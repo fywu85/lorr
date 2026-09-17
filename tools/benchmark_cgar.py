@@ -50,7 +50,7 @@ def main():
         (out / "summary.json").write_text(json.dumps(ordered, indent=2) + "\n")
         fields = ["instance", "before", "after", "delta_percent", "makespan", "planner_errors", "schedule_errors", "timeouts", "wall_seconds", "exit", "valid"]
         with (out / "summary.csv").open("w", newline="") as stream:
-            writer = csv.DictWriter(stream, fieldnames=fields)
+            writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
             writer.writeheader()
             writer.writerows({k: row.get(k) for k in fields} for row in ordered)
         lines = ["# CGAR migration benchmark", "", "One run per MR24 instance; 1000 ms per decision and 30000 ms preprocessing.",
