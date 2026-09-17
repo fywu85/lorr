@@ -1,0 +1,91 @@
+{
+  "numTaskFinished": 457,
+  "numPlannerErrors": 0,
+  "numScheduleErrors": 0,
+  "numEntryTimeouts": 0,
+  "makespan": 600,
+  "variant": "sample",
+  "instance": "RANDOM-01",
+  "steps": 600,
+  "wall_seconds": 0.693,
+  "exit_code": 0,
+  "diagnostics": [
+    {
+      "t": 0,
+      "calls": 1,
+      "assigned": 100,
+      "local": 100,
+      "fallback": 0,
+      "dense": 0,
+      "sparse": 1,
+      "nodes": 8604,
+      "empty_limit": 0,
+      "empty_deadline": 0,
+      "pickup_cost": 330,
+      "chain_cost": 4440,
+      "route_queries": 509,
+      "manhattan": 0,
+      "upgrades": 0
+    },
+    {
+      "t": 200,
+      "calls": 201,
+      "assigned": 237,
+      "local": 235,
+      "fallback": 0,
+      "dense": 0,
+      "sparse": 105,
+      "nodes": 44197,
+      "empty_limit": 0,
+      "empty_deadline": 0,
+      "pickup_cost": 1600,
+      "chain_cost": 13099,
+      "route_queries": 79110,
+      "manhattan": 0,
+      "upgrades": 0
+    },
+    {
+      "t": 400,
+      "calls": 401,
+      "assigned": 393,
+      "local": 390,
+      "fallback": 0,
+      "dense": 0,
+      "sparse": 208,
+      "nodes": 82970,
+      "empty_limit": 0,
+      "empty_deadline": 0,
+      "pickup_cost": 3089,
+      "chain_cost": 21457,
+      "route_queries": 157286,
+      "manhattan": 0,
+      "upgrades": 0
+    }
+  ],
+  "valid": true,
+  "metadata": {
+    "variant": "sample",
+    "environment": {
+      "CGAR_DIAG_GLOBAL_SAMPLES": "64"
+    },
+    "command": [
+      "/shared/share_mala/fw2449/lorr2024/experiments/throughput-20260917/build/v2/lifelong",
+      "-i",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+      "-o",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-diagnosis-20260917/sample-RANDOM-01-600/result.json",
+      "-s",
+      "600",
+      "-t",
+      "1000",
+      "-p",
+      "30000"
+    ],
+    "binary_sha256": "5eedad48d3e6f251e50501da8735eae43223f05a7a7ce3ee12f084a28472f087",
+    "probe_build": {
+      "production_source_sha256": "96a4399c5f1e35e4b661fb2aacb07e6e7318f0041b44a748ba53efe48096e37f",
+      "probe_source_sha256": "7bb90af60a5d2f8d5da5c11932f080ca497cfbf397612eebf9b21ffe8cf003c8",
+      "binary_sha256": "5eedad48d3e6f251e50501da8735eae43223f05a7a7ce3ee12f084a28472f087"
+    }
+  }
+}

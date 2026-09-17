@@ -38,6 +38,8 @@ for obstacles, duplicate destinations, and edge swaps.
 
 [Latest full MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft.
 
+[Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. The production planner is unchanged by these experiments.
+
 ```sh
 python3 tools/benchmark_cgar.py --output runs/cgar-new-run --jobs 1
 ```

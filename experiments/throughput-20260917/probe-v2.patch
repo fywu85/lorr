@@ -1,0 +1,310 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -8,6 +8,14 @@
+ #include <string>
+ 
+ namespace cgar {
++struct DiagnosticStats {
++ long long calls=0, assigned=0, local_assigned=0, fallback_assigned=0;
++ long long dense_calls=0, sparse_calls=0, nodes=0, empty_limit=0, empty_deadline=0;
++ long long pickup_cost=0, chain_cost=0, route_queries=0, manhattan=0, chain_upgrades=0;
++};
++static DiagnosticStats diagnostic;
++static std::unordered_set<int> diagnostic_exact_chains;
++
+ 
+ namespace {
+ 
+@@ -560,6 +568,7 @@
+ }
+ 
+ int Cgar::route_h(int i, int cell) {
++    ++diagnostic.route_queries;
+     const Agent& a = agents_[i];
+     const int pocket = cert_.pocket[cell];
+     const int source_pocket = cert_.pocket[loc_[i]];
+@@ -571,10 +580,10 @@
+         // Building a table is a full-map BFS. Cap how many a single step may build,
+         // otherwise a map with thousands of distinct goals blows the time budget;
+         // robots that miss out steer by straight-line distance until a later step.
+-        if (table_budget_ <= 0) return oracle_.manhattan(cell, a.goal);
++        if (table_budget_ <= 0) { ++diagnostic.manhattan; return oracle_.manhattan(cell, a.goal); }
+         --table_budget_;
+         t = oracle_.try_table(a.goal, distance_deadline_);
+-        if (t == nullptr) { table_budget_ = 0; return oracle_.manhattan(cell, a.goal); }
++        if (t == nullptr) { table_budget_ = 0; ++diagnostic.manhattan; return oracle_.manhattan(cell, a.goal); }
+     }
+     if (oracle_.value(*t, cell) < kInf) return oracle_.value(*t, cell);
+     if (pocket >= 0) return kFar + cert_.exit_dist[cell];
+@@ -1051,6 +1060,10 @@
+                 stats_.txn_moves, stats_.txn_aborts, stats_.txn_no_hole, in_txn, locks, stats_.lock_grants,
+                 stats_.safety_waits, idle, stats_.assignments, stats_.fair_assignments,
+                 oracle_.full() ? "full" : "ok", stats_.evacuations, parked_count(), active_certified_);
++    std::printf("[diag] t=%d calls=%lld assigned=%lld local=%lld fallback=%lld dense=%lld sparse=%lld nodes=%lld empty_limit=%lld empty_deadline=%lld pickup_cost=%lld chain_cost=%lld route_queries=%lld manhattan=%lld upgrades=%lld\n",
++       env_->curr_timestep, diagnostic.calls, diagnostic.assigned, diagnostic.local_assigned, diagnostic.fallback_assigned,
++       diagnostic.dense_calls, diagnostic.sparse_calls, diagnostic.nodes, diagnostic.empty_limit, diagnostic.empty_deadline,
++       diagnostic.pickup_cost, diagnostic.chain_cost, diagnostic.route_queries, diagnostic.manhattan, diagnostic.chain_upgrades);
+     std::fflush(stdout);
+ }
+ 
+@@ -1058,7 +1071,17 @@
+ 
+ int Cgar::task_chain_cost(int task_id) {
+     auto it = chain_cost_.find(task_id);
+-    if (it != chain_cost_.end()) return it->second;
++    if (it != chain_cost_.end()) {
++        bool upgrade = env_int("CGAR_DIAG_UPGRADE_CHAIN", 0) && !diagnostic_exact_chains.count(task_id);
++        if (upgrade) {
++            const Task& task = env_->task_pool.at(task_id);
++            for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k)
++                upgrade &= oracle_.has(task.locations[k]);
++        }
++        if (!upgrade) return it->second;
++        ++diagnostic.chain_upgrades;
++        diagnostic_exact_chains.insert(task_id);
++    }
+     const Task& task = env_->task_pool.at(task_id);
+     long long total = 0;
+     for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k) {
+@@ -1086,6 +1109,128 @@
+ // unpruned oldest-task admission. A bounded pair store never truncates the task
+ // pool by ID; unmatched robots get a fresh search over the remaining tasks.
+ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>& proposed) {
++    ++diagnostic.calls;
++    if (env_int("CGAR_DIAG_DRAFT_SCHED", 0)) {
++
++    env_ = env;
++    const auto deadline = Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms));
++    deadline_ = distance_deadline_ = deadline;
++    prepare_capacity_mode();
++    if (capacity_mode_ && !parking_ready_) return;
++    proposed = env->curr_task_schedule;
++    proposed.resize(n_, -1);
++    table_budget_ = sched_tables_;
++    // Rebuild from the pool so a rejected schedule cannot lose a task permanently.
++    free_tasks_.clear();
++    for (const auto& entry : env->task_pool) {
++        if (entry.second.agent_assigned == -1 && eligible_task(entry.second)) free_tasks_.insert(entry.first);
++    }
++    for (auto it = chain_cost_.begin(); it != chain_cost_.end();) {
++        it = free_tasks_.count(it->first) ? std::next(it) : chain_cost_.erase(it);
++    }
++    std::vector<int> robots;
++    for (int i = 0; i < n_; ++i) {
++        if (proposed[i] == -1 && !parked_[i]) robots.push_back(i);
++    }
++    if (robots.empty() || free_tasks_.empty()) return;
++    std::vector<int> tasks(free_tasks_.begin(), free_tasks_.end());
++    std::sort(tasks.begin(), tasks.end());
++
++    struct Pair {
++        double score;
++        int cost, task, robot;
++    };
++    std::vector<Pair> pairs;
++    pairs.reserve(std::min<size_t>(robots.size() * tasks.size(), 8u << 20));
++    const int now = env->curr_timestep;
++    for (int t : tasks) {
++        if (Clock::now() > deadline) break;
++        const Task& task = env->task_pool.at(t);
++        const int first = task.locations.at(task.idx_next_loc);
++        const int chain = task_chain_cost(t);
++        const double wait = std::max(0, now - task.t_revealed);
++        const std::vector<int>* table = oracle_.find(first);
++        if (table == nullptr && table_budget_ > 0) {
++            --table_budget_;
++            table = oracle_.try_table(first, deadline);
++        }
++        if (static_cast<long long>(pairs.size()) >= max_pairs_) break;
++        for (int r : robots) {
++            const int from = env->curr_states[r].location;
++            int d;
++            if (table) {
++                d = oracle_.value(*table, from);
++                if (d >= kInf) {
++                    const int exit = cert_.exit_cell[from];
++                    d = exit >= 0 && oracle_.value(*table, exit) < kInf ? cert_.exit_dist[from] + oracle_.value(*table, exit) : kInf;
++                }
++            } else {
++                d = oracle_.manhattan(from, first);
++            }
++            if (d >= kInf) continue;
++            const int cost = std::max(1, d + chain);
++            pairs.push_back({hrrn_ ? 1.0 + wait / cost : 1.0, cost, t, r});
++        }
++    }
++    // Sorting is unbounded work, so shrink an oversized list to its cheapest
++    // candidates first (cost is the HRRN denominator, so this keeps the best pairs).
++    if (static_cast<long long>(pairs.size()) > max_pairs_) {
++        std::nth_element(pairs.begin(), pairs.begin() + max_pairs_, pairs.end(),
++                         [](const Pair& a, const Pair& b) { return a.cost < b.cost; });
++        pairs.resize(max_pairs_);
++    }
++    std::sort(pairs.begin(), pairs.end(), [](const Pair& a, const Pair& b) {
++        if (a.score != b.score) return a.score > b.score;
++        if (a.cost != b.cost) return a.cost < b.cost;
++        if (a.task != b.task) return a.task < b.task;
++        return a.robot < b.robot;
++    });
++
++    std::vector<char> robot_used(n_, 0);
++    std::unordered_set<int> task_used;
++    std::vector<int> by_age = tasks;
++    std::sort(by_age.begin(), by_age.end(), [&](int a, int b) {
++        const int ra = env->task_pool.at(a).t_revealed, rb = env->task_pool.at(b).t_revealed;
++        return ra != rb ? ra < rb : a < b;
++    });
++    size_t oldest = 0;
++    auto assign = [&](const Pair& p) {
++        robot_used[p.robot] = 1;
++        task_used.insert(p.task);
++        proposed[p.robot] = p.task;
++        ++stats_.assignments;
++        ++diagnostic.assigned;
++        diagnostic.pickup_cost += p.cost - chain_cost_.at(p.task);
++        diagnostic.chain_cost += chain_cost_.at(p.task);
++    };
++    size_t remaining = std::min(robots.size(), tasks.size());
++    for (const Pair& p : pairs) {
++        if (remaining == 0) break;
++        if (regular_admissions_ >= n_) {
++            while (oldest < by_age.size() && task_used.count(by_age[oldest])) ++oldest;
++            if (oldest < by_age.size()) {
++                const int t_old = by_age[oldest];
++                for (const Pair& q : pairs) {
++                    if (q.task == t_old && !robot_used[q.robot]) {
++                        assign(q);
++                        ++stats_.fair_assignments;
++                        --remaining;
++                        break;
++                    }
++                }
++            }
++            regular_admissions_ = 0;
++            if (remaining == 0) break;
++        }
++        if (robot_used[p.robot] || task_used.count(p.task)) continue;
++        assign(p);
++        ++regular_admissions_;
++        --remaining;
++    }
++    for (int t : task_used) free_tasks_.erase(t);
++
++        return;
++    }
+     env_ = env;
+     deadline_ = Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms));
+     distance_deadline_ = Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms / 2));
+@@ -1143,6 +1288,8 @@
+         return tasks[a].id < tasks[b].id;
+     });
+     std::vector<char> robot_used(n_, 0), task_used(tasks.size(), 0);
++    std::vector<int> available(tasks.size()), available_position(tasks.size());
++    for (size_t t = 0; t < tasks.size(); ++t) available[t] = available_position[t] = static_cast<int>(t);
+     size_t oldest = 0;
+     auto oldest_task = [&]() {
+         while (oldest < by_age.size() && task_used[by_age[oldest]]) ++oldest;
+@@ -1151,7 +1298,15 @@
+     auto assign = [&](const Pair& p) {
+         robot_used[p.robot] = 1;
+         task_used[p.task] = 1;
++        const int slot = available_position[p.task], last = available.back();
++        available[slot] = last;
++        available_position[last] = slot;
++        available.pop_back();
++        available_position[p.task] = -1;
+         proposed[p.robot] = tasks[p.task].id;
++        ++diagnostic.assigned;
++        diagnostic.pickup_cost += p.cost - tasks[p.task].chain;
++        diagnostic.chain_cost += tasks[p.task].chain;
+         ++stats_.assignments;
+     };
+     auto estimate = [&](int r, int t) {
+@@ -1183,6 +1338,9 @@
+ 
+     std::vector<int> seen(cert_.free.size(), 0), distance(cert_.free.size(), 0), queue;
+     int generation = 0;
++    const int node_limit = std::max(1, env_int("CGAR_DIAG_NODE_LIMIT", 2048));
++    const int global_samples = std::max(0, env_int("CGAR_DIAG_GLOBAL_SAMPLES", 0));
++    const auto candidate_deadline = deadline_ - std::chrono::milliseconds(global_samples ? std::max(1, time_limit_ms / 4) : 0);
+     auto candidates = [&](int r, int limit) {
+         std::vector<Pair> result;
+         const int from = env->curr_states[r].location;
+@@ -1191,8 +1349,9 @@
+         distance[from] = 0;
+         // The search is local and bounded; the fallback below still covers every
+         // remaining robot when sparse endpoints or the deadline exhaust it.
+-        for (size_t head = 0; head < queue.size() && head < 2048; ++head) {
+-            if ((head & 63) == 0 && Clock::now() >= deadline_) break;
++        for (size_t head = 0; head < queue.size() && head < static_cast<size_t>(node_limit); ++head) {
++            if ((head & 63) == 0 && Clock::now() >= candidate_deadline) break;
++            ++diagnostic.nodes;
+             const int u = queue[head];
+             for (int t : at_cell[u]) if (!task_used[t]) {
+                 result.push_back(pair_for(r, t, distance[u]));
+@@ -1206,15 +1365,33 @@
+                 queue.push_back(v);
+             }
+         }
++        if (result.empty()) {
++            if (Clock::now() >= candidate_deadline) ++diagnostic.empty_deadline;
++            else ++diagnostic.empty_limit;
++        }
+         return result;
+     };
+-    const int per_robot = static_cast<int>(std::max<long long>(1, std::min<long long>(16, max_pairs_ / robots.size())));
++    const int per_robot = static_cast<int>(std::max<long long>(1, std::min<long long>(env_int("CGAR_DIAG_CANDIDATES", 16), max_pairs_ / robots.size())));
+     std::vector<Pair> pairs;
+     pairs.reserve(static_cast<size_t>(std::min<long long>(max_pairs_, robots.size() * per_robot)));
++    const bool dense = env_int("CGAR_DIAG_HYBRID", 0) &&
++        robots.size() * tasks.size() <= static_cast<size_t>(max_pairs_);
++    if (dense) {
++        ++diagnostic.dense_calls;
++        for (int r : robots) {
++            for (size_t t = 0; t < tasks.size(); ++t) {
++                if ((pairs.size() & 1023) == 0 && Clock::now() >= candidate_deadline) break;
++                pairs.push_back(estimate(r, static_cast<int>(t)));
++            }
++            if (Clock::now() >= candidate_deadline) break;
++        }
++    } else {
++        ++diagnostic.sparse_calls;
+     for (int r : robots) {
+-        if (Clock::now() >= deadline_ || static_cast<long long>(pairs.size()) >= max_pairs_) break;
++        if (Clock::now() >= candidate_deadline || static_cast<long long>(pairs.size()) >= max_pairs_) break;
+         auto local = candidates(r, std::min<int>(per_robot, static_cast<int>(max_pairs_ - pairs.size())));
+         pairs.insert(pairs.end(), local.begin(), local.end());
++    }
+     }
+     std::sort(pairs.begin(), pairs.end(), better);
+     for (const Pair& p : pairs) {
+@@ -1222,6 +1399,7 @@
+         fair_admission();
+         if (robot_used[p.robot] || task_used[p.task]) continue;
+         assign(p);
++        ++diagnostic.local_assigned;
+         ++regular_admissions_;
+     }
+     for (int r : robots) {
+@@ -1231,7 +1409,20 @@
+         const int fallback = oldest_task();
+         if (fallback < 0) break;
+         auto local = candidates(r, 8);
+-        const Pair best = local.empty() ? estimate(r, fallback) : *std::min_element(local.begin(), local.end(), better);
++        if (local.empty()) ++diagnostic.fallback_assigned;
++        else ++diagnostic.local_assigned;
++        if (local.empty() && env_int("CGAR_DIAG_DEFER_FALLBACK", 0)) continue;
++        Pair best = local.empty() ? estimate(r, fallback) : *std::min_element(local.begin(), local.end(), better);
++        if (local.empty() && global_samples) {
++            const uint64_t base = (static_cast<uint64_t>(r) + 1) * 2654435761ULL +
++                (static_cast<uint64_t>(now) + 1) * 2246822519ULL;
++            for (int k = 0; k < global_samples; ++k) {
++                const int t = available[(base + static_cast<uint64_t>(k) * 3266489917ULL) % available.size()];
++                if (task_used[t]) continue;
++                const Pair candidate = estimate(r, t);
++                if (better(candidate, best)) best = candidate;
++            }
++        }
+         assign(best);
+         ++regular_admissions_;
+     }

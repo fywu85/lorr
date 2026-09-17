@@ -1,0 +1,74 @@
+VALIDATION variant=sample
+CERTIFICATE_RESULT cases=1608 certified=1201 topology_checks=passed
+[cgar] certificate N=2 free=6 core=4 promotion_arcs=8 iterations=3 valid=1 capacity=2 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=4 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=2 manhattan=0 upgrades=0
+POCKET_RESULT exact_joint_solution_steps=11 cgar_goals_reached=2/2 after_steps=11 final_cells=3,0
+[cgar] certificate N=2 free=24 core=4 promotion_arcs=8 iterations=21 valid=1 capacity=2 pockets=1 largest_pocket=20 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=40 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=47 manhattan=0 upgrades=0
+POCKET_RESULT exact_joint_solution_steps=47 cgar_goals_reached=2/2 after_steps=65 final_cells=21,0
+[cgar] certificate N=2 free=4 core=4 promotion_arcs=8 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=266 manhattan=0 upgrades=0
+PERSISTENT_PRIMARY passed
+[cgar] certificate N=5 free=6 core=4 promotion_arcs=8 iterations=2 valid=0 capacity=3 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=-1 stall=-1 txns=1 moves=1 aborts=0 no_hole=0 in_txn=1 locks=0 grants=0 safety_waits=0 idle=5 assigned=0 fair=0 tables=ok evacuations=0 parked=1 active_certified=0
+[diag] t=0 calls=1 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=469 manhattan=0 upgrades=0
+[cgar] capacity_mode active=3 parked=2 capacity=3 core_tasks_only=1
+CAPACITY_BOOTSTRAP passed active=3 parked=2
+[cgar] certificate N=10000 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=10000 pockets=0 largest_pocket=0 secs=0.007 | stall=4 txn=1 cert=1
+SCHEDULER_RESULT idle_robots=10000 available_tasks=10000 assigned=10000 budget_ms=5000 elapsed_ms=74
+[cgar] certificate N=2 free=6 core=6 promotion_arcs=14 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+FAIR_SPARSE_SCHEDULE passed
+COMPACT_DISTANCES passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.044 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[diag] t=0 calls=6 assigned=10007 local=10006 fallback=0 dense=0 sparse=4 nodes=161057 empty_limit=0 empty_deadline=0 pickup_cost=10008 chain_cost=147 route_queries=6268 manhattan=5790 upgrades=0
+BOUNDED_DISTANCE_WORK passed budget_ms=5 elapsed_ms=2
+All CGAR regression checks passed
+VALIDATION variant=hybrid_sample
+CERTIFICATE_RESULT cases=1608 certified=1201 topology_checks=passed
+[cgar] certificate N=2 free=6 core=4 promotion_arcs=8 iterations=3 valid=1 capacity=2 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=4 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=2 manhattan=0 upgrades=0
+POCKET_RESULT exact_joint_solution_steps=11 cgar_goals_reached=2/2 after_steps=11 final_cells=3,0
+[cgar] certificate N=2 free=24 core=4 promotion_arcs=8 iterations=21 valid=1 capacity=2 pockets=1 largest_pocket=20 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=40 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=47 manhattan=0 upgrades=0
+POCKET_RESULT exact_joint_solution_steps=47 cgar_goals_reached=2/2 after_steps=65 final_cells=21,0
+[cgar] certificate N=2 free=4 core=4 promotion_arcs=8 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[diag] t=0 calls=0 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=266 manhattan=0 upgrades=0
+PERSISTENT_PRIMARY passed
+[cgar] certificate N=5 free=6 core=4 promotion_arcs=8 iterations=2 valid=0 capacity=3 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=-1 stall=-1 txns=1 moves=1 aborts=0 no_hole=0 in_txn=1 locks=0 grants=0 safety_waits=0 idle=5 assigned=0 fair=0 tables=ok evacuations=0 parked=1 active_certified=0
+[diag] t=0 calls=1 assigned=0 local=0 fallback=0 dense=0 sparse=0 nodes=0 empty_limit=0 empty_deadline=0 pickup_cost=0 chain_cost=0 route_queries=469 manhattan=0 upgrades=0
+[cgar] capacity_mode active=3 parked=2 capacity=3 core_tasks_only=1
+CAPACITY_BOOTSTRAP passed active=3 parked=2
+[cgar] certificate N=10000 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=10000 pockets=0 largest_pocket=0 secs=0.008 | stall=4 txn=1 cert=1
+SCHEDULER_RESULT idle_robots=10000 available_tasks=10000 assigned=10000 budget_ms=5000 elapsed_ms=79
+[cgar] certificate N=2 free=6 core=6 promotion_arcs=14 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+FAIR_SPARSE_SCHEDULE passed
+COMPACT_DISTANCES passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.049 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[diag] t=0 calls=6 assigned=10007 local=10006 fallback=0 dense=1 sparse=3 nodes=161045 empty_limit=0 empty_deadline=0 pickup_cost=10008 chain_cost=147 route_queries=6268 manhattan=5786 upgrades=0
+BOUNDED_DISTANCE_WORK passed budget_ms=5 elapsed_ms=2
+All CGAR regression checks passed
+VALIDATION variant=production
+[cgar] certificate N=1 free=202 core=202 promotion_arcs=602 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+CHAIN_CAP selected=0 selected_cost=100 optimal_task=16 optimal_cost=1
+[cgar] certificate N=1 free=62 core=62 promotion_arcs=182 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+BUCKET_HRRN selected=0 selected_cost=21 selected_score=1.95238 optimal_task=16 optimal_cost=30 optimal_score=4.33333
+VALIDATION variant=sample
+[cgar] certificate N=1 free=202 core=202 promotion_arcs=602 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+CHAIN_CAP selected=0 selected_cost=100 optimal_task=16 optimal_cost=1
+[cgar] certificate N=1 free=62 core=62 promotion_arcs=182 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+BUCKET_HRRN selected=0 selected_cost=21 selected_score=1.95238 optimal_task=16 optimal_cost=30 optimal_score=4.33333
+VALIDATION variant=hybrid_sample
+[cgar] certificate N=1 free=202 core=202 promotion_arcs=602 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+CHAIN_CAP selected=16 selected_cost=1 optimal_task=16 optimal_cost=1
+[cgar] certificate N=1 free=62 core=62 promotion_arcs=182 iterations=1 valid=1 capacity=1 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+BUCKET_HRRN selected=16 selected_cost=30 selected_score=4.33333 optimal_task=16 optimal_cost=30 optimal_score=4.33333
+All experiment validation checks passed
