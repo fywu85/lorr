@@ -36,6 +36,8 @@ for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
 
+[Latest full MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft.
+
 ```sh
 python3 tools/benchmark_cgar.py --output runs/cgar-new-run --jobs 1
 ```
