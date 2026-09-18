@@ -31,14 +31,14 @@ ctest --test-dir cgar/build --output-on-failure
 
 The tests cover graph-certificate premises, pocket evacuation, persistent primary
 tickets, task replacement, excess-capacity parking, full 10,000-robot scheduling,
-fair admission, and deadline fallback. Simulated actions are independently checked
+fair admission, sparse fallback quality, and explicit timeout failures. Simulated actions are independently checked
 for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
 
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 
-[Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. The production planner is unchanged by these experiments. A [follow-up Fable 5.1 Max review](experiments/throughput-20260918-fable/README.md) was completed through Claude Code CLI.
+[Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. Those diagnostic prototypes were separate from the production planner. A [follow-up Fable 5.1 Max review](experiments/throughput-20260918-fable/README.md) was completed through Claude Code CLI.
 
 ```sh
 python3 tools/benchmark_cgar.py --output runs/cgar-new-run --jobs 1
@@ -47,7 +47,9 @@ python3 tools/benchmark_cgar.py --output runs/cgar-new-run --jobs 1
 The runner uses all ten MR24 instances, their archived simulation lengths, 1000 ms
 per decision, and 30000 ms preprocessing. Each output directory must be new. Use
 `--instances RANDOM-01 RANDOM-02` to run a subset. Sequential execution is the
-default because this workspace's CPU quota is one core.
+default for the interactive host, whose account quota is one core. For actual parallel execution on GRID, use `python3 tools/benchmark_gridengine.py --output runs/cgar-grid-new --jobs 10`; it reserves one physical core per instance.
+
+The [sequential repeat](benchmarks/mr24-sequential-repeat-20260918/summary.md) documents contention, the [GRID report](benchmarks/gridengine-20260918/README.md) verifies reserved parallel CPU execution, and the [strict-deadline study](experiments/throughput-20260918-strict/README.md) evaluates the first fallback repair and shorter horizons.
 
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run

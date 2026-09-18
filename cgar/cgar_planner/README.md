@@ -37,13 +37,19 @@ an external/default scheduler can assign work outside its supported task set.
 ## Scheduling
 
 For every idle robot, a bounded local search supplies nearby task candidates.
-Candidates are ranked using whole-chain HRRN estimates, and unmatched robots
-search the remaining pool again. A cheap fallback covers robots not reached
-before the search deadline. Every fleet-width of regular admissions includes an
+Candidates are ranked using whole-chain HRRN estimates. Unmatched robots replenish
+candidates that other robots took; an unchanged search that already found nothing
+is not repeated. When the fixed local search finds nothing, a deterministic sample
+of unused tasks competes with the oldest task under the same cost objective.
+Every fleet-width of regular admissions includes an
 oldest-task slot evaluated independently of candidate pruning. This is a sparse
 approximation to global HRRN, rather than an exhaustive assignment matrix.
 
 `CGAR_MAX_PAIRS` bounds stored candidates, not which task IDs are eligible.
+`CGAR_FALLBACK_REPAIR=0` selects the old fallback for a matched control;
+`CGAR_FALLBACK_SAMPLES` defaults to 64 (clamped to 0–4096). Sampling uses a separate
+deterministic sequence and does not consume PIBT's random stream. Cumulative
+scheduler counters are logged every 200 steps; the last log can precede the horizon.
 `CGAR_PRIMARY_PATIENCE` and `CGAR_TXN_MAX_AGE` are no longer used. Other existing
 switches, including `CGAR_PLANNER=default`, `CGAR_SCHEDULER=default`, `CGAR_CERT`,
 `CGAR_TXN`, `CGAR_HRRN`, cache budgets, and seed retain their experimental roles.
@@ -52,11 +58,18 @@ progress mechanism.
 
 ## Planning deadlines
 
-Distance tables use compact indices for traversable cells. BFS construction checks
-its deadline and caches only complete tables. The primary receives the first exact
-distance lookup; other missing tables use Manhattan estimates once the distance
-budget expires. Planning reserves time for action validation, and recursive PIBT
-also checks the deadline.
+Scheduling, distance construction, recovery and PIBT share the entry's absolute
+wall-clock deadline. If required computation does not finish, CGAR throws `Timeout`;
+the competition entry logs `CGAR_TIMEOUT` and exits with code 124. The runner records
+a failed timeout with unavailable task/error counts, rather than a successful
+partial schedule or a budget-induced waiting plan. The simulator is unchanged.
+
+Distance tables use compact traversable-cell indices and publish only complete
+BFS results. The primary receives the first exact lookup. Fixed table-count,
+candidate-count and sampling limits remain part of the algorithm: missing secondary
+tables use Manhattan estimates after the prescribed count is exhausted. Elapsed
+time no longer decides how many candidates or samples to consider. A successful
+call completes this fixed policy; this is not an anytime algorithm.
 
 ## Build and verification
 
@@ -70,7 +83,8 @@ env/bin/ctest --test-dir cgar/build --output-on-failure
 The regression executable checks certificate reachability, short and long pocket
 evacuations, persistent primaries, task-epoch replacement at the same cell,
 capacity bootstrap, full 10,000-robot assignment coverage, and fair admission
-under a one-pair candidate cap, and bounded distance work under a short deadline. Every simulated fixture action is checked for
+under a one-pair candidate cap, sparse fallback quality, replenishment after taken
+candidates, and explicit scheduler/distance timeouts. Every simulated fixture action is checked for
 obstacles, vertex collisions, and edge swaps.
 
 Run the ten main-round instances into a new directory with:
@@ -85,4 +99,20 @@ the original draft's outputs (or their committed summary when raw outputs are ab
 1000 ms per decision, and 30000 ms preprocessing. Results are single runs; task
 throughput and simulator error counts do not establish starvation freedom.
 
-Recorded full-suite results: [sequential execution](../../benchmarks/mr24-20260917/summary.md) and [ten concurrent instances](../../benchmarks/mr24-parallel-20260918/summary.md). Both use the same production executable. The parallel run shares one CPU across the jobs; all ten horizons completed with zero errors or timeouts, with throughput differences documented in the report.
+CGAR currently computes on one core. On this GRID cluster, use a reserved allocation
+with one physical core per instance to avoid the interactive account's shared
+one-CPU quota:
+
+```sh
+python3 tools/benchmark_gridengine.py --output runs/cgar-grid-new --jobs 10
+```
+
+The launcher requests 8 GiB per slot and uses `debian.q`, the `threaded` parallel environment, physical-core
+binding and an exclusive allocation. Each native run is pinned to a different
+physical core. Affinity, cgroup quotas, CPU model, CPU time and peak RSS are recorded.
+The [GRID resource report](../../benchmarks/gridengine-20260918/README.md) explains
+the allocation and its differences from the competition's larger allowance.
+
+Recorded historical full-suite results: [sequential execution](../../benchmarks/mr24-20260917/summary.md) and [ten concurrent instances](../../benchmarks/mr24-parallel-20260918/summary.md). Both use the same production executable. The parallel run shares one CPU across the jobs; all ten horizons completed with zero errors or timeouts, with throughput differences documented in the report.
+
+The [sequential repeat](../../benchmarks/mr24-sequential-repeat-20260918/summary.md) documents remaining account contention. The [strict-deadline fallback study](../../experiments/throughput-20260918-strict/README.md) contains matched policy comparisons and shorter-horizon calibration.

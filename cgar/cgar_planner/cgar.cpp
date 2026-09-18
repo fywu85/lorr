@@ -333,15 +333,15 @@ const std::vector<int>& DistanceOracle::table(int goal) {
 }
 
 const std::vector<int>* DistanceOracle::try_table(int goal, std::chrono::steady_clock::time_point deadline) {
+    check_deadline(deadline, "distance_table");
     if (const auto* cached = find(goal)) return cached;
-    if (std::chrono::steady_clock::now() >= deadline) return nullptr;
     std::vector<int> dist(cells_.size(), kInf);
     const int goal_pocket = cert_->pocket[goal];
     const int start = index_[goal];
     queue_.assign(1, start);
     dist[start] = 0;
     for (size_t head = 0; head < queue_.size(); ++head) {
-        if ((head & 1023) == 0 && std::chrono::steady_clock::now() >= deadline) return nullptr;
+        if ((head & 1023) == 0) check_deadline(deadline, "distance_table");
         const int u = queue_[head];
         for (int v : neighbors_[u]) {
             if (dist[v] != kInf) continue;
@@ -351,6 +351,7 @@ const std::vector<int>* DistanceOracle::try_table(int goal, std::chrono::steady_
             queue_.push_back(v);
         }
     }
+    check_deadline(deadline, "distance_table_complete");
     // Only complete tables enter the cache: partial BFS results cannot certify
     // a decreasing potential. Compact indices avoid caching obstacle cells.
     lru_.push_front(goal);
@@ -418,6 +419,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     max_pairs_ = std::max(1, env_int("CGAR_MAX_PAIRS", 2000000));
     enable_txn_ = env_int("CGAR_TXN", 1) != 0;
     hrrn_ = env_int("CGAR_HRRN", 1) != 0;
+    repair_fallback_ = env_int("CGAR_FALLBACK_REPAIR", 1) != 0;
+    fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     enable_locks_ = env_int("CGAR_CERT", 1) != 0;
     const size_t table_mb = static_cast<size_t>(env_int("CGAR_TABLE_MB", 2048));
     rng_.seed(static_cast<unsigned>(env_int("CGAR_SEED", 0)));
@@ -560,6 +563,7 @@ int Cgar::select_primary() {
 }
 
 int Cgar::route_h(int i, int cell) {
+    ++stats_.route_queries;
     const Agent& a = agents_[i];
     const int pocket = cert_.pocket[cell];
     const int source_pocket = cert_.pocket[loc_[i]];
@@ -571,10 +575,9 @@ int Cgar::route_h(int i, int cell) {
         // Building a table is a full-map BFS. Cap how many a single step may build,
         // otherwise a map with thousands of distinct goals blows the time budget;
         // robots that miss out steer by straight-line distance until a later step.
-        if (table_budget_ <= 0) return oracle_.manhattan(cell, a.goal);
+        if (table_budget_ <= 0) { ++stats_.route_manhattan; return oracle_.manhattan(cell, a.goal); }
         --table_budget_;
         t = oracle_.try_table(a.goal, distance_deadline_);
-        if (t == nullptr) { table_budget_ = 0; return oracle_.manhattan(cell, a.goal); }
     }
     if (oracle_.value(*t, cell) < kInf) return oracle_.value(*t, cell);
     if (pocket >= 0) return kFar + cert_.exit_dist[cell];
@@ -603,7 +606,7 @@ void Cgar::reserve(int cell, int who) {
 
 bool Cgar::pibt(int i, int parent) {
     const int u = loc_[i];
-    if (Clock::now() >= deadline_) { next_[i] = u; reserve(u, i); return false; }
+    check_deadline(deadline_, "pibt");
     struct Cand {
         int cell, h, occupied, turns;
         unsigned tie;
@@ -665,7 +668,7 @@ bool Cgar::clear_cell(int cell, int forbidden, const std::vector<char>& region,
     prev[cell] = cell;
     int hole = -1;
     for (size_t head = 0; head < queue.size(); ++head) {
-        if ((head & 255) == 0 && Clock::now() >= deadline_) return false;
+        if ((head & 255) == 0) check_deadline(deadline_, "recovery_search");
         const int u = queue[head];
         if (occupancy[u] < 0) { hole = u; break; }
         for (int d = 0; d < 4; ++d) {
@@ -778,7 +781,7 @@ bool Cgar::evacuate_pocket(int pocket) {
             if (robot < 0 || cert_.exit_dist[positions[i]] < cert_.exit_dist[positions[robot]]) robot = i;
         }
         if (robot < 0) break;
-        if (Clock::now() >= deadline_) return false;
+        check_deadline(deadline_, "pocket_evacuation");
         while (!cert_.core[positions[robot]]) {
             const int u = positions[robot];
             int v = -1;
@@ -916,12 +919,15 @@ void Cgar::make_safe(std::vector<Action>& actions) {
 }
 
 void Cgar::plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& actions) {
+    plan(env, Clock::now() + std::chrono::milliseconds(time_limit_ms), actions);
+}
+
+void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<Action>& actions) {
+    check_deadline(deadline, "planning_start");
     env_ = env;
     actions.assign(n_, Action::W);
-    if (time_limit_ms <= 0) return;
-    const auto started = Clock::now();
-    deadline_ = started + std::chrono::milliseconds(time_limit_ms - std::min(25, time_limit_ms / 10));
-    distance_deadline_ = started + std::chrono::milliseconds(std::max(1, time_limit_ms / 3));
+    deadline_ = deadline;
+    distance_deadline_ = deadline_;
     oracle_.trim();
     table_budget_ = plan_tables_;
     sync_agents();
@@ -937,7 +943,8 @@ void Cgar::plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& 
         // core holes from the search, so a successful shift adds a new core hole.
         auto region = cert_.free;
         for (size_t c = 0; c < region.size(); ++c) if (cert_.core[c] && occ_now_[c] < 0) region[c] = 0;
-        for (int i = 0; i < n_ && Clock::now() < deadline_; ++i) {
+        for (int i = 0; i < n_; ++i) {
+            check_deadline(deadline_, "capacity_bootstrap");
             if (!cert_.core[loc_[i]]) continue;
             bool portal = false;
             for (int d = 0; d < 4; ++d) {
@@ -995,7 +1002,8 @@ void Cgar::plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& 
         else ++a.stall;
     }
     if (enable_txn_ && active_certified_ && txn_moves_.empty() && primary_ >= 0 &&
-        agents_[primary_].stall >= stall_limit_ && Clock::now() < deadline_) {
+        agents_[primary_].stall >= stall_limit_) {
+        check_deadline(deadline_, "primary_recovery");
         // A promotion must use a complete, exact distance table.
         if (oracle_.has(agents_[primary_].goal)) try_install_txn(primary_);
     }
@@ -1025,7 +1033,7 @@ void Cgar::plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& 
     }
     for (int i : order_) {
         if (next_[i] != -1) continue;
-        if (Clock::now() >= deadline_) { next_[i] = loc_[i]; reserve(loc_[i], i); continue; }
+        check_deadline(deadline_, "action_planning");
         pibt(i, -1);
     }
     for (int i = 0; i < n_; ++i) {
@@ -1038,6 +1046,7 @@ void Cgar::plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& 
     for (int i = 0; i < n_; ++i) if (!checked[i] && actions[i] == Action::FW) move_check(i, checked, actions);
     make_safe(actions);
     if (env_->curr_timestep % 200 == 0) log_summary();
+    check_deadline(deadline_, "planning_complete");
 }
 
 void Cgar::log_summary() {
@@ -1051,6 +1060,17 @@ void Cgar::log_summary() {
                 stats_.txn_moves, stats_.txn_aborts, stats_.txn_no_hole, in_txn, locks, stats_.lock_grants,
                 stats_.safety_waits, idle, stats_.assignments, stats_.fair_assignments,
                 oracle_.full() ? "full" : "ok", stats_.evacuations, parked_count(), active_certified_);
+    std::printf("[cgar-scheduler] t=%d repair=%d samples=%d calls=%lld local=%lld fallback=%lld fair=%lld "
+                "searches=%lld nodes=%lld task_limits=%lld node_limits=%lld deadlines=%lld empty=%lld "
+                "skipped_empty=%lld sampled=%lld sample_deadlines=%lld improved=%lld "
+                "pickup_estimate=%lld chain_estimate=%lld route_queries=%lld route_manhattan=%lld\n",
+                env_->curr_timestep, repair_fallback_, fallback_samples_, stats_.schedule_calls,
+                stats_.local_assignments, stats_.fallback_assignments, stats_.fair_assignments,
+                stats_.candidate_searches, stats_.candidate_nodes, stats_.candidate_task_limits,
+                stats_.candidate_node_limits, stats_.candidate_deadlines, stats_.empty_searches,
+                stats_.skipped_empty_searches, stats_.sample_evaluations,
+                stats_.sample_deadlines, stats_.improved_fallbacks, stats_.estimated_pickup_cost,
+                stats_.estimated_chain_cost, stats_.route_queries, stats_.route_manhattan);
     std::fflush(stdout);
 }
 
@@ -1066,9 +1086,8 @@ int Cgar::task_chain_cost(int task_id) {
         if (oracle_.find(task.locations[k]) == nullptr) {
             if (table_budget_ > 0) {
                 --table_budget_;
-                if (oracle_.try_table(task.locations[k], distance_deadline_))
-                    d = oracle_.dist(task.locations[k - 1], task.locations[k]);
-                else { table_budget_ = 0; d = oracle_.manhattan(task.locations[k - 1], task.locations[k]); }
+                oracle_.try_table(task.locations[k], distance_deadline_);
+                d = oracle_.dist(task.locations[k - 1], task.locations[k]);
             } else {
                 d = oracle_.manhattan(task.locations[k - 1], task.locations[k]);
             }
@@ -1086,13 +1105,19 @@ int Cgar::task_chain_cost(int task_id) {
 // unpruned oldest-task admission. A bounded pair store never truncates the task
 // pool by ID; unmatched robots get a fresh search over the remaining tasks.
 void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>& proposed) {
+    schedule(env, Clock::now() + std::chrono::milliseconds(time_limit_ms), proposed);
+}
+
+void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vector<int>& proposed) {
+    check_deadline(deadline, "scheduling_start");
+    ++stats_.schedule_calls;
     env_ = env;
-    deadline_ = Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms));
-    distance_deadline_ = Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms / 2));
+    deadline_ = deadline;
+    distance_deadline_ = deadline_;
     proposed = env->curr_task_schedule;
     proposed.resize(n_, -1);
     prepare_capacity_mode();
-    if (capacity_mode_ && !parking_ready_) return;
+    if (capacity_mode_ && !parking_ready_) { check_deadline(deadline_, "capacity_schedule"); return; }
     table_budget_ = sched_tables_;
     free_tasks_.clear();
     for (const auto& entry : env->task_pool)
@@ -1101,21 +1126,21 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
         it = free_tasks_.count(it->first) ? std::next(it) : chain_cost_.erase(it);
     std::vector<int> robots;
     for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i]) robots.push_back(i);
-    if (robots.empty() || free_tasks_.empty()) return;
+    if (robots.empty() || free_tasks_.empty()) { check_deadline(deadline_, "empty_schedule"); return; }
     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
     ++scheduler_cursor_;
 
     struct TaskCost { int id, first, chain, revealed; };
-    struct Pair { double score; int cost, task, robot; };
+    struct Pair { double score; int cost, task, robot, pickup; };
     std::vector<int> ids(free_tasks_.begin(), free_tasks_.end());
     std::sort(ids.begin(), ids.end());
     std::vector<TaskCost> tasks;
     std::vector<std::vector<int>> at_cell(cert_.free.size());
     for (int id : ids) {
         const Task& task = env->task_pool.at(id);
-        // Reserve time for candidate generation: additional chain estimates can
-        // use their cached value or a cheap lower bound without another full BFS.
-        if (Clock::now() + std::chrono::milliseconds(std::max(1, time_limit_ms / 2)) >= deadline_) table_budget_ = 0;
+        // The table-count limit is fixed work policy; elapsed time never changes
+        // which estimates are computed. A missed deadline raises Timeout.
+        check_deadline(deadline_, "task_metadata");
         const int first = task.locations.at(task.idx_next_loc);
         at_cell[first].push_back(static_cast<int>(tasks.size()));
         tasks.push_back({id, first, task_chain_cost(id), task.t_revealed});
@@ -1125,7 +1150,7 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
         const auto& task = tasks[t];
         const int cost = std::max(1, d + task.chain);
         return Pair{hrrn_ ? 1.0 + std::max(0, now - task.revealed) / static_cast<double>(cost) : 1.0,
-                    cost, t, r};
+                    cost, t, r, d};
     };
     auto better = [&](const Pair& a, const Pair& b) {
         if (a.score != b.score) return a.score > b.score;
@@ -1143,6 +1168,11 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
         return tasks[a].id < tasks[b].id;
     });
     std::vector<char> robot_used(n_, 0), task_used(tasks.size(), 0);
+    // Keep unused task indices compact so global samples never scan assigned tasks.
+    // Maintain this in both modes for matched ablations with the same bookkeeping.
+    std::vector<int> available(tasks.size()), available_position(tasks.size());
+    for (size_t t = 0; t < tasks.size(); ++t)
+        available[t] = available_position[t] = static_cast<int>(t);
     size_t oldest = 0;
     auto oldest_task = [&]() {
         while (oldest < by_age.size() && task_used[by_age[oldest]]) ++oldest;
@@ -1151,7 +1181,14 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
     auto assign = [&](const Pair& p) {
         robot_used[p.robot] = 1;
         task_used[p.task] = 1;
+        const int slot = available_position[p.task], last = available.back();
+        available[slot] = last;
+        available_position[last] = slot;
+        available.pop_back();
+        available_position[p.task] = -1;
         proposed[p.robot] = tasks[p.task].id;
+        stats_.estimated_pickup_cost += p.pickup;
+        stats_.estimated_chain_cost += tasks[p.task].chain;
         ++stats_.assignments;
     };
     auto estimate = [&](int r, int t) {
@@ -1183,20 +1220,31 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
 
     std::vector<int> seen(cert_.free.size(), 0), distance(cert_.free.size(), 0), queue;
     int generation = 0;
+    const auto candidate_deadline = deadline_;
+    std::vector<char> first_search_empty(n_, 0);
     auto candidates = [&](int r, int limit) {
+        ++stats_.candidate_searches;
         std::vector<Pair> result;
         const int from = env->curr_states[r].location;
         queue.assign(1, from);
         seen[from] = ++generation;
         distance[from] = 0;
         // The search is local and bounded; the fallback below still covers every
-        // remaining robot when sparse endpoints or the deadline exhaust it.
-        for (size_t head = 0; head < queue.size() && head < 2048; ++head) {
-            if ((head & 63) == 0 && Clock::now() >= deadline_) break;
+        // remaining robot when sparse endpoints exhaust its fixed work limit.
+        size_t head = 0;
+        for (; head < queue.size() && head < 2048; ++head) {
+            if ((head & 63) == 0 && Clock::now() >= candidate_deadline) {
+                ++stats_.candidate_deadlines;
+                throw Timeout("candidate_search");
+            }
+            ++stats_.candidate_nodes;
             const int u = queue[head];
             for (int t : at_cell[u]) if (!task_used[t]) {
                 result.push_back(pair_for(r, t, distance[u]));
-                if (static_cast<int>(result.size()) >= limit) return result;
+                if (static_cast<int>(result.size()) >= limit) {
+                    ++stats_.candidate_task_limits;
+                    return result;
+                }
             }
             for (int d = 0; d < 4; ++d) {
                 const int v = neighbor(u, d);
@@ -1206,14 +1254,18 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
                 queue.push_back(v);
             }
         }
+        if (head >= 2048 && head < queue.size()) ++stats_.candidate_node_limits;
+        if (result.empty()) ++stats_.empty_searches;
         return result;
     };
     const int per_robot = static_cast<int>(std::max<long long>(1, std::min<long long>(16, max_pairs_ / robots.size())));
     std::vector<Pair> pairs;
     pairs.reserve(static_cast<size_t>(std::min<long long>(max_pairs_, robots.size() * per_robot)));
     for (int r : robots) {
-        if (Clock::now() >= deadline_ || static_cast<long long>(pairs.size()) >= max_pairs_) break;
+        check_deadline(candidate_deadline, "candidate_generation");
+        if (static_cast<long long>(pairs.size()) >= max_pairs_) break;
         auto local = candidates(r, std::min<int>(per_robot, static_cast<int>(max_pairs_ - pairs.size())));
+        first_search_empty[r] = local.empty();
         pairs.insert(pairs.end(), local.begin(), local.end());
     }
     std::sort(pairs.begin(), pairs.end(), better);
@@ -1222,6 +1274,7 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
         fair_admission();
         if (robot_used[p.robot] || task_used[p.task]) continue;
         assign(p);
+        ++stats_.local_assignments;
         ++regular_admissions_;
     }
     for (int r : robots) {
@@ -1230,11 +1283,41 @@ void Cgar::schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>&
         if (robot_used[r]) continue;
         const int fallback = oldest_task();
         if (fallback < 0) break;
-        auto local = candidates(r, 8);
-        const Pair best = local.empty() ? estimate(r, fallback) : *std::min_element(local.begin(), local.end(), better);
+        std::vector<Pair> local;
+        if (repair_fallback_ && first_search_empty[r]) {
+            // Assignments only remove tasks within this call; an identical search
+            // cannot recover from an earlier empty result under the same bounds.
+            ++stats_.skipped_empty_searches;
+        } else {
+            // Candidates may have been taken by other robots, so a previously
+            // nonempty search still needs replenishment.
+            local = candidates(r, 8);
+        }
+        Pair best = local.empty() ? estimate(r, fallback) : *std::min_element(local.begin(), local.end(), better);
+        if (local.empty()) {
+            ++stats_.fallback_assignments;
+            if (repair_fallback_) {
+                // A separate deterministic sequence preserves PIBT's random stream.
+                // The oldest task remains a candidate; fair admission is independent.
+                const uint64_t base = (static_cast<uint64_t>(r) + 1) * 2654435761ULL +
+                    (static_cast<uint64_t>(now) + 1) * 2246822519ULL;
+                const int samples = std::min<int>(fallback_samples_, static_cast<int>(available.size()));
+                for (int k = 0; k < samples; ++k) {
+                    if (Clock::now() >= deadline_) { ++stats_.sample_deadlines; throw Timeout("fallback_sampling"); }
+                    const int t = available[(base + static_cast<uint64_t>(k) * 3266489917ULL) % available.size()];
+                    const Pair candidate = estimate(r, t);
+                    ++stats_.sample_evaluations;
+                    if (better(candidate, best)) best = candidate;
+                }
+                if (best.task != fallback) ++stats_.improved_fallbacks;
+            }
+        } else {
+            ++stats_.local_assignments;
+        }
         assign(best);
         ++regular_admissions_;
     }
+    check_deadline(deadline_, "scheduling_complete");
 }
 
 }  // namespace cgar

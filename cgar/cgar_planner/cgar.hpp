@@ -27,11 +27,21 @@
 #include <cstdint>
 #include <list>
 #include <random>
+#include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace cgar {
+
+class Timeout : public std::runtime_error {
+public:
+    explicit Timeout(const char* stage) : std::runtime_error(stage) {}
+};
+
+inline void check_deadline(std::chrono::steady_clock::time_point deadline, const char* stage) {
+    if (std::chrono::steady_clock::now() >= deadline) throw Timeout(stage);
+}
 
 constexpr int kInf = 1 << 29;
 constexpr long long kIdleTicket = (1LL << 62);
@@ -110,6 +120,13 @@ struct Stats {
     long long assignments = 0;
     long long fair_assignments = 0;
     long long evacuations = 0;
+    long long schedule_calls = 0, local_assignments = 0, fallback_assignments = 0;
+    long long candidate_searches = 0, candidate_nodes = 0, candidate_task_limits = 0;
+    long long candidate_node_limits = 0, candidate_deadlines = 0, empty_searches = 0;
+    long long skipped_empty_searches = 0;
+    long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
+    long long estimated_pickup_cost = 0, estimated_chain_cost = 0;
+    long long route_queries = 0, route_manhattan = 0;
 };
 
 class Cgar {
@@ -118,11 +135,14 @@ public:
 
     void initialize(SharedEnvironment* env, int preprocess_ms);
     void schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>& proposed);
+    void schedule(SharedEnvironment* env, std::chrono::steady_clock::time_point deadline, std::vector<int>& proposed);
     void plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& actions);
+    void plan(SharedEnvironment* env, std::chrono::steady_clock::time_point deadline, std::vector<Action>& actions);
 
     int primary() const { return primary_; }
     int parked_count() const;
     bool active_certified() const { return active_certified_; }
+    const Stats& stats() const { return stats_; }
 
 private:
     using Clock = std::chrono::steady_clock;
@@ -196,6 +216,8 @@ private:
     bool enable_txn_ = true;
     bool enable_locks_ = true;
     bool hrrn_ = true;
+    bool repair_fallback_ = true;
+    int fallback_samples_ = 64;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;

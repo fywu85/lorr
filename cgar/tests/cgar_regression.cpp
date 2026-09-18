@@ -131,6 +131,57 @@ void fair_sparse_schedule() {
  unsetenv("CGAR_MAX_PAIRS");
  std::cout<<"FAIR_SPARSE_SCHEDULE passed\n";
 }
+void sparse_fallback_quality() {
+ // Both pickups are beyond the local search radius. Task-ID order sends each
+ // robot across the map; choosing among unused alternatives avoids that trip.
+ SharedEnvironment e;e.num_of_agents=2;e.rows=201;e.cols=201;e.map.assign(201*201,0);
+ e.curr_states={State(100*201+50,0,0),State(100*201+150,0,0)};
+ e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
+ Task far;far.task_id=0;far.t_revealed=0;far.locations={100*201+195};e.task_pool.emplace(0,far);
+ Task near;near.task_id=1;near.t_revealed=0;near.locations={100*201+5};e.task_pool.emplace(1,near);
+ setenv("CGAR_FALLBACK_REPAIR","0",1);
+ Cgar legacy;legacy.initialize(&e,1000);std::vector<int> before;legacy.schedule(&e,5000,before);
+ setenv("CGAR_FALLBACK_REPAIR","1",1);
+ Cgar repaired;repaired.initialize(&e,1000);std::vector<int> after;repaired.schedule(&e,5000,after);
+ unsetenv("CGAR_FALLBACK_REPAIR");
+ if(before!=std::vector<int>({0,1})||after!=std::vector<int>({1,0}))
+  throw std::runtime_error("sparse fallback did not reduce pickup travel while preserving unique coverage");
+ if(repaired.stats().skipped_empty_searches!=2||repaired.stats().candidate_searches!=2)
+  throw std::runtime_error("empty local searches were repeated");
+ std::cout<<"SPARSE_FALLBACK_QUALITY passed pickup_distance=290->90 searches=4->2\n";
+}
+void replenish_taken_candidate() {
+ // The first candidate is claimed by another robot. A second local search must
+ // still find the remaining nearby task even when global sampling is disabled.
+ setenv("CGAR_MAX_PAIRS","2",1);setenv("CGAR_FALLBACK_SAMPLES","0",1);
+ SharedEnvironment e;e.num_of_agents=2;e.rows=101;e.cols=101;e.map.assign(101*101,0);
+ e.curr_states={State(50*101+50,0,0),State(50*101+51,0,0)};
+ e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
+ for(auto item:std::vector<std::pair<int,int>>{{0,0},{1,50*101+50},{2,50*101+55}}){
+  Task task;task.task_id=item.first;task.t_revealed=0;task.locations={item.second};e.task_pool.emplace(item.first,task);
+ }
+ Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,5000,proposed);
+ unsetenv("CGAR_MAX_PAIRS");unsetenv("CGAR_FALLBACK_SAMPLES");
+ if(proposed!=std::vector<int>({1,2}))throw std::runtime_error("taken candidates were not replenished locally");
+ std::cout<<"REPLENISH_TAKEN_CANDIDATE passed\n";
+}
+void bounded_scheduler_work() {
+ setenv("CGAR_FALLBACK_SAMPLES","4096",1);
+ SharedEnvironment e;e.num_of_agents=1000;e.rows=200;e.cols=200;e.map.assign(40000,0);
+ e.curr_task_schedule.assign(1000,-1);e.goal_locations.resize(1000);
+ for(int i=0;i<1000;++i){
+  e.curr_states.emplace_back(i,0,0);Task task;task.task_id=i;task.t_revealed=0;
+  task.locations={39999-i};e.task_pool.emplace(i,task);
+ }
+ Cgar c;c.initialize(&e,1000);std::vector<int> proposed;
+ bool timed_out=false;auto start=std::chrono::steady_clock::now();
+ try { c.schedule(&e,1,proposed); } catch(const cgar::Timeout&) { timed_out=true; }
+ auto ms=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
+ unsetenv("CGAR_FALLBACK_SAMPLES");
+ if(!timed_out)throw std::runtime_error("unfinished scheduler work returned instead of timing out");
+ if(ms>500)throw std::runtime_error("scheduler did not stop promptly at its deadline");
+ std::cout<<"BOUNDED_SCHEDULER_WORK passed explicit_timeout=1 budget_ms=1 elapsed_ms="<<ms<<"\n";
+}
 void compact_distances() {
  auto cert=build_certificate({0,0,0,0,0,0,1,1},2,4,2);
  DistanceOracle oracle;oracle.init(&cert,1024);
@@ -148,15 +199,18 @@ void bounded_distance_work() {
  for(int i=0;i<1000;++i){e.curr_states.emplace_back(i,0,0);e.goal_locations[i]={{{39999-i,0}}};}
  auto cert=build_certificate(e.map,e.rows,e.cols,e.num_of_agents);
  DistanceOracle oracle;oracle.init(&cert,1<<20);
- if(oracle.try_table(39999,std::chrono::steady_clock::now())||oracle.has(39999))throw std::runtime_error("expired BFS published a partial table");
+ bool table_timeout=false;
+ try { oracle.try_table(39999,std::chrono::steady_clock::now()); } catch(const cgar::Timeout&) { table_timeout=true; }
+ if(!table_timeout||oracle.has(39999))throw std::runtime_error("expired BFS did not raise a timeout without publishing a partial table");
  const auto& table=oracle.table(39999);
  if(oracle.value(table,0)!=398)throw std::runtime_error("wrong compact distance");
  setenv("CGAR_PLAN_TABLES","100000",1);Cgar c;c.initialize(&e,1000);std::vector<Action>a;
- auto start=std::chrono::steady_clock::now();c.plan(&e,5,a);
+ bool plan_timeout=false;auto start=std::chrono::steady_clock::now();
+ try { c.plan(&e,5,a); } catch(const cgar::Timeout&) { plan_timeout=true; }
  auto ms=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
  unsetenv("CGAR_PLAN_TABLES");
+ if(!plan_timeout)throw std::runtime_error("unfinished planning work returned instead of timing out");
  if(ms>500)throw std::runtime_error("distance work ignored the planning deadline");
- if(step(e,e.curr_states,a).empty())throw std::runtime_error("deadline fallback produced invalid actions");
- std::cout<<"BOUNDED_DISTANCE_WORK passed budget_ms=5 elapsed_ms="<<ms<<"\n";
+ std::cout<<"BOUNDED_DISTANCE_WORK passed explicit_timeout=1 budget_ms=5 elapsed_ms="<<ms<<"\n";
 }
-int main(){try{certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

@@ -1,0 +1,69 @@
+{
+  "cases": [
+    {
+      "name": "control-s0-r0",
+      "seed": 0,
+      "repeat": 0,
+      "repair": 0,
+      "time_limit_ms": 1000
+    },
+    {
+      "name": "repair-s0-r0",
+      "seed": 0,
+      "repeat": 0,
+      "repair": 1,
+      "time_limit_ms": 1000
+    },
+    {
+      "name": "control-s1-r0",
+      "seed": 1,
+      "repeat": 0,
+      "repair": 0,
+      "time_limit_ms": 1000
+    },
+    {
+      "name": "repair-s1-r0",
+      "seed": 1,
+      "repeat": 0,
+      "repair": 1,
+      "time_limit_ms": 1000
+    },
+    {
+      "name": "control-s2-r0",
+      "seed": 2,
+      "repeat": 0,
+      "repair": 0,
+      "time_limit_ms": 1000
+    },
+    {
+      "name": "repair-s2-r0",
+      "seed": 2,
+      "repeat": 0,
+      "repair": 1,
+      "time_limit_ms": 1000
+    }
+  ],
+  "horizon_profile": {
+    "WAREHOUSE": 1000,
+    "SORTATION": 1000,
+    "CITY-01": 1000,
+    "CITY-02": 1000,
+    "GAME": 1000,
+    "RANDOM-01": 600,
+    "RANDOM-02": 600,
+    "RANDOM-03": 800,
+    "RANDOM-04": 1000,
+    "RANDOM-05": 1000
+  },
+  "source_commit": "2fdc26ffb7008e613fa264be141fa766cd24cda6",
+  "source_dirty": true,
+  "sources": {
+    "cgar/cgar_planner/cgar.cpp": "340ccfd80b6e2d53e089c47ab1b7834e3001fbbc76a37b04d7222728d5518800",
+    "cgar/cgar_planner/cgar.hpp": "5f9e2547ff4f39f843482868511638ce48698637cec5eb31eb774a9b5083a101",
+    "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+    "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+    "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+  },
+  "binary_sha256": "b3d21462746328334f6a3cdc1e296c15abc5de88f31e8ed46b753e44924b0fd5",
+  "allocation_policy": "30 reserved physical cores; six suites at once, five single-core instances per suite"
+}

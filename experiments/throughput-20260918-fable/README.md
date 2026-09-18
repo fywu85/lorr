@@ -4,6 +4,7 @@ This is the additional independent review requested by the user, performed throu
 
 - [Fable's completed review](review.md)
 - [Checked findings and qualifications](assessment.md)
+- [Proposed implementation sequence and validation criteria](implementation-plan.md)
 - [Invocation and returned model metadata](metadata.json)
 - [Exact review prompt](prompt.md)
 - [Reproducible CLI driver](run_review.py)

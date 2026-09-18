@@ -32,7 +32,8 @@ void TaskScheduler::plan(int time_limit, std::vector<int> & proposed_schedule)
         DefaultPlanner::schedule_plan(time_limit / 2 - DefaultPlanner::SCHEDULER_TIMELIMIT_TOLERANCE, proposed_schedule, env);
         return;
     }
-    // Dispatch is far cheaper than routing, so leave most of the step to the planner.
-    cgar::Cgar::instance().schedule(env, time_limit / 3 - DefaultPlanner::SCHEDULER_TIMELIMIT_TOLERANCE,
+    // Scheduler and planner share the entry's real deadline. Do not shorten
+    // computation or substitute a different policy to satisfy an internal slice.
+    cgar::Cgar::instance().schedule(env, env->plan_start_time + std::chrono::milliseconds(time_limit),
                                     proposed_schedule);
 }

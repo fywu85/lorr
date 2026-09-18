@@ -2,6 +2,9 @@
 #include "Tasks.h"
 #include "utils.h"
 #include "heuristics.h"
+#include "cgar.hpp"
+#include <cstdio>
+#include <cstdlib>
 
 // The initialize function will be called by competition system at the preprocessing stage.
 // Implement the initialize functions of the planner and scheduler to load or compute auxiliary data.
@@ -20,14 +23,19 @@ void Entry::initialize(int preprocess_time_limit)
 //NB: the parameter time_limit is specified in milliseconds.
 void Entry::compute(int time_limit, std::vector<Action> & plan, std::vector<int> & proposed_schedule)
 {
-    //call the task scheduler to assign tasks to agents
-    scheduler->plan(time_limit,proposed_schedule);
-
-    //then update the first unfinished errand/location of tasks for planner reference
-    update_goal_locations(proposed_schedule);
-    
-    //call the planner to compute the actions
-    planner->plan(time_limit,plan);
+    try {
+        scheduler->plan(time_limit, proposed_schedule);
+        update_goal_locations(proposed_schedule);
+        planner->plan(time_limit, plan);
+        cgar::check_deadline(env->plan_start_time + std::chrono::milliseconds(time_limit), "entry_complete");
+    } catch (const cgar::Timeout& error) {
+        const double elapsed = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - env->plan_start_time).count();
+        std::fprintf(stderr, "CGAR_TIMEOUT timestep=%d elapsed_ms=%.3f stage=%s\n",
+                     env->curr_timestep, elapsed, error.what());
+        std::fflush(nullptr);
+        std::_Exit(124);  // The benchmark records an explicit timeout, never a partial result.
+    }
 
 }
 

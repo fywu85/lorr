@@ -16,19 +16,19 @@ bool use_default_planner() {
     return v != nullptr && std::string(v) == "default";
 }
 
-// Milliseconds left of this entry call, minus the start-kit's timing tolerance.
-int remaining(SharedEnvironment* env, int limit) {
+// Milliseconds left of this entry call; CGAR uses the shared full deadline.
+int remaining(SharedEnvironment* env, int limit, int tolerance = 0) {
     const auto spent = std::chrono::duration_cast<milliseconds>(
                            std::chrono::steady_clock::now() - env->plan_start_time)
                            .count();
-    return limit - static_cast<int>(spent) - DefaultPlanner::PLANNER_TIMELIMIT_TOLERANCE;
+    return limit - static_cast<int>(spent) - tolerance;
 }
 }  // namespace
 
 void MAPFPlanner::initialize(int preprocess_time_limit)
 {
     if (use_default_planner()) {
-        DefaultPlanner::initialize(remaining(env, preprocess_time_limit), env);
+        DefaultPlanner::initialize(remaining(env, preprocess_time_limit, DefaultPlanner::PLANNER_TIMELIMIT_TOLERANCE), env);
         return;
     }
     cgar::Cgar::instance().initialize(env, remaining(env, preprocess_time_limit));
@@ -37,8 +37,8 @@ void MAPFPlanner::initialize(int preprocess_time_limit)
 void MAPFPlanner::plan(int time_limit, vector<Action> & actions)
 {
     if (use_default_planner()) {
-        DefaultPlanner::plan(remaining(env, time_limit), actions, env);
+        DefaultPlanner::plan(remaining(env, time_limit, DefaultPlanner::PLANNER_TIMELIMIT_TOLERANCE), actions, env);
         return;
     }
-    cgar::Cgar::instance().plan(env, remaining(env, time_limit), actions);
+    cgar::Cgar::instance().plan(env, env->plan_start_time + milliseconds(time_limit), actions);
 }
