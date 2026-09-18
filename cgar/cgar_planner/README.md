@@ -56,6 +56,42 @@ switches, including `CGAR_PLANNER=default`, `CGAR_SCHEDULER=default`, `CGAR_CERT
 Turning off certificates or transactions also turns off the corresponding
 progress mechanism.
 
+## Experimental assignment changes
+
+`CGAR_PICKUP_WEIGHT` multiplies pickup distance in the scheduler objective before
+adding the remaining task-chain cost. The default is 1; accepted values are
+clamped to 1–16. With HRRN enabled, waiting age is divided by this weighted cost.
+`CGAR_HRRN=0` instead ranks directly by cost. The independent oldest-task admission
+rule remains active in either mode. One weight applies to every map.
+
+`CGAR_REASSIGN=1` enables a bounded pass that swaps two already assigned tasks
+before their first pickup. It defaults to 0. Every ten steps, the pass considers
+at most 256 eligible source robots, with at most 16 nearby partners from a
+2,048-node core search and 16 deterministic global samples per source. A swap
+must save at least four estimated pickup moves and 10% of the pair's pickup cost.
+Both tasks stay assigned; their chain costs cancel in this comparison.
+
+A task may change robot at most once before pickup. Each robot has a 20-step
+cooldown after a swap. Started tasks, the current and next pending primary,
+recovery participants and cells, pocket service, unfinished movement commitments,
+and tasks admitted through the oldest-task rule are protected. Both robots and
+pickups must be in the core. Existing capacity restrictions apply to the complete
+remaining task chains. The pass never changes simulator-owned task metadata;
+normal task-epoch synchronization creates tickets for the accepted new goals.
+Finite retargeting and primary protection preserve the existing progress rules;
+these checks do not constitute a new end-to-end liveness proof.
+
+Each speculative pair uses cached complete distance tables for both goals if
+available, otherwise Manhattan distance for all four comparisons. The pass builds
+no tables and does not promote routing-cache entries. Its fixed work must finish
+before the shared deadline; otherwise it raises `Timeout`. There is no return of
+partly completed reassignment work. `[cgar-reassignment]` logs work, accepted swaps,
+estimated savings and protected assignments.
+
+See the [assignment experiment](../../experiments/assignment-20260918/README.md)
+for full-horizon comparisons of weights, reassignment and the direct-cost ranking
+used by NMS. These switches are experimental until a robust gain is established.
+
 ## Experimental distance consistency switches
 
 Three independent switches are available for matched experiments; all default to
@@ -107,7 +143,9 @@ The regression executable checks certificate reachability, short and long pocket
 evacuations, persistent primaries, task-epoch replacement at the same cell,
 capacity bootstrap, full 10,000-robot assignment coverage, and fair admission
 under a one-pair candidate cap, sparse fallback quality, replenishment after taken
-candidates, and explicit scheduler/distance timeouts. Every simulated fixture action is checked for
+candidates, explicit scheduler/distance timeouts, weighted pickup choices, bounded
+unopened-task swaps, and protection of started tasks, primary tickets, recovery
+witnesses, ongoing turns and fair admissions. Every simulated fixture action is checked for
 obstacles, vertex collisions, and edge swaps.
 
 Run the ten main-round instances into a new directory with:

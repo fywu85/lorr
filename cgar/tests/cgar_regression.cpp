@@ -254,4 +254,96 @@ void consistent_progress_basis() {
  if(legacy.best!=2||legacy.stall!=1)throw std::runtime_error("disabled switch changed baseline progress policy");
  std::cout<<"CONSISTENT_PROGRESS_BASIS passed\n";
 }
-int main(){try{cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void weighted_pickup_assignment() {
+ SharedEnvironment e;e.num_of_agents=1;e.rows=2;e.cols=11;e.map.assign(22,0);
+ e.curr_states={State(0,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);
+ Task near;near.task_id=0;near.t_revealed=0;near.locations={1,9};e.task_pool.emplace(0,near);
+ Task far;far.task_id=1;far.t_revealed=0;far.locations={4};e.task_pool.emplace(1,far);
+ setenv("CGAR_PICKUP_WEIGHT","1",1);Cgar control;control.initialize(&e,1000);std::vector<int>a;
+ control.schedule(&e,100,a);
+ setenv("CGAR_PICKUP_WEIGHT","5",1);Cgar weighted;weighted.initialize(&e,1000);std::vector<int>b;
+ weighted.schedule(&e,100,b);unsetenv("CGAR_PICKUP_WEIGHT");
+ if(a!=std::vector<int>{1}||b!=std::vector<int>{0})throw std::runtime_error("pickup weight did not trade empty travel against remaining task travel");
+ // Waiting-time priority remains effective under the weighted objective.
+ e.task_pool.at(1).t_revealed=-1000;
+ setenv("CGAR_PICKUP_WEIGHT","5",1);Cgar aged;aged.initialize(&e,1000);aged.schedule(&e,100,b);unsetenv("CGAR_PICKUP_WEIGHT");
+ if(b!=std::vector<int>{1})throw std::runtime_error("pickup weighting bypassed waiting-time priority");
+ std::cout<<"WEIGHTED_PICKUP_ASSIGNMENT passed empty_travel=4->1 aging_preserved=1\n";
+}
+SharedEnvironment swap_fixture() {
+ SharedEnvironment e;e.num_of_agents=2;e.rows=3;e.cols=12;e.map.assign(36,0);e.curr_timestep=0;
+ e.curr_states={State(0,0,0),State(11,0,2)};e.curr_task_schedule={0,1};e.goal_locations={{{10,0}},{{1,0}}};
+ for(int i=0;i<2;++i){Task t;t.task_id=i;t.t_revealed=-5;t.agent_assigned=i;t.locations={i?1:10,i?13:22};e.task_pool.emplace(i,t);}
+ return e;
+}
+void unopened_reassignment() {
+ setenv("CGAR_REASSIGN","1",1);
+ auto e=swap_fixture();Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,100,proposed);
+ if(proposed!=std::vector<int>({1,0})||c.stats().reassign_swaps!=1||c.stats().reassign_saving!=18)
+  throw std::runtime_error("unopened task swap did not reduce pickup travel from 20 to 2");
+ if(e.curr_task_schedule!=std::vector<int>({0,1})||e.task_pool.at(0).agent_assigned!=0||e.task_pool.at(0).t_revealed!=-5)
+  throw std::runtime_error("speculative reassignment mutated simulator task state");
+ e.curr_task_schedule=proposed;e.curr_states[0].location=11;e.curr_states[1].location=0;e.curr_timestep=20;
+ c.schedule(&e,100,proposed);
+ if(proposed!=e.curr_task_schedule||c.stats().reassign_swaps!=1)
+  throw std::runtime_error("task reassignment limit permitted repeated redirection");
+ auto started=swap_fixture();started.task_pool.at(0).idx_next_loc=1;
+ Cgar immutable;immutable.initialize(&started,1000);immutable.schedule(&started,100,proposed);
+ if(proposed!=started.curr_task_schedule||immutable.stats().reassign_swaps)
+  throw std::runtime_error("started task was reassigned");
+ auto small=swap_fixture();small.curr_states={State(4,0,0),State(5,0,2)};
+ small.task_pool.at(0).locations={6};small.task_pool.at(1).locations={3};
+ Cgar margin;margin.initialize(&small,1000);margin.schedule(&small,100,proposed);
+ if(proposed!=small.curr_task_schedule)throw std::runtime_error("insignificant two-step saving caused reassignment");
+ unsetenv("CGAR_REASSIGN");
+ std::cout<<"UNOPENED_REASSIGNMENT passed pickup_distance=20->2 task_cap=1 started_tasks_preserved=1\n";
+}
+void reassignment_primary_and_commitments() {
+ setenv("CGAR_REASSIGN","1",1);
+ for(bool turning:{false,true}){
+  auto e=swap_fixture();e.num_of_agents=3;e.curr_task_schedule={0,1,2};
+  e.curr_states={State(24,0,0),State(0,0,turning?3:0),State(11,0,turning?3:2)};
+  e.goal_locations={{{35,0}},{{10,0}},{{1,0}}};e.task_pool.clear();
+  for(int i=0;i<3;++i){Task t;t.task_id=i;t.agent_assigned=i;t.locations={i==0?35:(i==1?10:1)};e.task_pool.emplace(i,t);}
+  Cgar c;c.initialize(&e,1000);std::vector<Action>a;c.plan(&e,100,a);
+  auto states=step(e,e.curr_states,a);if(states.empty())throw std::runtime_error("invalid swap setup action");e.curr_states=states;
+  e.curr_timestep=10;std::vector<int> proposed;c.schedule(&e,100,proposed);
+  if(c.primary()!=0||proposed[0]!=0||c.stats().reassign_primary_protected==0)
+   throw std::runtime_error("fair primary changed during reassignment");
+  if(turning&&proposed!=e.curr_task_schedule)throw std::runtime_error("unfinished turn commitment was redirected");
+  if(!turning&&proposed!=std::vector<int>({0,2,1}))throw std::runtime_error("primary protection unnecessarily blocked other swaps");
+ }
+ unsetenv("CGAR_REASSIGN");
+ std::cout<<"REASSIGNMENT_PRIMARY_AND_COMMITMENTS passed\n";
+}
+void reassignment_recovery_protection() {
+ setenv("CGAR_REASSIGN","1",1);
+ SharedEnvironment e;e.num_of_agents=3;e.rows=2;e.cols=2;e.map.assign(4,0);e.curr_states={State(0,0,0),State(1,0,1),State(2,0,0)};
+ e.curr_task_schedule={0,1,2};e.goal_locations={{{3,0}},{{2,0}},{{1,0}}};
+ for(int i=0;i<3;++i){Task t;t.task_id=i;t.agent_assigned=i;t.locations={i==0?3:(i==1?2:1)};e.task_pool.emplace(i,t);}
+ Cgar c;c.initialize(&e,1000);std::vector<Action>a;
+ for(int t=0;t<10&&!c.stats().txns;++t){e.curr_timestep=t;c.plan(&e,100,a);}
+ if(!c.stats().txns)throw std::runtime_error("recovery fixture did not install a witness");
+ e.curr_timestep=10;std::vector<int> proposed;c.schedule(&e,100,proposed);
+ if(proposed!=e.curr_task_schedule||!c.stats().reassign_recovery_protected)
+  throw std::runtime_error("reassignment failed to protect recovery participants");
+ unsetenv("CGAR_REASSIGN");std::cout<<"REASSIGNMENT_RECOVERY_PROTECTION passed\n";
+}
+void reassignment_fair_admission() {
+ setenv("CGAR_REASSIGN","1",1);
+ SharedEnvironment e;e.num_of_agents=2;e.rows=2;e.cols=11;e.map.assign(22,0);e.curr_timestep=20;
+ e.curr_states={State(0,0,0),State(10,0,2)};e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
+ for(int i=0;i<2;++i){Task t;t.task_id=i;t.t_revealed=0;t.locations={i*10};e.task_pool.emplace(i,t);}
+ Task old;old.task_id=100;old.t_revealed=-1;old.locations={8};for(int i=0;i<100;++i)old.locations.push_back(i%2?8:0);e.task_pool.emplace(100,old);
+ Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,100,proposed);
+ if(proposed!=std::vector<int>({0,1}))throw std::runtime_error("fair reassignment fixture did not defer old task");
+ e.task_pool.erase(0);e.task_pool.erase(1);Task fresh;fresh.task_id=2;fresh.t_revealed=20;fresh.locations={0};e.task_pool.emplace(2,fresh);
+ c.schedule(&e,100,proposed);
+ if(proposed!=std::vector<int>({2,100})||c.stats().fair_assignments!=1)throw std::runtime_error("old task did not receive fair admission");
+ e.curr_task_schedule=proposed;e.curr_states[0].location=8;e.curr_states[1].location=0;e.curr_timestep=40;
+ for(int i=0;i<2;++i)e.task_pool.at(proposed[i]).agent_assigned=i;
+ c.schedule(&e,100,proposed);
+ if(proposed!=e.curr_task_schedule||!c.stats().reassign_fair_protected)throw std::runtime_error("fair admission was redirected by a cheaper swap");
+ unsetenv("CGAR_REASSIGN");std::cout<<"REASSIGNMENT_FAIR_ADMISSION passed\n";
+}
+int main(){try{unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

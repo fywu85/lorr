@@ -153,6 +153,10 @@ struct Stats {
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
     long long estimated_pickup_cost = 0, estimated_chain_cost = 0;
     long long route_queries = 0, route_manhattan = 0, progress_basis_resets = 0;
+    long long reassign_passes = 0, reassign_eligible = 0, reassign_sources = 0, reassign_nodes = 0;
+    long long reassign_pairs = 0, reassign_swaps = 0, reassign_saving = 0;
+    long long reassign_table_pairs = 0, reassign_manhattan_pairs = 0;
+    long long reassign_primary_protected = 0, reassign_recovery_protected = 0, reassign_fair_protected = 0;
 };
 
 class Cgar {
@@ -207,6 +211,7 @@ private:
     int neighbor(int cell, int dir) const;
     bool adjacent_to_pocket(int cell, int pocket) const;
     int task_chain_cost(int task_id);
+    void reassign_unopened(std::vector<int>& proposed);
     void log_summary();
 
     bool initialized_ = false;
@@ -247,6 +252,8 @@ private:
     bool scheduler_cache_peek_ = false;
     bool stable_stall_basis_ = false;
     int fallback_samples_ = 64;
+    int pickup_weight_ = 1;
+    bool reassign_ = false;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;
@@ -256,7 +263,9 @@ private:
     std::unordered_map<int, int> chain_cost_;
     ChainCostCache refined_chain_cost_;
     long long regular_admissions_ = 0;
-    size_t scheduler_cursor_ = 0;
+    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0;
+    std::unordered_set<int> reassigned_tasks_, fair_tasks_;
+    std::vector<int> last_reassignment_;
 };
 
 }  // namespace cgar

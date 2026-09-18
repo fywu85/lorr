@@ -1,0 +1,110 @@
+{
+  "cases": [
+    {
+      "name": "baseline-s0-r0",
+      "variant": "baseline",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "weight2-s0-r0",
+      "variant": "weight2",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "2"
+      }
+    },
+    {
+      "name": "weight5-s0-r0",
+      "variant": "weight5",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "5"
+      }
+    },
+    {
+      "name": "baseline-s1-r0",
+      "variant": "baseline",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "weight2-s1-r0",
+      "variant": "weight2",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "2"
+      }
+    },
+    {
+      "name": "weight5-s1-r0",
+      "variant": "weight5",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "5"
+      }
+    },
+    {
+      "name": "baseline-s2-r0",
+      "variant": "baseline",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "weight2-s2-r0",
+      "variant": "weight2",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "2"
+      }
+    },
+    {
+      "name": "weight5-s2-r0",
+      "variant": "weight5",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_PICKUP_WEIGHT": "5"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "4d726b0aca9a2cc54359136646a9d112cbf5fbeb",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "cb68d3abec3bd4169ec3a4b6e70bd4a94e3dc29e1d79d402cfb021a0dad55e18",
+      "cgar/cgar_planner/cgar.hpp": "30399464ecff6cec8ea1c78bfae3c2503944307b0d951a25c2a005b8205773f3",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "f1f8e5a4897e56f56e294e30b590b3ee3967ef97ed19ea2b37a37b2aa06411a9"
+    },
+    "binary_sha256": "5c41a47058572c1afeb9eb63dea0baed8ea87c01a244abc546d62ec428d37fec"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE",
+    "SORTATION",
+    "CITY-01",
+    "CITY-02",
+    "GAME",
+    "RANDOM-01",
+    "RANDOM-02",
+    "RANDOM-03",
+    "RANDOM-04",
+    "RANDOM-05"
+  ],
+  "parallel_suites": 6,
+  "jobs_per_suite": 5,
+  "time_limit_ms": 1000
+}

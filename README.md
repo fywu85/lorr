@@ -61,6 +61,13 @@ the full-run conclusion, so candidate defaults still need full-horizon validatio
 [NMS transfer priorities](experiments/throughput-20260918-next/NMS-transfer.md)
 focus next on unopened-task reassignment, pickup weighting and orientation costs.
 
+The [NMS-inspired assignment study](experiments/assignment-20260918/README.md)
+implements global pickup weighting and bounded swaps of unopened tasks. It tests
+both ideas separately and together, plus direct weighted-cost ranking. Reassignment
+protects primary tickets, recovery witnesses, started tasks and fair admissions.
+The default remains unchanged; measured throughput/waiting-time tradeoffs and
+experimental settings are documented in the report.
+
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run
 throughput comparisons; passing the simulator does not prove starvation freedom.
