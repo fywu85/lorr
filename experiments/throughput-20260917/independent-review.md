@@ -2,7 +2,7 @@
 
 The strongest evidence locates the major regression in task scheduling, especially initial pickup allocation, with shared distance-cache effects still part of the attribution. It does not support treating the loss as a necessary cost of the motion-correctness repairs.
 
-This review was performed by an available session agent; the requested Fable 5.1 max model was unavailable. The independent work consisted of source inspection, existing-log inspection, a small task-distribution scan, and two tiny synthetic probes. The main agent supplied and ran the controlled ablations and trajectory analyses. This report changes no production code and does not report a new full-suite benchmark.
+This review was performed by an available session agent. Fable 5.1 max was not invoked for this pass: it was absent from the session agent tool's model list, and the installed Claude Code CLI had not yet been checked. The independent work consisted of source inspection, existing-log inspection, a small task-distribution scan, and two tiny synthetic probes. The main agent supplied and ran the controlled ablations and trajectory analyses. This report changes no production code and does not report a new full-suite benchmark.
 
 The decisive controlled comparison uses the same corrected motion backend on SORTATION for 1,000 steps, with 1,000 ms per decision and 30,000 ms preprocessing:
 
