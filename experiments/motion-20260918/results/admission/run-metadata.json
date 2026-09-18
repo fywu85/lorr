@@ -1,0 +1,3818 @@
+{
+  "baseline-s0-r0": {
+    "started_utc": "2026-09-18T15:54:12.653008+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:45.666773+00:00"
+  },
+  "orientation_admission-s0-r0": {
+    "started_utc": "2026-09-18T15:54:12.652850+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:59.402149+00:00"
+  },
+  "baseline-s1-r0": {
+    "started_utc": "2026-09-18T15:54:12.652941+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "1"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:51.858086+00:00"
+  },
+  "orientation_admission-s1-r0": {
+    "started_utc": "2026-09-18T15:54:12.653052+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "1"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:56.197880+00:00"
+  },
+  "baseline-s2-r0": {
+    "started_utc": "2026-09-18T15:54:12.653809+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "2"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:51.713526+00:00"
+  },
+  "orientation_admission-s2-r0": {
+    "started_utc": "2026-09-18T15:54:12.654091+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "2"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T15:57:56.642012+00:00"
+  },
+  "baseline-s3-r0": {
+    "started_utc": "2026-09-18T15:57:45.766967+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "3"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:01:19.091386+00:00"
+  },
+  "orientation_admission-s3-r0": {
+    "started_utc": "2026-09-18T15:57:51.798592+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "3"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:02:08.568734+00:00"
+  },
+  "baseline-s4-r0": {
+    "started_utc": "2026-09-18T15:57:51.923438+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "4"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:01:37.445092+00:00"
+  },
+  "orientation_admission-s4-r0": {
+    "started_utc": "2026-09-18T15:57:56.338191+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "4"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:01:39.439172+00:00"
+  },
+  "baseline-s5-r0": {
+    "started_utc": "2026-09-18T15:57:56.706041+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_SEED": "5"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:01:17.668896+00:00"
+  },
+  "orientation_admission-s5-r0": {
+    "started_utc": "2026-09-18T15:57:59.486496+00:00",
+    "jobs": 5,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+        "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+      },
+      "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "2",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_SEED": "5"
+    },
+    "cpu_resources": {
+      "hostname": "research06",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ],
+        [
+          12,
+          76
+        ],
+        [
+          13,
+          77
+        ],
+        [
+          14,
+          78
+        ],
+        [
+          15,
+          79
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          81
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          83
+        ],
+        [
+          20,
+          84
+        ],
+        [
+          21,
+          85
+        ],
+        [
+          22,
+          86
+        ],
+        [
+          23,
+          87
+        ],
+        [
+          24,
+          88
+        ],
+        [
+          25,
+          89
+        ],
+        [
+          26,
+          90
+        ],
+        [
+          27,
+          91
+        ],
+        [
+          28,
+          92
+        ],
+        [
+          29,
+          93
+        ]
+      ],
+      "address_space_limit_bytes": [
+        257698037760,
+        257698037760
+      ],
+      "physical_cores_visible": 30,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-motion-admission-full-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      },
+      "SORTATION": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+        "steps": 5000
+      },
+      "CITY-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+        "steps": 3000
+      },
+      "CITY-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+        "steps": 3000
+      },
+      "GAME": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+        "steps": 5000
+      },
+      "RANDOM-01": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+        "steps": 600
+      },
+      "RANDOM-02": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+        "steps": 600
+      },
+      "RANDOM-03": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+        "steps": 800
+      },
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      },
+      "RANDOM-05": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+        "steps": 2000
+      }
+    },
+    "finished_utc": "2026-09-18T16:01:46.184874+00:00"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "name": "baseline-s0-r0",
+      "variant": "baseline",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s0-r0",
+      "variant": "orientation_admission",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s1-r0",
+      "variant": "baseline",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s1-r0",
+      "variant": "orientation_admission",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s2-r0",
+      "variant": "baseline",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s2-r0",
+      "variant": "orientation_admission",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s3-r0",
+      "variant": "baseline",
+      "seed": 3,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s3-r0",
+      "variant": "orientation_admission",
+      "seed": 3,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s4-r0",
+      "variant": "baseline",
+      "seed": 4,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s4-r0",
+      "variant": "orientation_admission",
+      "seed": 4,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s5-r0",
+      "variant": "baseline",
+      "seed": 5,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "orientation_admission-s5-r0",
+      "variant": "orientation_admission",
+      "seed": 5,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "445ca8e2d3151c065698ab00b3ec5d1bff85eeb4f8b64540f5f2163439cd17ef",
+      "cgar/cgar_planner/cgar.hpp": "1a3a478a2835b71c1768d79a06da38b02db974c56103364cb93fd45185a8e66b",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "887b375478ec6f46f854069eb3e72c59e60bc2de4e8ae517d2185e4db890ea29"
+    },
+    "binary_sha256": "9075453dd3960724c21d9028c256cd3816bcbc3288a50c268f1f22794843789e"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE",
+    "SORTATION",
+    "CITY-01",
+    "CITY-02",
+    "GAME",
+    "RANDOM-01",
+    "RANDOM-02",
+    "RANDOM-03",
+    "RANDOM-04",
+    "RANDOM-05"
+  ],
+  "parallel_suites": 6,
+  "jobs_per_suite": 5,
+  "time_limit_ms": 1000
+}

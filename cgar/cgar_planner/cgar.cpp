@@ -397,6 +397,61 @@ void DistanceOracle::trim() {
     }
 }
 
+void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes) {
+    cert_ = cert; max_bytes_ = max_bytes;
+    index_.assign(cert->free.size(), -1); cells_.clear();
+    for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
+        index_[u] = static_cast<int>(cells_.size()); cells_.push_back(u);
+    }
+    table_bytes_ = std::max<size_t>(1, cells_.size() * 4 * sizeof(int));
+    tables_.clear(); lru_.clear(); queue_.reserve(cells_.size() * 4);
+}
+
+const std::vector<int>* TurnDistanceOracle::find(int goal) {
+    const auto it = tables_.find(goal);
+    if (it == tables_.end()) return nullptr;
+    lru_.splice(lru_.begin(), lru_, it->second.lru);
+    return &it->second.dist;
+}
+
+const std::vector<int>* TurnDistanceOracle::table(int goal, std::chrono::steady_clock::time_point deadline) {
+    check_deadline(deadline, "turn_distance_table");
+    if (const auto* cached = find(goal)) return cached;
+    std::vector<int> dist(cells_.size() * 4, kInf); queue_.clear();
+    const int gp = cert_->pocket[goal], root = index_.at(goal) * 4;
+    for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
+    for (size_t head = 0; head < queue_.size(); ++head) {
+        if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+        const int node = queue_[head], cell = cells_[node / 4], d = node % 4;
+        const int backward = grid_neighbor(cell, (d + 2) % 4, cert_->rows, cert_->cols);
+        int pred[3] = {node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
+        if (backward >= 0 && index_[backward] >= 0 && (cert_->core[backward] || cert_->pocket[backward] == gp))
+            pred[2] = index_[backward] * 4 + d;
+        for (int v : pred) if (v >= 0 && dist[v] == kInf) { dist[v] = dist[node] + 1; queue_.push_back(v); }
+    }
+    check_deadline(deadline, "turn_distance_table_complete");
+    lru_.push_front(goal);
+    auto added = tables_.emplace(goal, Entry{std::move(dist), lru_.begin()});
+    return &added.first->second.dist;
+}
+
+int TurnDistanceOracle::value(const std::vector<int>& table, int cell, int orientation) const {
+    return index_.at(cell) < 0 ? kInf : table[index_[cell] * 4 + orientation];
+}
+
+void TurnDistanceOracle::retain(const std::unordered_set<int>& goals) {
+    for (auto it = tables_.begin(); it != tables_.end();) {
+        if (goals.count(it->first)) { ++it; continue; }
+        lru_.erase(it->second.lru); it = tables_.erase(it);
+    }
+}
+
+void TurnDistanceOracle::trim() {
+    while (!lru_.empty() && tables_.size() * table_bytes_ > max_bytes_) {
+        tables_.erase(lru_.back()); lru_.pop_back();
+    }
+}
+
 int ChainCostCache::estimate(const Task& task, DistanceOracle& oracle, int& table_budget,
                              std::chrono::steady_clock::time_point deadline, bool peek) {
     auto result = entries_.try_emplace(task.task_id);
@@ -481,6 +536,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     plan_tables_ = env_int("CGAR_PLAN_TABLES", 256);
     sched_tables_ = env_int("CGAR_SCHED_TABLES", 128);
     max_pairs_ = std::max(1, env_int("CGAR_MAX_PAIRS", 2000000));
+    diagnostics_ = env_int("CGAR_DIAGNOSTICS", 0) != 0;
+    turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
+    orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
     enable_txn_ = env_int("CGAR_TXN", 1) != 0;
     hrrn_ = env_int("CGAR_HRRN", 1) != 0;
     pickup_weight_ = std::max(1, std::min(16, env_int("CGAR_PICKUP_WEIGHT", 1)));
@@ -503,6 +561,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     }
     const double secs = std::chrono::duration<double>(Clock::now() - t0).count();
     oracle_.init(&cert_, table_mb << 20);
+    if (orientation_guidance_) turn_oracle_.init(&cert_, size_t(512) << 20);
 
     const size_t cells = cert_.free.size();
     occ_now_.assign(cells, -1);
@@ -569,6 +628,7 @@ void Cgar::sync_agents() {
             // would freeze (KNAPP releases commitment when blockers are not expected
             // to clear; here a fixed age is the grid equivalent).
             if (!adjacent || (!a.in_txn && a.commit_age > commit_limit_)) {
+                if (diagnostics_) ++stats_.expired_commitments;
                 a.committed = -1;
                 a.commit_age = 0;
                 a.in_txn = false;
@@ -599,6 +659,27 @@ void Cgar::update_locks() {
             a.lock = -1;
         }
     }
+}
+
+void Cgar::refresh_orientation_cache() {
+    // Reserve the finite cache for currently requested goals. Retain resident
+    // entries on equal demand, avoiding cyclic LRU churn when the working set
+    // exceeds capacity. This policy depends on live requests, never map names.
+    std::unordered_map<int, int> demand;
+    for (int i = 0; i < n_; ++i) if (agents_[i].goal >= 0 && !parked_[i]) ++demand[agents_[i].goal];
+    struct Goal { int goal, count; bool resident; };
+    std::vector<Goal> ranked; ranked.reserve(demand.size());
+    for (const auto& item : demand) ranked.push_back({item.first, item.second, turn_oracle_.has(item.first)});
+    std::sort(ranked.begin(), ranked.end(), [](const Goal& a, const Goal& b) {
+        if (a.count != b.count) return a.count > b.count;
+        if (a.resident != b.resident) return a.resident > b.resident;
+        return a.goal < b.goal;
+    });
+    oriented_goals_.clear();
+    const size_t capacity = std::min(ranked.size(), turn_oracle_.capacity());
+    for (size_t k = 0; k < capacity; ++k) oriented_goals_.insert(ranked[k].goal);
+    turn_oracle_.retain(oriented_goals_);
+    check_deadline(deadline_, "orientation_cache_admission");
 }
 
 void Cgar::compute_order(int primary) {
@@ -694,8 +775,30 @@ bool Cgar::pibt(int i, int parent) {
         if (v < 0 || !allowed(i, v)) continue;
         cands[m++] = {v, route_h(i, v), occ_now_[v] >= 0 ? 1 : 0, turn_steps(i, v), static_cast<unsigned>(rng_())};
     }
-    std::sort(cands, cands + m, [](const Cand& a, const Cand& b) {
+    if (orientation_guidance_ && agents_[i].goal >= 0 &&
+        !(cert_.pocket[u] >= 0 && pocket_draining_[cert_.pocket[u]])) {
+        const int goal = agents_[i].goal;
+        const auto* table = turn_oracle_.find(goal);
+        if (!table && turn_table_budget_ > 0 && (orientation_guidance_ == 1 || oriented_goals_.count(goal))) {
+            --turn_table_budget_;
+            table = turn_oracle_.table(goal, deadline_);
+            ++stats_.oriented_builds;
+        }
+        if (table && turn_oracle_.value(*table, u, ori_[i]) < kInf) {
+            ++stats_.oriented_guided;
+            // Compare complete turn-then-forward macros, including a unit wait
+            // at the current orientation. Every robot uses one cost basis.
+            for (int k = 0; k < m; ++k) {
+                const int v = cands[k].cell;
+                const int d = v == u ? ori_[i] : direction(u, v, cert_.cols);
+                const int remaining = turn_oracle_.value(*table, v, d);
+                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + cands[k].turns;
+            }
+        } else ++stats_.oriented_fallback;
+    }
+    std::sort(cands, cands + m, [&](const Cand& a, const Cand& b) {
         if (a.h != b.h) return a.h < b.h;
+        if (turn_first_ && a.turns != b.turns) return a.turns < b.turns;
         if (a.occupied != b.occupied) return a.occupied < b.occupied;
         if (a.turns != b.turns) return a.turns < b.turns;
         return a.tie < b.tie;
@@ -1005,10 +1108,14 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     distance_deadline_ = deadline_;
     oracle_.trim();
     table_budget_ = plan_tables_;
+    turn_table_budget_ = 32;
+    if (orientation_guidance_) turn_oracle_.trim();
     sync_agents();
     advance_txn();
     prepare_capacity_mode();
     update_locks();
+    if (orientation_guidance_ == 2 && (env_->curr_timestep % 32 == 0 || oriented_goals_.empty()))
+        refresh_orientation_cache();
     primary_ = select_primary();
     // The persistent primary gets an exact potential before optional routing work.
     if (primary_ >= 0) oracle_.try_table(agents_[primary_].goal, distance_deadline_);
@@ -1083,6 +1190,11 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
         if (oracle_.has(agents_[primary_].goal)) try_install_txn(primary_);
     }
 
+    std::vector<char> diagnostic_commitments;
+    if (diagnostics_) {
+        diagnostic_commitments.resize(n_);
+        for (int i = 0; i < n_; ++i) diagnostic_commitments[i] = agents_[i].committed >= 0;
+    }
     for (int c : touched_) reserved_[c] = -1;
     touched_.clear();
     next_.assign(n_, -1);
@@ -1117,11 +1229,76 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
         agents_[i].committed = next_[i];
         actions[i] = action_toward(i, next_[i]);
     }
+    const auto offered = diagnostics_ ? actions : std::vector<Action>();
     std::vector<char> checked(n_, 0);
     for (int i = 0; i < n_; ++i) if (!checked[i] && actions[i] == Action::FW) move_check(i, checked, actions);
     make_safe(actions);
+    if (diagnostics_) {
+        record_movement(offered, actions, diagnostic_commitments);
+        if ((env_->curr_timestep + 1) % 200 == 0) log_movement();
+    }
     if (env_->curr_timestep % 200 == 0) log_summary();
     check_deadline(deadline_, "planning_complete");
+}
+
+void Cgar::record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
+                           const std::vector<char>& commitments) {
+    // Memoize the terminal offered action in each dependency chain. A cycle of
+    // forward moves has no stationary terminal; final safety rejection is separate.
+    std::vector<int> terminal(n_, -1), seen(n_, -1), chain;
+    for (int root = 0; root < n_; ++root) {
+        if (terminal[root] >= 0) continue;
+        chain.clear();
+        int j = root, kind = 4;
+        while (j >= 0 && terminal[j] < 0 && seen[j] != root) {
+            seen[j] = root; chain.push_back(j);
+            if (offered[j] != Action::FW) { kind = static_cast<int>(offered[j]); break; }
+            j = occ_now_[next_[j]];
+        }
+        if (j >= 0 && terminal[j] >= 0) kind = terminal[j];
+        for (int k : chain) terminal[k] = kind;
+    }
+    for (int i = 0; i < n_; ++i) {
+        const Agent& a = agents_[i];
+        auto& m = stats_.movement[a.goal < 0 ? 0 : (a.stop <= 0 ? 1 : 2)];
+        ++m.actions[static_cast<int>(actions[i])];
+        m.recovery += a.in_txn;
+        m.primary += i == primary_;
+        m.commitment += commitments[i];
+        m.pocket += cert_.pocket[loc_[i]] >= 0;
+        if (actions[i] == Action::W) {
+            if (offered[i] == Action::W) ++m.planned_wait;
+            else if (terminal[i] == Action::CR || terminal[i] == Action::CCR || terminal[i] == Action::W) {
+                ++m.blocked_forward;
+                m.turn_dependency += terminal[i] == Action::CR || terminal[i] == Action::CCR;
+            } else ++m.safety_cancel;
+        }
+        if (actions[i] != Action::FW) continue;
+        const auto* table = a.goal >= 0 ? oracle_.peek(a.goal) : nullptr;
+        const int before = table ? oracle_.value(*table, loc_[i]) : kInf;
+        const int after = table ? oracle_.value(*table, next_[i]) : kInf;
+        if (before >= kInf || after >= kInf) ++m.forward_unknown;
+        else if (after < before) ++m.forward_closer;
+        else if (after > before) ++m.forward_farther;
+        else ++m.forward_equal;
+    }
+}
+
+void Cgar::log_movement() const {
+    std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d builds=%lld guided=%lld fallback=%lld\n",
+                env_->curr_timestep + 1, orientation_guidance_, turn_first_, stats_.oriented_builds,
+                stats_.oriented_guided, stats_.oriented_fallback);
+    for (int phase = 0; phase < 3; ++phase) {
+        const auto& m = stats_.movement[phase];
+        std::printf("[cgar-movement] steps=%d phase=%d fw=%lld cr=%lld ccr=%lld wait=%lld "
+                    "planned_wait=%lld blocked_forward=%lld safety_cancel=%lld turn_dependency=%lld "
+                    "closer=%lld farther=%lld equal=%lld unknown=%lld recovery=%lld primary=%lld "
+                    "commitment=%lld pocket=%lld expired_commitments=%lld\n",
+                    env_->curr_timestep + 1, phase, m.actions[0], m.actions[1], m.actions[2], m.actions[3],
+                    m.planned_wait, m.blocked_forward, m.safety_cancel, m.turn_dependency,
+                    m.forward_closer, m.forward_farther, m.forward_equal, m.forward_unknown,
+                    m.recovery, m.primary, m.commitment, m.pocket, stats_.expired_commitments);
+    }
 }
 
 void Cgar::log_summary() {

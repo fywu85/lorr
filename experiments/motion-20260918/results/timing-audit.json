@@ -1,0 +1,281 @@
+{
+  "measurement": "plannerTimes times BaseSystem::plan, including planner-return logging after Entry::compute finishes.",
+  "interpretation": "Pauses coincide across separate processes after the planner-return log timestamp. This supports a logging or host pause, not a longer CGAR search; the specific system cause was not instrumented.",
+  "anomalies": [
+    {
+      "case": "orientation_admission-s3-r0",
+      "instance": "WAREHOUSE",
+      "decision_index": 3405,
+      "plannerTimes_seconds": 3.725071463,
+      "simulator_entry_timeouts": 0,
+      "previous_log_record": "[2026-09-18 11:59:55.669598] [0x0000154d85e82780] [info]    Task 43167 is revealed",
+      "planner_return_log_record": "[2026-09-18 11:59:55.689882] [0x0000154d85e82780] [info]    [timestep=3405] planner returns",
+      "following_log_record": "[2026-09-18 11:59:59.407775] [0x0000154d85e82780] [info]    [timestep=3406] Agent 19 finishes task 8596",
+      "previous_to_return_timestamp_seconds": 0.020284,
+      "return_to_following_timestamp_seconds": 3.717893,
+      "source_log_sha256": "9e8eb91ff356fb88686a61ca5e44d285e4d7c07a84df6d97d5b0f6840ff71fd0"
+    },
+    {
+      "case": "baseline-s4-r0",
+      "instance": "WAREHOUSE",
+      "decision_index": 3923,
+      "plannerTimes_seconds": 3.718440968,
+      "simulator_entry_timeouts": 0,
+      "previous_log_record": "[2026-09-18 11:59:55.659761] [0x000015109c543780] [info]    Task 44279 is revealed",
+      "planner_return_log_record": "[2026-09-18 11:59:55.679693] [0x000015109c543780] [info]    [timestep=3923] planner returns",
+      "following_log_record": "[2026-09-18 11:59:59.391998] [0x000015109c543780] [info]    [timestep=3924] Agent 1064 finishes task 26210",
+      "previous_to_return_timestamp_seconds": 0.019932,
+      "return_to_following_timestamp_seconds": 3.712305,
+      "source_log_sha256": "8180c3197e631b8f7493d22f512afb985e8cd5180fd4a33e0835302c8e1151a0"
+    },
+    {
+      "case": "orientation_admission-s5-r0",
+      "instance": "WAREHOUSE",
+      "decision_index": 3609,
+      "plannerTimes_seconds": 1.182628839,
+      "simulator_entry_timeouts": 0,
+      "previous_log_record": "[2026-09-18 12:00:05.904665] [0x000014cdf1b16780] [info]    Task 44207 is revealed",
+      "planner_return_log_record": "[2026-09-18 12:00:05.925667] [0x000014cdf1b16780] [info]    [timestep=3609] planner returns",
+      "following_log_record": "[2026-09-18 12:00:07.099643] [0x000014cdf1b16780] [info]    [timestep=3610] Agent 39 finishes task 22801",
+      "previous_to_return_timestamp_seconds": 0.021002,
+      "return_to_following_timestamp_seconds": 1.173976,
+      "source_log_sha256": "12086593e80079e7d590b88ba575c2a6999c181c7be35b397446dc83f6037d7a"
+    },
+    {
+      "case": "orientation_admission-s5-r0",
+      "instance": "SORTATION",
+      "decision_index": 2784,
+      "plannerTimes_seconds": 1.230784081,
+      "simulator_entry_timeouts": 0,
+      "previous_log_record": "[2026-09-18 12:00:05.856865] [0x000014f185176780] [info]    Task 51140 is revealed",
+      "planner_return_log_record": "[2026-09-18 12:00:05.951085] [0x000014f185176780] [info]    [timestep=2784] planner returns",
+      "following_log_record": "[2026-09-18 12:00:07.099558] [0x000014f185176780] [info]    [timestep=2785] Agent 1748 finishes task 6013",
+      "previous_to_return_timestamp_seconds": 0.09422,
+      "return_to_following_timestamp_seconds": 1.148473,
+      "source_log_sha256": "9af9e0fdc891e7940d104608d2d164445ab08ff26888c063bb15f0a689ea044c"
+    }
+  ],
+  "repeat_comparisons": [
+    {
+      "case": "baseline-s3-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "bc585238f2c943dde46179e4ef5ad897fa7a04bbe292d1fde413d7514c27b678",
+      "original_max_wrapper_seconds": 0.506236632,
+      "repeat_max_wrapper_seconds": 0.493882631
+    },
+    {
+      "case": "baseline-s3-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "494989b732bb04898562dfde68973273b71135e1c80e777f2609e0c11c163f51",
+      "original_max_wrapper_seconds": 0.538340908,
+      "repeat_max_wrapper_seconds": 0.525353995
+    },
+    {
+      "case": "orientation_admission-s3-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "9c94c8135ece94b2048be1b3ca1911fc45dfc40552c71fdd55f0f9769390abf0",
+      "original_max_wrapper_seconds": 3.725071463,
+      "repeat_max_wrapper_seconds": 0.543768311
+    },
+    {
+      "case": "orientation_admission-s3-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "925e0b6770c3e8c4be5512a131043b6b4cec3c1b4e93b85445381e4acc21259e",
+      "original_max_wrapper_seconds": 0.672074367,
+      "repeat_max_wrapper_seconds": 0.593053249
+    },
+    {
+      "case": "baseline-s4-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "29a2d442a0ed86988001ea2a1f82f417858981729f5e658031ad32102233558c",
+      "original_max_wrapper_seconds": 3.718440968,
+      "repeat_max_wrapper_seconds": 0.494625049
+    },
+    {
+      "case": "baseline-s4-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "9d057a4027b376401e74273daeb631310bda9c7a6166e6bcec7bc9780a16c2a3",
+      "original_max_wrapper_seconds": 0.536310168,
+      "repeat_max_wrapper_seconds": 0.525837395
+    },
+    {
+      "case": "orientation_admission-s4-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "903ab045cc8004e80030285b88532580f2c181ab3220e1c4f2bfd5ac365949ef",
+      "original_max_wrapper_seconds": 0.556745285,
+      "repeat_max_wrapper_seconds": 0.544843777
+    },
+    {
+      "case": "orientation_admission-s4-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "9eaa0c951124010d4ad43f9dc3bf88794b479b33782e7ade6be45cf63ecb0580",
+      "original_max_wrapper_seconds": 0.606096398,
+      "repeat_max_wrapper_seconds": 0.591788996
+    },
+    {
+      "case": "baseline-s5-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "f94ed215563fa2ba56e219021b3d3563eb02af1efe103235d262c67bda13f1f5",
+      "original_max_wrapper_seconds": 0.508143082,
+      "repeat_max_wrapper_seconds": 0.494628595
+    },
+    {
+      "case": "baseline-s5-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "9c2a885afb7abeb1b2dd140dc44940c7a83ec49c8c8843bfcd72e10612dc22ca",
+      "original_max_wrapper_seconds": 0.538856228,
+      "repeat_max_wrapper_seconds": 0.525007642
+    },
+    {
+      "case": "orientation_admission-s5-r0",
+      "instance": "WAREHOUSE",
+      "identical_trajectory": true,
+      "trajectory_sha256": "c2ee3c9815baec899c86b799d3df2d252c422297e8594e18ae06089f5c5fdc17",
+      "original_max_wrapper_seconds": 1.182628839,
+      "repeat_max_wrapper_seconds": 0.543114978
+    },
+    {
+      "case": "orientation_admission-s5-r0",
+      "instance": "SORTATION",
+      "identical_trajectory": true,
+      "trajectory_sha256": "5cd43bd34161b5e15d03bb8c58746694c8e8c23480b4ff985807603d2ff2cc5c",
+      "original_max_wrapper_seconds": 1.230784081,
+      "repeat_max_wrapper_seconds": 0.593060423
+    }
+  ],
+  "repeat_allocation": {
+    "started_utc": "2026-09-18T16:09:37.575899+00:00",
+    "resources": {
+      "hostname": "research22",
+      "cpu_model": "AMD EPYC 7532 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ],
+        [
+          1,
+          65
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          5,
+          69
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          7,
+          71
+        ],
+        [
+          8,
+          72
+        ],
+        [
+          9,
+          73
+        ],
+        [
+          10,
+          74
+        ],
+        [
+          11,
+          75
+        ]
+      ],
+      "address_space_limit_bytes": [
+        103079215104,
+        103079215104
+      ],
+      "physical_cores_visible": 12,
+      "representative_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "selected_cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "job_id": "8897309"
+  }
+}

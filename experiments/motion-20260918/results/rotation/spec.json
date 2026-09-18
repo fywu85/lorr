@@ -1,0 +1,125 @@
+{
+  "cases": [
+    {
+      "name": "baseline-s0-r0",
+      "variant": "baseline",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "rotation-s0-r0",
+      "variant": "rotation",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1"
+      }
+    },
+    {
+      "name": "rotation_turn_first-s0-r0",
+      "variant": "rotation_turn_first",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s1-r0",
+      "variant": "baseline",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "rotation-s1-r0",
+      "variant": "rotation",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1"
+      }
+    },
+    {
+      "name": "rotation_turn_first-s1-r0",
+      "variant": "rotation_turn_first",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "baseline-s2-r0",
+      "variant": "baseline",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1"
+      }
+    },
+    {
+      "name": "rotation-s2-r0",
+      "variant": "rotation",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1"
+      }
+    },
+    {
+      "name": "rotation_turn_first-s2-r0",
+      "variant": "rotation_turn_first",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ROTATION_RESERVATIONS": "1",
+        "CGAR_TURN_FIRST": "1"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "83fc9312918073a0d39bb60b9d8fb3fb3cf116bf",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "4016b26776827709c7deb820b37830fdd560dc6562624b1fd72f6a37fd0d632c",
+      "cgar/cgar_planner/cgar.hpp": "80016f0bf7cc9364df927bb36f95956d00edd331ed2c07835bbfe24553d0a829",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "7eea937d914526a170b0075356ec6ebb46bd42ee5fa9d996d9c5ac13abb77733"
+    },
+    "binary_sha256": "693379e1fe55f566f195073b14c60023ffc930984abe7f7410a47c79b595d467"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE",
+    "SORTATION",
+    "CITY-01",
+    "CITY-02",
+    "GAME",
+    "RANDOM-01",
+    "RANDOM-02",
+    "RANDOM-03",
+    "RANDOM-04",
+    "RANDOM-05"
+  ],
+  "parallel_suites": 6,
+  "jobs_per_suite": 5,
+  "time_limit_ms": 1000
+}

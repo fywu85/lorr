@@ -115,6 +115,45 @@ changes contain no map-name or map-category policies. See the
 [matched experiment](../../experiments/throughput-20260918-next/README.md) for
 validation, the promotion decision and NMS transfer priorities.
 
+## Experimental motion guidance and diagnostics
+
+All new motion switches default to `0`. They apply globally, without map-name or
+map-category rules:
+
+- `CGAR_TURN_FIRST=1` orders equal-distance candidates by required turns before
+  preferring an empty cell. The remaining candidate ordering is unchanged.
+- `CGAR_ORIENTATION_GUIDANCE=1` uses exact unit-action distances over
+  `(cell, orientation)`, including forward moves and both turn directions.
+  Complete turn-and-forward costs compete with a unit wait. Every candidate for
+  one robot uses the same cost basis. The cache holds 512 MiB of distance tables
+  after trimming and builds at most 32 complete new tables per decision. This
+  original LRU experiment can churn; new tables may temporarily exceed the
+  retained cache limit until the next decision.
+- `CGAR_ORIENTATION_GUIDANCE=2` restricts those builds to goals admitted by a
+  demand policy. Every 32 steps it ranks active goals by request count, retains
+  resident entries on ties, then breaks ties by goal ID. Only as many goals as
+  fit in the same cache are admitted. Goals without a table use the existing
+  spatial guidance; prescribed counts determine this fallback, never elapsed time.
+- `CGAR_DIAGNOSTICS=1` logs cumulative final actions and disjoint wait causes every
+  200 completed decisions. Counts distinguish idle, before-pickup and after-pickup
+  robots, identify turn dependencies, and record moves relative to cached spatial
+  distance. Recovery, primary, commitment and pocket counts are overlapping
+  contexts. Diagnostics read cached distances without building or promoting
+  entries or consuming randomness.
+
+Orientation costs guide ordinary PIBT choices. They do not replace the certified
+spatial progress potential, primary tickets, recovery witnesses, pocket locks or
+existing commitments. Robots evacuating a draining pocket retain exit guidance.
+All prescribed computation must complete before the shared deadline, including
+complete table construction; otherwise the entry raises `Timeout`.
+
+The optional combination `CGAR_ORIENTATION_GUIDANCE=2 CGAR_TURN_FIRST=1` improves
+several instances over six full-horizon seeds, but SORTATION remains mixed and
+has a negative mean. It is not the default. The [movement study](../../experiments/motion-20260918/README.md)
+contains per-seed throughput, runtime and memory, identical-goal NMS comparisons,
+and unsuccessful four-proposal and rotation-reservation experiments. Those two
+rejected mechanisms are archived as patches and absent from the active planner.
+
 ## Planning deadlines
 
 Scheduling, distance construction, recovery and PIBT share the entry's absolute
@@ -145,8 +184,10 @@ capacity bootstrap, full 10,000-robot assignment coverage, and fair admission
 under a one-pair candidate cap, sparse fallback quality, replenishment after taken
 candidates, explicit scheduler/distance timeouts, weighted pickup choices, bounded
 unopened-task swaps, and protection of started tasks, primary tickets, recovery
-witnesses, ongoing turns and fair admissions. Every simulated fixture action is checked for
-obstacles, vertex collisions, and edge swaps.
+witnesses, ongoing turns and fair admissions. The turn-distance oracle is compared with independent forward action searches;
+cache eviction/retention, explicit timeout failure, and turn-dependency attribution
+are also checked. Every simulated fixture action is checked for obstacles, vertex
+collisions, and edge swaps.
 
 Run the ten main-round instances into a new directory with:
 

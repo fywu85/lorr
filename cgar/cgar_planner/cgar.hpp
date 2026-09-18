@@ -100,6 +100,28 @@ private:
     std::vector<std::vector<int>> neighbors_;
 };
 
+// Shortest action costs over (cell, orientation), with unit-cost turns and
+// forward moves. Used only for guidance; the certified spatial potential stays
+// in DistanceOracle. Cache entries are complete reverse BFS traversals.
+class TurnDistanceOracle {
+public:
+    void init(const Certificate* cert, size_t max_bytes);
+    const std::vector<int>* find(int goal);
+    const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
+    int value(const std::vector<int>& table, int cell, int orientation) const;
+    bool has(int goal) const { return tables_.count(goal) != 0; }
+    size_t capacity() const { return max_bytes_ / table_bytes_; }
+    void retain(const std::unordered_set<int>& goals);
+    void trim();
+private:
+    struct Entry { std::vector<int> dist; std::list<int>::iterator lru; };
+    const Certificate* cert_ = nullptr;
+    size_t max_bytes_ = 0, table_bytes_ = 1;
+    std::vector<int> cells_, index_, queue_;
+    std::list<int> lru_;
+    std::unordered_map<int, Entry> tables_;
+};
+
 // Retain table-derived scalar legs even if their full distance table is evicted.
 // Previously approximated legs are refined only when a complete table is cached.
 class ChainCostCache {
@@ -136,7 +158,20 @@ struct Agent {
     bool observe_progress(int distance, ProgressBasis basis, bool stable_basis);
 };
 
+// Disjoint final actions and overlapping diagnostic contexts. Recording only
+// reads cached distances and never changes table recency or consumes randomness.
+struct MovementStats {
+    long long actions[4] = {};  // FW, CR, CCR, W
+    long long planned_wait = 0, blocked_forward = 0, safety_cancel = 0;
+    long long turn_dependency = 0;
+    long long forward_closer = 0, forward_farther = 0, forward_equal = 0, forward_unknown = 0;
+    long long recovery = 0, primary = 0, commitment = 0, pocket = 0;
+};
+
 struct Stats {
+    MovementStats movement[3];  // idle, before pickup, after pickup
+    long long expired_commitments = 0;
+    long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
     long long txns = 0;
     long long txn_aborts = 0;
     long long txn_no_hole = 0;
@@ -182,6 +217,7 @@ private:
     void update_locks();
     int select_primary();
     void compute_order(int primary);
+    void refresh_orientation_cache();
 
     // routing
     int route_h(int i, int cell, ProgressBasis* basis = nullptr);
@@ -213,11 +249,15 @@ private:
     int task_chain_cost(int task_id);
     void reassign_unopened(std::vector<int>& proposed);
     void log_summary();
+    void record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
+                         const std::vector<char>& commitments);
+    void log_movement() const;
 
     bool initialized_ = false;
     SharedEnvironment* env_ = nullptr;
     Certificate cert_;
     DistanceOracle oracle_;
+    TurnDistanceOracle turn_oracle_;
     Stats stats_;
     std::mt19937 rng_{0};
 
@@ -244,6 +284,11 @@ private:
     int plan_tables_ = 256;      // per-step budget for the planner
     int sched_tables_ = 128;     // per-step budget for the scheduler
     long long max_pairs_ = 2000000;
+    bool turn_first_ = false;
+    int orientation_guidance_ = 0;  // 0 off, 1 LRU experiment, 2 demand-based admission
+    std::unordered_set<int> oriented_goals_;
+    int turn_table_budget_ = 0;
+    bool diagnostics_ = false;
     bool enable_txn_ = true;
     bool enable_locks_ = true;
     bool hrrn_ = true;

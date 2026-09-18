@@ -346,4 +346,56 @@ void reassignment_fair_admission() {
  if(proposed!=e.curr_task_schedule||!c.stats().reassign_fair_protected)throw std::runtime_error("fair admission was redirected by a cheaper swap");
  unsetenv("CGAR_REASSIGN");std::cout<<"REASSIGNMENT_FAIR_ADMISSION passed\n";
 }
-int main(){try{unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void oriented_distances() {
+ const int rows=4,cols=5;std::vector<int> map={0,0,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0,0,1,1,1};
+ const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;oracle.init(&cert,1);
+ int checked=0;
+ for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
+  const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+  for(int from=0;from<rows*cols;++from)if(!map[from])for(int ori=0;ori<4;++ori){
+   int expected=kInf;
+   if(cert.core[from]||cert.pocket[from]==cert.pocket[goal]){
+    std::vector<int> distance(rows*cols*4,-1);std::queue<int> q;q.push(from*4+ori);distance[from*4+ori]=0;
+    while(!q.empty()){
+     int u=q.front();q.pop();int cell=u/4,dir=u%4;
+     if(cell==goal){expected=distance[u];break;}
+     for(Action action:{Action::FW,Action::CR,Action::CCR}){
+      int v=cell,d=dir;
+      if(action==Action::FW)v=nb(cell,dir,rows,cols);
+      else d=(dir+(action==Action::CR?1:3))%4;
+      if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
+      int node=v*4+d;if(distance[node]>=0)continue;distance[node]=distance[u]+1;q.push(node);
+     }
+    }
+   }
+   if(oracle.value(*table,from,ori)!=expected)throw std::runtime_error("oriented oracle disagrees with independent action search");
+   ++checked;
+  }
+  oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
+ }
+ // Demand admission can explicitly retain one resident and evict another.
+ TurnDistanceOracle retained;retained.init(&cert,1<<20);
+ retained.table(0,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+ retained.table(1,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+ retained.retain({1});
+ if(retained.has(0)||!retained.has(1)||retained.capacity()<2)throw std::runtime_error("orientation retention failed");
+ bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
+ if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
+ std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" explicit_timeout=1 bounded_cache=1\n";
+}
+
+void movement_diagnostics() {
+ SharedEnvironment e;e.num_of_agents=2;e.rows=2;e.cols=3;e.map.assign(6,0);
+ e.curr_states={State(0,0,0),State(1,0,0)};e.curr_task_schedule={0,1};e.goal_locations={{{2,0}},{{4,0}}};
+ for(int i=0;i<2;++i){Task t;t.task_id=i;t.locations={i?4:2};e.task_pool.emplace(i,t);}
+ unsetenv("CGAR_DIAGNOSTICS");Cgar plain;plain.initialize(&e,1000);std::vector<Action>a;plain.plan(&e,100,a);
+ setenv("CGAR_DIAGNOSTICS","1",1);Cgar measured;measured.initialize(&e,1000);std::vector<Action>b;measured.plan(&e,100,b);
+ unsetenv("CGAR_DIAGNOSTICS");
+ if(a!=b||a!=std::vector<Action>({Action::W,Action::CR}))throw std::runtime_error("turn dependency fixture or diagnostic equivalence failed");
+ const auto& m=measured.stats().movement[1];
+ if(m.actions[0]!=0||m.actions[1]!=1||m.actions[2]!=0||m.actions[3]!=1||m.blocked_forward!=1||m.turn_dependency!=1||m.planned_wait||m.safety_cancel)
+  throw std::runtime_error("diagnostic wait attribution failed");
+ std::cout<<"MOVEMENT_DIAGNOSTICS passed turn_dependency=1 actions_unchanged=1\n";
+}
+
+int main(){try{oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

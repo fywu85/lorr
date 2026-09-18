@@ -68,6 +68,15 @@ protects primary tickets, recovery witnesses, started tasks and fair admissions.
 The default remains unchanged; measured throughput/waiting-time tradeoffs and
 experimental settings are documented in the report.
 
+The [movement diagnosis and NMS comparison](experiments/motion-20260918/README.md)
+isolate a movement gap using identical robot positions and goals, including an
+NMS reference with uniform action costs and no category-specific fleet limits.
+An optional profile, `CGAR_ORIENTATION_GUIDANCE=2 CGAR_TURN_FIRST=1`, adds turn-aware
+route costs with a bounded cache. Across six seeds it improves WAREHOUSE by 10.7%,
+CITY-01 by 6.2%, and RANDOM-02 by 9.9%, but SORTATION averages -1.5%. Defaults remain
+unchanged. The report retains all full-horizon results, rejected prototypes,
+CPU allocations, and a follow-up audit of simulator timing outliers.
+
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run
 throughput comparisons; passing the simulator does not prove starvation freedom.
