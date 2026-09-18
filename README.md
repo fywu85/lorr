@@ -36,7 +36,7 @@ for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
 
-[Latest full MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft.
+[Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 
 [Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. The production planner is unchanged by these experiments.
 

@@ -84,3 +84,5 @@ configuration overrides, output JSON, logs, and CSV/Markdown comparisons with
 the original draft's outputs (or their committed summary when raw outputs are absent). Each instance uses the archived simulation length,
 1000 ms per decision, and 30000 ms preprocessing. Results are single runs; task
 throughput and simulator error counts do not establish starvation freedom.
+
+Recorded full-suite results: [sequential execution](../../benchmarks/mr24-20260917/summary.md) and [ten concurrent instances](../../benchmarks/mr24-parallel-20260918/summary.md). Both use the same production executable. The parallel run shares one CPU across the jobs; all ten horizons completed with zero errors or timeouts, with throughput differences documented in the report.

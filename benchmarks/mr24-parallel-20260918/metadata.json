@@ -1,0 +1,66 @@
+{
+  "started_utc": "2026-09-18T06:39:23.666462+00:00",
+  "jobs": 10,
+  "plan_time_limit_ms": 1000,
+  "preprocess_time_limit_ms": 30000,
+  "binary_sha256": "653b4f3f5247e50ee1829559aa117b01476ef914e42571f0fa51426795d0c5f3",
+  "sources": {
+    "cgar/cgar_planner/cgar.cpp": "96a4399c5f1e35e4b661fb2aacb07e6e7318f0041b44a748ba53efe48096e37f",
+    "cgar/cgar_planner/cgar.hpp": "27f55fd87e784c4a4184d128795de9cd2e6a63f2e011625a4bd3184cc75082ba",
+    "cgar/src/MAPFPlanner.cpp": "305755013de1127f2094dad0f5ab0be5030b342d4c000fd7c97c575fcf01a8bf",
+    "cgar/src/TaskScheduler.cpp": "89414712405a3cfed727e0411620c1a90f09c0b741d0d155f8f7f3e0faa36311"
+  },
+  "environment": {},
+  "instances": {
+    "WAREHOUSE": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+      "steps": 5000
+    },
+    "SORTATION": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+      "steps": 5000
+    },
+    "CITY-01": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+      "steps": 3000
+    },
+    "CITY-02": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+      "steps": 3000
+    },
+    "GAME": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+      "steps": 5000
+    },
+    "RANDOM-01": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+      "steps": 600
+    },
+    "RANDOM-02": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+      "steps": 600
+    },
+    "RANDOM-03": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+      "steps": 800
+    },
+    "RANDOM-04": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+      "steps": 1000
+    },
+    "RANDOM-05": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "steps": 2000
+    }
+  },
+  "source_commit_at_launch": "5436a8fbdd3f59f01a27199e89c56a4823bf6c3c",
+  "report_created_utc": "2026-09-18T07:01:27.139824+00:00",
+  "cpu_quota": {
+    "quota_us": 100000,
+    "period_us": 100000,
+    "effective_cpus": 1
+  },
+  "raw_output_directory": "runs/cgar-parallel-20260918",
+  "comparison": "Same production executable as the September 17 sequential run",
+  "background_activity": "Fable CLI performed a read-only source review during part of the benchmark; lightweight local reporting and Git operations also ran."
+}
