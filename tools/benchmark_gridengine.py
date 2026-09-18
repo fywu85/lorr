@@ -15,6 +15,7 @@ from cpu_resources import cpu_resources
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ['cgar/cgar_planner/cgar.cpp', 'cgar/cgar_planner/cgar.hpp',
+           'cgar/cgar_planner/pibt_kernel.hpp',
            'cgar/src/MAPFPlanner.cpp', 'cgar/src/TaskScheduler.cpp', 'cgar/src/Entry.cpp']
 
 

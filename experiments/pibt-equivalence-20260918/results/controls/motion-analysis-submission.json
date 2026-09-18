@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "4",
+    "-binding",
+    "linear:4",
+    "-l",
+    "exclusive=true,h_rt=00:30:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "motion_analysis",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-pibt-controls-20260918/motion-analysis.log",
+    "-S",
+    "/bin/bash",
+    "-hold_jid",
+    "8897433",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-pibt-controls-20260918/motion-analysis.sh"
+  ],
+  "response": "8897434\n",
+  "exit": 0
+}

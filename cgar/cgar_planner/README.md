@@ -154,6 +154,40 @@ contains per-seed throughput, runtime and memory, identical-goal NMS comparisons
 and unsuccessful four-proposal and rotation-reservation experiments. Those two
 rejected mechanisms are archived as patches and absent from the active planner.
 
+## Experimental PIBT reference policy
+
+`CGAR_PIBT_REFERENCE=1` selects native `Kei18/pibt2` spatial candidate ordering and
+priorities inside the shared destination-assignment recursion. It uses exact
+spatial distance tables, initial-distance and elapsed-step priorities, and the
+upstream random tie-breaking sequence. It defaults `CGAR_CERT` and `CGAR_TXN` to
+`0`, disables ordinary movement commitments, and includes every traversable
+component without capacity pruning. These settings are experimental; the regular
+CGAR policy and its defaults remain unchanged.
+
+For layer comparisons, `CGAR_PIBT_TICKETS=1` restores CGAR's priority ordering and
+`CGAR_PIBT_COMMITMENTS=1` restores ordinary destination persistence. Explicit
+`CGAR_CERT=1` restores certificate routing, pocket locks and capacity handling;
+`CGAR_TXN=1` restores optional recovery when its certificate conditions hold.
+Transaction commitments remain protected even when ordinary commitments are off.
+The PIBT-specific ticket/commitment switches have no effect unless reference mode
+is enabled. `CGAR_TURN_FIRST` and `CGAR_ORIENTATION_GUIDANCE` must both be zero in
+reference mode; incompatible combinations are rejected at initialization.
+
+Native PIBT has no rotations. The competition entry still applies LoRR turns,
+forward-dependency cancellation and final collision checks. The conformance
+harness separately tests native spatial moves and an independent rotation
+adapter. Lifelong scheduling stays with CGAR; changing or retiring a target cell
+restarts its native priority episode. This extension is not upstream's MAPD
+scheduler. The compatibility profile does not inherit the disabled certificate
+and recovery progress guarantees.
+
+Exact distances in this profile do not fall back to Manhattan after a table-count
+limit. Required tables complete or raise `Timeout`. Large cold workloads can
+therefore need more than the usual one-second decision budget. The diagnostic
+study uses an explicit ten-second cap, with all one-second failures retained.
+See the [PIBT study](../../experiments/pibt-equivalence-20260918/README.md) for the
+pinned source, 308 equivalence cases, 300 full runs, runtime and per-layer effects.
+
 ## Planning deadlines
 
 Scheduling, distance construction, recovery and PIBT share the entry's absolute

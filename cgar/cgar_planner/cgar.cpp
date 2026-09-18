@@ -539,7 +539,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     diagnostics_ = env_int("CGAR_DIAGNOSTICS", 0) != 0;
     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
-    enable_txn_ = env_int("CGAR_TXN", 1) != 0;
+    pibt_reference_ = env_int("CGAR_PIBT_REFERENCE", 0) != 0;
+    pibt_tickets_ = env_int("CGAR_PIBT_TICKETS", 0) != 0;
+    pibt_commitments_ = env_int("CGAR_PIBT_COMMITMENTS", 0) != 0;
+    enable_txn_ = env_int("CGAR_TXN", pibt_reference_ ? 0 : 1) != 0;
     hrrn_ = env_int("CGAR_HRRN", 1) != 0;
     pickup_weight_ = std::max(1, std::min(16, env_int("CGAR_PICKUP_WEIGHT", 1)));
     refine_chain_costs_ = env_int("CGAR_REFINE_CHAIN_COSTS", 0) != 0;
@@ -548,12 +551,23 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     repair_fallback_ = env_int("CGAR_FALLBACK_REPAIR", 1) != 0;
     reassign_ = env_int("CGAR_REASSIGN", 0) != 0;
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
-    enable_locks_ = env_int("CGAR_CERT", 1) != 0;
+    enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
     const size_t table_mb = static_cast<size_t>(env_int("CGAR_TABLE_MB", 2048));
     rng_.seed(static_cast<unsigned>(env_int("CGAR_SEED", 0)));
 
     const auto t0 = Clock::now();
-    cert_ = build_certificate_feasible(env->map, env->rows, env->cols, enable_locks_ ? n_ : 0);
+    if (pibt_reference_ && !enable_locks_) {
+        // The reference domain includes every traversable component. No capacity
+        // pruning or pocket policy is part of the native PIBT special case.
+        cert_.rows = env->rows; cert_.cols = env->cols; cert_.robots = n_;
+        for (int obstacle : env->map) cert_.free.push_back(!obstacle);
+        cert_.core = cert_.free;
+        cert_.core_size = std::count(cert_.free.begin(), cert_.free.end(), 1);
+        cert_.pocket.assign(env->map.size(), -1);
+        cert_.exit_dist.assign(env->map.size(), 0);
+        cert_.exit_cell.assign(env->map.size(), -1);
+        cert_.promotion.assign(env->map.size(), 0);
+    } else cert_ = build_certificate_feasible(env->map, env->rows, env->cols, enable_locks_ ? n_ : 0);
     if (!enable_locks_) {
         // Ablation: route over the whole connected floor with no pockets.
         std::fill(cert_.pocket.begin(), cert_.pocket.end(), -1);
@@ -579,6 +593,16 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     free_tasks_.clear();
     chain_cost_.clear();
     last_reassignment_.assign(n_, -20);
+    if (pibt_reference_) {
+        pibt_elapsed_.assign(n_, 0); pibt_initial_distance_.assign(n_, 0);
+        pibt_previous_goal_.assign(n_, -1); pibt_tie_.resize(n_);
+        std::uniform_real_distribution<float> uniform(0, 1);
+        for (int i = 0; i < n_; ++i) pibt_tie_[i] = uniform(rng_);
+        if (turn_first_ || orientation_guidance_)
+            throw std::invalid_argument("PIBT reference policy requires unmodified spatial candidate ordering");
+        std::printf("[cgar-pibt-reference] enabled=1 tickets=%d commitments=%d cert=%d txn=%d exact_distances=1\n",
+                    pibt_tickets_, pibt_commitments_, enable_locks_, enable_txn_);
+    }
 
     size_t free_cells = std::count(cert_.free.begin(), cert_.free.end(), 1);
     size_t largest_pocket = 0;
@@ -614,6 +638,10 @@ void Cgar::sync_agents() {
             a.best = kInf;
             a.stall = 0;
             a.progress_basis = ProgressBasis::None;
+        }
+        if (pibt_reference_ && !pibt_commitments_ && !a.in_txn) {
+            a.committed = -1;
+            a.commit_age = 0;
         }
         if (a.committed == loc_[i]) {
             a.committed = -1;
@@ -682,7 +710,39 @@ void Cgar::refresh_orientation_cache() {
     check_deadline(deadline_, "orientation_cache_admission");
 }
 
+void Cgar::update_pibt_priorities() {
+    // Update from observed movement, so turns count as elapsed physical steps.
+    // Fixed goals reproduce pibt2. A replacement/retired LoRR goal starts a new
+    // priority episode; that extension is not part of upstream's MAPF driver.
+    for (int i = 0; i < n_; ++i) {
+        const int goal = agents_[i].goal;
+        if (pibt_priorities_ready_)
+            pibt_elapsed_[i] = pibt_previous_goal_[i] < 0 || loc_[i] == pibt_previous_goal_[i]
+                                  ? 0 : pibt_elapsed_[i] + 1;
+        if (!pibt_priorities_ready_ || goal != pibt_previous_goal_[i]) {
+            pibt_elapsed_[i] = 0;
+            pibt_initial_distance_[i] = goal < 0 ? 0 : route_h(i, loc_[i]);
+        }
+        pibt_previous_goal_[i] = goal;
+    }
+    pibt_priorities_ready_ = true;
+}
+
 void Cgar::compute_order(int primary) {
+    if (pibt_reference_ && !pibt_tickets_) {
+        if (order_.size() != static_cast<size_t>(n_)) {
+            order_.resize(n_);
+            for (int i = 0; i < n_; ++i) order_[i] = i;
+        }
+        // Preserve the previous order on subsequent sorts, as upstream does.
+        std::sort(order_.begin(), order_.end(), [&](int x, int y) {
+            if (pibt_elapsed_[x] != pibt_elapsed_[y]) return pibt_elapsed_[x] > pibt_elapsed_[y];
+            if (pibt_initial_distance_[x] != pibt_initial_distance_[y])
+                return pibt_initial_distance_[x] > pibt_initial_distance_[y];
+            return pibt_tie_[x] > pibt_tie_[y];
+        });
+        return;
+    }
     order_.resize(n_);
     for (int i = 0; i < n_; ++i) order_[i] = i;
     auto cls = [&](int i) {
@@ -721,6 +781,11 @@ int Cgar::route_h(int i, int cell, ProgressBasis* basis) {
         return distance;
     };
     const Agent& a = agents_[i];
+    if (pibt_reference_ && !enable_locks_) {
+        if (a.goal < 0) return observe(cell == loc_[i] ? 0 : 1, ProgressBasis::None);
+        const auto* table = oracle_.try_table(a.goal, distance_deadline_);
+        return observe(oracle_.value(*table, cell), ProgressBasis::RouteTable);
+    }
     const int pocket = cert_.pocket[cell];
     const int source_pocket = cert_.pocket[loc_[i]];
     if (source_pocket >= 0 && pocket_draining_[source_pocket])
@@ -731,7 +796,7 @@ int Cgar::route_h(int i, int cell, ProgressBasis* basis) {
         // Building a table is a full-map BFS. Cap how many a single step may build,
         // otherwise a map with thousands of distinct goals blows the time budget;
         // robots that miss out steer by straight-line distance until a later step.
-        if (table_budget_ <= 0) { ++stats_.route_manhattan; return observe(oracle_.manhattan(cell, a.goal), ProgressBasis::Manhattan); }
+        if (table_budget_ <= 0 && !pibt_reference_) { ++stats_.route_manhattan; return observe(oracle_.manhattan(cell, a.goal), ProgressBasis::Manhattan); }
         --table_budget_;
         t = oracle_.try_table(a.goal, distance_deadline_);
     }
@@ -760,9 +825,25 @@ void Cgar::reserve(int cell, int who) {
     reserved_[cell] = who;
 }
 
-bool Cgar::pibt(int i, int parent) {
+PibtCandidates Cgar::pibt_candidates(int i) {
     const int u = loc_[i];
     check_deadline(deadline_, "pibt");
+    if (pibt_reference_) {
+        PibtCandidates result;
+        // Match grid-pathfinding's west, east, north, south, then wait order.
+        for (int d : {2, 0, 3, 1}) {
+            const int v = neighbor(u, d);
+            if (v >= 0 && allowed(i, v)) result.cells[result.size++] = v;
+        }
+        result.cells[result.size++] = u;
+        std::shuffle(result.cells.begin(), result.cells.begin() + result.size, rng_);
+        std::sort(result.cells.begin(), result.cells.begin() + result.size, [&](int v, int w) {
+            const int dv = route_h(i, v), dw = route_h(i, w);
+            if (dv != dw) return dv < dw;
+            return (occ_now_[v] >= 0) < (occ_now_[w] >= 0);
+        });
+        return result;
+    }
     struct Cand {
         int cell, h, occupied, turns;
         unsigned tie;
@@ -803,22 +884,15 @@ bool Cgar::pibt(int i, int parent) {
         if (a.turns != b.turns) return a.turns < b.turns;
         return a.tie < b.tie;
     });
-    for (int k = 0; k < m; ++k) {
-        const int c = cands[k].cell;
-        if (cands[k].h >= kInf) continue;
-        const int r = reserved_[c];
-        if (r != -1 && r != i) continue;
-        if (parent >= 0 && c == loc_[parent]) continue;
-        reserve(c, i);
-        next_[i] = c;
-        if (c == u) return true;
-        const int j = occ_now_[c];
-        if (j >= 0 && next_[j] == -1 && !pibt(j, i)) continue;
-        return true;
-    }
-    next_[i] = u;
-    reserve(u, i);
-    return false;
+    PibtCandidates result;
+    for (int k = 0; k < m; ++k) if (cands[k].h < kInf) result.cells[result.size++] = cands[k].cell;
+    return result;
+}
+
+bool Cgar::pibt(int i, int parent) {
+    auto candidates = [&](int robot) { return pibt_candidates(robot); };
+    auto reservation = [&](int cell, int robot) { reserve(cell, robot); };
+    return assign_pibt(i, parent, loc_, occ_now_, reserved_, next_, candidates, reservation);
 }
 
 void Cgar::abort_txn() {
@@ -1165,6 +1239,7 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
         if (urgent_pocket >= 0) evacuate_pocket(urgent_pocket);
     }
 
+    if (pibt_reference_) update_pibt_priorities();
     compute_order(primary_);
     for (int i : order_) {
         Agent& a = agents_[i];
@@ -1226,7 +1301,8 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     for (int i = 0; i < n_; ++i) {
         if (next_[i] == loc_[i]) continue;
         if (agents_[i].committed != next_[i]) agents_[i].commit_age = 0;
-        agents_[i].committed = next_[i];
+        if (!pibt_reference_ || pibt_commitments_ || agents_[i].in_txn)
+            agents_[i].committed = next_[i];
         actions[i] = action_toward(i, next_[i]);
     }
     const auto offered = diagnostics_ ? actions : std::vector<Action>();

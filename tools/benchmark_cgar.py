@@ -72,6 +72,7 @@ def main():
     shutil.copy2(args.binary.resolve(), binary)
     instances = {p.stem: p.resolve() for p in (ROOT / "mr24").glob("*/*.json")}
     sources = [ROOT / "cgar/cgar_planner/cgar.cpp", ROOT / "cgar/cgar_planner/cgar.hpp",
+               ROOT / "cgar/cgar_planner/pibt_kernel.hpp",
                ROOT / "cgar/src/MAPFPlanner.cpp", ROOT / "cgar/src/TaskScheduler.cpp", ROOT / "cgar/src/Entry.cpp"]
     provenance = json.loads(args.source_manifest.read_text()) if args.source_manifest else None
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()

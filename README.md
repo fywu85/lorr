@@ -77,6 +77,15 @@ CITY-01 by 6.2%, and RANDOM-02 by 9.9%, but SORTATION averages -1.5%. Defaults r
 unchanged. The report retains all full-horizon results, rejected prototypes,
 CPU allocations, and a follow-up audit of simulator timing outliers.
 
+The [PIBT specialization study](experiments/pibt-equivalence-20260918/README.md)
+adds an optional policy that matches the pinned `Kei18/pibt2` reference on 308
+cases and 8.76 million robot decisions. Across 300 full-horizon diagnostic runs,
+CGAR's existing movement commitments explain much of its advantage over spatial
+PIBT with a direct turn adapter. Default trajectories remain identical. The
+study uses an explicit 10-second decision cap for exact-distance construction;
+it retains the preceding one-second failures and is not a competition-budget
+comparison.
+
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run
 throughput comparisons; passing the simulator does not prove starvation freedom.

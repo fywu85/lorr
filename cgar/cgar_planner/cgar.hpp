@@ -22,6 +22,7 @@
 
 #include "ActionModel.h"
 #include "SharedEnv.h"
+#include "pibt_kernel.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -208,6 +209,8 @@ public:
     int parked_count() const;
     bool active_certified() const { return active_certified_; }
     const Stats& stats() const { return stats_; }
+    // Destination proposals before the LoRR turn adapter; native-grid conformance only.
+    const std::vector<int>& proposed_cells() const { return next_; }
 
 private:
     using Clock = std::chrono::steady_clock;
@@ -218,12 +221,14 @@ private:
     int select_primary();
     void compute_order(int primary);
     void refresh_orientation_cache();
+    void update_pibt_priorities();
 
     // routing
     int route_h(int i, int cell, ProgressBasis* basis = nullptr);
     bool allowed(int i, int cell) const;
     int turn_steps(int i, int cell) const;
     bool pibt(int i, int parent);
+    PibtCandidates pibt_candidates(int i);
     void reserve(int cell, int who);
 
     // liveness floor
@@ -284,6 +289,11 @@ private:
     int plan_tables_ = 256;      // per-step budget for the planner
     int sched_tables_ = 128;     // per-step budget for the scheduler
     long long max_pairs_ = 2000000;
+    bool pibt_reference_ = false;  // exact spatial PIBT policy, experimental
+    bool pibt_tickets_ = false, pibt_commitments_ = false;
+    bool pibt_priorities_ready_ = false;
+    std::vector<int> pibt_elapsed_, pibt_initial_distance_, pibt_previous_goal_;
+    std::vector<float> pibt_tie_;
     bool turn_first_ = false;
     int orientation_guidance_ = 0;  // 0 off, 1 LRU experiment, 2 demand-based admission
     std::unordered_set<int> oriented_goals_;
