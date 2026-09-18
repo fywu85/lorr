@@ -1,0 +1,58 @@
+{
+  "sampling": "Approximately every 30 seconds; began during GAME after all five RANDOM cases finished.",
+  "coverage": "CPU utilization averages include only intervals with the same single benchmark process at both endpoints. Transitions between instances are excluded. Samples are not a full-run CPU accounting.",
+  "first_sample_utc": "2026-09-18T07:29:23.938551+00:00",
+  "last_sample_utc": "2026-09-18T08:02:27.663899+00:00",
+  "samples": 67,
+  "stable_process_intervals": 61,
+  "stable_process_sampled_wall_seconds": 1833.573,
+  "benchmark_cpu_seconds_in_stable_intervals": 836.86,
+  "cgroup_cpu_seconds_in_stable_intervals": 1833.47,
+  "mean_benchmark_cpu_cores": 0.4564,
+  "minimum_interval_benchmark_cpu_cores": 0.2339,
+  "maximum_interval_benchmark_cpu_cores": 0.9017,
+  "mean_cgroup_cpu_cores": 0.9999,
+  "benchmark_share_of_cgroup_cpu_percent": 45.64,
+  "cgroup_periods_during_sampling": 19837,
+  "cgroup_throttled_periods_during_sampling": 19545,
+  "cgroup_throttled_period_percent": 98.53,
+  "observed_cpu_quota_us": [
+    100000
+  ],
+  "observed_cpu_period_us": [
+    100000
+  ],
+  "raw_samples": "runs/cgar-sequential-repeat-20260918/cpu-samples.jsonl",
+  "by_instance": {
+    "GAME": {
+      "stable_intervals": 16,
+      "sampled_wall_seconds": 481.33,
+      "mean_benchmark_cpu_cores": 0.3245,
+      "mean_cgroup_cpu_cores": 1.0
+    },
+    "CITY-01": {
+      "stable_intervals": 2,
+      "sampled_wall_seconds": 60.089,
+      "mean_benchmark_cpu_cores": 0.5409,
+      "mean_cgroup_cpu_cores": 1.0002
+    },
+    "CITY-02": {
+      "stable_intervals": 7,
+      "sampled_wall_seconds": 210.399,
+      "mean_benchmark_cpu_cores": 0.4251,
+      "mean_cgroup_cpu_cores": 1.0
+    },
+    "WAREHOUSE": {
+      "stable_intervals": 16,
+      "sampled_wall_seconds": 480.865,
+      "mean_benchmark_cpu_cores": 0.5218,
+      "mean_cgroup_cpu_cores": 0.9998
+    },
+    "SORTATION": {
+      "stable_intervals": 20,
+      "sampled_wall_seconds": 600.891,
+      "mean_benchmark_cpu_cores": 0.5122,
+      "mean_cgroup_cpu_cores": 1.0
+    }
+  }
+}

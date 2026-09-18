@@ -1,0 +1,86 @@
+{
+  "started_utc": "2026-09-18T07:26:56.952987+00:00",
+  "jobs": 1,
+  "plan_time_limit_ms": 1000,
+  "preprocess_time_limit_ms": 30000,
+  "binary_sha256": "653b4f3f5247e50ee1829559aa117b01476ef914e42571f0fa51426795d0c5f3",
+  "sources": {
+    "cgar/cgar_planner/cgar.cpp": "96a4399c5f1e35e4b661fb2aacb07e6e7318f0041b44a748ba53efe48096e37f",
+    "cgar/cgar_planner/cgar.hpp": "27f55fd87e784c4a4184d128795de9cd2e6a63f2e011625a4bd3184cc75082ba",
+    "cgar/src/MAPFPlanner.cpp": "305755013de1127f2094dad0f5ab0be5030b342d4c000fd7c97c575fcf01a8bf",
+    "cgar/src/TaskScheduler.cpp": "89414712405a3cfed727e0411620c1a90f09c0b741d0d155f8f7f3e0faa36311"
+  },
+  "environment": {},
+  "instances": {
+    "RANDOM-01": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+      "steps": 600
+    },
+    "RANDOM-02": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
+      "steps": 600
+    },
+    "RANDOM-03": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
+      "steps": 800
+    },
+    "RANDOM-04": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+      "steps": 1000
+    },
+    "RANDOM-05": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "steps": 2000
+    },
+    "GAME": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/game.domain/GAME.json",
+      "steps": 5000
+    },
+    "CITY-01": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-01.json",
+      "steps": 3000
+    },
+    "CITY-02": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+      "steps": 3000
+    },
+    "WAREHOUSE": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+      "steps": 5000
+    },
+    "SORTATION": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/SORTATION.json",
+      "steps": 5000
+    }
+  },
+  "source_commit_at_launch": "2fdc26ffb7008e613fa264be141fa766cd24cda6",
+  "launch_notes_recorded_utc": "2026-09-18T07:31:12.139962+00:00",
+  "production_binary_matches_original": true,
+  "production_sources_match_original": true,
+  "CGAR_environment_cleared": true,
+  "instance_order": [
+    "RANDOM-01",
+    "RANDOM-02",
+    "RANDOM-03",
+    "RANDOM-04",
+    "RANDOM-05",
+    "GAME",
+    "CITY-01",
+    "CITY-02",
+    "WAREHOUSE",
+    "SORTATION"
+  ],
+  "concurrency": "Only one CGAR benchmark process runs at a time; the Fable CLI review has finished.",
+  "background_activity": "Other processes under the same account share its one-CPU cgroup quota. Early process inspection showed pdflatex and MainThread processes consuming CPU. Lightweight source/report inspection and a 30-second CPU sampler also overlap this repeat.",
+  "monitor_started_after": "The five RANDOM instances completed; GAME was running.",
+  "raw_cpu_samples": "runs/cgar-sequential-repeat-20260918/cpu-samples.jsonl",
+  "report_created_utc": "2026-09-18T08:03:59.392089+00:00",
+  "raw_output_directory": "runs/cgar-sequential-repeat-20260918",
+  "cpu_quota": {
+    "quota_us": 100000,
+    "period_us": 100000,
+    "effective_cpus": 1
+  },
+  "comparison": "Same production binary, four recorded source hashes, settings, inputs, horizons, and case order as the September 17 sequential run. No experimental planner changes.",
+  "cpu_observations": "cpu-observations.json"
+}

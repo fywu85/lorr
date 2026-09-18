@@ -1,0 +1,45 @@
+{
+  "time_utc": "2026-09-18T07:54:20.322436+00:00",
+  "hostname": "research57",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    8,
+    9,
+    24,
+    25,
+    26,
+    27,
+    64,
+    65,
+    66,
+    67,
+    72,
+    73,
+    88,
+    89,
+    90,
+    91
+  ],
+  "distinct_physical_cores": 10,
+  "cgroup": "11:devices:/system.slice/sgeexecd.p536.service\n10:memory:/system.slice/sgeexecd.p536.service\n9:pids:/system.slice/sgeexecd.p536.service\n8:blkio:/\n7:freezer:/\n6:cpuset:/\n5:rdma:/\n4:perf_event:/\n3:cpu,cpuacct:/\n2:net_cls,net_prio:/\n1:name=systemd:/system.slice/sgeexecd.p536.service\n0::/system.slice/sgeexecd.p536.service\n",
+  "cpu_limits": [
+    {
+      "path": "/sys/fs/cgroup/cpu",
+      "limits": {
+        "cpu.cfs_quota_us": "-1",
+        "cpu.cfs_period_us": "100000"
+      }
+    }
+  ],
+  "scheduler": {
+    "JOB_ID": "8897140",
+    "QUEUE": "debian.q",
+    "NSLOTS": "10",
+    "PE": "threaded",
+    "SGE_BINDING": null
+  },
+  "binary_sha256": "653b4f3f5247e50ee1829559aa117b01476ef914e42571f0fa51426795d0c5f3"
+}
