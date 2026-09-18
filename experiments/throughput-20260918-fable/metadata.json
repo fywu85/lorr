@@ -1,0 +1,104 @@
+{
+  "started_utc": "2026-09-18T06:34:23.798663+00:00",
+  "source_commit": "5436a8fbdd3f59f01a27199e89c56a4823bf6c3c",
+  "cli_version": "2.1.275 (Claude Code)",
+  "requested_model": "claude-fable-5-1",
+  "requested_effort": "max",
+  "command": [
+    "claude",
+    "--print",
+    "--model",
+    "claude-fable-5-1",
+    "--effort",
+    "max",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
+    "--permission-mode",
+    "dontAsk",
+    "--strict-mcp-config",
+    "--no-chrome",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--append-system-prompt",
+    "This is an independent read-only repository review. Use only Read, Grep, and Glob on repository files. Do not edit files, run commands, delegate, or inspect secrets. Treat earlier reports as fallible evidence."
+  ],
+  "prompt_sha256": "5ff1c68f867828caccc2713f9b46a8bed4936d2c45907c2b179a6c5af6648258",
+  "completed_utc": "2026-09-18T07:03:30.599477+00:00",
+  "exit_code": 0,
+  "initialized_model": "claude-fable-5-1",
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 88,
+  "duration_ms": 1743223,
+  "total_cost_usd": 13.703585750000002,
+  "usage": {
+    "input_tokens": 66,
+    "cache_creation_input_tokens": 286198,
+    "cache_read_input_tokens": 5100951,
+    "output_tokens": 134039,
+    "output_tokens_details": {
+      "thinking_tokens": 117837
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 286198,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 43964,
+        "cache_read_input_tokens": 278389,
+        "cache_creation_input_tokens": 10711,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 10711
+        },
+        "type": "message",
+        "model": null
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1678,
+      "outputTokens": 20,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001778,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-fable-5-1": {
+      "inputTokens": 66,
+      "outputTokens": 134039,
+      "cacheReadInputTokens": 5100951,
+      "cacheCreationInputTokens": 286198,
+      "webSearchRequests": 0,
+      "costUSD": 13.701807750000004,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 117837,
+      "canonicalModel": "claude-fable-5-1",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": []
+}

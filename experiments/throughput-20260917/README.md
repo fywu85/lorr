@@ -19,7 +19,7 @@ Both affected maps have every free cell in the certified core, no pockets, and n
 
 **Measured prototypes**
 
-The fallback prototype reserves one quarter of the scheduler's budget for the final allocation pass. When local search produces no candidate, it compares the oldest task with 64 deterministically sampled entries from the still-unused task vector, using existing distance/whole-chain estimates. Removal is constant time, the sample does not consume PIBT's random stream, and the separate fair-admission rule remains active. Sampling can repeat entries and miss good candidates; it is a bounded approximation.
+The fallback prototype reserves one quarter of the scheduler's budget for the final allocation pass. When local search produces no candidate, it compares the oldest task with 64 deterministically sampled entries from the still-unused task vector, using existing distance/whole-chain estimates. Removal is constant time, the sample does not consume PIBT's random stream, and the separate fair-admission rule remains active. The 64 draws are distinct for the observed pools of at least 64 tasks; smaller pools can repeat entries. Sampling can miss good candidates and is a bounded approximation.
 
 A separate hybrid branch evaluates all robot/task pairs when their product fits the existing pair budget. Both branches use identical settings across all tested maps. No map names, special coordinates, preferred aisle directions, or per-map weights appear in either policy.
 
@@ -68,3 +68,5 @@ The builder requires the recorded production source hash and reuses the existing
 The [independent review](independent-review.md) provides source locations, synthetic counterexamples, and an additional critical pass on these recommendations. That first pass used the session agent tool. Fable 5.1 was not listed by that tool; the installed Claude Code CLI had not been checked at that point.
 
 **Follow-up parallel evaluation, September 18:** [all ten archived horizons were run concurrently](../../benchmarks/mr24-parallel-20260918/summary.md) with the same production executable under the shared one-CPU quota. All ten completed without errors or entry timeouts, but GAME, both CITY cases, WAREHOUSE, and SORTATION had lower throughput than the sequential run. This adds evidence of sensitivity to available computation time; it is not a test of the fallback prototype.
+
+The requested [Fable 5.1 Max review through Claude Code](../throughput-20260918-fable/README.md) is now complete. Its [checked findings](../throughput-20260918-fable/assessment.md) add steady-state node-limit failures, reassignment and recovery-latency proposals, and qualifications to the interpretation of the hybrid and sampling comparisons.

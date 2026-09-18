@@ -32,3 +32,5 @@ python3 tools/benchmark_cgar.py --output runs/cgar-parallel-repeat --jobs 10
 [Machine-readable results](summary.json) · [CSV](summary.csv) · [Source, executable, configuration, and resource metadata](metadata.json)
 
 The raw simulator outputs, logs, and executable snapshot remain locally in `runs/cgar-parallel-20260918` and are excluded from Git.
+
+**GAME allocation diagnostic.** Both runs assign all 6,500 robots their first task at step 1. Mean first-pickup Manhattan distance rises from **2.76 cells sequentially to 284.10 cells in parallel**. All 6,500 first pickups are observed in the sequential trajectory, versus 5,303 in parallel; 1,197 remain unobserved at step 5,000. Mean delay among the observed pickups is 26.48 versus 1,811.33 steps; the latter excludes the unobserved pickups and is not an unconditional mean. This demonstrates a substantial initial allocation difference, while leaving its contribution relative to later routing/cache effects unisolated. See [cohort statistics](game-initial-cohorts.json) and the [offline analysis script](analyze_game_initial.py), which requires the preserved local raw trajectories.
