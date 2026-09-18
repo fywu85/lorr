@@ -31,7 +31,8 @@ ctest --test-dir cgar/build --output-on-failure
 
 The tests cover graph-certificate premises, pocket evacuation, persistent primary
 tickets, task replacement, excess-capacity parking, full 10,000-robot scheduling,
-fair admission, sparse fallback quality, and explicit timeout failures. Simulated actions are independently checked
+fair admission, sparse fallback quality, cache refinement and eviction, consistent
+stall observations, and explicit timeout failures. Simulated actions are independently checked
 for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
@@ -50,6 +51,15 @@ per decision, and 30000 ms preprocessing. Each output directory must be new. Use
 default for the interactive host, whose account quota is one core. For actual parallel execution on GRID, use `python3 tools/benchmark_gridengine.py --output runs/cgar-grid-new --jobs 10`; it reserves one physical core per instance.
 
 The [sequential repeat](benchmarks/mr24-sequential-repeat-20260918/summary.md) documents contention, the [GRID report](benchmarks/gridengine-20260918/README.md) verifies reserved parallel CPU execution, and the [strict-deadline study](experiments/throughput-20260918-strict/README.md) evaluates the first fallback repair and shorter horizons.
+
+The [scheduler and distance-consistency study](experiments/throughput-20260918-next/README.md)
+adds 360 matched CGAR runs, a reconstruction of the original CGAR core, and
+KittyKnight/NMS references on reserved CPU allocations. The tested changes did not
+justify a new default: HRRN remains enabled, fallback sampling remains 64, and the
+three distance-consistency switches default off. A 1,000-step screen can reverse
+the full-run conclusion, so candidate defaults still need full-horizon validation.
+[NMS transfer priorities](experiments/throughput-20260918-next/NMS-transfer.md)
+focus next on unopened-task reassignment, pickup weighting and orientation costs.
 
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run

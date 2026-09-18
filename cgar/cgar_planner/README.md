@@ -56,6 +56,29 @@ switches, including `CGAR_PLANNER=default`, `CGAR_SCHEDULER=default`, `CGAR_CERT
 Turning off certificates or transactions also turns off the corresponding
 progress mechanism.
 
+## Experimental distance consistency switches
+
+Three independent switches are available for matched experiments; all default to
+`0` until full-horizon results justify promotion:
+
+- `CGAR_REFINE_CHAIN_COSTS=1` replaces permanent approximate task-chain scalars with
+  per-leg estimates. A cached complete BFS table can refine a previously Manhattan
+  leg; the refined scalar survives table eviction. A changed task stop or route
+  invalidates the entry. Revisiting an approximate entry does not build more tables.
+- `CGAR_SCHEDULER_CACHE_PEEK=1` reads cached tables without promoting their LRU
+  positions. Routing still promotes tables normally, and new table construction
+  retains the existing fixed quota.
+- `CGAR_STABLE_STALL_BASIS=1` restarts a robot's progress observation window when its
+  potential changes between Manhattan, table-derived distance and pocket exit.
+  It preserves the robot's ticket. A primary receives its mandatory complete table
+  before observation, so secondary-cache eviction does not continually reset its
+  recovery timer.
+
+`[cgar-estimates]` logs refinements, invalidations and observation resets. These
+changes contain no map-name or map-category policies. See the
+[matched experiment](../../experiments/throughput-20260918-next/README.md) for
+validation, the promotion decision and NMS transfer priorities.
+
 ## Planning deadlines
 
 Scheduling, distance construction, recovery and PIBT share the entry's absolute

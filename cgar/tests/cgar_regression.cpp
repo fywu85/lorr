@@ -213,4 +213,45 @@ void bounded_distance_work() {
  if(ms>500)throw std::runtime_error("distance work ignored the planning deadline");
  std::cout<<"BOUNDED_DISTANCE_WORK passed explicit_timeout=1 budget_ms=5 elapsed_ms="<<ms<<"\n";
 }
-int main(){try{certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void cache_and_chain_consistency() {
+ // The center obstacle makes the route from 3 to 5 cost four moves, not two.
+ auto cert=build_certificate({0,0,0,0,1,0,0,0,0},3,3,1);
+ DistanceOracle oracle;oracle.init(&cert,8*sizeof(int));
+ ChainCostCache cache;Task task;task.task_id=7;task.locations={3,5};
+ int budget=0;auto deadline=std::chrono::steady_clock::time_point::max();
+ if(cache.estimate(task,oracle,budget,deadline,true)!=2)throw std::runtime_error("missing approximate chain fixture");
+ oracle.table(5);
+ if(cache.estimate(task,oracle,budget,deadline,true)!=4||cache.refined_legs!=1||cache.changed_costs!=1)
+  throw std::runtime_error("cached approximate chain did not refine from a complete table");
+ oracle.table(0);oracle.peek(5);oracle.trim();
+ if(oracle.has(5)||!oracle.has(0))throw std::runtime_error("scheduler peek promoted LRU entry");
+ if(cache.estimate(task,oracle,budget,deadline,true)!=4)throw std::runtime_error("table eviction lost refined scalar cost");
+ oracle.table(5);oracle.find(0);oracle.trim();
+ if(oracle.has(5)||!oracle.has(0))throw std::runtime_error("routing lookup did not promote LRU entry");
+ task.idx_next_loc=1;
+ if(cache.estimate(task,oracle,budget,deadline,true)!=0||cache.invalidations!=1)
+  throw std::runtime_error("task stop change did not invalidate chain cost");
+ task.idx_next_loc=0;task.locations={3,0};
+ if(cache.estimate(task,oracle,budget,deadline,true)!=1||cache.invalidations!=2)
+  throw std::runtime_error("task locations change did not invalidate chain cost");
+ cache.retain({});task.locations={3,5};
+ if(cache.estimate(task,oracle,budget,deadline,true)!=2)throw std::runtime_error("finished task cost was retained");
+ std::cout<<"CACHE_AND_CHAIN_CONSISTENCY passed approximate=2 refined=4 retained_after_eviction=4\n";
+}
+void consistent_progress_basis() {
+ Agent agent;agent.ticket=42;
+ agent.observe_progress(2,ProgressBasis::Manhattan,true);
+ for(int i=0;i<5;++i)agent.observe_progress(2,ProgressBasis::Manhattan,true);
+ if(agent.stall!=5)throw std::runtime_error("stall observation did not accumulate");
+ if(!agent.observe_progress(6,ProgressBasis::RouteTable,true)||agent.best!=6||agent.stall!=0||agent.ticket!=42)
+  throw std::runtime_error("potential change inherited a false stall or changed ticket");
+ for(int i=0;i<4;++i)agent.observe_progress(6,ProgressBasis::RouteTable,true);
+ if(agent.stall!=4)throw std::runtime_error("consistent potential kept resetting recovery timer");
+ agent.observe_progress(5,ProgressBasis::RouteTable,true);
+ if(agent.best!=5||agent.stall!=0)throw std::runtime_error("real progress did not reset stall");
+ Agent legacy;legacy.observe_progress(2,ProgressBasis::Manhattan,false);
+ legacy.observe_progress(6,ProgressBasis::RouteTable,false);
+ if(legacy.best!=2||legacy.stall!=1)throw std::runtime_error("disabled switch changed baseline progress policy");
+ std::cout<<"CONSISTENT_PROGRESS_BASIS passed\n";
+}
+int main(){try{cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

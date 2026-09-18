@@ -1,0 +1,88 @@
+[  4%] Building CXX object CMakeFiles/lifelong.dir/cgar_planner/cgar.cpp.o
+[ 13%] Building CXX object CMakeFiles/lifelong.dir/src/Entry.cpp.o
+[ 13%] Building CXX object CMakeFiles/lifelong.dir/src/MAPFPlanner.cpp.o
+[ 18%] Building CXX object CMakeFiles/lifelong.dir/src/TaskScheduler.cpp.o
+[ 22%] Linking CXX executable lifelong
+[100%] Built target lifelong
+[ 66%] Building CXX object CMakeFiles/cgar_regression.dir/tests/cgar_regression.cpp.o
+[ 66%] Building CXX object CMakeFiles/cgar_regression.dir/cgar_planner/cgar.cpp.o
+[100%] Linking CXX executable cgar_regression
+[100%] Built target cgar_regression
+CACHE_AND_CHAIN_CONSISTENCY passed approximate=2 refined=4 retained_after_eviction=4
+CONSISTENT_PROGRESS_BASIS passed
+CERTIFICATE_RESULT cases=1608 certified=1201 topology_checks=passed
+[cgar] certificate N=2 free=6 core=4 promotion_arcs=8 iterations=3 valid=1 capacity=2 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=4 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=2 route_manhattan=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+POCKET_RESULT exact_joint_solution_steps=11 cgar_goals_reached=2/2 after_steps=11 final_cells=3,0
+[cgar] certificate N=2 free=24 core=4 promotion_arcs=8 iterations=21 valid=1 capacity=2 pockets=1 largest_pocket=20 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=40 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=2 route_manhattan=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+POCKET_RESULT exact_joint_solution_steps=47 cgar_goals_reached=2/2 after_steps=65 final_cells=21,0
+[cgar] certificate N=2 free=4 core=4 promotion_arcs=8 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=8 route_manhattan=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+PERSISTENT_PRIMARY passed
+[cgar] certificate N=5 free=6 core=4 promotion_arcs=8 iterations=2 valid=0 capacity=3 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=-1 stall=-1 txns=1 moves=1 aborts=0 no_hole=0 in_txn=1 locks=0 grants=0 safety_waits=0 idle=5 assigned=0 fair=0 tables=ok evacuations=0 parked=1 active_certified=0
+[cgar-scheduler] t=0 repair=1 samples=64 calls=1 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=0 route_manhattan=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+[cgar] capacity_mode active=3 parked=2 capacity=3 core_tasks_only=1
+CAPACITY_BOOTSTRAP passed active=3 parked=2
+[cgar] certificate N=10000 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=10000 pockets=0 largest_pocket=0 secs=0.003 | stall=4 txn=1 cert=1
+SCHEDULER_RESULT idle_robots=10000 available_tasks=10000 assigned=10000 budget_ms=5000 elapsed_ms=20
+[cgar] certificate N=2 free=6 core=6 promotion_arcs=14 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+FAIR_SPARSE_SCHEDULE passed
+[cgar] certificate N=2 free=40401 core=40401 promotion_arcs=160800 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+[cgar] certificate N=2 free=40401 core=40401 promotion_arcs=160800 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+SPARSE_FALLBACK_QUALITY passed pickup_distance=290->90 searches=4->2
+[cgar] certificate N=2 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.003 | stall=4 txn=1 cert=1
+REPLENISH_TAKEN_CANDIDATE passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+BOUNDED_SCHEDULER_WORK passed explicit_timeout=1 budget_ms=1 elapsed_ms=1
+COMPACT_DISTANCES passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.010 | stall=4 txn=1 cert=1
+BOUNDED_DISTANCE_WORK passed explicit_timeout=1 budget_ms=5 elapsed_ms=5
+All CGAR regression checks passed
+CACHE_AND_CHAIN_CONSISTENCY passed approximate=2 refined=4 retained_after_eviction=4
+CONSISTENT_PROGRESS_BASIS passed
+CERTIFICATE_RESULT cases=1608 certified=1201 topology_checks=passed
+[cgar] certificate N=2 free=6 core=4 promotion_arcs=8 iterations=3 valid=1 capacity=2 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=4 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=2 route_manhattan=0
+[cgar-estimates] t=0 refine=1 peek=1 stable_stall=1 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+POCKET_RESULT exact_joint_solution_steps=11 cgar_goals_reached=2/2 after_steps=11 final_cells=3,0
+[cgar] certificate N=2 free=24 core=4 promotion_arcs=8 iterations=21 valid=1 capacity=2 pockets=1 largest_pocket=20 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=1 moves=40 aborts=0 no_hole=0 in_txn=2 locks=1 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=1 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=2 route_manhattan=0
+[cgar-estimates] t=0 refine=1 peek=1 stable_stall=1 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+POCKET_RESULT exact_joint_solution_steps=47 cgar_goals_reached=2/2 after_steps=65 final_cells=21,0
+[cgar] certificate N=2 free=4 core=4 promotion_arcs=8 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=8 route_manhattan=0
+[cgar-estimates] t=0 refine=1 peek=1 stable_stall=1 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+PERSISTENT_PRIMARY passed
+[cgar] certificate N=5 free=6 core=4 promotion_arcs=8 iterations=2 valid=0 capacity=3 pockets=1 largest_pocket=2 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=-1 stall=-1 txns=1 moves=1 aborts=0 no_hole=0 in_txn=1 locks=0 grants=0 safety_waits=0 idle=5 assigned=0 fair=0 tables=ok evacuations=0 parked=1 active_certified=0
+[cgar-scheduler] t=0 repair=1 samples=64 calls=1 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=0 route_manhattan=0
+[cgar-estimates] t=0 refine=1 peek=1 stable_stall=1 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+[cgar] capacity_mode active=3 parked=2 capacity=3 core_tasks_only=1
+CAPACITY_BOOTSTRAP passed active=3 parked=2
+[cgar] certificate N=10000 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=10000 pockets=0 largest_pocket=0 secs=0.003 | stall=4 txn=1 cert=1
+SCHEDULER_RESULT idle_robots=10000 available_tasks=10000 assigned=10000 budget_ms=5000 elapsed_ms=21
+[cgar] certificate N=2 free=6 core=6 promotion_arcs=14 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+FAIR_SPARSE_SCHEDULE passed
+[cgar] certificate N=2 free=40401 core=40401 promotion_arcs=160800 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+[cgar] certificate N=2 free=40401 core=40401 promotion_arcs=160800 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+SPARSE_FALLBACK_QUALITY passed pickup_distance=290->90 searches=4->2
+[cgar] certificate N=2 free=10201 core=10201 promotion_arcs=40400 iterations=1 valid=1 capacity=2 pockets=0 largest_pocket=0 secs=0.003 | stall=4 txn=1 cert=1
+REPLENISH_TAKEN_CANDIDATE passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.010 | stall=4 txn=1 cert=1
+BOUNDED_SCHEDULER_WORK passed explicit_timeout=1 budget_ms=1 elapsed_ms=1
+COMPACT_DISTANCES passed
+[cgar] certificate N=1000 free=40000 core=40000 promotion_arcs=159200 iterations=1 valid=1 capacity=1000 pockets=0 largest_pocket=0 secs=0.011 | stall=4 txn=1 cert=1
+BOUNDED_DISTANCE_WORK passed explicit_timeout=1 budget_ms=5 elapsed_ms=5
+All CGAR regression checks passed

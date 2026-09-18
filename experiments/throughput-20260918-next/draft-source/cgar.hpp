@@ -8,14 +8,13 @@
 //
 //  * the directed capacity certificate: core berths B, support arcs H, promotion
 //    arcs P with |Reach_(H-u)(v)| >= N, and |B| > N;
-//  * constructive pocket evacuation followed by exclusive service;
+//  * off-core pockets entered through their portal by one working robot at a time,
+//    and never entered by pushed robots;
 //  * dense synchronous PIBT whose priority is the goal-ticket age, with the oldest
 //    schedulable ticket pinned first as the fair primary;
-//  * durable vacancy/evacuation witnesses, executed in compatible synchronous waves;
+//  * the serial vacancy witness: when the primary stalls, the cheapest hole shift
+//    that empties its next promotion berth is committed as one transaction;
 //  * whole-chain HRRN task dispatch with a fair admission wave.
-//
-// If the whole fleet exceeds the core capacity, outside robots park and only
-// core tasks are admitted. The certificate then covers the active fleet.
 //
 // Orientation follows the start-kit: 0 east (+1), 1 south (+cols), 2 west (-1),
 // 3 north (-cols).
@@ -27,21 +26,11 @@
 #include <cstdint>
 #include <list>
 #include <random>
-#include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace cgar {
-
-class Timeout : public std::runtime_error {
-public:
-    explicit Timeout(const char* stage) : std::runtime_error(stage) {}
-};
-
-inline void check_deadline(std::chrono::steady_clock::time_point deadline, const char* stage) {
-    if (std::chrono::steady_clock::now() >= deadline) throw Timeout(stage);
-}
 
 constexpr int kInf = 1 << 29;
 constexpr long long kIdleTicket = (1LL << 62);
@@ -75,13 +64,9 @@ class DistanceOracle {
 public:
     void init(const Certificate* cert, size_t max_bytes);
     const std::vector<int>& table(int goal);
-    const std::vector<int>* try_table(int goal, std::chrono::steady_clock::time_point deadline);
-    int value(const std::vector<int>& table, int cell) const;
     const std::vector<int>* find(int goal);  // no build
     bool has(int goal) const { return tables_.count(goal) != 0; }
     bool full() const { return tables_.size() * table_bytes_ >= max_bytes_; }
-    const std::vector<int>* peek(int goal) const;  // no build or LRU promotion
-    int distance_from(const std::vector<int>& table, int from) const;
     int dist(int from, int goal);
     int manhattan(int a, int b) const;
     void trim();
@@ -96,34 +81,11 @@ private:
     size_t table_bytes_ = 1;
     std::list<int> lru_;
     std::unordered_map<int, Entry> tables_;
-    std::vector<int> queue_, index_, cells_;
-    std::vector<std::vector<int>> neighbors_;
+    std::vector<int> queue_;
 };
-
-// Retain table-derived scalar legs even if their full distance table is evicted.
-// Previously approximated legs are refined only when a complete table is cached.
-class ChainCostCache {
-public:
-    int estimate(const Task& task, DistanceOracle& oracle, int& table_budget,
-                 std::chrono::steady_clock::time_point deadline, bool peek);
-    void retain(const std::unordered_set<int>& task_ids);
-    long long refined_legs = 0, changed_costs = 0, invalidations = 0;
-    long long approximate_reads = 0, table_reads = 0;
-private:
-    struct Entry {
-        int stop = -1;
-        std::vector<int> locations, legs;
-        std::vector<char> table_derived;
-        int total = 0;
-    };
-    std::unordered_map<int, Entry> entries_;
-};
-
-enum class ProgressBasis { None, Manhattan, RouteTable, PocketExit };
 
 struct Agent {
     int goal = -1;
-    int task = -1, stop = -1;
     long long ticket = kIdleTicket;
     int committed = -1;  // next cell this robot is turning toward or moving into
     int commit_age = 0;  // steps spent holding that commitment without arriving
@@ -131,9 +93,6 @@ struct Agent {
     int best = kInf;     // best route distance reached under the current ticket
     int stall = 0;       // steps since `best` last improved
     int lock = -1;       // pocket lock held
-    ProgressBasis progress_basis = ProgressBasis::None;
-    // A different potential starts a new observation window, not a new ticket.
-    bool observe_progress(int distance, ProgressBasis basis, bool stable_basis);
 };
 
 struct Stats {
@@ -145,14 +104,6 @@ struct Stats {
     long long safety_waits = 0;
     long long assignments = 0;
     long long fair_assignments = 0;
-    long long evacuations = 0;
-    long long schedule_calls = 0, local_assignments = 0, fallback_assignments = 0;
-    long long candidate_searches = 0, candidate_nodes = 0, candidate_task_limits = 0;
-    long long candidate_node_limits = 0, candidate_deadlines = 0, empty_searches = 0;
-    long long skipped_empty_searches = 0;
-    long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
-    long long estimated_pickup_cost = 0, estimated_chain_cost = 0;
-    long long route_queries = 0, route_manhattan = 0, progress_basis_resets = 0;
 };
 
 class Cgar {
@@ -161,14 +112,7 @@ public:
 
     void initialize(SharedEnvironment* env, int preprocess_ms);
     void schedule(SharedEnvironment* env, int time_limit_ms, std::vector<int>& proposed);
-    void schedule(SharedEnvironment* env, std::chrono::steady_clock::time_point deadline, std::vector<int>& proposed);
     void plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& actions);
-    void plan(SharedEnvironment* env, std::chrono::steady_clock::time_point deadline, std::vector<Action>& actions);
-
-    int primary() const { return primary_; }
-    int parked_count() const;
-    bool active_certified() const { return active_certified_; }
-    const Stats& stats() const { return stats_; }
 
 private:
     using Clock = std::chrono::steady_clock;
@@ -180,7 +124,7 @@ private:
     void compute_order(int primary);
 
     // routing
-    int route_h(int i, int cell, ProgressBasis* basis = nullptr);
+    int route_h(int i, int cell);
     bool allowed(int i, int cell) const;
     int turn_steps(int i, int cell) const;
     bool pibt(int i, int parent);
@@ -189,15 +133,6 @@ private:
     // liveness floor
     void try_install_txn(int primary);
     void abort_txn();
-    struct Shift { int robot, from, to; };
-    bool clear_cell(int cell, int forbidden, const std::vector<char>& region,
-                    std::vector<int>& occupancy, std::vector<int>& positions,
-                    std::vector<Shift>& witness);
-    void install_txn(std::vector<Shift> witness);
-    void advance_txn();
-    bool evacuate_pocket(int pocket);
-    void prepare_capacity_mode();
-    bool eligible_task(const Task& task) const;
 
     // action synthesis
     Action action_toward(int i, int target) const;
@@ -225,38 +160,28 @@ private:
     std::vector<int> next_;
     std::vector<int> order_;
     std::vector<int> pocket_occ_, pocket_lock_;
-    std::vector<char> pocket_draining_, parked_;
     long long next_ticket_ = 0;
 
     std::vector<int> txn_cells_;
-    std::vector<Shift> txn_moves_;
-    size_t txn_cursor_ = 0, txn_wave_end_ = 0;
     int txn_age_ = 0;
     int stall_limit_ = 4;
     int commit_limit_ = 3;  // a commitment covers 2 turns plus the move
-    long long primary_ticket_ = kIdleTicket;
+    int primary_patience_ = 40;  // steps before a hopeless primary yields the floor
     int table_budget_ = 0;       // new BFS tables allowed in the current call
     int plan_tables_ = 256;      // per-step budget for the planner
     int sched_tables_ = 128;     // per-step budget for the scheduler
     long long max_pairs_ = 2000000;
+    int txn_max_age_ = 12;
     bool enable_txn_ = true;
     bool enable_locks_ = true;
     bool hrrn_ = true;
-    bool repair_fallback_ = true;
-    bool refine_chain_costs_ = false;
-    bool scheduler_cache_peek_ = false;
-    bool stable_stall_basis_ = false;
-    int fallback_samples_ = 64;
     int primary_ = -1;
-    bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
-    Clock::time_point deadline_, distance_deadline_;
 
     // scheduler state
     std::unordered_set<int> free_tasks_;
     std::unordered_map<int, int> chain_cost_;
-    ChainCostCache refined_chain_cost_;
     long long regular_admissions_ = 0;
-    size_t scheduler_cursor_ = 0;
+    bool use_default_scheduler_ = false;
 };
 
 }  // namespace cgar

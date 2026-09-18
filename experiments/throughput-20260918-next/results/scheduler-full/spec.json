@@ -1,0 +1,107 @@
+{
+  "cases": [
+    {
+      "name": "baseline-s0-r0",
+      "variant": "baseline",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "hrrn_off-s0-r0",
+      "variant": "hrrn_off",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_HRRN": "0"
+      }
+    },
+    {
+      "name": "samples256-s0-r0",
+      "variant": "samples256",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_FALLBACK_SAMPLES": "256"
+      }
+    },
+    {
+      "name": "baseline-s1-r0",
+      "variant": "baseline",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "hrrn_off-s1-r0",
+      "variant": "hrrn_off",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_HRRN": "0"
+      }
+    },
+    {
+      "name": "samples256-s1-r0",
+      "variant": "samples256",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_FALLBACK_SAMPLES": "256"
+      }
+    },
+    {
+      "name": "baseline-s2-r0",
+      "variant": "baseline",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {}
+    },
+    {
+      "name": "hrrn_off-s2-r0",
+      "variant": "hrrn_off",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_HRRN": "0"
+      }
+    },
+    {
+      "name": "samples256-s2-r0",
+      "variant": "samples256",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_FALLBACK_SAMPLES": "256"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "87322af24ad6f8521d9fae5d577031bd2a62cfd9",
+    "source_dirty": false,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "340ccfd80b6e2d53e089c47ab1b7834e3001fbbc76a37b04d7222728d5518800",
+      "cgar/cgar_planner/cgar.hpp": "5f9e2547ff4f39f843482868511638ce48698637cec5eb31eb774a9b5083a101",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d"
+    },
+    "binary_sha256": "b3d21462746328334f6a3cdc1e296c15abc5de88f31e8ed46b753e44924b0fd5"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE",
+    "SORTATION",
+    "CITY-01",
+    "CITY-02",
+    "GAME",
+    "RANDOM-01",
+    "RANDOM-02",
+    "RANDOM-03",
+    "RANDOM-04",
+    "RANDOM-05"
+  ],
+  "parallel_suites": 6,
+  "jobs_per_suite": 5,
+  "time_limit_ms": 1000
+}

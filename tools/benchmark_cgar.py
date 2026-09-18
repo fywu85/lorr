@@ -31,6 +31,7 @@ def main():
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--instances", nargs="*")
     parser.add_argument("--binary", type=Path, default=ROOT / "cgar/build/lifelong")
+    parser.add_argument("--source-manifest", type=Path, help="Build provenance for a frozen executable")
     parser.add_argument("--steps", type=int, help="Override the horizon for each selected instance")
     parser.add_argument("--horizon-profile", type=Path, help="JSON mapping of instance names to shorter screening horizons")
     parser.add_argument("--plan-time-limit-ms", type=int, default=1000, help="Decision deadline; 1000 is the competition setting")
@@ -72,10 +73,15 @@ def main():
     instances = {p.stem: p.resolve() for p in (ROOT / "mr24").glob("*/*.json")}
     sources = [ROOT / "cgar/cgar_planner/cgar.cpp", ROOT / "cgar/cgar_planner/cgar.hpp",
                ROOT / "cgar/src/MAPFPlanner.cpp", ROOT / "cgar/src/TaskScheduler.cpp", ROOT / "cgar/src/Entry.cpp"]
+    provenance = json.loads(args.source_manifest.read_text()) if args.source_manifest else None
+    binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
+    if provenance is not None and provenance["binary_sha256"] != binary_hash:
+        parser.error("source-manifest does not describe this executable")
     metadata = {"started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
-                "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
-                "sources": {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
+                "binary_sha256": binary_hash,
+                "sources": provenance["sources"] if provenance else {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
+                "build_provenance": provenance,
                 "environment": {k: v for k, v in environment.items() if k.startswith("CGAR_")},
                 "cpu_resources": resources, "cpu_binding": cpus,
                 "source_binary": str(args.binary.resolve()),
@@ -146,6 +152,8 @@ def main():
             results[name] = row
             save()
             print(json.dumps(row), flush=True)
+    metadata["finished_utc"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     return 0 if all(row["valid"] for row in results.values()) else 1
 
 if __name__ == "__main__":

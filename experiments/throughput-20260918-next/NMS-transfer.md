@@ -1,0 +1,17 @@
+# Ideas to transfer from the active NMS submission
+
+This review uses `nms`, which selects submission `44950d1b61b7482b4529a9dc127fa9d220962bdc`, and its active `Solution` implementation. The separate `Solution2` tree and disabled alternatives are not evidence for the measured reference result. These are proposed follow-on experiments; the current implementation batch tests CGAR's scheduler settings and distance-estimate consistency.
+
+| Priority | Active NMS mechanism | Generic CGAR experiment | Required safeguard |
+|---|---|---|---|
+| 1 | Reconsider assignments while `idx_next_loc == 0` | Reassign unopened tasks when a bounded matching pass finds a meaningful improvement | Freeze the fair primary, recovery participants, and started tasks; bound reassignment frequency and preserve task admission age |
+| 2 | Assignment objective uses `5 * distance_to_pickup + remaining_chain_cost` on the main-round categories | Test one global pickup weight, including the existing weight 1 as control | Use the same weight on every map; retain explicit fair admission and measure waiting-task ages |
+| 3 | Heuristic graph contains orientation states and turn actions | Cache orientation-aware costs, initially for pickup ranking or movement tie-breaking | Respect the memory budget; keep a separate certified progress potential if guidance costs differ |
+| 4 | Cached sorted candidate lists, oldest refresh first, followed by a global heap over robot choices | Share candidate discovery or retain a bounded per-robot list with deterministic refresh quotas | Invalidate assigned/completed tasks and guarantee every eligible idle robot is considered |
+| 5 | 32 parallel PIBTS searches, with the highest-scoring action set selected | Evaluate a small fixed portfolio of complete movement proposals | Hold primary/recovery constraints fixed in every proposal; fixed proposal and iteration counts, with timeout as failure |
+
+The active scheduling path is `MyScheduler::solver_schedule()` in `Solution/Scheduler/scheduler.cpp`, which invokes `SchedulerSolver::update()`, `rebuild_dp()`, `triv_solve()`, and `solve()`. `Solution/Scheduler/scheduler_solver.cpp` implements eligibility, costs and candidate matching. `Solution/settings.hpp` enables `ENABLE_SCHEDULER_CHANGE_TASK` and sets `SCHEDULER_LNS_TIME = 0`: assignment-swap search exists, but this configuration allocates it no time. `ENABLE_PHANTOM_SCHEDULE` is disabled too. Neither mechanism should be credited as an active source of the snapshot's performance.
+
+`Solution/Objects/Environment/heuristic_matrix.cpp` builds distances over orientation states. Its supplied graph includes guidance weights; the transferable idea is accounting for actual actions, not copying map-specific weights. `Solution/Planner/eplanner.cpp` constructs independent PIBTS workers and selects the best completed candidate. NMS's search loops are deadline-driven. A CGAR adaptation must replace those loops with prescribed finite work, then either complete that work or raise a timeout.
+
+I would begin with assignment quality. Reassignment, pickup weighting and better cost estimates can reduce travel demand without replacing CGAR's motion backend. The movement portfolio is a larger change because it must preserve the durable recovery witness, pocket exclusion and fair-primary rules in every candidate. These priorities are hypotheses, not isolated explanations of NMS's measured lead.

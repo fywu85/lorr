@@ -370,8 +370,16 @@ const std::vector<int>* DistanceOracle::find(int goal) {
     return &it->second.dist;
 }
 
+const std::vector<int>* DistanceOracle::peek(int goal) const {
+    const auto it = tables_.find(goal);
+    return it == tables_.end() ? nullptr : &it->second.dist;
+}
+
 int DistanceOracle::dist(int from, int goal) {
-    const auto& t = table(goal);
+    return distance_from(table(goal), from);
+}
+
+int DistanceOracle::distance_from(const std::vector<int>& t, int from) const {
     if (value(t, from) < kInf) return value(t, from);
     const int exit = cert_->exit_cell[from];
     if (exit >= 0 && value(t, exit) < kInf) return cert_->exit_dist[from] + value(t, exit);
@@ -387,6 +395,62 @@ void DistanceOracle::trim() {
         tables_.erase(lru_.back());
         lru_.pop_back();
     }
+}
+
+int ChainCostCache::estimate(const Task& task, DistanceOracle& oracle, int& table_budget,
+                             std::chrono::steady_clock::time_point deadline, bool peek) {
+    auto result = entries_.try_emplace(task.task_id);
+    Entry& entry = result.first->second;
+    const bool fresh = result.second || entry.stop != task.idx_next_loc || entry.locations != task.locations;
+    if (fresh) {
+        if (!result.second) ++invalidations;
+        entry.stop = task.idx_next_loc;
+        entry.locations = task.locations;
+        entry.legs.assign(task.locations.size(), 0);
+        entry.table_derived.assign(task.locations.size(), 0);
+    }
+    const int previous = entry.total;
+    long long total = 0;
+    bool approximate = false;
+    for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k) {
+        if (!entry.table_derived[k]) {
+            const int goal = task.locations[k];
+            const auto* table = peek ? oracle.peek(goal) : oracle.find(goal);
+            // Refinement never spends additional BFS work on an existing entry.
+            if (!table && fresh && table_budget > 0) {
+                --table_budget;
+                table = oracle.try_table(goal, deadline);
+            }
+            if (table) {
+                entry.legs[k] = std::min(oracle.distance_from(*table, task.locations[k - 1]), kFar);
+                entry.table_derived[k] = 1;
+                if (!fresh) ++refined_legs;
+            } else if (fresh) {
+                entry.legs[k] = std::min(oracle.manhattan(task.locations[k - 1], goal), kFar);
+            }
+        }
+        total += entry.legs[k];
+        approximate |= !entry.table_derived[k];
+    }
+    entry.total = static_cast<int>(std::min<long long>(total, kFar));
+    if (!fresh && entry.total != previous) ++changed_costs;
+    if (approximate) ++approximate_reads;
+    else ++table_reads;
+    return entry.total;
+}
+
+void ChainCostCache::retain(const std::unordered_set<int>& task_ids) {
+    for (auto it = entries_.begin(); it != entries_.end();)
+        it = task_ids.count(it->first) ? std::next(it) : entries_.erase(it);
+}
+
+bool Agent::observe_progress(int distance, ProgressBasis basis, bool stable_basis) {
+    const bool changed = stable_basis && progress_basis != ProgressBasis::None && progress_basis != basis;
+    if (changed) { best = kInf; stall = 0; }
+    progress_basis = basis;
+    if (distance < best) { best = distance; stall = 0; }
+    else ++stall;
+    return changed;
 }
 
 // ─── planner ─────────────────────────────────────────────────────────────────
@@ -419,6 +483,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     max_pairs_ = std::max(1, env_int("CGAR_MAX_PAIRS", 2000000));
     enable_txn_ = env_int("CGAR_TXN", 1) != 0;
     hrrn_ = env_int("CGAR_HRRN", 1) != 0;
+    refine_chain_costs_ = env_int("CGAR_REFINE_CHAIN_COSTS", 0) != 0;
+    scheduler_cache_peek_ = env_int("CGAR_SCHEDULER_CACHE_PEEK", 0) != 0;
+    stable_stall_basis_ = env_int("CGAR_STABLE_STALL_BASIS", 0) != 0;
     repair_fallback_ = env_int("CGAR_FALLBACK_REPAIR", 1) != 0;
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     enable_locks_ = env_int("CGAR_CERT", 1) != 0;
@@ -484,6 +551,7 @@ void Cgar::sync_agents() {
             a.ticket = goal < 0 ? kIdleTicket : next_ticket_++;
             a.best = kInf;
             a.stall = 0;
+            a.progress_basis = ProgressBasis::None;
         }
         if (a.committed == loc_[i]) {
             a.committed = -1;
@@ -562,26 +630,30 @@ int Cgar::select_primary() {
     return best;
 }
 
-int Cgar::route_h(int i, int cell) {
+int Cgar::route_h(int i, int cell, ProgressBasis* basis) {
     ++stats_.route_queries;
+    auto observe = [&](int distance, ProgressBasis kind) {
+        if (basis) *basis = kind;
+        return distance;
+    };
     const Agent& a = agents_[i];
     const int pocket = cert_.pocket[cell];
     const int source_pocket = cert_.pocket[loc_[i]];
     if (source_pocket >= 0 && pocket_draining_[source_pocket])
-        return pocket < 0 ? 0 : kFar + cert_.exit_dist[cell];
-    if (a.goal < 0) return pocket < 0 ? 0 : kFar + cert_.exit_dist[cell];
+        return observe(pocket < 0 ? 0 : kFar + cert_.exit_dist[cell], ProgressBasis::PocketExit);
+    if (a.goal < 0) return observe(pocket < 0 ? 0 : kFar + cert_.exit_dist[cell], ProgressBasis::PocketExit);
     const std::vector<int>* t = oracle_.find(a.goal);
     if (t == nullptr) {
         // Building a table is a full-map BFS. Cap how many a single step may build,
         // otherwise a map with thousands of distinct goals blows the time budget;
         // robots that miss out steer by straight-line distance until a later step.
-        if (table_budget_ <= 0) { ++stats_.route_manhattan; return oracle_.manhattan(cell, a.goal); }
+        if (table_budget_ <= 0) { ++stats_.route_manhattan; return observe(oracle_.manhattan(cell, a.goal), ProgressBasis::Manhattan); }
         --table_budget_;
         t = oracle_.try_table(a.goal, distance_deadline_);
     }
-    if (oracle_.value(*t, cell) < kInf) return oracle_.value(*t, cell);
-    if (pocket >= 0) return kFar + cert_.exit_dist[cell];
-    return kInf;
+    if (oracle_.value(*t, cell) < kInf) return observe(oracle_.value(*t, cell), ProgressBasis::RouteTable);
+    if (pocket >= 0) return observe(kFar + cert_.exit_dist[cell], ProgressBasis::PocketExit);
+    return observe(kInf, ProgressBasis::RouteTable);
 }
 
 bool Cgar::allowed(int i, int cell) const {
@@ -997,9 +1069,9 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     for (int i = 0; i < n_; ++i) {
         Agent& a = agents_[i];
         if (a.goal < 0 || parked_[i]) continue;
-        const int h = route_h(i, loc_[i]);
-        if (h < a.best) { a.best = h; a.stall = 0; }
-        else ++a.stall;
+        ProgressBasis basis;
+        const int h = route_h(i, loc_[i], &basis);
+        stats_.progress_basis_resets += a.observe_progress(h, basis, stable_stall_basis_);
     }
     if (enable_txn_ && active_certified_ && txn_moves_.empty() && primary_ >= 0 &&
         agents_[primary_].stall >= stall_limit_) {
@@ -1071,29 +1143,33 @@ void Cgar::log_summary() {
                 stats_.skipped_empty_searches, stats_.sample_evaluations,
                 stats_.sample_deadlines, stats_.improved_fallbacks, stats_.estimated_pickup_cost,
                 stats_.estimated_chain_cost, stats_.route_queries, stats_.route_manhattan);
+    std::printf("[cgar-estimates] t=%d refine=%d peek=%d stable_stall=%d refined_legs=%lld "
+                "changed_costs=%lld invalidations=%lld approximate_reads=%lld table_reads=%lld basis_resets=%lld\n",
+                env_->curr_timestep, refine_chain_costs_, scheduler_cache_peek_, stable_stall_basis_,
+                refined_chain_cost_.refined_legs, refined_chain_cost_.changed_costs,
+                refined_chain_cost_.invalidations, refined_chain_cost_.approximate_reads,
+                refined_chain_cost_.table_reads, stats_.progress_basis_resets);
     std::fflush(stdout);
 }
 
 // ─── scheduler ───────────────────────────────────────────────────────────────
 
 int Cgar::task_chain_cost(int task_id) {
+    if (refine_chain_costs_)
+        return refined_chain_cost_.estimate(env_->task_pool.at(task_id), oracle_, table_budget_,
+                                            distance_deadline_, scheduler_cache_peek_);
     auto it = chain_cost_.find(task_id);
     if (it != chain_cost_.end()) return it->second;
     const Task& task = env_->task_pool.at(task_id);
     long long total = 0;
     for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k) {
-        int d;
-        if (oracle_.find(task.locations[k]) == nullptr) {
-            if (table_budget_ > 0) {
-                --table_budget_;
-                oracle_.try_table(task.locations[k], distance_deadline_);
-                d = oracle_.dist(task.locations[k - 1], task.locations[k]);
-            } else {
-                d = oracle_.manhattan(task.locations[k - 1], task.locations[k]);
-            }
-        } else {
-            d = oracle_.dist(task.locations[k - 1], task.locations[k]);
+        const auto* table = scheduler_cache_peek_ ? oracle_.peek(task.locations[k]) : oracle_.find(task.locations[k]);
+        if (!table && table_budget_ > 0) {
+            --table_budget_;
+            table = oracle_.try_table(task.locations[k], distance_deadline_);
         }
+        const int d = table ? oracle_.distance_from(*table, task.locations[k - 1])
+                            : oracle_.manhattan(task.locations[k - 1], task.locations[k]);
         total += std::min(d, kFar);
     }
     const int cost = static_cast<int>(std::min<long long>(total, kFar));
@@ -1124,6 +1200,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         if (entry.second.agent_assigned == -1 && eligible_task(entry.second)) free_tasks_.insert(entry.first);
     for (auto it = chain_cost_.begin(); it != chain_cost_.end();)
         it = free_tasks_.count(it->first) ? std::next(it) : chain_cost_.erase(it);
+    if (refine_chain_costs_) refined_chain_cost_.retain(free_tasks_);
     std::vector<int> robots;
     for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i]) robots.push_back(i);
     if (robots.empty() || free_tasks_.empty()) { check_deadline(deadline_, "empty_schedule"); return; }
@@ -1193,7 +1270,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     };
     auto estimate = [&](int r, int t) {
         const int from = env->curr_states[r].location, goal = tasks[t].first;
-        const auto* table = oracle_.find(goal);
+        const auto* table = scheduler_cache_peek_ ? oracle_.peek(goal) : oracle_.find(goal);
         int d = table ? oracle_.value(*table, from) : oracle_.manhattan(from, goal);
         if (d >= kInf) {
             const int exit = cert_.exit_cell[from];
