@@ -1,0 +1,19 @@
+{
+  "completed": false,
+  "build_log_sha256": "fdadebb3e41b29229f9358886e1bcd832612f2e03b397ea47f5f71f8278a3bb4",
+  "passed_checks": [],
+  "failure_tail": [
+    "[cgar-scheduler] t=0 repair=1 samples=64 pickup_weight=1 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=8 route_manhattan=0",
+    "[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0",
+    "[cgar-reassignment] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 swaps=0 estimated_saving=0 table_pairs=0 manhattan_pairs=0 primary_protected=0 recovery_protected=0 fair_protected=0",
+    "blocked robot did not prepare a safe turn while preserving primary motion",
+    "Traceback (most recent call last):",
+    "  File \"/shared/share_mala/fw2449/lorr2024/experiments/assignment-20260918/build.py\", line 46, in <module>",
+    "    if __name__=='__main__':raise SystemExit(main())",
+    "  File \"/shared/share_mala/fw2449/lorr2024/experiments/assignment-20260918/build.py\", line 40, in main",
+    "    subprocess.run([str(ROOT/'cgar/build/cgar_regression')],cwd=str(ROOT),env=env,check=True)",
+    "  File \"/usr/lib/python3.7/subprocess.py\", line 487, in run",
+    "    output=stdout, stderr=stderr)",
+    "subprocess.CalledProcessError: Command '['/shared/share_mala/fw2449/lorr2024/cgar/build/cgar_regression']' returned non-zero exit status 1."
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "construct_full_conflicts-s0-r0": {
+    "started_utc": "2026-09-18T20:11:16.546616+00:00",
+    "jobs": 1,
+    "plan_time_limit_ms": 2000,
+    "preprocess_time_limit_ms": 30000,
+    "binary_sha256": "a074202cb138ffbe92ff3cf384341d7712543348093ebdac3ded2ab78f1e456e",
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "4ce8af86e5243bd2737c4ccefa84639b2dee545cc3666e0a8037ced31b33f587",
+      "cgar/cgar_planner/cgar.hpp": "b948eeb92933166d3f5630a48bd2e6052c0cbd13d3ccf2be077ccd6a1175b5f5",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/action_sequences.hpp": "be591abc55f16354b8fbdbdfd9c101c3a0dbba4eb2e5b311a35d13765bd0427c",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "build_provenance": {
+      "source_commit": "d6be5084f055b2941892e9845b0c20833612d07c",
+      "source_dirty": true,
+      "sources": {
+        "cgar/cgar_planner/cgar.cpp": "4ce8af86e5243bd2737c4ccefa84639b2dee545cc3666e0a8037ced31b33f587",
+        "cgar/cgar_planner/cgar.hpp": "b948eeb92933166d3f5630a48bd2e6052c0cbd13d3ccf2be077ccd6a1175b5f5",
+        "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+        "cgar/cgar_planner/action_sequences.hpp": "be591abc55f16354b8fbdbdfd9c101c3a0dbba4eb2e5b311a35d13765bd0427c",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "70a3ec15787ef63498f04480047269e9b25729dd07c6a84b5ebbfb5056390612"
+      },
+      "binary_sha256": "a074202cb138ffbe92ff3cf384341d7712543348093ebdac3ded2ab78f1e456e"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "1",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_TURN_TABLE_MB": "8192",
+      "CGAR_SEQUENCE_HORIZON": "5",
+      "CGAR_SEQUENCE_CONSTRUCT": "1",
+      "CGAR_SEQUENCE_FREE_INTENTS": "1",
+      "CGAR_SEQUENCE_BLOCKERS": "10",
+      "CGAR_SEQUENCE_DEPTH": "63",
+      "CGAR_SEQUENCE_TURN_ONLY": "1",
+      "CGAR_SEQUENCE_BUDGET": "512",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research48",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "logical_cpu_affinity": [
+        0,
+        64
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          0,
+          64
+        ]
+      ],
+      "address_space_limit_bytes": [
+        17179869184,
+        17179869184
+      ],
+      "physical_cores_visible": 1,
+      "representative_cpus": [
+        0
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      0
+    ],
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-construction-complete-v14-20260918/lifelong",
+    "instances": {
+      "WAREHOUSE": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+        "steps": 5000
+      }
+    },
+    "finished_utc": "2026-09-18T20:27:22.873504+00:00"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "4",
+    "-binding",
+    "linear:4",
+    "-l",
+    "exclusive=true,h_rt=01:00:00,h_vmem=16G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-turn-full-v8-20260918/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-turn-full-v8-20260918/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8897601\n",
+  "resource_amendment": {
+    "job": "8897601",
+    "h_rt": "02:00:00",
+    "h_vmem": "16G",
+    "exclusive": true,
+    "reason": "Allow slow full 5000-step prototype to finish; decision deadline remains 2000 ms"
+  }
+}

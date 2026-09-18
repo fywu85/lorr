@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "4",
+    "-binding",
+    "linear:4",
+    "-l",
+    "exclusive=true,h_rt=01:00:00,h_vmem=16G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-repair-full-v5-20260918/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-repair-full-v5-20260918/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8897538\n"
+}

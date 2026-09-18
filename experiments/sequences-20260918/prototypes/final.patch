@@ -1,0 +1,15 @@
+diff --git a/cgar/cgar_planner/cgar.cpp b/cgar/cgar_planner/cgar.cpp
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -575,7 +575,10 @@
+     }
+     const double secs = std::chrono::duration<double>(Clock::now() - t0).count();
+     oracle_.init(&cert_, table_mb << 20);
+-    if (orientation_guidance_) turn_oracle_.init(&cert_, size_t(512) << 20);
++    if (orientation_guidance_) {
++        const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
++        turn_oracle_.init(&cert_, mb << 20);
++    }
+ 
+     const size_t cells = cert_.free.size();
+     occ_now_.assign(cells, -1);

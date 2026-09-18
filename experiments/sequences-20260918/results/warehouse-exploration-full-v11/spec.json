@@ -1,0 +1,127 @@
+{
+  "cases": [
+    {
+      "name": "corrected_sequence-s0-r0",
+      "variant": "corrected_sequence",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "free_explore_200-s0-r0",
+      "variant": "free_explore_200",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "4",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_BLOCKERS": "3",
+        "CGAR_SEQUENCE_BUDGET": "64",
+        "CGAR_SEQUENCE_DEPTH": "8",
+        "CGAR_SEQUENCE_CARRY": "0",
+        "CGAR_SEQUENCE_TEMPERATURE": "200"
+      }
+    },
+    {
+      "name": "free_explore_800-s0-r0",
+      "variant": "free_explore_800",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "4",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_BLOCKERS": "3",
+        "CGAR_SEQUENCE_BUDGET": "64",
+        "CGAR_SEQUENCE_DEPTH": "8",
+        "CGAR_SEQUENCE_CARRY": "0",
+        "CGAR_SEQUENCE_TEMPERATURE": "800"
+      }
+    },
+    {
+      "name": "carry_explore_200-s0-r0",
+      "variant": "carry_explore_200",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "4",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_BLOCKERS": "3",
+        "CGAR_SEQUENCE_BUDGET": "64",
+        "CGAR_SEQUENCE_DEPTH": "8",
+        "CGAR_SEQUENCE_CARRY": "1",
+        "CGAR_SEQUENCE_TEMPERATURE": "200"
+      }
+    },
+    {
+      "name": "carry_explore_800-s0-r0",
+      "variant": "carry_explore_800",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "4",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_BLOCKERS": "3",
+        "CGAR_SEQUENCE_BUDGET": "64",
+        "CGAR_SEQUENCE_DEPTH": "8",
+        "CGAR_SEQUENCE_CARRY": "1",
+        "CGAR_SEQUENCE_TEMPERATURE": "800"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "d6be5084f055b2941892e9845b0c20833612d07c",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "aa3e2d682202da8d83749df13694d6ed8c50a8f963895232ca284c1851db21af",
+      "cgar/cgar_planner/cgar.hpp": "2136b3758025214851b6569c0640ae15c6d49042b87461c2f09c07b18fc5ee03",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/action_sequences.hpp": "39637138239d4dc3ca68c9aad3f90e7fb77f6053be563b9f53299dd5ab0f0464",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "5adc0104e1f1e5c29317f9068d2f05027304bc5f93ffe2c98926d796073af338"
+    },
+    "binary_sha256": "7ee45d845afbdab7069d5473ccf5b02b645099217d5701df4c0b4543fceb0d6a"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE"
+  ],
+  "parallel_suites": 5,
+  "jobs_per_suite": 1,
+  "time_limit_ms": 2000,
+  "memory_gib_per_slot": 16
+}

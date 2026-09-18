@@ -1,0 +1,179 @@
+{
+  "cases": [
+    {
+      "name": "orientation_512-s0-r0",
+      "variant": "orientation_512",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "orientation_8192-s0-r0",
+      "variant": "orientation_8192",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "sequence5_oriented_512-s0-r0",
+      "variant": "sequence5_oriented_512",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "sequence5_oriented_8192-s0-r0",
+      "variant": "sequence5_oriented_8192",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "orientation_512-s1-r0",
+      "variant": "orientation_512",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "orientation_8192-s1-r0",
+      "variant": "orientation_8192",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "sequence5_oriented_512-s1-r0",
+      "variant": "sequence5_oriented_512",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "sequence5_oriented_8192-s1-r0",
+      "variant": "sequence5_oriented_8192",
+      "seed": 1,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "orientation_512-s2-r0",
+      "variant": "orientation_512",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "orientation_8192-s2-r0",
+      "variant": "orientation_8192",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    },
+    {
+      "name": "sequence5_oriented_512-s2-r0",
+      "variant": "sequence5_oriented_512",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "2",
+        "CGAR_TURN_FIRST": "1"
+      }
+    },
+    {
+      "name": "sequence5_oriented_8192-s2-r0",
+      "variant": "sequence5_oriented_8192",
+      "seed": 2,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "d6be5084f055b2941892e9845b0c20833612d07c",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "00087b1e750f3f797e53e3d95948c243473782f09164c38896cc8acec32a1859",
+      "cgar/cgar_planner/cgar.hpp": "2bb7e15af593152a032801500dacbb15a2dea84290d0552d1c6d6efbf4cb0841",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/action_sequences.hpp": "21dec2448945736e82a81514afad20797358f70d2668b29ac817cc7ef299dd18",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "efd243a31b22f35661068dd7a740c5e66404fd6fc3e6c778198eb20e7d9a7457"
+    },
+    "binary_sha256": "554fbfb22f30bebf8c993dfae0bfecc4cdee63321be94177bb50227e389208e6"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE"
+  ],
+  "parallel_suites": 12,
+  "jobs_per_suite": 1,
+  "time_limit_ms": 1000,
+  "memory_gib_per_slot": 16
+}

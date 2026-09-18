@@ -1,0 +1,84 @@
+{
+  "cases": [
+    {
+      "name": "carry-s0-r0",
+      "variant": "carry",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_CARRY": "1"
+      }
+    },
+    {
+      "name": "carry_turn-s0-r0",
+      "variant": "carry_turn",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_CARRY": "1",
+        "CGAR_SEQUENCE_TURN_ONLY": "2"
+      }
+    },
+    {
+      "name": "carry_multi-s0-r0",
+      "variant": "carry_multi",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_SEQUENCE_HORIZON": "5",
+        "CGAR_SEQUENCE_PASSES": "2",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_SEQUENCE_DEFER_COMMITMENT": "1",
+        "CGAR_SEQUENCE_FREE_INTENTS": "1",
+        "CGAR_SEQUENCE_CARRY": "1",
+        "CGAR_SEQUENCE_BLOCKERS": "3",
+        "CGAR_SEQUENCE_BUDGET": "128",
+        "CGAR_SEQUENCE_DEPTH": "8"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "d6be5084f055b2941892e9845b0c20833612d07c",
+    "source_dirty": true,
+    "sources": {
+      "cgar/cgar_planner/cgar.cpp": "554ec5a17b9be9421f70bd84cc83192ff82322f8cffc496473c13325d91b0b98",
+      "cgar/cgar_planner/cgar.hpp": "6c797ebb251320050c4703e1686c2c02c1695ad511394e673776f70479a1e1c5",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/action_sequences.hpp": "7f71734b08dbde1cef842382f273045b448dfd6d3572ffc7701d7a9beaf8fd10",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "ef6271f3eeb688f289966366bc4345a335d55ecb4f3ce53a4b82b643c5f590ed"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "067eb407fc906daae6f4b83dd53434ce984065da6dd315d8ed200ad3b5ef5313"
+    },
+    "binary_sha256": "b11dc80ff382a763fbbf5c3979374ea54a6484c3644fe62c5c0550bbc5dd8d68"
+  },
+  "horizons": null,
+  "instances": [
+    "WAREHOUSE"
+  ],
+  "parallel_suites": 3,
+  "jobs_per_suite": 1,
+  "time_limit_ms": 2000,
+  "memory_gib_per_slot": 16
+}

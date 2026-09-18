@@ -1,0 +1,639 @@
+diff --git a/cgar/cgar_planner/cgar.cpp b/cgar/cgar_planner/cgar.cpp
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -414,6 +414,11 @@
+     return &it->second.dist;
+ }
+ 
++const std::vector<int>* TurnDistanceOracle::peek(int goal) const {
++    auto it = tables_.find(goal);
++    return it == tables_.end() ? nullptr : &it->second.dist;
++}
++
+ const std::vector<int>* TurnDistanceOracle::table(int goal, std::chrono::steady_clock::time_point deadline) {
+     check_deadline(deadline, "turn_distance_table");
+     if (const auto* cached = find(goal)) return cached;
+@@ -537,6 +542,14 @@
+     sched_tables_ = env_int("CGAR_SCHED_TABLES", 128);
+     max_pairs_ = std::max(1, env_int("CGAR_MAX_PAIRS", 2000000));
+     diagnostics_ = env_int("CGAR_DIAGNOSTICS", 0) != 0;
++    sequence_horizon_ = env_int("CGAR_SEQUENCE_HORIZON", 0);
++    sequence_defer_commitment_ = env_int("CGAR_SEQUENCE_DEFER_COMMITMENT", 0) != 0;
++    sequence_blockers_ = std::max(1, std::min(3, env_int("CGAR_SEQUENCE_BLOCKERS", 1)));
++    sequence_budget_ = std::max(1, std::min(1024, env_int("CGAR_SEQUENCE_BUDGET", 64)));
++    sequence_depth_ = std::max(0, std::min(15, env_int("CGAR_SEQUENCE_DEPTH", 4)));
++    sequence_passes_ = std::max(1, std::min(4, env_int("CGAR_SEQUENCE_PASSES", 1)));
++    if (sequence_horizon_ != 0 && sequence_horizon_ != 3 && sequence_horizon_ != 5)
++        throw std::invalid_argument("CGAR_SEQUENCE_HORIZON must be 0, 3 or 5");
+     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
+     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
+     pibt_reference_ = env_int("CGAR_PIBT_REFERENCE", 0) != 0;
+@@ -575,9 +588,17 @@
+     }
+     const double secs = std::chrono::duration<double>(Clock::now() - t0).count();
+     oracle_.init(&cert_, table_mb << 20);
+-    if (orientation_guidance_) turn_oracle_.init(&cert_, size_t(512) << 20);
++    if (orientation_guidance_) {
++        const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
++        turn_oracle_.init(&cert_, mb << 20);
++    }
+ 
+     const size_t cells = cert_.free.size();
++    if (sequence_horizon_) {
++        sequence_neighbors_.resize(cells);
++        for (size_t cell = 0; cell < cells; ++cell) for (int d = 0; d < 4; ++d)
++            sequence_neighbors_[cell][d] = neighbor(static_cast<int>(cell), d);
++    }
+     occ_now_.assign(cells, -1);
+     reserved_.assign(cells, -1);
+     touched_.clear();
+@@ -598,7 +619,7 @@
+         pibt_previous_goal_.assign(n_, -1); pibt_tie_.resize(n_);
+         std::uniform_real_distribution<float> uniform(0, 1);
+         for (int i = 0; i < n_; ++i) pibt_tie_[i] = uniform(rng_);
+-        if (turn_first_ || orientation_guidance_)
++        if (turn_first_ || orientation_guidance_ || sequence_horizon_)
+             throw std::invalid_argument("PIBT reference policy requires unmodified spatial candidate ordering");
+         std::printf("[cgar-pibt-reference] enabled=1 tickets=%d commitments=%d cert=%d txn=%d exact_distances=1\n",
+                     pibt_tickets_, pibt_commitments_, enable_locks_, enable_txn_);
+@@ -1265,6 +1286,11 @@
+         if (oracle_.has(agents_[primary_].goal)) try_install_txn(primary_);
+     }
+ 
++    std::vector<int> sequence_commitments;
++    if (sequence_horizon_) {
++        sequence_commitments.reserve(n_);
++        for (const auto& agent : agents_) sequence_commitments.push_back(agent.committed);
++    }
+     std::vector<char> diagnostic_commitments;
+     if (diagnostics_) {
+         diagnostic_commitments.resize(n_);
+@@ -1305,16 +1331,191 @@
+             agents_[i].committed = next_[i];
+         actions[i] = action_toward(i, next_[i]);
+     }
+-    const auto offered = diagnostics_ ? actions : std::vector<Action>();
++    auto offered = diagnostics_ ? actions : std::vector<Action>();
+     std::vector<char> checked(n_, 0);
+     for (int i = 0; i < n_; ++i) if (!checked[i] && actions[i] == Action::FW) move_check(i, checked, actions);
+     make_safe(actions);
++    if (sequence_horizon_) {
++        refine_action_sequences(actions, sequence_commitments);
++        // The complete joint sequence already accounts for stationary robots.
++        // Its waits are planned waits; the pre-search cancellations are not the
++        // causal decomposition of this different final joint action.
++        if (diagnostics_) offered = actions;
++    }
+     if (diagnostics_) {
+         record_movement(offered, actions, diagnostic_commitments);
+         if ((env_->curr_timestep + 1) % 200 == 0) log_movement();
+     }
+     if (env_->curr_timestep % 200 == 0) log_summary();
+     check_deadline(deadline_, "planning_complete");
++}
++
++void Cgar::refine_action_sequences(std::vector<Action>& actions, const std::vector<int>& commitments) {
++    const int horizon = sequence_horizon_;
++    const auto baseline_actions = actions;
++    const auto baseline_targets = next_;
++    std::vector<char> fixed(n_, false), witness_cell(cert_.free.size(), false);
++    for (int cell : txn_cells_) witness_cell[cell] = true;
++    std::vector<std::vector<ActionSequence>> choices(n_);
++    // The many paths revisit the same handful of local states. Memoization is
++    // per robot and call; it neither builds tables nor changes their recency.
++    const size_t cell_count = cert_.free.size();
++    std::vector<int> spatial_cache(cell_count), spatial_stamp(cell_count, -1);
++    std::vector<int> heuristic_cache(cell_count * 4), heuristic_stamp(cell_count * 4, -1);
++    // Enumerate a generic action language: no reversed turns before a forward,
++    // at most a clockwise half-turn, and no unfinished turn at the horizon.
++    // Waits may occur anywhere. This is generated once, with no map-specific pool.
++    static const auto pools = [] {
++        std::array<std::vector<std::array<Action, kSequenceMaxHorizon>>, 6> result;
++        for (int h : {3, 5}) {
++            std::array<Action, kSequenceMaxHorizon> sequence{};
++            auto visit = [&](auto&& self, int t, int turn_sign, int turns) -> void {
++                if (t == h) {
++                    if (turns == 0) result[h].push_back(sequence);
++                    return;
++                }
++                for (Action a : {Action::FW, Action::CR, Action::CCR, Action::W}) {
++                    const int sign = a == Action::CR ? 1 : (a == Action::CCR ? -1 : 0);
++                    if (sign && (turns == 2 || (turn_sign && turn_sign != sign) || (sign == -1 && turns))) continue;
++                    sequence[t] = a;
++                    self(self, t + 1, a == Action::FW ? 0 : (sign ? sign : turn_sign),
++                         a == Action::FW ? 0 : turns + (sign != 0));
++                }
++            };
++            visit(visit, 0, 0, 0);
++        }
++        return result;
++    }();
++    for (int i = 0; i < n_; ++i) {
++        check_deadline(deadline_, "sequence_candidates");
++        const Agent& agent = agents_[i];
++        fixed[i] = i == primary_ || agent.in_txn || parked_[i] || agent.lock >= 0 ||
++                   !cert_.core[loc_[i]] || !cert_.core[baseline_targets[i]] ||
++                   witness_cell[loc_[i]] || (capacity_mode_ && !parking_ready_);
++        stats_.sequence_protected += fixed[i];
++        const auto* distance = agent.goal >= 0 ? oracle_.peek(agent.goal) : nullptr;
++        auto spatial = [&](int cell) {
++            if (agent.goal < 0) return 0;
++            if (spatial_stamp[cell] != i) {
++                spatial_stamp[cell] = i;
++                spatial_cache[cell] = distance ? oracle_.value(*distance, cell) : oracle_.manhattan(cell, agent.goal);
++            }
++            return spatial_cache[cell];
++        };
++        const auto* oriented = orientation_guidance_ && agent.goal >= 0 ? turn_oracle_.peek(agent.goal) : nullptr;
++        stats_.sequence_oriented += oriented != nullptr;
++        auto heuristic = [&](int cell, int orientation) {
++            if (oriented) {
++                const int exact = turn_oracle_.value(*oriented, cell, orientation);
++                if (exact < kInf) return exact;
++            }
++            const int state = cell * 4 + orientation;
++            if (heuristic_stamp[state] == i) return heuristic_cache[state];
++            heuristic_stamp[state] = i;
++            int h = spatial(cell);
++            if (h <= 0 || h >= kInf) return heuristic_cache[state] = h;
++            int turns = 2;
++            for (int d = 0; d < 4; ++d) {
++                int v = sequence_neighbors_[cell][d];
++                if (v < 0 || !cert_.free[v] || spatial(v) >= h) continue;
++                int delta = (d - orientation + 4) % 4;
++                turns = std::min(turns, delta == 3 ? 1 : delta);
++            }
++            return heuristic_cache[state] = h + turns;
++        };
++        auto score = [&](ActionSequence& path) {
++            // Terminal action distance dominates; the integral favors progress
++            // earlier in the horizon. Equal-progress detours/turns have a cost.
++            path.cost = int64_t(100) * heuristic(path.cells[horizon], path.orientations[horizon]);
++            for (int t = 1; t <= horizon; ++t)
++                path.cost += int64_t(5) * spatial(path.cells[t]) + (path.actions[t - 1] != Action::W);
++        };
++        ActionSequence baseline;
++        baseline.cells[0] = loc_[i]; baseline.orientations[0] = ori_[i];
++        for (int t = 1; t <= horizon; ++t) {
++            Action a = t == 1 ? actions[i] : Action::W;
++            baseline.actions[t - 1] = a;
++            baseline.cells[t] = a == Action::FW ? sequence_neighbors_[baseline.cells[t - 1]][baseline.orientations[t - 1]] : baseline.cells[t - 1];
++            baseline.orientations[t] = (baseline.orientations[t - 1] + (a == Action::CR ? 1 : a == Action::CCR ? 3 : 0)) % 4;
++        }
++        score(baseline); choices[i].push_back(baseline);
++        if (fixed[i]) continue;
++        for (const auto& sequence : pools[horizon]) {
++            ActionSequence path;
++            path.cells[0] = loc_[i]; path.orientations[0] = ori_[i]; path.actions = sequence;
++            bool valid = true;
++            int commitment = commitments[i];
++            for (int t = 1; t <= horizon; ++t) {
++                const int cell = path.cells[t - 1], orientation = path.orientations[t - 1];
++                const Action a = sequence[t - 1];
++                // Existing useful first actions are protected. A blocked wait
++                // may become a move only toward its existing committed cell.
++                if (t == 1 && commitment >= 0 && actions[i] != Action::W && a != actions[i]) { valid = false; break; }
++                if (commitment >= 0 && a != Action::W) {
++                    int d = direction(cell, commitment, cert_.cols);
++                    int delta = (d - orientation + 4) % 4;
++                    Action required = delta == 0 ? Action::FW : delta == 3 ? Action::CCR : Action::CR;
++                    if (a != required) { valid = false; break; }
++                }
++                const int to = a == Action::FW ? sequence_neighbors_[cell][orientation] : cell;
++                if (to < 0 || !cert_.core[to] || !allowed(i, to) || witness_cell[to]) { valid = false; break; }
++                path.cells[t] = to;
++                path.orientations[t] = (orientation + (a == Action::CR ? 1 : a == Action::CCR ? 3 : 0)) % 4;
++                if (to == commitment) commitment = -1;
++            }
++            if (!valid) continue;
++            score(path); choices[i].push_back(path);
++        }
++    }
++    ActionSequenceSearch search(static_cast<int>(cert_.free.size()), horizon, choices, fixed, sequence_blockers_, sequence_budget_, sequence_depth_);
++    search.run(order_, sequence_passes_, [&] { check_deadline(deadline_, "sequence_repair"); });
++    // Replay-validate every layer before publishing the first joint action.
++    std::vector<int> owners(cert_.free.size(), -1);
++    for (int t = 1; t <= horizon; ++t) {
++        for (int i = 0; i < n_; ++i) {
++            const auto& p = search.path(i);
++            int v = p.cells[t];
++            if (v < 0 || v >= static_cast<int>(cert_.free.size()) || !cert_.free[v] || owners[v] >= 0)
++                throw std::logic_error("invalid sequence vertex");
++            owners[v] = i;
++        }
++        for (int i = 0; i < n_; ++i) {
++            const auto& p = search.path(i);
++            if (p.cells[t - 1] == p.cells[t]) continue;
++            int other = owners[p.cells[t - 1]];
++            if (other >= 0 && search.path(other).cells[t - 1] == p.cells[t])
++                throw std::logic_error("invalid sequence edge swap");
++        }
++        for (int i = 0; i < n_; ++i) owners[search.path(i).cells[t]] = -1;
++    }
++    check_deadline(deadline_, "sequence_complete");
++    for (int i = 0; i < n_; ++i) {
++        if (search.selected(i) == 0) continue;
++        const auto& path = search.path(i);
++        int target = commitments[i];
++        for (int t = 1; t <= horizon; ++t) if (path.cells[t] != loc_[i]) { target = path.cells[t]; break; }
++        // A future visit after an initial wait is not a turn/move in progress.
++        // Retain an existing commitment, but do not acquire a new immediate
++        // reservation for a cell that this robot has not started to enter.
++        if (commitments[i] < 0 && target >= 0 && path.actions[0] == Action::W) {
++            ++stats_.sequence_future_commitments;
++            if (sequence_defer_commitment_) {
++                target = -1;
++                ++stats_.sequence_deferred_commitments;
++            }
++        }
++        if (agents_[i].committed != target) agents_[i].commit_age = 0;
++        agents_[i].committed = target;
++        next_[i] = target < 0 ? loc_[i] : target;
++        actions[i] = path.actions[0];
++        stats_.sequence_changed_actions += actions[i] != baseline_actions[i];
++    }
++    ++stats_.sequence_calls;
++    stats_.sequence_attempts += search.attempts;
++    stats_.sequence_improvements += search.improvements;
++    stats_.sequence_rollbacks += search.rollbacks;
++    stats_.sequence_candidates += search.candidates;
++    stats_.sequence_displacements += search.displacements;
+ }
+ 
+ void Cgar::record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
+@@ -1361,6 +1562,13 @@
+ }
+ 
+ void Cgar::log_movement() const {
++    std::printf("[cgar-sequences] steps=%d horizon=%d passes=%d blockers=%d budget=%d depth=%d calls=%lld attempts=%lld improvements=%lld "
++                "rollbacks=%lld candidates=%lld displacements=%lld changed_actions=%lld protected=%lld oriented=%lld future_commitments=%lld deferred_commitments=%lld\n",
++                env_->curr_timestep + 1, sequence_horizon_, sequence_passes_, sequence_blockers_, sequence_budget_, sequence_depth_, stats_.sequence_calls,
++                stats_.sequence_attempts, stats_.sequence_improvements, stats_.sequence_rollbacks,
++                stats_.sequence_candidates, stats_.sequence_displacements, stats_.sequence_changed_actions,
++                stats_.sequence_protected, stats_.sequence_oriented,
++                stats_.sequence_future_commitments, stats_.sequence_deferred_commitments);
+     std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d builds=%lld guided=%lld fallback=%lld\n",
+                 env_->curr_timestep + 1, orientation_guidance_, turn_first_, stats_.oriented_builds,
+                 stats_.oriented_guided, stats_.oriented_fallback);
+diff --git a/cgar/cgar_planner/cgar.hpp b/cgar/cgar_planner/cgar.hpp
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -23,6 +23,7 @@
+ #include "ActionModel.h"
+ #include "SharedEnv.h"
+ #include "pibt_kernel.hpp"
++#include "action_sequences.hpp"
+ 
+ #include <chrono>
+ #include <cstdint>
+@@ -108,6 +109,7 @@
+ public:
+     void init(const Certificate* cert, size_t max_bytes);
+     const std::vector<int>* find(int goal);
++    const std::vector<int>* peek(int goal) const;
+     const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
+     int value(const std::vector<int>& table, int cell, int orientation) const;
+     bool has(int goal) const { return tables_.count(goal) != 0; }
+@@ -173,6 +175,10 @@
+     MovementStats movement[3];  // idle, before pickup, after pickup
+     long long expired_commitments = 0;
+     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
++    long long sequence_calls = 0, sequence_attempts = 0, sequence_improvements = 0;
++    long long sequence_rollbacks = 0, sequence_candidates = 0, sequence_displacements = 0;
++    long long sequence_changed_actions = 0, sequence_protected = 0, sequence_oriented = 0;
++    long long sequence_future_commitments = 0, sequence_deferred_commitments = 0;
+     long long txns = 0;
+     long long txn_aborts = 0;
+     long long txn_no_hole = 0;
+@@ -248,6 +254,7 @@
+     Action action_toward(int i, int target) const;
+     bool move_check(int i, std::vector<char>& checked, std::vector<Action>& actions);
+     void make_safe(std::vector<Action>& actions);
++    void refine_action_sequences(std::vector<Action>& actions, const std::vector<int>& commitments);
+ 
+     int neighbor(int cell, int dir) const;
+     bool adjacent_to_pocket(int cell, int pocket) const;
+@@ -294,6 +301,10 @@
+     bool pibt_priorities_ready_ = false;
+     std::vector<int> pibt_elapsed_, pibt_initial_distance_, pibt_previous_goal_;
+     std::vector<float> pibt_tie_;
++    int sequence_horizon_ = 0, sequence_passes_ = 1;
++    bool sequence_defer_commitment_ = false;
++    int sequence_blockers_ = 1, sequence_budget_ = 64, sequence_depth_ = 4;
++    std::vector<std::array<int, 4>> sequence_neighbors_;
+     bool turn_first_ = false;
+     int orientation_guidance_ = 0;  // 0 off, 1 LRU experiment, 2 demand-based admission
+     std::unordered_set<int> oriented_goals_;
+diff --git a/cgar/cgar_planner/action_sequences.hpp b/cgar/cgar_planner/action_sequences.hpp
+new file mode 100644
+--- /dev/null
++++ b/cgar/cgar_planner/action_sequences.hpp
+@@ -0,0 +1,205 @@
++#pragma once
++#include "ActionModel.h"
++#include <algorithm>
++#include <array>
++#include <cstdint>
++#include <stdexcept>
++#include <vector>
++
++namespace cgar {
++
++constexpr int kSequenceMaxHorizon = 5;
++struct ActionSequence {
++    std::array<int, kSequenceMaxHorizon + 1> cells{};
++    std::array<int, kSequenceMaxHorizon + 1> orientations{};
++    std::array<Action, kSequenceMaxHorizon> actions{};
++    int64_t cost = 0;
++};
++
++// Bounded displacement-chain search over COMPLETE, jointly feasible trajectories.
++// The initial trajectory for each robot is choice zero. A failed repair restores
++// every reservation; a successful repair strictly reduces the summed path cost.
++// Deadline checks are supplied by CGAR and throw, never accepting partial work.
++class ActionSequenceSearch {
++public:
++    ActionSequenceSearch(int cells, int horizon, const std::vector<std::vector<ActionSequence>>& choices,
++                         const std::vector<char>& fixed, int max_blockers = 1, int candidate_budget = 64, int max_depth = 4)
++        : horizon_(horizon), choices_(choices), fixed_(fixed), selected_(choices.size(), 0),
++          owners_(cells * horizon, -1), visiting_(choices.size(), false), cells_(cells), max_blockers_(max_blockers),
++          candidate_budget_(candidate_budget), max_depth_(max_depth) {
++        if (horizon < 1 || horizon > kSequenceMaxHorizon || choices.size() != fixed.size() ||
++            max_blockers < 1 || max_blockers > 3 || candidate_budget < 1 || max_depth < 0 || max_depth > 15)
++            throw std::invalid_argument("invalid action-sequence search dimensions");
++        for (size_t i = 0; i < choices.size(); ++i) {
++            if (choices[i].empty() || conflict(choices[i][0]) != -1)
++                throw std::logic_error("invalid initial joint action sequences");
++            add(static_cast<int>(i));
++        }
++        ordered_.resize(choices.size());
++        for (size_t i = 0; i < choices.size(); ++i) {
++            auto& ids = ordered_[i];
++            for (size_t k = 0; k < choices[i].size(); ++k) ids.push_back(static_cast<int>(k));
++            std::stable_sort(ids.begin(), ids.end(), [&](int a, int b) { return choices[i][a].cost < choices[i][b].cost; });
++        }
++    }
++
++    template<class Check>
++    void run(const std::vector<int>& order, int passes, Check check) {
++        for (int pass = 0; pass < passes; ++pass) for (int robot : order) {
++            check();
++            if (fixed_[robot]) continue;
++            ++attempts;
++            remove(robot);
++            int budget = candidate_budget_;
++            const bool improved = max_blockers_ == 1 ? repair(robot, 0, budget, 0, check) :
++                repair_many(robot, {}, 0, 0, budget, 0, check);
++            if (improved) ++improvements;
++            else { add(robot); ++rollbacks; }
++        }
++        check();
++    }
++
++    const ActionSequence& path(int robot) const { return choices_[robot][selected_[robot]]; }
++    int selected(int robot) const { return selected_[robot]; }
++    long long attempts = 0, improvements = 0, rollbacks = 0, candidates = 0, displacements = 0;
++
++private:
++    // -1: free, -2: multiple distinct blockers; otherwise a single robot.
++    int conflict(const ActionSequence& path) const {
++        int blocker = -1;
++        auto observe = [&](int robot) {
++            if (robot < 0) return true;
++            if (blocker >= 0 && blocker != robot) return false;
++            blocker = robot; return true;
++        };
++        for (int t = 1; t <= horizon_; ++t) {
++            const int from = path.cells[t - 1], to = path.cells[t];
++            if (from < 0 || to < 0 || from >= cells_ || to >= cells_)
++                throw std::logic_error("action-sequence cell outside the map");
++            if (!observe(owners_[(t - 1) * cells_ + to])) return -2;
++            if (from != to) {
++                const int other = owners_[(t - 1) * cells_ + from];
++                if (other >= 0 && this->path(other).cells[t - 1] == to && !observe(other)) return -2;
++            }
++        }
++        return blocker;
++    }
++    void add(int robot) {
++        const auto& p = path(robot);
++        for (int t = 1; t <= horizon_; ++t) {
++            int& owner = owners_[(t - 1) * cells_ + p.cells[t]];
++            if (owner >= 0) throw std::logic_error("duplicate sequence reservation");
++            owner = robot;
++        }
++    }
++    void remove(int robot) {
++        const auto& p = path(robot);
++        for (int t = 1; t <= horizon_; ++t) {
++            int& owner = owners_[(t - 1) * cells_ + p.cells[t]];
++            if (owner != robot) throw std::logic_error("missing sequence reservation");
++            owner = -1;
++        }
++    }
++    template<class Check>
++    bool repair(int robot, int depth, int& budget, int64_t delta, Check& check) {
++        visiting_[robot] = true;
++        const int old = selected_[robot];
++        const int64_t old_cost = path(robot).cost;
++        for (int choice : ordered_[robot]) {
++            if (budget-- <= 0) break;
++            ++candidates;
++            if ((candidates & 63) == 0) check();
++            const auto& candidate = choices_[robot][choice];
++            const int other = conflict(candidate);
++            if (other == -2 || (other >= 0 && (depth == max_depth_ || fixed_[other] || visiting_[other]))) continue;
++            const int64_t change = delta + candidate.cost - old_cost;
++            if (other < 0) {
++                if (change >= 0) continue;
++                selected_[robot] = choice; add(robot);
++                visiting_[robot] = false; return true;
++            }
++            remove(other);
++            selected_[robot] = choice; add(robot);
++            ++displacements;
++            if (repair(other, depth + 1, budget, change, check)) {
++                visiting_[robot] = false; return true;
++            }
++            remove(robot); selected_[robot] = old;
++            add(other);
++        }
++        selected_[robot] = old;
++        visiting_[robot] = false;
++        return false;
++    }
++    // Return all conflicting robots, up to the configured fixed fan-out. Paths
++    // already chosen in this repair are protected; pending paths are unreserved.
++    int blockers(const ActionSequence& path, std::array<int, 3>& result) const {
++        int count = 0;
++        auto observe = [&](int robot) {
++            if (robot < 0) return true;
++            if (fixed_[robot] || visiting_[robot]) return false;
++            for (int k = 0; k < count; ++k) if (result[k] == robot) return true;
++            if (count == max_blockers_) return false;
++            result[count++] = robot; return true;
++        };
++        for (int t = 1; t <= horizon_; ++t) {
++            const int from = path.cells[t - 1], to = path.cells[t];
++            if (from < 0 || to < 0 || from >= cells_ || to >= cells_)
++                throw std::logic_error("action-sequence cell outside the map");
++            if (!observe(owners_[(t - 1) * cells_ + to])) return -1;
++            if (from != to) {
++                const int other = owners_[(t - 1) * cells_ + from];
++                if (other >= 0 && this->path(other).cells[t - 1] == to && !observe(other)) return -1;
++            }
++        }
++        return count;
++    }
++
++    // On entry, robot and pending have no reservations. On failure every selected
++    // path and reservation is restored to exactly that state. On success all
++    // pending robots are placed and the COMPLETE joint cost is strictly lower.
++    template<class Check>
++    bool repair_many(int robot, std::array<int, 16> pending, int pending_count, int depth,
++                     int& budget, int64_t delta, Check& check) {
++        visiting_[robot] = true;
++        const int old = selected_[robot];
++        const int64_t old_cost = path(robot).cost;
++        for (int choice : ordered_[robot]) {
++            if (budget-- <= 0) break;
++            ++candidates;
++            if ((candidates & 63) == 0) check();
++            const auto& candidate = choices_[robot][choice];
++            std::array<int, 3> displaced{};
++            const int count = blockers(candidate, displaced);
++            if (count < 0 || depth + pending_count + count > max_depth_) continue;
++            auto next_pending = pending;
++            int next_count = pending_count;
++            for (int k = 0; k < count; ++k) {
++                remove(displaced[k]);
++                next_pending[next_count++] = displaced[k];
++            }
++            selected_[robot] = choice; add(robot);
++            const int64_t change = delta + candidate.cost - old_cost;
++            displacements += count;
++            const bool accepted = next_count == 0 ? change < 0 :
++                repair_many(next_pending[next_count - 1], next_pending, next_count - 1,
++                            depth + 1, budget, change, check);
++            if (accepted) { visiting_[robot] = false; return true; }
++            remove(robot); selected_[robot] = old;
++            for (int k = 0; k < count; ++k) add(displaced[k]);
++        }
++        selected_[robot] = old;
++        visiting_[robot] = false;
++        return false;
++    }
++    int horizon_;
++    const std::vector<std::vector<ActionSequence>>& choices_;
++    const std::vector<char>& fixed_;
++    std::vector<int> selected_, owners_;
++    std::vector<char> visiting_;
++    int cells_;
++    int max_blockers_, candidate_budget_, max_depth_;
++    std::vector<std::vector<int>> ordered_;
++};
++
++}  // namespace cgar
+diff --git a/cgar/tests/cgar_regression.cpp b/cgar/tests/cgar_regression.cpp
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -398,4 +398,98 @@
+  std::cout<<"MOVEMENT_DIAGNOSTICS passed turn_dependency=1 actions_unchanged=1\n";
+ }
+ 
+-int main(){try{oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++void action_sequence_search() {
++ auto path=[](std::initializer_list<int> cells,int cost){
++  ActionSequence p;int t=0;for(int c:cells)p.cells[t++]=c;p.cost=cost;return p;
++ };
++ auto validate=[](const ActionSequenceSearch& search,int robots,int horizon){
++  for(int t=1;t<=horizon;++t)for(int i=0;i<robots;++i)for(int j=0;j<i;++j){
++   const auto& a=search.path(i);const auto& b=search.path(j);
++   if(a.cells[t]==b.cells[t]||(a.cells[t]==b.cells[t-1]&&b.cells[t]==a.cells[t-1]))
++    throw std::runtime_error("sequence search accepted a future collision");
++  }
++ };
++ std::vector<std::vector<ActionSequence>> choices={
++  {path({0,0,0,0},10),path({0,0,1,1},0)},
++  {path({1,1,1,1},10),path({1,1,0,0},0)}};
++ std::vector<char> fixed(2,false);
++ ActionSequenceSearch swap(4,3,choices,fixed);swap.run({0,1},2,[]{});
++ validate(swap,2,3);
++ if(swap.selected(0)||swap.selected(1)||swap.improvements)
++  throw std::runtime_error("later edge swap escaped rollback");
++ choices[1][1]=path({1,2,2,2},15);
++ ActionSequenceSearch repair(4,3,choices,fixed);repair.run({0,1},1,[]{});
++ validate(repair,2,3);
++ if(!repair.selected(0)||!repair.selected(1)||repair.path(0).cost+repair.path(1).cost!=15)
++  throw std::runtime_error("beneficial displacement chain was missed");
++ fixed[1]=true;ActionSequenceSearch protected_path(4,3,choices,fixed);protected_path.run({0,1},2,[]{});
++ if(protected_path.selected(0)||protected_path.selected(1))throw std::runtime_error("fixed sequence was displaced");
++ choices={ {path({0,0,0,0},10),path({0,1,2,3},0)}, {path({1,1,1,1},10)}, {path({3,3,3,3},10)} };
++ fixed.assign(3,false);ActionSequenceSearch multiple(4,3,choices,fixed);multiple.run({0,1,2},1,[]{});
++ validate(multiple,3,3);if(multiple.selected(0))throw std::runtime_error("multiple blockers were lost");
++ choices[1].push_back(path({1,4,4,4},12));choices[2].push_back(path({3,5,5,5},12));
++ ActionSequenceSearch branching(6,3,choices,fixed,3,256,8);branching.run({0,1,2},1,[]{});
++ validate(branching,3,3);
++ if(!branching.selected(0)||!branching.selected(1)||!branching.selected(2)||
++    branching.path(0).cost+branching.path(1).cost+branching.path(2).cost!=24)
++  throw std::runtime_error("multiple-blocker repair did not complete the joint improvement");
++ choices[1][1].cost=16;choices[2][1].cost=16;
++ ActionSequenceSearch rollback(6,3,choices,fixed,3,256,8);rollback.run({0,1,2},2,[]{});
++ validate(rollback,3,3);
++ for(int i=0;i<3;++i)if(rollback.selected(i))throw std::runtime_error("multi-blocker rejection lost a reservation");
++ choices[1][1].cost=12;choices[2][1].cost=12;fixed[2]=true;
++ ActionSequenceSearch multi_fixed(6,3,choices,fixed,3,256,8);multi_fixed.run({0,1,2},2,[]{});
++ for(int i=0;i<3;++i)if(multi_fixed.selected(i))throw std::runtime_error("multi-blocker repair displaced a protected path");
++ bool timed_out=false;
++ try { multiple.run({0,1,2},1,[]{throw Timeout("sequence_test");}); }catch(const Timeout&){timed_out=true;}
++ if(!timed_out)throw std::runtime_error("sequence deadline did not fail explicitly");
++ std::cout<<"ACTION_SEQUENCE_SEARCH passed future_swap=1 displacement=1 rollback=1 fixed_path=1 multiple_blockers=1 multi_blocker_repair=1 multi_blocker_rollback=1 explicit_timeout=1\n";
++}
++
++void action_sequence_integration() {
++ std::mt19937 rng(924);int decisions=0;long long deferred=0;
++ for(int blockers:{1,3})for(int defer:{0,1})for(int horizon:{3,5})for(int test=0;test<12;++test){
++  setenv("CGAR_SEQUENCE_BLOCKERS",std::to_string(blockers).c_str(),1);
++  setenv("CGAR_SEQUENCE_DEFER_COMMITMENT",std::to_string(defer).c_str(),1);
++  SharedEnvironment e;e.rows=5;e.cols=6;e.map.assign(30,0);e.num_of_agents=12;
++  std::vector<int> cells(30);for(int i=0;i<30;++i)cells[i]=i;
++  std::shuffle(cells.begin(),cells.end(),rng);
++  for(int i=0;i<12;++i)e.curr_states.emplace_back(cells[i],0,rng()%4);
++  std::shuffle(cells.begin(),cells.end(),rng);
++  for(int i=0;i<12;++i){e.goal_locations.push_back({{cells[i],0}});e.curr_task_schedule.push_back(i);Task t;t.task_id=i;t.locations={cells[i]};e.task_pool.emplace(i,t);}
++  unsetenv("CGAR_SEQUENCE_HORIZON");Cgar baseline;baseline.initialize(&e,1000);std::vector<Action> before;baseline.plan(&e,1000,before);
++  setenv("CGAR_SEQUENCE_HORIZON",std::to_string(horizon).c_str(),1);
++  Cgar planner;planner.initialize(&e,1000);std::vector<Action> actions;planner.plan(&e,1000,actions);
++  if(planner.primary()!=baseline.primary()||actions[planner.primary()]!=before[baseline.primary()])
++   throw std::runtime_error("sequence search changed primary action");
++  for(int t=0;t<40;++t){
++   if(t){e.curr_timestep=t;planner.plan(&e,1000,actions);}
++   auto next=step(e,e.curr_states,actions);if(next.empty())throw std::runtime_error("invalid sequence integration action");
++   e.curr_states=next;++decisions;
++  }
++  if(planner.stats().sequence_calls!=40)throw std::runtime_error("sequence search omitted a complete call");
++  deferred+=planner.stats().sequence_deferred_commitments;
++  if(defer && planner.stats().sequence_future_commitments!=planner.stats().sequence_deferred_commitments)
++   throw std::runtime_error("sequence wait acquired a premature commitment");
++ }
++ if(!deferred)throw std::runtime_error("sequence integration did not exercise delayed commitments");
++ unsetenv("CGAR_SEQUENCE_DEFER_COMMITMENT");
++ unsetenv("CGAR_SEQUENCE_BLOCKERS");
++ unsetenv("CGAR_SEQUENCE_HORIZON");
++ std::cout<<"ACTION_SEQUENCE_INTEGRATION passed joint_steps="<<decisions<<" protected_primary=1 horizons=3,5\n";
++}
++
++void action_sequence_protections() {
++ for(int blockers:{1,3})for(int defer:{0,1})for(int h:{3,5}){
++  setenv("CGAR_SEQUENCE_BLOCKERS",std::to_string(blockers).c_str(),1);
++  setenv("CGAR_SEQUENCE_DEFER_COMMITMENT",std::to_string(defer).c_str(),1);
++  setenv("CGAR_SEQUENCE_HORIZON",std::to_string(h).c_str(),1);
++  pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();reassignment_recovery_protection();
++ }
++ unsetenv("CGAR_SEQUENCE_HORIZON");
++ unsetenv("CGAR_SEQUENCE_DEFER_COMMITMENT");
++ unsetenv("CGAR_SEQUENCE_BLOCKERS");
++ std::cout<<"ACTION_SEQUENCE_PROTECTIONS passed pockets=1 persistent_ticket=1 capacity_bootstrap=1 recovery=1\n";
++}
++
++int main(){try{action_sequence_protections();action_sequence_search();action_sequence_integration();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

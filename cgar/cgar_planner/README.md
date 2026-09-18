@@ -125,10 +125,17 @@ map-category rules:
 - `CGAR_ORIENTATION_GUIDANCE=1` uses exact unit-action distances over
   `(cell, orientation)`, including forward moves and both turn directions.
   Complete turn-and-forward costs compete with a unit wait. Every candidate for
-  one robot uses the same cost basis. The cache holds 512 MiB of distance tables
+  one robot uses the same cost basis. By default the cache holds 512 MiB of distance tables
   after trimming and builds at most 32 complete new tables per decision. This
   original LRU experiment can churn; new tables may temporarily exceed the
   retained cache limit until the next decision.
+- `CGAR_TURN_TABLE_MB` sets the orientation-table cache capacity in MiB
+  (default 512, clamped to 16–32768). It changes storage capacity, not the
+  fixed limit of 32 complete table builds per decision. On full WAREHOUSE,
+  `CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1 CGAR_TURN_TABLE_MB=8192`
+  outperformed the 512 MiB demand-cache profile on six planner seeds, with
+  total measured peak memory around 14.3 GiB. Larger capacities preserved
+  the same trajectories on seeds 0–2. See the [warehouse study](../../experiments/sequences-20260918/README.md).
 - `CGAR_ORIENTATION_GUIDANCE=2` restricts those builds to goals admitted by a
   demand policy. Every 32 steps it ranks active goals by request count, retains
   resident entries on ties, then breaks ties by goal ID. Only as many goals as

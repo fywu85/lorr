@@ -86,6 +86,13 @@ study uses an explicit 10-second decision cap for exact-distance construction;
 it retains the preceding one-second failures and is not a competition-budget
 comparison.
 
+The [full WAREHOUSE sequence and cache study](experiments/sequences-20260918/README.md)
+focuses subsequent work on that instance and uses all 5,000 steps for iterations.
+An optional 8 GiB orientation-cache profile improves mean completions by 17.3%
+over default CGAR across six planner seeds, using about 14.3 GiB total peak RSS.
+Full KittyKnight/NMS references, the remaining throughput gap, unsuccessful
+sequence prototypes, and a second Fable 5.1 Max CLI review are retained.
+
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run
 throughput comparisons; passing the simulator does not prove starvation freedom.
