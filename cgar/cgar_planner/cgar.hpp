@@ -24,6 +24,7 @@
 #include "SharedEnv.h"
 #include "pibt_kernel.hpp"
 #include "temporal_geometry.hpp"
+#include "temporal_prepare.hpp"
 #include "temporal_regions.hpp"
 #include "temporal_warm_start.hpp"
 #include "flow_guidance.hpp"
@@ -227,6 +228,7 @@ struct Stats {
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
     long long flow_freezes = 0, flow_penalized_edges = 0;
+    long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0;
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
     long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0, guide_refinements = 0;
     long long txns = 0;
@@ -333,7 +335,7 @@ private:
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
     int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0;
-    int temporal_workers_ = 1, temporal_threads_ = 1;
+    int temporal_workers_ = 1, temporal_threads_ = 1, temporal_prepare_threads_ = 1;
     bool temporal_regions_ = false;
     TemporalRegionOptions temporal_region_options_;
     Stats stats_;

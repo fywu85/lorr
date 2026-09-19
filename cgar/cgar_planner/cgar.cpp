@@ -685,6 +685,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
+    temporal_prepare_threads_ = env_int("CGAR_TEMPORAL_PREP_THREADS", 1);
+    if (temporal_prepare_threads_ < 1 || temporal_prepare_threads_ > 32)
+        throw std::invalid_argument("temporal preparation threads must be in [1,32]");
     temporal_regions_ = env_int("CGAR_TEMPORAL_REGIONS", 0) != 0;
     temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
     temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
@@ -698,12 +701,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
         throw std::invalid_argument("invalid CGAR temporal region configuration");
     if (temporal_ || turn_prefetch_threads_) {
-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_});
+        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_});
         cpu_set_t affinity; CPU_ZERO(&affinity);
         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d region_threads=%d allowed_cpus=%d\n",
-                    temporal_workers_, temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
+        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d allowed_cpus=%d\n",
+                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
     }
     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));

@@ -1,5 +1,6 @@
 #include "cgar.hpp"
 #include <algorithm>
+#include <atomic>
 #include <array>
 #include <chrono>
 #include <iostream>
@@ -642,8 +643,11 @@ void temporal_region_adapter_regression() {
  setenv("CGAR_TEMPORAL_REGION_STEPS","256",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","2",1);
  SharedEnvironment e;e.rows=9;e.cols=11;e.num_of_agents=48;e.map.assign(99,0);e.curr_task_schedule.assign(48,-1);e.goal_locations.resize(48);
  for(int r=0;r<48;++r){e.curr_states.emplace_back(r,0,r%4);e.goal_locations[r]={{98-r,0}};}
- setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
- setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
+ const bool had_preparation=std::getenv("CGAR_TEMPORAL_PREP_THREADS")!=nullptr;
+ const std::string saved_preparation=had_preparation?std::getenv("CGAR_TEMPORAL_PREP_THREADS"):"";
+ setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
+ setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
+ if(had_preparation)setenv("CGAR_TEMPORAL_PREP_THREADS",saved_preparation.c_str(),1);else unsetenv("CGAR_TEMPORAL_PREP_THREADS");
  int checked=0;
  for(int t=0;t<100;++t){
   e.curr_timestep=t;std::vector<Action>a,b;serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
@@ -652,6 +656,9 @@ void temporal_region_adapter_regression() {
   for(int r=0;r<48;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+37)%99;
   checked+=48;
  }
+ if(serial.stats().temporal_prepared_robots!=checked||parallel.stats().temporal_prepared_robots!=checked||
+    serial.stats().temporal_parallel_preparations||parallel.stats().temporal_parallel_preparations!=100)
+  throw std::runtime_error("production preparation threads did not process the complete fleet");
  if(std::getenv("CGAR_FLOW_STRENGTH")&&
     (serial.stats().flow_freezes!=1||parallel.stats().flow_freezes!=1||!serial.stats().flow_penalized_edges||
      serial.stats().flow_penalized_edges!=parallel.stats().flow_penalized_edges))
@@ -671,7 +678,7 @@ void temporal_region_adapter_regression() {
     (!serial.stats().guide_refinements||serial.stats().guide_refinements!=parallel.stats().guide_refinements))
   throw std::runtime_error("production guide refinement was vacuous or changed with thread count");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
- std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
+ std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 preparation_threads=1,4 valid_episodes=1\n";
 }
 
 void temporal_regions_regression() {
@@ -1276,4 +1283,47 @@ void guide_window_regression() {
  std::cout<<"GUIDE_WINDOW passed rotated_forward_states="<<covered<<" forward_over_parking_rankings="<<rankings<<" independent_obstacle_bfs=1 all_goal_headings=1\n";
 }
 
-int main(){try{guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void temporal_preparation_regression() {
+ // Every worker must finish or report its failure before the caller returns,
+ // including when the main worker throws and when a child worker throws.
+ for(int fault=-1;fault<4;++fault){
+  std::array<std::atomic<int>,4> entered,finished;for(auto&v:entered)v.store(0);for(auto&v:finished)v.store(0);
+  bool failed=false;
+  try{run_temporal_preparation(4,[&](int worker){entered[worker].store(1);if(worker==fault)throw Timeout("prepare_fixture");finished[worker].store(1);});}
+  catch(const Timeout&){failed=true;}
+  if(failed!=(fault>=0))throw std::runtime_error("preparation worker failure was swallowed");
+  for(int worker=0;worker<4;++worker)if(entered[worker].load()!=1||finished[worker].load()!=(worker!=fault))
+   throw std::runtime_error("preparation returned before every other worker completed");
+ }
+ bool invalid=false;try{run_temporal_preparation(0,[](int){});}catch(const std::invalid_argument&){invalid=true;}
+ if(!invalid)throw std::runtime_error("invalid preparation thread count was accepted");
+
+ // A one-MiB logical turn cache cannot hold all 48 distinct goals on this
+ // graph. Repeated planning therefore exposes changes to LRU lookup order,
+ // not just parallel scoring of a warm, never-evicted set of small tables.
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","256",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);
+ setenv("CGAR_TEMPORAL_ORDER","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);
+ setenv("CGAR_TURN_TABLE_MB","1",1);setenv("CGAR_TURN_COMPACT","1",1);
+ SharedEnvironment e;e.rows=50;e.cols=50;e.num_of_agents=48;e.map.assign(2500,0);e.curr_task_schedule.assign(48,-1);e.goal_locations.resize(48);
+ for(int r=0;r<48;++r){e.curr_states.emplace_back(r*17,0,r%4);e.goal_locations[r]={{2499-r*13,0}};}
+ setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
+ setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
+ int checked=0;
+ for(int t=0;t<80;++t){
+  e.curr_timestep=t;std::vector<Action>a,b;serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
+  if(a!=b)throw std::runtime_error("parallel preparation changed decisions under turn-cache eviction");
+  auto next=step(e,e.curr_states,a);if(next.empty())throw std::runtime_error("parallel preparation produced a collision");e.curr_states=next;
+  for(int r=0;r<48;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+997)%2500;
+  checked+=48;
+ }
+ const auto&a=serial.stats();const auto&b=parallel.stats();
+ if(a.oriented_builds<=48||a.oriented_builds!=b.oriented_builds||a.oriented_guided!=b.oriented_guided||a.oriented_fallback!=b.oriented_fallback||
+    a.temporal_prepared_robots!=checked||b.temporal_prepared_robots!=checked||a.temporal_parallel_preparations||b.temporal_parallel_preparations!=80)
+  throw std::runtime_error("parallel preparation changed cache behavior or failed to exercise all workers");
+ for(const char*name:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_ORDER",
+     "CGAR_ORIENTATION_GUIDANCE","CGAR_TURN_FIRST","CGAR_TURN_TABLE_MB","CGAR_TURN_COMPACT","CGAR_TEMPORAL_PREP_THREADS"})unsetenv(name);
+ std::cout<<"TEMPORAL_PREPARATION passed joined_failure_cases=4 joined_success=1 invalid_threads=1 identical_robot_decisions="<<checked
+          <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+}
+
+int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

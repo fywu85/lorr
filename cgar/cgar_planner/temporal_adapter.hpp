@@ -64,78 +64,105 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.guide_refinements += guide_stats.refined;
     }
     const auto guides_finished = Clock::now();
-    std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
-    for (int i = 0; i < n_; ++i) {
-        check_deadline(deadline_, "temporal_candidates");
-        const int goal = agents_[i].goal; goals[i] = goal;
-        const auto* spatial = goal < 0 ? nullptr : oracle_.peek(goal);
-        const auto* oriented = goal < 0 ? nullptr : turn_oracle_.find(goal);
-        if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
-        const bool guided = guide_enabled_ && guide_routes_.guided(i);
-        const int robot_turn_cost = oriented && !guided ? turn_cost_ : 1;
-        if (goal >= 0) { if (oriented) ++exact_metric_robots; else ++fallback_metric_robots; }
-        auto original_distance = [&](int cell, int direction) {
-            if (goal < 0) return 0;
-            if (oriented) {
-                const int d = turn_oracle_.value(*oriented, cell, direction);
-                if (d < kInf) return d;
+    // find() promotes turn-table recency. Resolve those lookups in exactly
+    // the original robot order before parallel read-only scoring. No table can
+    // be built or evicted while worker-local heuristic scratch is in use.
+    std::vector<const std::vector<int>*> prepared_spatial;
+    std::vector<const TurnTable*> prepared_oriented;
+    if (temporal_prepare_threads_ > 1) {
+        prepared_spatial.resize(n_, nullptr); prepared_oriented.resize(n_, nullptr);
+        for (int i = 0; i < n_; ++i) {
+            if (!(i % 64)) check_deadline(deadline_, "temporal_candidate_tables");
+            const int goal = agents_[i].goal;
+            if (goal >= 0) {
+                prepared_spatial[i] = oracle_.peek(goal); prepared_oriented[i] = turn_oracle_.find(goal);
             }
-            return TemporalGeometry::fallback_distance(cell, direction, kInf,
-                [&](int u) { return spatial ? oracle_.value(*spatial, u) : oracle_.manhattan(u, goal); },
-                [&](int u, int dir) { const int to = neighbor(u, dir); return to >= 0 && cert_.free[to] ? to : -1; });
-        };
-        auto distance = [&](int cell, int direction) {
-            const int state = cell * 4 + direction;
-            if (heuristic_stamp[state] != i) {
-                heuristic_stamp[state] = i;
-                heuristic_value[state] = guided ? guide_routes_.distance(i, cell, direction) : original_distance(cell, direction);
-                if (heuristic_value[state] < 0) throw std::logic_error("guide window does not cover a temporal candidate");
-            }
-            return heuristic_value[state];
-        };
-        auto cost = [&](const TemporalPath& path, int op) {
-            const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
-                TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
-                    return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
-                }) : 0;
-            return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_) +
-                   int64_t(extra) * temporal_distance_scale_;
-        };
-        priorities[i] = goal < 0 ? kInf : original_distance(loc_[i], ori_[i]);
-        if (temporal_order_ == 2 && goal >= 0) {
-            const auto found = env_->task_pool.find(agents_[i].task);
-            if (found != env_->task_pool.end()) {
-                const auto& task = found->second;
-                int from = goal;
-                for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k) {
-                    const int to = task.locations[k];
-                    const auto* table = oracle_.peek(to);
-                    const int leg = table ? oracle_.distance_from(*table, from) : oracle_.manhattan(from, to);
-                    priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, int64_t(priorities[i]) + leg));
-                    from = to;
+        }
+    }
+    std::vector<std::array<int, 2>> prepared_metrics(temporal_prepare_threads_, {0, 0});
+    run_temporal_preparation(temporal_prepare_threads_, [&](int worker) {
+        std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
+        const int begin = int(int64_t(n_) * worker / temporal_prepare_threads_);
+        const int end = int(int64_t(n_) * (worker + 1) / temporal_prepare_threads_);
+        for (int i = begin; i < end; ++i) {
+            check_deadline(deadline_, "temporal_candidates");
+            const int goal = agents_[i].goal; goals[i] = goal;
+            const auto* spatial = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? oracle_.peek(goal) : prepared_spatial[i]);
+            const auto* oriented = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? turn_oracle_.find(goal) : prepared_oriented[i]);
+            if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
+            const bool guided = guide_enabled_ && guide_routes_.guided(i);
+            const int robot_turn_cost = oriented && !guided ? turn_cost_ : 1;
+            if (goal >= 0) { if (oriented) ++prepared_metrics[worker][0]; else ++prepared_metrics[worker][1]; }
+            auto original_distance = [&](int cell, int direction) {
+                if (goal < 0) return 0;
+                if (oriented) {
+                    const int d = turn_oracle_.value(*oriented, cell, direction);
+                    if (d < kInf) return d;
+                }
+                return TemporalGeometry::fallback_distance(cell, direction, kInf,
+                    [&](int u) { return spatial ? oracle_.value(*spatial, u) : oracle_.manhattan(u, goal); },
+                    [&](int u, int dir) { const int to = neighbor(u, dir); return to >= 0 && cert_.free[to] ? to : -1; });
+            };
+            auto distance = [&](int cell, int direction) {
+                const int state = cell * 4 + direction;
+                if (heuristic_stamp[state] != i) {
+                    heuristic_stamp[state] = i;
+                    heuristic_value[state] = guided ? guide_routes_.distance(i, cell, direction) : original_distance(cell, direction);
+                    if (heuristic_value[state] < 0) throw std::logic_error("guide window does not cover a temporal candidate");
+                }
+                return heuristic_value[state];
+            };
+            auto cost = [&](const TemporalPath& path, int op) {
+                const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
+                    TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
+                        return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
+                    }) : 0;
+                return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_) +
+                       int64_t(extra) * temporal_distance_scale_;
+            };
+            priorities[i] = goal < 0 ? kInf : original_distance(loc_[i], ori_[i]);
+            if (temporal_order_ == 2 && goal >= 0) {
+                const auto& tasks = env_->task_pool;
+                const auto found = tasks.find(agents_[i].task);
+                if (found != tasks.end()) {
+                    const auto& task = found->second;
+                    int from = goal;
+                    for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k) {
+                        const int to = task.locations[k];
+                        const auto* table = oracle_.peek(to);
+                        const int leg = table ? oracle_.distance_from(*table, from) : oracle_.manhattan(from, to);
+                        priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, int64_t(priorities[i]) + leg));
+                        from = to;
+                    }
                 }
             }
-        }
-        seeds[i] = temporal_geometry_.seed(loc_[i], ori_[i], pinned[i] ? static_cast<int>(actions[i]) : 3);
-        choices[i].push_back({&seeds[i], cost(seeds[i], 0), 0});
-        if (pinned[i]) continue;
-        const auto& paths = temporal_geometry_.paths(loc_[i], ori_[i]);
-        for (int op = 1; op < 129; ++op) {
-            const auto& path = paths[op];
-            if (!path.valid || (!temporal_steps_ && path.depth > 3)) continue;
-            bool valid = true; int from = loc_[i];
-            for (int t = 0; t < 5; ++t) {
-                const int to = path.cells[t];
-                if (!cert_.core[to] || !allowed(i, to) || witness[to] ||
-                    (to != from && intent_owner[to] >= 0 && intent_owner[to] != i)) { valid = false; break; }
-                from = to;
+            choices[i].reserve(pinned[i] ? 1 : 129);
+            seeds[i] = temporal_geometry_.seed(loc_[i], ori_[i], pinned[i] ? static_cast<int>(actions[i]) : 3);
+            choices[i].push_back({&seeds[i], cost(seeds[i], 0), 0});
+            if (pinned[i]) continue;
+            const auto& paths = temporal_geometry_.paths(loc_[i], ori_[i]);
+            for (int op = 1; op < 129; ++op) {
+                const auto& path = paths[op];
+                if (!path.valid || (!temporal_steps_ && path.depth > 3)) continue;
+                bool valid = true; int from = loc_[i];
+                for (int t = 0; t < 5; ++t) {
+                    const int to = path.cells[t];
+                    if (!cert_.core[to] || !allowed(i, to) || witness[to] ||
+                        (to != from && intent_owner[to] >= 0 && intent_owner[to] != i)) { valid = false; break; }
+                    from = to;
+                }
+                if (valid) choices[i].push_back({&path, cost(path, op), op});
             }
-            if (valid) choices[i].push_back({&path, cost(path, op), op});
+            std::sort(choices[i].begin() + 1, choices[i].end(), [](const auto& a, const auto& b) {
+                return std::tie(a.cost, a.operation) < std::tie(b.cost, b.operation);
+            });
         }
-        std::sort(choices[i].begin() + 1, choices[i].end(), [](const auto& a, const auto& b) {
-            return std::tie(a.cost, a.operation) < std::tie(b.cost, b.operation);
-        });
+    });
+    for (const auto& count : prepared_metrics) {
+        exact_metric_robots += count[0]; fallback_metric_robots += count[1];
     }
+    stats_.temporal_prepared_robots += n_;
+    if (temporal_prepare_threads_ > 1) ++stats_.temporal_parallel_preparations;
     auto order = order_;
     if (temporal_order_) std::stable_sort(order.begin(), order.end(), [&](int a, int b) {
         return std::tie(priorities[a], a) < std::tie(priorities[b], b);
