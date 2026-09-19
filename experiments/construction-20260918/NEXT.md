@@ -14,7 +14,7 @@ Current experiment queue:
 - `runs/cgar-temporal-scheduler-v7-20260918`, job 8898307: five full seed-0 cases
   run sequentially. Global-64/direct-cost/weight-5 has finished at 109,676;
   its same-build control has finished at 107,457. Direct cost with weights 1
-  and 5, and HRRN plus global-64, are still being compared.
+  and 5 has finished at 107,083 and 109,836. HRRN plus global-64 is still running.
 - `runs/cgar-temporal-work-full-v8-20260918`, job 8898333: held behind that
   scheduler matrix, so full benchmark allocations do not overlap. It tests
   4M candidates with and without the global-64 scheduler, plus the 50k control.
@@ -39,7 +39,9 @@ including abandoned assignments, is approximately one fifth for both. Stronger
 coordination and generic route guidance deserve priority over a larger independent
 portfolio, whose quality gain was only about 0.5%.
 
-Possible bounded follow-ups are generic turn/congestion costs with consistent
-path scoring, or deterministic parallel repair over independently owned regions.
-These are ideas to investigate, not implemented or validated improvements. Keep
-the protected CGAR progress mechanism and explicit failure contract intact.
+Weighted turn guidance and deterministic parallel regional repair are now
+implemented as optional experiments, with regression and cold-deadline checks.
+Their full matrices are queued as jobs 8898338 and 8898343 respectively; see
+[ROUTING.md](ROUTING.md). Neither has a full-run performance result yet. Learned
+traffic costs remain an unimplemented possible follow-up. Preserve the protected
+CGAR progress mechanism and explicit failure contract in every variant.

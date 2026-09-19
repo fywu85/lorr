@@ -24,6 +24,7 @@
 #include "SharedEnv.h"
 #include "pibt_kernel.hpp"
 #include "temporal_geometry.hpp"
+#include "temporal_regions.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -102,12 +103,12 @@ private:
     std::vector<std::vector<int>> neighbors_;
 };
 
-// Shortest action costs over (cell, orientation), with unit-cost turns and
-// forward moves. Used only for guidance; the certified spatial potential stays
-// in DistanceOracle. Cache entries are complete reverse BFS traversals.
+// Shortest guidance costs over (cell, orientation), with unit forward cost and
+// an optional integer turn cost. The certified spatial potential remains in
+// DistanceOracle. Every cached reverse traversal is complete.
 class TurnDistanceOracle {
 public:
-    void init(const Certificate* cert, size_t max_bytes);
+    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1);
     const std::vector<int>* find(int goal);
     const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
     int value(const std::vector<int>& table, int cell, int orientation) const;
@@ -120,6 +121,8 @@ private:
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
     std::vector<int> cells_, index_, queue_;
+    int turn_cost_ = 1;
+    std::vector<std::vector<int>> buckets_;
     std::list<int> lru_;
     std::unordered_map<int, Entry> tables_;
 };
@@ -270,8 +273,10 @@ private:
     std::mt19937_64 temporal_rng_{0};
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
-    int temporal_candidate_limit_ = 0;
+    int temporal_candidate_limit_ = 0, turn_cost_ = 1;
     int temporal_workers_ = 1, temporal_threads_ = 1;
+    bool temporal_regions_ = false;
+    TemporalRegionOptions temporal_region_options_;
     Stats stats_;
     std::mt19937 rng_{0};
 

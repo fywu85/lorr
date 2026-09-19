@@ -399,8 +399,10 @@ void DistanceOracle::trim() {
     }
 }
 
-void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes) {
-    cert_ = cert; max_bytes_ = max_bytes;
+void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost) {
+    if (turn_cost < 1 || turn_cost > 16) throw std::invalid_argument("turn guidance cost must be in [1,16]");
+    cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost;
+    buckets_.assign(turn_cost_ + 1, {});
     index_.assign(cert->free.size(), -1); cells_.clear();
     for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
         index_[u] = static_cast<int>(cells_.size()); cells_.push_back(u);
@@ -421,15 +423,43 @@ const std::vector<int>* TurnDistanceOracle::table(int goal, std::chrono::steady_
     if (const auto* cached = find(goal)) return cached;
     std::vector<int> dist(cells_.size() * 4, kInf); queue_.clear();
     const int gp = cert_->pocket[goal], root = index_.at(goal) * 4;
-    for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
-    for (size_t head = 0; head < queue_.size(); ++head) {
-        if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
-        const int node = queue_[head], cell = cells_[node / 4], d = node % 4;
+    auto predecessors = [&](int node) {
+        const int cell = cells_[node / 4], d = node % 4;
         const int backward = grid_neighbor(cell, (d + 2) % 4, cert_->rows, cert_->cols);
-        int pred[3] = {node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
+        std::array<int, 3> pred{node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
         if (backward >= 0 && index_[backward] >= 0 && (cert_->core[backward] || cert_->pocket[backward] == gp))
             pred[2] = index_[backward] * 4 + d;
-        for (int v : pred) if (v >= 0 && dist[v] == kInf) { dist[v] = dist[node] + 1; queue_.push_back(v); }
+        return pred;
+    };
+    if (turn_cost_ == 1) {
+        // Preserve the original unit-cost traversal and cache contents exactly.
+        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
+        for (size_t head = 0; head < queue_.size(); ++head) {
+            if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+            const int node = queue_[head];
+            for (int v : predecessors(node)) if (v >= 0 && dist[v] == kInf) {
+                dist[v] = dist[node] + 1; queue_.push_back(v);
+            }
+        }
+    } else {
+        // Dial's bounded-integer Dijkstra: no heap and no partially cached table.
+        for (auto& bucket : buckets_) bucket.clear();
+        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; buckets_[0].push_back(root + d); }
+        size_t pending = 4, popped = 0; int distance = 0;
+        while (pending) {
+            if ((popped & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+            auto& bucket = buckets_[distance % buckets_.size()];
+            if (bucket.empty()) { ++distance; continue; }
+            const int node = bucket.back(); bucket.pop_back(); --pending; ++popped;
+            if (dist[node] != distance) continue;
+            const auto pred = predecessors(node);
+            for (int k = 0; k < 3; ++k) if (pred[k] >= 0) {
+                const int next_distance = distance + (k == 2 ? 1 : turn_cost_);
+                if (next_distance >= dist[pred[k]]) continue;
+                dist[pred[k]] = next_distance;
+                buckets_[next_distance % buckets_.size()].push_back(pred[k]); ++pending;
+            }
+        }
     }
     check_deadline(deadline, "turn_distance_table_complete");
     lru_.push_front(goal);
@@ -541,15 +571,29 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
+    turn_cost_ = env_int("CGAR_TURN_COST", 1);
+    if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
+    if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
+    temporal_regions_ = env_int("CGAR_TEMPORAL_REGIONS", 0) != 0;
+    temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
+    temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
+    temporal_region_options_.steps = env_int("CGAR_TEMPORAL_REGION_STEPS", 25000);
+    temporal_region_options_.threads = env_int("CGAR_TEMPORAL_REGION_THREADS", temporal_region_options_.parts);
+    if (temporal_regions_ && (!temporal_ || temporal_region_options_.parts < 1 || temporal_region_options_.parts > 32 ||
+        temporal_region_options_.rounds < 1 || temporal_region_options_.rounds > 16 ||
+        temporal_region_options_.steps < 1 || temporal_region_options_.steps > 1000000 ||
+        temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
+        throw std::invalid_argument("invalid CGAR temporal region configuration");
     if (temporal_) {
+        const int required_threads = std::max(temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 1);
         cpu_set_t affinity; CPU_ZERO(&affinity);
-        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < temporal_threads_)
+        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d allowed_cpus=%d\n",
-                    temporal_workers_, temporal_threads_, CPU_COUNT(&affinity));
+        std::printf("[cgar-temporal-allocation] workers=%d threads=%d region_threads=%d allowed_cpus=%d\n",
+                    temporal_workers_, temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
     }
     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));
@@ -596,7 +640,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     oracle_.init(&cert_, table_mb << 20);
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
-        turn_oracle_.init(&cert_, mb << 20);
+        turn_oracle_.init(&cert_, mb << 20, turn_cost_);
     }
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
@@ -900,7 +944,7 @@ PibtCandidates Cgar::pibt_candidates(int i) {
                 const int v = cands[k].cell;
                 const int d = v == u ? ori_[i] : direction(u, v, cert_.cols);
                 const int remaining = turn_oracle_.value(*table, v, d);
-                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + cands[k].turns;
+                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + turn_cost_ * cands[k].turns;
             }
         } else ++stats_.oriented_fallback;
     }

@@ -213,8 +213,30 @@ off, and these results do not imply performance on other maps.
   cap also applies, defaulting to 1,000,000 when this option is positive. It has
   only deadline-screening evidence so far, not a full-run performance claim.
 
-A deadline overrun propagates as `Timeout`; no partial worker portfolio or
-clock-truncated search is returned successfully. The [study](../../experiments/construction-20260918/README.md)
+Additional optional experiments are undergoing full-run evaluation:
+
+- `CGAR_TURN_COST` sets an integer rotation guidance cost (1–16, default 1).
+  Forward cost stays one. Complete reverse Dijkstra tables and temporal path
+  scores charge the same extra turn cost, including rotations represented by
+  terminal waits. The certificate's spatial potential is unchanged.
+- `CGAR_TEMPORAL_REGIONS` enables repair of disjoint portions of one complete
+  plan (1–32 regions; unset or 0 disables it). Partitions use only dimensions;
+  paths crossing a boundary and all protected paths stay fixed for that round.
+  Other candidates remain wholly inside their assigned region.
+  `CGAR_TEMPORAL_REGION_STEPS` sets attempts per region (default 25,000),
+  `CGAR_TEMPORAL_REGION_ROUNDS` sets complete rounds with shifted boundaries
+  (default 2, range 1–16), and `CGAR_TEMPORAL_REGION_THREADS` sets concurrent
+  execution (default the region count). Every worker finishes before merging;
+  the complete merged reservations are checked for collisions. Thread scheduling
+  does not change seeds, prescribed work, or the selected result.
+
+Turn costs 2/4 and four-region repair with one/two 25k-attempt rounds passed
+50-step deadline screens on reserved EPYC 9354 cores. Larger tested settings
+failed explicitly. These are feasibility checks, not throughput evidence; see
+[the pending experiment record](../../experiments/construction-20260918/ROUTING.md).
+
+A deadline overrun propagates as `Timeout`; no partial worker portfolio, regional
+merge, or clock-truncated search is returned successfully. The [study](../../experiments/construction-20260918/README.md)
 retains native conformance, full trajectories' fingerprints, failed settings,
 resource allocations and the independent Fable review. These finite checks do
 not constitute an end-to-end liveness proof.

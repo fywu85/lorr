@@ -37,7 +37,6 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     std::vector<std::vector<TemporalChoice>> choices(n_);
     std::vector<int> priorities(n_, kInf);
     std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
-    const auto& operations = TemporalGeometry::operations();
     for (int i = 0; i < n_; ++i) {
         check_deadline(deadline_, "temporal_candidates");
         const int goal = agents_[i].goal;
@@ -58,7 +57,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 const int h = spatial ? oracle_.value(*spatial, to) : oracle_.manhattan(to, goal);
                 if (h < d) { const int delta = (dir - direction + 4) % 4; turns = std::min(turns, delta == 3 ? 1 : delta); }
             }
-            return d + turns;
+            return d + turn_cost_ * turns;
         };
         auto distance = [&](int cell, int direction) {
             const int state = cell * 4 + direction;
@@ -68,18 +67,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
             return heuristic_value[state];
         };
-        auto cost = [&](const TemporalPath& path, int op) -> int64_t {
-            if (goal < 0) return op;
-            int d = distance(path.cells[4], path.orientation);
-            // Native NMS gives a terminal wait the best orientation reachable
-            // during that wait; these turns still consume actual simulation steps.
-            if (operations[op][4] == 3) {
-                d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4),
-                             distance(path.cells[4], (path.orientation + 3) % 4)});
-                if (operations[op][3] == 3) d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4));
-            }
-            for (int t = 0; t < 5; ++t) if (path.cells[t] == goal) d = -t;
-            return int64_t(d) * 50 - op;
+        auto cost = [&](const TemporalPath& path, int op) {
+            return TemporalGeometry::cost(path, op, goal, turn_cost_, distance);
         };
         priorities[i] = goal < 0 ? kInf : distance(loc_[i], ori_[i]);
         if (temporal_order_ == 2 && goal >= 0) {
@@ -156,7 +145,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     int best = 0;
     for (int worker = 1; worker < temporal_workers_; ++worker)
         if (results[worker]->score() > results[best]->score()) best = worker;
-    auto& search = *results[best];
+    TemporalRegionStats region_stats;
+    std::unique_ptr<TemporalPibt> regional;
+    if (temporal_regions_) regional = repair_temporal_regions(cert_.rows, cert_.cols, loc_, choices, pinned, power,
+        temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
+        [&] { check_deadline(deadline_, "temporal_region_repair"); });
+    auto& search = regional ? *regional : *results[best];
     // Validate the complete temporal result before exposing its first action.
     std::vector<int> owners(cells, -1), previous(n_);
     for (int t = 0; t < 5; ++t) {
@@ -191,11 +185,17 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
         }
     }
+    const auto& construction_stats = results[best]->stats;
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
         std::printf("[cgar-temporal] step=%d workers=%d threads=%d selected_worker=%d candidate_limit=%d roots=%lld accepted=%lld recursion=%lld candidates=%lld max_depth=%d exhausted=%lld repairs=%lld repair_accept=%lld score=%.3f\n",
-                    env_->curr_timestep + 1, temporal_workers_, temporal_threads_, best, temporal_candidate_limit_, search.stats.roots, search.stats.accepted, search.stats.recursive_calls,
-                    search.stats.candidates, search.stats.max_depth, search.stats.budget_exhausted,
-                    search.stats.repairs, search.stats.repairs_accepted, search.score());
+                    env_->curr_timestep + 1, temporal_workers_, temporal_threads_, best, temporal_candidate_limit_, construction_stats.roots, construction_stats.accepted, construction_stats.recursive_calls,
+                    construction_stats.candidates, construction_stats.max_depth, construction_stats.budget_exhausted,
+                    construction_stats.repairs, construction_stats.repairs_accepted, search.score());
+    if (diagnostics_ && temporal_regions_ && (env_->curr_timestep + 1) % 200 == 0)
+        std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d active=%lld candidates=%lld repairs=%lld accepted=%lld score=%.3f\n",
+                    env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,
+                    temporal_region_options_.threads, region_stats.active_robots, region_stats.candidates,
+                    region_stats.repairs, region_stats.accepted, search.score());
     check_deadline(deadline_, "temporal_complete");
 }
 }  // namespace cgar

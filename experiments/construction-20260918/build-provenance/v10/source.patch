@@ -1,0 +1,607 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -399,8 +399,10 @@
+     }
+ }
+ 
+-void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes) {
+-    cert_ = cert; max_bytes_ = max_bytes;
++void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost) {
++    if (turn_cost < 1 || turn_cost > 16) throw std::invalid_argument("turn guidance cost must be in [1,16]");
++    cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost;
++    buckets_.assign(turn_cost_ + 1, {});
+     index_.assign(cert->free.size(), -1); cells_.clear();
+     for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
+         index_[u] = static_cast<int>(cells_.size()); cells_.push_back(u);
+@@ -421,15 +423,43 @@
+     if (const auto* cached = find(goal)) return cached;
+     std::vector<int> dist(cells_.size() * 4, kInf); queue_.clear();
+     const int gp = cert_->pocket[goal], root = index_.at(goal) * 4;
+-    for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
+-    for (size_t head = 0; head < queue_.size(); ++head) {
+-        if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+-        const int node = queue_[head], cell = cells_[node / 4], d = node % 4;
++    auto predecessors = [&](int node) {
++        const int cell = cells_[node / 4], d = node % 4;
+         const int backward = grid_neighbor(cell, (d + 2) % 4, cert_->rows, cert_->cols);
+-        int pred[3] = {node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
++        std::array<int, 3> pred{node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
+         if (backward >= 0 && index_[backward] >= 0 && (cert_->core[backward] || cert_->pocket[backward] == gp))
+             pred[2] = index_[backward] * 4 + d;
+-        for (int v : pred) if (v >= 0 && dist[v] == kInf) { dist[v] = dist[node] + 1; queue_.push_back(v); }
++        return pred;
++    };
++    if (turn_cost_ == 1) {
++        // Preserve the original unit-cost traversal and cache contents exactly.
++        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
++        for (size_t head = 0; head < queue_.size(); ++head) {
++            if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
++            const int node = queue_[head];
++            for (int v : predecessors(node)) if (v >= 0 && dist[v] == kInf) {
++                dist[v] = dist[node] + 1; queue_.push_back(v);
++            }
++        }
++    } else {
++        // Dial's bounded-integer Dijkstra: no heap and no partially cached table.
++        for (auto& bucket : buckets_) bucket.clear();
++        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; buckets_[0].push_back(root + d); }
++        size_t pending = 4, popped = 0; int distance = 0;
++        while (pending) {
++            if ((popped & 1023) == 0) check_deadline(deadline, "turn_distance_table");
++            auto& bucket = buckets_[distance % buckets_.size()];
++            if (bucket.empty()) { ++distance; continue; }
++            const int node = bucket.back(); bucket.pop_back(); --pending; ++popped;
++            if (dist[node] != distance) continue;
++            const auto pred = predecessors(node);
++            for (int k = 0; k < 3; ++k) if (pred[k] >= 0) {
++                const int next_distance = distance + (k == 2 ? 1 : turn_cost_);
++                if (next_distance >= dist[pred[k]]) continue;
++                dist[pred[k]] = next_distance;
++                buckets_[next_distance % buckets_.size()].push_back(pred[k]); ++pending;
++            }
++        }
+     }
+     check_deadline(deadline, "turn_distance_table_complete");
+     lru_.push_front(goal);
+@@ -541,15 +571,29 @@
+     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
+     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
+     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
++    turn_cost_ = env_int("CGAR_TURN_COST", 1);
++    if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
++    if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
+     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
+     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
+     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
++    temporal_regions_ = env_int("CGAR_TEMPORAL_REGIONS", 0) != 0;
++    temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
++    temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
++    temporal_region_options_.steps = env_int("CGAR_TEMPORAL_REGION_STEPS", 25000);
++    temporal_region_options_.threads = env_int("CGAR_TEMPORAL_REGION_THREADS", temporal_region_options_.parts);
++    if (temporal_regions_ && (!temporal_ || temporal_region_options_.parts < 1 || temporal_region_options_.parts > 32 ||
++        temporal_region_options_.rounds < 1 || temporal_region_options_.rounds > 16 ||
++        temporal_region_options_.steps < 1 || temporal_region_options_.steps > 1000000 ||
++        temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
++        throw std::invalid_argument("invalid CGAR temporal region configuration");
+     if (temporal_) {
++        const int required_threads = std::max(temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 1);
+         cpu_set_t affinity; CPU_ZERO(&affinity);
+-        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < temporal_threads_)
++        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
+             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
+-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d allowed_cpus=%d\n",
+-                    temporal_workers_, temporal_threads_, CPU_COUNT(&affinity));
++        std::printf("[cgar-temporal-allocation] workers=%d threads=%d region_threads=%d allowed_cpus=%d\n",
++                    temporal_workers_, temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
+     }
+     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
+     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));
+@@ -596,7 +640,7 @@
+     oracle_.init(&cert_, table_mb << 20);
+     if (orientation_guidance_) {
+         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
+-        turn_oracle_.init(&cert_, mb << 20);
++        turn_oracle_.init(&cert_, mb << 20, turn_cost_);
+     }
+ 
+     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
+@@ -900,7 +944,7 @@
+                 const int v = cands[k].cell;
+                 const int d = v == u ? ori_[i] : direction(u, v, cert_.cols);
+                 const int remaining = turn_oracle_.value(*table, v, d);
+-                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + cands[k].turns;
++                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + turn_cost_ * cands[k].turns;
+             }
+         } else ++stats_.oriented_fallback;
+     }
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -24,6 +24,7 @@
+ #include "SharedEnv.h"
+ #include "pibt_kernel.hpp"
+ #include "temporal_geometry.hpp"
++#include "temporal_regions.hpp"
+ 
+ #include <chrono>
+ #include <cstdint>
+@@ -102,12 +103,12 @@
+     std::vector<std::vector<int>> neighbors_;
+ };
+ 
+-// Shortest action costs over (cell, orientation), with unit-cost turns and
+-// forward moves. Used only for guidance; the certified spatial potential stays
+-// in DistanceOracle. Cache entries are complete reverse BFS traversals.
++// Shortest guidance costs over (cell, orientation), with unit forward cost and
++// an optional integer turn cost. The certified spatial potential remains in
++// DistanceOracle. Every cached reverse traversal is complete.
+ class TurnDistanceOracle {
+ public:
+-    void init(const Certificate* cert, size_t max_bytes);
++    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1);
+     const std::vector<int>* find(int goal);
+     const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
+     int value(const std::vector<int>& table, int cell, int orientation) const;
+@@ -120,6 +121,8 @@
+     const Certificate* cert_ = nullptr;
+     size_t max_bytes_ = 0, table_bytes_ = 1;
+     std::vector<int> cells_, index_, queue_;
++    int turn_cost_ = 1;
++    std::vector<std::vector<int>> buckets_;
+     std::list<int> lru_;
+     std::unordered_map<int, Entry> tables_;
+ };
+@@ -270,8 +273,10 @@
+     std::mt19937_64 temporal_rng_{0};
+     bool temporal_ = false, temporal_equal_weight_ = false;
+     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
+-    int temporal_candidate_limit_ = 0;
++    int temporal_candidate_limit_ = 0, turn_cost_ = 1;
+     int temporal_workers_ = 1, temporal_threads_ = 1;
++    bool temporal_regions_ = false;
++    TemporalRegionOptions temporal_region_options_;
+     Stats stats_;
+     std::mt19937 rng_{0};
+ 
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -37,7 +37,6 @@
+     std::vector<std::vector<TemporalChoice>> choices(n_);
+     std::vector<int> priorities(n_, kInf);
+     std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
+-    const auto& operations = TemporalGeometry::operations();
+     for (int i = 0; i < n_; ++i) {
+         check_deadline(deadline_, "temporal_candidates");
+         const int goal = agents_[i].goal;
+@@ -58,7 +57,7 @@
+                 const int h = spatial ? oracle_.value(*spatial, to) : oracle_.manhattan(to, goal);
+                 if (h < d) { const int delta = (dir - direction + 4) % 4; turns = std::min(turns, delta == 3 ? 1 : delta); }
+             }
+-            return d + turns;
++            return d + turn_cost_ * turns;
+         };
+         auto distance = [&](int cell, int direction) {
+             const int state = cell * 4 + direction;
+@@ -68,18 +67,8 @@
+             }
+             return heuristic_value[state];
+         };
+-        auto cost = [&](const TemporalPath& path, int op) -> int64_t {
+-            if (goal < 0) return op;
+-            int d = distance(path.cells[4], path.orientation);
+-            // Native NMS gives a terminal wait the best orientation reachable
+-            // during that wait; these turns still consume actual simulation steps.
+-            if (operations[op][4] == 3) {
+-                d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4),
+-                             distance(path.cells[4], (path.orientation + 3) % 4)});
+-                if (operations[op][3] == 3) d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4));
+-            }
+-            for (int t = 0; t < 5; ++t) if (path.cells[t] == goal) d = -t;
+-            return int64_t(d) * 50 - op;
++        auto cost = [&](const TemporalPath& path, int op) {
++            return TemporalGeometry::cost(path, op, goal, turn_cost_, distance);
+         };
+         priorities[i] = goal < 0 ? kInf : distance(loc_[i], ori_[i]);
+         if (temporal_order_ == 2 && goal >= 0) {
+@@ -156,7 +145,12 @@
+     int best = 0;
+     for (int worker = 1; worker < temporal_workers_; ++worker)
+         if (results[worker]->score() > results[best]->score()) best = worker;
+-    auto& search = *results[best];
++    TemporalRegionStats region_stats;
++    std::unique_ptr<TemporalPibt> regional;
++    if (temporal_regions_) regional = repair_temporal_regions(cert_.rows, cert_.cols, loc_, choices, pinned, power,
++        temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
++        [&] { check_deadline(deadline_, "temporal_region_repair"); });
++    auto& search = regional ? *regional : *results[best];
+     // Validate the complete temporal result before exposing its first action.
+     std::vector<int> owners(cells, -1), previous(n_);
+     for (int t = 0; t < 5; ++t) {
+@@ -196,6 +190,11 @@
+                     env_->curr_timestep + 1, temporal_workers_, temporal_threads_, best, temporal_candidate_limit_, search.stats.roots, search.stats.accepted, search.stats.recursive_calls,
+                     search.stats.candidates, search.stats.max_depth, search.stats.budget_exhausted,
+                     search.stats.repairs, search.stats.repairs_accepted, search.score());
++    if (diagnostics_ && temporal_regions_ && (env_->curr_timestep + 1) % 200 == 0)
++        std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d active=%lld candidates=%lld repairs=%lld accepted=%lld score=%.3f\n",
++                    env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,
++                    temporal_region_options_.threads, region_stats.active_robots, region_stats.candidates,
++                    region_stats.repairs, region_stats.accepted, search.score());
+     check_deadline(deadline_, "temporal_complete");
+ }
+ }  // namespace cgar
+--- a/cgar/cgar_planner/temporal_geometry.hpp
++++ b/cgar/cgar_planner/temporal_geometry.hpp
+@@ -23,6 +23,33 @@
+             return pool;
+         }();
+         return value;
++    }
++
++    // All candidates consume five unit-time slots. Charge only the extra cost
++    // of real or terminal-wait rotations, so a costly turn cannot manufacture
++    // heuristic progress. Goal completion retains the native terminal reward.
++    template<class Distance>
++    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance) {
++        if (goal < 0) return op;
++        const auto& actions = operations()[op];
++        const int extra = turn_cost - 1;
++        int d = distance(path.cells[4], path.orientation);
++        if (actions[4] == 3) {
++            d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4) + extra,
++                         distance(path.cells[4], (path.orientation + 3) % 4) + extra});
++            if (actions[3] == 3)
++                d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4) + 2 * extra);
++        }
++        int turns = 0, turns_to_goal = -1;
++        for (int t = 0; t < 5; ++t) {
++            const int action = op == 0 && t == 0 ? path.first_action : actions[t];
++            turns += action == 1 || action == 2;
++            if (path.cells[t] == goal) {
++                if (turns_to_goal < 0) turns_to_goal = turns;
++                d = -t;
++            }
++        }
++        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * 50 - op;
+     }
+ 
+     template<class Deadline>
+--- a/cgar/cgar_planner/temporal_pibt.hpp
++++ b/cgar/cgar_planner/temporal_pibt.hpp
+@@ -36,14 +36,17 @@
+ public:
+     TemporalPibt(int cells, const std::vector<std::vector<TemporalChoice>>& choices,
+                  const std::vector<char>& fixed, const std::vector<double>& power,
+-                 int displacement_limit, uint64_t seed)
++                 int displacement_limit, uint64_t seed, const std::vector<int>* initial = nullptr,
++                 const std::vector<std::vector<int>>* choice_regions = nullptr, int region = -1)
+         : choices_(choices), fixed_(fixed), power_(power), limit_(displacement_limit), rng_(seed),
+-          selected_(choices.size(), 0), visited_(choices.size(), 0),
+-          used_cells_(cells), used_edges_(2 * cells) {
++          selected_(initial ? *initial : std::vector<int>(choices.size(), 0)), visited_(choices.size(), 0),
++          used_cells_(cells), used_edges_(2 * cells), choice_regions_(choice_regions), region_(region) {
++        if (selected_.size() != choices.size()) throw std::logic_error("invalid temporal initial size");
+         for (auto& x : used_cells_) x.fill(-1);
+         for (auto& x : used_edges_) x.fill(-1);
+         for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
+-            if (choices_[r].empty() || !choices_[r][0].path->valid) throw std::logic_error("invalid temporal seed");
++            if (selected_[r] < 0 || selected_[r] >= static_cast<int>(choices_[r].size()) ||
++                !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
+             if (blocker(r) != -1) throw std::logic_error("conflicting temporal seed");
+             add(r);
+         }
+@@ -60,7 +63,8 @@
+     }
+ 
+     template<class Deadline>
+-    void repair(int steps, Deadline check, long long candidate_limit = 0) {
++    void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr) {
++        if (roots && roots->empty()) return;
+         double best_score = score_;
+         auto best = selected_;
+         temperature_ = 0.001;
+@@ -70,7 +74,8 @@
+         for (int k = 0; k < steps && (!candidate_limit || stats.candidates < candidate_limit); ++k) {
+             check();
+             if (k && k % 128 == 0) horizon_ = random_int(3, 5);
+-            const int r = random_int(0, static_cast<int>(choices_.size()) - 1);
++            const int draw = random_int(0, static_cast<int>(roots ? roots->size() : choices_.size()) - 1);
++            const int r = roots ? (*roots)[draw] : draw;
+             ++stats.repairs;
+             if (!fixed_[r] && attempt(r, true, check)) ++stats.repairs_accepted;
+             temperature_ *= 0.999;
+@@ -86,6 +91,7 @@
+ 
+     const TemporalChoice& choice(int r) const { return choices_[r][selected_[r]]; }
+     int selected(int r) const { return selected_[r]; }
++    const std::vector<int>& selections() const { return selected_; }
+     double score() const { return score_; }
+     TemporalStats stats;
+ 
+@@ -136,7 +142,8 @@
+         // Choices are sorted by the native terminal score, excluding the wait
+         // seed at index zero. A failed ordinary wait remains displaceable.
+         for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
+-            if (choices_[r][k].path->depth > horizon_) continue;
++            if (choices_[r][k].path->depth > horizon_ ||
++                (choice_regions_ && (*choice_regions_)[r][k] != region_)) continue;
+             ++stats.candidates;
+             selected_[r] = k;
+             const int other = blocker(r);
+@@ -176,6 +183,8 @@
+     std::vector<int> selected_;
+     std::vector<uint64_t> visited_;
+     std::vector<std::array<int, kTemporalHorizon>> used_cells_, used_edges_;
++    const std::vector<std::vector<int>>* choice_regions_ = nullptr;
++    int region_ = -1;
+     uint64_t generation_ = 0;
+     double score_ = 0, old_score_ = 0, temperature_ = 0;
+ };
+--- /dev/null
++++ b/cgar/cgar_planner/temporal_regions.hpp
+@@ -0,0 +1,120 @@
++#pragma once
++// Deterministic parallel repair of disjoint portions of one temporal plan.
++// Partitions depend only on dimensions; no map identities or lane templates.
++#include "temporal_pibt.hpp"
++#include <atomic>
++#include <exception>
++#include <memory>
++#include <thread>
++
++namespace cgar {
++struct TemporalRegionOptions {
++    int parts = 4, rounds = 2, steps = 25000, threads = 4;
++};
++
++struct TemporalRegionStats {
++    long long active_robots = 0, candidates = 0, repairs = 0, accepted = 0;
++};
++
++template<class Deadline>
++std::unique_ptr<TemporalPibt> repair_temporal_regions(
++        int rows, int cols, const std::vector<int>& locations,
++        const std::vector<std::vector<TemporalChoice>>& choices,
++        const std::vector<char>& protected_robots, const std::vector<double>& power,
++        int displacement_limit, const TemporalPibt& initial,
++        const TemporalRegionOptions& options, std::mt19937_64& rng,
++        TemporalRegionStats& stats, Deadline check) {
++    if (options.parts < 1 || options.parts > 32 || options.rounds < 1 ||
++        options.steps < 0 || options.threads < 1 || options.threads > options.parts)
++        throw std::invalid_argument("invalid temporal region work limits");
++    const int count = static_cast<int>(choices.size()), cells = rows * cols;
++    int row_parts = 1, col_parts = options.parts;
++    double aspect = 1e100;
++    for (int rp = 1; rp <= options.parts; ++rp) if (options.parts % rp == 0) {
++        const int cp = options.parts / rp;
++        const double candidate = std::abs(std::log(double(rows) * cp / (double(cols) * rp)));
++        if (candidate < aspect) { aspect = candidate; row_parts = rp; col_parts = cp; }
++    }
++    std::vector<int> selected = initial.selections();
++    std::unique_ptr<TemporalPibt> merged;
++    for (int round = 0; round < options.rounds; ++round) {
++        check();
++        const int phase = round % 4;
++        const int row_shift = phase == 1 || phase == 2 ? rows / (2 * row_parts) : 0;
++        const int col_shift = phase == 1 || phase == 3 ? cols / (2 * col_parts) : 0;
++        std::vector<int> owner(cells);
++        for (int u = 0; u < cells; ++u)
++            owner[u] = ((u / cols + row_shift) % rows) * row_parts / rows * col_parts +
++                       ((u % cols + col_shift) % cols) * col_parts / cols;
++        std::vector<std::vector<int>> choice_regions(count), roots(options.parts);
++        for (int r = 0; r < count; ++r) {
++            if ((r & 63) == 0) check();
++            auto& allowed = choice_regions[r]; allowed.resize(choices[r].size(), -1);
++            for (size_t k = 0; k < choices[r].size(); ++k) {
++                int region = owner[locations[r]];
++                for (int u : choices[r][k].path->cells)
++                    if (owner[u] != region) { region = -1; break; }
++                allowed[k] = region;
++            }
++            // A robot whose existing path crosses a boundary stays fixed for
++            // this round. Its complete reservations remain visible everywhere.
++            const int region = allowed[selected[r]];
++            if (!protected_robots[r] && region >= 0) roots[region].push_back(r);
++        }
++        std::vector<uint64_t> seeds(options.parts);
++        for (auto& seed : seeds) seed = rng();
++        std::vector<std::unique_ptr<TemporalPibt>> results(options.parts);
++        std::vector<std::exception_ptr> errors(options.parts);
++        // Masks must outlive their searches, including merging below.
++        std::vector<std::vector<char>> fixed(options.parts, std::vector<char>(count, true));
++        for (int region = 0; region < options.parts; ++region)
++            for (int r : roots[region]) fixed[region][r] = false;
++        std::atomic<int> next{0};
++        auto work = [&] {
++            for (;;) {
++                const int region = next.fetch_add(1);
++                if (region >= options.parts) return;
++                if (roots[region].empty()) continue;
++                try {
++                    check();
++                    auto search = std::make_unique<TemporalPibt>(cells, choices, fixed[region], power,
++                        displacement_limit, seeds[region], &selected, &choice_regions, region);
++                    search->repair(options.steps, check, 0, &roots[region]);
++                    check(); results[region] = std::move(search);
++                } catch (...) { errors[region] = std::current_exception(); }
++            }
++        };
++        std::vector<std::thread> threads;
++        try {
++            for (int t = 1; t < options.threads; ++t) threads.emplace_back(work);
++        } catch (...) {
++            for (auto& thread : threads) thread.join();
++            throw;
++        }
++        work(); for (auto& thread : threads) thread.join();
++        for (const auto& error : errors) if (error) std::rethrow_exception(error);
++        const double before = merged ? merged->score() : initial.score();
++        const auto previous = selected;
++        for (int region = 0; region < options.parts; ++region) if (results[region]) {
++            for (int r = 0; r < count; ++r) {
++                if (fixed[region][r]) {
++                    if (results[region]->selected(r) != previous[r])
++                        throw std::logic_error("regional search changed a protected robot");
++                } else selected[r] = results[region]->selected(r);
++            }
++            stats.active_robots += roots[region].size();
++            const auto& observed = results[region]->stats;
++            stats.candidates += observed.candidates; stats.repairs += observed.repairs;
++            stats.accepted += observed.repairs_accepted;
++        }
++        // Reconstruct all reservations together. The constructor checks every
++        // occupied cell and edge, so an invalid merge cannot escape the layer.
++        merged = std::make_unique<TemporalPibt>(cells, choices, protected_robots, power,
++            displacement_limit, 0, &selected);
++        if (merged->score() + 1e-6 < before)
++            throw std::logic_error("regional repair reduced the complete-plan score");
++        check();
++    }
++    return merged;
++}
++}  // namespace cgar
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -373,30 +373,53 @@
+ }
+ void oriented_distances() {
+  const int rows=4,cols=5;std::vector<int> map={0,0,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0,0,1,1,1};
+- const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;oracle.init(&cert,1);
+- int checked=0;
+- for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
+-  const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+-  for(int from=0;from<rows*cols;++from)if(!map[from])for(int ori=0;ori<4;++ori){
+-   int expected=kInf;
+-   if(cert.core[from]||cert.pocket[from]==cert.pocket[goal]){
+-    std::vector<int> distance(rows*cols*4,-1);std::queue<int> q;q.push(from*4+ori);distance[from*4+ori]=0;
+-    while(!q.empty()){
+-     int u=q.front();q.pop();int cell=u/4,dir=u%4;
+-     if(cell==goal){expected=distance[u];break;}
+-     for(Action action:{Action::FW,Action::CR,Action::CCR}){
+-      int v=cell,d=dir;
+-      if(action==Action::FW)v=nb(cell,dir,rows,cols);
+-      else d=(dir+(action==Action::CR?1:3))%4;
+-      if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
+-      int node=v*4+d;if(distance[node]>=0)continue;distance[node]=distance[u]+1;q.push(node);
++ const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;
++ TemporalGeometry geometry;geometry.initialize(cert.free,rows,cols,[]{});
++ int checked=0,score_checks=0;
++ for(int turn_cost:{1,2,4,8}){
++  oracle.init(&cert,1,turn_cost);
++  for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
++   const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
++   auto distance=[&](int cell,int dir){return oracle.value(*table,cell,dir);};
++   for(int from=0;from<rows*cols;++from)if(!map[from])for(int ori=0;ori<4;++ori){
++    int expected=kInf;
++    if(cert.core[from]||cert.pocket[from]==cert.pocket[goal]){
++     // Independent forward heap Dijkstra; production uses reverse BFS/buckets.
++     using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;
++     std::vector<int> distances(rows*cols*4,kInf);q.push({0,from*4+ori});distances[from*4+ori]=0;
++     while(!q.empty()){
++      auto [cost,u]=q.top();q.pop();if(cost!=distances[u])continue;int cell=u/4,dir=u%4;
++      if(cell==goal){expected=cost;break;}
++      for(Action action:{Action::FW,Action::CR,Action::CCR}){
++       int v=cell,d=dir;
++       if(action==Action::FW)v=nb(cell,dir,rows,cols);
++       else d=(dir+(action==Action::CR?1:3))%4;
++       if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
++       int node=v*4+d,new_cost=cost+(action==Action::FW?1:turn_cost);
++       if(new_cost>=distances[node])continue;distances[node]=new_cost;q.push({new_cost,node});
++      }
+      }
+     }
++    if(distance(from,ori)!=expected)throw std::runtime_error("oriented oracle disagrees with independent weighted action search");
++    ++checked;
++    if(expected>=kInf)continue;
++    const auto& paths=geometry.paths(from,ori);
++    for(int op=0;op<129;++op){
++     const auto& path=paths[op];if(!path.valid)continue;
++     bool domain=true,completed=false;
++     for(int cell:path.cells){domain&=cert.core[cell]||cert.pocket[cell]==cert.pocket[goal];completed|=cell==goal;}
++     if(!domain||completed)continue;
++     // Over five slots, physically attainable progress cannot exceed five
++     // after charging extra turns, including virtual terminal-wait rotations.
++     const int64_t score=TemporalGeometry::cost(path,op,goal,turn_cost,distance);
++     if(score+op<int64_t(expected-5)*50)throw std::runtime_error("temporal score rewards an unpaid weighted turn");
++     ++score_checks;
++    }
+    }
+-   if(oracle.value(*table,from,ori)!=expected)throw std::runtime_error("oriented oracle disagrees with independent action search");
+-   ++checked;
+-  }
+-  oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
++   oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
++  }
++  bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
++  if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
+  }
+  // Demand admission can explicitly retain one resident and evict another.
+  TurnDistanceOracle retained;retained.init(&cert,1<<20);
+@@ -404,9 +427,7 @@
+  retained.table(1,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+  retained.retain({1});
+  if(retained.has(0)||!retained.has(1)||retained.capacity()<2)throw std::runtime_error("orientation retention failed");
+- bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
+- if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
+- std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" explicit_timeout=1 bounded_cache=1\n";
++ std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" weighted_score_checks="<<score_checks<<" turn_costs=1,2,4,8 explicit_timeout=1 bounded_cache=1\n";
+ }
+ 
+ void movement_diagnostics() {
+@@ -548,4 +569,57 @@
+  std::cout<<"TEMPORAL_PARALLEL passed workers=4 serial_vs_parallel_robot_decisions="<<comparisons<<"\n";
+ }
+ 
+-int main(){try{initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++void temporal_regions_regression() {
++ const int rows=9,cols=11,cells=rows*cols,count=48;
++ std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
++ int checked=0,boundary_cases=0;
++ for(int trial=0;trial<24;++trial){
++  std::mt19937_64 random(trial+77);std::vector<int> locations(cells);std::iota(locations.begin(),locations.end(),0);
++  std::shuffle(locations.begin(),locations.end(),random);locations.resize(count);
++  std::vector<std::vector<TemporalChoice>> choices(count);std::vector<char> fixed(count,false);std::vector<double> power(count,1);
++  std::vector<int> order(count);std::iota(order.begin(),order.end(),0);std::shuffle(order.begin(),order.end(),random);
++  for(int r=0;r<count;++r){
++   int goal=random()%cells;const auto& paths=geometry.paths(locations[r],random()%4);
++   for(int k=0;k<129;++k)if(paths[k].valid){
++    int end=paths[k].cells[4],distance=std::abs(end/cols-goal/cols)+std::abs(end%cols-goal%cols);
++    choices[r].push_back({&paths[k],int64_t(distance)*50-k,k});
++   }
++   std::sort(choices[r].begin()+1,choices[r].end(),[](const auto& a,const auto& b){return std::tie(a.cost,a.operation)<std::tie(b.cost,b.operation);});
++  }
++  TemporalPibt initial(cells,choices,fixed,power,8192,trial);initial.construct(order,[]{});initial.repair(512,[]{});
++  fixed[trial%count]=true; // Protect a complete path that may already be moving.
++  TemporalRegionOptions options;options.parts=4;options.rounds=4;options.steps=256;options.threads=1;
++  std::mt19937_64 serial_rng(trial+100),parallel_rng(trial+100);TemporalRegionStats a_stats,b_stats;
++  auto serial=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,serial_rng,a_stats,[]{});
++  options.threads=4;
++  auto parallel=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,parallel_rng,b_stats,[]{});
++  if(serial->selections()!=parallel->selections()||a_stats.candidates!=b_stats.candidates||a_stats.repairs!=b_stats.repairs||serial_rng!=parallel_rng)
++   throw std::runtime_error("regional parallel scheduling changed the complete result");
++  if(serial->score()+1e-6<initial.score())throw std::runtime_error("regional complete-plan score decreased");
++  if(a_stats.active_robots<count*options.rounds)++boundary_cases;
++  for(int r=0;r<count;++r)if(fixed[r]&&serial->selected(r)!=initial.selected(r))throw std::runtime_error("regional repair changed protected path");
++  for(int t=0;t<5;++t){
++   std::vector<int> owner(cells,-1),previous(count);
++   for(int r=0;r<count;++r){const auto& path=*serial->choice(r).path;int to=path.cells[t];previous[r]=t?path.cells[t-1]:locations[r];
++    if(owner[to]>=0)throw std::runtime_error("regional merge vertex collision");owner[to]=r;}
++   for(int r=0;r<count;++r){int other=owner[previous[r]];
++    if(other>=0&&other!=r&&previous[other]==serial->choice(r).path->cells[t])throw std::runtime_error("regional merge edge swap");}
++  }
++  if(trial==0){
++   std::atomic<int> calls{0};std::mt19937_64 failure_rng(100);TemporalRegionStats ignored;bool failed=false;
++   try{repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,failure_rng,ignored,[&]{if(++calls>30)throw Timeout("regional_fixture");});}
++   catch(const Timeout&){failed=true;}
++   if(!failed)throw std::runtime_error("regional worker timeout was swallowed");
++  }
++  checked+=count;
++ }
++ if(!boundary_cases)throw std::runtime_error("regional fixture did not exercise boundaries");
++ std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" complete_merge_valid=1 protected_paths=1 explicit_timeout=1\n";
++ // Exercise the production adapter, including primary/pocket/capacity protection.
++ setenv("CGAR_TEMPORAL_REGIONS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
++ setenv("CGAR_TEMPORAL_REGION_STEPS","128",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","2",1);
++ temporal_primary_regression();
++ for(const char* name:{"CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_THREADS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS"})unsetenv(name);
++}
++
++int main(){try{temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

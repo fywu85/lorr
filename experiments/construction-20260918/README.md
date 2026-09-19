@@ -25,3 +25,6 @@ next experiments. Source patches and build checks are retained under
 `build-provenance/`; compact matrices, hashes and resource records are under
 `results/`. The original probe did not modify the active planner; the opt-in
 implementation was added afterwards and is described in the full-run report.
+
+[ROUTING.md](ROUTING.md) records the subsequent weighted-turn and regional-repair
+experiments, their deadline-only screens, full-run queue, and validation limits.

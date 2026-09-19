@@ -373,30 +373,53 @@ void reassignment_fair_admission() {
 }
 void oriented_distances() {
  const int rows=4,cols=5;std::vector<int> map={0,0,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0,0,1,1,1};
- const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;oracle.init(&cert,1);
- int checked=0;
- for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
-  const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
-  for(int from=0;from<rows*cols;++from)if(!map[from])for(int ori=0;ori<4;++ori){
-   int expected=kInf;
-   if(cert.core[from]||cert.pocket[from]==cert.pocket[goal]){
-    std::vector<int> distance(rows*cols*4,-1);std::queue<int> q;q.push(from*4+ori);distance[from*4+ori]=0;
-    while(!q.empty()){
-     int u=q.front();q.pop();int cell=u/4,dir=u%4;
-     if(cell==goal){expected=distance[u];break;}
-     for(Action action:{Action::FW,Action::CR,Action::CCR}){
-      int v=cell,d=dir;
-      if(action==Action::FW)v=nb(cell,dir,rows,cols);
-      else d=(dir+(action==Action::CR?1:3))%4;
-      if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
-      int node=v*4+d;if(distance[node]>=0)continue;distance[node]=distance[u]+1;q.push(node);
+ const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;
+ TemporalGeometry geometry;geometry.initialize(cert.free,rows,cols,[]{});
+ int checked=0,score_checks=0;
+ for(int turn_cost:{1,2,4,8}){
+  oracle.init(&cert,1,turn_cost);
+  for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
+   const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+   auto distance=[&](int cell,int dir){return oracle.value(*table,cell,dir);};
+   for(int from=0;from<rows*cols;++from)if(!map[from])for(int ori=0;ori<4;++ori){
+    int expected=kInf;
+    if(cert.core[from]||cert.pocket[from]==cert.pocket[goal]){
+     // Independent forward heap Dijkstra; production uses reverse BFS/buckets.
+     using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;
+     std::vector<int> distances(rows*cols*4,kInf);q.push({0,from*4+ori});distances[from*4+ori]=0;
+     while(!q.empty()){
+      auto [cost,u]=q.top();q.pop();if(cost!=distances[u])continue;int cell=u/4,dir=u%4;
+      if(cell==goal){expected=cost;break;}
+      for(Action action:{Action::FW,Action::CR,Action::CCR}){
+       int v=cell,d=dir;
+       if(action==Action::FW)v=nb(cell,dir,rows,cols);
+       else d=(dir+(action==Action::CR?1:3))%4;
+       if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
+       int node=v*4+d,new_cost=cost+(action==Action::FW?1:turn_cost);
+       if(new_cost>=distances[node])continue;distances[node]=new_cost;q.push({new_cost,node});
+      }
      }
     }
+    if(distance(from,ori)!=expected)throw std::runtime_error("oriented oracle disagrees with independent weighted action search");
+    ++checked;
+    if(expected>=kInf)continue;
+    const auto& paths=geometry.paths(from,ori);
+    for(int op=0;op<129;++op){
+     const auto& path=paths[op];if(!path.valid)continue;
+     bool domain=true,completed=false;
+     for(int cell:path.cells){domain&=cert.core[cell]||cert.pocket[cell]==cert.pocket[goal];completed|=cell==goal;}
+     if(!domain||completed)continue;
+     // Over five slots, physically attainable progress cannot exceed five
+     // after charging extra turns, including virtual terminal-wait rotations.
+     const int64_t score=TemporalGeometry::cost(path,op,goal,turn_cost,distance);
+     if(score+op<int64_t(expected-5)*50)throw std::runtime_error("temporal score rewards an unpaid weighted turn");
+     ++score_checks;
+    }
    }
-   if(oracle.value(*table,from,ori)!=expected)throw std::runtime_error("oriented oracle disagrees with independent action search");
-   ++checked;
+   oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
   }
-  oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
+  bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
+  if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
  }
  // Demand admission can explicitly retain one resident and evict another.
  TurnDistanceOracle retained;retained.init(&cert,1<<20);
@@ -404,9 +427,7 @@ void oriented_distances() {
  retained.table(1,std::chrono::steady_clock::now()+std::chrono::seconds(1));
  retained.retain({1});
  if(retained.has(0)||!retained.has(1)||retained.capacity()<2)throw std::runtime_error("orientation retention failed");
- bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
- if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
- std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" explicit_timeout=1 bounded_cache=1\n";
+ std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" weighted_score_checks="<<score_checks<<" turn_costs=1,2,4,8 explicit_timeout=1 bounded_cache=1\n";
 }
 
 void movement_diagnostics() {
@@ -548,4 +569,63 @@ void temporal_parallel_regression() {
  std::cout<<"TEMPORAL_PARALLEL passed workers=4 serial_vs_parallel_robot_decisions="<<comparisons<<"\n";
 }
 
-int main(){try{initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void temporal_regions_regression() {
+ const int rows=9,cols=11,cells=rows*cols,count=48;
+ std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
+ int checked=0,boundary_cases=0;
+ for(int trial=0;trial<24;++trial){
+  std::mt19937_64 random(trial+77);std::vector<int> locations(cells);std::iota(locations.begin(),locations.end(),0);
+  std::shuffle(locations.begin(),locations.end(),random);locations.resize(count);
+  std::vector<std::vector<TemporalChoice>> choices(count);std::vector<char> fixed(count,false);std::vector<double> power(count,1);
+  std::vector<int> order(count);std::iota(order.begin(),order.end(),0);std::shuffle(order.begin(),order.end(),random);
+  for(int r=0;r<count;++r){
+   int goal=random()%cells;const auto& paths=geometry.paths(locations[r],random()%4);
+   for(int k=0;k<129;++k)if(paths[k].valid){
+    int end=paths[k].cells[4],distance=std::abs(end/cols-goal/cols)+std::abs(end%cols-goal%cols);
+    choices[r].push_back({&paths[k],int64_t(distance)*50-k,k});
+   }
+   std::sort(choices[r].begin()+1,choices[r].end(),[](const auto& a,const auto& b){return std::tie(a.cost,a.operation)<std::tie(b.cost,b.operation);});
+  }
+  TemporalPibt initial(cells,choices,fixed,power,8192,trial);initial.construct(order,[]{});initial.repair(512,[]{});
+  fixed[trial%count]=true; // Protect a complete path that may already be moving.
+  TemporalRegionOptions options;options.parts=4;options.rounds=4;options.steps=256;options.threads=1;
+  std::mt19937_64 serial_rng(trial+100),parallel_rng(trial+100);TemporalRegionStats a_stats,b_stats;
+  auto serial=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,serial_rng,a_stats,[]{});
+  options.threads=4;
+  auto parallel=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,parallel_rng,b_stats,[]{});
+  if(serial->selections()!=parallel->selections()||a_stats.candidates!=b_stats.candidates||a_stats.repairs!=b_stats.repairs||serial_rng!=parallel_rng)
+   throw std::runtime_error("regional parallel scheduling changed the complete result");
+  if(serial->score()+1e-6<initial.score())throw std::runtime_error("regional complete-plan score decreased");
+  // Count boundary-crossing input paths directly; protected robots alone do
+  // not establish that the geometric boundary rule was exercised.
+  auto quadrant=[&](int cell){return (cell/cols)*2/rows*2+(cell%cols)*2/cols;};
+  bool crosses=false;
+  for(int r=0;r<count;++r)if(!fixed[r])for(int cell:initial.choice(r).path->cells)
+   crosses|=quadrant(cell)!=quadrant(locations[r]);
+  if(crosses)++boundary_cases;
+  for(int r=0;r<count;++r)if(fixed[r]&&serial->selected(r)!=initial.selected(r))throw std::runtime_error("regional repair changed protected path");
+  for(int t=0;t<5;++t){
+   std::vector<int> owner(cells,-1),previous(count);
+   for(int r=0;r<count;++r){const auto& path=*serial->choice(r).path;int to=path.cells[t];previous[r]=t?path.cells[t-1]:locations[r];
+    if(owner[to]>=0)throw std::runtime_error("regional merge vertex collision");owner[to]=r;}
+   for(int r=0;r<count;++r){int other=owner[previous[r]];
+    if(other>=0&&other!=r&&previous[other]==serial->choice(r).path->cells[t])throw std::runtime_error("regional merge edge swap");}
+  }
+  if(trial==0){
+   std::atomic<int> calls{0};std::mt19937_64 failure_rng(100);TemporalRegionStats ignored;bool failed=false;
+   try{repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,failure_rng,ignored,[&]{if(++calls>30)throw Timeout("regional_fixture");});}
+   catch(const Timeout&){failed=true;}
+   if(!failed)throw std::runtime_error("regional worker timeout was swallowed");
+  }
+  checked+=count;
+ }
+ if(!boundary_cases)throw std::runtime_error("regional fixture did not exercise boundaries");
+ std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" complete_merge_valid=1 protected_paths=1 explicit_timeout=1\n";
+ // Exercise the production adapter, including primary/pocket/capacity protection.
+ setenv("CGAR_TEMPORAL_REGIONS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
+ setenv("CGAR_TEMPORAL_REGION_STEPS","128",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","2",1);
+ temporal_primary_regression();
+ for(const char* name:{"CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_THREADS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS"})unsetenv(name);
+}
+
+int main(){try{temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

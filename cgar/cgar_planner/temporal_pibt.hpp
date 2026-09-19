@@ -36,14 +36,17 @@ class TemporalPibt {
 public:
     TemporalPibt(int cells, const std::vector<std::vector<TemporalChoice>>& choices,
                  const std::vector<char>& fixed, const std::vector<double>& power,
-                 int displacement_limit, uint64_t seed)
+                 int displacement_limit, uint64_t seed, const std::vector<int>* initial = nullptr,
+                 const std::vector<std::vector<int>>* choice_regions = nullptr, int region = -1)
         : choices_(choices), fixed_(fixed), power_(power), limit_(displacement_limit), rng_(seed),
-          selected_(choices.size(), 0), visited_(choices.size(), 0),
-          used_cells_(cells), used_edges_(2 * cells) {
+          selected_(initial ? *initial : std::vector<int>(choices.size(), 0)), visited_(choices.size(), 0),
+          used_cells_(cells), used_edges_(2 * cells), choice_regions_(choice_regions), region_(region) {
+        if (selected_.size() != choices.size()) throw std::logic_error("invalid temporal initial size");
         for (auto& x : used_cells_) x.fill(-1);
         for (auto& x : used_edges_) x.fill(-1);
         for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
-            if (choices_[r].empty() || !choices_[r][0].path->valid) throw std::logic_error("invalid temporal seed");
+            if (selected_[r] < 0 || selected_[r] >= static_cast<int>(choices_[r].size()) ||
+                !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
             if (blocker(r) != -1) throw std::logic_error("conflicting temporal seed");
             add(r);
         }
@@ -60,7 +63,8 @@ public:
     }
 
     template<class Deadline>
-    void repair(int steps, Deadline check, long long candidate_limit = 0) {
+    void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr) {
+        if (roots && roots->empty()) return;
         double best_score = score_;
         auto best = selected_;
         temperature_ = 0.001;
@@ -70,7 +74,8 @@ public:
         for (int k = 0; k < steps && (!candidate_limit || stats.candidates < candidate_limit); ++k) {
             check();
             if (k && k % 128 == 0) horizon_ = random_int(3, 5);
-            const int r = random_int(0, static_cast<int>(choices_.size()) - 1);
+            const int draw = random_int(0, static_cast<int>(roots ? roots->size() : choices_.size()) - 1);
+            const int r = roots ? (*roots)[draw] : draw;
             ++stats.repairs;
             if (!fixed_[r] && attempt(r, true, check)) ++stats.repairs_accepted;
             temperature_ *= 0.999;
@@ -86,6 +91,7 @@ public:
 
     const TemporalChoice& choice(int r) const { return choices_[r][selected_[r]]; }
     int selected(int r) const { return selected_[r]; }
+    const std::vector<int>& selections() const { return selected_; }
     double score() const { return score_; }
     TemporalStats stats;
 
@@ -136,7 +142,8 @@ private:
         // Choices are sorted by the native terminal score, excluding the wait
         // seed at index zero. A failed ordinary wait remains displaceable.
         for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
-            if (choices_[r][k].path->depth > horizon_) continue;
+            if (choices_[r][k].path->depth > horizon_ ||
+                (choice_regions_ && (*choice_regions_)[r][k] != region_)) continue;
             ++stats.candidates;
             selected_[r] = k;
             const int other = blocker(r);
@@ -176,6 +183,8 @@ private:
     std::vector<int> selected_;
     std::vector<uint64_t> visited_;
     std::vector<std::array<int, kTemporalHorizon>> used_cells_, used_edges_;
+    const std::vector<std::vector<int>>* choice_regions_ = nullptr;
+    int region_ = -1;
     uint64_t generation_ = 0;
     double score_ = 0, old_score_ = 0, temperature_ = 0;
 };

@@ -25,6 +25,33 @@ public:
         return value;
     }
 
+    // All candidates consume five unit-time slots. Charge only the extra cost
+    // of real or terminal-wait rotations, so a costly turn cannot manufacture
+    // heuristic progress. Goal completion retains the native terminal reward.
+    template<class Distance>
+    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance) {
+        if (goal < 0) return op;
+        const auto& actions = operations()[op];
+        const int extra = turn_cost - 1;
+        int d = distance(path.cells[4], path.orientation);
+        if (actions[4] == 3) {
+            d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4) + extra,
+                         distance(path.cells[4], (path.orientation + 3) % 4) + extra});
+            if (actions[3] == 3)
+                d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4) + 2 * extra);
+        }
+        int turns = 0, turns_to_goal = -1;
+        for (int t = 0; t < 5; ++t) {
+            const int action = op == 0 && t == 0 ? path.first_action : actions[t];
+            turns += action == 1 || action == 2;
+            if (path.cells[t] == goal) {
+                if (turns_to_goal < 0) turns_to_goal = turns;
+                d = -t;
+            }
+        }
+        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * 50 - op;
+    }
+
     template<class Deadline>
     void initialize(const std::vector<char>& free, int rows, int cols, Deadline check) {
         rows_ = rows; cols_ = cols; free_ = free; index_.assign(free.size() * 4, -1);
