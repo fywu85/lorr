@@ -60,6 +60,34 @@ def main():
     assert checked['completed_loaded_steps']['mean'] == 3 and checked['completed_loaded_forward_excess_over_shortest'] == 0
     assert checked['full_phase_actions']['idle']['wait'] == 5 and checked['full_phase_actions']['empty']['fw'] == 2
     assert checked['full_phase_actions']['loaded'] == checked['completed_loaded_action_totals']
+    # Opposite turn transitions can overlap. R,W,C,R contains two stationary
+    # reversals and one adjacent reversal; the loaded phase starts at step3.
+    reversal = {'teamSize': 2, 'makespan': 7, 'numTaskFinished': 1,
+                'numPlannerErrors': 0, 'numScheduleErrors': 0, 'numEntryTimeouts': 0,
+                'start': [[0, 0, 'E'], [0, 4, 'W']],
+                'actualPaths': ['F,F,R,W,C,R,F', 'W,W,W,W,W,W,W'],
+                'actualSchedule': ['1:0', '0:-1'],
+                'tasks': [[0, 0, [0, 2, 1, 2]]], 'events': [[2, 0, 0, 1], [7, 0, 0, 2]]}
+    # A turn at pickup belongs to the empty phase. Its opposite loaded turn
+    # must not be counted across the phase boundary; only C,R at steps2/3 counts.
+    boundary = {'teamSize': 2, 'makespan': 4, 'numTaskFinished': 1,
+                'numPlannerErrors': 0, 'numScheduleErrors': 0, 'numEntryTimeouts': 0,
+                'start': [[0, 0, 'E'], [0, 4, 'W']],
+                'actualPaths': ['R,C,R,F', 'W,W,W,W'],
+                'actualSchedule': ['1:0', '0:-1'],
+                'tasks': [[0, 0, [0, 0, 1, 0]]], 'events': [[1, 0, 0, 1], [4, 0, 0, 2]]}
+    for name, data, expected in [('reversal-fixture', reversal, {'adjacent': 1, 'stationary': 2}),
+                                 ('boundary-fixture', boundary, {'adjacent': 1, 'stationary': 1})]:
+        (out / (name + '.json')).write_text(json.dumps(data))
+        subprocess.run([str(binary), str(out / 'fixture.map'), str(out / (name + '.json')),
+                        str(out / (name + '-result.json'))], check=True)
+        observed = json.loads((out / (name + '-result.json')).read_text())
+        assert observed['completed_opposite_turn_transitions'] == expected
+        assert observed['full_opposite_turn_transitions']['loaded'] == expected
+        assert observed['full_opposite_turn_transitions']['empty'] == {'adjacent': 0, 'stationary': 0}
+        assert observed['full_opposite_turn_transitions']['idle'] == {'adjacent': 0, 'stationary': 0}
+    for observed in (result, checked):
+        assert observed['completed_opposite_turn_transitions'] == {'adjacent': 0, 'stationary': 0}
     cases = {
         'cgar_cache': 'runs/cgar-temporal-full-v1-20260918/orientation_8192-s0-r0/WAREHOUSE.json',
         'cgar_equal_50000': 'runs/cgar-temporal-validation-v5-20260918/equal_50000-s0-r0/WAREHOUSE.json',
@@ -69,7 +97,7 @@ def main():
     if a.cases:
         cases = json.loads(a.cases.read_text())
         assert isinstance(cases, dict) and cases
-        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture', 'fixture-result', 'loaded-fixture', 'loaded-fixture-result', 'provenance') for name in cases)
+        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture', 'fixture-result', 'loaded-fixture', 'loaded-fixture-result', 'reversal-fixture', 'reversal-fixture-result', 'boundary-fixture', 'boundary-fixture-result', 'provenance') for name in cases)
     inputs = {}
     for name, path in cases.items():
         target = ROOT / path
@@ -84,7 +112,8 @@ def main():
         'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'script_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
-        'command': command, 'fixture_passed': True, 'loaded_action_fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
+        'command': command, 'fixture_passed': True, 'loaded_action_fixture_passed': True,
+        'opposite_turn_fixture_passed': True, 'phase_boundary_fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
         'map': str(a.map.resolve()), 'map_sha256': hashlib.sha256(a.map.read_bytes()).hexdigest()}, indent=2) + '\n')
 
 

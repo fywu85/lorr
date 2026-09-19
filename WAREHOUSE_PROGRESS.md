@@ -1,10 +1,12 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 19:12:48 UTC.
+Updated: 2026-09-19 19:37:35 UTC.
 
 **Current six-seed reference: 142,474.8 mean tasks**, graded strength 4/scale 4 with margin 25, turn-build 128, heading/traffic-aware pickup selection, and 64 complete pickup fields per step. The six-seed range is **141,802–143,325**. All six full totals and final 1,000-step windows improve over the preceding pickup-flow reference (**+2.215%** in the mean); empty robot-steps fall 7.43–7.84% and outstanding age p90 falls 5–14 steps. Sixteen fields also improve all six seeds, but 64 fields win every full total. The absolute high is **143,767**, from the four-worker policy. That policy wins five seeds but regresses on seed5 and is not promoted. The 32-field policy and both tested cost-based discovery profiles are rejected. The target remains unmet.
 
 The local KittyKnight reference is **152,981**. The confirmed mean is **6.87% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+
+The latest sixteen-worker candidate completes **143,749 / 143,571** tasks on seeds0/2 (**+0.879%** versus the paired one-worker control), with both final windows improving. Four remaining seeds are running before any promotion. It uses16 reserved cores,7.43–7.68 average cores,379.5–392.0ms mean step time and11.976GB peak RSS. Eight workers have mixed results; fractional turn costs and warm starts lose both matched seeds. These tests add no new absolute record. [Worker comparison](experiments/construction-20260918/PICKUP_FULL_WORKER_SCALING.md) · [Turn/warm comparison](experiments/construction-20260918/FRACTIONAL_MIXED.md).
 
 ## New best scores over time
 

@@ -69,3 +69,30 @@ and all-warm/mixed with four-cold. The automatic paired table uses one-worker0;
 it does not replace these matched comparisons. All full decisions must meet1s.
 Any positive effect requires six-seed confirmation before promotion.
 [Configuration](fractional-mixed-screen-variants.json).
+
+## Full results: keep both options disabled
+
+Jobs8898981/8898982 completed all twelve full runs. All60,000 complete entries
+meet one second (maximum937.83ms), with peakRSS12.147GB. Every source/test hash
+matches exact commitf6d0ae448504762136c4f5d85f25d7d207207965. Both one-worker and
+four-cold controls exactly reproduce the prior full trajectories. Disjoint physical
+core bindings and absence of a CPU quota were verified.
+
+| Policy | Seed0 tasks | Seed2 tasks | Mean change versus matched control |
+|---|---:|---:|---:|
+|One worker, surcharge0|141829|142988|Control|
+|One worker, surcharge1|141768|141778|−0.446%|
+|One worker, surcharge2|141263|142599|−0.335%|
+|Four cold workers|143340|143409|Control|
+|Four warm workers|142094|142669|−0.693%|
+|One warm/three cold workers|142724|142817|−0.421%|
+
+Every candidate loses both full totals to its matched control. Surcharge2 reduces
+loaded turns9.04%/9.54%, but loaded waits rise12.86%/10.93%; fewer turns alone do
+not imply more completed tasks. Both warm variants also lose both final1,000-step
+windows. At step5000, mixed mode records4,999 warm and15,001 cold constructor
+runs; all-warm records19,996 warm and4 cold, confirming nonvacuous participation.
+
+Neither option is promoted or queued for six-seed confirmation. The existing
+six-seed reference and its defaults remain unchanged.
+[Full matched comparisons and verification](results/fractional-mixed-full-v44/comparison.json).

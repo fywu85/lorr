@@ -1,0 +1,208 @@
+{
+  "checked_utc": "2026-09-19T19:29:43.292195+00:00",
+  "scope": "Offline replay of seven complete 5000-step, 10000-robot warehouse trajectories. Four hand-counted fixtures pass. No production planner changes.",
+  "definitions": {
+    "adjacent": "Opposite quarter-turn actions on consecutive steps of the same robot, task and phase.",
+    "stationary": "Opposite consecutive quarter-turn actions allowing intervening waits, but no forward/unknown action or robot/task/phase boundary. Includes adjacent transitions."
+  },
+  "checks": {
+    "full64_seed0": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_previous_fields_exact": true,
+      "previous_fields_checked": 36,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-full-v42/metrics.json"
+    },
+    "full64_seed2": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_previous_fields_exact": true,
+      "previous_fields_checked": 36,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-full-v42/metrics.json"
+    },
+    "kittyknight": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_previous_fields_exact": true,
+      "previous_fields_checked": 36
+    },
+    "workers4_seed0": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-workers-full-v43/metrics.json"
+    },
+    "workers4_seed2": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-workers-full-v43/metrics.json"
+    },
+    "workers4_seed5": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-workers-confirm-v43/metrics.json"
+    },
+    "workers1_seed5": {
+      "conserves_all_50000000_robot_steps": true,
+      "all_cgar_phase_actions_exact": true,
+      "metrics": "experiments/construction-20260918/results/pickup-full-workers-confirm-v43/metrics.json"
+    }
+  },
+  "rows": [
+    {
+      "case": "full64_seed0",
+      "tasks": 141829,
+      "completed_chain_mean": 241.7579902558715,
+      "loaded_forward_mean": 250.88283778352806,
+      "loaded_forward_excess_mean": 9.124847527656543,
+      "loaded_turn_mean": 11.191413603705872,
+      "loaded_wait_mean": 15.311114088091998,
+      "loaded_elapsed_mean": 277.3853654753259,
+      "completed_adjacent_opposite_turns_mean": 0.49764152606307593,
+      "completed_stationary_opposite_turns_mean": 0.5239760556726762,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 71358,
+        "stationary": 75142
+      }
+    },
+    {
+      "case": "full64_seed2",
+      "tasks": 142988,
+      "completed_chain_mean": 241.80891403474416,
+      "loaded_forward_mean": 250.00399334209862,
+      "loaded_forward_excess_mean": 8.195079307354463,
+      "loaded_turn_mean": 10.355148683805634,
+      "loaded_wait_mean": 14.099973424343302,
+      "loaded_elapsed_mean": 274.45911545024757,
+      "completed_adjacent_opposite_turns_mean": 0.4091881836238006,
+      "completed_stationary_opposite_turns_mean": 0.4316306263462668,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 59504,
+        "stationary": 62770
+      }
+    },
+    {
+      "case": "kittyknight",
+      "tasks": 152981,
+      "completed_chain_mean": 233.8357050875599,
+      "loaded_forward_mean": 238.42926899418882,
+      "loaded_forward_excess_mean": 4.593563906628928,
+      "loaded_turn_mean": 5.678476412103464,
+      "loaded_wait_mean": 8.410684987024533,
+      "loaded_elapsed_mean": 252.5184303933168,
+      "completed_adjacent_opposite_turns_mean": 0.09218138200168649,
+      "completed_stationary_opposite_turns_mean": 0.11018361757342415,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 14770,
+        "stationary": 17668
+      }
+    },
+    {
+      "case": "workers4_seed0",
+      "tasks": 143340,
+      "completed_chain_mean": 241.81018557276406,
+      "loaded_forward_mean": 249.7362355239291,
+      "loaded_forward_excess_mean": 7.926049951165062,
+      "loaded_turn_mean": 10.333633319380494,
+      "loaded_wait_mean": 13.830438119157249,
+      "loaded_elapsed_mean": 273.90030696246686,
+      "completed_adjacent_opposite_turns_mean": 0.3565717873587275,
+      "completed_stationary_opposite_turns_mean": 0.3762731965955072,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 51914,
+        "stationary": 54783
+      }
+    },
+    {
+      "case": "workers4_seed2",
+      "tasks": 143409,
+      "completed_chain_mean": 241.82950163518328,
+      "loaded_forward_mean": 249.77919795828714,
+      "loaded_forward_excess_mean": 7.94969632310385,
+      "loaded_turn_mean": 10.192826112726538,
+      "loaded_wait_mean": 14.118674560174048,
+      "loaded_elapsed_mean": 274.0906986311877,
+      "completed_adjacent_opposite_turns_mean": 0.3534645663800738,
+      "completed_stationary_opposite_turns_mean": 0.37111338897837653,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 51532,
+        "stationary": 54124
+      }
+    },
+    {
+      "case": "workers4_seed5",
+      "tasks": 139710,
+      "completed_chain_mean": 242.00323527306563,
+      "loaded_forward_mean": 251.91058621430105,
+      "loaded_forward_excess_mean": 9.907350941235416,
+      "loaded_turn_mean": 11.776773316154891,
+      "loaded_wait_mean": 15.97439696514208,
+      "loaded_elapsed_mean": 279.661756495598,
+      "completed_adjacent_opposite_turns_mean": 0.6465464175792713,
+      "completed_stationary_opposite_turns_mean": 0.6966788347290817,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 102343,
+        "stationary": 111019
+      }
+    },
+    {
+      "case": "workers1_seed5",
+      "tasks": 142917,
+      "completed_chain_mean": 241.87212158105754,
+      "loaded_forward_mean": 249.86530643660305,
+      "loaded_forward_excess_mean": 7.993184855545526,
+      "loaded_turn_mean": 10.367010222716683,
+      "loaded_wait_mean": 14.208645577503026,
+      "loaded_elapsed_mean": 274.44096223682277,
+      "completed_adjacent_opposite_turns_mean": 0.4014008130593281,
+      "completed_stationary_opposite_turns_mean": 0.4241762701428102,
+      "full_loaded_opposite_turn_transitions": {
+        "adjacent": 58430,
+        "stationary": 61771
+      }
+    }
+  ],
+  "worker_pairs": [
+    {
+      "seed": 0,
+      "control": "full64_seed0",
+      "variant": "workers4_seed0",
+      "variant_minus_control": {
+        "tasks": 1511,
+        "loaded_forward_mean": -1.14660225959895,
+        "loaded_turn_mean": -0.8577802843253775,
+        "loaded_wait_mean": -1.480675968934749,
+        "loaded_elapsed_mean": -3.485058512859041,
+        "completed_adjacent_opposite_turns_mean": -0.1410697387043484,
+        "completed_stationary_opposite_turns_mean": -0.14770285907716907
+      }
+    },
+    {
+      "seed": 2,
+      "control": "full64_seed2",
+      "variant": "workers4_seed2",
+      "variant_minus_control": {
+        "tasks": 421,
+        "loaded_forward_mean": -0.22479538381148245,
+        "loaded_turn_mean": -0.16232257107909653,
+        "loaded_wait_mean": 0.01870113583074584,
+        "loaded_elapsed_mean": -0.3684168190598598,
+        "completed_adjacent_opposite_turns_mean": -0.05572361724372682,
+        "completed_stationary_opposite_turns_mean": -0.060517237367890275
+      }
+    },
+    {
+      "seed": 5,
+      "control": "workers1_seed5",
+      "variant": "workers4_seed5",
+      "variant_minus_control": {
+        "tasks": -3207,
+        "loaded_forward_mean": 2.045279777697999,
+        "loaded_turn_mean": 1.4097630934382082,
+        "loaded_wait_mean": 1.765751387639055,
+        "loaded_elapsed_mean": 5.220794258775243,
+        "completed_adjacent_opposite_turns_mean": 0.24514560451994322,
+        "completed_stationary_opposite_turns_mean": 0.2725025645862715
+      }
+    }
+  ],
+  "limitations": "Transition events can overlap and are not a count of unique wasted actions. Necessary traffic accommodation can reverse turns. These are observed completed-task cohorts with unfinished work censored, not causal or additive potential savings. The local KittyKnight reference used38.858GB RSS versus our32GB cap."
+}

@@ -19,6 +19,7 @@ struct TaskInfo {
     std::vector<Assignment> assignments;
     long long chain = 0;
     std::array<long long, 5> loaded_actions{};
+    std::array<long long, 2> loaded_opposite_turns{};  // adjacent, stationary with waits allowed
     int first_pickup_distance = -1, last_pickup_distance = -1;
 };
 struct Query { int target, source, task, kind; };
@@ -79,6 +80,7 @@ int main(int argc, char** argv) {
         const std::array<std::string, 5> action_names{"fw", "cr", "ccr", "wait", "other"};
         auto action_kind = [](char action) { return action == 'F' ? 0 : action == 'R' ? 1 : action == 'C' ? 2 : action == 'W' ? 3 : 4; };
         std::array<std::array<long long, 5>, 3> phase_actions{};  // idle, empty, loaded
+        std::array<std::array<long long, 2>, 3> phase_opposite_turns{};
         long long non_motion_actions = 0;
         long long idle_steps = 0, empty_forward = 0, empty_turns = 0, empty_waits = 0, empty_other = 0;
         for (size_t robot = 0; robot < data.at("actualSchedule").size(); ++robot) {
@@ -99,16 +101,32 @@ int main(int argc, char** argv) {
                 size_t colon = entry.find(':');
                 entries.emplace_back(std::stoi(entry.substr(0, colon)), std::stoi(entry.substr(colon + 1)));
             }
+            int previous_step = -2, previous_task = -2, previous_phase = -1, previous_kind = -1;
+            int stationary_turn = -1;
             for (size_t slot = 0; slot < entries.size(); ++slot) {
                 int step = entries[slot].first, task_id = entries[slot].second;
                 int end = slot + 1 < entries.size() ? entries[slot + 1].first - 1 : data.at("makespan").get<int>();
                 for (int at = std::max(1, step); at <= end; ++at) {
                     const int kind = action_kind(path.at(2 * (at - 1)));
-                    if (task_id < 0) { ++phase_actions[0][kind]; continue; }
-                    auto& task = tasks.at(index.at(task_id));
-                    const bool loaded = task.pickup >= 0 && at > task.pickup;
-                    ++phase_actions[loaded ? 2 : 1][kind];
-                    if (loaded && task.finished >= 0 && at <= task.finished) ++task.loaded_actions[kind];
+                    auto* task = task_id < 0 ? nullptr : &tasks.at(index.at(task_id));
+                    const int phase = !task ? 0 : task->pickup >= 0 && at > task->pickup ? 2 : 1;
+                    const bool completed_loaded = phase == 2 && task->finished >= 0 && at <= task->finished;
+                    ++phase_actions[phase][kind];
+                    if (completed_loaded) ++task->loaded_actions[kind];
+                    const bool same_segment = previous_step + 1 == at && previous_task == task_id && previous_phase == phase;
+                    if (!same_segment) stationary_turn = -1;
+                    if (kind == 1 || kind == 2) {
+                        const bool adjacent = same_segment && (previous_kind == 1 || previous_kind == 2) && previous_kind != kind;
+                        const bool stationary = stationary_turn >= 0 && stationary_turn != kind;
+                        phase_opposite_turns[phase][0] += adjacent;
+                        phase_opposite_turns[phase][1] += stationary;
+                        if (completed_loaded) {
+                            task->loaded_opposite_turns[0] += adjacent;
+                            task->loaded_opposite_turns[1] += stationary;
+                        }
+                        stationary_turn = kind;
+                    } else if (kind != 3) stationary_turn = -1;  // forward or unknown action ends the stationary segment
+                    previous_step = at; previous_task = task_id; previous_phase = phase; previous_kind = kind;
                 }
                 if (task_id < 0) idle_steps += std::max(0, end - std::max(1, step) + 1);
                 else {
@@ -136,6 +154,11 @@ int main(int argc, char** argv) {
         long long classified = 0;
         for (int phase = 0; phase < 3; ++phase) {
             const std::string name = phase == 0 ? "idle" : phase == 1 ? "empty" : "loaded";
+            if (phase_opposite_turns[phase][0] > phase_opposite_turns[phase][1] ||
+                phase_opposite_turns[phase][1] > phase_actions[phase][1] + phase_actions[phase][2])
+                throw std::runtime_error("opposite-turn counts exceed their containing action sets");
+            report["full_opposite_turn_transitions"][name] = {
+                {"adjacent", phase_opposite_turns[phase][0]}, {"stationary", phase_opposite_turns[phase][1]}};
             for (int kind = 0; kind < 5; ++kind) {
                 report["full_phase_actions"][name][action_names[kind]] = phase_actions[phase][kind];
                 classified += phase_actions[phase][kind];
@@ -199,6 +222,7 @@ int main(int argc, char** argv) {
     long long pickup_elapsed = 0, pickup_distance = 0, loaded_elapsed = 0, loaded_distance = 0;
     int changes = 0, assigned_unpicked = 0, assignments_after_pickup = 0;
     std::array<long long, 5> completed_loaded_actions{};
+    std::array<long long, 2> completed_opposite_turns{};
     for (auto& task : tasks) {
         revealed_chain.push_back(task.chain);
         if (task.finished >= 0) {
@@ -209,6 +233,7 @@ int main(int argc, char** argv) {
             if (std::accumulate(task.loaded_actions.begin(), task.loaded_actions.end(), 0LL) != task.finished - task.pickup)
                 throw std::runtime_error("completed task action accounting differs from event elapsed time");
             for (size_t kind = 0; kind < task.loaded_actions.size(); ++kind) completed_loaded_actions[kind] += task.loaded_actions[kind];
+            for (size_t kind = 0; kind < task.loaded_opposite_turns.size(); ++kind) completed_opposite_turns[kind] += task.loaded_opposite_turns[kind];
         }
         if (task.assignments.empty()) continue;
         assigned_chain.push_back(task.chain);
@@ -236,6 +261,11 @@ int main(int argc, char** argv) {
     for (size_t kind = 0; kind < completed_loaded_actions.size(); ++kind) {
         report["completed_loaded_action_totals"][action_names[kind]] = completed_loaded_actions[kind];
         report["completed_loaded_action_means"][action_names[kind]] = completed_chain.empty() ? json(nullptr) : json(double(completed_loaded_actions[kind]) / completed_chain.size());
+    }
+    for (int kind = 0; kind < 2; ++kind) {
+        const std::string name = kind == 0 ? "adjacent" : "stationary";
+        report["completed_opposite_turn_transitions"][name] = completed_opposite_turns[kind];
+        report["completed_opposite_turn_transition_means"][name] = completed_chain.empty() ? json(nullptr) : json(double(completed_opposite_turns[kind]) / completed_chain.size());
     }
     report["completed_loaded_forward_excess_over_shortest"] = completed_loaded_actions[0] - loaded_distance;
     if (completed_loaded_actions[4] == 0 && completed_loaded_actions[0] < loaded_distance)
