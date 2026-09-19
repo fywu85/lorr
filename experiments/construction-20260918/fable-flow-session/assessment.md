@@ -166,3 +166,57 @@ earlier complete commit, an edge-only reverse collision, exact displacement-size
 cutoffs and512tiny instances enumerating57200candidate combinations.211returned
 changes pass independent collision/protection/fresh-score replay. No fractional
 score failure was reproduced; the production comparison has not been changed.
+
+
+## Turn08: complete table admission and next direction
+
+The same Fable5.1 max-effort session completed a read-only v40 source review at
+2026-09-19T15:34:44UTC. It read five changed excerpts (92771-byte payload), ran
+no tests and found no reproducible correctness counterexample. Its earlier
+pending-primary concern is withdrawn. Actual reported cost is16.015591USD and
+duration612.547s; the CLI's requested12USD setting did not act as a strict cap.
+Visible findings and metadata are archived in turn08; raw protocol stays ignored.
+
+Direct source checks support deterministic rank/admission, immutable compute
+inputs, separate worker scratch, no mid-step trimming and safe candidate pointer
+lifetimes. Mode2's admission refresh every32steps is an existing optional policy;
+production uses mode1, so it does not explain current throughput. Changing mode2
+is not a necessary production fix. Table insertion can exceed the configured
+cache accounting until the next plan's trim, but measured RSS remains the
+controlling32GB requirement. The counter prefetched_hits now includes intentional
+batch admissions; do not label that counter speculative usefulness when both
+features are enabled. The claimed universal exception guarantee needs qualification:
+per-item compute failures and thread-creation failures are caught/joined, but a
+worker's tiny initial bucket allocation sits outside its per-item catch. No such
+allocation failure was observed; no broad all-exceptions proof is claimed.
+
+Existing oracle tests cover eviction equivalence and an already-expired deadline;
+they do not force timeout during a running chunk. The v40 batch1024 screen does
+exercise a four-thread mid-computation timeout at timestep128 and exits124 through
+CGAR's explicit timeout path. That is actual failure evidence, not a test of every
+possible allocator/worker exception or private-cache retry after a failed run.
+
+Do not adopt the review's linear coverage-to-throughput extrapolation or statement
+that search-side changes are spent. Sampled coverage is not a causal response
+curve, and two search operators do not exhaust the design space. Its approximate
+assignment/motion share is not a validated causal split across different cohorts.
+A completed batch512 seed2 has already lost throughput despite complete valid
+execution; await the whole independently analyzed matrix for the policy decision.
+
+The strongest new implementation hypothesis is to price and enumerate pickup
+candidates with heading and the published traffic costs. Source confirms that
+current local candidate search is unit BFS, and fallback estimates also ignore
+heading/tolls. This mismatch is real; the claim that it causes seed2 collapse is
+unproven. Before implementing, preserve current-task/fair admission and distinguish
+local exact settled costs from fallback estimates, graph-domain differences,
+fixed search bounds and scheduler-before-planner publication timing. The saved
+runs do not record every historical candidate shortlist, so an exact16-candidate
+counterfactual cannot simply be recovered from the aggregate audit. The suggested
+5% shortlist-change gate and0.5–2% gain are hypotheses, not acceptance evidence.
+
+A secondary test of graded tolls (strength4 at scale4) follows the measured margin
+sensitivity and the losses from uniformly weak or stronger binary penalties.
+It uses existing validated generic configuration, with no map rule. Full paired
+results are required. Margin25 has now independently passed all six seeds with
+mean136426.2 (+1.364%), all totals/final windows improved; this completed update
+postdates the payload's two-seed status.

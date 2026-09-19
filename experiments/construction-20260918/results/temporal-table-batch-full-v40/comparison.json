@@ -1,0 +1,2721 @@
+{
+  "scope": "All eight full5000-step warehouse runs complete and validate. Serial/parallel batch128 trajectories match exactly for both seeds, including sampled admission/coverage and cumulative orientation counters.",
+  "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+  "recorded_production_and_test_hashes_verified": 20,
+  "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+  "rows": [
+    {
+      "case": "flow1_margin50_refresh512_batch0_bthreads1_work4m_prep4-s0-r0",
+      "batch": 0,
+      "threads": 1,
+      "seed": 0,
+      "tasks": 134511,
+      "completed_per_1000": [
+        22523,
+        27754,
+        28022,
+        27997,
+        28215
+      ],
+      "trajectory_sha256": "560432482c0e07c0cc5ea575c7fcf9a1c4f2745476e5a51f0d65018ded868399",
+      "mean_entry_ms": 241.24105106979997,
+      "max_entry_seconds": 0.786663131,
+      "average_cpu_cores": 1.2071632576380082,
+      "peak_rss_bytes": 11744464896,
+      "wall_seconds": 1280.344,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 322.4104,
+        "p90": 653
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 132489,
+        "guided": 36586490,
+        "fallback": 13407875
+      },
+      "sampled_mean_exact_fraction": 0.756864,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 3997,
+          "fallback_metric": 6003
+        },
+        {
+          "step": 400,
+          "exact_metric": 9221,
+          "fallback_metric": 779
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 6499,
+          "fallback_metric": 3501
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 2792,
+          "fallback_metric": 7208
+        },
+        {
+          "step": 1400,
+          "exact_metric": 8121,
+          "fallback_metric": 1879
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 5798,
+          "fallback_metric": 4202
+        },
+        {
+          "step": 2000,
+          "exact_metric": 9813,
+          "fallback_metric": 187
+        },
+        {
+          "step": 2200,
+          "exact_metric": 1682,
+          "fallback_metric": 8318
+        },
+        {
+          "step": 2400,
+          "exact_metric": 7743,
+          "fallback_metric": 2257
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 5139,
+          "fallback_metric": 4861
+        },
+        {
+          "step": 3000,
+          "exact_metric": 9310,
+          "fallback_metric": 690
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 7242,
+          "fallback_metric": 2758
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 4346,
+          "fallback_metric": 5654
+        },
+        {
+          "step": 4000,
+          "exact_metric": 8875,
+          "fallback_metric": 1125
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 6643,
+          "fallback_metric": 3357
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 3549,
+          "fallback_metric": 6451
+        },
+        {
+          "step": 5000,
+          "exact_metric": 8446,
+          "fallback_metric": 1554
+        }
+      ],
+      "batch_samples": [],
+      "finished_utc": "2026-09-19T15:37:39.729932+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads1_work4m_prep4-s0-r0",
+      "batch": 128,
+      "threads": 1,
+      "seed": 0,
+      "tasks": 138003,
+      "completed_per_1000": [
+        22881,
+        28438,
+        28776,
+        28875,
+        29033
+      ],
+      "trajectory_sha256": "fb27b0039c8d3d65664c301f02fc2b3efc69409eb3d5941ee56275ef3ca16428",
+      "mean_entry_ms": 270.28198588059985,
+      "max_entry_seconds": 0.926328232,
+      "average_cpu_cores": 1.178307768752514,
+      "peak_rss_bytes": 12481114112,
+      "wall_seconds": 1425.91,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.8692,
+        "p90": 640
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 150508,
+        "guided": 48190797,
+        "fallback": 1803825
+      },
+      "sampled_mean_exact_fraction": 0.986224,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 9983,
+          "fallback_metric": 17
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 6573,
+          "fallback_metric": 3427
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00029
+        },
+        {
+          "step": 400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000297
+        },
+        {
+          "step": 600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000271
+        },
+        {
+          "step": 800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000337
+        },
+        {
+          "step": 1000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000322
+        },
+        {
+          "step": 1200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 144,
+          "built": 128,
+          "covered": 128,
+          "seconds": 0.296003
+        },
+        {
+          "step": 1400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000321
+        },
+        {
+          "step": 1600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000323
+        },
+        {
+          "step": 1800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000307
+        },
+        {
+          "step": 2000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.0003
+        },
+        {
+          "step": 2200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 3555,
+          "built": 128,
+          "covered": 136,
+          "seconds": 0.293927
+        },
+        {
+          "step": 2400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000309
+        },
+        {
+          "step": 2600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000255
+        },
+        {
+          "step": 2800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000346
+        },
+        {
+          "step": 3000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000283
+        },
+        {
+          "step": 3200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000321
+        },
+        {
+          "step": 3400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000375
+        },
+        {
+          "step": 3600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000291
+        },
+        {
+          "step": 3800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000349
+        },
+        {
+          "step": 4000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000321
+        },
+        {
+          "step": 4200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000313
+        },
+        {
+          "step": 4400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000322
+        },
+        {
+          "step": 4600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000334
+        },
+        {
+          "step": 4800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000257
+        },
+        {
+          "step": 5000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000316
+        }
+      ],
+      "finished_utc": "2026-09-19T15:40:05.295021+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads4_work4m_prep4-s0-r0",
+      "batch": 128,
+      "threads": 4,
+      "seed": 0,
+      "tasks": 138003,
+      "completed_per_1000": [
+        22881,
+        28438,
+        28776,
+        28875,
+        29033
+      ],
+      "trajectory_sha256": "fb27b0039c8d3d65664c301f02fc2b3efc69409eb3d5941ee56275ef3ca16428",
+      "mean_entry_ms": 253.5178048048005,
+      "max_entry_seconds": 0.838467923,
+      "average_cpu_cores": 1.2809850981258704,
+      "peak_rss_bytes": 12620800000,
+      "wall_seconds": 1342.289,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.8692,
+        "p90": 640
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 150508,
+        "guided": 48190797,
+        "fallback": 1803825
+      },
+      "sampled_mean_exact_fraction": 0.986224,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 9983,
+          "fallback_metric": 17
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 6573,
+          "fallback_metric": 3427
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000299
+        },
+        {
+          "step": 400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000288
+        },
+        {
+          "step": 600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000265
+        },
+        {
+          "step": 800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000338
+        },
+        {
+          "step": 1000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000331
+        },
+        {
+          "step": 1200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 144,
+          "built": 128,
+          "covered": 128,
+          "seconds": 0.109801
+        },
+        {
+          "step": 1400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000325
+        },
+        {
+          "step": 1600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000323
+        },
+        {
+          "step": 1800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000304
+        },
+        {
+          "step": 2000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000297
+        },
+        {
+          "step": 2200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 3555,
+          "built": 128,
+          "covered": 136,
+          "seconds": 0.115035
+        },
+        {
+          "step": 2400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000303
+        },
+        {
+          "step": 2600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000253
+        },
+        {
+          "step": 2800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000339
+        },
+        {
+          "step": 3000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000273
+        },
+        {
+          "step": 3200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000325
+        },
+        {
+          "step": 3400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000354
+        },
+        {
+          "step": 3600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000283
+        },
+        {
+          "step": 3800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000341
+        },
+        {
+          "step": 4000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000328
+        },
+        {
+          "step": 4200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000309
+        },
+        {
+          "step": 4400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000316
+        },
+        {
+          "step": 4600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000326
+        },
+        {
+          "step": 4800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000259
+        },
+        {
+          "step": 5000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000328
+        }
+      ],
+      "finished_utc": "2026-09-19T15:38:41.675661+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch512_bthreads4_work4m_prep4-s0-r0",
+      "batch": 512,
+      "threads": 4,
+      "seed": 0,
+      "tasks": 137848,
+      "completed_per_1000": [
+        22836,
+        28459,
+        28728,
+        28843,
+        28982
+      ],
+      "trajectory_sha256": "fc25921b50913341d89932202270396e2f98b970400fcb96ad03980fd06262c8",
+      "mean_entry_ms": 236.8556818898002,
+      "max_entry_seconds": 0.942205388,
+      "average_cpu_cores": 1.3085971610741929,
+      "peak_rss_bytes": 12077555712,
+      "wall_seconds": 1259.001,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.60066666666665,
+        "p90": 642
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 151974,
+        "guided": 49441428,
+        "fallback": 552335
+      },
+      "sampled_mean_exact_fraction": 1.0,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000285
+        },
+        {
+          "step": 400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000244
+        },
+        {
+          "step": 600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000232
+        },
+        {
+          "step": 800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000291
+        },
+        {
+          "step": 1000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000307
+        },
+        {
+          "step": 1200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000251
+        },
+        {
+          "step": 1400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000301
+        },
+        {
+          "step": 1600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00029
+        },
+        {
+          "step": 1800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000356
+        },
+        {
+          "step": 2000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000328
+        },
+        {
+          "step": 2200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000285
+        },
+        {
+          "step": 2400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000323
+        },
+        {
+          "step": 2600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000291
+        },
+        {
+          "step": 2800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000328
+        },
+        {
+          "step": 3000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000206
+        },
+        {
+          "step": 3200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000343
+        },
+        {
+          "step": 3400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000357
+        },
+        {
+          "step": 3600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000259
+        },
+        {
+          "step": 3800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000383
+        },
+        {
+          "step": 4000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000377
+        },
+        {
+          "step": 4200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000325
+        },
+        {
+          "step": 4400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000279
+        },
+        {
+          "step": 4600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000276
+        },
+        {
+          "step": 4800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000343
+        },
+        {
+          "step": 5000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000313
+        }
+      ],
+      "finished_utc": "2026-09-19T15:37:18.384783+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch0_bthreads1_work4m_prep4-s2-r0",
+      "batch": 0,
+      "threads": 1,
+      "seed": 2,
+      "tasks": 134519,
+      "completed_per_1000": [
+        22349,
+        27631,
+        28183,
+        28142,
+        28214
+      ],
+      "trajectory_sha256": "53fc2a70c0cb678d7b5adda53eadc9ce7140f13b1aef5d0a6c0de4a4ca786208",
+      "mean_entry_ms": 259.4270793067992,
+      "max_entry_seconds": 0.787388501,
+      "average_cpu_cores": 1.1929185916178426,
+      "peak_rss_bytes": 11744268288,
+      "wall_seconds": 1372.52,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 321.20033333333333,
+        "p90": 652
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 132489,
+        "guided": 36555003,
+        "fallback": 13438281
+      },
+      "sampled_mean_exact_fraction": 0.75718,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 4046,
+          "fallback_metric": 5954
+        },
+        {
+          "step": 400,
+          "exact_metric": 9241,
+          "fallback_metric": 759
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 6541,
+          "fallback_metric": 3459
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 2935,
+          "fallback_metric": 7065
+        },
+        {
+          "step": 1400,
+          "exact_metric": 8187,
+          "fallback_metric": 1813
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 5719,
+          "fallback_metric": 4281
+        },
+        {
+          "step": 2000,
+          "exact_metric": 9735,
+          "fallback_metric": 265
+        },
+        {
+          "step": 2200,
+          "exact_metric": 1614,
+          "fallback_metric": 8386
+        },
+        {
+          "step": 2400,
+          "exact_metric": 7646,
+          "fallback_metric": 2354
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 5106,
+          "fallback_metric": 4894
+        },
+        {
+          "step": 3000,
+          "exact_metric": 9263,
+          "fallback_metric": 737
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 7230,
+          "fallback_metric": 2770
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 4413,
+          "fallback_metric": 5587
+        },
+        {
+          "step": 4000,
+          "exact_metric": 8903,
+          "fallback_metric": 1097
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 6687,
+          "fallback_metric": 3313
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 3580,
+          "fallback_metric": 6420
+        },
+        {
+          "step": 5000,
+          "exact_metric": 8449,
+          "fallback_metric": 1551
+        }
+      ],
+      "batch_samples": [],
+      "finished_utc": "2026-09-19T15:39:11.907768+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads1_work4m_prep4-s2-r0",
+      "batch": 128,
+      "threads": 1,
+      "seed": 2,
+      "tasks": 136701,
+      "completed_per_1000": [
+        22584,
+        28246,
+        28649,
+        28491,
+        28731
+      ],
+      "trajectory_sha256": "8e52aadd762f72edce8fae2abc8e8da3793ccbff0ef9ec5294bc3d851e97582a",
+      "mean_entry_ms": 252.23102820400055,
+      "max_entry_seconds": 0.914230845,
+      "average_cpu_cores": 1.190060807101942,
+      "peak_rss_bytes": 12139315200,
+      "wall_seconds": 1335.982,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.958,
+        "p90": 642
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 149542,
+        "guided": 48207551,
+        "fallback": 1786185
+      },
+      "sampled_mean_exact_fraction": 0.986384,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 9998,
+          "fallback_metric": 2
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 6598,
+          "fallback_metric": 3402
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000242
+        },
+        {
+          "step": 400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000304
+        },
+        {
+          "step": 600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000296
+        },
+        {
+          "step": 800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000343
+        },
+        {
+          "step": 1000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.0003
+        },
+        {
+          "step": 1200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 130,
+          "built": 128,
+          "covered": 129,
+          "seconds": 0.292728
+        },
+        {
+          "step": 1400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000306
+        },
+        {
+          "step": 1600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000297
+        },
+        {
+          "step": 1800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00025
+        },
+        {
+          "step": 2000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000266
+        },
+        {
+          "step": 2200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 3530,
+          "built": 128,
+          "covered": 132,
+          "seconds": 0.294085
+        },
+        {
+          "step": 2400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000309
+        },
+        {
+          "step": 2600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000245
+        },
+        {
+          "step": 2800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000287
+        },
+        {
+          "step": 3000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000344
+        },
+        {
+          "step": 3200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000318
+        },
+        {
+          "step": 3400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000322
+        },
+        {
+          "step": 3600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000319
+        },
+        {
+          "step": 3800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000356
+        },
+        {
+          "step": 4000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000284
+        },
+        {
+          "step": 4200,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000271
+        },
+        {
+          "step": 4400,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000291
+        },
+        {
+          "step": 4600,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000296
+        },
+        {
+          "step": 4800,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000347
+        },
+        {
+          "step": 5000,
+          "limit": 128,
+          "threads": 1,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000333
+        }
+      ],
+      "finished_utc": "2026-09-19T15:38:35.368888+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads4_work4m_prep4-s2-r0",
+      "batch": 128,
+      "threads": 4,
+      "seed": 2,
+      "tasks": 136701,
+      "completed_per_1000": [
+        22584,
+        28246,
+        28649,
+        28491,
+        28731
+      ],
+      "trajectory_sha256": "8e52aadd762f72edce8fae2abc8e8da3793ccbff0ef9ec5294bc3d851e97582a",
+      "mean_entry_ms": 235.13847598719994,
+      "max_entry_seconds": 0.834108967,
+      "average_cpu_cores": 1.300318645343082,
+      "peak_rss_bytes": 12076879872,
+      "wall_seconds": 1250.833,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.958,
+        "p90": 642
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 149542,
+        "guided": 48207551,
+        "fallback": 1786185
+      },
+      "sampled_mean_exact_fraction": 0.986384,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 9998,
+          "fallback_metric": 2
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 6598,
+          "fallback_metric": 3402
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000237
+        },
+        {
+          "step": 400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000305
+        },
+        {
+          "step": 600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000285
+        },
+        {
+          "step": 800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000325
+        },
+        {
+          "step": 1000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000303
+        },
+        {
+          "step": 1200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 130,
+          "built": 128,
+          "covered": 129,
+          "seconds": 0.113759
+        },
+        {
+          "step": 1400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000302
+        },
+        {
+          "step": 1600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000308
+        },
+        {
+          "step": 1800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000243
+        },
+        {
+          "step": 2000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000276
+        },
+        {
+          "step": 2200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 3530,
+          "built": 128,
+          "covered": 132,
+          "seconds": 0.110139
+        },
+        {
+          "step": 2400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000332
+        },
+        {
+          "step": 2600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000257
+        },
+        {
+          "step": 2800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000281
+        },
+        {
+          "step": 3000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000331
+        },
+        {
+          "step": 3200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000321
+        },
+        {
+          "step": 3400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000332
+        },
+        {
+          "step": 3600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000336
+        },
+        {
+          "step": 3800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00033
+        },
+        {
+          "step": 4000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000304
+        },
+        {
+          "step": 4200,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000286
+        },
+        {
+          "step": 4400,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00029
+        },
+        {
+          "step": 4600,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000314
+        },
+        {
+          "step": 4800,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000317
+        },
+        {
+          "step": 5000,
+          "limit": 128,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000314
+        }
+      ],
+      "finished_utc": "2026-09-19T15:37:10.219430+00:00"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch512_bthreads4_work4m_prep4-s2-r0",
+      "batch": 512,
+      "threads": 4,
+      "seed": 2,
+      "tasks": 119685,
+      "completed_per_1000": [
+        22908,
+        28010,
+        26934,
+        24953,
+        16880
+      ],
+      "trajectory_sha256": "1f91e2439b7993593f7a4905131fe6430b7b08cd67888c3b931b8ac9e1aae0b1",
+      "mean_entry_ms": 180.33024299960036,
+      "max_entry_seconds": 0.925189336,
+      "average_cpu_cores": 1.3941491238117523,
+      "peak_rss_bytes": 11870674944,
+      "wall_seconds": 973.05,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 683.5631333333333,
+        "p90": 1365
+      },
+      "orientation_counters": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 32,
+        "builds": 142630,
+        "guided": 49452533,
+        "fallback": 535631
+      },
+      "sampled_mean_exact_fraction": 1.0,
+      "coverage_samples": [
+        {
+          "step": 200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 1800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 2800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 3800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4200,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4400,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4600,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 4800,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        },
+        {
+          "step": 5000,
+          "exact_metric": 10000,
+          "fallback_metric": 0
+        }
+      ],
+      "batch_samples": [
+        {
+          "step": 200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000253
+        },
+        {
+          "step": 400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000316
+        },
+        {
+          "step": 600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000281
+        },
+        {
+          "step": 800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000288
+        },
+        {
+          "step": 1000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000283
+        },
+        {
+          "step": 1200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000275
+        },
+        {
+          "step": 1400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00032
+        },
+        {
+          "step": 1600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000264
+        },
+        {
+          "step": 1800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000312
+        },
+        {
+          "step": 2000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000303
+        },
+        {
+          "step": 2200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000307
+        },
+        {
+          "step": 2400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.00032
+        },
+        {
+          "step": 2600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000298
+        },
+        {
+          "step": 2800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000291
+        },
+        {
+          "step": 3000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000287
+        },
+        {
+          "step": 3200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000284
+        },
+        {
+          "step": 3400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000311
+        },
+        {
+          "step": 3600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000286
+        },
+        {
+          "step": 3800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000249
+        },
+        {
+          "step": 4000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000267
+        },
+        {
+          "step": 4200,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000271
+        },
+        {
+          "step": 4400,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000246
+        },
+        {
+          "step": 4600,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000276
+        },
+        {
+          "step": 4800,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000214
+        },
+        {
+          "step": 5000,
+          "limit": 512,
+          "threads": 4,
+          "missing_goals": 0,
+          "built": 0,
+          "covered": 0,
+          "seconds": 0.000215
+        }
+      ],
+      "finished_utc": "2026-09-19T15:32:32.442405+00:00"
+    }
+  ],
+  "controls": [
+    {
+      "case": "flow1_margin50_refresh512_batch0_bthreads1_work4m_prep4-s0-r0",
+      "exact": true,
+      "trajectory_sha256": "560432482c0e07c0cc5ea575c7fcf9a1c4f2745476e5a51f0d65018ded868399"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch0_bthreads1_work4m_prep4-s2-r0",
+      "exact": true,
+      "trajectory_sha256": "53fc2a70c0cb678d7b5adda53eadc9ce7140f13b1aef5d0a6c0de4a4ca786208"
+    }
+  ],
+  "serial_parallel_equivalence": [
+    {
+      "seed": 0,
+      "exact_trajectory": true,
+      "exact_orientation_counts_and_sampled_admission": true,
+      "serial_wall_seconds": 1425.91,
+      "parallel_wall_seconds": 1342.289,
+      "wall_reduction_percent": 5.8643953685716514,
+      "serial_mean_entry_ms": 270.28198588059985,
+      "parallel_mean_entry_ms": 253.5178048048005
+    },
+    {
+      "seed": 2,
+      "exact_trajectory": true,
+      "exact_orientation_counts_and_sampled_admission": true,
+      "serial_wall_seconds": 1335.982,
+      "parallel_wall_seconds": 1250.833,
+      "wall_reduction_percent": 6.373514014410365,
+      "serial_mean_entry_ms": 252.23102820400055,
+      "parallel_mean_entry_ms": 235.13847598719994
+    }
+  ],
+  "mean_tasks_by_batch": {
+    "0": 134515,
+    "128": 137352,
+    "512": 128766.5
+  },
+  "mean_effect_percent_by_batch": {
+    "0": 0.0,
+    "128": 2.1090584693156833,
+    "512": -4.273501096531984
+  },
+  "interpretation": "Batch128 improves both seeds versus old build32 controls; it gains one and loses one versus the stronger build128 reference, so requires remaining-seed confirmation. Batch512 loses heavily on seed2 and is not promoted. Higher sampled guidance coverage is not monotonically related to throughput."
+}

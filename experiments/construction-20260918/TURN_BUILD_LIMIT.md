@@ -54,3 +54,12 @@ Count128 versus32 confirmation runs seeds1/3/4/5 in8898756/8898757, eight parall
 cases with four physical cores each. Production and test hashes for the completed
 matrix exactly match commit5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27.
 [Full comparison](results/turn-build-limit-full-v39/comparison.json).
+
+
+The remaining-seed confirmation8898756/8898757 is complete, all12paired cases
+valid and every build32 control exact. Build128 scores137060/137271/136841/
+137227/136949/137092 over seeds0..5, mean137073.3 (+1.845%). Every full total
+and final window improves. It also exceeds margin25/build32 on all six seeds,
+so margin50/build128 is now the benchmark reference. Its six-seed maximum entry
+is0.873055s, peak RSS12.013GB and average complete-step latency234.8–269.9ms.
+[Six-seed confirmation](results/turn-build-limit-six-seed-v39.json).

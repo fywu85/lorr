@@ -6,8 +6,13 @@ including late full-run states, and records whether construction finishes before
 its own deadline. These fixed-goal motion probes diagnose coordination; full
 5,000-step lifelong runs remain the criterion for adopting CGAR improvements.
 
-The active CGAR control is `CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1
-CGAR_TURN_TABLE_MB=8192`. Its six-seed mean is 43,176.17 tasks. The valid local
+The original CGAR control was `CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1
+CGAR_TURN_TABLE_MB=8192`, with a six-seed mean of43,176.17 tasks. The current
+[benchmark reference](warehouse-reference-variants.json) adds temporal planning
+and refreshed observed-flow guidance, reaching **137,073.3 mean tasks over all
+six seeds**. Its [full evidence](results/turn-build-limit-six-seed-v39.json)
+and the root [throughput history](../../WAREHOUSE_PROGRESS.md) supersede the
+original control as the current performance summary. The valid local
 KittyKnight reference completed 152,981 with a larger CPU allocation and more
 than 32 GB memory. The CGAR target remains below 32,000,000,000 measured bytes,
 one-second complete decisions, and generic rules without map-specific policies.

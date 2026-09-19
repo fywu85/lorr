@@ -44,3 +44,24 @@ must be checked before choosing a setting. No production default is changed.
 
 [Build archive](build-provenance/v40/),
 [screen and failure evidence](results/temporal-table-batch-screen-v40/).
+
+
+All eight full runs and independent analyses complete. Batch128 produces138003/
+136701 tasks (mean137352), with exact serial/parallel trajectories, cumulative
+orientation counts and sampled admission/coverage counters on both seeds.
+Parallelism reduces full wall time5.864%/6.374%; the larger short-screen speedup
+does not describe full-horizon execution. Parallel mean entries235.1–253.5ms,
+CPU1.281–1.300cores and peak RSS12.621GB remain within the allocated budget.
+
+Batch512 produces137848/119685, with seed2 final window16880 versus28214 in
+control. All25 sampled steps have100% exact metric availability on both seeds;
+that does not imply a monotone throughput gain. The larger batch is rejected.
+Batch128 samples average98.62%/98.64% exact metric availability. Its two-seed
+mean is only0.293% above the now six-seed-confirmed serial build-limit128 policy,
+with one win and one loss against that stronger control.
+
+Confirmation8898765/8898766 compares batch128parallel plus demand32 against
+batch0 plus demand128 on seeds1/3/4/5 using the same frozenv40 binary. All six
+stronger control trajectories must match their previously completed reference.
+The exact tested source/test tree is50e8e6e4cef1495a4054590e613cf762eb39009c.
+[Full batch evidence](results/temporal-table-batch-full-v40/comparison.json).

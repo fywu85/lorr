@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 15:19:29 UTC.
+Updated: 2026-09-19 15:50:28 UTC.
 
-**Best observed full run: 137,490 completed tasks** — refreshed flow with 96 turn-table builds per step, seed 0. The 128-build setting has the strongest two-seed mean, **136,950.5** (+1.811% against paired controls); refreshed margin 25 reaches **136,424** (+1.419%). Their remaining-seed confirmations are running. Ordinary refresh remains the current six-seed reference: **134,590.3 mean**, range **134,061–134,966**. Pool exchange has a slightly higher six-seed mean of 134,840.8, but wins only four seeds, loses two, and worsens task-age tails; it is not promoted. The throughput target remains unmet.
+**Best observed full run: 138,003 completed tasks** — a fixed parallel batch of 128 complete turn tables, seed 0. Its two-seed mean is **137,352**; remaining-seed confirmation is running against the stronger control. **The current six-seed benchmark reference is margin50 with turn-build128: 137,073.3 mean**, range **136,841–137,271**. It improves every seed over both the original margin50/build32 reference and the intermediate margin25/build32 reference. Larger batch512 regresses on seed2 and is not promoted. The throughput target remains unmet.
 
-The local KittyKnight reference is **152,981**, so the experimental peak is **10.13% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**, so the experimental peak is **9.79% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -40,6 +40,8 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 14:58:29 | 136,888 | Refreshed flow, margin 25 / 0 | [45ebea2](https://github.com/fywu85/lorr/commit/45ebea2680e393a1e3ae060f29194b494bedc254) | [data](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v36/) · two seeds only |
 | 2026-09-19 15:08:42 | 137,190 | Refresh512, turn builds 64 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
 | 2026-09-19 15:10:30 | 137,490 | Refresh512, turn builds 96 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
+| 2026-09-19 15:37:18 | 137,848 | Parallel batch512 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · not robust: seed2 regresses |
+| 2026-09-19 15:38:41 | 138,003 | Parallel batch128 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · two seeds; confirmation running |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -64,36 +66,42 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Two-owner temporal transactions | Six seeds:134,584 /135,299 /135,357 /132,125 /133,325 /134,525; mean134,202.5 | Wins3of6, loses0.288% in the mean. All12paired runs valid and all six controls exactly reproduce. Not promoted. [Evidence](experiments/construction-20260918/results/temporal-transaction-six-seed-v36.json). |
 | Direct cost, pickup weights3/5 | Weight3:134,397 /134,194; weight5:136,149 /52,444 | Weight3 loses0.163%. Weight5 seed2 collapses to4,447 tasks in the final window. Historical peak retained; both rejected. [Evidence](experiments/construction-20260918/results/flow-refresh-pickup-full-v33/comparison.json). |
 | Unopened pool exchange | Six seeds: 135,409 / 135,476 / 134,762 / 135,078 / 134,311 / 134,009; mean 134,840.8 | +0.186%; wins four, loses two. Outstanding age p90 rises on every seed. Not promoted. [Evidence](experiments/construction-20260918/results/pool-exchange-six-seed-v37.json). |
-| Refreshed margin 25 | Seeds 0/2: **136,888 / 135,960**, mean **136,424** | +1.419%, both full totals and final windows improve. Six-seed confirmation running. Refreshed margin 75 and doubled strength lose. [Evidence](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/comparison.json). |
-| Larger turn-table rebuild allowance | Counts 64/96/128 have two-seed means **136,302.5 / 136,600 / 136,950.5** | All beat both controls; count 128 wins the mean (+1.811%). Sampled exact-metric coverage rises from 75.7% to 97.4%. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/turn-build-limit-full-v39/comparison.json). |
+| Refreshed margin 25 | Six seeds: **136,888 / 135,838 / 135,960 / 136,885 / 136,582 / 136,404**; mean **136,426.2** | **Confirmed intermediate reference.** +1.364%; all six full totals and final windows improve, and outstanding age p90 falls on every seed. All 12 paired runs valid with exact controls. [Evidence](experiments/construction-20260918/results/flow-refresh-margin25-six-seed-v36.json). |
+| Larger turn-table rebuild allowance | Count128 six seeds: **137,060 / 137,271 / 136,841 / 137,227 / 136,949 / 137,092**, mean **137,073.3** | **Current benchmark reference.** +1.845% over build32, winning all six totals and final windows. Also exceeds margin25/build32 on every seed. [Evidence](experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json). |
+| Complete parallel table batches | Batch128 seeds0/2: **138,003 / 136,701**; batch512: **137,848 / 119,685** | Batch128 serial and parallel reproduce both full trajectories exactly; parallel wall time falls5.86–6.37%. Batch512 has100% sampled exact coverage but regresses, so coverage is not a monotone quality measure. [Evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
-## Resource cost of the leading configuration
+## Resource cost of the current benchmark reference
 
-Across the six-seed confirmation, mean complete scheduling plus planning latency
-is **239.4–258.1 ms**, with a maximum of **776.3 ms**.
-The independent seeds 0/2 latency audit measured p99 at **323.8 / 340.1 ms**.
-Average CPU use is **1.195–1.211 cores** with four physical cores reserved
-per instance (about 30% average utilization). Peak process RSS reaches **13.121 GB**,
-and full runs take **21.19–22.75 minutes**.
-CPU is process user plus system time divided by wall time, not an instantaneous
-sample. Hosts were exclusive and unthrottled. Preparation uses multiple workers;
-much of the remaining work is serial. A separate repeated control reached 792.9 ms,
-so 776.3 ms is the maximum of this confirmation, not of every repeated run.
-[Six-seed resource evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json),
-[independent latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
+The confirmed margin50/build128 profile averages **234.8–269.9 ms** per complete
+scheduling plus planning step across six seeds. Maximum entry time is **873.1 ms**,
+average CPU use **1.182–1.210 cores**, peak process RSS **12.013 GB**, and full
+runs take **20.80–23.75 minutes**. Four physical cores are reserved per instance.
+No p99 claim is made for this new six-seed cohort. CPU is process user plus system
+time divided by wall time, not an instantaneous sample. Hosts were exclusive and
+unthrottled.
+[Current six-seed resources](experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json),
+[explicit benchmark configuration](experiments/construction-20260918/warehouse-reference-variants.json).
 
-The newer two-seed turn-build128 experiment averages **251.0–264.0 ms**,
-with maximum **870.9 ms**, **1.18–1.19 CPU cores**, and **11.905 GB** peak RSS.
-It takes **22.14–23.25 minutes** per full run. Refreshed margin25 averages
-247.1–248.4 ms and uses 11.324–11.814 GB peak RSS. Neither has completed
-six-seed confirmation yet.
-[Turn-build resources](experiments/construction-20260918/results/turn-build-limit-full-v39/comparison.json),
-[margin resources](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/comparison.json).
+The earlier margin25/build32 confirmation averages231.7–255.4ms, reaches787.3ms
+maximum and14.052GB peak RSS, with1.195–1.215CPU cores. Its full runs take
+20.53–22.53minutes. Margin50/build32 averages239.4–258.1ms and reaches13.121GB
+peak RSS; a separate audit of that original policy has p99 latency323.8/340.1ms
+and a repeated control reached792.9ms maximum. Those quantiles do not describe
+the newer policies.
+[Margin25 resources](experiments/construction-20260918/results/flow-refresh-margin25-six-seed-v36.json),
+[original margin50 resources](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json),
+[original latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
 
-Four full-size search workers average 271–277 ms per decision and 2.60–2.63 CPU
-cores, but add only 0.204% throughput on seeds 0/2; they are not promoted.
+Batch128 with four build threads averages235.1–253.5ms on seeds0/2, uses1.28–
+1.30CPU cores and reaches12.621GB peak RSS. Its full trajectories exactly match
+batch128 with one build thread, while total wall time falls5.86–6.37%. Throughput
+comparison with the stronger build128 reference still needs the other four seeds.
+[Full serial/parallel evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json).
+
+Four full-size search workers average271–277ms per decision and2.60–2.63CPU
+cores, but add only0.204% throughput on seeds0/2; they are not promoted.
 [Parallel-search evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json).
 
 ## Updating this log
