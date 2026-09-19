@@ -52,6 +52,15 @@ struct TemporalServiceAudit {
     std::array<TemporalServiceBucket, 3> post_service{};
 };
 
+// Read-only observations at complete repair-attempt boundaries. A thrown
+// deadline leaves completed=false; no partial search result is authorized.
+struct TemporalRepairAudit {
+    bool completed = false;
+    double initial_score = 0, peak_score = 0, final_score = 0, returned_score = 0;
+    long long attempts = 0, peak_updates = 0;
+    int peak_attempt = 0;
+};
+
 struct TemporalStats {
     long long roots = 0, accepted = 0, recursive_calls = 0, candidates = 0;
     long long budget_exhausted = 0, repairs = 0, repairs_accepted = 0;
@@ -108,10 +117,14 @@ public:
 
     template<class Deadline>
     void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr,
-                int temperature_ppm = 1000) {
+                int temperature_ppm = 1000, TemporalRepairAudit* audit = nullptr) {
         if (temperature_ppm < 0 || temperature_ppm > 1000000)
             throw std::invalid_argument("temporal repair temperature must be in [0,1000000] ppm");
-        if (roots && roots->empty()) return;
+        if (audit) {
+            *audit = {};
+            audit->initial_score = audit->peak_score = audit->final_score = audit->returned_score = score_;
+        }
+        if (roots && roots->empty()) { if (audit) audit->completed = true; return; }
         double best_score = score_;
         auto best = selected_;
         temperature_ = static_cast<double>(temperature_ppm) / 1000000.0;
@@ -126,7 +139,14 @@ public:
             ++stats.repairs;
             if (!fixed_[r] && attempt(r, true, check)) ++stats.repairs_accepted;
             temperature_ *= 0.999;
+            if (audit) {
+                ++audit->attempts;
+                if (score_ > audit->peak_score + 1e-6) {
+                    audit->peak_score = score_; audit->peak_attempt = k + 1; ++audit->peak_updates;
+                }
+            }
         }
+        if (audit) audit->final_score = score_;
         // NMS compares the final search state to construction. Keep the same
         // rule; do not let wall-clock time choose a different stopping point.
         if (score_ <= best_score + 1e-6) {
@@ -135,6 +155,7 @@ public:
             selected_ = std::move(best); score_ = 0;
             for (int r = 0; r < static_cast<int>(choices_.size()); ++r) add(r);
         } else ++stats.repair_batches_kept;
+        if (audit) { audit->returned_score = score_; audit->completed = true; }
     }
 
     const TemporalChoice& choice(int r) const { return choices_[r][selected_[r]]; }

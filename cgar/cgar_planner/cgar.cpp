@@ -756,6 +756,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_region_options_.steps = env_int("CGAR_TEMPORAL_REGION_STEPS", 25000);
     temporal_region_options_.temperature_ppm = env_int("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM", 1000);
     temporal_region_options_.threads = env_int("CGAR_TEMPORAL_REGION_THREADS", temporal_region_options_.parts);
+    const int region_peak_audit = env_int("CGAR_TEMPORAL_REGION_PEAK_AUDIT", 0);
+    if (region_peak_audit < 0 || region_peak_audit > 1 || (region_peak_audit && !temporal_regions_))
+        throw std::invalid_argument("regional peak audit requires enabled regions and a boolean setting");
+    temporal_region_options_.audit_peaks = region_peak_audit != 0;
     if (temporal_regions_ && (!temporal_ || temporal_region_options_.parts < 1 || temporal_region_options_.parts > 32 ||
         temporal_region_options_.rounds < 1 || temporal_region_options_.rounds > 16 ||
         temporal_region_options_.steps < 1 || temporal_region_options_.steps > 1000000 ||

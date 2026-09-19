@@ -11,6 +11,29 @@ namespace cgar {
 struct TemporalRegionOptions {
     int parts = 4, rounds = 2, steps = 25000, threads = 4;
     int temperature_ppm = 1000;
+    bool audit_peaks = false;
+};
+
+struct TemporalRegionPeaks {
+    long long batches = 0, attempts = 0, peak_updates = 0, lost_peaks = 0, lost_improvements = 0;
+    long long peak_attempt_sum = 0;
+    int max_peak_attempt = 0;
+    double peak_gain = 0, final_gain = 0, discarded_gain = 0;
+    void observe(const TemporalRepairAudit& a) {
+        if (!a.completed) throw std::logic_error("incomplete regional peak audit");
+        ++batches; attempts += a.attempts; peak_updates += a.peak_updates;
+        lost_peaks += a.peak_score > a.returned_score + 1e-6;
+        lost_improvements += a.peak_score > a.initial_score + 1e-6 && a.final_score <= a.initial_score + 1e-6;
+        peak_attempt_sum += a.peak_attempt; max_peak_attempt = std::max(max_peak_attempt, a.peak_attempt);
+        peak_gain += a.peak_score - a.initial_score; final_gain += a.final_score - a.initial_score;
+        discarded_gain += std::max(0.0, a.peak_score - a.returned_score);
+    }
+    void merge(const TemporalRegionPeaks& b) {
+        batches += b.batches; attempts += b.attempts; peak_updates += b.peak_updates;
+        lost_peaks += b.lost_peaks; lost_improvements += b.lost_improvements;
+        peak_attempt_sum += b.peak_attempt_sum; max_peak_attempt = std::max(max_peak_attempt, b.max_peak_attempt);
+        peak_gain += b.peak_gain; final_gain += b.final_gain; discarded_gain += b.discarded_gain;
+    }
 };
 
 struct TemporalRegionStats {
@@ -18,6 +41,7 @@ struct TemporalRegionStats {
     long long kept_regions = 0, reverted_regions = 0, frozen_crossers = 0;
     double score_before = 0, score_after = 0;
     std::vector<double> round_scores;
+    TemporalRegionPeaks peaks;
 };
 
 template<class Deadline>
@@ -77,6 +101,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         std::vector<std::vector<char>> fixed(options.parts, std::vector<char>(count, true));
         std::vector<std::unique_ptr<TemporalPibt>> results(options.parts);
         std::vector<std::exception_ptr> errors(options.parts);
+        std::vector<TemporalRepairAudit> audits(options.audit_peaks ? options.parts : 0);
         for (int region = 0; region < options.parts; ++region)
             for (int r : roots[region]) fixed[region][r] = false;
         std::atomic<int> next{0};
@@ -89,7 +114,8 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
                     check();
                     auto search = std::make_unique<TemporalPibt>(cells, choices, fixed[region], power,
                         displacement_limit, seeds[region], &selected, &choice_regions, region);
-                    search->repair(options.steps, check, 0, &roots[region], options.temperature_ppm);
+                    search->repair(options.steps, check, 0, &roots[region], options.temperature_ppm,
+                                   options.audit_peaks ? &audits[region] : nullptr);
                     check(); results[region] = std::move(search);
                 } catch (...) { errors[region] = std::current_exception(); }
             }
@@ -118,6 +144,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
             stats.accepted += observed.repairs_accepted;
             stats.kept_regions += observed.repair_batches_kept;
             stats.reverted_regions += observed.repair_batches_reverted;
+            if (options.audit_peaks) stats.peaks.observe(audits[region]);
         }
         // Reconstruct all reservations together. The constructor checks every
         // occupied cell and edge, so an invalid merge cannot escape the layer.

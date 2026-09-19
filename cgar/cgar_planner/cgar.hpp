@@ -232,6 +232,7 @@ struct MovementStats {
 };
 
 struct Stats {
+    TemporalRegionPeaks regional_peaks;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;

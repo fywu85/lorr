@@ -307,6 +307,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     if (temporal_regions_) regional = repair_temporal_regions(cert_.rows, cert_.cols, loc_, choices, pinned, power,
         temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
         [&] { check_deadline(deadline_, "temporal_region_repair"); });
+    if (temporal_region_options_.audit_peaks) stats_.regional_peaks.merge(region_stats.peaks);
     const auto regions_finished = Clock::now();
     TemporalTransactionStats transaction_stats;
     auto transaction = repair_temporal_transactions(cells, choices, pinned, power, temporal_budget_,
@@ -465,6 +466,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,
                 warm_stats.initial_resets, warm_stats.collision_resets);
         if (temporal_regions_) {
+            if (temporal_region_options_.audit_peaks) {
+                const auto& p = stats_.regional_peaks;
+                std::printf("[cgar-regional-peaks] step=%d batches=%lld attempts=%lld peak_updates=%lld lost_peaks=%lld lost_improvements=%lld peak_gain=%.6f final_gain=%.6f discarded_gain=%.6f peak_attempt_sum=%lld max_peak_attempt=%d\n",
+                    env_->curr_timestep + 1, p.batches, p.attempts, p.peak_updates, p.lost_peaks,
+                    p.lost_improvements, p.peak_gain, p.final_gain, p.discarded_gain, p.peak_attempt_sum, p.max_peak_attempt);
+            }
             std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d temperature_ppm=%d active=%lld candidates=%lld repairs=%lld attempts_accepted=%lld kept=%lld reverted=%lld frozen_crossers=%lld score_before=%.3f score_after=%.3f\n",
                         env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,
                         temporal_region_options_.threads, temporal_region_options_.temperature_ppm, region_stats.active_robots, region_stats.candidates,

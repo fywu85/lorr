@@ -30,3 +30,11 @@ The suggested journal is one possible implementation, not approved production co
 A best scalar score would not prove better warehouse throughput. His thermal-phase
 analysis is qualitative: small losses can remain acceptable late, and ties remain
 possible. Use measured counters before deciding on a retention change.
+
+Source follow-up: TurnDistanceOracle::compute restricts predecessor cells to the
+core or the goal's own pocket. A geometrically valid path can end in an excluded
+pocket even when its earlier current goal has finite next-table distance. Thus the
+suggested endpoint-finiteness case can occur before later admissibility filtering;
+the conservative whole-set fallback is intentional. A dedicated production pocket
+fixture remains a useful test follow-up. Existing disconnected fixture tests the
+separate infinite-current-goal case.

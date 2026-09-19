@@ -67,3 +67,10 @@ from3a5594a plus the archived patch. The production policy does not build next-g
 tables, alter recency, inspect hidden tasks, release reservations or return partial
 work. It uses only already-resident complete tables after normal builds finish.
 [Build and regressions](build-provenance/v47/), [experiment profiles](next-errand-variants.json).
+
+V47 is now committed and pushed as exact3946d3340ddae324b3ba77eb6a1d23b1418f0fbc;
+all22 frozen source/test hashes match that commit. The screen completes both cases:
+OFF exactly reproduces the confirmed regional prefix, ON alters candidate scores,
+and maxima are961.20/959.32ms with peakRSS5.273GB. Full8899141/analysis8899143
+runs ON/OFF on seeds0/2 with four physical cores per process. It remains incomplete;
+there is no full-run quality conclusion. [Screen](results/next-errand-screen-v47/equivalence.json).

@@ -1,0 +1,75 @@
+{
+  "scope": "200-step feasibility only. Four-region/eight-core control reproduces the prior four-core regional2 trajectory exactly. Eight regions double prescribed regional attempts with eight repair threads. No throughput acceptance.",
+  "checked_utc": "2026-09-19T21:56:27.666545+00:00",
+  "all_valid": true,
+  "complete_entries_within_1s": 400,
+  "verified_frozen_source_and_test_files": 22,
+  "binary_sha256": "7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c",
+  "four_region_control_exact": true,
+  "disjoint_eight_physical_cores": true,
+  "no_cpu_quota": true,
+  "counters": {
+    "flow4_pickupfull64_regions4_rounds2_peak_audit-s0-r0": {
+      "cumulative_peaks": {
+        "step": 200,
+        "batches": 1600,
+        "attempts": 40000000,
+        "peak_updates": 640403,
+        "lost_peaks": 0,
+        "lost_improvements": 0,
+        "peak_gain": 169582046.0,
+        "final_gain": 167534374.0,
+        "discarded_gain": 0.0,
+        "peak_attempt_sum": 33752288,
+        "max_peak_attempt": 25000
+      },
+      "regional_step200": {
+        "step": 200,
+        "regions": 4,
+        "rounds": 2,
+        "threads": 4,
+        "temperature_ppm": 1000,
+        "active": 19611,
+        "candidates": 8741715,
+        "repairs": 200000,
+        "attempts_accepted": 89741,
+        "kept": 6,
+        "reverted": 2,
+        "frozen_crossers": 387,
+        "score_before": 13015668.0,
+        "score_after": 13101422.0
+      }
+    },
+    "flow4_pickupfull64_regions8_rounds2_peak_audit-s0-r0": {
+      "cumulative_peaks": {
+        "step": 200,
+        "batches": 3200,
+        "attempts": 80000000,
+        "peak_updates": 841129,
+        "lost_peaks": 1,
+        "lost_improvements": 1,
+        "peak_gain": 213791158.0,
+        "final_gain": 210111870.0,
+        "discarded_gain": 256.0,
+        "peak_attempt_sum": 62500394,
+        "max_peak_attempt": 25000
+      },
+      "regional_step200": {
+        "step": 200,
+        "regions": 8,
+        "rounds": 2,
+        "threads": 8,
+        "temperature_ppm": 1000,
+        "active": 19234,
+        "candidates": 23146786,
+        "repairs": 400000,
+        "attempts_accepted": 172374,
+        "kept": 14,
+        "reverted": 2,
+        "frozen_crossers": 744,
+        "score_before": 12824596.0,
+        "score_after": 13032926.0
+      }
+    }
+  }
+}
