@@ -13,7 +13,9 @@ target; retain that difference when comparing. The active goal is not complete.
   regions. All 5,000 entries pass, max 0.881398 seconds, RSS 12.106 GB, one core.
   Its paired 4M control is 109,244 (+12.50%); earlier regional best is 112,164.
   Final-window count improves 22,456 to 25,254 and task-age p90 850 to 743.
-  Still 30,085 below the leader and only one seed. See FLOW_MARGIN.md.
+  Confirmation seeds 1/2 reach 122,195 and 70,171. The three-seed mean is only
+  105,087.3, with a severe late collapse in seed 2. **Do not promote this profile.**
+  Its strongest seed remains 30,085 below the leader. See FLOW_MARGIN.md.
 - The no-margin flow field completes at only 46,186 and degrades late. A late
   freeze with margin 50 reaches 110,649. All pass deadlines; better timing alone
   does not make a routing policy useful. The 4M control exactly matches v8.
@@ -35,13 +37,19 @@ target; retain that difference when comparing. The active goal is not complete.
 All full matrices use two independent single-core EPYC 9354 instances and
 24 GiB aggregate reserved memory, one-second decisions and 5,000 steps.
 
-1. **8898544/8898545**, frozen v20-r1, running on research52: independent seeds
-   1/2 for the exact new best margin-50 profile. No completed new seed yet.
-2. **8898550/8898552**, frozen v26-r1: corrected route-to-go metric, comparing
+1. **8898550/8898552**, frozen v26-r1, running on research31: corrected route-to-go metric, comparing
    disabled control, unit routes, opposing-cost routes, reconnection, and bounded
-   refinement 64. All five screens pass; no full guide throughput result yet.
-3. **8898554/8898555**, frozen v20-r1: unchanged best control versus margins
-   25/75 and strength 2 at margin 50. All three new feasibility screens pass.
+   refinement 64. All five screens pass. First full pair: control 109,244 and
+   unit guides 39,066, both valid. Unit guides collapse late (2,778 tasks in the
+   final window, age p90 4,505); they are not promoted. Other profiles still run.
+2. **8898558/8898559**, frozen v20-r1: matching no-flow 4M controls at seeds 1/2,
+   to distinguish the fragile flow policy from its different fixed-work setting.
+3. **8898554/8898555**, frozen v20-r1: margin-50 control versus margins 25/75
+   and strength 2. Moved while pending after the matched controls; all three
+   feasibility screens pass. See results/flow-neighbors-queue-update.json.
+4. **8898566/8898567**, frozen v27: exact-policy validation of global 4M and
+   global 25k plus two regional rounds after the kernel optimization. This matrix
+   uses two four-core instances and 24 GiB total; the others above use two cores.
 
 The old v21/v24 guide full matrices and analysis jobs
 8898527/8898528/8898535/8898536 were confirmed pending and canceled. No running
@@ -74,3 +82,11 @@ actual RSS, trajectory fingerprints, final-window rates and movement efficiency.
 Do not rank policies by short prefixes. Confirm additional seeds before promoting
 an improvement, and six before claiming the goal has been achieved. Future
 combinations of flow, regional repair or warm reuse require independent validation.
+
+
+An isolated all-search candidate index preserves exact results but makes
+global/warm kernels 1.9%/1.5% slower. A regional-only template specialization
+preserves all checksums and reduces isolated regional time 6.9%, global time
+about 2%. The exact tested header is integrated in v27. All regressions and both
+production screens pass with identical trajectories; full validation is queued
+above. No end-to-end speedup is established. See prefilter/.

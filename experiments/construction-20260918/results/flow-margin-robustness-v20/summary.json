@@ -1,0 +1,61 @@
+{
+  "profiles_identical": true,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "completed_full_runs": 3,
+  "mean_tasks": 105087.33333333333,
+  "range_tasks": [
+    70171,
+    122896
+  ],
+  "established_50k_reference_mean": 107413.33333333333,
+  "decision": "Do not promote: one seed collapses late and the three-seed mean is below the established 50k reference. The reference uses a different fixed-work policy; this is a policy comparison, not a one-variable causal ablation.",
+  "records": [
+    {
+      "case": "flow1_margin50_work4m-s0-r0",
+      "tasks": 122896,
+      "completed_per_1000": [
+        21931,
+        25125,
+        25226,
+        25360,
+        25254
+      ],
+      "outstanding_task_age_p90": 743,
+      "trajectory_sha256": "24df3ec4a91b7e11a3689366a1b5032619c6d04d7f47c5236ee89dee30a7718a"
+    },
+    {
+      "case": "flow1_margin50_work4m-s1-r0",
+      "tasks": 122195,
+      "completed_per_1000": [
+        21867,
+        25033,
+        25186,
+        24992,
+        25117
+      ],
+      "outstanding_task_age_p90": 753,
+      "trajectory_sha256": "855ccc0ba5a45912c0624e86417d962a95a70fde2e25e7893a93e48fcd4fbe0d"
+    },
+    {
+      "case": "flow1_margin50_work4m-s2-r0",
+      "tasks": 70171,
+      "completed_per_1000": [
+        21294,
+        23690,
+        14898,
+        6630,
+        3659
+      ],
+      "outstanding_task_age_p90": 3170,
+      "trajectory_sha256": "ca590f7c9804e3bec8623d509b84d4c2f5ca0900dd7a91ac21fa4a711d4d4a90"
+    }
+  ],
+  "sources": [
+    "results/flow-margin-full-v20/metrics.json",
+    "results/flow-margin-confirm-v20/metrics.json"
+  ]
+}

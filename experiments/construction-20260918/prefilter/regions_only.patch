@@ -1,0 +1,80 @@
+--- a/temporal_pibt.hpp
++++ b/temporal_pibt.hpp
+@@ -50,6 +50,23 @@
+                 !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
+             if (blocker(r) != -1) throw std::logic_error("conflicting temporal seed");
+             add(r);
++        }
++        if (choice_regions_) {
++            size_t count = 0;
++            for (int r = 0; r < static_cast<int>(choices_.size()); ++r)
++                if (!fixed_[r]) count += choices_[r].size() - 1;
++            candidate_order_.reserve(count * 3);
++            candidate_offsets_.resize(choices_.size());
++            for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
++                for (int horizon = 3; horizon <= 5; ++horizon) {
++                    candidate_offsets_[r][horizon - 3] = candidate_order_.size();
++                    if (fixed_[r]) continue;
++                    for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k)
++                        if (choices_[r][k].path->depth <= horizon && (*choice_regions_)[r][k] == region_)
++                            candidate_order_.push_back(k);
++                }
++                candidate_offsets_[r][3] = candidate_order_.size();
++            }
+         }
+     }
+ 
+@@ -136,7 +153,7 @@
+         return temperature_ > 0 && old_score_ > 0 &&
+                draw < std::exp(-((old_score_ - score_) / old_score_) / temperature_);
+     }
+-    template<class Deadline>
++    template<bool Indexed, class Deadline>
+     int build(int r, int depth, int& counter, bool repairing, Deadline& check) {
+         ++stats.recursive_calls;
+         stats.max_depth = std::max(stats.max_depth, depth);
+@@ -146,9 +163,12 @@
+         const int old = selected_[r];
+         // Choices are sorted by the native terminal score, excluding the wait
+         // seed at index zero. A failed ordinary wait remains displaceable.
+-        for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
+-            if (choices_[r][k].path->depth > horizon_ ||
+-                (choice_regions_ && (*choice_regions_)[r][k] != region_)) continue;
++        const size_t end = Indexed ? candidate_offsets_[r][horizon_ - 2] : choices_[r].size();
++        for (size_t offset = Indexed ? candidate_offsets_[r][horizon_ - 3] : 1; offset < end; ++offset) {
++            const int k = Indexed ? candidate_order_[offset] : static_cast<int>(offset);
++            if constexpr (!Indexed) {
++                if (choices_[r][k].path->depth > horizon_) continue;
++            }
+             ++stats.candidates;
+             selected_[r] = k;
+             const int other = blocker(r);
+@@ -165,7 +185,7 @@
+                 if (selected_[other] != 0 && random_real() < 0.8) continue;
+             }
+             remove(other); add(r);
+-            const int result = build(other, depth + 1, ++counter, repairing, check);
++            const int result = build<Indexed>(other, depth + 1, ++counter, repairing, check);
+             if (result == 1) return 1;
+             remove(r); add(other);
+             if (result == 2) { selected_[r] = old; return 2; }
+@@ -176,7 +196,8 @@
+     bool attempt(int r, bool repairing, Deadline& check) {
+         ++generation_; old_score_ = score_; remove(r);
+         int counter = 0;
+-        const int result = build(r, 0, counter, repairing, check);
++        const int result = choice_regions_ ? build<true>(r, 0, counter, repairing, check) :
++                                           build<false>(r, 0, counter, repairing, check);
+         if (result != 1) add(r);
+         return result == 1;
+     }
+@@ -185,7 +206,8 @@
+     const std::vector<double>& power_;
+     int limit_, horizon_ = 3;
+     std::mt19937_64 rng_;
+-    std::vector<int> selected_;
++    std::vector<int> selected_, candidate_order_;
++    std::vector<std::array<size_t, 4>> candidate_offsets_;
+     std::vector<uint64_t> visited_;
+     std::vector<std::array<int, kTemporalHorizon>> used_cells_, used_edges_;
+     const std::vector<std::vector<int>>* choice_regions_ = nullptr;

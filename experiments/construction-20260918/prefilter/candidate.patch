@@ -1,0 +1,48 @@
+--- a/temporal_pibt.hpp
++++ b/temporal_pibt.hpp
+@@ -50,6 +50,22 @@
+                 !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
+             if (blocker(r) != -1) throw std::logic_error("conflicting temporal seed");
+             add(r);
++        }
++        size_t count = 0;
++        for (int r = 0; r < static_cast<int>(choices_.size()); ++r)
++            if (!fixed_[r]) count += choices_[r].size() - 1;
++        candidate_order_.reserve(count * 3);
++        candidate_offsets_.resize(choices_.size());
++        for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
++            for (int horizon = 3; horizon <= 5; ++horizon) {
++                candidate_offsets_[r][horizon - 3] = candidate_order_.size();
++                if (fixed_[r]) continue;
++                for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k)
++                    if (choices_[r][k].path->depth <= horizon &&
++                        (!choice_regions_ || (*choice_regions_)[r][k] == region_))
++                        candidate_order_.push_back(k);
++            }
++            candidate_offsets_[r][3] = candidate_order_.size();
+         }
+     }
+ 
+@@ -146,9 +162,9 @@
+         const int old = selected_[r];
+         // Choices are sorted by the native terminal score, excluding the wait
+         // seed at index zero. A failed ordinary wait remains displaceable.
+-        for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
+-            if (choices_[r][k].path->depth > horizon_ ||
+-                (choice_regions_ && (*choice_regions_)[r][k] != region_)) continue;
++        for (size_t offset = candidate_offsets_[r][horizon_ - 3];
++             offset < candidate_offsets_[r][horizon_ - 2]; ++offset) {
++            const int k = candidate_order_[offset];
+             ++stats.candidates;
+             selected_[r] = k;
+             const int other = blocker(r);
+@@ -185,7 +201,8 @@
+     const std::vector<double>& power_;
+     int limit_, horizon_ = 3;
+     std::mt19937_64 rng_;
+-    std::vector<int> selected_;
++    std::vector<int> selected_, candidate_order_;
++    std::vector<std::array<size_t, 4>> candidate_offsets_;
+     std::vector<uint64_t> visited_;
+     std::vector<std::array<int, kTemporalHorizon>> used_cells_, used_edges_;
+     const std::vector<std::vector<int>>* choice_regions_ = nullptr;

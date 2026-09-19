@@ -291,5 +291,7 @@ The final 1,000-step count improves from 22,456 to 25,254, age p90 from 850 to
 from 3,183,258 to 1,970,601. The no-margin field collapses to 46,186 despite
 passing deadlines; late-freeze/margin-50 yields 110,649. Margin 50 is a
 count-imbalance rule, not a statistical confidence guarantee. Full independent
-seeds 1/2 are running; no additional-seed outcome or six-seed claim is available.
-[FULL details and all outcomes](FLOW_MARGIN.md).
+seeds 1/2 subsequently finish at 122,195 and **70,171**. Their three-seed mean,
+including seed 0, is **105,087.3**, below the established 50k reference. The late
+collapse in seed 2 prevents promotion despite the strong single-seed peak.
+[Full details and all outcomes](FLOW_MARGIN.md).

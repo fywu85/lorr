@@ -274,3 +274,23 @@ Corrected full **8898550**, analysis **8898552**, follows the independent flow
 confirmation **8898544/8898545**. It compares these same five profiles at seed 0,
 5,000 steps, two single-core EPYC 9354 instances and 24 GiB aggregate memory.
 The nearby flow-setting full matrix **8898554/8898555** follows it.
+
+
+## First completed corrected-guide full pair
+
+The v26 control again completes 109,244 with its exact prior full trajectory.
+Unit-cost guides (opposite/load costs zero) complete only **39,066**, despite
+all 5,000 exact entry samples passing, max 0.935855331 seconds, RSS
+11,996,459,008 bytes and zero errors/timeouts. Its five successive 1,000-step
+counts are 17,230 / 10,425 / 5,438 / 3,195 / 2,778; outstanding task age p90 is
+4,505 versus 850 for control. It accumulates 13,619,939 loaded waits and
+9,415,952 loaded turns, versus control's 2,772,123 and 3,675,264.
+
+At the last sampled step it maintains 7,164 guides, invalidates 473 route
+deviations, and rebuilds 512 routes, with only four goal resets. This is
+consistent with repeated displacement and route concentration, but does not
+isolate a single cause. The waypoint fix resolves a real scoring error; it does
+not establish a throughput gain. Congestion-aware/reconnection/refinement full
+cases are still running and must finish before drawing conclusions about them.
+Only the two completed cases were analyzed, using a read-only subset on GRID.
+[Full-horizon first-pair evidence](results/guide-window-first-pair-v26/).

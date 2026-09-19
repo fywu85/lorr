@@ -81,9 +81,9 @@ a deadline failure but does not repair its bad routing behavior.
 
 [Complete full matrix](results/flow-margin-full-v20/),
 [exact full control equivalence](results/flow-work-full-equivalence.json).
-Full independent seeds 1/2 are running in **8898544**, with analysis **8898545**,
-using the exact frozen v20-r1 binary and unchanged margin-50 settings. No
-additional-seed score is available yet; six-seed confirmation remains required.
+Full independent seeds 1/2 and analysis **8898544/8898545** are complete,
+using the exact frozen v20-r1 binary and unchanged margin-50 settings.
+They disqualify this profile from promotion; see the robustness results below.
 
 
 Three one-variable follow-ups pass screen **8898549**: margin 25 (max entry
@@ -95,3 +95,33 @@ margin-50/strength-1 control after corrected-guide jobs **8898550/8898552**.
 It retains the same frozen v20-r1 binary, seed 0, 5,000 steps, exact deadline,
 two disjoint physical cores and 24 GiB total reservation.
 [Screen evidence](results/flow-margin-neighbors-screen-v20/).
+
+
+## Independent-seed confirmation: not robust
+
+| Seed | Tasks | Five consecutive 1,000-step windows | Max entry seconds | Peak RSS bytes | Age p90 |
+|---|---:|---|---:|---:|---:|
+| 0 | 122,896 | 21,931 / 25,125 / 25,226 / 25,360 / 25,254 | 0.881397952 | 12,105,699,328 | 743 |
+| 1 | 122,195 | 21,867 / 25,033 / 25,186 / 24,992 / 25,117 | 0.865685336 | 11,944,648,704 | 753 |
+| 2 | 70,171 | 21,294 / 23,690 / 14,898 / 6,630 / 3,659 | 0.857074394 | 11,790,622,720 | 3,170 |
+
+All runs are valid full results; the loss is not a timeout or partial-solution
+artifact. The mean is **105,087.3**, below the established 50k profile's three-seed
+107,413.3. Those profiles differ in fixed work as well as flow guidance, so this
+is a comparison of complete policies, not a one-variable causal claim. The
+margin-50 policy is **not promoted**. Six-seed testing of this fragile setting
+is not a priority while more robust alternatives are being evaluated.
+
+Seed 2 has 10,260,146 loaded waits and 7,196,046 loaded turns, versus seed 1's
+2,788,268 waits and 2,745,557 turns. Its final-window rate and task-age tail
+collapse. At 2,000 steps its cumulative count is only 4.4% behind seed 0; at
+5,000 it is 42.9% behind. Even a 2,000-step prefix would conceal much of this
+failure. This supports retaining full horizons for new routing-policy claims.
+
+Two strong seeds and one late collapse establish strong seed sensitivity. The
+early frozen field is a plausible contributor, but the seed also changes repair
+throughout the run. Matched no-flow 4M controls at seeds 1/2 are still needed to
+isolate the policy change from the work setting; specific causal edges have not
+been established. Online intended-route guidance is running independently.
+[Full confirmation](results/flow-margin-confirm-v20/),
+[three-seed summary](results/flow-margin-robustness-v20/summary.json).

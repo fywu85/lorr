@@ -1,0 +1,23 @@
+{
+  "source_commit": "b418490fc17f5cb1dcd3d5cc5987bd069537e0df",
+  "source_hashes": {
+    "baseline": {
+      "temporal_geometry.hpp": "117aa30f19fecc4baf10af216db6efeb6b63a130d42948fbd73c62c71e3d18c6",
+      "temporal_pibt.hpp": "d9b2038df5e6f35d7aa0c6e00ebd3a5f108b61126327c6963af5c3185e828802"
+    },
+    "candidate": {
+      "temporal_geometry.hpp": "117aa30f19fecc4baf10af216db6efeb6b63a130d42948fbd73c62c71e3d18c6",
+      "temporal_pibt.hpp": "e2d391b4bb845a2117fcd227b058e742df3ad61a5372a746f88c5b0bc311a24d"
+    }
+  },
+  "driver_sha256": "8e2eb9902b54d959afbc78e70211f9f0efa2edaef27157900e69a5225bec97fb",
+  "patch_sha256": "757b7a5f4319361766e9d022b72b568155b1620e8a695eb167fab2a687f76c26",
+  "cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "repetitions": 6,
+  "modes": {
+    "0": "cold equal-weight global search",
+    "1": "region-filtered search",
+    "2": "valid warm initial plan and unequal weights"
+  },
+  "purpose": "Synthetic fixed-work kernel equivalence and runtime, including indexing setup/free; not lifelong throughput."
+}
