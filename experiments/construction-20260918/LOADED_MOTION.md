@@ -40,3 +40,11 @@ single cause or establish that more search will help.
 [Comparison and limits](results/loaded-motion-audit-v1/comparison.json),
 [complete audit](results/loaded-motion-audit-v1/),
 [cases](loaded-motion-cases.json), [C++](decompose.cpp), [driver](decompose.py).
+
+Full rotation counters further localize the source. Across all six confirmed runs,
+only54–83 rotations come from the equal-distance wait-seed tie. More than99.5%
+of roughly2.2million total turns are selected planned rotations; the sum of seed,
+planned and protected rotations exactly matches full motion counters. These
+counters include empty and loaded phases. They narrow the observed source but do
+not bound the eventual effect of a policy change on later trajectories.
+[Full rotation attribution](results/full64-rotation-attribution-v1.json).

@@ -92,7 +92,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const auto* oriented = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? turn_oracle_.find(goal) : prepared_oriented[i]);
             if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
             const bool guided = guide_enabled_ && guide_routes_.guided(i);
-            const int robot_turn_cost = (oriented && !guided ? turn_cost_ : 1) * flow_cost_scale_;
+            const int robot_turn_cost = oriented && !guided ? guidance_turn_cost_ : flow_cost_scale_;
             if (goal >= 0) { if (oriented) ++prepared_metrics[worker][0]; else ++prepared_metrics[worker][1]; }
             auto original_distance = [&](int cell, int direction) {
                 if (goal < 0) return 0;
@@ -186,6 +186,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     const auto search_started = Clock::now();
     std::vector<std::unique_ptr<TemporalPibt>> results(temporal_workers_);
     std::vector<std::exception_ptr> errors(temporal_workers_);
+    std::vector<char> warm_started(temporal_workers_, false);
     std::atomic<int> next_worker{0};
     auto work = [&] {
         for (;;) {
@@ -193,8 +194,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             if (worker >= temporal_workers_) return;
             std::unique_ptr<TemporalPibt> run;
             try {
-                run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker],
-                    initial.empty() ? nullptr : &initial);
+                // All alternatives finish. In mixed mode only worker0 reuses
+                // the previous complete suffix; exact-score ties retain it.
+                const auto* worker_initial = !initial.empty() && (!temporal_mixed_start_ || worker == 0) ? &initial : nullptr;
+                warm_started[worker] = worker_initial != nullptr;
+                run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker], worker_initial);
                 run->construct(order, [&] { check_deadline(deadline_, "temporal_construction"); });
                 if (temporal_steps_) run->repair(temporal_steps_, [&] { check_deadline(deadline_, "temporal_repair"); }, temporal_candidate_limit_);
                 check_deadline(deadline_, "temporal_worker_complete");
@@ -230,6 +234,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     int best = 0;
     for (int worker = 1; worker < temporal_workers_; ++worker)
         if (results[worker]->score() > results[best]->score()) best = worker;
+    int warm_workers = 0;
+    for (char warm : warm_started) warm_workers += warm;
+    stats_.temporal_warm_worker_runs += warm_workers;
+    stats_.temporal_cold_worker_runs += temporal_workers_ - warm_workers;
+    stats_.temporal_selected_warm_runs += warm_started[best];
     const auto global_finished = Clock::now();
     TemporalRegionStats region_stats;
     std::unique_ptr<TemporalPibt> regional;
@@ -340,6 +349,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     construction_stats.repairs, construction_stats.repairs_accepted, results[best]->score());
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0) {
         auto seconds = [](auto start, auto end) { return std::chrono::duration<double>(end - start).count(); };
+        std::printf("[cgar-temporal-starts] step=%d mixed=%d warm=%d cold=%d selected_warm=%d warm_runs=%lld cold_runs=%lld unit_cost=%d turn_cost=%d turn_surcharge=%d\n",
+                    env_->curr_timestep + 1, int(temporal_mixed_start_), warm_workers, temporal_workers_ - warm_workers,
+                    int(warm_started[best]), stats_.temporal_warm_worker_runs, stats_.temporal_cold_worker_runs,
+                    flow_cost_scale_, guidance_turn_cost_, turn_surcharge_);
         std::printf("[cgar-temporal-timing] step=%d candidates=%.6f global=%.6f regions=%.6f validation=%.6f exact_metric=%d fallback_metric=%d distance_scale=%d\n",
                     env_->curr_timestep + 1, seconds(candidate_started, search_started), seconds(search_started, global_finished),
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),

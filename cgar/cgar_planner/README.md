@@ -202,6 +202,10 @@ off, and these results do not imply performance on other maps.
   State/time mismatches discard history. Construction and fixed repair still
   finish completely, and the final plan still passes all collision checks.
   This is experimental; full throughput validation is pending.
+- `CGAR_TEMPORAL_MIXED_START=1` gives only worker 0 a valid warm suffix and
+  starts the other workers cold (default off). It requires warm start and at
+  least two workers. Every worker finishes its fixed work; score ties keep
+  worker 0. Missing history makes every worker cold. This is experimental.
 - `CGAR_TEMPORAL_BUDGET` bounds displacements per construction root (default 8192);
   repair roots also have the native cap of 1000. A failed bounded attempt rolls
   back according to the algorithm, independently of elapsed time.
@@ -226,6 +230,13 @@ Additional optional experiments are undergoing full-run evaluation:
   Forward cost stays one. Complete reverse Dijkstra tables and temporal path
   scores charge the same extra turn cost, including rotations represented by
   terminal waits. The certificate's spatial potential is unchanged.
+- `CGAR_TURN_SURCHARGE` adds an integer surcharge in the flow metric's scaled
+  units (default 0). Nonzero requires temporal flow and physical turn cost 1;
+  the resulting turn price must be at most 16. At scale 4, values 1/2 price a
+  turn at 5/6, while a physical slot and base forward action remain 4. Reverse
+  guidance, PIBT macros, temporal scores and both pickup searches share that
+  price. Robots without an exact orientation table retain the unit-turn
+  fallback. [Tests and experiments](../../experiments/construction-20260918/FRACTIONAL_MIXED.md).
 - `CGAR_TEMPORAL_REGIONS` enables repair of disjoint portions of one complete
   plan (1–32 regions; unset or 0 disables it). Partitions use only dimensions;
   paths crossing a boundary and all protected paths stay fixed for that round.

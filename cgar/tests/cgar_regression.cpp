@@ -284,11 +284,11 @@ void global_task_candidates() {
 void oriented_pickup_search_regression() {
  OrientedPickupSearch search;CompletePickupSearch complete;FullPickupField full;int compared=0;
  constexpr int R=7,C=8,N=R*C;
- for(int field=0;field<12;++field)for(int scale:{1,2,4,8}){
+ for(int field=0;field<12;++field)for(int scale:{1,2,4,8})for(int extra:{0,1,2}){
   std::vector<char> free(N,true);for(int u=0;u<N;++u)if((u*17+field*13)%11<2)free[u]=false;
   if(field==0)for(int c=0;c<C;++c)free[3*C+c]=false;
   std::vector<int> costs(N*4);for(int u=0;u<N;++u)for(int d=0;d<4;++d)costs[u*4+d]=scale*(1+(u*19+d*7+field)%2);
-  const int turn=scale*(1+field%2);
+  const int turn=scale*(1+field%2)+extra;if(turn>16)continue;
   for(int start:{0,N/2,N-1}){free[start]=true;for(int heading=0;heading<4;++heading){
    // Independent repeated relaxation on the explicit state graph; no heap,
    // generation stamps, early endpoint callbacks or shared search routine.
@@ -309,6 +309,13 @@ void oriented_pickup_search_regression() {
     [&](int u){return free[u];},[&](int u,int d){return costs[u*4+d];},[]{},full);
    long long reachable=0;for(int value:expected)reachable+=value<kInf;
    if(full.states!=reachable||full.pops<full.states)throw std::runtime_error("complete pickup field did not settle every reachable state");
+   Certificate cert;cert.rows=R;cert.cols=C;cert.free=cert.core=free;cert.pocket.assign(N,-1);
+   TurnDistanceOracle reverse;reverse.init(&cert,1<<20,turn,true,scale);
+   reverse.set_forward_costs(std::vector<uint8_t>(costs.begin(),costs.end()));
+   for(int goal:{0,N/2,N-1})if(free[goal]){
+    const auto* table=reverse.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+    if(reverse.value(*table,start,heading)!=full.distance[goal])throw std::runtime_error("reverse, bounded and complete pickup metrics disagree");
+   }
    for(int goal=0;goal<N;++goal){int want=kInf;for(int d=0;d<4;++d)want=std::min(want,expected[goal*4+d]);
     if((want==kInf? -1:want)!=got[goal]||full.distance[goal]!=want)throw std::runtime_error("pickup cost differs from independent graph relaxation");++compared;
    }
@@ -326,7 +333,7 @@ void oriented_pickup_search_regression() {
  int recovered=-1;search.run(2,0,2,128,2,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[](int,int){return 3;},[&](int u,int cost){if(u==1)recovered=cost;return false;},[]{});
  if(recovered!=7)throw std::runtime_error("pickup scratch reuse after failure or turn cost is incorrect");
  for(int bound:{0,65537}){bool invalid=false;try{search.run(2,0,0,bound,1,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[](int,int){return 1;},[](int,int){return false;},[]{});}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid pickup work bound accepted");}
- std::cout<<"ORIENTED_PICKUP_SEARCH passed independent_goal_costs="<<compared<<" complete_dial_field=1 scales=1,2,4,8 all_headings=1 obstacles_disconnection=1 settled_only=1 fixed_queue_pops=1 early_endpoint_stop=1 injected_mid_search_timeout=1 scratch_reuse=1\n";
+ std::cout<<"ORIENTED_PICKUP_SEARCH passed independent_goal_costs="<<compared<<" complete_dial_field=1 reverse_oracle_basis=1 fractional_turn_surcharges=0,1,2 scales=1,2,4,8 all_headings=1 obstacles_disconnection=1 settled_only=1 fixed_queue_pops=1 early_endpoint_stop=1 injected_mid_search_timeout=1 scratch_reuse=1\n";
 }
 
 void pickup_flow_scheduler_regression() {
@@ -844,8 +851,32 @@ void temporal_parallel_regression() {
   for(int i=0;i<24;++i)if(e.curr_states[i].location==e.goal_locations[i][0].first)e.goal_locations[i][0].first=(e.goal_locations[i][0].first+37)%64;
   comparisons+=a.size();
  }
+ const bool warm=getenv("CGAR_TEMPORAL_WARM_START")&&std::string(getenv("CGAR_TEMPORAL_WARM_START"))!="0";
+ const bool mixed=getenv("CGAR_TEMPORAL_MIXED_START")&&std::string(getenv("CGAR_TEMPORAL_MIXED_START"))!="0";
+ const long long expected_warm=warm?79*(mixed?1:4):0;
+ for(const auto* planner:{&serial,&parallel}){
+  if(planner->stats().temporal_warm_worker_runs!=expected_warm||planner->stats().temporal_cold_worker_runs!=320-expected_warm||
+     (warm&&!planner->stats().temporal_warm_retained))throw std::runtime_error("complete worker warm/cold participation was not exercised");
+ }
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_WORKERS","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_PARALLEL passed workers=4 serial_vs_parallel_robot_decisions="<<comparisons<<"\n";
+}
+
+void temporal_mixed_start_regression() {
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);setenv("CGAR_TEMPORAL_MIXED_START","1",1);
+ temporal_parallel_regression();
+ setenv("CGAR_FLOW_STRENGTH","4",1);setenv("CGAR_FLOW_WARMUP","4",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_TURN_SURCHARGE","1",1);
+ temporal_parallel_regression();
+ for(const char* key:{"CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_COST_SCALE","CGAR_TURN_SURCHARGE"})unsetenv(key);
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TEMPORAL_WORKERS","1",1);
+ auto reject=[](){SharedEnvironment e;e.rows=e.cols=2;e.num_of_agents=1;e.map.assign(4,0);e.curr_states={State(0,0,0)};
+  e.curr_task_schedule={-1};e.goal_locations.resize(1);bool rejected=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid mixed-start configuration accepted");};
+ reject();setenv("CGAR_TEMPORAL_WORKERS","4",1);setenv("CGAR_TEMPORAL_WARM_START","0",1);reject();
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);setenv("CGAR_TEMPORAL_MIXED_START","2",1);reject();
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_WORKERS","CGAR_TEMPORAL_WARM_START","CGAR_TEMPORAL_MIXED_START"})unsetenv(key);
+ std::cout<<"TEMPORAL_MIXED_START passed complete_worker0_warm=1 other3cold=1 first_entry_allcold=1 serial_parallel_actions=3840 fractional_metric_interaction=1 invalid_configuration=1\n";
 }
 
 void temporal_turn_progress_regression() {
@@ -1253,10 +1284,11 @@ void flow_cost_scale_regression() {
  Certificate cert;cert.rows=rows;cert.cols=cols;cert.free=cert.core=free;cert.pocket.assign(cells,-1);
  TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
  long long distances_checked=0,scores_checked=0,uniform_scores=0;
- for(int unit:{1,2,4,8})for(bool biased:{false,true}){
+ for(int unit:{1,2,4,8})for(bool biased:{false,true})for(int extra_turn:{0,1,2}){
+  const int turn=unit+extra_turn;
   std::vector<uint8_t> edge(cells*4,unit);
   if(biased)for(int u=0;u<cells;++u)for(int d=0;d<4;++d)edge[u*4+d]+=(u*13+d*3)%5==0;
-  TurnDistanceOracle oracle;oracle.init(&cert,1<<20,unit,true,unit);
+  TurnDistanceOracle oracle;oracle.init(&cert,1<<20,turn,true,unit);
   if(oracle.set_forward_costs(edge)!=biased)throw std::runtime_error("scaled neutral field changed the metric");
   for(int goal:{0,16,18,34}){
    const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
@@ -1270,7 +1302,7 @@ void flow_cost_scale_regression() {
      const auto [cost,state]=q.top();q.pop();if(cost!=d[state])continue;
      if(state/4==goal){exact[start]=cost;break;}
      auto relax=[&](int next,int step_cost){if(cost+step_cost<d[next]){d[next]=cost+step_cost;q.push({d[next],next});}};
-     relax(state/4*4+(state%4+1)%4,unit);relax(state/4*4+(state%4+3)%4,unit);
+     relax(state/4*4+(state%4+1)%4,turn);relax(state/4*4+(state%4+3)%4,turn);
      const int next=nb(state/4,state%4,rows,cols);
      if(next>=0&&free[next])relax(next*4+state%4,edge[state]);
     }
@@ -1284,12 +1316,12 @@ void flow_cost_scale_regression() {
      const auto& path=paths[op];const int extra=TemporalGeometry::forward_surcharge(path,cell,goal,[&](int from,int to){
       for(int d=0;d<4;++d)if(nb(from,d,rows,cols)==to)return int(edge[from*4+d]);
       throw std::runtime_error("invalid scaled-score edge");},unit);
-     const int64_t cost=TemporalGeometry::cost(path,op,goal,unit,distance,50,unit)+int64_t(extra)*50;
+     const int64_t cost=TemporalGeometry::cost(path,op,goal,turn,distance,50,unit)+int64_t(extra)*50;
      const bool reached=std::find(path.cells.begin(),path.cells.end(),goal)!=path.cells.end();
      if(!reached&&cost+int64_t(op)*unit<int64_t(exact[cell*4+dir]-5*unit)*50)
       throw std::runtime_error("scaled temporal score rewarded unpaid progress");
      ++scores_checked;
-     if(!biased){
+     if(!biased&&!extra_turn){
       auto original=[&](int u,int d){return exact[u*4+d]/unit;};
       const int64_t expected=TemporalGeometry::cost(path,op,goal,1,original)*unit;
       if(extra||cost!=expected||TemporalGeometry::cost(path,op,-1,unit,distance,50,unit)!=int64_t(op)*unit)
@@ -1347,7 +1379,48 @@ void flow_cost_scale_regression() {
       "CGAR_FLOW_COST_SCALE","CGAR_TEMPORAL_WARM_START","CGAR_TURN_COMPACT"})unsetenv(name);
  std::cout<<"FLOW_COST_SCALE passed independent_weighted_distances="<<distances_checked<<" paid_progress_scores="<<scores_checked
           <<" exact_uniform_scores="<<uniform_scores<<" neutral_robot_decisions="<<identical
-          <<" scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+          <<" fractional_turn_surcharges=0,1,2 scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+}
+
+void fractional_turn_scheduler_regression() {
+ auto blank=[](){SharedEnvironment e;e.rows=e.cols=9;e.num_of_agents=1;e.map.assign(81,0);
+  e.curr_states={State(40,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);return e;};
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","100",1);setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_PICKUP_FLOW","1",1);
+ int checked=0;
+ for(int extra:{0,1,2,12})for(int mode=0;mode<3;++mode){
+  setenv("CGAR_TURN_SURCHARGE",std::to_string(extra).c_str(),1);
+  setenv("CGAR_PICKUP_FULL_ROBOTS",mode==1?"1":"0",1);
+  auto e=blank();if(mode==2)e.goal_locations[0]={{39,0}};Cgar c;c.initialize(&e,1000);
+  // Physically valid all-wait observations isolate metric publication and
+  // cache preparation from the action the planner would choose for this goal.
+  for(int t=0;t<2;++t){e.curr_timestep=t;std::vector<Action>a;c.plan(&e,1000,a);
+   if(step(e,e.curr_states,{Action::W}).empty())throw std::runtime_error("fractional pickup observation invalid");}
+  e.curr_timestep=2;e.goal_locations[0].clear();Task task;task.task_id=7;task.t_revealed=2;task.locations={39};e.task_pool.emplace(7,task);
+  std::vector<int> proposed;c.schedule(&e,1000,proposed);
+  const int expected=(2*(4+extra)+4+3)/4;
+  if(proposed!=std::vector<int>{7}||c.stats().estimated_pickup_cost!=expected||c.stats().pickup_flow_snapshot_publication!=1)
+   throw std::runtime_error("production pickup did not use the fractional turn metric");
+  if(mode==1?c.stats().pickup_full_fields!=1:!c.stats().pickup_flow_searches)
+   throw std::runtime_error("fractional pickup test missed its intended search path");
+  if(mode==2){c.schedule(&e,1000,proposed);
+   if(proposed!=std::vector<int>{7}||c.stats().estimated_pickup_cost!=2*expected||!c.stats().pickup_flow_cached_estimates)
+    throw std::runtime_error("cached fair estimate disagreed with fractional pickup search");}
+  if(e.curr_task_schedule!=std::vector<int>{-1}||e.task_pool.at(7).idx_next_loc||e.task_pool.at(7).agent_assigned!=-1)
+   throw std::runtime_error("fractional pickup changed simulator task metadata");
+  ++checked;
+ }
+ unsetenv("CGAR_PICKUP_FULL_ROBOTS");
+ for(const char* bad:{"-1","13","16"}){setenv("CGAR_TURN_SURCHARGE",bad,1);auto e=blank();bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid effective fractional turn cost accepted");}
+ setenv("CGAR_TURN_SURCHARGE","1",1);setenv("CGAR_TEMPORAL","0",1);{auto e=blank();bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("fractional turn accepted without temporal flow");}
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH",
+     "CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_COST_SCALE","CGAR_PICKUP_FLOW","CGAR_TURN_SURCHARGE"})unsetenv(key);
+ std::cout<<"FRACTIONAL_TURN_SCHEDULER passed production_cases="<<checked<<" bounded_complete_cached=1 neutral_default=1 edge16_boundary=1 metadata_unchanged=1\n";
 }
 
 void temporal_transaction_regression() {
@@ -2220,4 +2293,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

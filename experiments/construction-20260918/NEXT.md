@@ -38,6 +38,47 @@ confirmed-reference-progress.json has seven increasing six-seed milestones.
 User editor swap .WAREHOUSE_PROGRESS.md.swp exists; exclude fromGit and do not
 delete. Preserve concurrent user markdown edits with read/compare-before-write.
 
+## New V44 source and review checkpoint
+
+Optional CGAR_TURN_SURCHARGE adds scaled integer turn surcharge, default0,
+requiring temporalflow andphysicalturn1, effectiveT<=16. Uniformeffectivecost
+feeds reverseoracle, PIBTmacros, temporalscorer andbothpickupsearches. Fallback
+remainsunitturn. New CGAR_TEMPORAL_MIXED_START default0 requireswarmstart and
+>=2workers; worker0warm,otherscold, allfinish beforestrictscorecomparison.
+Actualconstructorparticipation counters; allpriorprotection/joins/historychecks.
+No wallclock-selected partial output. No new throughput claim.
+
+Build8898977 complete, allCGARchecks pass. Frozen
+runs/cgar-fractional-mixed-build-v44-20260919, archivebuild-provenance/v44,
+312linepatch independently reconstructed fromd4ece2ebbf483678b6a8f837692ec58228c8b0ff;
+all22source/testhashesverified againstarchiveandcurrentfiles. No C++buildactive.
+Tests88704independentpickupgoal costs+reverse/bounded/completebasisagreement,
+12288weightedDijkstra distances,724608paid-progressscores,120768uniformscores,
+11520neutralproductiondecisions,12productionfractionalpickupcases,
+3840mixedserial/parallelrobotdecisions withactualwarm/coldparticipation.
+
+Screen8898980 complete6/6valid,max935.833ms,RSS5.233GB. Surcharge0one/fourcold
+wholeprefixesexactV43,actualmixed1warm/3cold/allwarm4/allcoldconstructorsverified.
+FRACTIONAL_MIXED.md andresults/fractional-mixed-screen-v44/equivalence.json.
+Full8898981/8898982 nowrunning12profiles: one-workerextras0/1/2 andfour-worker
+cold/allwarm/mixed, seeds0/2.48physicalcores,4perprocess,192GiBaggregate,32GBcap.
+Compareextrasvsoneworker0; comparewarm/mixedvsfourcold. Automaticpairtableuses
+one-worker0, so manuallyapplymatchedcontrols. Raw
+runs/cgar-fractional-mixed-full-v44-20260919. All22hashes unchanged sincebuild.
+
+Fableturn11 complete18:47:43UTC,515.385s,47.123751USDactual,samesession,
+noerrors/denials/tools. Archivedvisiblefinal/metadata/status/qualifiedassessment.
+No newreproducedmotionbug. It proposedsmallfractionalturnandmixedwarm/cold;
+thesearehypotheses,notnewgains. Allwaitvirtualrotationdiscountcanrepresent2turns,
+notuniversal1slot. P/Q arithmeticwasnotarealizablegridfixture. Do notadopt
+proxy-onlyrejection/permanentfalsifierrules. Noarrival-scorechangejustified.
+Newcodewasimplementedafterreview; thereviewdidnotinspectV44implementation.
+
+Fullrotationattribution eightcasesnowverified: sixconfirmed64plusfour-worker0/2,
+allseed/planned/protectedturnssumexactlytomotioncounters. Tiedwaitturnsonlysixseed
+54–83,planned>99.5%of~2.2Mturns. Full64-rotation-attribution-v1.json;LOADED_MOTION.md.
+This is observedprovenance,notaninterventionbound.
+
 ## Completed latest experiments
 
 V43 exactsource1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9, all22 source/test
@@ -87,18 +128,21 @@ optionalcost discovery key. The default preserves V42 by full trajectory evidenc
  exactV42/64. Fullstrength4 must match141829/142988. No shortprefixqualityclaim.
  PICKUP_FULL_FLOW_STRENGTH.md andpickup-full-flow-strength-variants.json.
 
+Additional V43worker scaling:8898975screen4/8/16workers complete, each16physical
+cores, max968.816ms,RSS5.283GB. Four-workerprefixexactunder4vs16coreallocation.
+Full8898978/8898979 started18:57:06UTC research31:8/16workers,seeds0/2,4concurrent
+casesx16cores=64,64GiBaggregate,32GBperprocess. Existing4workerfullfirstpair has
+fourcoresperprocess; comparequalitywithresourceallocationsstated, notequalresource
+runtime. Autoanalysiscontrol8workers. PICKUP_FULL_WORKER_SCALING.md,
+runs/cgar-pickup-full-worker-scaling-full-v43-20260919.
+
 ## Persistent Fable
 
 Session1ebb1075-3538-49d1-93d1-a00c94fa256a, Fable5.1max viaClaudeCodeCLI;
-explicit source-sharing permission persists. Turns01–10complete. Turn11running,
-raw runs/fable-cgar-session/turn11, CLI started18:39:05UTC; sourceexactV43,
-preparedbaseHEADc19a446 (report-onlychanges), threechangedexcerpts29819bytes.
-Prompt fable-flow-session/followup-10.md asksatmosttwo concrete motionchanges,
-currentloadedactionaudit, sixseed64gain, failedcostkey suggestion andnew4workers.
-Includes caution thatgeometry alreadycompensatespastweightedturns/terminalwaits;
-scaledflowcurrentlyrejectsphysicalturn!=1. Source-spec refreshed to V43functionranges.
-No rawprotocol/hiddenreasoning inGit; archiveonlyvisiblefinal,metadata,status,
-andqualifiedassessment. Turn10actualcost35.470251 despite12USDflag; nothardcap.
+explicit source-sharing permission persists. Turns01–11complete, noCLIprocesslive.
+Latestvisiblefindings/metadata/status/assessment fable-flow-session/turn11/.
+Source-specrangeslastupdatedV43; refreshbeforeanyV44diffreview. Source-cacheisV43.
+No rawprotocol/hiddenreasoning inGit. The12USD CLI flag has not acted asahardcap.
 
 ## Established negative evidence and guardrails
 
@@ -121,5 +165,5 @@ Larger distancecoefficient256/1024 lost onearlyno-flowseed0; no knownscoringbug.
 Guidereconnection/weightedguidevariants previouslycollapsed; do notrepeatsamepolicy.
 
 Next: save completed reports/configs/history; assessFableturn11; collectlivefullruns,
-validate and confirm promising policies. Currentcheckpointc19a446waspushed;
-plannerexact1661176isalreadypublic. Goal remains active/unmet, not blocked.
+validate and confirm promising policies. Currentreportcheckpointd4ece2eispushed;
+V43plannerexact1661176ispublic. V44source/resultscheckpointisbeingprepared. Goal remains active/unmet, not blocked.

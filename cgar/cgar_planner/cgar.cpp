@@ -692,6 +692,16 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("flow cost scale must be one of 1,2,4,8");
     if (flow_cost_scale_ != 1 && (!flow_strength_ || !temporal_ || turn_cost_ != 1))
         throw std::invalid_argument("scaled flow costs require temporal planning, enabled flow and unit physical turns");
+    // A fractional surcharge is expressed in the existing scaled cost units.
+    // Keep the physical slot and forward/base costs unchanged, and use this
+    // single effective price in every oriented planning/scheduling calculation.
+    turn_surcharge_ = env_int("CGAR_TURN_SURCHARGE", 0);
+    if (turn_surcharge_ < 0 || turn_surcharge_ > 15 ||
+        (turn_surcharge_ && (!flow_strength_ || !temporal_ || turn_cost_ != 1)))
+        throw std::invalid_argument("turn surcharge requires temporal flow, unit physical turns and a value in [0,15]");
+    guidance_turn_cost_ = turn_cost_ * flow_cost_scale_ + turn_surcharge_;
+    if (guidance_turn_cost_ > 16)
+        throw std::invalid_argument("scaled turn cost plus surcharge must not exceed 16");
     guide_enabled_ = env_int("CGAR_GUIDE_ROUTES", 0) != 0;
     if (guide_enabled_ && (!temporal_ || turn_cost_ != 1 || flow_strength_))
         throw std::invalid_argument("guide routes require temporal planning, unit turns and frozen flow disabled");
@@ -718,6 +728,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
+    const int mixed_start = env_int("CGAR_TEMPORAL_MIXED_START", 0);
+    if (mixed_start < 0 || mixed_start > 1 ||
+        (mixed_start && (!temporal_warm_start_ || temporal_workers_ < 2)))
+        throw std::invalid_argument("mixed temporal starts require warm start, at least two workers and a boolean setting");
+    temporal_mixed_start_ = mixed_start != 0;
     temporal_prepare_threads_ = env_int("CGAR_TEMPORAL_PREP_THREADS", 1);
     if (temporal_prepare_threads_ < 1 || temporal_prepare_threads_ > 32)
         throw std::invalid_argument("temporal preparation threads must be in [1,32]");
@@ -816,7 +831,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     oracle_.init(&cert_, table_mb << 20);
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
-        turn_oracle_.init(&cert_, mb << 20, turn_cost_ * flow_cost_scale_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
+        turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
         if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
             env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0), env_int("CGAR_FLOW_REFRESH_INTERVAL", 0), flow_cost_scale_, cache_only_refresh != 0);
@@ -1171,7 +1186,7 @@ PibtCandidates Cgar::pibt_candidates(int i) {
                 const int v = cands[k].cell;
                 const int d = v == u ? ori_[i] : direction(u, v, cert_.cols);
                 const int remaining = turn_oracle_.value(*table, v, d);
-                cands[k].h = remaining >= kInf ? kInf : remaining + (v == u ? flow_cost_scale_ : turn_oracle_.forward_cost(u, d)) + turn_cost_ * flow_cost_scale_ * cands[k].turns;
+                cands[k].h = remaining >= kInf ? kInf : remaining + (v == u ? flow_cost_scale_ : turn_oracle_.forward_cost(u, d)) + guidance_turn_cost_ * cands[k].turns;
             }
         } else ++stats_.oriented_fallback;
     }
@@ -2158,7 +2173,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                 for (int k = worker; k < static_cast<int>(selected.size()); k += threads) {
                     const auto& state = env->curr_states[selected[k]];
                     pickup_full_workers_[worker].run(static_cast<int>(cert_.free.size()),
-                        state.location, state.orientation, turn_cost_ * pickup_scale, kInf,
+                        state.location, state.orientation, guidance_turn_cost_, kInf,
                         [&](int cell, int dir) { return neighbor(cell, dir); },
                         [&](int cell) { return cert_.free[cell] && (!capacity_mode_ || cert_.core[cell]); },
                         [&](int cell, int dir) { return turn_oracle_.forward_cost(cell, dir); },
@@ -2308,7 +2323,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         }
         if (pickup_metric && (!capacity_mode_ || cert_.core[from])) {
             const auto work = pickup_search_.run(static_cast<int>(cert_.free.size()), from,
-                env->curr_states[r].orientation, pickup_flow_nodes_, turn_cost_ * flow_cost_scale_,
+                env->curr_states[r].orientation, pickup_flow_nodes_, guidance_turn_cost_,
                 [&](int cell, int dir) { return neighbor(cell, dir); },
                 [&](int cell) { return cert_.free[cell] && (!capacity_mode_ || cert_.core[cell]); },
                 [&](int cell, int dir) { return turn_oracle_.forward_cost(cell, dir); },
