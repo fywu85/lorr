@@ -23,6 +23,7 @@
 #include "ActionModel.h"
 #include "SharedEnv.h"
 #include "pibt_kernel.hpp"
+#include "pickup_search.hpp"
 #include "temporal_geometry.hpp"
 #include "temporal_prepare.hpp"
 #include "temporal_regions.hpp"
@@ -157,6 +158,10 @@ public:
     bool weighted_forward() const { return !forward_costs_.empty(); }
     long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
     const TurnTable* find(int goal);
+    const TurnTable* peek(int goal) const {
+        const auto found = tables_.find(goal);
+        return found == tables_.end() ? nullptr : &found->second.dist;
+    }
     const TurnTable* table(int goal, std::chrono::steady_clock::time_point deadline);
     int value(const TurnTable& table, int cell, int orientation) const;
     bool has(int goal) const { return tables_.count(goal) != 0; }
@@ -249,6 +254,10 @@ struct Stats {
     long long schedule_calls = 0, local_assignments = 0, fallback_assignments = 0;
     long long candidate_searches = 0, candidate_nodes = 0, candidate_task_limits = 0;
     long long candidate_node_limits = 0, candidate_deadlines = 0, empty_searches = 0;
+    long long pickup_flow_searches = 0, pickup_flow_pops = 0, pickup_flow_states = 0;
+    long long pickup_flow_cells = 0, pickup_flow_candidates = 0, pickup_flow_limits = 0;
+    long long pickup_flow_cached_estimates = 0, pickup_flow_approximate_estimates = 0;
+    long long pickup_flow_warmup_calls = 0, pickup_flow_snapshot_publication = 0;
     long long skipped_empty_searches = 0;
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
     long long global_evaluations = 0, global_assignments = 0;
@@ -404,6 +413,9 @@ private:
     int fallback_samples_ = 64;
     int global_samples_ = 0;
     int pickup_weight_ = 1;
+    bool pickup_flow_ = false;
+    int pickup_flow_nodes_ = 8192;
+    OrientedPickupSearch pickup_search_;
     int turn_build_limit_ = 32;
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false;

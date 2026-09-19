@@ -1,0 +1,383 @@
+{
+  "scope": "Six paired full 5000-step warehouse seeds. Initial seeds 0/2 compare frozen v40 candidates with validated v39 demand-build128 controls; v40 repeats of those controls on seeds 1/3/4/5 match the established full trajectory hashes exactly.",
+  "checked_utc": "2026-09-19T16:22:52.449600+00:00",
+  "rows": [
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "build_limit": 128,
+      "seed": 0,
+      "tasks": 137060,
+      "completed_per_1000": [
+        22591,
+        28257,
+        28702,
+        28608,
+        28902
+      ],
+      "trajectory_sha256": "0f20b5f502434cec7d88ea6f5d82bfb4d650e6460aaa2a84ac2449b2c4107be3",
+      "mean_entry_ms": 264.01586282439973,
+      "max_entry_seconds": 0.870924109,
+      "average_cpu_cores": 1.184473530814794,
+      "peak_rss_bytes": 11904798720,
+      "wall_seconds": 1394.779,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.3042,
+        "p90": 647
+      },
+      "finished_utc": "2026-09-19T15:09:44.205276+00:00",
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-full-v39",
+      "policy": "demand_build128",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 138003,
+      "completed_per_1000": [
+        22881,
+        28438,
+        28776,
+        28875,
+        29033
+      ],
+      "trajectory_sha256": "fb27b0039c8d3d65664c301f02fc2b3efc69409eb3d5941ee56275ef3ca16428",
+      "mean_entry_ms": 253.5178048048005,
+      "max_entry_seconds": 0.838467923,
+      "average_cpu_cores": 1.2809850981258704,
+      "peak_rss_bytes": 12620800000,
+      "wall_seconds": 1342.289,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.8692,
+        "p90": 640
+      },
+      "finished_utc": "2026-09-19T15:38:41.675661+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-full-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_batch0_bthreads1_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 137271,
+      "completed_per_1000": [
+        22785,
+        28316,
+        28624,
+        28607,
+        28939
+      ],
+      "trajectory_sha256": "5ce774f217fef69e68204f2c2baebd7f56a5361596bedd8ec01e593d1cc8dff2",
+      "mean_entry_ms": 272.8319144694002,
+      "max_entry_seconds": 0.863316293,
+      "average_cpu_cores": 1.1755177337093181,
+      "peak_rss_bytes": 11880075264,
+      "wall_seconds": 1439.338,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.1756,
+        "p90": 644
+      },
+      "finished_utc": "2026-09-19T16:11:08.722406+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild32_batch128_bthreads4_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 137388,
+      "completed_per_1000": [
+        22680,
+        28323,
+        28649,
+        28744,
+        28992
+      ],
+      "trajectory_sha256": "5c0504a8fac6015cd137420c1250d6b0780cc70b917a83b7259072d07e9b16a7",
+      "mean_entry_ms": 240.52600633760022,
+      "max_entry_seconds": 0.83552346,
+      "average_cpu_cores": 1.2984519767269875,
+      "peak_rss_bytes": 12252540928,
+      "wall_seconds": 1276.644,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.4832666666667,
+        "p90": 640
+      },
+      "finished_utc": "2026-09-19T16:08:26.028346+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "build_limit": 128,
+      "seed": 2,
+      "tasks": 136841,
+      "completed_per_1000": [
+        22944,
+        28222,
+        28477,
+        28509,
+        28689
+      ],
+      "trajectory_sha256": "387d0beb287e281bdcfcea4e7e89c40cf393d47dd7974eeef4d5b42c4f61601c",
+      "mean_entry_ms": 250.95568258319878,
+      "max_entry_seconds": 0.837535766,
+      "average_cpu_cores": 1.1949006858198978,
+      "peak_rss_bytes": 11449061376,
+      "wall_seconds": 1328.513,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.54966666666667,
+        "p90": 646
+      },
+      "finished_utc": "2026-09-19T15:08:37.937923+00:00",
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-full-v39",
+      "policy": "demand_build128",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78"
+    },
+    {
+      "case": "flow1_margin50_refresh512_batch128_bthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 136701,
+      "completed_per_1000": [
+        22584,
+        28246,
+        28649,
+        28491,
+        28731
+      ],
+      "trajectory_sha256": "8e52aadd762f72edce8fae2abc8e8da3793ccbff0ef9ec5294bc3d851e97582a",
+      "mean_entry_ms": 235.13847598719994,
+      "max_entry_seconds": 0.834108967,
+      "average_cpu_cores": 1.300318645343082,
+      "peak_rss_bytes": 12076879872,
+      "wall_seconds": 1250.833,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.958,
+        "p90": 642
+      },
+      "finished_utc": "2026-09-19T15:37:10.219430+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-full-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_batch0_bthreads1_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 137227,
+      "completed_per_1000": [
+        22634,
+        28211,
+        28738,
+        28729,
+        28915
+      ],
+      "trajectory_sha256": "e53bfac7cdfd7a78baa39afc0798ccebce0b0fcc49730b14dbce0738e7e198b6",
+      "mean_entry_ms": 243.96196116860006,
+      "max_entry_seconds": 0.873943924,
+      "average_cpu_cores": 1.1980877095424811,
+      "peak_rss_bytes": 11950817280,
+      "wall_seconds": 1293.81,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.00266666666664,
+        "p90": 643
+      },
+      "finished_utc": "2026-09-19T16:08:43.194683+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild32_batch128_bthreads4_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 137477,
+      "completed_per_1000": [
+        22751,
+        28325,
+        28725,
+        28747,
+        28929
+      ],
+      "trajectory_sha256": "821e60cf2e398c70250a201efd54c276418ac5b8cf12ddf6ca9f98a80a4ee66d",
+      "mean_entry_ms": 248.88505977079998,
+      "max_entry_seconds": 0.83480424,
+      "average_cpu_cores": 1.2857200445129222,
+      "peak_rss_bytes": 12081975296,
+      "wall_seconds": 1319.338,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.4986,
+        "p90": 642
+      },
+      "finished_utc": "2026-09-19T16:09:08.722405+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_batch0_bthreads1_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 136949,
+      "completed_per_1000": [
+        22922,
+        28302,
+        28549,
+        28487,
+        28689
+      ],
+      "trajectory_sha256": "e921700e807897bb3658220fcb2fa0672ea5c6f94df74e5212108619166d8e00",
+      "mean_entry_ms": 240.55535027839952,
+      "max_entry_seconds": 0.88146039,
+      "average_cpu_cores": 1.2046793019100124,
+      "peak_rss_bytes": 11768102912,
+      "wall_seconds": 1276.438,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.00073333333336,
+        "p90": 645
+      },
+      "finished_utc": "2026-09-19T16:08:25.825091+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild32_batch128_bthreads4_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 134785,
+      "completed_per_1000": [
+        22599,
+        27900,
+        28229,
+        27962,
+        28095
+      ],
+      "trajectory_sha256": "23cc9b0554b7153fc97ffe225b4a32b8e18735d391414ed49a6a232abb6c2cb1",
+      "mean_entry_ms": 203.84770958000007,
+      "max_entry_seconds": 0.846635577,
+      "average_cpu_cores": 1.3456904587148755,
+      "peak_rss_bytes": 12275601408,
+      "wall_seconds": 1091.729,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 322.66046666666665,
+        "p90": 651
+      },
+      "finished_utc": "2026-09-19T16:05:21.116509+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_batch0_bthreads1_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 137092,
+      "completed_per_1000": [
+        23018,
+        28351,
+        28491,
+        28610,
+        28622
+      ],
+      "trajectory_sha256": "9c887e10adfe29f37280e83890daec16ce0d96722e7cb2d4497c852a895cb6d9",
+      "mean_entry_ms": 235.66971249999952,
+      "max_entry_seconds": 0.862334809,
+      "average_cpu_cores": 1.2076931860040059,
+      "peak_rss_bytes": 11362795520,
+      "wall_seconds": 1252.455,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 317.65793333333335,
+        "p90": 649
+      },
+      "finished_utc": "2026-09-19T16:08:01.843774+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build128"
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild32_batch128_bthreads4_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 137390,
+      "completed_per_1000": [
+        22731,
+        28440,
+        28666,
+        28737,
+        28816
+      ],
+      "trajectory_sha256": "88e047a722da9540ee870239b1ab14b0ff2fbe44aee367376044a083fdc852ea",
+      "mean_entry_ms": 237.43279056799966,
+      "max_entry_seconds": 0.844311904,
+      "average_cpu_cores": 1.299604654531127,
+      "peak_rss_bytes": 12083040256,
+      "wall_seconds": 1261.618,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.5797333333333,
+        "p90": 644
+      },
+      "finished_utc": "2026-09-19T16:08:11.009125+00:00",
+      "evidence": "experiments/construction-20260918/results/temporal-table-batch-confirm-v40",
+      "exact_production_source_commit": "50e8e6e4cef1495a4054590e613cf762eb39009c",
+      "binary_sha256": "8b1694d8eaab5aba6995eed0fc4f57b54578d07244f30d00f2c2190d351b33aa",
+      "policy": "demand_build32_parallel_batch128"
+    }
+  ],
+  "six_seed_confirmation_complete": true,
+  "throughput_goal_complete": false,
+  "control_mean_tasks": 137073.33333333334,
+  "candidate_mean_tasks": 136957.33333333334,
+  "paired_task_differences": [
+    943,
+    117,
+    -140,
+    250,
+    -2164,
+    298
+  ],
+  "paired_final1000_differences": [
+    131,
+    53,
+    42,
+    14,
+    -594,
+    194
+  ],
+  "mean_effect_percent": -0.08462623413257875,
+  "promoted_as_benchmark_reference": false,
+  "interpretation": "Four full totals improve and two regress. Seed4 loses 2164 tasks and erases the aggregate gain; retain demand-build128 as the confirmed reference. Prior serial/parallel equivalence establishes speedup for the batch policy, not a throughput benefit over this stronger policy.",
+  "resource_summary_candidate": {
+    "mean_entry_ms": [
+      203.84770958000007,
+      253.5178048048005
+    ],
+    "average_cpu_cores": [
+      1.2809850981258704,
+      1.3456904587148755
+    ],
+    "wall_seconds": [
+      1091.729,
+      1342.289
+    ],
+    "max_entry_seconds": 0.846635577,
+    "peak_rss_bytes": 12620800000
+  }
+}

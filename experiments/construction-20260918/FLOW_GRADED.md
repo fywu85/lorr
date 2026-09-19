@@ -32,3 +32,17 @@ seeds before adoption.
 [Initial screen](results/flow-graded-screen-v39/),
 [build128 screen](results/flow-graded-turn128-screen-v39/),
 [full configuration](flow-graded-turn128-variants.json).
+
+## Full seeds0/2 completed
+
+All eight runs independently validate; all four binary-control trajectories are
+exact. Graded margin25 completes138402/139303 (mean138852.5), versus binary
+margin25's137149/139037 (mean138093): +0.550% in the mean. Seed2's final1000
+window is153tasks lower, so full totals alone do not establish uniformly better
+steady throughput. Graded margin0 scores56537/139796 and collapses on seed0
+(final1000=5770), despite valid one-second decisions. Reject margin0.
+
+[Full comparison](results/flow-graded-turn128-full-v39/comparison.json).
+Remaining four seeds run as8898785 with analysis8898786, comparing graded and
+binary margin25 on the same frozenv39 source. The confirmed reference remains
+margin50/build128 until six-seed evidence supports a change.

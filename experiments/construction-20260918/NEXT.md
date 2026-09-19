@@ -3,118 +3,109 @@
 Goal: at least152981 tasks over5000 steps with10000 robots, repeatably over six
 seeds, complete one-second decisions, process RSS below32000000000 bytes and
 isolated GRID physical cores. No map identities, aisle templates, supplied weights,
-future tasks or map-specific fleet caps. Local KittyKnight target used38.858GB RSS;
-this is not an official equal-resource comparison. Goal remains active and unmet.
+future tasks or map-specific fleet caps. Local KittyKnight used38.858GB RSS; this
+is not an official equal-resource comparison. Goal remains active and unmet.
 Maintain ../../WAREHOUSE_PROGRESS.md with exact source/commit/time provenance.
 
 ## Current confirmed reference
 
-Margin50 with turn-build128, explicit warehouse-reference-variants.json:
-137060/137271/136841/137227/136949/137092 on seeds0..5, mean137073.3 (+1.845%
-versus matched build32). All six totals and final windows improve; all12paired
-runs validate and all six build32 controls exactly repeat. It also beats margin25/
-build32 on every seed. Maximum entry0.873055s, mean234.8–269.9ms, CPU1.182–
-1.210cores out of four reserved, peak12.013GB RSS and20.80–23.75minute full runs.
-No new p99 aggregation. Exact source5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27.
-Evidence results/turn-build-limit-six-seed-v39.json.
+Margin50/build128 in warehouse-reference-variants.json:
+137060/137271/136841/137227/136949/137092, mean137073.3 (+1.845% versus build32).
+All six totals/final windows improve; all12paired runs valid and controls exact.
+Source5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27, frozenv39.
+Mean234.8–269.9ms per complete scheduling+planning step, max0.873055s,
+CPU1.182–1.210cores out of four reserved, RSS12.013GB and20.80–23.75minutes.
+No p99 aggregation for this cohort. See results/turn-build-limit-six-seed-v39.json.
 
-Margin25/build32 was an intermediate six-seed reference:136888/135838/135960/
-136885/136582/136404, mean136426.2 (+1.364%). All totals/final windows improve
-and task-age p90 falls against margin50/build32. Maximum0.787348s and peak
-14.052GB. Exact source45ebea2, results/flow-refresh-margin25-six-seed-v36.json.
-Original margin50/build32 mean134590.3 remains a stable historical control.
+## Completed comparisons
 
-## New complete batch evidence
+- Batch128 six seeds:138003/137388/136701/137477/134785/137390, mean136957.3,
+  minus0.085% against demand-build128. Four wins/two losses; seed4 erases gain.
+  All decisions valid, four v40 stronger-control repeats exact. NOT promoted.
+  Source50e8e6e4cef1495a4054590e613cf762eb39009c.
+  results/temporal-table-batch-six-seed-v40.json. Prior serial/parallel batch128
+  trajectories match exactly and four threads cut wall time5.86–6.37%; that does
+  not establish throughput gain over the stronger demand-build128 policy.
+- Margin25/build128:137149/139037 seeds0/2, mean138093 (+0.834% vs50/128).
+  Both totals/final windows improve. All six known constituents/controls exact.
+  Factor effects overlap (difference-in-differences minus766.5tasks).
+  results/flow-turn-interaction-full-v39/comparison.json. Four-seed confirmation live.
+- Graded strength4/scale4 margin25:138402/139303, mean138852.5 (+0.550% vs binary
+  margin25). Both full totals improve; seed2 final1000 is153tasks lower.
+  All eight complete runs valid and four binary controls exact. Four-seed check live.
+  Graded margin0:56537/139796. Seed0 final1000 collapses to5770; REJECTED despite
+  historical peak139796. results/flow-graded-turn128-full-v39/comparison.json.
+- Machine progress provenance has33 chronological records. Latest139303 completed
+ 16:13:44UTC, then rejected-policy139796 at16:13:53UTC, both exactv39 source.
 
-V40 all eight full cases complete and independently validate. Batch128 serial and
-parallel BOTH score138003/136701. Entire trajectories, orientation counts and
-sampled admission/coverage exactly match on each seed. Four-thread construction
-reduces full wall time5.864%/6.374%, from1425.910/1335.982s to1342.289/1250.833s.
-Parallel mean235.1–253.5ms, CPU1.281–1.300cores, peak12.621GB. Two-seed mean
-137352 is2.109% above old build32 but only0.293% above build128, with one win
-and one loss against that stronger control. Further confirmation is required.
-
-Batch512 scores137848/119685; seed2 final1000 falls to16880. It is rejected.
-All25 sampled steps have100% exact guidance in both batch512 seeds; more sampled
-coverage is not monotonically related to throughput. Batch128 averages98.62%/
-98.64%. Exact source/test tree50e8e6e4cef1495a4054590e613cf762eb39009c.
-New peak138003 completes15:38:41UTC in parallel seed0; earlier137848 at15:37:18
-is retained as a historical record despite its policy regression. Thirty records.
-Evidence results/temporal-table-batch-full-v40/comparison.json.
+Other rejected directions remain documented: transactions six-seed mean134202.5
+(-0.288% vs old134590.3), unopened pool mean134840.8 (+0.186%, worse ages every
+seed), direct cost/pickup5 seed2 collapse52444, batch512 seed2 regression119685
+with100% sampled exact guidance. Coverage is not a monotone quality measure.
 
 ## Running full evaluations
 
-- 8898759 /8898760: margin50/25 crossed with build32/128, seeds0/2, frozenv39.
-  Raw runs/cgar-flow-turn-interaction-full-v39-20260919, start15:33:19UTC,
-  exclusive research38. New combination screen passes; three controls exact.
-- 8898765 /8898766: batch128parallel plus demand32 against batch0 plus demand128,
-  seeds1/3/4/5, frozenv40. Raw runs/cgar-temporal-table-batch-confirm-v40-20260919,
-  start15:47:09UTC, exclusive research46. Stronger control hashes must exactly
-  reproduce all four previous build128 cases before combining six-seed evidence.
-- 8898768 /8898769: binary margin50/25 against graded strength4/scale4 margin25/0,
-  all at build128, seeds0/2, frozenv39. Raw
-  runs/cgar-flow-graded-turn128-full-v39-20260919. See FLOW_GRADED.md.
-  Screen8898767 passes all, max0.874s/RSS5.226GB, both binary controls exact.
+- 8898776 /8898777: binary margin25/50 at build128, seeds1/3/4/5, frozenv39;
+  runs/cgar-flow-turn-interaction-confirm-v39-20260919, start16:11:23UTC,
+  exclusive research50. Verify four margin50 trajectories against six-seed reference.
+- 8898785 /8898786: graded strength4/scale4 margin25 versus binary margin25,
+  seeds1/3/4/5, frozenv39; runs/cgar-flow-graded-turn128-confirm-v39-20260919,
+  start16:23:13UTC, exclusive research31. Binary controls should match8898776.
+- 8898787 /8898788: pickup flow enabled/disabled under HRRN1/weight1 and
+  HRRN0/weight5, all margin50/build128, seeds0/2, frozenv41;
+  runs/cgar-pickup-flow-full-v41-20260919, start16:24:43UTC, research38.
+  HRRN1/weight1 disabled control must exactly reproduce established build128.
+  Historical weight5 collapse was build32; do not claim this recreates that regime.
 
-Each matrix has eight concurrent cases, four disjoint physical cores per planner,
-128GiB aggregate reservation and32decimalGB individual limit. All C++ builds are
-complete. No C++ edits have been made since v40; live runs use frozen binaries.
+Each matrix has eight simultaneous cases, four disjoint physical cores per
+planner,128GiB aggregate reservation and32decimalGB individual limit. All C++
+builds complete. Live runs use frozen binaries. No C++ build is active.
 
-## Persistent Fable and next implementation
+## Pickup implementation checkpoint
+
+V41 optional CGAR_PICKUP_FLOW defaults off, requires learned flow. ForwardDijkstra
+uses current heading and last complete publication, emitting only settled cell
+minima. Fixed8192queue-pops default (1–65536), same endpoint shortlist limits.
+Scheduler precedes publication; it intentionally sees the last completed field.
+Pickup, chain and HRRN age terms use compatible base units. Fallback uses a cached
+complete turn table when present, otherwise scaled former approximate costs;
+no fallback exactness claim. Physical free graph/core restriction differs from
+certificate-table pocket domains. See PICKUP_FLOW.md for implementation limits.
+
+Build8898778 runs/cgar-pickup-flow-build-v41-r3-20260919 passed ALL regressions,
+including32256 independent shortest-path checks and scheduler integration cases.
+Archive build-provenance/v41 independently reconstructs all21 source/test hashes.
+Earlier attempts changed test fixtures only: warmup actually rotates idle robots;
+heading fixture now uses observed heading. Toll fixture isolates a prescribed
+physically valid observation trace; full simulator validates actual offered actions.
+
+Screen8898784 has4/4valid, max0.875702s, peak5.204GB, exact disabled default
+fingerprint a5e00bb26608e8aa797413db9267fdce11f1630a2ea8ffafbfc67ff6f739c71a.
+No short-prefix performance rankings. results/pickup-flow-screen-v41/.
+
+## Persistent Fable
 
 Same Claude CLI session1ebb1075-3538-49d1-93d1-a00c94fa256a, Fable5.1 max,
 via fable-flow-session/run_review.py. User explicitly permits source/info sharing.
-Turns01–08 complete; no Fable process remains running. Turn08 completed
-15:34:44UTC,612.547s, actual16.015591USD despite requested12USD CLI setting.
-Read-only review of five changed excerpts (92771bytes), no tests executed, no
-reproducible v40 correctness counterexample. Visible review/metadata/status are
-archived; raw protocol stays ignored. Never restart the persistent session.
+Turns01–08 complete. Turn08 finished15:34:44UTC,612.547s, actual16.015591USD
+(the requested12USD flag is not a reliable hard cap). No reproducible v40 bug found;
+Fable ran no tests. Visible review/metadata/status archived; raw protocol ignored.
 
-Checked findings: stable table pointers, deterministic rank/admission, immutable
-worker inputs. Mode2's32-step admission lag is irrelevant to production mode1.
-Prefetched_hits conflates old speculation and new batch admissions. Per-item
-compute/thread-creation failures join; tiny worker bucket allocation is outside
-that catch, so do not claim all possible exceptions are proved safe. The1024
-screen actually fails inside four-thread table computation and exits124 correctly.
-No partial actions are returned. New private-cache retry semantics are not promised.
+Turn09 will review committed v41 in the same session using followup-08.md and
+updated source-spec ranges. Check runs/fable-cgar-session/turn09/status.json before
+starting anything; never restart session or resend the entire codebase.
 
-Reject Fable's blanket claim that search directions are spent and any linear
-coverage-to-task extrapolation. Its assignment/motion split is not causal across
-cohorts. Pool predictions were overoptimistic: six-seed pool mean134840.8 (+0.186%)
-has four wins/two losses and worse ages throughout. Transactions mean134202.5
-(-0.288%) wins three/loses three. Neither is promoted. Direct-cost pickup5's
-136149/52444 pair is not robust; seed2 final window4447. HRRN0 adds17%empty travel.
-
-Next concrete implementation hypothesis: align local pickup selection with heading
-and the complete published traffic cost field, rather than unit BFS. Existing
-schedule() local candidate search is unit BFS capped2048cell pops/16tasks; fallback
-uses unit table or Manhattan estimates. Generic forward Dijkstra over(cell,heading)
-can return only settled pickup costs with a prescribed work bound, leaving full
-scheduling/planning/deadline validation mandatory. Preserve old mode by default,
-all started/primary/fair protections, robot/task uniqueness and fair admissions.
-
-Before editing, resolve cost units (scaled pickup versus unit chain), physical
-free-graph versus certificate/pocket domain, search bounds versus shortlist reach,
-and fallback approximate versus exact local costs. Scheduler runs before plan's
-flow publication; explicitly define the last-published snapshot or share a
-once-per-observation publication helper rather than silently changing phase order.
-A fixed warmup/publication condition is allowed; a clock-based policy is not.
-The historical runs do not log every candidate shortlist, so exact16-candidate
-counterfactuals cannot be recovered merely from aggregate audits. Fable's5% gate
-and0.5–2% expected gain are hypotheses, not evidence or required approval gates.
-
-Implement a bounded optional policy with independent small-graph Dijkstra checks,
-heading/toll cases, fixed work and timeout propagation, default action equivalence,
-and scheduler integration/fairness checks. Then screen and run matched full cases.
-Keep C++ unchanged during each GRID build; archive and independently reconstruct
-all source hashes before attributing results to a commit.
+Fable08's pickup alignment suggestion motivated v41; its predicted gain and any
+claim that search directions are exhausted remain unproven. More table coverage
+can lower throughput. No source change is justified solely by a review prediction.
 
 ## Next decisions
 
-1. Analyze full interaction and graded-cost results with exact controls, all5000
-   steps, complete-entry timing and RSS. No short-prefix performance rankings.
-2. Complete batch128 confirmation against the stronger build128 control. All
-   source changes are optional; adopt a reference only from six-seed evidence.
-3. Implement the pickup-cost alignment experiment while existing full jobs run.
-4. Commit/push validated checkpoints, update historical records and current
-   reference configuration, and keep the goal active until all target checks pass.
+1. Confirm margin25/build128 over six seeds; verify every repeated control and
+   full entry timing/RSS before changing the explicit benchmark reference.
+2. Complete graded and pickup full comparisons, including late windows and task
+   age. Reject fragile settings; extend promising ones to the remaining seeds.
+3. Review Fable09 findings against source/tests; implement reproducible corrections
+   in a new frozen build without editing during a GRID build.
+4. Commit/push validated checkpoints and update chronological throughput records
+   with exact-source hashes. Keep the goal active until all target checks pass.

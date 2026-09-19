@@ -759,6 +759,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     enable_txn_ = env_int("CGAR_TXN", pibt_reference_ ? 0 : 1) != 0;
     hrrn_ = env_int("CGAR_HRRN", 1) != 0;
     pickup_weight_ = std::max(1, std::min(16, env_int("CGAR_PICKUP_WEIGHT", 1)));
+    const int pickup_flow = env_int("CGAR_PICKUP_FLOW", 0);
+    pickup_flow_nodes_ = env_int("CGAR_PICKUP_FLOW_NODES", 8192);
+    if (pickup_flow < 0 || pickup_flow > 1 || pickup_flow_nodes_ < 1 || pickup_flow_nodes_ > 65536 ||
+        (pickup_flow && !flow_strength_))
+        throw std::invalid_argument("pickup flow requires learned flow, a boolean setting and 1-65536 queue pops");
+    pickup_flow_ = pickup_flow != 0;
     refine_chain_costs_ = env_int("CGAR_REFINE_CHAIN_COSTS", 0) != 0;
     scheduler_cache_peek_ = env_int("CGAR_SCHEDULER_CACHE_PEEK", 0) != 0;
     stable_stall_basis_ = env_int("CGAR_STABLE_STALL_BASIS", 0) != 0;
@@ -1723,6 +1729,12 @@ void Cgar::log_summary() {
                 stats_.sample_deadlines, stats_.improved_fallbacks, stats_.estimated_pickup_cost,
                 stats_.estimated_chain_cost, stats_.route_queries, stats_.route_manhattan,
                 global_samples_, stats_.global_evaluations, stats_.global_assignments);
+    if (pickup_flow_)
+        std::printf("[cgar-pickup-flow] t=%d enabled=1 node_limit=%d snapshot_publication=%lld searches=%lld pops=%lld states=%lld cells=%lld candidates=%lld limits=%lld cached_estimates=%lld approximate_estimates=%lld warmup_calls=%lld\n",
+            env_->curr_timestep, pickup_flow_nodes_, stats_.pickup_flow_snapshot_publication,
+            stats_.pickup_flow_searches, stats_.pickup_flow_pops, stats_.pickup_flow_states,
+            stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
+            stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
     std::printf("[cgar-estimates] t=%d refine=%d peek=%d stable_stall=%d refined_legs=%lld "
                 "changed_costs=%lld invalidations=%lld approximate_reads=%lld table_reads=%lld basis_resets=%lld\n",
                 env_->curr_timestep, refine_chain_costs_, scheduler_cache_peek_, stable_stall_basis_,
@@ -2084,6 +2096,15 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
     ++scheduler_cursor_;
 
+    // Scheduling precedes the current plan's observation/publication. Use the
+    // last complete published metric without changing that lifecycle. Before
+    // its first publication the original scheduler is preserved exactly.
+    const bool pickup_metric = pickup_flow_ && flow_guidance_.publications() > 0;
+    const int pickup_scale = pickup_metric ? flow_cost_scale_ : 1;
+    if (pickup_flow_) {
+        stats_.pickup_flow_snapshot_publication = flow_guidance_.publications();
+        stats_.pickup_flow_warmup_calls += !pickup_metric;
+    }
     struct TaskCost { int id, first, chain, revealed; };
     struct Pair { double score; int cost, task, robot, pickup; bool global = false; };
     std::vector<int> ids(free_tasks_.begin(), free_tasks_.end());
@@ -2102,9 +2123,9 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     const int now = env->curr_timestep;
     auto pair_for = [&](int r, int t, int d) {
         const auto& task = tasks[t];
-        const int cost = static_cast<int>(std::max<long long>(1, std::min<long long>(kInf - 1,
-            static_cast<long long>(pickup_weight_) * d + task.chain)));
-        return Pair{hrrn_ ? 1.0 + std::max(0, now - task.revealed) / static_cast<double>(cost) : 1.0,
+        const int cost = static_cast<int>(std::max<long long>(pickup_scale, std::min<long long>(kInf - 1,
+            static_cast<long long>(pickup_weight_) * d + static_cast<long long>(pickup_scale) * task.chain)));
+        return Pair{hrrn_ ? 1.0 + (static_cast<double>(std::max(0, now - task.revealed)) * pickup_scale) / cost : 1.0,
                     cost, t, r, d};
     };
     auto better = [&](const Pair& a, const Pair& b) {
@@ -2142,7 +2163,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         available.pop_back();
         available_position[p.task] = -1;
         proposed[p.robot] = tasks[p.task].id;
-        stats_.estimated_pickup_cost += p.pickup;
+        stats_.estimated_pickup_cost += (static_cast<long long>(p.pickup) + pickup_scale - 1) / pickup_scale;
         stats_.estimated_chain_cost += tasks[p.task].chain;
         ++stats_.assignments;
         stats_.global_assignments += p.global;
@@ -2155,7 +2176,19 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             const int exit = cert_.exit_cell[from];
             d = exit >= 0 && table && oracle_.value(*table, exit) < kInf ? cert_.exit_dist[from] + oracle_.value(*table, exit) : kFar;
         }
-        return pair_for(r, t, d);
+        if (pickup_metric) {
+            // Complete cached metrics improve fallback estimates without new
+            // table construction or LRU mutation. Missing/unreachable entries
+            // retain the previous approximate estimate in the same base units.
+            const auto* oriented = turn_oracle_.peek(goal);
+            const int value = oriented ? turn_oracle_.value(*oriented, from, env->curr_states[r].orientation) : kInf;
+            if (value < kInf) {
+                ++stats_.pickup_flow_cached_estimates;
+                return pair_for(r, t, value);
+            }
+            ++stats_.pickup_flow_approximate_estimates;
+        }
+        return pair_for(r, t, static_cast<int>(std::min<long long>(kInf - 1, static_cast<long long>(d) * pickup_scale)));
     };
     auto fair_admission = [&]() {
         if (regular_admissions_ < n_) return;
@@ -2183,6 +2216,32 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         ++stats_.candidate_searches;
         std::vector<Pair> result;
         const int from = env->curr_states[r].location;
+        if (pickup_metric && (!capacity_mode_ || cert_.core[from])) {
+            const auto work = pickup_search_.run(static_cast<int>(cert_.free.size()), from,
+                env->curr_states[r].orientation, pickup_flow_nodes_, turn_cost_ * flow_cost_scale_,
+                [&](int cell, int dir) { return neighbor(cell, dir); },
+                [&](int cell) { return cert_.free[cell] && (!capacity_mode_ || cert_.core[cell]); },
+                [&](int cell, int dir) { return turn_oracle_.forward_cost(cell, dir); },
+                [&](int cell, int distance) {
+                    for (int t : at_cell[cell]) if (!task_used[t]) {
+                        result.push_back(pair_for(r, t, distance));
+                        if (static_cast<int>(result.size()) >= limit) return true;
+                    }
+                    return false;
+                },
+                [&] {
+                    if (Clock::now() >= candidate_deadline) {
+                        ++stats_.candidate_deadlines; throw Timeout("pickup_flow_candidates");
+                    }
+                });
+            ++stats_.pickup_flow_searches; stats_.pickup_flow_pops += work.pops;
+            stats_.pickup_flow_states += work.states; stats_.pickup_flow_cells += work.cells;
+            stats_.pickup_flow_candidates += result.size(); stats_.pickup_flow_limits += work.limited;
+            stats_.candidate_nodes += work.pops; stats_.candidate_task_limits += work.stopped;
+            stats_.candidate_node_limits += work.limited;
+            if (result.empty()) ++stats_.empty_searches;
+            return result;
+        }
         queue.assign(1, from);
         seen[from] = ++generation;
         distance[from] = 0;
@@ -2197,7 +2256,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             ++stats_.candidate_nodes;
             const int u = queue[head];
             for (int t : at_cell[u]) if (!task_used[t]) {
-                result.push_back(pair_for(r, t, distance[u]));
+                result.push_back(pair_for(r, t, distance[u] * pickup_scale));
                 if (static_cast<int>(result.size()) >= limit) {
                     ++stats_.candidate_task_limits;
                     return result;

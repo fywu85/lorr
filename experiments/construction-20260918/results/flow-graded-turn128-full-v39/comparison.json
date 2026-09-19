@@ -1,0 +1,301 @@
+{
+  "scope": "Eight independently analyzed complete 5000-step warehouse runs on seeds0/2. All four binary-penalty controls exactly reproduce the flow/table interaction experiment. All decisions and memory limits valid.",
+  "checked_utc": "2026-09-19T16:22:52.449600+00:00",
+  "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+  "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+  "rows": [
+    {
+      "case": "flow1_scale1_margin50_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 137060,
+      "completed_per_1000": [
+        22591,
+        28257,
+        28702,
+        28608,
+        28902
+      ],
+      "trajectory_sha256": "0f20b5f502434cec7d88ea6f5d82bfb4d650e6460aaa2a84ac2449b2c4107be3",
+      "mean_entry_ms": 263.3406183622005,
+      "max_entry_seconds": 0.870670045,
+      "average_cpu_cores": 1.179505190302899,
+      "peak_rss_bytes": 11900772352,
+      "wall_seconds": 1391.386,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.3042,
+        "p90": 647
+      },
+      "finished_utc": "2026-09-19T16:15:20.783745+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 50
+    },
+    {
+      "case": "flow1_scale1_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 137149,
+      "completed_per_1000": [
+        21977,
+        28523,
+        28860,
+        28837,
+        28952
+      ],
+      "trajectory_sha256": "822c996bdb46aee38c667e242e7d7e85fd4cdfe882568741c7c54ddbf9d74c54",
+      "mean_entry_ms": 249.77805496960028,
+      "max_entry_seconds": 0.866971949,
+      "average_cpu_cores": 1.1901428900056885,
+      "peak_rss_bytes": 11363672064,
+      "wall_seconds": 1322.543,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.1000666666667,
+        "p90": 643
+      },
+      "finished_utc": "2026-09-19T16:14:11.940269+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 25
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 138402,
+      "completed_per_1000": [
+        22424,
+        28868,
+        29016,
+        29022,
+        29072
+      ],
+      "trajectory_sha256": "626b8bb8d8124b3eff498e4070f4c876faac5fb0ae7615e9edcc0dc7d46dd0e3",
+      "mean_entry_ms": 250.3220392118,
+      "max_entry_seconds": 0.874163857,
+      "average_cpu_cores": 1.1922941683648614,
+      "peak_rss_bytes": 11935174656,
+      "wall_seconds": 1325.938,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.0982,
+        "p90": 638
+      },
+      "finished_utc": "2026-09-19T16:14:15.336609+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 25
+    },
+    {
+      "case": "flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 56537,
+      "completed_per_1000": [
+        20744,
+        17188,
+        7324,
+        5511,
+        5770
+      ],
+      "trajectory_sha256": "7795e7b8083040b885340fb98578cf61c8dd1cf9952887a6b22e93e1e125c6b9",
+      "mean_entry_ms": 195.90480069600068,
+      "max_entry_seconds": 0.873933454,
+      "average_cpu_cores": 1.2228535311018516,
+      "peak_rss_bytes": 10828832768,
+      "wall_seconds": 1053.974,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1916.2894,
+        "p90": 3752
+      },
+      "finished_utc": "2026-09-19T16:09:43.376785+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 0
+    },
+    {
+      "case": "flow1_scale1_margin50_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 136841,
+      "completed_per_1000": [
+        22944,
+        28222,
+        28477,
+        28509,
+        28689
+      ],
+      "trajectory_sha256": "387d0beb287e281bdcfcea4e7e89c40cf393d47dd7974eeef4d5b42c4f61601c",
+      "mean_entry_ms": 250.25659017560037,
+      "max_entry_seconds": 0.832887703,
+      "average_cpu_cores": 1.1942115478130948,
+      "peak_rss_bytes": 11367112704,
+      "wall_seconds": 1325.516,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 315.54966666666667,
+        "p90": 646
+      },
+      "finished_utc": "2026-09-19T16:14:14.977338+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 50
+    },
+    {
+      "case": "flow1_scale1_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 139037,
+      "completed_per_1000": [
+        23105,
+        28689,
+        28986,
+        29044,
+        29213
+      ],
+      "trajectory_sha256": "63f3f60986555f9c0b4d5e766bac7d20b12c89192706f9da2340fd11efe13760",
+      "mean_entry_ms": 253.23077560379875,
+      "max_entry_seconds": 0.844215515,
+      "average_cpu_cores": 1.1902148418363536,
+      "peak_rss_bytes": 11940438016,
+      "wall_seconds": 1341.145,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.6243333333333,
+        "p90": 639
+      },
+      "finished_utc": "2026-09-19T16:14:30.547634+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 25
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 139303,
+      "completed_per_1000": [
+        23140,
+        28993,
+        29052,
+        29058,
+        29060
+      ],
+      "trajectory_sha256": "ce7dcadf8691596600c4210a6f6d2597f678919f76d984e3f05af63c0d70d51a",
+      "mean_entry_ms": 244.23378184460057,
+      "max_entry_seconds": 0.834457597,
+      "average_cpu_cores": 1.1981889160956116,
+      "peak_rss_bytes": 11359502336,
+      "wall_seconds": 1295.273,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.0218,
+        "p90": 639
+      },
+      "finished_utc": "2026-09-19T16:13:44.674737+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 25
+    },
+    {
+      "case": "flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 139796,
+      "completed_per_1000": [
+        23466,
+        29009,
+        29053,
+        29087,
+        29181
+      ],
+      "trajectory_sha256": "ac4f72aac1583975c89da8ef503a8c6edc3d4bf88d36244164a8ebac1165dad0",
+      "mean_entry_ms": 246.20278262619937,
+      "max_entry_seconds": 0.836143163,
+      "average_cpu_cores": 1.196768512362369,
+      "peak_rss_bytes": 11359862784,
+      "wall_seconds": 1304.399,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 313.7205333333333,
+        "p90": 637
+      },
+      "finished_utc": "2026-09-19T16:13:53.804889+00:00",
+      "evidence": "experiments/construction-20260918/results/flow-graded-turn128-full-v39",
+      "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 0
+    }
+  ],
+  "profiles": [
+    {
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 25,
+      "tasks": [
+        137149,
+        139037
+      ],
+      "mean_tasks": 138093.0,
+      "effect_vs_margin50_percent": 0.8342430294157488,
+      "effect_vs_binary_margin25_percent": 0.0
+    },
+    {
+      "strength": 1,
+      "cost_scale": 1,
+      "margin": 50,
+      "tasks": [
+        137060,
+        136841
+      ],
+      "mean_tasks": 136950.5,
+      "effect_vs_margin50_percent": 0.0,
+      "effect_vs_binary_margin25_percent": -0.8273409948368116
+    },
+    {
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 0,
+      "tasks": [
+        56537,
+        139796
+      ],
+      "mean_tasks": 98166.5,
+      "effect_vs_margin50_percent": -28.31972135917722,
+      "effect_vs_binary_margin25_percent": -28.91276168958601
+    },
+    {
+      "strength": 4,
+      "cost_scale": 4,
+      "margin": 25,
+      "tasks": [
+        138402,
+        139303
+      ],
+      "mean_tasks": 138852.5,
+      "effect_vs_margin50_percent": 1.388822968882919,
+      "effect_vs_binary_margin25_percent": 0.5499916722788267
+    }
+  ],
+  "six_seed_confirmation_complete": false,
+  "promoted_as_benchmark_reference": false,
+  "interpretation": "Strength4/scale4 at margin25 improves both totals over binary margin25, but the seed2 final window is 153 tasks lower. Confirm the remaining four seeds before promotion. Margin0 collapses on seed0 to 5770 tasks in the final1000 steps, so it is rejected despite a seed2 single-run record."
+}

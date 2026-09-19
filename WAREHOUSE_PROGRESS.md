@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 15:50:28 UTC.
+Updated: 2026-09-19 16:26:47 UTC.
 
-**Best observed full run: 138,003 completed tasks** — a fixed parallel batch of 128 complete turn tables, seed 0. Its two-seed mean is **137,352**; remaining-seed confirmation is running against the stronger control. **The current six-seed benchmark reference is margin50 with turn-build128: 137,073.3 mean**, range **136,841–137,271**. It improves every seed over both the original margin50/build32 reference and the intermediate margin25/build32 reference. Larger batch512 regresses on seed2 and is not promoted. The throughput target remains unmet.
+**Current six-seed benchmark reference: 137,073.3 mean tasks**, margin50 with turn-build128, range **136,841–137,271**. The newest conservative graded-penalty candidate scores **138,402 / 139,303** on seeds0/2 (mean **138,852.5**); remaining-seed confirmation is running. The absolute historical peak is **139,796**, from a zero-threshold policy that collapses on its other seed and is **rejected**. Parallel batch128 loses0.085% in the six-seed mean against the stronger reference and is not promoted. The throughput target remains unmet.
 
-The local KittyKnight reference is **152,981**, so the experimental peak is **9.79% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**. The rejected single-run peak is **8.62% below** it; the conservative two-seed candidate mean is **9.24% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -41,7 +41,10 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 15:08:42 | 137,190 | Refresh512, turn builds 64 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
 | 2026-09-19 15:10:30 | 137,490 | Refresh512, turn builds 96 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
 | 2026-09-19 15:37:18 | 137,848 | Parallel batch512 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · not robust: seed2 regresses |
-| 2026-09-19 15:38:41 | 138,003 | Parallel batch128 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · two seeds; confirmation running |
+| 2026-09-19 15:38:41 | 138,003 | Parallel batch128 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · not promoted: six-seed mean loses |
+| 2026-09-19 15:55:29 | 139,037 | Margin25 + turn builds128 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds; confirmation running |
+| 2026-09-19 16:13:44 | 139,303 | Graded scale4/strength4, margin25 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds; confirmation running |
+| 2026-09-19 16:13:53 | 139,796 | Graded scale4/strength4, margin0 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · rejected: seed0 collapses |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -69,6 +72,10 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Refreshed margin 25 | Six seeds: **136,888 / 135,838 / 135,960 / 136,885 / 136,582 / 136,404**; mean **136,426.2** | **Confirmed intermediate reference.** +1.364%; all six full totals and final windows improve, and outstanding age p90 falls on every seed. All 12 paired runs valid with exact controls. [Evidence](experiments/construction-20260918/results/flow-refresh-margin25-six-seed-v36.json). |
 | Larger turn-table rebuild allowance | Count128 six seeds: **137,060 / 137,271 / 136,841 / 137,227 / 136,949 / 137,092**, mean **137,073.3** | **Current benchmark reference.** +1.845% over build32, winning all six totals and final windows. Also exceeds margin25/build32 on every seed. [Evidence](experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json). |
 | Complete parallel table batches | Batch128 seeds0/2: **138,003 / 136,701**; batch512: **137,848 / 119,685** | Batch128 serial and parallel reproduce both full trajectories exactly; parallel wall time falls5.86–6.37%. Batch512 has100% sampled exact coverage but regresses, so coverage is not a monotone quality measure. [Evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json). |
+| Parallel batch128, six-seed confirmation | **138,003 /137,388 /136,701 /137,477 /134,785 /137,390**, mean **136,957.3** | Four wins/two losses; mean **0.085% below** demand-build128. Seed4 erases the gain. All decisions valid; four repeated stronger controls exact. Not promoted. [Evidence](experiments/construction-20260918/results/temporal-table-batch-six-seed-v40.json). |
+| Margin25 + turn-build128 | Seeds0/2: **137,149 /139,037**, mean **138,093** | Both totals and final windows beat margin50/build128; mean **+0.834%**. Gains overlap rather than adding independently. Four-seed confirmation running. [Evidence](experiments/construction-20260918/results/flow-turn-interaction-full-v39/comparison.json). |
+| Graded penalties, strength4/scale4, margin25 | Seeds0/2: **138,402 /139,303**, mean **138,852.5** | Both totals improve over binary margin25; mean **+0.550%**. Seed2's final window is153tasks lower, so this is not yet a confirmed improvement. Four-seed confirmation running. [Evidence](experiments/construction-20260918/results/flow-graded-turn128-full-v39/comparison.json). |
+| Graded penalties, zero confidence threshold | Seeds0/2: **56,537 /139,796** | **Rejected.** Seed0 final window collapses to5,770tasks despite all complete decisions meeting time/memory limits. Its historical peak stays visible. [Evidence](experiments/construction-20260918/results/flow-graded-turn128-full-v39/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
@@ -96,9 +103,10 @@ the newer policies.
 
 Batch128 with four build threads averages235.1–253.5ms on seeds0/2, uses1.28–
 1.30CPU cores and reaches12.621GB peak RSS. Its full trajectories exactly match
-batch128 with one build thread, while total wall time falls5.86–6.37%. Throughput
-comparison with the stronger build128 reference still needs the other four seeds.
-[Full serial/parallel evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json).
+batch128 with one build thread, while total wall time falls5.86–6.37%. The six-seed throughput
+comparison with the stronger build128 reference loses0.085%, so this policy is not promoted.
+[Full serial/parallel evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json),
+[six-seed confirmation](experiments/construction-20260918/results/temporal-table-batch-six-seed-v40.json).
 
 Four full-size search workers average271–277ms per decision and2.60–2.63CPU
 cores, but add only0.204% throughput on seeds0/2; they are not promoted.
