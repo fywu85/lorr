@@ -1,0 +1,606 @@
+{
+  "source_sha256": "3d55b62a0fe3694e71cfafa2602244989b9ff921a1cff23200d006ea6e1b3a21",
+  "cases": [
+    {
+      "case": "flow1_margin50_work4m-s0-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-full-v20-20260919/flow1_margin50_work4m-s0-r0",
+      "instance": "WAREHOUSE",
+      "steps": 5000,
+      "robots": 10000,
+      "tasks": 122896,
+      "binary_sha256": "969ad669d5d8368b8d8435f3dc1f1e245ba2230e7afb4a43e08122633627650d",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "flow_parameters": {
+        "warmup": 128,
+        "strength": 1,
+        "minimum": 8,
+        "margin": 50,
+        "base": 1
+      },
+      "reconstructed_moves": 961331,
+      "reconstructed_penalized_edges": 17106,
+      "reconstruction_matches_production_flow_log": true,
+      "actions_match_full_production_movement_logs": true,
+      "neutral_graph": {
+        "free_cells": 38586,
+        "components": 1,
+        "largest_component": 38586,
+        "largest_component_fraction": 1.0,
+        "sink_components": 1,
+        "cells_in_sink_components_lt_100": 0
+      },
+      "windows": [
+        {
+          "end": 1000,
+          "actions": {
+            "R": 500291,
+            "F": 8509680,
+            "neutral_F": 8284323,
+            "W": 693195,
+            "C": 296834,
+            "penalized_F": 225357,
+            "opposite_turn_without_intervening_forward": 62613
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 2000,
+          "actions": {
+            "F": 8681142,
+            "neutral_F": 8597674,
+            "W": 646625,
+            "C": 241872,
+            "R": 430361,
+            "penalized_F": 83468,
+            "opposite_turn_without_intervening_forward": 48177
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 3000,
+          "actions": {
+            "F": 8647502,
+            "neutral_F": 8561464,
+            "W": 662235,
+            "C": 247361,
+            "R": 442902,
+            "penalized_F": 86038,
+            "opposite_turn_without_intervening_forward": 51803
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 4000,
+          "actions": {
+            "F": 8698370,
+            "neutral_F": 8616269,
+            "W": 636246,
+            "R": 424574,
+            "C": 240810,
+            "opposite_turn_without_intervening_forward": 45010,
+            "penalized_F": 82101
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 5000,
+          "actions": {
+            "F": 8686072,
+            "neutral_F": 8604282,
+            "W": 645927,
+            "R": 426029,
+            "C": 241972,
+            "opposite_turn_without_intervening_forward": 46741,
+            "penalized_F": 81790
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        }
+      ],
+      "limitation": "Neutral-only SCCs are an observational abstraction; penalized edges remain usable. Stall counts include all robots. Opposite-turn count permits intervening waits. No causal effect is inferred."
+    },
+    {
+      "case": "flow1_margin50_work4m-s1-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-confirm-v20-20260919/flow1_margin50_work4m-s1-r0",
+      "instance": "WAREHOUSE",
+      "steps": 5000,
+      "robots": 10000,
+      "tasks": 122195,
+      "binary_sha256": "969ad669d5d8368b8d8435f3dc1f1e245ba2230e7afb4a43e08122633627650d",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "flow_parameters": {
+        "warmup": 128,
+        "strength": 1,
+        "minimum": 8,
+        "margin": 50,
+        "base": 1
+      },
+      "reconstructed_moves": 962499,
+      "reconstructed_penalized_edges": 17058,
+      "reconstruction_matches_production_flow_log": true,
+      "actions_match_full_production_movement_logs": true,
+      "neutral_graph": {
+        "free_cells": 38586,
+        "components": 1,
+        "largest_component": 38586,
+        "largest_component_fraction": 1.0,
+        "sink_components": 1,
+        "cells_in_sink_components_lt_100": 0
+      },
+      "windows": [
+        {
+          "end": 1000,
+          "actions": {
+            "R": 505680,
+            "F": 8498430,
+            "neutral_F": 8279091,
+            "penalized_F": 219339,
+            "W": 700640,
+            "C": 295250,
+            "opposite_turn_without_intervening_forward": 63664
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 2000,
+          "actions": {
+            "F": 8663564,
+            "neutral_F": 8584593,
+            "R": 430546,
+            "penalized_F": 78971,
+            "W": 665474,
+            "C": 240416,
+            "opposite_turn_without_intervening_forward": 51238
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 3000,
+          "actions": {
+            "F": 8635372,
+            "neutral_F": 8555615,
+            "W": 671330,
+            "R": 446530,
+            "C": 246768,
+            "opposite_turn_without_intervening_forward": 54427,
+            "penalized_F": 79757
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 4000,
+          "actions": {
+            "F": 8657840,
+            "neutral_F": 8579459,
+            "R": 439785,
+            "C": 244658,
+            "opposite_turn_without_intervening_forward": 51426,
+            "W": 657717,
+            "penalized_F": 78381
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 5000,
+          "actions": {
+            "F": 8654553,
+            "neutral_F": 8576979,
+            "W": 666323,
+            "R": 436520,
+            "C": 242604,
+            "opposite_turn_without_intervening_forward": 51374,
+            "penalized_F": 77574
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        }
+      ],
+      "limitation": "Neutral-only SCCs are an observational abstraction; penalized edges remain usable. Stall counts include all robots. Opposite-turn count permits intervening waits. No causal effect is inferred."
+    },
+    {
+      "case": "flow1_margin50_work4m-s2-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-confirm-v20-20260919/flow1_margin50_work4m-s2-r0",
+      "instance": "WAREHOUSE",
+      "steps": 5000,
+      "robots": 10000,
+      "tasks": 70171,
+      "binary_sha256": "969ad669d5d8368b8d8435f3dc1f1e245ba2230e7afb4a43e08122633627650d",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "flow_parameters": {
+        "warmup": 128,
+        "strength": 1,
+        "minimum": 8,
+        "margin": 50,
+        "base": 1
+      },
+      "reconstructed_moves": 956753,
+      "reconstructed_penalized_edges": 17183,
+      "reconstruction_matches_production_flow_log": true,
+      "actions_match_full_production_movement_logs": true,
+      "neutral_graph": {
+        "free_cells": 38586,
+        "components": 1,
+        "largest_component": 38586,
+        "largest_component_fraction": 1.0,
+        "sink_components": 1,
+        "cells_in_sink_components_lt_100": 0
+      },
+      "windows": [
+        {
+          "end": 1000,
+          "actions": {
+            "R": 541214,
+            "F": 8394671,
+            "neutral_F": 8167041,
+            "W": 753445,
+            "C": 310670,
+            "penalized_F": 227630,
+            "opposite_turn_without_intervening_forward": 75488
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 2000,
+          "actions": {
+            "F": 8414106,
+            "penalized_F": 94686,
+            "R": 529599,
+            "W": 780136,
+            "neutral_F": 8319420,
+            "C": 276159,
+            "opposite_turn_without_intervening_forward": 85779
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 3000,
+          "actions": {
+            "F": 6341460,
+            "neutral_F": 6211489,
+            "W": 1829797,
+            "C": 551536,
+            "R": 1277207,
+            "penalized_F": 129971,
+            "opposite_turn_without_intervening_forward": 423882
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 268,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 4000,
+          "actions": {
+            "F": 3626453,
+            "neutral_F": 3494543,
+            "W": 3960976,
+            "R": 1720101,
+            "penalized_F": 131910,
+            "C": 692470,
+            "opposite_turn_without_intervening_forward": 647852
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 1,
+            "robots_at_most_16_cells_last_256": 980,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 5000,
+          "actions": {
+            "R": 1901836,
+            "W": 4654656,
+            "F": 2694082,
+            "neutral_F": 2567218,
+            "C": 749426,
+            "opposite_turn_without_intervening_forward": 740346,
+            "penalized_F": 126864
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 4,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 3,
+            "robots_at_most_16_cells_last_256": 933,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        }
+      ],
+      "limitation": "Neutral-only SCCs are an observational abstraction; penalized edges remain usable. Stall counts include all robots. Opposite-turn count permits intervening waits. No causal effect is inferred."
+    },
+    {
+      "case": "equal_work4m_compact-s2-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-work4m-confirm-v20-20260919/equal_work4m_compact-s2-r0",
+      "instance": "WAREHOUSE",
+      "steps": 5000,
+      "robots": 10000,
+      "tasks": 109182,
+      "binary_sha256": "969ad669d5d8368b8d8435f3dc1f1e245ba2230e7afb4a43e08122633627650d",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "flow_parameters": {
+        "warmup": 128,
+        "strength": 0,
+        "minimum": 8,
+        "margin": 0,
+        "base": 1
+      },
+      "reconstructed_moves": 956753,
+      "reconstructed_penalized_edges": 0,
+      "reconstruction_matches_production_flow_log": false,
+      "actions_match_full_production_movement_logs": true,
+      "neutral_graph": {
+        "free_cells": 38586,
+        "components": 1,
+        "largest_component": 38586,
+        "largest_component_fraction": 1.0,
+        "sink_components": 1,
+        "cells_in_sink_components_lt_100": 0
+      },
+      "windows": [
+        {
+          "end": 1000,
+          "actions": {
+            "R": 663564,
+            "F": 8253225,
+            "neutral_F": 8253225,
+            "W": 731982,
+            "C": 351229,
+            "opposite_turn_without_intervening_forward": 87874
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 2000,
+          "actions": {
+            "F": 8386821,
+            "neutral_F": 8386821,
+            "W": 683228,
+            "R": 622399,
+            "C": 307552,
+            "opposite_turn_without_intervening_forward": 76774
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 3000,
+          "actions": {
+            "F": 8395281,
+            "neutral_F": 8395281,
+            "W": 682397,
+            "R": 615495,
+            "C": 306827,
+            "opposite_turn_without_intervening_forward": 72656
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 4000,
+          "actions": {
+            "W": 673512,
+            "F": 8401841,
+            "neutral_F": 8401841,
+            "R": 615797,
+            "C": 308850,
+            "opposite_turn_without_intervening_forward": 73191
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        },
+        {
+          "end": 5000,
+          "actions": {
+            "F": 8388451,
+            "neutral_F": 8388451,
+            "W": 681833,
+            "R": 620826,
+            "C": 308890,
+            "opposite_turn_without_intervening_forward": 74286
+          },
+          "snapshot": {
+            "robots_no_forward_for_100": 0,
+            "robots_no_forward_for_500": 0,
+            "robots_no_forward_for_1000": 0,
+            "robots_at_most_1_cells_last_256": 0,
+            "robots_at_most_4_cells_last_256": 0,
+            "robots_at_most_16_cells_last_256": 0,
+            "robots_in_largest_neutral_scc": 10000,
+            "robots_in_neutral_sink_scc_lt_100": 0
+          }
+        }
+      ],
+      "limitation": "Neutral-only SCCs are an observational abstraction; penalized edges remain usable. Stall counts include all robots. Opposite-turn count permits intervening waits. No causal effect is inferred."
+    }
+  ],
+  "field_comparisons": [
+    {
+      "a": "flow1_margin50_work4m-s0-r0",
+      "b": "flow1_margin50_work4m-s1-r0",
+      "both_penalized": 8508,
+      "one_only_penalized": 17148
+    },
+    {
+      "a": "flow1_margin50_work4m-s0-r0",
+      "b": "flow1_margin50_work4m-s2-r0",
+      "both_penalized": 8312,
+      "one_only_penalized": 17665
+    },
+    {
+      "a": "flow1_margin50_work4m-s0-r0",
+      "b": "equal_work4m_compact-s2-r0",
+      "both_penalized": 0,
+      "one_only_penalized": 17106
+    },
+    {
+      "a": "flow1_margin50_work4m-s1-r0",
+      "b": "flow1_margin50_work4m-s2-r0",
+      "both_penalized": 8408,
+      "one_only_penalized": 17425
+    },
+    {
+      "a": "flow1_margin50_work4m-s1-r0",
+      "b": "equal_work4m_compact-s2-r0",
+      "both_penalized": 0,
+      "one_only_penalized": 17058
+    },
+    {
+      "a": "flow1_margin50_work4m-s2-r0",
+      "b": "equal_work4m_compact-s2-r0",
+      "both_penalized": 0,
+      "one_only_penalized": 17183
+    }
+  ]
+}

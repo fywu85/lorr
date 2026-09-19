@@ -142,3 +142,27 @@ available control. No promotion is justified.
 
 An optional cumulative refresh experiment is now built and screen-validated;
 its full seed comparisons are pending. See [FLOW_REFRESH.md](FLOW_REFRESH.md).
+
+
+## Nearby parameters: full seed-0 result
+
+Matrix 8898554 and analysis 8898555 complete successfully. All four cases have
+all 5,000 movement/timing samples, no errors or timeouts, and RSS below 32 GB.
+The repeated margin50 strength1 control has exactly the earlier full trajectory
+fingerprint, not merely the same score.
+
+| Profile | Tasks | Last 1,000 | Max entry (s) | Age p90 |
+|---|---:|---:|---:|---:|
+| strength1 margin50 control | 122,896 | 25,254 | 0.860278304 | 743 |
+| strength1 margin25 | 55,344 | 4,064 | 0.903567274 | 3,826 |
+| strength1 margin75 | 119,528 | 24,388 | 0.901415214 | 779 |
+| strength2 margin50 | 119,294 | 24,593 | 0.874671928 | 770 |
+
+None improves the control. Margin25 looks only 2.84% worse at step 1,000 but
+finishes 54.97% worse, again rejecting short prefixes as quality rankings.
+Margin75 and strength2 have stable late seed-0 rates but no multi-seed confirmation.
+These settings are not promoted. The independent [flow-field audit](FLOW_FIELD_AUDIT.md)
+finds connected neutral-cost graphs and pronounced late movement churn in the
+original failing seed; it does not identify a unique causal edge.
+
+[Complete evidence](results/flow-margin-neighbors-full-v20/).

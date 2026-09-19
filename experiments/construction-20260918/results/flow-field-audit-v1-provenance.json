@@ -1,0 +1,37 @@
+{
+  "submission": {
+    "command": [
+      "/opt/n1ge/bin/lx24-amd64/qsub",
+      "-terse",
+      "-w",
+      "e",
+      "-cwd",
+      "-q",
+      "debian.q",
+      "-pe",
+      "threaded",
+      "1",
+      "-binding",
+      "linear:1",
+      "-l",
+      "exclusive=true,h_rt=00:30:00,h_vmem=4G",
+      "-m",
+      "n",
+      "-N",
+      "flow_audit",
+      "-j",
+      "y",
+      "-o",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-field-audit-v1-20260919/scheduler.log",
+      "-S",
+      "/bin/bash",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-field-audit-v1-20260919/job.sh"
+    ],
+    "response": "8898630\n",
+    "exit": 0
+  },
+  "script": "#!/bin/bash\nset -eu\nexec /usr/bin/python3 /shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/flow_field_audit.py --cases /shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-full-v20-20260919/flow1_margin50_work4m-s0-r0 /shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-confirm-v20-20260919/flow1_margin50_work4m-s1-r0 /shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-confirm-v20-20260919/flow1_margin50_work4m-s2-r0 /shared/share_mala/fw2449/lorr2024/runs/cgar-work4m-confirm-v20-20260919/equal_work4m_compact-s2-r0 --output /shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/flow-field-audit-v1.json\n",
+  "source_sha256": "3d55b62a0fe3694e71cfafa2602244989b9ff921a1cff23200d006ea6e1b3a21",
+  "output_sha256": "3896fb0beb4ca50b37d14079bca53775d6e842147af7f0a27a8cb65daf853729",
+  "checks": "Hand-counted strict-margin boundary and directed SCC fixture passed; every reconstructed active flow field exactly matches production move/penalty counters; all four full action totals match independent production diagnostics."
+}

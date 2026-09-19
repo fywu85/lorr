@@ -60,3 +60,22 @@ throughput recovery is established yet.
 [Build](build-provenance/v30/), [screens](results/flow-refresh-screen-v30/),
 [default equivalence](results/flow-refresh-default-equivalence.json),
 [queue change](results/flow-refresh-queue-update.json).
+
+
+## First completed full pair: seed 0
+
+Completed first-pair analysis **8898634** independently checks all 5,000 decisions
+and trajectory records. Frozen control exactly reproduces the v20 trajectory and
+122,896 tasks. Interval512 reaches **134,511**, +9.45% versus frozen flow, with
+windows22,523 /27,754 /28,022 /27,997 /28,215 and outstanding-task agep90 **653**
+(control743). Maximum complete entry is **0.765266707s**, RSS **11,838,496,768bytes**;
+there are no errors or timeouts. This is a new single-seed experimental peak,
+12.07% below the local152,981 target. Seed2 and the complete matrix remain pending.
+
+The gain does not isolate a mechanism: each changed field also clears old-metric
+tables, temporarily increasing use of the fallback heuristic. Future diagnosis
+must distinguish improved flow estimates from those cache/fallback effects.
+No six-seed or default-promotion claim is made.
+
+[First-pair evidence](results/flow-refresh-first-pair-v30/),
+[continuously maintained progress log](../../WAREHOUSE_PROGRESS.md).

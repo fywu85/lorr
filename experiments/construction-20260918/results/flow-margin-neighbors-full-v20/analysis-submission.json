@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:30:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "motion_analysis",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-neighbors-full-v20-20260919/motion-analysis.log",
+    "-S",
+    "/bin/bash",
+    "-hold_jid",
+    "8898554",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-margin-neighbors-full-v20-20260919/motion-analysis.sh"
+  ],
+  "response": "8898555\n",
+  "exit": 0
+}

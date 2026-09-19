@@ -37,6 +37,8 @@ for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
 
+[WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
+
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 
 [Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. Those diagnostic prototypes were separate from the production planner. A [follow-up Fable 5.1 Max review](experiments/throughput-20260918-fable/README.md) was completed through Claude Code CLI.
