@@ -38,6 +38,20 @@ struct TemporalForwardAudit {
     TemporalForwardPartition easiest, physical;
 };
 
+// Post-service reservations are observed slots, not assumed removable blockers.
+struct TemporalServiceBucket {
+    int robots = 0, selected_wait = 0, selected_turn = 0, selected_forward = 0;
+    int candidate_forward = 0;
+    int64_t physical_gain = 0;
+};
+struct TemporalServiceAudit {
+    int eligible = 0, no_improving = 0, unblocked = 0, other_blocker = 0;
+    int arriving = 0, arriving_known_next = 0;
+    // Tags of the cheapest candidate in the easiest improving blocker class:
+    // only owners with known next errands, only finishing owners, or both.
+    std::array<TemporalServiceBucket, 3> post_service{};
+};
+
 struct TemporalStats {
     long long roots = 0, accepted = 0, recursive_calls = 0, candidates = 0;
     long long budget_exhausted = 0, repairs = 0, repairs_accepted = 0;
@@ -177,6 +191,75 @@ public:
             }
             tally(out, best_class); tally(out.easiest, easiest); tally(out.physical, physical);
         }
+        return out;
+    }
+    // Const snapshot, with no search/RNG/cache changes. Every examined candidate
+    // improves the distance/turn objective by a full unit after removing op ties.
+    // A conflict is post-service only strictly after its owner's first goal hit;
+    // arrival-slot conflicts and all fixed owners remain in the other class.
+    template<class Deadline>
+    TemporalServiceAudit audit_post_service(const std::vector<int>& goals,
+            const std::vector<char>& known_next, int distance_scale, int unit_cost,
+            Deadline check) const {
+        const int count = static_cast<int>(choices_.size());
+        if (goals.size() != choices_.size() || known_next.size() != choices_.size() ||
+            distance_scale <= 0 || unit_cost <= 0)
+            throw std::invalid_argument("invalid post-service audit inputs");
+        TemporalServiceAudit out;
+        std::vector<int> arrival(count, -1);
+        for (int r = 0; r < count; ++r) {
+            if ((r & 63) == 0) check();
+            if (goals[r] < 0) continue;
+            for (int t = 0; t < kTemporalHorizon; ++t) if (choice(r).path->cells[t] == goals[r]) {
+                arrival[r] = t; ++out.arriving; out.arriving_known_next += known_next[r] != 0; break;
+            }
+        }
+        for (int r = 0; r < count; ++r) {
+            if ((r & 63) == 0) check();
+            if (fixed_[r] || goals[r] < 0 || power_[r] <= 0) continue;
+            ++out.eligible;
+            const int64_t old_physical = choice(r).cost + int64_t(choice(r).operation) * unit_cost;
+            int best = -1, best_class = 3, best_tags = 0;
+            int64_t best_gain = 0;
+            for (int k = 0; k < static_cast<int>(choices_[r].size()); ++k) {
+                const auto& candidate = choices_[r][k];
+                const int64_t gain = old_physical - candidate.cost - int64_t(candidate.operation) * unit_cost;
+                if (gain < int64_t(distance_scale) * unit_cost) continue;
+                bool blocked = false, real = false;
+                int tags = 0;
+                auto take = [&](int owner, int t) {
+                    if (owner < 0 || owner == r) return;
+                    blocked = true;
+                    if (fixed_[owner] || arrival[owner] < 0 || t <= arrival[owner]) real = true;
+                    else tags |= known_next[owner] ? 1 : 2;
+                };
+                const auto& path = *candidate.path;
+                for (int t = 0; t < kTemporalHorizon; ++t) {
+                    take(used_cells_[path.cells[t]][t], t);
+                    if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t], t);
+                }
+                const int category = !blocked ? 0 : real ? 2 : 1;
+                if (category < best_class || (category == best_class &&
+                    (best < 0 || candidate.cost < choices_[r][best].cost ||
+                     (candidate.cost == choices_[r][best].cost && candidate.operation < choices_[r][best].operation)))) {
+                    best = k; best_class = category; best_tags = tags; best_gain = gain;
+                }
+            }
+            if (best < 0) ++out.no_improving;
+            else if (best_class == 0) ++out.unblocked;
+            else if (best_class == 2) ++out.other_blocker;
+            else {
+                if (best_tags < 1 || best_tags > 3) throw std::logic_error("missing post-service owner tag");
+                auto& part = out.post_service[best_tags - 1];
+                ++part.robots; part.physical_gain += best_gain;
+                const int action = choice(r).path->first_action;
+                if (action == 0) ++part.selected_forward;
+                else if (action == 3) ++part.selected_wait;
+                else ++part.selected_turn;
+                part.candidate_forward += choices_[r][best].path->first_action == 0;
+            }
+        }
+        check();
         return out;
     }
     TemporalStats stats;

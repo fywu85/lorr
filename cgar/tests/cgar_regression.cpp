@@ -1646,6 +1646,85 @@ void temporal_transaction_safety_regression() {
  std::cout<<"TEMPORAL_TRANSACTION_SAFETY passed multi_root_commit_rollback_reuse=2 later_budget_exhaustion=4 edge_only_conflict=1 size_boundary=1 fractional_scores=1 tiny_fixtures=512 enumerated="<<enumerated<<" accepted="<<accepted<<"\n";
 }
 
+void temporal_service_audit_regression() {
+ TemporalGeometry geometry;geometry.initialize(std::vector<char>(7,true),1,7,[]{});
+ auto op=[&](std::array<uint8_t,5> actions){const auto& all=TemporalGeometry::operations();
+  for(int k=0;k<int(all.size());++k)if(all[k]==actions)return k;
+  throw std::runtime_error("missing service-audit fixture operation");};
+ const int fast=op({0,0,0,3,3}),one=op({0,3,3,3,3}),delayed=op({3,0,3,3,3}),two=op({0,0,3,3,3});
+ int fixtures=0;
+ // 0 free,1 known,2 finishing,3 mixed,4 no arrival,5 arrival-slot,
+ // 6 protected,7 easier free option,8 edge-only,9 repeated owner,
+ // 10 selected turn,11 selected forward,12 non-forward alternative.
+ const int expected[]={0,1,2,3,4,4,4,0,1,1,1,1,1};
+ for(int scenario=0;scenario<13;++scenario){
+  const int count=scenario==0?1:scenario==3?3:2;
+  std::vector<std::vector<TemporalChoice>> choices(count);std::vector<char> fixed(count,false),known(count,true);
+  std::vector<double> power(count,1);std::vector<int> goals(count,5),initial(count,0);
+  TemporalPath rotated=geometry.seed(0,0,1);
+  choices[0]={{&geometry.paths(0,0)[0],2000,0},{&geometry.paths(0,0)[fast],-fast,fast}};
+  if(count>1){choices[1]={{&geometry.paths(2,0)[0],0,0}};goals[1]=2;}
+  if(scenario==2)known[1]=false;
+  if(scenario==3){choices[2]={{&geometry.paths(3,0)[0],0,0}};goals[2]=3;known[2]=false;}
+  if(scenario==4)goals[1]=4;
+  if(scenario==5)choices[1][0].path=&geometry.paths(3,2)[delayed];
+  if(scenario==6)fixed[1]=true;
+  if(scenario==7)choices[0].push_back({&geometry.paths(0,0)[one],500-one,one});
+  if(scenario==8)choices[1][0].path=&geometry.paths(2,2)[delayed];
+  if(scenario==9)choices[0][1]={&geometry.paths(0,0)[two],-two,two};
+  if(scenario==10)choices[0][0].path=&rotated;
+  if(scenario==11){choices[0].push_back({&geometry.paths(0,0)[one],1000-one,one});initial[0]=2;}
+  if(scenario==12){choices[0][1]={&geometry.paths(0,0)[delayed],-delayed,delayed};choices[1][0].path=&geometry.paths(1,0)[0];goals[1]=1;}
+  TemporalPibt a(7,choices,fixed,power,8192,123,&initial),b(7,choices,fixed,power,8192,123,&initial);
+  const auto selected=a.selections();const auto score=a.score();const auto stats=a.stats;
+  const auto audit=a.audit_post_service(goals,known,50,1,[]{});
+  int post=0;for(const auto& bucket:audit.post_service){post+=bucket.robots;
+   if(bucket.selected_wait+bucket.selected_turn+bucket.selected_forward!=bucket.robots||bucket.candidate_forward>bucket.robots)
+    throw std::runtime_error("service audit action partition does not conserve robots");}
+  if(audit.eligible!=count-int(scenario==6)||audit.no_improving!=audit.eligible-1||
+     audit.unblocked!=int(expected[scenario]==0)||audit.other_blocker!=int(expected[scenario]==4)||
+     post!=int(expected[scenario]>=1&&expected[scenario]<=3)||
+     audit.eligible!=audit.no_improving+audit.unblocked+audit.other_blocker+post)
+   throw std::runtime_error("service audit misclassified hand-counted fixture "+std::to_string(scenario));
+  if(post){const auto& bucket=audit.post_service[expected[scenario]-1];
+   if(bucket.robots!=1||bucket.selected_turn!=int(scenario==10)||bucket.selected_forward!=int(scenario==11)||
+      bucket.candidate_forward!=int(scenario!=12)||bucket.physical_gain<50)
+    throw std::runtime_error("service audit lost owner/service/action attribution");}
+  if(a.selections()!=selected||a.score()!=score||a.stats.candidates!=stats.candidates)
+   throw std::runtime_error("service audit mutated search state");
+  std::vector<int> order(count);for(int r=0;r<count;++r)order[r]=r;
+  a.construct(order,[]{});b.construct(order,[]{});a.repair(256,[]{});b.repair(256,[]{});
+  if(a.selections()!=b.selections()||a.score()!=b.score()||a.stats.candidates!=b.stats.candidates||a.stats.repairs_accepted!=b.stats.repairs_accepted)
+   throw std::runtime_error("service audit changed subsequent random search");
+  ++fixtures;
+ }
+ // Own future reservations are not other owners, even when currently moving.
+ std::vector<std::vector<TemporalChoice>> choices(1);
+ choices[0]={{&geometry.paths(0,0)[0],2000,0},{&geometry.paths(0,0)[one],1000-one,one},{&geometry.paths(0,0)[fast],-fast,fast}};
+ std::vector<char> fixed(1,false),known(1,true);std::vector<double> power(1,1);std::vector<int> goals(1,6),initial(1,1);
+ TemporalPibt self(7,choices,fixed,power,8192,7,&initial);
+ if(self.audit_post_service(goals,known,50,1,[]{}).unblocked!=1)throw std::runtime_error("service audit counted own reservations");
+ for(int unit:{1,4,8})for(int gain:{0,49,50}){
+  choices[0]={{&geometry.paths(0,0)[0],int64_t(1000)*unit,0},{&geometry.paths(0,0)[one],int64_t(1000-gain-one)*unit,one}};
+  TemporalPibt boundary(7,choices,fixed,power,8192,7);auto audit=boundary.audit_post_service(goals,known,50,unit,[]{});
+  if(audit.unblocked!=int(gain==50)||audit.no_improving!=int(gain<50))throw std::runtime_error("service audit confused op ties with a full physical unit");
+ }
+ for(auto units:std::vector<std::pair<int,int>>{{0,1},{1,0},{-1,1},{1,-1}}){bool rejected=false;
+  try{self.audit_post_service(goals,known,units.first,units.second,[]{});}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("service audit accepted invalid cost units");}
+ bool rejected=false;try{self.audit_post_service({},known,50,1,[]{});}catch(const std::invalid_argument&){rejected=true;}
+ if(!rejected)throw std::runtime_error("service audit accepted mismatched goal count");
+ const auto selections=self.selections();const auto score=self.score();bool failed=false;
+ try{self.audit_post_service(goals,known,50,1,[]{throw Timeout("service_fixture");});}catch(const Timeout&){failed=true;}
+ if(!failed||self.selections()!=selections||self.score()!=score)throw std::runtime_error("service audit timeout altered a completed plan");
+ for(const char* value:{"-1","4097","1"}){setenv("CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE",value,1);
+  SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool invalid=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}
+  if(!invalid)throw std::runtime_error("invalid/non-temporal service audit accepted");}
+ setenv("CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE","7",1);temporal_region_adapter_regression();temporal_primary_regression();unsetenv("CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE");
+ std::cout<<"TEMPORAL_SERVICE_AUDIT passed hand_counted_fixtures="<<fixtures<<" known_finishing_mixed=1 arrival_slot_and_fixed_excluded=1 edge_only_and_repeated_owner=1 easiest_alternative=1 selected_wait_turn_forward=1 own_reservations_excluded=1 physical_unit_boundaries=9 immutable_rng_reservations=1 explicit_timeout=1 protected_serial_parallel_actions=4800\n";
+}
+
 void temporal_forward_audit_regression() {
  TemporalGeometry geometry;geometry.initialize(std::vector<char>(7,true),1,7,[]{});
  auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
@@ -2293,4 +2372,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

@@ -369,6 +369,7 @@ private:
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
     int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0, temporal_conflict_audit_stride_ = 0;
+    int temporal_service_audit_stride_ = 0;
     int guidance_turn_cost_ = 1, turn_surcharge_ = 0;
     int temporal_workers_ = 1, temporal_threads_ = 1, temporal_prepare_threads_ = 1;
     bool temporal_regions_ = false;

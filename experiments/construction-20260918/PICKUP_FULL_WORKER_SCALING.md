@@ -40,13 +40,24 @@ four. The fixed-work, same-CPU-family comparison measures policy quality; it is
 not an equal-resource runtime-speedup claim. Memory is the whole-process high-water
 mark. [Full comparisons and resource evidence](results/pickup-full-worker-scaling-full-v43/comparison.json).
 
-## Six-seed confirmation underway
+## Six-seed comparison complete
 
-Seeds1/3 run in job8898991 (analysis8898992), and seeds4/5 in job8898993
-(analysis8898994). Each matrix runs four cases concurrently on64 physical cores:
-one/sixteen workers per seed, with16 cores reserved per process. Both use the
-frozen V43 binary,64GiB aggregate reservations and the32GB per-process cap.
-The one-worker controls must exactly reproduce their existing full trajectories.
-All six seeds must be assessed before changing the confirmed reference.
-[Confirmation configuration](pickup-full-workers16-confirm-variants.json),
-[first-pair configuration](pickup-full-worker-scaling-full-variants.json).
+Jobs8898991/8898992 and8898993/8898994 completed the remaining seeds with matched
+one-worker controls. All12 one/sixteen-worker runs are valid, all60,000 entries meet
+one second, and all six controls exactly reproduce V42/64 trajectories. Every
+source/test hash matches exactV43/1661176.
+
+Sixteen-worker seeds0..5:143749/143241/143571/143643/141876/142587, mean
+**143111.1667**, **+0.44663%** versus142474.8333. This is the highest observed
+six-seed mean so far. Paired totals change+1920/−84/+583/+1841/−112/−330, and final
+windows change+227/−87/+199/+280/+47/−101. Three totals and two tails regress;
+there is no uniform improvement or established significance from these six seeds.
+Keep the one-worker working reference while testing regional repair. No new
+absolute record exceeds the existing143767, and no confirmed-reference milestone
+is added.
+
+Across six sixteen-worker runs, mean latency is326.1–392.0ms, maximum954.12ms,
+average CPU6.27–7.68 cores of16 reserved, and peakRSS12.048GB. The broader range
+supersedes the first-pair resource range when discussing this six-seed cohort.
+[Full verification and paired data](results/pickup-full-workers16-six-seed-v43.json),
+[confirmation configuration](pickup-full-workers16-confirm-variants.json).

@@ -1,0 +1,45 @@
+{
+  "checked_utc": "2026-09-19T19:55:57.713592+00:00",
+  "control": "flow4_pickupfull64_work4m_regions0-s0-r0",
+  "reference_control": "flow4_turnextra0_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s0-r0",
+  "full_prefix_exact": true,
+  "trajectory_sha256": "0941646ba4985c0d4d18ad713e9563ac3edae7eac77aa50072c9fea59bcc0837",
+  "exact_source_commit": "f6d0ae448504762136c4f5d85f25d7d207207965",
+  "verified_source_and_test_files": 22,
+  "all_three_cases_valid": true,
+  "regional_counters": {
+    "flow4_pickupfull64_work4m_regions4_rounds1_steps25k-s0-r0": {
+      "step": 200,
+      "regions": 4,
+      "rounds": 1,
+      "threads": 4,
+      "temperature_ppm": 1000,
+      "active": 9837,
+      "candidates": 8892763,
+      "repairs": 100000,
+      "attempts_accepted": 45192,
+      "kept": 4,
+      "reverted": 0,
+      "frozen_crossers": 162,
+      "score_before": 12223178.0,
+      "score_after": 12955334.0
+    },
+    "flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s0-r0": {
+      "step": 200,
+      "regions": 4,
+      "rounds": 2,
+      "threads": 4,
+      "temperature_ppm": 1000,
+      "active": 19611,
+      "candidates": 8741715,
+      "repairs": 200000,
+      "attempts_accepted": 89741,
+      "kept": 6,
+      "reverted": 2,
+      "frozen_crossers": 387,
+      "score_before": 13015668.0,
+      "score_after": 13101422.0
+    }
+  },
+  "scope": "200-step deadline/equivalence screen, not a quality ranking. Full runs and six-seed confirmation remain required."
+}

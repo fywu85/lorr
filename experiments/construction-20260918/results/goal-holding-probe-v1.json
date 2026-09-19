@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-09-19T20:05:35.222243+00:00",
+  "compiler_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-O2",
+    "-std=c++17",
+    "-Icgar/cgar_planner",
+    "experiments/construction-20260918/goal_holding_probe.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "runs/cgar-goal-holding-probe-v1-20260919/probe"
+  ],
+  "sources": {
+    "experiments/construction-20260918/goal_holding_probe.cpp": "7bd004f0e70f4f446c59679869cfa1deedd7d7d83356690e44b931f6edcb5235",
+    "cgar/cgar_planner/temporal_geometry.hpp": "09462e4949b3f9e3e11179cf654b714076afc5c1bc807539b98f5f42bb79b57b",
+    "cgar/cgar_planner/temporal_pibt.hpp": "17997c709569359f3ce74a5f8e1d99b363d671b23abcb24cd041bd3c1e0eaa9c"
+  },
+  "binary_sha256": "679e20b0a426e899d3286a552b49e8cc67d4283c48957f0e2ef38fb69249730a",
+  "runs": [
+    {
+      "arguments": [],
+      "exit_code": 0,
+      "wall_seconds": 0.01686009205877781,
+      "stdout": "CASE 1 A start=11 heading=2 goal=10 known_next=3 B start=5 heading=1 goal=8\nnative A op=58 score=-1032 actions=FWWWW cells=10,10,10,10,10,\nnative B op=102 score=-8 actions=RFFFF cells=5,4,3,2,1,\nalternative A op=67 score=-668 actions=FRWFW cells=10,10,10,3,3,\nalternative B op=111 score=-244 actions=FRFFF cells=12,12,11,10,9,\nnative joint cost=-1040 alternative=-912 future_hold_conflict_slots=1\nCASE 2 A start=12 heading=2 goal=11 known_next=4 B start=5 heading=1 goal=7\nnative A op=58 score=-1032 actions=FWWWW cells=11,11,11,11,11,\nnative B op=102 score=192 actions=RFFFF cells=5,4,3,2,1,\nalternative A op=80 score=-520 actions=FRFWW cells=11,11,4,4,4,\nalternative B op=111 score=-44 actions=FRFFF cells=12,12,11,10,9,\nnative joint cost=-840 alternative=-564 future_hold_conflict_slots=1\nEXHAUSTIVE_PAIR_CHOICES_CHECKED cases=987 examples=2\n"
+    },
+    {
+      "arguments": [
+        "--fable-fixture"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.006891053169965744,
+      "stdout": "FABLE_FIXTURE native A op=58 first=0 native B op=85 first=0 jointcost=-772\nEXHAUSTIVE_PAIR_CHOICES_CHECKED cases=1 examples=0\n"
+    }
+  ],
+  "scope": "Finite open-grid score analysis. Exact minimization over pairs of valid native operations per sampled input. Not a full production search trace, warehouse prevalence estimate, or throughput counterfactual. The common unit/turn cost is4 with no flow tolls."
+}

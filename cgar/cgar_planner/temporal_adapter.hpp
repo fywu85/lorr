@@ -341,6 +341,29 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         };
         log_partition("scalar", audit.easiest); log_partition("physical", audit.physical);
     }
+    if (temporal_service_audit_stride_ && (env_->curr_timestep + 1) % temporal_service_audit_stride_ == 0) {
+        std::vector<char> known_next(n_, false);
+        for (int r = 0; r < n_; ++r) {
+            const auto task = env_->task_pool.find(agents_[r].task);
+            if (task != env_->task_pool.end())
+                known_next[r] = task->second.idx_next_loc + 1 < static_cast<int>(task->second.locations.size());
+        }
+        const auto audit = search.audit_post_service(goals, known_next, temporal_distance_scale_, flow_cost_scale_,
+            [&] { check_deadline(deadline_, "temporal_service_audit"); });
+        if (diagnostics_) {
+            std::printf("[cgar-temporal-service-audit] step=%d eligible=%d no_improving=%d unblocked=%d other_blocker=%d known_only=%d finishing_only=%d mixed=%d arriving=%d arriving_known_next=%d distance_scale=%d unit_cost=%d\n",
+                env_->curr_timestep + 1, audit.eligible, audit.no_improving, audit.unblocked, audit.other_blocker,
+                audit.post_service[0].robots, audit.post_service[1].robots, audit.post_service[2].robots,
+                audit.arriving, audit.arriving_known_next, temporal_distance_scale_, flow_cost_scale_);
+            const char* names[] = {"known", "finishing", "mixed"};
+            for (int k = 0; k < 3; ++k) {
+                const auto& part = audit.post_service[k];
+                std::printf("[cgar-temporal-service-options] step=%d owners=%s robots=%d selected_wait=%d selected_turn=%d selected_forward=%d candidate_forward=%d physical_gain=%lld\n",
+                    env_->curr_timestep + 1, names[k], part.robots, part.selected_wait, part.selected_turn,
+                    part.selected_forward, part.candidate_forward, static_cast<long long>(part.physical_gain));
+            }
+        }
+    }
     const auto& construction_stats = results[best]->stats;
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
         std::printf("[cgar-temporal] step=%d workers=%d threads=%d selected_worker=%d candidate_limit=%d roots=%lld accepted=%lld recursion=%lld candidates=%lld max_depth=%d exhausted=%lld repairs=%lld repair_accept=%lld score=%.3f\n",

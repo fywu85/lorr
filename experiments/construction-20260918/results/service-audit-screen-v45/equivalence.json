@@ -1,0 +1,108 @@
+{
+  "checked_utc": "2026-09-19T20:07:51.869771+00:00",
+  "all_two_cases_valid": true,
+  "all_prefixes_exact_v44": true,
+  "trajectory_sha256": "0941646ba4985c0d4d18ad713e9563ac3edae7eac77aa50072c9fea59bcc0837",
+  "source_build": "build-provenance/v45",
+  "frames": {
+    "flow4_pickupfull64_work4m_serviceaudit0-s0-r0": {
+      "partitions": [],
+      "options": []
+    },
+    "flow4_pickupfull64_work4m_serviceaudit67-s0-r0": {
+      "partitions": [
+        {
+          "step": 67,
+          "eligible": 9999,
+          "no_improving": 1707,
+          "unblocked": 2222,
+          "other_blocker": 6010,
+          "known_only": 54,
+          "finishing_only": 6,
+          "mixed": 0,
+          "arriving": 156,
+          "arriving_known_next": 133,
+          "distance_scale": 50,
+          "unit_cost": 4
+        },
+        {
+          "step": 134,
+          "eligible": 9996,
+          "no_improving": 4159,
+          "unblocked": 1253,
+          "other_blocker": 4532,
+          "known_only": 37,
+          "finishing_only": 15,
+          "mixed": 0,
+          "arriving": 227,
+          "arriving_known_next": 147,
+          "distance_scale": 50,
+          "unit_cost": 4
+        }
+      ],
+      "options": [
+        {
+          "step": 67,
+          "robots": 54,
+          "selected_wait": 8,
+          "selected_turn": 11,
+          "selected_forward": 35,
+          "candidate_forward": 33,
+          "physical_gain": 39800,
+          "owners": "known"
+        },
+        {
+          "step": 67,
+          "robots": 6,
+          "selected_wait": 0,
+          "selected_turn": 0,
+          "selected_forward": 6,
+          "candidate_forward": 5,
+          "physical_gain": 1800,
+          "owners": "finishing"
+        },
+        {
+          "step": 67,
+          "robots": 0,
+          "selected_wait": 0,
+          "selected_turn": 0,
+          "selected_forward": 0,
+          "candidate_forward": 0,
+          "physical_gain": 0,
+          "owners": "mixed"
+        },
+        {
+          "step": 134,
+          "robots": 37,
+          "selected_wait": 3,
+          "selected_turn": 8,
+          "selected_forward": 26,
+          "candidate_forward": 19,
+          "physical_gain": 27150,
+          "owners": "known"
+        },
+        {
+          "step": 134,
+          "robots": 15,
+          "selected_wait": 2,
+          "selected_turn": 4,
+          "selected_forward": 9,
+          "candidate_forward": 9,
+          "physical_gain": 3200,
+          "owners": "finishing"
+        },
+        {
+          "step": 134,
+          "robots": 0,
+          "selected_wait": 0,
+          "selected_turn": 0,
+          "selected_forward": 0,
+          "candidate_forward": 0,
+          "physical_gain": 0,
+          "owners": "mixed"
+        }
+      ]
+    }
+  },
+  "scope": "Complete200-step prefix equality and audit count conservation. No full-run prevalence or throughput claim."
+}
