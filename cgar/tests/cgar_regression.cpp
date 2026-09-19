@@ -372,6 +372,76 @@ void reassignment_fair_admission() {
  if(proposed!=e.curr_task_schedule||!c.stats().reassign_fair_protected)throw std::runtime_error("fair admission was redirected by a cheaper swap");
  unsetenv("CGAR_REASSIGN");std::cout<<"REASSIGNMENT_FAIR_ADMISSION passed\n";
 }
+SharedEnvironment pool_exchange_fixture() {
+ SharedEnvironment e;e.num_of_agents=4;e.rows=3;e.cols=20;e.map.assign(60,0);e.curr_timestep=0;
+ e.curr_states={State(0,0,0),State(20,0,0),State(39,0,2),State(59,0,2)};
+ e.curr_task_schedule={10,11,12,13};e.goal_locations={{{15,0}},{{35,0}},{{23,0}},{{36,0}}};
+ const std::vector<std::vector<int>> stops={{15},{35,36},{40,23},{41,36}};
+ for(int r=0;r<4;++r){Task t;t.task_id=10+r;t.t_revealed=-7;t.agent_assigned=r;t.locations=stops[r];t.idx_next_loc=r>=2?1:0;e.task_pool.emplace(t.task_id,t);}
+ Task available;available.task_id=100;available.t_revealed=-3;available.locations={22,23};e.task_pool.emplace(100,available);
+ return e;
+}
+void pool_exchange_regression() {
+ auto prepare=[](Cgar& c,SharedEnvironment& e){
+  c.initialize(&e,1000);std::vector<Action>a;c.plan(&e,1000,a);
+  auto states=step(e,e.curr_states,a);if(states.empty()||states[1].location!=21)throw std::runtime_error("pool exchange fixture did not advance to expected source");
+  e.curr_states=states;e.curr_timestep=10;
+ };
+ for(bool enabled:{false,true}){
+  setenv("CGAR_REASSIGN_POOL",enabled?"1":"0",1);auto e=pool_exchange_fixture();Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);
+  const auto expected=enabled?std::vector<int>{10,100,12,13}:e.curr_task_schedule;
+  if(proposed!=expected||c.stats().pool_exchanges!=int(enabled)||c.stats().pool_pickup_saving!=13*int(enabled)||c.stats().pool_total_saving!=13*int(enabled))
+   throw std::runtime_error("pool exchange did not preserve disabled behavior or save independently counted pickup distance");
+  if(e.curr_task_schedule!=std::vector<int>({10,11,12,13})||e.task_pool.at(11).agent_assigned!=1||e.task_pool.at(11).t_revealed!=-7||e.task_pool.at(100).agent_assigned!=-1||e.task_pool.at(100).t_revealed!=-3||e.task_pool.size()!=5)
+   throw std::runtime_error("pool exchange mutated simulator state or discarded the released task");
+  if(enabled&&(!c.stats().pool_primary_protected||proposed[2]!=12||proposed[3]!=13))throw std::runtime_error("pool exchange redirected a protected or started task");
+ }
+ setenv("CGAR_REASSIGN_POOL","1",1);
+ for(int mode=0;mode<4;++mode){
+  auto e=pool_exchange_fixture();
+  if(mode==0){e.task_pool.at(11).locations={35,23};e.task_pool.at(100).locations={37};} // cheaper total, worse pickup
+  if(mode==1)e.task_pool.at(100).locations={22,36,15,36}; // better pickup, worse total
+  if(mode==2)e.task_pool.at(100).locations={22,57}; // missing complete chain table
+  if(mode==3)setenv("CGAR_PLAN_TABLES","0",1); // missing incumbent pickup table
+  Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);unsetenv("CGAR_PLAN_TABLES");
+  if(proposed!=e.curr_task_schedule||c.stats().pool_exchanges)throw std::runtime_error("pool exchange accepted missing or non-improving distance evidence");
+  if(mode==2&&!c.stats().pool_missing_chain)throw std::runtime_error("missing pool chain table was not observed");
+  if(mode==3&&!c.stats().pool_missing_pickup)throw std::runtime_error("missing old pickup table was not observed");
+ }
+ // Once-retargeted tasks remain protected after the robot cooldown expires.
+ auto e=pool_exchange_fixture();e.task_pool.at(100).locations={29};Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);
+ if(proposed!=std::vector<int>({10,100,12,13})||c.stats().pool_exchanges!=1)throw std::runtime_error("pool retarget-limit fixture did not make its first exchange");
+ e.curr_task_schedule=proposed;e.task_pool.at(11).agent_assigned=-1;e.task_pool.at(100).agent_assigned=1;e.goal_locations[1]={{{29,0}}};e.curr_timestep=11;
+ std::vector<Action>a;c.plan(&e,1000,a);auto states=step(e,e.curr_states,a);
+ if(states.empty()||states[1].location!=22)throw std::runtime_error("pool retarget-limit fixture did not finish its movement commitment");
+ e.curr_states=states;e.curr_timestep=40;Task closer;closer.task_id=101;closer.t_revealed=40;closer.locations={23};e.task_pool.emplace(101,closer);
+ c.schedule(&e,1000,proposed);
+ if(proposed!=e.curr_task_schedule||c.stats().pool_exchanges!=1)throw std::runtime_error("pool exchange repeatedly retargeted an unopened task after cooldown");
+ unsetenv("CGAR_REASSIGN_POOL");
+ for(const char* value:{"-1","2"}){setenv("CGAR_REASSIGN_POOL",value,1);auto invalid=pool_exchange_fixture();bool rejected=false;try{Cgar x;x.initialize(&invalid,1000);}catch(const std::invalid_argument&){rejected=true;}if(!rejected)throw std::runtime_error("pool exchange accepted invalid boolean configuration");}
+ unsetenv("CGAR_REASSIGN_POOL");
+ std::cout<<"POOL_EXCHANGE passed pickup_distance=14->1 chain_distance=1->1 disabled_equivalence=1 independent_pickup_guard=1 total_guard=1 missing_tables=1 started_primary_protected=1 task_age_and_release_preserved=1 finite_retarget=1\n";
+}
+void pool_exchange_fair_admission() {
+ setenv("CGAR_REASSIGN_POOL","1",1);
+ SharedEnvironment e;e.num_of_agents=2;e.rows=2;e.cols=31;e.map.assign(62,0);e.curr_timestep=20;
+ e.curr_states={State(0,0,0),State(30,0,2)};e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
+ for(int i=0;i<2;++i){Task t;t.task_id=i;t.t_revealed=0;t.locations={i*30};e.task_pool.emplace(i,t);}
+ Task old;old.task_id=100;old.t_revealed=-1;old.locations={20};for(int i=0;i<100;++i)old.locations.push_back(i%2?20:7);e.task_pool.emplace(100,old);
+ Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,1000,proposed);
+ if(proposed!=std::vector<int>({0,1}))throw std::runtime_error("pool fair fixture did not defer old task");
+ e.task_pool.erase(0);e.task_pool.erase(1);Task fresh;fresh.task_id=2;fresh.t_revealed=20;fresh.locations={7};e.task_pool.emplace(2,fresh);
+ c.schedule(&e,1000,proposed);
+ if(proposed!=std::vector<int>({2,100})||c.stats().fair_assignments!=1)throw std::runtime_error("pool fair fixture did not admit old task");
+ e.curr_task_schedule=proposed;e.goal_locations={{{7,0}},{{20,0}}};for(int r=0;r<2;++r)e.task_pool.at(proposed[r]).agent_assigned=r;
+ std::vector<Action>a;c.plan(&e,1000,a);auto states=step(e,e.curr_states,a);
+ if(states.empty()||states[0].location!=1||states[1].location!=29||c.primary()!=0)throw std::runtime_error("pool fair fixture did not establish a non-primary fair episode");
+ e.curr_states=states;e.curr_timestep=40;Task tempting;tempting.task_id=200;tempting.t_revealed=40;tempting.locations={28};e.task_pool.emplace(200,tempting);
+ c.schedule(&e,1000,proposed);
+ if(proposed!=e.curr_task_schedule||!c.stats().pool_fair_protected||c.stats().pool_exchanges)throw std::runtime_error("pool exchange redirected a fair admission toward a cheaper pickup");
+ unsetenv("CGAR_REASSIGN_POOL");std::cout<<"POOL_EXCHANGE_FAIR_ADMISSION passed attractive_alternative=1 non_primary_fair_episode=1\n";
+}
+
 void oriented_distances() {
  const int rows=4,cols=5;std::vector<int> map={0,0,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0,0,1,1,1};
  const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;
@@ -1794,4 +1864,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

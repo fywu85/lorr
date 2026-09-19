@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 13:55:28 UTC.
+Updated: 2026-09-19 14:24:43 UTC.
 
-**Best observed full run: 135,177 completed tasks** — refresh512 with strict wait turns, seed 0. Its two-seed mean is **134,424.5**, slightly below ordinary refresh512 on the same seeds. Ordinary refresh is now confirmed on **all six seeds (0–5)**: **134,590.3 mean**, range **134,061–134,966**, with no deadline or memory failures. The throughput target remains unmet.
+**Best observed full run: 136,149 completed tasks** — direct-cost dispatch with pickup weight5, seed0. **This policy is not promoted:** seed2 collapses to52,444 despite valid decisions. The two-owner transaction pass reaches135,357 and improves the two-seed mean by0.339%; its remaining four seeds are running. Ordinary refresh remains the configuration confirmed on **all six seeds (0–5)**: **134,590.3 mean**, range **134,061–134,966**, with no deadline or memory failures. The throughput target remains unmet.
 
-The local KittyKnight reference is **152,981**, so the experimental peak is **11.64% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**, so the experimental peak is **11.00% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -35,6 +35,8 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 10:49:30 | 134,511 | Learned flow, refresh every 512 / 0 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-first-pair-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seed 0 only |
 | 2026-09-19 11:26:47 | 134,519 | Learned flow, refresh every 512 / 2 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-full-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seeds 0/2 confirmed |
 | 2026-09-19 12:37:41 | 135,177 | Refresh512 + strict wait turns /0 | [846360e](https://github.com/fywu85/lorr/commit/846360ec9f8f0fddbd2d5d52544113e799945f43) | [data](experiments/construction-20260918/results/strict-wait-turn-full-v32/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v32/) · mixed two-seed effect |
+| 2026-09-19 14:13:43 | 135,357 | Refresh512 + two-owner transactions /2 | [45ebea2](https://github.com/fywu85/lorr/commit/45ebea2680e393a1e3ae060f29194b494bedc254) | [data](experiments/construction-20260918/results/temporal-transaction-full-v36/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v36/) · positive two-seed mean; confirmation running |
+| 2026-09-19 14:19:27 | 136,149 | Direct cost + pickup weight5 /0 | [348b92f](https://github.com/fywu85/lorr/commit/348b92fd27b528a71c956d09d638cc40ebe33e0c) | [data](experiments/construction-20260918/results/flow-refresh-pickup-full-v33/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v33/) · not robust: seed2 collapses |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -50,12 +52,14 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Refresh every 1,024 | Seeds 0/2: 133,652 / 131,316; mean 132,484 | Both recover steady final-window throughput, but interval 512 wins both full totals. |
 | Frozen flow with warm reuse | Seeds 0/2: 123,373 / 123,251; mean 123,312 | Recovers seed 2 without updating the field; below refresh512 on both tested seeds. |
 | Gentler frozen-flow penalties | Scale4 seeds0/2: 121,812 /119,927; scale8: 119,337 /117,897 | Both recover seed2, but lower healthy-seed throughput and remain below refresh512. |
-| Strict wait turns + refresh512 | Seeds0/2: **135,177 /133,672**, mean134,424.5; all decisions valid | New single-run peak; mean is0.067% below ordinary refresh on these seeds. No additive gain established. |
+| Strict wait turns + refresh512 | Seeds0/2: **135,177 /133,672**, mean134,424.5; all decisions valid | Historical single-run peak; mean is0.067% below ordinary refresh on these seeds. No additive gain established. |
 | Refresh512 + warm reuse | Seeds0/2: 134,997 /134,794; mean134,895.5 | Small positive paired effect (+0.283%); broader confirmation pending. Refresh256 slightly loses on both seeds. |
 | Cache-only resets | Four strict-mode/seed contrasts: actual refresh beats cache-only every time | Actual traffic-cost updates add8.74–9.84% above cache-only in healthy controls; legacy seed2 still deteriorates with cache-only. [Evidence](experiments/construction-20260918/results/flow-cache-only-full-v33/causal-comparison.json). |
 | Additional parallel search | Four4M workers:134,975 /134,603, mean134,789 | Only+0.204% over one worker; four1M workers collapse despite valid decisions. [Full evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json). |
 | Gentler refreshed costs | Scale2 mean132,957; scale4 mean130,823.5 | Lose1.16% /2.74% to ordinary refresh512; not promoted. |
 | Direct-cost dispatch | Seeds 0/2: 131,199 / 130,947; mean 131,073 | Loses 2.559%; chain refinement leaves both trajectories unchanged. Shorter loaded chains accompany about 17% more empty robot-steps. [Evidence](experiments/construction-20260918/results/flow-refresh-dispatch-full-v33/comparison.json). |
+| Two-owner temporal transactions | Seeds0/2:134,584 /135,357, mean134,970.5 | +0.339% versus disabled. One-owner mean134,867.5 (+0.262%). Remaining four seeds running; not yet promoted. [Evidence](experiments/construction-20260918/results/temporal-transaction-full-v36/comparison.json). |
+| Direct cost, pickup weights3/5 | Weight3:134,397 /134,194; weight5:136,149 /52,444 | Weight3 loses0.163%. Weight5 seed2 collapses to4,447 tasks in the final window. Historical peak retained; both rejected. [Evidence](experiments/construction-20260918/results/flow-refresh-pickup-full-v33/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 

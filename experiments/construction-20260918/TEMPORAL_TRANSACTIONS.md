@@ -50,7 +50,26 @@ Full **8898717 / 8898718** compares disabled, one-owner and two-owner modes on
 seeds 0/2, all 5,000 steps. Six independent instances run on exclusive research50
 with 24 physical EPYC9354 cores and 72 GiB aggregate reservation. Each planner
 uses four disjoint cores, complete one-second decisions and its own 32 GB RSS
-validity limit. No full outcome is available yet.
+validity limit. All six full outcomes are now independently analyzed and valid.
+
+| Owners | Seed0 | Seed2 | Mean | Versus disabled |
+|---|---:|---:|---:|---:|
+| Disabled | 134,511 | 134,519 | 134,515 | — |
+| One | 134,661 | 135,074 | 134,867.5 | +0.262% |
+| Two | 134,584 | 135,357 | 134,970.5 | +0.339% |
+
+Both disabled trajectories exactly reproduce v30. Two-owner versus one-owner
+adds only0.0764% to the paired mean and loses on seed0. One-owner itself adds
+sibling backtracking, recursive relocation and terminal acceptance, so its
+contrast with disabled is not solely an owner-count comparison. Sampled passes
+use the complete65,536-candidate allowance and commit roughly0.88–2.28 roots
+per step. Mean sampled pass cost is3.59–4.25ms. These samples do not count every
+step. See [comparison](results/temporal-transaction-full-v36/comparison.json).
+
+All entries stay below0.780seconds and RSS below11.78GB. The new peak135,357
+is from exact production source45ebea2, finished14:13:43UTC. Full confirmation
+on seeds1/3/4/5 is running as8898725 /8898726, eight concurrent cases with the
+matched disabled control. No six-seed improvement claim yet.
 
 [Source archive](build-provenance/v36/),
 [regression and screen evidence](results/temporal-transaction-screen-v36/),

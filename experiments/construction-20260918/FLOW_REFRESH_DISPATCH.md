@@ -60,3 +60,13 @@ eight seed0/2 cases concurrently on32 physical cores under128 GiB aggregate
 reservation. Each planner has four disjoint cores and individual1s/32GB checks.
 [Pickup profiles](flow-refresh-pickup-variants.json),
 [pickup screens](results/flow-refresh-pickup-screen-v33/).
+
+
+The full pickup-weight matrix8898721/8898722 is also complete. All eight cases
+are valid; all four weight1 control trajectories exactly reproduce the preceding
+factorial. Direct-cost weight3 gives134397/134194 (mean134295.5), still0.163%
+below the HRRN baseline. Weight5 gives136149 on seed0 but collapses on seed2
+to52444, including only4447 tasks in the final1000 steps. Both are rejected.
+The seed0 peak is retained with its completion timestamp and exact v33 source
+commit in WAREHOUSE_PROGRESS.md; it is not a robust leading policy.
+[Full pickup evidence](results/flow-refresh-pickup-full-v33/comparison.json).

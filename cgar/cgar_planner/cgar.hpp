@@ -258,6 +258,10 @@ struct Stats {
     long long reassign_pairs = 0, reassign_swaps = 0, reassign_saving = 0;
     long long reassign_table_pairs = 0, reassign_manhattan_pairs = 0;
     long long reassign_primary_protected = 0, reassign_recovery_protected = 0, reassign_fair_protected = 0;
+    long long pool_passes = 0, pool_eligible = 0, pool_sources = 0, pool_nodes = 0, pool_pairs = 0;
+    long long pool_exchanges = 0, pool_pickup_saving = 0, pool_chain_delta = 0, pool_total_saving = 0;
+    long long pool_missing_pickup = 0, pool_missing_chain = 0, pool_short_pickup = 0;
+    long long pool_primary_protected = 0, pool_recovery_protected = 0, pool_fair_protected = 0;
 };
 
 class Cgar {
@@ -318,7 +322,14 @@ private:
     int neighbor(int cell, int dir) const;
     bool adjacent_to_pocket(int cell, int pocket) const;
     int task_chain_cost(int task_id);
+    struct UnopenedCandidates {
+        std::vector<int> robots;
+        long long primary = 0, recovery = 0, fair = 0;
+    };
+    void prune_reassignment_records();
+    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only) const;
     void reassign_unopened(std::vector<int>& proposed);
+    void exchange_unopened_with_pool(std::vector<int>& proposed);
     void log_summary();
     void record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
                          const std::vector<char>& commitments);
@@ -391,7 +402,7 @@ private:
     int fallback_samples_ = 64;
     int global_samples_ = 0;
     int pickup_weight_ = 1;
-    bool reassign_ = false;
+    bool reassign_ = false, reassign_pool_ = false;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;
@@ -401,7 +412,7 @@ private:
     std::unordered_map<int, int> chain_cost_;
     ChainCostCache refined_chain_cost_;
     long long regular_admissions_ = 0;
-    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0;
+    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0, pool_reassign_cursor_ = 0;
     std::unordered_set<int> reassigned_tasks_, fair_tasks_;
     std::vector<int> last_reassignment_;
 };

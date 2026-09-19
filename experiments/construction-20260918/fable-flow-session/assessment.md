@@ -111,3 +111,27 @@ this review ran. Its immutable input, separate reservations, undo journal, locke
 placed robots and complete-score acceptance address the atomicity concerns.
 One-owner and two-owner arms will measure the neighborhood effect directly;
 no throughput result is inferred from kernel tests or the advisor's prediction.
+
+
+Turn06 completes in the SAME session: one turn,391.765seconds,$10.10757575,
+29493payload bytes and five changed/new source excerpts. The read-only source
+review finds no counterexample to transactional atomicity, reservation ownership,
+undo, fixed protection or fail-closed work/deadline behavior. It did not execute
+code. It correctly distinguishes the one-owner transaction neighborhood from
+the earlier one-owner repair: sibling backtracking, terminal aggregate acceptance
+and recursion all change. Only the branch2/branch1 contrast isolates owner count.
+
+The suggested comparison of a reconstructed score against a freshly summed
+baseline avoids a possible fractional-rank floating-point drift mismatch. No
+counterexample was supplied, and the tested equal-weight integer scores are
+exact. Add a meaningful fractional-power regression before changing that check.
+Multi-root commit/rollback/unlock coverage, edge-only conflicts and deeper size
+cutoffs are useful next regression targets. The overlap estimate for root rank
+windows is approximate; changing rank order prevents interpreting it as an exact
+per-robot waiting bound. Optional pruning/cursor changes remain hypotheses.
+
+The full transaction result is small: one-owner mean+0.262%, two-owner+0.339%;
+two-owner loses to one-owner on seed0. The remaining four seeds are being tested.
+The pickup5 seed0 record136149 also accompanies a seed2 late collapse to52444;
+it cannot establish a robust pickup-weight benefit. Neither local scalar gains
+nor independent pickup guards establish full-run system throughput or liveness.

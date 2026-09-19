@@ -36,50 +36,43 @@ The goal remains active. Maintain ../../WAREHOUSE_PROGRESS.md after full results
   completed chain lengths 242.32 versus 233.84. Cohorts differ, so this is not
   a causal decomposition. Dwell concentration does not justify new cell tolls.
 
-## Running work at the 13:55 UTC checkpoint
+## Current checkpoint: 14:28 UTC
 
-- **8898717 / 8898718**: v36 transaction repair, disabled / one-owner /
-  two-owner, seeds 0/2. All six full cases run concurrently on exclusive
-  research50, 24 physical cores / 72 GiB aggregate. Each has four disjoint cores
-  and individual 1-second / 32 GB checks. Build8898706 and screen8898715 pass.
-  Immutable input, separate reservation table, bounded backtracking and exact
-  rollback; no partial result on deadline. See TEMPORAL_TRANSACTIONS.md.
-- **8898721 / 8898722**: pickup-weight full matrix on frozen v33. HRRN1/weight1,
-  direct-cost weights1/3/5, seeds0/2; eight concurrent cases, 32 physical cores
-  and 128 GiB aggregate reservation. Screen8898719 passes all four cases,
-  including both exact controls; maximum entry is 0.8084 seconds.
-
-All earlier matrices are fully analyzed. The HRRN/refinement matrix loses with
-HRRN disabled: 131199/130947 versus 134511/134519. Refinement makes no change to
-both direct-cost trajectories and only a three-task change under HRRN. The travel
-audit8898716 finds shorter completed chains235.27 versus242.32, but 17–18% more
-empty robot-steps. Test stronger pickup weighting before crediting a shorter chain
-mix as a throughput improvement. HRRN remains enabled in the leading policy.
-
-Expanded v35 full audit8898688/8898689 is complete and exactly reproduces both
-baseline trajectories. Final-window physical opportunities per step are roughly
-4 free, 350–356 one-owner, 171–175 two-owner and 44–47 three-plus. No new best.
-No C++ build remains active. Every running benchmark uses its own frozen binary.
+- Transaction full8898717/8898718 is complete, all six cases valid and both
+  disabled trajectories exact. One-owner mean134867.5 (+0.262%); two-owner
+  mean134970.5 (+0.339%). Two-owner seed2 creates135357 at14:13:43UTC.
+  Remaining seeds1/3/4/5 are running as **8898725 /8898726**, two profiles,
+  eight concurrent cases,32physical cores/128GiB aggregate, exclusive research46.
+- Pickup full8898721/8898722 is complete. All eight cases valid, four weight1
+  control hashes exact. Weight3 mean134295.5 slightly loses. Weight5 seed0
+  creates136149 at14:19:27UTC, but seed2 collapses to52444 (final4447).
+  Neither weight is promoted. The chronological record retains both new peaks.
+- Optional pool exchangev37 is implemented. Build8898723 and screen8898727 pass;
+  disabled prefix is exact. Complete-source archive verified. Full **8898728 /8898729**
+  compares disabled/exchange/exchange+two-owner on seeds0/2 concurrently. Four
+  physical cores/process,72GiB aggregate, individual1-second/32GBchecks.
+  See POOL_EXCHANGE.md for cost guards, protection, release and retarget semantics.
+- Fable turn06 is complete, reviewed source45ebea2, same UUID. No concrete
+  atomicity counterexample. Potential fractional-score drift and multi-root
+  coverage need independent tests; no proven defect in tested integer profile.
+  Preserve and assess the visible review as recorded in fable-flow-session/.
 
 ## Next decisions
 
-1. Finish the one-owner/two-owner transaction and pickup-weight matrices. Verify
-   all full trajectories, complete timing samples, memory, task-age tails and
-   final windows. Keep the current leading configuration until an improvement
-   survives appropriate seed confirmation.
-2. Develop a bounded exchange of an en-route robot's unopened task with an
-   available task if the pickup results still leave this useful. Require a pickup
-   saving independently of chain cost, and a non-worsening total estimate. Use
-   consistent complete core distances; never compare Manhattan to exact BFS.
-   Preserve primary, recovery, pocket, capacity and fair-admission protections,
-   original reveal times, robot cooldowns and a finite release limit per task.
-   Account for the released task remaining in the pool. No pool exchange is
-   currently implemented. See Fable turn05 and its independent assessment.
-3. Get a source review of the implemented transaction logic in the SAME Fable
-   session, supplying only new/changed files and the relevant regression excerpt.
-4. Keep full horizons for quality claims: both frozen flow and reduced search
-   can collapse late. More CPU alone has not closed the gap. Do not claim that
-   every alternative search neighborhood is saturated.
+1. Finish transaction six-seed confirmation and full exchange evaluation.
+   Verify complete trajectory hashes, timing, RSS, final windows, task ages and
+   release statistics. No short-prefix rankings or single-seed promotion.
+2. Get a read-only review of the new pool pass in the SAME Fable session, sending
+   only changed excerpts and completed-result corrections. Preserve source-based
+   critique separately from performance predictions and unproven liveness claims.
+3. Add meaningful transaction multi-root/unlock/rollback, edge-only conflict and
+   fractional-weight regressions before altering the proposed floating-point
+   comparison. Existing frozen binaries are unaffected by future source edits.
+4. Investigate any exchange benefit or late failure before increasing search work.
+   More CPU alone has yielded small gains; this does not prove all neighborhoods
+   are saturated. Pickup5 collapse reinforces the need for full horizons.
+5. Maintain ../../WAREHOUSE_PROGRESS.md and exact commit-linked source provenance;
+   the best robust six-seed policy remains ordinary refresh512, mean134590.3.
 
 ## Persistent Fable consultation
 
@@ -89,7 +82,7 @@ Standing explicit user permission covers relevant project information and source
 Prepare bounded, hashed payloads; resume the existing session and send changed
 source excerpts only. No tools or edits are allowed in the consultation. Raw
 protocol/session data stays under ignored runs/. Archive visible reviews and
-usage/status metadata only. Turns 01–05 complete. Independently assess advice and predictions; reviews are
+usage/status metadata only. Turns 01–06 complete. Independently assess advice and predictions; reviews are
 not a substitute for complete benchmark and correctness evidence.
 
 
@@ -101,3 +94,4 @@ established. See fable-flow-session/assessment.md for the independent assessment
 The existing TaskManager validates releasing unopened tasks and preserves their
 reveal times; changing started tasks is rejected. A future pool pass must also
 preserve primary, recovery, pocket, fair-admission and finite-retargeting rules.
+

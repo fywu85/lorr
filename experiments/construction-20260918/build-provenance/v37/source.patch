@@ -1,0 +1,405 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -755,6 +755,9 @@
+     stable_stall_basis_ = env_int("CGAR_STABLE_STALL_BASIS", 0) != 0;
+     repair_fallback_ = env_int("CGAR_FALLBACK_REPAIR", 1) != 0;
+     reassign_ = env_int("CGAR_REASSIGN", 0) != 0;
++    const int reassign_pool = env_int("CGAR_REASSIGN_POOL", 0);
++    if (reassign_pool < 0 || reassign_pool > 1) throw std::invalid_argument("pool reassignment must be boolean");
++    reassign_pool_ = reassign_pool != 0;
+     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
+     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
+     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
+@@ -810,6 +813,7 @@
+     free_tasks_.clear();
+     chain_cost_.clear();
+     last_reassignment_.assign(n_, -20);
++    pool_reassign_cursor_ = 0;
+     if (pibt_reference_) {
+         pibt_elapsed_.assign(n_, 0); pibt_initial_distance_.assign(n_, 0);
+         pibt_previous_goal_.assign(n_, -1); pibt_tie_.resize(n_);
+@@ -1678,6 +1682,11 @@
+                 stats_.reassign_sources, stats_.reassign_nodes, stats_.reassign_pairs, stats_.reassign_swaps,
+                 stats_.reassign_saving, stats_.reassign_table_pairs, stats_.reassign_manhattan_pairs,
+                 stats_.reassign_primary_protected, stats_.reassign_recovery_protected, stats_.reassign_fair_protected);
++    std::printf("[cgar-pool-exchange] t=%d enabled=%d passes=%lld eligible=%lld sources=%lld nodes=%lld pairs=%lld exchanges=%lld pickup_saving=%lld chain_delta=%lld total_saving=%lld missing_pickup=%lld missing_chain=%lld short_pickup=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld\n",
++        env_->curr_timestep, reassign_pool_, stats_.pool_passes, stats_.pool_eligible, stats_.pool_sources,
++        stats_.pool_nodes, stats_.pool_pairs, stats_.pool_exchanges, stats_.pool_pickup_saving,
++        stats_.pool_chain_delta, stats_.pool_total_saving, stats_.pool_missing_pickup, stats_.pool_missing_chain,
++        stats_.pool_short_pickup, stats_.pool_primary_protected, stats_.pool_recovery_protected, stats_.pool_fair_protected);
+     std::fflush(stdout);
+ }
+ 
+@@ -1706,14 +1715,7 @@
+     return cost;
+ }
+ 
+-// A fixed-work swap pass over unopened, already assigned tasks. No task is
+-// dropped, and a task can be retargeted at most once before its first pickup.
+-void Cgar::reassign_unopened(std::vector<int>& proposed) {
+-    constexpr int interval = 10, source_limit = 256, local_limit = 16;
+-    constexpr int node_limit = 2048, global_samples = 16, cooldown = 20;
+-    const int now = env_->curr_timestep;
+-    if (!reassign_ || now % interval != 0) return;
+-    ++stats_.reassign_passes;
++void Cgar::prune_reassignment_records() {
+     auto prune = [&](std::unordered_set<int>& records) {
+         for (auto it = records.begin(); it != records.end();) {
+             const auto task = env_->task_pool.find(*it);
+@@ -1723,6 +1725,11 @@
+     };
+     prune(reassigned_tasks_);
+     prune(fair_tasks_);
++}
++
++Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only) const {
++    constexpr int cooldown = 20;
++    const int now = env_->curr_timestep;
+     // Also preserve the next pending primary if the previous one just finished.
+     int oldest = -1;
+     for (int i = 0; i < n_; ++i) {
+@@ -1733,14 +1740,14 @@
+             env_->curr_states[i].location == task->second.locations.front()) continue;
+         if (oldest < 0 || agent.ticket < agents_[oldest].ticket) oldest = i;
+     }
+-    std::vector<int> eligible;
++    UnopenedCandidates result;
+     for (int i = 0; i < n_; ++i) {
+         check_deadline(deadline_, "reassignment_eligibility");
+-        if (i == primary_ || i == oldest) { ++stats_.reassign_primary_protected; continue; }
++        if (i == primary_ || i == oldest) { ++result.primary; continue; }
+         const Agent& agent = agents_[i];
+         const int cell = env_->curr_states[i].location;
+         if (agent.in_txn || std::binary_search(txn_cells_.begin(), txn_cells_.end(), cell)) {
+-            ++stats_.reassign_recovery_protected; continue;
++            ++result.recovery; continue;
+         }
+         if (parked_[i] || agent.lock >= 0 || !cert_.core[cell] ||
+             (agent.committed >= 0 && agent.committed != cell) || now - last_reassignment_[i] < cooldown) continue;
+@@ -1749,10 +1756,28 @@
+         const Task& task = found->second;
+         if (task.idx_next_loc != 0 || task.locations.empty() || !cert_.core[task.locations.front()] ||
+             cell == task.locations.front() || !eligible_task(task)) continue;
+-        if (fair_tasks_.count(proposed[i])) { ++stats_.reassign_fair_protected; continue; }
++        if (fair_tasks_.count(proposed[i])) { ++result.fair; continue; }
+         if (reassigned_tasks_.count(proposed[i])) continue;
+-        eligible.push_back(i);
+-    }
++        if (existing_only && (agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket)) continue;
++        result.robots.push_back(i);
++    }
++    return result;
++}
++
++// A fixed-work swap pass over unopened, already assigned tasks. No task is
++// dropped, and a task can be retargeted at most once before its first pickup.
++void Cgar::reassign_unopened(std::vector<int>& proposed) {
++    constexpr int interval = 10, source_limit = 256, local_limit = 16;
++    constexpr int node_limit = 2048, global_samples = 16, cooldown = 20;
++    const int now = env_->curr_timestep;
++    if (!reassign_ || now % interval != 0) return;
++    ++stats_.reassign_passes;
++    prune_reassignment_records();
++    auto candidates = unopened_candidates(proposed, false);
++    stats_.reassign_primary_protected += candidates.primary;
++    stats_.reassign_recovery_protected += candidates.recovery;
++    stats_.reassign_fair_protected += candidates.fair;
++    const auto& eligible = candidates.robots;
+     stats_.reassign_eligible += eligible.size();
+     if (eligible.size() < 2) { check_deadline(deadline_, "reassignment_empty"); return; }
+     // Index pickup locations with linked lists, avoiding per-cell heap allocation.
+@@ -1839,6 +1864,138 @@
+     check_deadline(deadline_, "reassignment_complete");
+ }
+ 
++// Exchange an existing unopened assignment with an available task. Pickup
++// savings are required independently of chain length; released tasks retain
++// their original metadata and remain available to ordinary scheduling.
++void Cgar::exchange_unopened_with_pool(std::vector<int>& proposed) {
++    constexpr int interval = 10, source_limit = 256, local_limit = 16;
++    constexpr int node_limit = 2048, exchange_limit = 32;
++    const int now = env_->curr_timestep;
++    if (!reassign_pool_ || now % interval != 0) return;
++    ++stats_.pool_passes;
++    prune_reassignment_records();
++    const auto candidates = unopened_candidates(proposed, true);
++    stats_.pool_primary_protected += candidates.primary;
++    stats_.pool_recovery_protected += candidates.recovery;
++    stats_.pool_fair_protected += candidates.fair;
++    const auto& eligible = candidates.robots;
++    stats_.pool_eligible += eligible.size();
++    if (eligible.empty()) { check_deadline(deadline_, "pool_exchange_empty"); return; }
++
++    // Scheduling may already have assigned tasks this call. Proposed, rather
++    // than the simulator's previous agent_assigned fields, defines availability.
++    std::unordered_set<int> assigned(proposed.begin(), proposed.end());
++    std::vector<int> available;
++    for (const auto& [id, task] : env_->task_pool) {
++        check_deadline(deadline_, "pool_exchange_index");
++        if (!assigned.count(id) && !reassigned_tasks_.count(id) && task.idx_next_loc == 0 &&
++            !task.locations.empty() && cert_.core[task.locations.front()] && eligible_task(task))
++            available.push_back(id);
++    }
++    std::sort(available.begin(), available.end());
++    if (available.empty()) { check_deadline(deadline_, "pool_exchange_no_tasks"); return; }
++    std::vector<int> head(cert_.free.size(), -1), link(available.size(), -1);
++    for (int k = int(available.size()) - 1; k >= 0; --k) {
++        const int cell = env_->task_pool.at(available[k]).locations.front();
++        link[k] = head[cell]; head[cell] = k;
++    }
++
++    // Read only complete cached tables: no speculative table construction,
++    // partial BFS chain estimates, mixed Manhattan scores or LRU promotion.
++    std::unordered_map<int, int> chains;
++    auto chain = [&](int id) {
++        const auto found = chains.find(id);
++        if (found != chains.end()) return found->second;
++        const auto& locations = env_->task_pool.at(id).locations;
++        long long total = 0;
++        for (size_t k = 1; k < locations.size(); ++k) {
++            check_deadline(deadline_, "pool_exchange_chain");
++            const auto* table = oracle_.peek(locations[k]);
++            if (!table) { total = kFar; break; }
++            const int distance = oracle_.distance_from(*table, locations[k - 1]);
++            if (distance >= kFar) { total = kFar; break; }
++            total += distance;
++            if (total >= kFar) { total = kFar; break; }
++        }
++        return chains.emplace(id, int(total)).first->second;
++    };
++    struct Pair { int robot, task, pickup_saving, old_chain, new_chain; long long new_total; };
++    std::vector<Pair> pairs;
++    std::vector<int> seen(cert_.free.size(), 0), distances(cert_.free.size(), 0), queue;
++    queue.reserve(node_limit * 2);
++    int generation = 0;
++    const size_t start = pool_reassign_cursor_ % eligible.size();
++    const size_t sources = std::min<size_t>(source_limit, eligible.size());
++    pool_reassign_cursor_ += sources;
++    for (size_t offset = 0; offset < sources; ++offset) {
++        check_deadline(deadline_, "pool_exchange_source");
++        const int r = eligible[(start + offset) % eligible.size()];
++        ++stats_.pool_sources;
++        const auto& old = env_->task_pool.at(proposed[r]);
++        const auto* pickup_table = oracle_.peek(old.locations.front());
++        if (!pickup_table) { ++stats_.pool_missing_pickup; continue; }
++        const int from = env_->curr_states[r].location;
++        const int old_pickup = oracle_.distance_from(*pickup_table, from);
++        if (old_pickup >= kFar) { ++stats_.pool_missing_pickup; continue; }
++        const int margin = std::max(4, (old_pickup + 9) / 10);
++        if (old_pickup < margin) { ++stats_.pool_short_pickup; continue; }
++        const int old_chain = chain(proposed[r]);
++        if (old_chain >= kFar) { ++stats_.pool_missing_chain; continue; }
++        const int radius = old_pickup - margin;
++        int considered = 0;
++        queue.assign(1, from); seen[from] = ++generation; distances[from] = 0;
++        for (size_t pos = 0; pos < queue.size() && pos < node_limit && considered < local_limit; ++pos) {
++            if ((pos & 63) == 0) check_deadline(deadline_, "pool_exchange_search");
++            const int cell = queue[pos], distance = distances[cell];
++            ++stats_.pool_nodes;
++            for (int k = head[cell]; k >= 0 && considered < local_limit; k = link[k]) {
++                ++considered; ++stats_.pool_pairs;
++                const int id = available[k], new_chain = chain(id);
++                if (new_chain >= kFar) { ++stats_.pool_missing_chain; continue; }
++                const long long new_total = static_cast<long long>(distance) + new_chain;
++                if (new_total > static_cast<long long>(old_pickup) + old_chain) continue;
++                pairs.push_back({r, k, old_pickup - distance, old_chain, new_chain, new_total});
++            }
++            if (distance == radius) continue;
++            for (int d = 0; d < 4; ++d) {
++                const int next = neighbor(cell, d);
++                // Exactly mirror DistanceOracle's domain for a CORE goal,
++                // including unclassified floor (pocket == -1). FIFO discovery
++                // gives exact distances to reached candidates despite the cap.
++                if (next < 0 || !cert_.free[next] || seen[next] == generation ||
++                    (!cert_.core[next] && cert_.pocket[next] != -1)) continue;
++                seen[next] = generation; distances[next] = distance + 1; queue.push_back(next);
++            }
++        }
++    }
++    std::sort(pairs.begin(), pairs.end(), [](const Pair& a, const Pair& b) {
++        if (a.pickup_saving != b.pickup_saving) return a.pickup_saving > b.pickup_saving;
++        if (a.new_total != b.new_total) return a.new_total < b.new_total;
++        if (a.task != b.task) return a.task < b.task;
++        return a.robot < b.robot;
++    });
++    std::vector<char> used_robots(n_, false), used_tasks(available.size(), false);
++    int accepted = 0;
++    for (const Pair& pair : pairs) {
++        check_deadline(deadline_, "pool_exchange_commit");
++        if (accepted == exchange_limit) break;
++        if (used_robots[pair.robot] || used_tasks[pair.task]) continue;
++        const int old_id = proposed[pair.robot], new_id = available[pair.task];
++        // Both sides have a finite retarget limit. The released task is not
++        // inserted into this call's candidate snapshot; it stays in task_pool.
++        reassigned_tasks_.insert(old_id); reassigned_tasks_.insert(new_id);
++        proposed[pair.robot] = new_id;
++        last_reassignment_[pair.robot] = now;
++        agents_[pair.robot].committed = -1; agents_[pair.robot].commit_age = 0;
++        used_robots[pair.robot] = used_tasks[pair.task] = true;
++        ++accepted; ++stats_.pool_exchanges;
++        stats_.pool_pickup_saving += pair.pickup_saving;
++        stats_.pool_chain_delta += pair.new_chain - pair.old_chain;
++        stats_.pool_total_saving += pair.pickup_saving + pair.old_chain - pair.new_chain;
++    }
++    check_deadline(deadline_, "pool_exchange_complete");
++}
++
+ // Sparse whole-chain HRRN: nearby task candidates for every idle robot, plus an
+ // unpruned oldest-task admission. A bounded pair store never truncates the task
+ // pool by ID; unmatched robots get a fresh search over the remaining tasks.
+@@ -1867,6 +2024,7 @@
+     for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i]) robots.push_back(i);
+     if (robots.empty() || free_tasks_.empty()) {
+         reassign_unopened(proposed);
++        exchange_unopened_with_pool(proposed);
+         check_deadline(deadline_, "empty_schedule"); return;
+     }
+     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
+@@ -1957,7 +2115,7 @@
+         }
+         if (found) {
+             assign(best);
+-            if (reassign_) fair_tasks_.insert(tasks[best.task].id);
++            if (reassign_ || reassign_pool_) fair_tasks_.insert(tasks[best.task].id);
+             ++stats_.fair_assignments;
+             regular_admissions_ = 0;
+         }
+@@ -2084,6 +2242,7 @@
+         ++regular_admissions_;
+     }
+     reassign_unopened(proposed);
++    exchange_unopened_with_pool(proposed);
+     check_deadline(deadline_, "scheduling_complete");
+ }
+ 
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -258,6 +258,10 @@
+     long long reassign_pairs = 0, reassign_swaps = 0, reassign_saving = 0;
+     long long reassign_table_pairs = 0, reassign_manhattan_pairs = 0;
+     long long reassign_primary_protected = 0, reassign_recovery_protected = 0, reassign_fair_protected = 0;
++    long long pool_passes = 0, pool_eligible = 0, pool_sources = 0, pool_nodes = 0, pool_pairs = 0;
++    long long pool_exchanges = 0, pool_pickup_saving = 0, pool_chain_delta = 0, pool_total_saving = 0;
++    long long pool_missing_pickup = 0, pool_missing_chain = 0, pool_short_pickup = 0;
++    long long pool_primary_protected = 0, pool_recovery_protected = 0, pool_fair_protected = 0;
+ };
+ 
+ class Cgar {
+@@ -318,7 +322,14 @@
+     int neighbor(int cell, int dir) const;
+     bool adjacent_to_pocket(int cell, int pocket) const;
+     int task_chain_cost(int task_id);
++    struct UnopenedCandidates {
++        std::vector<int> robots;
++        long long primary = 0, recovery = 0, fair = 0;
++    };
++    void prune_reassignment_records();
++    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only) const;
+     void reassign_unopened(std::vector<int>& proposed);
++    void exchange_unopened_with_pool(std::vector<int>& proposed);
+     void log_summary();
+     void record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
+                          const std::vector<char>& commitments);
+@@ -391,7 +402,7 @@
+     int fallback_samples_ = 64;
+     int global_samples_ = 0;
+     int pickup_weight_ = 1;
+-    bool reassign_ = false;
++    bool reassign_ = false, reassign_pool_ = false;
+     int primary_ = -1;
+     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
+     Clock::time_point deadline_, distance_deadline_;
+@@ -401,7 +412,7 @@
+     std::unordered_map<int, int> chain_cost_;
+     ChainCostCache refined_chain_cost_;
+     long long regular_admissions_ = 0;
+-    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0;
++    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0, pool_reassign_cursor_ = 0;
+     std::unordered_set<int> reassigned_tasks_, fair_tasks_;
+     std::vector<int> last_reassignment_;
+ };
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -372,6 +372,76 @@
+  if(proposed!=e.curr_task_schedule||!c.stats().reassign_fair_protected)throw std::runtime_error("fair admission was redirected by a cheaper swap");
+  unsetenv("CGAR_REASSIGN");std::cout<<"REASSIGNMENT_FAIR_ADMISSION passed\n";
+ }
++SharedEnvironment pool_exchange_fixture() {
++ SharedEnvironment e;e.num_of_agents=4;e.rows=3;e.cols=20;e.map.assign(60,0);e.curr_timestep=0;
++ e.curr_states={State(0,0,0),State(20,0,0),State(39,0,2),State(59,0,2)};
++ e.curr_task_schedule={10,11,12,13};e.goal_locations={{{15,0}},{{35,0}},{{23,0}},{{36,0}}};
++ const std::vector<std::vector<int>> stops={{15},{35,36},{40,23},{41,36}};
++ for(int r=0;r<4;++r){Task t;t.task_id=10+r;t.t_revealed=-7;t.agent_assigned=r;t.locations=stops[r];t.idx_next_loc=r>=2?1:0;e.task_pool.emplace(t.task_id,t);}
++ Task available;available.task_id=100;available.t_revealed=-3;available.locations={22,23};e.task_pool.emplace(100,available);
++ return e;
++}
++void pool_exchange_regression() {
++ auto prepare=[](Cgar& c,SharedEnvironment& e){
++  c.initialize(&e,1000);std::vector<Action>a;c.plan(&e,1000,a);
++  auto states=step(e,e.curr_states,a);if(states.empty()||states[1].location!=21)throw std::runtime_error("pool exchange fixture did not advance to expected source");
++  e.curr_states=states;e.curr_timestep=10;
++ };
++ for(bool enabled:{false,true}){
++  setenv("CGAR_REASSIGN_POOL",enabled?"1":"0",1);auto e=pool_exchange_fixture();Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);
++  const auto expected=enabled?std::vector<int>{10,100,12,13}:e.curr_task_schedule;
++  if(proposed!=expected||c.stats().pool_exchanges!=int(enabled)||c.stats().pool_pickup_saving!=13*int(enabled)||c.stats().pool_total_saving!=13*int(enabled))
++   throw std::runtime_error("pool exchange did not preserve disabled behavior or save independently counted pickup distance");
++  if(e.curr_task_schedule!=std::vector<int>({10,11,12,13})||e.task_pool.at(11).agent_assigned!=1||e.task_pool.at(11).t_revealed!=-7||e.task_pool.at(100).agent_assigned!=-1||e.task_pool.at(100).t_revealed!=-3||e.task_pool.size()!=5)
++   throw std::runtime_error("pool exchange mutated simulator state or discarded the released task");
++  if(enabled&&(!c.stats().pool_primary_protected||proposed[2]!=12||proposed[3]!=13))throw std::runtime_error("pool exchange redirected a protected or started task");
++ }
++ setenv("CGAR_REASSIGN_POOL","1",1);
++ for(int mode=0;mode<4;++mode){
++  auto e=pool_exchange_fixture();
++  if(mode==0){e.task_pool.at(11).locations={35,23};e.task_pool.at(100).locations={37};} // cheaper total, worse pickup
++  if(mode==1)e.task_pool.at(100).locations={22,36,15,36}; // better pickup, worse total
++  if(mode==2)e.task_pool.at(100).locations={22,57}; // missing complete chain table
++  if(mode==3)setenv("CGAR_PLAN_TABLES","0",1); // missing incumbent pickup table
++  Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);unsetenv("CGAR_PLAN_TABLES");
++  if(proposed!=e.curr_task_schedule||c.stats().pool_exchanges)throw std::runtime_error("pool exchange accepted missing or non-improving distance evidence");
++  if(mode==2&&!c.stats().pool_missing_chain)throw std::runtime_error("missing pool chain table was not observed");
++  if(mode==3&&!c.stats().pool_missing_pickup)throw std::runtime_error("missing old pickup table was not observed");
++ }
++ // Once-retargeted tasks remain protected after the robot cooldown expires.
++ auto e=pool_exchange_fixture();e.task_pool.at(100).locations={29};Cgar c;prepare(c,e);std::vector<int> proposed;c.schedule(&e,1000,proposed);
++ if(proposed!=std::vector<int>({10,100,12,13})||c.stats().pool_exchanges!=1)throw std::runtime_error("pool retarget-limit fixture did not make its first exchange");
++ e.curr_task_schedule=proposed;e.task_pool.at(11).agent_assigned=-1;e.task_pool.at(100).agent_assigned=1;e.goal_locations[1]={{{29,0}}};e.curr_timestep=11;
++ std::vector<Action>a;c.plan(&e,1000,a);auto states=step(e,e.curr_states,a);
++ if(states.empty()||states[1].location!=22)throw std::runtime_error("pool retarget-limit fixture did not finish its movement commitment");
++ e.curr_states=states;e.curr_timestep=40;Task closer;closer.task_id=101;closer.t_revealed=40;closer.locations={23};e.task_pool.emplace(101,closer);
++ c.schedule(&e,1000,proposed);
++ if(proposed!=e.curr_task_schedule||c.stats().pool_exchanges!=1)throw std::runtime_error("pool exchange repeatedly retargeted an unopened task after cooldown");
++ unsetenv("CGAR_REASSIGN_POOL");
++ for(const char* value:{"-1","2"}){setenv("CGAR_REASSIGN_POOL",value,1);auto invalid=pool_exchange_fixture();bool rejected=false;try{Cgar x;x.initialize(&invalid,1000);}catch(const std::invalid_argument&){rejected=true;}if(!rejected)throw std::runtime_error("pool exchange accepted invalid boolean configuration");}
++ unsetenv("CGAR_REASSIGN_POOL");
++ std::cout<<"POOL_EXCHANGE passed pickup_distance=14->1 chain_distance=1->1 disabled_equivalence=1 independent_pickup_guard=1 total_guard=1 missing_tables=1 started_primary_protected=1 task_age_and_release_preserved=1 finite_retarget=1\n";
++}
++void pool_exchange_fair_admission() {
++ setenv("CGAR_REASSIGN_POOL","1",1);
++ SharedEnvironment e;e.num_of_agents=2;e.rows=2;e.cols=31;e.map.assign(62,0);e.curr_timestep=20;
++ e.curr_states={State(0,0,0),State(30,0,2)};e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
++ for(int i=0;i<2;++i){Task t;t.task_id=i;t.t_revealed=0;t.locations={i*30};e.task_pool.emplace(i,t);}
++ Task old;old.task_id=100;old.t_revealed=-1;old.locations={20};for(int i=0;i<100;++i)old.locations.push_back(i%2?20:7);e.task_pool.emplace(100,old);
++ Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,1000,proposed);
++ if(proposed!=std::vector<int>({0,1}))throw std::runtime_error("pool fair fixture did not defer old task");
++ e.task_pool.erase(0);e.task_pool.erase(1);Task fresh;fresh.task_id=2;fresh.t_revealed=20;fresh.locations={7};e.task_pool.emplace(2,fresh);
++ c.schedule(&e,1000,proposed);
++ if(proposed!=std::vector<int>({2,100})||c.stats().fair_assignments!=1)throw std::runtime_error("pool fair fixture did not admit old task");
++ e.curr_task_schedule=proposed;e.goal_locations={{{7,0}},{{20,0}}};for(int r=0;r<2;++r)e.task_pool.at(proposed[r]).agent_assigned=r;
++ std::vector<Action>a;c.plan(&e,1000,a);auto states=step(e,e.curr_states,a);
++ if(states.empty()||states[0].location!=1||states[1].location!=29||c.primary()!=0)throw std::runtime_error("pool fair fixture did not establish a non-primary fair episode");
++ e.curr_states=states;e.curr_timestep=40;Task tempting;tempting.task_id=200;tempting.t_revealed=40;tempting.locations={28};e.task_pool.emplace(200,tempting);
++ c.schedule(&e,1000,proposed);
++ if(proposed!=e.curr_task_schedule||!c.stats().pool_fair_protected||c.stats().pool_exchanges)throw std::runtime_error("pool exchange redirected a fair admission toward a cheaper pickup");
++ unsetenv("CGAR_REASSIGN_POOL");std::cout<<"POOL_EXCHANGE_FAIR_ADMISSION passed attractive_alternative=1 non_primary_fair_episode=1\n";
++}
++
+ void oriented_distances() {
+  const int rows=4,cols=5;std::vector<int> map={0,0,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0,0,1,1,1};
+  const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;
+@@ -1794,4 +1864,4 @@
+           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+ }
+ 
+-int main(){try{temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
