@@ -1,0 +1,37 @@
+equal_work4m_compact-s0-r0 WAREHOUSE 109244
+guide_unit_h1_work4m-s0-r0 WAREHOUSE 39066
+guide_h2_work4m-s0-r0 WAREHOUSE 42051
+reconnect16_b128_h2_work4m-s0-r0 WAREHOUSE 28071
+refine64_reconnect16_b128_h2_work4m-s0-r0 WAREHOUSE 33507
+concurrent.futures.process._RemoteTraceback:
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.7/concurrent/futures/process.py", line 232, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/usr/lib/python3.7/concurrent/futures/process.py", line 191, in _process_chunk
+    return [fn(*args) for args in chunk]
+  File "/usr/lib/python3.7/concurrent/futures/process.py", line 191, in <listcomp>
+    return [fn(*args) for args in chunk]
+  File "/shared/share_mala/fw2449/lorr2024/experiments/sequences-20260918/analyze.py", line 14, in get_metrics
+    row = base(item)
+  File "/shared/share_mala/fw2449/lorr2024/experiments/motion-20260918/analyze.py", line 27, in get_metrics
+    assert phases and all(x['steps']==row['steps'] for x in phases.values())
+AssertionError
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/shared/share_mala/fw2449/lorr2024/experiments/sequences-20260918/analyze.py", line 25, in <module>
+    motion.assignment.analyze_matrix.main()
+  File "/shared/share_mala/fw2449/lorr2024/experiments/throughput-20260918-next/analyze_matrix.py", line 37, in main
+    metrics = list(pool.map(get_metrics, [(c['name'], root / c['name'] / (r['instance'] + '.json')) for c, r in valid]))
+  File "/usr/lib/python3.7/concurrent/futures/process.py", line 476, in _chain_from_iterable_of_lists
+    for element in iterable:
+  File "/usr/lib/python3.7/concurrent/futures/_base.py", line 586, in result_iterator
+    yield fs.pop().result()
+  File "/usr/lib/python3.7/concurrent/futures/_base.py", line 432, in result
+    return self.__get_result()
+  File "/usr/lib/python3.7/concurrent/futures/_base.py", line 384, in __get_result
+    raise self._exception
+AssertionError

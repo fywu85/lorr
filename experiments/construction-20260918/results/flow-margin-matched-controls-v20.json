@@ -1,0 +1,46 @@
+{
+  "same_frozen_binary_sha256": "969ad669d5d8368b8d8435f3dc1f1e245ba2230e7afb4a43e08122633627650d",
+  "control_mean_tasks": 109225.0,
+  "flow_mean_tasks": 105087.33333333333,
+  "effect_of_means_percent": -3.7882047760738558,
+  "rows": [
+    {
+      "seed": 0,
+      "control_tasks": 109244,
+      "frozen_flow_tasks": 122896,
+      "effect_percent": 12.496796162718326,
+      "control_last_1000": 22456,
+      "flow_last_1000": 25254,
+      "control_age_p90": 850,
+      "flow_age_p90": 743,
+      "control_trajectory_sha256": "b27300836b4200a0c70db8abf7f581024fb6ad8bdf6c77546af068fbf9bd8a6d",
+      "flow_trajectory_sha256": "24df3ec4a91b7e11a3689366a1b5032619c6d04d7f47c5236ee89dee30a7718a"
+    },
+    {
+      "seed": 1,
+      "control_tasks": 109249,
+      "frozen_flow_tasks": 122195,
+      "effect_percent": 11.849994050288792,
+      "control_last_1000": 22439,
+      "flow_last_1000": 25117,
+      "control_age_p90": 867,
+      "flow_age_p90": 753,
+      "control_trajectory_sha256": "33ec7ef862ee2729cb1d6a5d55940ed3fdc747b9749c5fc3424ce1b38a5d0261",
+      "flow_trajectory_sha256": "855ccc0ba5a45912c0624e86417d962a95a70fde2e25e7893a93e48fcd4fbe0d"
+    },
+    {
+      "seed": 2,
+      "control_tasks": 109182,
+      "frozen_flow_tasks": 70171,
+      "effect_percent": -35.73024857577256,
+      "control_last_1000": 22330,
+      "flow_last_1000": 3659,
+      "control_age_p90": 858,
+      "flow_age_p90": 3170,
+      "control_trajectory_sha256": "d8f7d1ce8206501d99350e0f02f3902a37d41a3a76faa532846ca41bf1d1398e",
+      "flow_trajectory_sha256": "ca590f7c9804e3bec8623d509b84d4c2f5ca0900dd7a91ac21fa4a711d4d4a90"
+    }
+  ],
+  "interpretation": "The matched no-flow 4M controls are stable across these three seeds. The frozen-flow policy introduces the severe seed-2 loss in this comparison; which traffic edges or feedback mechanism causes it remains unisolated. Do not promote.",
+  "six_seed_confirmation": false
+}

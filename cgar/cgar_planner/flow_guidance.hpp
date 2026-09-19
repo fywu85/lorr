@@ -1,29 +1,36 @@
 #pragma once
-// Learn soft directional costs from executed movement, then freeze them once.
+// Learn soft directional costs from executed movement. Freeze once by default,
+// or publish complete cumulative fields at fixed observation-count intervals.
 // No map identities, geometric lane rules, task forecasts, or wall-clock stops.
 #include <algorithm>
 #include <cstdint>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 namespace cgar {
 class FlowGuidance {
 public:
     void initialize(const std::vector<char>& free, int rows, int cols,
-                    int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0) {
+                    int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0,
+                    int refresh_interval = 0) {
         if (rows < 1 || cols < 1 || free.size() != size_t(rows) * cols ||
             warmup < 1 || warmup > 4096 || strength < 1 || strength > 8 ||
             minimum_samples < 1 || minimum_samples > 65536 ||
-            minimum_margin_percent < 0 || minimum_margin_percent > 100)
+            minimum_margin_percent < 0 || minimum_margin_percent > 100 ||
+            refresh_interval < 0 || refresh_interval > 4096)
             throw std::invalid_argument("invalid learned flow configuration");
         free_ = free; rows_ = rows; cols_ = cols; warmup_ = warmup;
         strength_ = strength; minimum_samples_ = minimum_samples; minimum_margin_percent_ = minimum_margin_percent;
         counts_.assign(free.size() * 4, 0); costs_.clear(); previous_.clear();
         last_step_ = -1; samples_ = 0; frozen_ = false;
-        moves_ = 0; penalized_edges_ = 0;
+        moves_ = 0; penalized_edges_ = 0; refresh_interval_ = refresh_interval;
+        publications_ = last_publication_samples_ = 0;
     }
 
-    // Returns true only when the complete frozen cost field is first ready.
+    // Returns true only at a prescribed publication point after all edge costs
+    // are complete. Refreshing retains cumulative observed counts; duplicate or
+    // skipped observations never advance work or invent intervening movement.
     bool observe(int timestep, const std::vector<int>& locations) {
         if (frozen_ || timestep == last_step_) return false;
         if (timestep < last_step_) throw std::logic_error("flow observation time reversed");
@@ -43,8 +50,9 @@ public:
         }
         // A skipped observation never invents intermediate movement.
         previous_ = locations; last_step_ = timestep;
-        if (samples_ < warmup_) return false;
-        costs_.assign(free_.size() * 4, 1);
+        if (samples_ < warmup_ || (publications_ && samples_ - last_publication_samples_ < refresh_interval_)) return false;
+        std::vector<uint8_t> next_costs(free_.size() * 4, 1);
+        int next_penalized = 0;
         for (int u = 0; u < int(free_.size()); ++u) if (free_[u])
             for (int dir = 0; dir < 4; ++dir) {
                 const int v = neighbor(u, dir);
@@ -57,10 +65,12 @@ public:
                 // Penalize going against observed dominant flow. Equal or
                 // unobserved traffic stays neutral; every edge stays usable.
                 const int extra = int((strength_ * (reverse - forward) + total - 1) / total);
-                costs_[size_t(u) * 4 + dir] += extra; ++penalized_edges_;
+                next_costs[size_t(u) * 4 + dir] += extra; ++next_penalized;
             }
-        frozen_ = true;
-        std::vector<uint64_t>().swap(counts_); std::vector<int>().swap(previous_);
+        costs_ = std::move(next_costs); penalized_edges_ = next_penalized;
+        last_publication_samples_ = samples_; ++publications_;
+        frozen_ = refresh_interval_ == 0;
+        if (frozen_) { std::vector<uint64_t>().swap(counts_); std::vector<int>().swap(previous_); }
         return true;
     }
 
@@ -70,6 +80,8 @@ public:
     uint64_t moves() const { return moves_; }
     int penalized_edges() const { return penalized_edges_; }
     int minimum_margin_percent() const { return minimum_margin_percent_; }
+    int refresh_interval() const { return refresh_interval_; }
+    int publications() const { return publications_; }
 
 private:
     int neighbor(int u, int dir) const {
@@ -80,6 +92,7 @@ private:
     }
     int rows_ = 0, cols_ = 0, warmup_ = 0, strength_ = 0, minimum_samples_ = 0;
     int last_step_ = -1, samples_ = 0, penalized_edges_ = 0, minimum_margin_percent_ = 0;
+    int refresh_interval_ = 0, publications_ = 0, last_publication_samples_ = 0;
     bool frozen_ = false;
     uint64_t moves_ = 0;
     std::vector<char> free_;

@@ -295,3 +295,11 @@ seeds 1/2 subsequently finish at 122,195 and **70,171**. Their three-seed mean,
 including seed 0, is **105,087.3**, below the established 50k reference. The late
 collapse in seed 2 prevents promotion despite the strong single-seed peak.
 [Full details and all outcomes](FLOW_MARGIN.md).
+
+
+The 4M-candidate no-flow policy now has matching full results at seeds 0–2:
+109,244 / 109,249 / 109,182, mean **109,225.0**. The frozen margin-50 flow
+policy's corresponding mean is **105,087.3**, or **-3.79%**, despite its
+122,896 seed-0 peak. The severe seed-2 loss belongs to the flow-policy change
+in the matched comparison, not to fixed 4M work by itself. Six-seed confirmation
+is still outstanding. [Matched comparison](results/flow-margin-matched-controls-v20.json).

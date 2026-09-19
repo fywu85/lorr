@@ -125,3 +125,20 @@ isolate the policy change from the work setting; specific causal edges have not
 been established. Online intended-route guidance is running independently.
 [Full confirmation](results/flow-margin-confirm-v20/),
 [three-seed summary](results/flow-margin-robustness-v20/summary.json).
+
+## Matched no-flow confirmation
+
+The missing same-work controls now complete at **109,249** (seed 1) and
+**109,182** (seed 2), both valid over all 5,000 steps. Together with seed 0's
+109,244, their mean is **109,225.0**. The frozen margin-50 field averages
+105,087.3, **3.79% below this matched control**, with seed-specific effects
++12.50%, +11.85% and -35.73%. All cases use the same frozen v20-r1 binary and
+fixed-work settings. The seed-2 collapse is introduced by the flow policy in
+this comparison; the responsible edges/feedback mechanism remain unisolated.
+The earlier comparison to a different 50k work policy is no longer the only
+available control. No promotion is justified.
+[Matched comparison](results/flow-margin-matched-controls-v20.json),
+[complete confirmations](results/work4m-confirm-v20/).
+
+An optional cumulative refresh experiment is now built and screen-validated;
+its full seed comparisons are pending. See [FLOW_REFRESH.md](FLOW_REFRESH.md).
