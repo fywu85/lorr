@@ -1,0 +1,472 @@
+{
+  "scope": "All12paired full5000-step/10000-robot warehouse runs, ordinary HRRN/weight1, graded4/scale4 margin25/build128 pickup flow OFF/ON. Allcomplete entries<=1s, RSS<32decimalGB; every OFFfull trajectory exactly reproduces the previous graded reference. Four bound physical cores per process, disjoint within each matrix and no CPU quota.",
+  "checked_utc": "2026-09-19T18:01:33.856600+00:00",
+  "exact_production_source_commit": "eb5b3827b9daf9f91aba88c78bef7be0d17cd07c",
+  "verified_source_and_test_files": 21,
+  "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+  "rows": [
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s0-r0",
+      "seed": 0,
+      "pickup_flow": 0,
+      "tasks": 138402,
+      "completed_per_1000": [
+        22424,
+        28868,
+        29016,
+        29022,
+        29072
+      ],
+      "trajectory_sha256": "626b8bb8d8124b3eff498e4070f4c876faac5fb0ae7615e9edcc0dc7d46dd0e3",
+      "mean_entry_ms": 247.83530478720013,
+      "max_entry_seconds": 0.879103443,
+      "average_cpu_cores": 1.1902452343537138,
+      "peak_rss_bytes": 11937669120,
+      "wall_seconds": 1313.442,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.0982,
+        "p90": 638
+      },
+      "finished_utc": "2026-09-19T17:23:38.828686+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8931087,
+        "empty_turn_actions": 654147,
+        "empty_wait_actions": 539392
+      },
+      "full_empty_robot_steps": 10124626
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s0-r0",
+      "seed": 0,
+      "pickup_flow": 1,
+      "tasks": 138963,
+      "completed_per_1000": [
+        22398,
+        28970,
+        29138,
+        29141,
+        29316
+      ],
+      "trajectory_sha256": "ec55f6ccc9e766186eb9337c62ffe2277dad0632f1642a14e02dddd86dddf723",
+      "mean_entry_ms": 263.4811492777999,
+      "max_entry_seconds": 0.872353523,
+      "average_cpu_cores": 1.1814343098019957,
+      "peak_rss_bytes": 11353088000,
+      "wall_seconds": 1392.168,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 318.59453333333335,
+        "p90": 656
+      },
+      "finished_utc": "2026-09-19T17:24:57.553872+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8790299,
+        "empty_turn_actions": 633744,
+        "empty_wait_actions": 535890
+      },
+      "full_empty_robot_steps": 9959933
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s1-r0",
+      "seed": 1,
+      "pickup_flow": 0,
+      "tasks": 139716,
+      "completed_per_1000": [
+        23178,
+        28948,
+        29164,
+        29149,
+        29277
+      ],
+      "trajectory_sha256": "255bbb9718b813060f4dc0d3afbd4dffdeac73cfc1b8fb73be599829a4519d1f",
+      "mean_entry_ms": 277.43907759100006,
+      "max_entry_seconds": 0.869190204,
+      "average_cpu_cores": 1.1708195244684825,
+      "peak_rss_bytes": 11929968640,
+      "wall_seconds": 1462.084,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 313.38846666666666,
+        "p90": 636
+      },
+      "finished_utc": "2026-09-19T17:57:17.514755+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 9016137,
+        "empty_turn_actions": 641770,
+        "empty_wait_actions": 520620
+      },
+      "full_empty_robot_steps": 10178527
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s1-r0",
+      "seed": 1,
+      "pickup_flow": 1,
+      "tasks": 140002,
+      "completed_per_1000": [
+        23107,
+        29049,
+        29203,
+        29247,
+        29396
+      ],
+      "trajectory_sha256": "e31f3b463f0e64d64be8eb126c40695b6e5d00173776da425f1c07a7a7a8ae23",
+      "mean_entry_ms": 283.9897198641992,
+      "max_entry_seconds": 0.8607105,
+      "average_cpu_cores": 1.1711443977083722,
+      "peak_rss_bytes": 11878670336,
+      "wall_seconds": 1494.645,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 317.03093333333334,
+        "p90": 647
+      },
+      "finished_utc": "2026-09-19T17:57:50.073730+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8823310,
+        "empty_turn_actions": 625859,
+        "empty_wait_actions": 517829
+      },
+      "full_empty_robot_steps": 9966998
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s2-r0",
+      "seed": 2,
+      "pickup_flow": 0,
+      "tasks": 139303,
+      "completed_per_1000": [
+        23140,
+        28993,
+        29052,
+        29058,
+        29060
+      ],
+      "trajectory_sha256": "ce7dcadf8691596600c4210a6f6d2597f678919f76d984e3f05af63c0d70d51a",
+      "mean_entry_ms": 243.43666995619893,
+      "max_entry_seconds": 0.844119792,
+      "average_cpu_cores": 1.198267113516537,
+      "peak_rss_bytes": 11357052928,
+      "wall_seconds": 1290.777,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.0218,
+        "p90": 639
+      },
+      "finished_utc": "2026-09-19T17:23:16.163200+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 9018663,
+        "empty_turn_actions": 665816,
+        "empty_wait_actions": 536390
+      },
+      "full_empty_robot_steps": 10220869
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s2-r0",
+      "seed": 2,
+      "pickup_flow": 1,
+      "tasks": 139677,
+      "completed_per_1000": [
+        23039,
+        29153,
+        29303,
+        29116,
+        29066
+      ],
+      "trajectory_sha256": "455361244a747c6e6de26fa0c0123ad5df8bbb5b5b2040af53b1b98f70065a81",
+      "mean_entry_ms": 250.99599431099938,
+      "max_entry_seconds": 0.851296567,
+      "average_cpu_cores": 1.1929137408450197,
+      "peak_rss_bytes": 11877945344,
+      "wall_seconds": 1328.7,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 320.02206666666666,
+        "p90": 659
+      },
+      "finished_utc": "2026-09-19T17:23:54.083944+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8882301,
+        "empty_turn_actions": 653012,
+        "empty_wait_actions": 535888
+      },
+      "full_empty_robot_steps": 10071201
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s3-r0",
+      "seed": 3,
+      "pickup_flow": 0,
+      "tasks": 138506,
+      "completed_per_1000": [
+        23115,
+        28813,
+        28818,
+        28842,
+        28918
+      ],
+      "trajectory_sha256": "1c6de3a650c11b4bd5cd10e9e2735bd483df24848950797c26b3edf327f058af",
+      "mean_entry_ms": 238.94410092919983,
+      "max_entry_seconds": 0.857247765,
+      "average_cpu_cores": 1.1988092645135326,
+      "peak_rss_bytes": 11879223296,
+      "wall_seconds": 1269.102,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.007,
+        "p90": 642
+      },
+      "finished_utc": "2026-09-19T17:54:04.531750+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8996301,
+        "empty_turn_actions": 664825,
+        "empty_wait_actions": 543235
+      },
+      "full_empty_robot_steps": 10204361
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s3-r0",
+      "seed": 3,
+      "pickup_flow": 1,
+      "tasks": 138671,
+      "completed_per_1000": [
+        23040,
+        28802,
+        28931,
+        28872,
+        29026
+      ],
+      "trajectory_sha256": "d717247a440b5ced832d89141288576a87146b5b6dc56e498dd33f7cf648f524",
+      "mean_entry_ms": 245.04948929520043,
+      "max_entry_seconds": 0.861862669,
+      "average_cpu_cores": 1.1946303625485977,
+      "peak_rss_bytes": 11879665664,
+      "wall_seconds": 1299.343,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 318.4155333333333,
+        "p90": 651
+      },
+      "finished_utc": "2026-09-19T17:54:34.771398+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8796538,
+        "empty_turn_actions": 654482,
+        "empty_wait_actions": 544686
+      },
+      "full_empty_robot_steps": 9995706
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s4-r0",
+      "seed": 4,
+      "pickup_flow": 0,
+      "tasks": 138304,
+      "completed_per_1000": [
+        23410,
+        28736,
+        28704,
+        28704,
+        28750
+      ],
+      "trajectory_sha256": "929ebad0ebc72b3337de293acb54ec385b9b693f9e8960843dffd4d2b6063cbe",
+      "mean_entry_ms": 229.38671535860067,
+      "max_entry_seconds": 0.872178427,
+      "average_cpu_cores": 1.2099763191204387,
+      "peak_rss_bytes": 11359883264,
+      "wall_seconds": 1222.682,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 316.4856,
+        "p90": 647
+      },
+      "finished_utc": "2026-09-19T17:53:18.117412+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 9001343,
+        "empty_turn_actions": 680240,
+        "empty_wait_actions": 580303
+      },
+      "full_empty_robot_steps": 10261886
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s4-r0",
+      "seed": 4,
+      "pickup_flow": 1,
+      "tasks": 139241,
+      "completed_per_1000": [
+        23473,
+        28830,
+        28963,
+        28847,
+        29128
+      ],
+      "trajectory_sha256": "9f117c6a2678dd2264dc54dd5abe353ac1876422ed133307ed6fb7737f872ff8",
+      "mean_entry_ms": 241.48010319820068,
+      "max_entry_seconds": 0.867173639,
+      "average_cpu_cores": 1.2041659388451749,
+      "peak_rss_bytes": 11900104704,
+      "wall_seconds": 1281.477,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 318.60946666666666,
+        "p90": 654
+      },
+      "finished_utc": "2026-09-19T17:54:16.905304+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8824562,
+        "empty_turn_actions": 653341,
+        "empty_wait_actions": 563508
+      },
+      "full_empty_robot_steps": 10041411
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s5-r0",
+      "seed": 5,
+      "pickup_flow": 0,
+      "tasks": 139457,
+      "completed_per_1000": [
+        23401,
+        28889,
+        29078,
+        29005,
+        29084
+      ],
+      "trajectory_sha256": "13bae35ed19e0618de7ff5e735db15afe911cf06bcc917e235513c0612fc2f7b",
+      "mean_entry_ms": 239.22903806840048,
+      "max_entry_seconds": 0.865388766,
+      "average_cpu_cores": 1.203747836777788,
+      "peak_rss_bytes": 11350011904,
+      "wall_seconds": 1269.238,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 313.19786666666664,
+        "p90": 638
+      },
+      "finished_utc": "2026-09-19T17:54:04.672979+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 9043070,
+        "empty_turn_actions": 675283,
+        "empty_wait_actions": 543466
+      },
+      "full_empty_robot_steps": 10261819
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s5-r0",
+      "seed": 5,
+      "pickup_flow": 1,
+      "tasks": 139773,
+      "completed_per_1000": [
+        23305,
+        28940,
+        29168,
+        29090,
+        29270
+      ],
+      "trajectory_sha256": "a768bc5051a3a0f963ff5076d592304cc235859f4189defb38a7457372929b50",
+      "mean_entry_ms": 246.96814825340078,
+      "max_entry_seconds": 0.85269608,
+      "average_cpu_cores": 1.1963669873890574,
+      "peak_rss_bytes": 11319169024,
+      "wall_seconds": 1309.369,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 317.7984666666667,
+        "p90": 650
+      },
+      "finished_utc": "2026-09-19T17:54:44.802884+00:00",
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "full_empty_actions": {
+        "empty_forward_actions": 8879755,
+        "empty_turn_actions": 648196,
+        "empty_wait_actions": 542533
+      },
+      "full_empty_robot_steps": 10070484
+    }
+  ],
+  "six_seed_confirmation_complete": true,
+  "throughput_goal_complete": false,
+  "control_mean_tasks": 138948.0,
+  "candidate_mean_tasks": 139387.83333333334,
+  "pairs": [
+    {
+      "seed": 0,
+      "task_difference": 561,
+      "final1000_difference": 244,
+      "empty_robot_steps_percent": -1.6266576167850544,
+      "age_p90_difference": 18,
+      "control_exactly_matches_confirmed_graded_reference": true
+    },
+    {
+      "seed": 1,
+      "task_difference": 286,
+      "final1000_difference": 119,
+      "empty_robot_steps_percent": -2.0781887202342753,
+      "age_p90_difference": 11,
+      "control_exactly_matches_confirmed_graded_reference": true
+    },
+    {
+      "seed": 2,
+      "task_difference": 374,
+      "final1000_difference": 6,
+      "empty_robot_steps_percent": -1.4643373278729999,
+      "age_p90_difference": 20,
+      "control_exactly_matches_confirmed_graded_reference": true
+    },
+    {
+      "seed": 3,
+      "task_difference": 165,
+      "final1000_difference": 108,
+      "empty_robot_steps_percent": -2.0447630184780796,
+      "age_p90_difference": 9,
+      "control_exactly_matches_confirmed_graded_reference": true
+    },
+    {
+      "seed": 4,
+      "task_difference": 937,
+      "final1000_difference": 378,
+      "empty_robot_steps_percent": -2.1484842065094045,
+      "age_p90_difference": 7,
+      "control_exactly_matches_confirmed_graded_reference": true
+    },
+    {
+      "seed": 5,
+      "task_difference": 316,
+      "final1000_difference": 186,
+      "empty_robot_steps_percent": -1.8645329838696267,
+      "age_p90_difference": 12,
+      "control_exactly_matches_confirmed_graded_reference": true
+    }
+  ],
+  "mean_effect_percent": 0.3165452783295608,
+  "resource_summary_pickup_flow": {
+    "mean_entry_ms": {
+      "min": 241.48010319820068,
+      "max": 283.9897198641992
+    },
+    "max_entry_seconds": {
+      "min": 0.851296567,
+      "max": 0.872353523
+    },
+    "average_cpu_cores": {
+      "min": 1.1711443977083722,
+      "max": 1.2041659388451749
+    },
+    "peak_rss_bytes": {
+      "min": 11319169024,
+      "max": 11900104704
+    },
+    "wall_seconds": {
+      "min": 1281.477,
+      "max": 1494.645
+    }
+  },
+  "promoted_as_benchmark_reference": true,
+  "interpretation": "All six full totals and final1000windows improve and all six whole empty robot-step totals fall. Outstanding agep90 rises on all six; fairness policy is retained. This is a modest repeatable improvement, not completion of the152981goal."
+}

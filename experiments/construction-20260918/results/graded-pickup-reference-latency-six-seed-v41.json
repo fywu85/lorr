@@ -1,0 +1,153 @@
+{
+  "checked_utc": "2026-09-19T18:02:22.388970+00:00",
+  "source_report": "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json",
+  "source_report_sha256": "9f5a1fd45d346451de48b85bf9289d072530d1b30e77e6037fc1ba79cd3dd291",
+  "script_sha256": "96a3dd5768a974c622806467af741abd76b9eab2e593dbcccecfcf9b5ccd4f17",
+  "scope": "Complete scheduler plus planner wall latency, 5000 samples per run. CPU is whole-process user+system time divided by wall time, including simulator, startup and logging; not a sampled instantaneous CPU value. RSS is the whole-process high-water mark. Quantiles use nearest rank.",
+  "rows": [
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 138963,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s0-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 263.4811492777999,
+        "p50_ms": 238.972025,
+        "p90_ms": 463.23625699999997,
+        "p95_ms": 521.737634,
+        "p99_ms": 559.566213,
+        "max_ms": 872.353523
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 352,
+      "average_cpu_cores": 1.1814343098019957,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.535857745049892,
+      "peak_rss_bytes": 11353088000,
+      "wall_seconds": 1392.168
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 140002,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-confirm-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s1-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 283.98971986419923,
+        "p50_ms": 262.869576,
+        "p90_ms": 482.59198599999996,
+        "p95_ms": 533.9470680000001,
+        "p99_ms": 570.572614,
+        "max_ms": 860.7105
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 427,
+      "average_cpu_cores": 1.1711443977083722,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.278609942709306,
+      "peak_rss_bytes": 11878670336,
+      "wall_seconds": 1494.645
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 139677,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-full-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s2-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 250.99599431099938,
+        "p50_ms": 222.164401,
+        "p90_ms": 457.901873,
+        "p95_ms": 504.65861300000006,
+        "p99_ms": 559.011488,
+        "max_ms": 851.296567
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 275,
+      "average_cpu_cores": 1.1929137408450197,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.822843521125492,
+      "peak_rss_bytes": 11877945344,
+      "wall_seconds": 1328.7
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 138671,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-confirm-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s3-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 245.0494892952004,
+        "p50_ms": 214.295618,
+        "p90_ms": 460.21900500000004,
+        "p95_ms": 495.92256899999995,
+        "p99_ms": 535.086341,
+        "max_ms": 861.862669
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 224,
+      "average_cpu_cores": 1.1946303625485977,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.865759063714943,
+      "peak_rss_bytes": 11879665664,
+      "wall_seconds": 1299.343
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 139241,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-confirm-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s4-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 241.4801031982007,
+        "p50_ms": 210.09523199999998,
+        "p90_ms": 455.0774,
+        "p95_ms": 488.461123,
+        "p99_ms": 529.790616,
+        "max_ms": 867.173639
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 154,
+      "average_cpu_cores": 1.2041659388451749,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 30.10414847112937,
+      "peak_rss_bytes": 11900104704,
+      "wall_seconds": 1281.477
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 139773,
+      "evidence": "experiments/construction-20260918/results/graded-pickup-flow-confirm-v41",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-flow-confirm-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s5-r0",
+      "binary_sha256": "f33966d0222723a9cbfbf25fe4cbbd6f662d4a7185349945420325d0e7956d1f",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 246.9681482534008,
+        "p50_ms": 217.659722,
+        "p90_ms": 460.137933,
+        "p95_ms": 497.188442,
+        "p99_ms": 540.597609,
+        "max_ms": 852.6960799999999
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 231,
+      "average_cpu_cores": 1.1963669873890574,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.909174684726437,
+      "peak_rss_bytes": 11319169024,
+      "wall_seconds": 1309.369
+    }
+  ]
+}

@@ -26,4 +26,11 @@ unreliable measure of total empty travel; the table uses whole empty robot-steps
 [All four runs and provenance](results/graded-pickup-travel-v1/),
 [compact comparison](results/graded-pickup-travel-v1/comparison.json),
 [full quality/time/memory checks](results/graded-pickup-flow-full-v41/comparison.json).
-Further decomposition of complete-field profiles16/32/64 is running separately.
+The complete-field decomposition is also complete:
+[Six complete-field traces](results/pickup-full-travel-v1/comparison.json).
+Fields64 cuts empty robot-steps to9.20M/9.28M, while completed chain means
+241.76/241.81 and loaded elapsed277.39/274.46change relatively little. The
+failed32-field seed0 has loaded elapsed392.72for its completed tasks and a
+shorter235.29chain mean; severe unfinished-work censoring limits interpretation.
+This supports testing motion improvements alongside task selection, without
+claiming an additive causal split of the leader gap.

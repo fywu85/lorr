@@ -67,8 +67,9 @@ Full8898851 with analysis8898853 compares0/16/32/64fields, four build threads,
 seeds0/2,5000steps. Eight cases run concurrently on disjoint four-core allocations,
 128GiB aggregate reservation and32decimalGB individual limit. Configurations:
 [pickup-full-variants.json](pickup-full-variants.json).
-The control is v41's graded pickup-flow policy, still under evaluation against the
-confirmed graded reference; it is not silently substituted for that reference.
+The original control was v41's graded pickup-flow policy, then under evaluation.
+Its separate six-seed confirmation subsequently passed and it is now the benchmark
+reference; the first two full-field comparisons still use their matched controls.
 
 ## Full results and confirmation
 

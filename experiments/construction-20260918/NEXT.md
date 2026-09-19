@@ -11,23 +11,27 @@ checkpoints. No blocker. Maintain ../../WAREHOUSE_PROGRESS.md.
 ## Confirmed reference and resource answer
 
 Graded strength4/scale4, margin25, refresh512, turn-build128,8GiBcache, ordinary
-HRRN1/weight1 and pickup flow OFF. warehouse-reference-variants.json.
-Seeds0..5=138402/139716/139303/138506/138304/139457, mean138948 (+0.611% over
-binary margin25/build128). All six totals improve; four finalwindows improve,
-seeds2/4 lose153/134. All12paired runs valid, six controls exactly reproduce.
-Source5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27, frozenv39.
-Mean229.3–277.3ms, median198.2–257.5ms, p99 509.0–567.5ms, max0.874164s,
-CPU1.174–1.215cores/4reserved, RSS11.936GB,20.33–24.36minutes.
-results/flow-graded-six-seed-v39.json and graded-reference-latency-six-seed-v39.json.
-User asked per-step latency/CPU/RAM; answered these ranges, explicitly whole-process
-average CPU, all30000complete entries<=1s, four reserved physical cores.
-Also reported unconfirmed64-field candidate285–287ms,1.47cores,11.90GB peak.
+HRRN1/weight1 and pickup flow ON. warehouse-reference-variants.json.
+Seeds0..5=138963/140002/139677/138671/139241/139773, mean139387.8333
+(+0.316545%vs preceding graded/OFF138948). All six full totals and finalwindows
+improve. All12runs valid, all six controls exactly reproduce the preceding
+graded reference. Empty robot-steps fall1.46–2.15%; agep90 rises7–20steps.
+Sourceeb5b3827b9daf9f91aba88c78bef7be0d17cd07c, frozenV41,21hasheschecked.
+Mean241.5–284.0ms, median210.1–262.9ms,p99529.8–570.6ms,max0.872354s,
+CPU1.171–1.204cores/4reserved,RSS11.901GB,21.36–24.91minutes.
+results/graded-pickup-flow-six-seed-v41.json and
+results/graded-pickup-reference-latency-six-seed-v41.json (audit8898919complete).
+The user's latency/CPU/RAM question was answered before this promotion using
+preceding graded/OFF229–277ms,1.17–1.21cores,11.94GB; final answer also
+distinguished unconfirmed64-field candidate285–287ms,1.47cores,11.90GB.
+Do not repeat the resource answer without new reason. Goal remains unmet.
 
 WAREHOUSE_PROGRESS now has36strictly increasing full-run records. New records:
 141725at17:42:42.270841UTC (16fields,seed2),142735at17:43:24.869257UTC
 (32fields,seed2,rejected policy),142988at17:43:34.384352UTC (64fields,seed2).
 All exactsource4872d048dd8155927074ac2a4d27a55756266fd5, validated22hashes.
-confirmed-reference-progress.json tracks four increasing six-seed milestones.
+confirmed-reference-progress.json now tracks five increasing six-seed milestones;
+new pickup-flow milestone completion17:57:50.073730UTC, exactsourceeb5b382.
 A user editor swap .WAREHOUSE_PROGRESS.md.swp appeared; leave it out of Git and
 do not delete it. Avoid overwriting concurrent user changes in the markdown.
 
@@ -40,7 +44,8 @@ runs/cgar-pickup-flow-build-v41-r3-20260919.
 - Graded margin25/build128 pickup ON138963/139677 vs exact OFF138402/139303,
   mean139320vs138852.5 (+0.337%), finalwindows+244/+6, full empty robot-steps
   down1.63%/1.46%, agep90 up18/20steps. All4valid and control hashes exact.
-  results/graded-pickup-flow-full-v41/comparison.json; remaining4seeds running.
+  results/graded-pickup-flow-full-v41/comparison.json; six-seedconfirmationnow
+  completeandpromotedasabove.
 - Independent full travel audit8898864 completed4cases; fixture/mapchecks and
   full empty-motion counters exact. Completed chain means242.3–242.6, loaded
   elapsed275.6–278.2; local KK233.84/252.52. Whole empty travel~10M likeKK.
@@ -62,10 +67,6 @@ runs/cgar-pickup-full-build-v42-r1-20260919. All8full runs valid, peakentry
 
 ## Running jobs (actual IDs)
 
-- 8898858 /8898860: V41graded pickup OFF/ON remaining seeds1/3/4/5,
-  start17:32:55UTC,research38,8concurrent x4physicalcores,128GiBaggregate.
-  Raw runs/cgar-graded-pickup-flow-confirm-v41-20260919. Validate all4OFFfull
-  trajectories against established graded reference before six-seed summary.
 - 8898882 /8898883: V42fields0/16/64 remaining seeds1/3/4/5,
   start17:45:58UTC,research44,12concurrent x4cores,192GiBaggregate.
   Raw runs/cgar-pickup-full-confirm-v42-20260919, pickup-full-confirm-variants.json.
@@ -74,12 +75,24 @@ runs/cgar-pickup-full-build-v42-r1-20260919. All8full runs valid, peakentry
   seeds0/2,8concurrent x4cores,128GiBaggregate. Raw
   runs/cgar-pickup-cost-key-full-v43-20260919. ExistingV42provides exact0/32
   default-key controls and64original comparison. All per-process caps32GB.
-- 8898903: V42full-travel decomposition of16/32/64 fields on seeds0/2,1core4G.
-  Raw runs/cgar-pickup-full-travel-v1-20260919/results. Onceprovenanceexists,
-  archive JSONonly, verifycounts againstfullmetrics, compare with exactV41
-  pickupONcontroltravel. Do not archive diagnostic binaries/rawtrajectories.
+- 8898924 /8898927: fixed planning workers1/2/4 with4Mwork each onV43/64fields,
+  seeds0/2,sixconcurrentcases x4physicalcores,96GiBaggregate;start18:03:54UTC
+  research31. Raw runs/cgar-pickup-full-workers-full-v43-20260919.
+  Screen8898912completed3/3valid,max0.913763s,RSS5.232GB; one-workerwholeprefix
+  exactV42/64. This is not prefixqualityevidence. Full one-worker controls must
+  exactly reproduce141829/142988. PICKUP_FULL_WORKERS.md andconfig.
+- 8898903complete: all6V42full-travel cases archived in results/pickup-full-travel-v1.
+  Fixture, simulator map hashes and all full empty-motion counters checked; exact
+  V41pickupONcontroltravel reused. No diagnostic binaries/rawtrajectories archived.
+  Fields64 completedchain241.76/241.81, loadedelapsed277.39/274.46; controls
+  242.55/242.60 and278.18/275.98. Empty steps9.20M/9.28M vs9.96M/10.07M.
+  Fields32failedseed0 has loadedelapsed392.72 (vs278.18), but completedcohort
+  shorter235.29, substantialcensoring. No causaladditivecostdecomposition.
 
 ## Tested V43 checkpoint
+
+Committed and pushed1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9; all22source/
+test hashes independently verified against the commit. Previous4872d04 isexactV42.
 
 Fable verified an actual omission: pickup workers were parsed after affinity
 validation. V43moves the check and includes the max potential pickup workers
@@ -131,11 +144,10 @@ thatstrongerpolicies cannotbenefitfrommoreparallelsearch. Fullhorizonforquality.
 
 ## Next actions
 
-1. Save/push the testedV43checkpoint plus completedV42results/history, review10
-   and fulltravel4. Verify exactcommittedsource againstall22requestedhashes.
-2. Finish V41gradedpickup six-seed comparison whenanalysis8898860completes.
-   Promoteonlyaftercompletequality/resource/controlchecks; recomputelatency
-   quantilesifpromoted, updatecurrentreference/historymilestonewithactualtime.
+1. V43source/results checkpoint1661176is pushed and22hashes verified.
+   Fulltravel6follow-up is complete and can join the next result checkpoint.
+2. V41gradedpickupall12valid,six-seedpromotion/history andallstepquantilesdone.
+   Save these completed reports andworker-screen/config in the next checkpoint.
 3. Evaluate V42sixseed16/64 andV43cost-keyfulloutcomes, exactcontrols, everyentry
    <=1s/RSS<32GB, completewindows/ages/travel. ExtendpromisingV43to4moreseeds.
 4. Confirmresourceheadroombeforemorefixedparallelsearchontheneweststrongpolicy.

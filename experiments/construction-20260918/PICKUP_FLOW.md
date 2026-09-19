@@ -114,3 +114,16 @@ fall1.63%/1.46%, while outstanding agep90 rises18/20steps. All entries finish
 within1second, all RSS below32GB; source is the same tested v41commit. This is
 a promising two-seed result; retain the confirmed OFF reference pending the
 remaining four seeds. [Comparison](results/graded-pickup-flow-full-v41/comparison.json).
+
+## Six-seed graded confirmation
+
+All12paired full runs are valid, below1second and32GB; all six OFFtrajectories
+exactly reproduce the graded reference. ONscores138963/140002/139677/138671/
+139241/139773, mean139387.8333 (+0.316545%). Paired gains561/286/374/165/937/
+316; final1,000-step gains244/119/6/108/378/186. Empty robot-steps fall on all
+six (1.46–2.15%), agep90 rises7–20steps. This modest improvement is promoted
+as the new benchmark reference; no152981target claim. Exact sourceeb5b382.
+Mean241.5–284.0ms,median210.1–262.9ms,p99529.8–570.6ms,max872.4ms,
+CPU1.171–1.204cores,peak11.901GB,21.36–24.91minutes.
+[Confirmation](results/graded-pickup-flow-six-seed-v41.json),
+[full-step latency audit](results/graded-pickup-reference-latency-six-seed-v41.json).
