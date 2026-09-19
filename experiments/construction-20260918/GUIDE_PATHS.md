@@ -294,3 +294,49 @@ not establish a throughput gain. Congestion-aware/reconnection/refinement full
 cases are still running and must finish before drawing conclusions about them.
 Only the two completed cases were analyzed, using a read-only subset on GRID.
 [Full-horizon first-pair evidence](results/guide-window-first-pair-v26/).
+
+## Completed corrected-guide comparison
+
+All five v26-r1 cases finish 5,000 steps with zero errors/timeouts, every entry
+sample below one second, and RSS below 12.015 GB. None of the guide variants is
+an improvement over the 109,244-task control. The corrected waypoint metric is
+a verified correctness fix, not evidence that route guidance helps throughput.
+
+| Policy | Tasks | Final 1,000 | Task age p90 | Max entry s |
+|---|---:|---:|---:|---:|
+| 4M control | 109,244 | 22,456 | 850 | 0.865250 |
+| Unit routes | 39,066 | 2,778 | 4,505 | 0.935855 |
+| Opposing-cost routes, h2 | 42,051 | 3,480 | 4,335 | 0.973808 |
+| Reconnect 16, batch 128 | 28,071 | 4,105 | 5,000 | 0.887376 |
+| Reconnect + refine 64 | 33,507 | 3,650 | 4,701 | 0.911235 |
+
+The full control exactly matches prior 4M trajectories. The large turn/wait
+increases in the complete unit/opposing/refinement diagnostics are consistent
+with route concentration or reduced route flexibility, but do not isolate either
+cause. Reconnection is especially poor and its oldest outstanding tasks reach
+age 5,000. No guide profile is promoted.
+
+Strict analysis job 8898552 caught a missing final movement-log sample for the
+reconnection case: stdout stopped at step 4,800 although the independently saved
+trajectory and all 5,000 entry timings are complete. The simulator normally
+uses `_exit(0)` without flushing C stdout. V29 explicitly flushes periodic movement
+diagnostics. Its build 8898621 passes the full regression suite and its archived
+patch reconstructs every source hash.
+
+Recovery job 8898620 uses explicit `--allow-incomplete-movement`. Strict analysis
+remains the default. Recovery retains independently derived full task, action,
+age and trajectory metrics and labels the incomplete optional diagnostics as
+`partial_movement_phases` with observed step 4,800. It does not invent final
+counts. Seven analyzer tests check strict rejection, incomplete/mixed samples,
+corrupt counters and full action crosschecks. The original failure is retained.
+[Full evidence](results/guide-window-full-v26/),
+[first analysis failure](results/guide-window-analysis-first-failure/),
+[flush build](build-provenance/v29/).
+
+A separate four-case load-cost screen 8898605 passes all 200-step deadlines
+(max 0.834 seconds, RSS below 4.878 GB). At the step-200 sample without
+reconnection, load cost 1 and A* weight 2 complete 205/512 searches (307 limited),
+while weight 4 completes 511/512. The latter has 8,721 active guides. These are
+coverage/work observations only, not throughput rankings. Both reconnection plus
+refinement load-cost screens also pass. No full load-cost score exists yet.
+[Load-cost feasibility evidence](results/guide-load-screen-v26/).

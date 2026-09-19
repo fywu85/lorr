@@ -1601,6 +1601,9 @@ void Cgar::log_movement() const {
                     m.forward_closer, m.forward_farther, m.forward_equal, m.forward_unknown,
                     m.recovery, m.primary, m.commitment, m.pocket, stats_.expired_commitments);
     }
+    // The competition driver uses _exit on normal shutdown, so the final
+    // periodic diagnostic sample must not remain in the C stdout buffer.
+    std::fflush(stdout);
 }
 
 void Cgar::log_summary() {

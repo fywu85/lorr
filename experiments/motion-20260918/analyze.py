@@ -22,9 +22,17 @@ def movement(log):
             assert row['fw']==row['closer']+row['farther']+row['equal']+row['unknown']
     return phases,orientation
 
-def get_metrics(item):
+def get_metrics(item, require_complete=True):
     row=base(item);phases,orientation=movement(item[1].with_suffix('.log'))
-    assert phases and all(x['steps']==row['steps'] for x in phases.values())
+    complete=bool(phases) and all(x['steps']==row['steps'] for x in phases.values())
+    assert complete or not require_complete, 'incomplete final movement diagnostics: '+str(item[1])
+    row['movement_diagnostics']={'complete':complete,'required_steps':row['steps'],
+                                 'observed_steps':sorted({x['steps'] for x in phases.values()})}
+    if not complete:
+        # Retain independently extracted full trajectory metrics. Optional
+        # partial counters are explicitly separated and never called full-run.
+        row['partial_movement_phases']=phases;row['partial_orientation']=orientation
+        return row
     row['movement_phases']=phases;row['orientation']=orientation
     # The external action records independently check the diagnostic phase counts.
     before=phases[1]

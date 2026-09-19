@@ -7,10 +7,11 @@ import shlex
 import subprocess
 import sys
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--input',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--hold-job');p.add_argument('--control',default='baseline');p.add_argument('--workers',type=int,default=4);a=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--input',required=True,type=Path);p.add_argument('--output',required=True,type=Path);p.add_argument('--hold-job');p.add_argument('--control',default='baseline');p.add_argument('--workers',type=int,default=4);p.add_argument('--allow-incomplete-movement',action='store_true');a=p.parse_args()
 if a.workers < 1:p.error('workers must be positive')
 raw=a.input.resolve();script=raw/'motion-analysis.sh'
 cmd=[sys.executable,str(HERE/'analyze.py'),'--input',str(raw),'--output',str(a.output.resolve()),'--control',a.control,'--workers',str(a.workers)]
+if a.allow_incomplete_movement:cmd+=['--allow-incomplete-movement']
 script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in cmd)+'\n')
 submit=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','e','-cwd','-q','debian.q','-pe','threaded',str(a.workers),'-binding','linear:'+str(a.workers),'-l','exclusive=true,h_rt=00:30:00,h_vmem=4G','-m','n','-N','motion_analysis','-j','y','-o',str(raw/'motion-analysis.log'),'-S','/bin/bash']
 if a.hold_job:submit+=['-hold_jid',a.hold_job]
