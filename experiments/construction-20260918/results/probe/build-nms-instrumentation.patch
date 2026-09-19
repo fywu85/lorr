@@ -1,0 +1,493 @@
+--- a/Solution/Objects/Environment/environment.cpp
++++ b/Solution/Objects/Environment/environment.cpp
+@@ -1,272 +1,31 @@
++// Diagnostic reference: replace NMS's environment initialization only.
++// Every legal action costs one; no map type, lane pattern or fleet cap is used.
++// NMS's archived PIBTS search, operation pool and 32-worker portfolio are retained.
+ #include <Objects/Environment/environment.hpp>
+-
+-#include <Scheduler/journey_graph.hpp>
+-#include <Scheduler/scheduler.hpp>
+-#include <Tools/tools.hpp>
+ #include <settings.hpp>
+ 
+-#include "heuristics.h"
+-#include "planner.h"
+-
+-#include <thread>
+-
+-namespace DefaultPlanner {
+-    extern DefaultPlanner::TrajLNS trajLNS;
++void init_environment(SharedEnvironment& env) {
++    get_map_type() = MapType::NONE;
++    get_test_type() = TestType::NONE;  // 10,000 agent capacity for every instance
++    get_map() = Map(env);
++    get_gg() = GraphGuidance(env.rows, env.cols);
++    for (uint32_t cell = 1; cell < get_map().get_size(); ++cell)
++        for (uint32_t d = 0; d < 4; ++d)
++            for (uint32_t a = 0; a < 4; ++a) get_gg().set(cell, d, a, 1);
++    get_graph() = Graph(get_map(), get_gg());
++    get_hm() = HeuristicMatrix(get_graph());
++    get_dhm() = DynamicHeuristicMatrix(get_map(), get_graph());
++    get_dhmr() = DHMR(get_graph());
++    init_operations();
++    get_omap() = OperationsMap(get_graph(), get_operations());
++    get_robots_handler() = RobotsHandler(env.num_of_agents);
+ }
+ 
+-using namespace DefaultPlanner;
+-
+-void init_default_heuristic(SharedEnvironment &env) {
+-#if defined(ENABLE_DEFAULT_PLANNER) || defined(ENABLE_DEFAULT_SCHEDULER)
+-    ETimer timer;
+-    init_heuristics(&env);
+-
+-    auto do_work = [&](uint32_t thr) {
+-        for (uint32_t pos = thr + 1; pos < get_map().get_size(); pos += THREADS) {
+-            if (get_map().is_free(pos)) {
+-                HeuristicTable &ht = global_heuristictable[pos - 1];
+-                init_heuristic(ht, &env, pos - 1);
+-
+-#ifdef ENABLE_DEFAULT_PLANNER
+-
+-                Neighbors *ns = &trajLNS.neighbors;
+-
+-                std::vector<int> neighbors;
+-                int cost, diff;
+-                while (!ht.open.empty()) {
+-                    HNode curr = ht.open.front();
+-                    ht.open.pop_front();
+-
+-                    getNeighborLocs(ns, neighbors, curr.location);
+-
+-                    for (int next: neighbors) {
+-                        cost = curr.value + 1;
+-                        diff = curr.location - next;
+-
+-                        //assert(next >= 0 && next < get_map().get_size() - 1);
+-                        //set current cost for reversed direction
+-
+-                        if (cost >= ht.htable[next])
+-                            continue;
+-
+-                        ht.open.emplace_back(next, 0, cost);
+-                        ht.htable[next] = cost;
+-                    }
+-                }
+-#else// ENABLE_DEFAULT_SCHEDULER
+-                for (uint32_t dir = 0; dir < 4; dir++) {
+-                    uint32_t source = get_graph().get_node(Position(pos, dir));
+-                    for (uint32_t target = 1; target < get_map().get_size(); target++) {
+-                        if (get_map().is_free(target)) {
+-                            ht.htable[target - 1] = std::min(ht.htable[target - 1], static_cast<int>(get_hm().get(source, target)));
+-                        }
+-                    }
+-                }
+-#endif
+-            }
+-        }
+-    };
+-
+-    std::vector<std::thread> threads(THREADS);
+-    for (uint32_t thr = 0; thr < THREADS; thr++) {
+-        threads[thr] = std::thread(do_work, thr);
+-    }
+-    for (uint32_t thr = 0; thr < THREADS; thr++) {
+-        threads[thr].join();
+-    }
+-
+-    PRINT(Printer() << "init_default_heuristic: " << timer << '\n';);
+-#endif
++void update_environment(SharedEnvironment& env) {
++    get_robots_handler().update(env);
+ }
+ 
+-void init_d2path() {
+-#ifdef ENABLE_DEFAULT_PLANNER
+-    ETimer timer;
+-    auto do_work = [&](uint32_t thr) {
+-        for (uint32_t r = thr; r < trajLNS.env->num_of_agents; r += THREADS) {
+-            init_dist_2_path(trajLNS.traj_dists[r], trajLNS.env, trajLNS.trajs[r]);
+-        }
+-    };
+-
+-    std::vector<std::thread> threads(THREADS);
+-    for (uint32_t thr = 0; thr < THREADS; thr++) {
+-        threads[thr] = std::thread(do_work, thr);
+-    }
+-    for (uint32_t thr = 0; thr < THREADS; thr++) {
+-        threads[thr].join();
+-    }
+-
+-    PRINT(Printer() << "init_d2path: " << timer << '\n';);
+-#endif
+-}
+-
+-void init_environment(SharedEnvironment &env) {
+-    static bool already_init = false;
+-    if (already_init) {
+-        return;
+-    }
+-    already_init = true;
+-
+-    // update map type
+-    {
+-        if (env.map_name == "warehouse_large.map") {
+-            get_map_type() = MapType::WAREHOUSE;
+-        } else if (env.map_name == "sortation_large.map") {
+-            get_map_type() = MapType::SORTATION;
+-        } else if (env.map_name == "brc202d.map") {
+-            get_map_type() = MapType::GAME;
+-        } else if (env.map_name == "Paris_1_256.map") {
+-            get_map_type() = MapType::CITY;
+-        } else if (env.map_name == "random-32-32-20.map") {
+-            get_map_type() = MapType::RANDOM;
+-        } else {
+-            get_map_type() = MapType::NONE;
+-            FAILED_ASSERT("undefined map");
+-        }
+-    }
+-
+-    //if(get_map_type() != MapType::RANDOM){
+-    //    return;
+-    //}
+-
+-    get_map() = Map(env);
+-#ifdef ENABLE_GG_SOLVER
+-    // read GraphGuidance
+-    {
+-        std::ifstream input("Tmp/gg" + std::to_string(get_unique_id()));
+-        input >> get_gg();
+-    }
+-    // read operations weights
+-    /*{
+-        std::ifstream input("Tmp/opw" + std::to_string(get_unique_id()));
+-        uint32_t k = 0;
+-        input >> k;
+-        get_operations_weights().resize(k);
+-        for (int &x: get_operations_weights()) {
+-            input >> x;
+-        }
+-    }*/
+-#else
+-    Printer().get() = std::ofstream("printer.txt");
+-    get_guidance_map() = GuidanceMap(get_map_type(), get_map());
+-    // warehouse bad guidance map
+-    if (get_map_type() == MapType::RANDOM
+-        // TODO: GuidanceMap для warehouse довольно плох
+-        //|| get_map_type() == MapType::WAREHOUSE
+-    ) {
+-        //Printer() << "GuidanceMap\n";
+-        get_gg() = GraphGuidance(get_guidance_map());
+-    } else {
+-        //Printer() << "without GuidanceMap\n";
+-        get_gg() = GraphGuidance(env);
+-    }
+-
+-    // init operations weights
+-    /*{
+-        std::stringstream input("45 -7 38 -18 11 72 -34 72 -4 52 31 38 17 -32 7 45 24 48 -35 49 19 -75 0 25 -54 -26 2 -9 -71 -22 -2 38 29 18 -72 16 46 0 9 1 21 -7 15 33 19 -1");
+-                //("17 -200 20 20 10 60 70 30 10 40 40 20 20 50 50 110 130 150");
+-        uint32_t k = 0;
+-        input >> k;
+-        get_operations_weights().resize(k);
+-        for (int &x: get_operations_weights()) {
+-            input >> x;
+-        }
+-    }*/
+-#endif
+-    get_graph() = Graph(get_map(), get_gg());
+-    get_hm() = HeuristicMatrix(get_graph());
+-    //get_rhm() = RawHeuristicMatrix(get_graph());
+-    get_dhm() = DynamicHeuristicMatrix(get_map(), get_graph());
+-    get_dhmr() = DHMR(get_graph());
+-    //get_wmap() = WorkloadMap(get_map(), get_graph());
+-    //get_jg() = JG::JourneyGraph(&env);
+-    init_operations();
+-    get_omap() = OperationsMap(get_graph(), get_operations());
+-
+-    //ASSERT(get_operations_weights().size() == get_operations().size(), "unmatch sizes: " + std::to_string(get_operations_weights().size()) + "!=" + std::to_string(get_operations().size()));
+-
+-    init_default_heuristic(env);
+-
+-    // generate random agents
+-    /*Randomizer rnd(74124);
+-    std::ofstream output("agents.txt");
+-    std::set<uint32_t> S;
+-    for(int i = 0; i < 6500; i++){
+-        uint32_t pos = 0;
+-        while(true){
+-            pos = rnd.get(1, get_map().get_size() - 1);
+-            if(get_map().is_free(pos) && !S.count(pos)){
+-                break;
+-            }
+-        }
+-        S.insert(pos);
+-    }
+-    for(uint32_t pos : S){
+-        pos--;
+-        output << pos << '\n';
+-    }
+-    output.flush();
+-    std::exit(0);*/
+-}
+-
+-void update_environment(SharedEnvironment &env) {
+-    double task_reveal = env.task_pool.size() * 1.0 / env.num_of_agents;
+-    // true everywhere
+-    //ASSERT(std::abs(task_reveal - 1.5) < 1e-3, "invalid task reveal");
+-
+-    // update test type
+-    {
+-        if (get_map_type() == MapType::RANDOM) {
+-            if (env.num_of_agents == 100) {
+-                get_test_type() = TestType::RANDOM_1;
+-            } else if (env.num_of_agents == 200) {
+-                get_test_type() = TestType::RANDOM_2;
+-            } else if (env.num_of_agents == 400) {
+-                get_test_type() = TestType::RANDOM_3;
+-            } else if (env.num_of_agents == 700) {
+-                get_test_type() = TestType::RANDOM_4;
+-            } else if (env.num_of_agents == 800) {
+-                get_test_type() = TestType::RANDOM_5;
+-            }
+-        } else if (get_map_type() == MapType::CITY) {
+-            // FAILED_ASSERT("TODO");
+-            // CITY-02:
+-            // 3000 failed
+-            // 3500 ok
+-            // ASSERT(env.num_of_agents < 3500, "invalid num of agents");
+-        } else if (get_map_type() == MapType::GAME) {
+-            get_test_type() = TestType::GAME;
+-        } else if (get_map_type() == MapType::WAREHOUSE) {
+-            if (env.num_of_agents == 10'000) {
+-                get_test_type() = TestType::WAREHOUSE;
+-            }
+-        } else if (get_map_type() == MapType::SORTATION) {
+-            if (env.num_of_agents == 10'000) {
+-                get_test_type() = TestType::SORTATION;
+-            }
+-        } else {
+-            FAILED_ASSERT("invalid map");
+-        }
+-    }
+-
+-    static int prev_timestep_updated = -1;
+-    if (prev_timestep_updated == -1) {
+-        get_robots_handler() = RobotsHandler(env.num_of_agents);
+-        init_d2path();
+-    }
+-    get_robots_handler().update(env);
+-    if (prev_timestep_updated == env.curr_timestep) {
+-        // for planner
+-        //get_dhmr().update(env.curr_timestep, get_now() + Milliseconds(DHM_REBUILD_TIMELIMIT));
+-        return;
+-    }
+-    prev_timestep_updated = env.curr_timestep;
+-    //get_dhm().update(env, get_now() + Milliseconds(DHM_REBUILD_TIMELIMIT));
+-    //get_dhmr().update(env.curr_timestep, get_now() + Milliseconds(DHM_REBUILD_TIMELIMIT));
+-    //get_wmap().update(env, get_now());
+-}
+-
+-std::vector<Action> &get_myplan() {
++std::vector<Action>& get_myplan() {
+     static std::vector<Action> plan;
+     return plan;
+ }
+--- a/Solution/Objects/Environment/heuristic_matrix.cpp
++++ b/Solution/Objects/Environment/heuristic_matrix.cpp
+@@ -59,6 +59,7 @@
+ }
+ 
+ HeuristicMatrix::HeuristicMatrix(const Graph &graph) {
++    const uint32_t THREADS = std::max(1u, nms_probe_uint("NMS_PREPROCESS_THREADS", 32));
+     ETimer timer;
+     matrix.resize(get_map().get_size());
+ 
+--- a/Solution/Planner/PIBT/pibts.cpp
++++ b/Solution/Planner/PIBT/pibts.cpp
+@@ -533,9 +533,12 @@
+ }*/
+ 
+ uint32_t PIBTS::build(uint32_t r, uint32_t depth, uint32_t &counter) {
++    ++trace.recursive_calls;
++    trace.max_depth = std::max(trace.max_depth, depth);
+     if (counter == -1 ||//
+         //counter > 30'000 ||//
+         (counter % 16 == 0 && get_now() >= end_time)) {
++        if (counter != UINT32_MAX) trace.clock_cut = true;
+         counter = -1;
+         return 2;
+     }
+@@ -544,6 +547,7 @@
+     uint32_t old_desired = desires[r];
+ 
+     for (uint32_t desired: robot_desires[r][current_depth]) {
++        ++trace.candidates;
+         ASSERT(get_operation_depth(desired) <= current_depth, "invalid robot_desires");
+         desires[r] = desired;
+         uint32_t to_r = get_used(r);
+@@ -918,6 +922,12 @@
+ }
+ 
+ void PIBTS::solve(uint64_t seed) {
++    const double solve_started = nms_probe_seconds();
++    trace.robots = robots.size(); trace.helpers = THREADS;
++    trace.start_cpu = sched_getcpu();
++    cpu_set_t mask; CPU_ZERO(&mask);
++    if (sched_getaffinity(0, sizeof(mask), &mask)) throw std::runtime_error("get affinity");
++    for (int cpu = 0; cpu < CPU_SETSIZE; ++cpu) if (CPU_ISSET(cpu, &mask)) trace.affinity.push_back(cpu);
+     rnd = Randomizer(seed);
+ 
+     auto update_current_depth = [&]() {
+@@ -931,15 +941,22 @@
+     };
+ 
+     temp = 0;
++    const double construction_started = nms_probe_seconds();
+     for (uint32_t r: order) {
+         if (get_now() >= end_time) {
++            trace.clock_cut = true;
+             break;
+         }
++        ++trace.order_visited;
+         if (desires[r] != 0) {
+             continue;
+         }
+-        build(r);
+-    }
++        ++trace.roots;
++        if (build(r)) ++trace.roots_accepted;
++    }
++    trace.construction_complete = trace.order_visited == order.size() && !trace.clock_cut;
++    trace.construction_score = cur_score;
++    trace.construction_seconds = nms_probe_seconds() - construction_started;
+ 
+     best_desires = desires;
+     best_score = cur_score;
+@@ -987,6 +1004,9 @@
+             }
+         }
+     }
++    trace.final_score = best_score; trace.search_steps = step;
++    trace.solve_seconds = nms_probe_seconds() - solve_started;
++    trace.end_cpu = sched_getcpu();
+ }
+ 
+ std::vector<Action> PIBTS::get_actions() const {
+--- a/Solution/Planner/PIBT/pibts.hpp
++++ b/Solution/Planner/PIBT/pibts.hpp
+@@ -1,4 +1,5 @@
+ #pragma once
++#include "nms_probe.hpp"
+ 
+ #include <Objects/Basic/randomizer.hpp>
+ #include <Planner/PIBT/pibt2.hpp>
+@@ -119,5 +120,6 @@
+ 
+     [[nodiscard]] double get_score() const;
+ 
++    NmsConstructionTrace trace;
+     uint32_t step = 0;
+ };
+--- a/Solution/Planner/eplanner.cpp
++++ b/Solution/Planner/eplanner.cpp
+@@ -30,21 +30,25 @@
+                                     ,
+                                     int, std::vector<uint32_t>, std::vector<int64_t>, uint32_t>;
+ 
+-        constexpr uint32_t THR = THREADS;
++        const uint32_t THR = std::max(1u, nms_probe_uint("NMS_WORKERS", THREADS));
++        nms_probe_traces().assign(THR, {});
+         std::vector<std::vector<ItemType>> results_pack(THR);
+ 
++        const double prepare_started = nms_probe_seconds();
+         PIBTS main_pibt_solver(get_robots_handler().get_robots(), end_time);
++        nms_probe_prepare_seconds() = nms_probe_seconds() - prepare_started;
+ 
+         auto do_work = [&](uint32_t thr, uint64_t seed) {
+             ETimer timer;
+             PIBTS pibt = main_pibt_solver;
+             pibt.solve(seed);
++            pibt.trace.worker = thr; nms_probe_traces()[thr] = pibt.trace;
+             auto time = timer.get_ms();
+             results_pack[thr].emplace_back(pibt.get_score(), pibt.get_actions(), time, pibt.get_desires(),
+                                            pibt.get_changes(), pibt.step);
+         };
+ 
+-        static Randomizer rnd;
++        static Randomizer rnd(nms_probe_uint("NMS_SEED", 202));
+         std::vector<std::thread> threads(THR);
+         for (uint32_t thr = 0; thr < THR; thr++) {
+             threads[thr] = std::thread(do_work, thr, rnd.get());
+--- a/Solution/nms_probe.hpp
++++ b/Solution/nms_probe.hpp
+@@ -0,0 +1,44 @@
++#pragma once
++#include <algorithm>
++#include <chrono>
++#include <cstdint>
++#include <cstdlib>
++#include <stdexcept>
++#include <string>
++#include <vector>
++#include <sched.h>
++
++inline uint32_t nms_probe_uint(const char* name, uint32_t fallback) {
++    const char* value = std::getenv(name);
++    if (!value) return fallback;
++    const std::string text(value);
++    size_t consumed = 0;
++    const auto parsed = std::stoull(text, &consumed);
++    if (text.empty() || text[0] == '-' || consumed != text.size() || parsed > UINT32_MAX)
++        throw std::runtime_error(std::string("invalid probe setting: ") + name);
++    return static_cast<uint32_t>(parsed);
++}
++
++inline double nms_probe_seconds() {
++    return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++
++struct NmsConstructionTrace {
++    uint32_t worker = 0, order_visited = 0, robots = 0, roots = 0, roots_accepted = 0;
++    uint64_t recursive_calls = 0, candidates = 0;
++    uint32_t max_depth = 0, search_steps = 0, helpers = 0;
++    bool clock_cut = false, construction_complete = false;
++    double construction_score = 0, final_score = 0, construction_seconds = 0, solve_seconds = 0;
++    int start_cpu = -1, end_cpu = -1;
++    std::vector<int> affinity;
++};
++
++inline std::vector<NmsConstructionTrace>& nms_probe_traces() {
++    static std::vector<NmsConstructionTrace> traces;
++    return traces;
++}
++
++inline double& nms_probe_prepare_seconds() {
++    static double seconds = 0;
++    return seconds;
++}
+--- a/Solution/settings.hpp
++++ b/Solution/settings.hpp
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <cstdint>
++#include "nms_probe.hpp"
+ #include <fstream>
+ #include <iostream>
+ #include <set>
+@@ -54,11 +55,11 @@
+ 
+ static constexpr uint32_t MAX_CONST = 10'000'000;
+ 
+-static constexpr uint32_t THREADS = 32;
++static const uint32_t THREADS = std::max(1u, nms_probe_uint("NMS_HELPERS", 32));
+ 
+ // if -1, then use timer
+ // else use steps, without timer
+-static constexpr uint32_t PIBTS_STEPS = -1;
++static const uint32_t PIBTS_STEPS = nms_probe_uint("NMS_STEPS", UINT32_MAX);
+ 
+ static constexpr uint32_t DHM_REBUILD_TIMELIMIT = 0;
+ 

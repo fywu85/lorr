@@ -111,6 +111,7 @@ protected:
 
     //for evaluation
     vector<int> solution_costs;
+    list<double> entry_compute_times;
     list<double> planner_times; 
     bool fast_mover_feasible = true;
 

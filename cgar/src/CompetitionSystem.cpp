@@ -82,6 +82,7 @@ void BaseSystem::plan(int & timeout_timesteps)
                 task_td.join();
                 started = false;
                 auto res = future.get();
+                entry_compute_times.push_back(planner->last_compute_seconds());
 
                 logger->log_info("planner returns", timestep + timeout_timesteps);
                 return;
@@ -105,6 +106,7 @@ bool BaseSystem::planner_initialize()
     if (init_future.wait_for(std::chrono::milliseconds(preprocess_time_limit)) == std::future_status::ready)
     {
         init_td.join();
+        init_future.get();  // Read and propagate initialization exceptions.
         return true;
     }
 
@@ -259,6 +261,9 @@ void BaseSystem::saveResults(const string &fileName, int screen) const
     js["numScheduleErrors"] = task_manager.get_number_errors();
 
     js["numEntryTimeouts"] = total_timetous;
+    js["entryComputeSamples"] = entry_compute_times.size();
+    js["entryComputeMaxSeconds"] = entry_compute_times.empty() ? -1.0 :
+        *std::max_element(entry_compute_times.begin(), entry_compute_times.end());
 
     // Save start locations[x,y,orientation]
     if (screen <= 2)
@@ -279,6 +284,9 @@ void BaseSystem::saveResults(const string &fileName, int screen) const
         for (double time: planner_times)
             planning_times.push_back(time);
         js["plannerTimes"] = planning_times;
+        json compute_times = json::array();
+        for (double time: entry_compute_times) compute_times.push_back(time);
+        js["entryComputeTimes"] = compute_times;
 
         // Save errors
         js["errors"] = simulator.action_errors_to_json();

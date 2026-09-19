@@ -24,13 +24,16 @@ def main():
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--control', default='baseline')
+    parser.add_argument('--workers', type=int, default=4)
     args = parser.parse_args()
+    if args.workers < 1:
+        parser.error('workers must be positive')
     root, out = args.input, args.output
     spec = json.loads((root / 'spec.json').read_text())
     summaries = {c['name']: json.loads((root / c['name'] / 'summary.json').read_text()) for c in spec['cases']}
     assert all(len(rows) == len(spec['instances']) for rows in summaries.values()), 'incomplete matrix'
     valid = [(c, r) for c in spec['cases'] for r in summaries[c['name']] if r['valid']]
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as pool:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.workers) as pool:
         metrics = list(pool.map(get_metrics, [(c['name'], root / c['name'] / (r['instance'] + '.json')) for c, r in valid]))
     keyed = {(r['case'], r['instance']): r for r in metrics}
     controls = {(c['seed'], c['repeat']): c for c in spec['cases'] if c['variant'] == args.control}

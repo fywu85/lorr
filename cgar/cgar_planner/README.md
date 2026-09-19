@@ -58,6 +58,13 @@ progress mechanism.
 
 ## Experimental assignment changes
 
+`CGAR_GLOBAL_SAMPLES` (default 0, clamped to 0–512) adds a deterministic
+sample of free tasks to each idle robot's initial shortlist, even when its local
+search found candidates. Samples use a coprime stride through the complete
+eligible task list, exclude local duplicates, and fit within `CGAR_MAX_PAIRS`.
+The oldest-task admission is still independent. This is an experimental option;
+its full warehouse comparisons are in the [construction study](../../experiments/construction-20260918/RESULTS.md).
+
 `CGAR_PICKUP_WEIGHT` multiplies pickup distance in the scheduler objective before
 adding the remaining task-chain cost. The default is 1; accepted values are
 clamped to 1–16. With HRRN enabled, waiting age is divided by this weighted cost.
@@ -161,6 +168,57 @@ contains per-seed throughput, runtime and memory, identical-goal NMS comparisons
 and unsuccessful four-proposal and rotation-reservation experiments. Those two
 rejected mechanisms are archived as patches and absent from the active planner.
 
+## Experimental temporal construction and repair
+
+`CGAR_TEMPORAL=1` uses a generic five-step operation pool, displacement constructor,
+and fixed-work repair adapted from NMS; see `LICENSE_NMS`. It requires orientation
+guidance and keeps CGAR's primary, recovery witnesses, pocket locks, parking and
+capacity rules. Ordinary spatial commitments are replaced by a temporal joint
+plan. Supporting forward moves required by a protected first action are pinned,
+and unfinished protected destination cells cannot be newly occupied. All five
+reservation layers are independently checked before publishing the first action.
+
+The tested warehouse research profile is:
+
+```sh
+CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1 CGAR_TURN_TABLE_MB=8192 \
+CGAR_TEMPORAL=1 CGAR_TEMPORAL_STEPS=50000 CGAR_TEMPORAL_EQUAL_WEIGHT=1 \
+./cgar/build/lifelong -i mr24/warehouse.domain/WAREHOUSE.json -o result.json -s 5000 -t 1000 -d 2
+```
+
+Use a reserved core rather than the shared interactive CPU quota. This profile
+averages 107,413 tasks across three full seeds, versus 43,407 for the paired
+previous cache profile. Measured total peak RSS is about 15.2 GiB. The precise
+seed-0 repeat has maximum complete entry time 0.5051 seconds. It has not yet
+matched the local leader or earned six-seed confirmation. The switch defaults
+off, and these results do not imply performance on other maps.
+
+- `CGAR_TEMPORAL_STEPS` prescribes repair attempts per worker (0–1,000,000).
+  Construction always processes the complete order. Zero means construction only.
+- `CGAR_TEMPORAL_BUDGET` bounds displacements per construction root (default 8192);
+  repair roots also have the native cap of 1000. A failed bounded attempt rolls
+  back according to the algorithm, independently of elapsed time.
+- `CGAR_TEMPORAL_ORDER` selects ticket (0), current-goal distance (1, default),
+  or estimated remaining-task-chain distance (2) construction order.
+- `CGAR_TEMPORAL_EQUAL_WEIGHT=1` gives every active ordinary robot equal score
+  weight; the default retains rank weights. Protected actions remain fixed.
+- `CGAR_TEMPORAL_WORKERS` (1–32) runs a deterministic portfolio.
+  `CGAR_TEMPORAL_THREADS` controls concurrent execution, defaulting to the worker
+  count. All prescribed workers finish or the entire decision fails. Seeds and
+  tie-breaking do not depend on thread completion order. The GRID matrix harness
+  accepts `--cpus-per-instance`; affinity size alone is not proof of an allocation.
+- `CGAR_TEMPORAL_CANDIDATE_LIMIT` (default 0) experiments with a deterministic
+  total candidate threshold per worker, including construction. It is checked
+  between complete repair attempts; the final attempt may overshoot. The attempt
+  cap also applies, defaulting to 1,000,000 when this option is positive. It has
+  only deadline-screening evidence so far, not a full-run performance claim.
+
+A deadline overrun propagates as `Timeout`; no partial worker portfolio or
+clock-truncated search is returned successfully. The [study](../../experiments/construction-20260918/README.md)
+retains native conformance, full trajectories' fingerprints, failed settings,
+resource allocations and the independent Fable review. These finite checks do
+not constitute an end-to-end liveness proof.
+
 ## Experimental PIBT reference policy
 
 `CGAR_PIBT_REFERENCE=1` selects native `Kei18/pibt2` spatial candidate ordering and
@@ -201,7 +259,12 @@ Scheduling, distance construction, recovery and PIBT share the entry's absolute
 wall-clock deadline. If required computation does not finish, CGAR throws `Timeout`;
 the competition entry logs `CGAR_TIMEOUT` and exits with code 124. The runner records
 a failed timeout with unavailable task/error counts, rather than a successful
-partial schedule or a budget-induced waiting plan. The simulator is unchanged.
+partial schedule or a budget-induced waiting plan. Initialization failures exit
+125 (invalid configuration or exception) or 124 (timeout), and readiness is set
+only after complete initialization. Local simulator instrumentation propagates
+initialization exceptions and adds `entryComputeTimes` at the final entry deadline
+check. The original `plannerTimes` also includes subsequent simulator logging;
+both series are retained. Movement rules and task accounting are unchanged.
 
 Distance tables use compact traversable-cell indices and publish only complete
 BFS results. The primary receives the first exact lookup. Fixed table-count,

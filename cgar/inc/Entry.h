@@ -33,4 +33,10 @@ public:
     virtual void compute(int time_limit, std::vector<Action> & plan, std::vector<int> & proposed_schedule);
 
     void update_goal_locations(std::vector<int> & proposed_schedule);
+
+    // Captured at the final deadline check, before the simulator logs completion.
+    double last_compute_seconds() const { return last_compute_seconds_; }
+private:
+    double last_compute_seconds_ = -1;
+
 };

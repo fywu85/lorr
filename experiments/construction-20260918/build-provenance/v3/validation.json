@@ -1,0 +1,29 @@
+{
+  "completed": true,
+  "build_log_sha256": "d9187b73e5ea732cfafd49b71bf8b3f247662c737b292f10d43f52a612d08a99",
+  "passed_checks": [
+    "TEMPORAL_KERNEL passed chain_robots=1500 random_cases=48 bounded_rollback=1 explicit_timeout=1",
+    "PERSISTENT_PRIMARY passed",
+    "CAPACITY_BOOTSTRAP passed active=3 parked=2",
+    "TEMPORAL_INTEGRATION passed primary_intent=1 pockets=1 capacity=1",
+    "ORIENTED_DISTANCES passed state_goal_pairs=900 explicit_timeout=1 bounded_cache=1",
+    "MOVEMENT_DIAGNOSTICS passed turn_dependency=1 actions_unchanged=1",
+    "UNOPENED_REASSIGNMENT passed pickup_distance=20->2 task_cap=1 started_tasks_preserved=1",
+    "REASSIGNMENT_PRIMARY_AND_COMMITMENTS passed",
+    "REASSIGNMENT_RECOVERY_PROTECTION passed",
+    "REASSIGNMENT_FAIR_ADMISSION passed",
+    "WEIGHTED_PICKUP_ASSIGNMENT passed empty_travel=4->1 aging_preserved=1",
+    "CACHE_AND_CHAIN_CONSISTENCY passed approximate=2 refined=4 retained_after_eviction=4",
+    "CONSISTENT_PROGRESS_BASIS passed",
+    "PERSISTENT_PRIMARY passed",
+    "CAPACITY_BOOTSTRAP passed active=3 parked=2",
+    "FAIR_SPARSE_SCHEDULE passed",
+    "SPARSE_FALLBACK_QUALITY passed pickup_distance=290->90 searches=4->2",
+    "REPLENISH_TAKEN_CANDIDATE passed",
+    "BOUNDED_SCHEDULER_WORK passed explicit_timeout=1 budget_ms=1 elapsed_ms=1",
+    "COMPACT_DISTANCES passed",
+    "BOUNDED_DISTANCE_WORK passed explicit_timeout=1 budget_ms=5 elapsed_ms=5",
+    "All CGAR regression checks passed"
+  ],
+  "patch_base": "0643ca7aad8515986e38a75cad18b244bb37bc97"
+}

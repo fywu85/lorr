@@ -93,6 +93,16 @@ over default CGAR across six planner seeds, using about 14.3 GiB total peak RSS.
 Full KittyKnight/NMS references, the remaining throughput gap, unsuccessful
 sequence prototypes, and a second Fable 5.1 Max CLI review are retained.
 
+The [temporal construction study](experiments/construction-20260918/RESULTS.md)
+ports and independently checks NMS-style construction and fixed-work repair inside
+CGAR's protection rules. The optional equal-weight 50k profile averages 107,413
+warehouse tasks over three seeds, versus 43,407 for the paired cache control.
+Serial and parallel portfolios produce identical full trajectories. A precise
+timing repeat stays below 0.506 seconds per entry and about 15.2 GiB total memory;
+six-seed confirmation and the 152,981-task local leader target remain outstanding.
+The study also records initialization-failure fixes, a further Fable CLI review,
+and an exact travel audit that identifies the remaining loaded-motion gap.
+
 Before values come from the existing draft runs and are preserved in
 [benchmarks/cgar-draft.json](benchmarks/cgar-draft.json). These are single-run
 throughput comparisons; passing the simulator does not prove starvation freedom.

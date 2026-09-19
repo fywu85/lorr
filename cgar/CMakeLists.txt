@@ -80,6 +80,9 @@ ELSE()
 ENDIF()
 
 
+find_package(Threads REQUIRED)
+target_link_libraries(lifelong Threads::Threads)
+
 add_custom_target(clean_all
     COMMAND ${CMAKE_BUILD_TOOL} clean
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/CMakeCache.txt
@@ -101,6 +104,6 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 include(CTest)
 if(BUILD_TESTING)
     add_executable(cgar_regression tests/cgar_regression.cpp cgar_planner/cgar.cpp)
-    target_link_libraries(cgar_regression ${Boost_LIBRARIES})
+    target_link_libraries(cgar_regression ${Boost_LIBRARIES} Threads::Threads)
     add_test(NAME cgar_regression COMMAND cgar_regression)
 endif()

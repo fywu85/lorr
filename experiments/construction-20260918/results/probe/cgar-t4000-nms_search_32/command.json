@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/shared/share_mala/fw2449/lorr2024/tools/run_with_usage.py",
+    "--output",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-construction-probe-20260918/cgar-t4000-nms_search_32/usage.json",
+    "--",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-construction-probe-build-20260918/nms-snapshot",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-construction-probe-build-20260918/snapshots/cgar-t4000.json",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-construction-probe-20260918/cgar-t4000-nms_search_32/result.json",
+    "100",
+    "1000"
+  ],
+  "environment": {
+    "CGAR_SEED": "0",
+    "NMS_SEED": "202",
+    "NMS_PREPROCESS_THREADS": "32",
+    "OMP_NUM_THREADS": "32",
+    "OMP_DYNAMIC": "FALSE",
+    "NMS_HELPERS": "32",
+    "NMS_WORKERS": "32"
+  }
+}

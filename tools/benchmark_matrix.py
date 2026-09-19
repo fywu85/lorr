@@ -19,16 +19,19 @@ from cpu_resources import cpu_resources
 def execute(out):
     spec = json.loads((out / 'spec.json').read_text())
     resources = cpu_resources()
-    count = spec['parallel_suites'] * spec['jobs_per_suite']
+    count = spec['parallel_suites'] * spec['jobs_per_suite'] * spec.get('cpus_per_instance', 1)
     cpus = resources['representative_cpus'][:count]
     assert len(cpus) == count and int(os.environ['NSLOTS']) >= count, resources
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota'] >= count, resources
     assert hashlib.sha256((out / 'lifelong').read_bytes()).hexdigest() == spec['build']['binary_sha256']
     write(out / 'allocation.json', {'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
           'resources': resources, 'selected_cpus': cpus, 'job_id': os.environ.get('JOB_ID')})
+    if spec.get('expected_cpu_model'):
+        assert resources['cpu_model'] == spec['expected_cpu_model'], resources
     groups = queue.Queue()
-    for start in range(0, count, spec['jobs_per_suite']):
-        groups.put(cpus[start:start + spec['jobs_per_suite']])
+    group_size = spec['jobs_per_suite'] * spec.get('cpus_per_instance', 1)
+    for start in range(0, count, group_size):
+        groups.put(cpus[start:start + group_size])
 
     def run(case):
         selected = groups.get()
@@ -38,7 +41,9 @@ def execute(out):
             command = [sys.executable, str(ROOT / 'tools/benchmark_cgar.py'), '--output', str(out / case['name']),
                        '--binary', str(out / 'lifelong'), '--source-manifest', str(out / 'build.json'),
                        '--jobs', str(spec['jobs_per_suite']), '--cpu-list', ','.join(map(str, selected)),
+                       '--cpus-per-instance', str(spec.get('cpus_per_instance', 1)),
                        '--seed', str(case['seed']), '--plan-time-limit-ms', str(spec['time_limit_ms']),
+                       '--log-detail-level', str(spec.get('log_detail_level', 1)),
                        '--instances'] + spec['instances']
             if spec['horizons']:
                 command += ['--horizon-profile', str(out / 'horizons.json')]
@@ -72,14 +77,19 @@ def main():
     parser.add_argument('--parallel-suites', type=int, default=6)
     parser.add_argument('--jobs-per-suite', type=int, default=5)
     parser.add_argument('--time-limit-ms', type=int, default=1000)
+    parser.add_argument('--log-detail-level', type=int, choices=[1, 2, 3], default=1)
+    parser.add_argument('--cpus-per-instance', type=int, default=1, help='Reserved physical cores per process')
     parser.add_argument('--memory-gib-per-slot', type=int, default=8)
     parser.add_argument('--runtime', default='01:00:00', help='Grid Engine wall-time limit; distinct from the per-decision limit')
+    parser.add_argument('--hosts', nargs='+', help='Optional scheduler host allowlist for hardware-controlled comparisons')
+    parser.add_argument('--expected-cpu-model', help='Fail before benchmarking if the allocated CPU model differs')
+    parser.add_argument('--hold-job', help='Wait for these Grid Engine job IDs before starting')
     parser.add_argument('--execute', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
     out = args.output.resolve()
     if args.execute:
         return execute(out)
-    if not args.variants or min(args.repeat, args.parallel_suites, args.jobs_per_suite, args.time_limit_ms, args.memory_gib_per_slot) < 1:
+    if not args.variants or min(args.repeat, args.parallel_suites, args.jobs_per_suite, args.time_limit_ms, args.memory_gib_per_slot, args.cpus_per_instance) < 1:
         parser.error('variants and positive work limits are required')
     variants = json.loads(args.variants.read_text())
     if not isinstance(variants, dict) or not variants:
@@ -117,14 +127,18 @@ def main():
         write(out / 'horizons.json', horizons)
     spec = {'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
             'parallel_suites': min(args.parallel_suites, len(cases)), 'jobs_per_suite': min(args.jobs_per_suite, len(instances)),
-            'time_limit_ms': args.time_limit_ms, 'memory_gib_per_slot': args.memory_gib_per_slot, 'runtime': args.runtime}
+            'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'runtime': args.runtime,
+            'hosts': args.hosts, 'expected_cpu_model': args.expected_cpu_model, 'hold_job': args.hold_job}
     write(out / 'spec.json', spec)
     command = ['/usr/bin/python3', str(Path(__file__).resolve()), '--execute', '--output', str(out)]
     (out / 'job.sh').write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(shlex.quote(x) for x in command) + '\n')
-    cores = spec['parallel_suites'] * spec['jobs_per_suite']
-    submit = ['/opt/n1ge/bin/lx24-amd64/qsub', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q', '-pe', 'threaded', str(cores),
+    cores = spec['parallel_suites'] * spec['jobs_per_suite'] * spec['cpus_per_instance']
+    queue_selector = ','.join('debian.q@' + host for host in args.hosts) if args.hosts else 'debian.q'
+    submit = ['/opt/n1ge/bin/lx24-amd64/qsub', '-terse', '-w', 'e', '-cwd', '-q', queue_selector, '-pe', 'threaded', str(cores),
               '-binding', 'linear:' + str(cores), '-l', 'exclusive=true,h_rt=' + args.runtime + ',h_vmem=' + str(args.memory_gib_per_slot) + 'G', '-m', 'n', '-N', 'lorr_matrix',
               '-j', 'y', '-o', str(out / 'scheduler.log'), '-S', '/bin/bash', str(out / 'job.sh')]
+    if args.hold_job:
+        submit[-1:-1] = ['-hold_jid', args.hold_job]
     result = subprocess.run(submit, cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     write(out / 'submission.json', {'command': submit, 'returncode': result.returncode, 'response': result.stdout})
     print(result.stdout, end='', flush=True)

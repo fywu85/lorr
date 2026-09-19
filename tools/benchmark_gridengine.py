@@ -15,7 +15,8 @@ from cpu_resources import cpu_resources
 
 ROOT = Path(__file__).resolve().parents[1]
 # Include prototype headers when an archived source patch adds one.
-SOURCES = (['cgar/cgar_planner/cgar.cpp'] +
+SOURCES = (['cgar/CMakeLists.txt', 'cgar/inc/Entry.h', 'cgar/inc/CompetitionSystem.h',
+            'cgar/src/CompetitionSystem.cpp', 'cgar/cgar_planner/cgar.cpp'] +
            sorted(str(p.relative_to(ROOT)) for p in (ROOT / 'cgar/cgar_planner').glob('*.hpp')) +
            ['cgar/src/MAPFPlanner.cpp', 'cgar/src/TaskScheduler.cpp', 'cgar/src/Entry.cpp'])
 

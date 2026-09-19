@@ -1,0 +1,63 @@
+{
+  "source_sha256": "860fb749849c32054aed947ea17d37d14c2cb71deb6206744c956a59b17fffad",
+  "binary_sha256": "5c09d5989c1ce7821a927de38ad590673a17e7f5f1f169db765040e4290018f2",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-travel-decomposition-v4-20260918/results/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-travel-decomposition-v4-20260918/results/decompose"
+  ],
+  "fixture_passed": true,
+  "allocation": {
+    "hostname": "research57",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      64
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ]
+    ],
+    "address_space_limit_bytes": [
+      4294967296,
+      4294967296
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "cgar_cache": {
+      "path": "runs/cgar-temporal-full-v1-20260918/orientation_8192-s0-r0/WAREHOUSE.json",
+      "sha256": "c78d8c23678f08c291c433f7bfabaebbdc393790b398567b5aa8899d54949527"
+    },
+    "cgar_equal_50000": {
+      "path": "runs/cgar-temporal-validation-v5-20260918/equal_50000-s0-r0/WAREHOUSE.json",
+      "sha256": "b66d38c5ec93a1d53a8c8d8811a789b2e45b87cdf5ccbb37cec3e20773b7d87b"
+    },
+    "kittyknight": {
+      "path": "runs/warehouse-leaders-full-20260918/kk-WAREHOUSE/result.json",
+      "sha256": "1b3c1cf93ad9c0e5502e22b4e455d9ee18fb0a94740104bbd92e0e9bb6f2c2d8"
+    },
+    "nms_diagnostic": {
+      "path": "runs/warehouse-leaders-full-20260918/nms-WAREHOUSE/result.json",
+      "sha256": "2074b608fac0bb85e89bad99c6939bdd5bd91454ff0cc7ec7ad9beb12d1bb987"
+    }
+  }
+}

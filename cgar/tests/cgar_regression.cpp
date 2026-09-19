@@ -6,6 +6,8 @@
 #include <queue>
 #include <set>
 #include <stdexcept>
+#include <thread>
+#include <exception>
 using namespace cgar;
 int nb(int u,int d,int R,int C) {
  int r=u/C,c=u%C;
@@ -254,6 +256,29 @@ void consistent_progress_basis() {
  if(legacy.best!=2||legacy.stall!=1)throw std::runtime_error("disabled switch changed baseline progress policy");
  std::cout<<"CONSISTENT_PROGRESS_BASIS passed\n";
 }
+void global_task_candidates() {
+ // A nearby batch fills the local shortlist, but a slightly farther pickup
+ // has a much shorter complete task. It must compete before fallback is needed.
+ SharedEnvironment e;e.num_of_agents=1;e.rows=2;e.cols=50;e.map.assign(100,0);
+ e.curr_states={State(0,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);
+ for(int id=0;id<16;++id){Task t;t.task_id=id;t.t_revealed=0;t.locations={1,49,1,49};e.task_pool.emplace(id,t);}
+ Task shorter;shorter.task_id=100;shorter.t_revealed=0;shorter.locations={20,21};e.task_pool.emplace(100,shorter);
+ setenv("CGAR_HRRN","0",1);
+ Cgar control;control.initialize(&e,1000);std::vector<int> before;control.schedule(&e,100,before);
+ setenv("CGAR_GLOBAL_SAMPLES","64",1);
+ Cgar broad;broad.initialize(&e,1000);std::vector<int> after;broad.schedule(&e,100,after);
+ if(before!=std::vector<int>{0}||after!=std::vector<int>{100}||broad.stats().global_assignments!=1||broad.stats().global_evaluations!=1)
+  throw std::runtime_error("global candidates did not complement the nonempty local shortlist");
+ // The independent oldest-task admission still runs with the broader shortlist.
+ e.task_pool.erase(100);broad.schedule(&e,100,after);
+ if(after!=std::vector<int>{0}||broad.stats().fair_assignments!=1)
+  throw std::runtime_error("global candidates bypassed fair admission");
+ // Tight pair caps must preserve coverage and the existing fairness fixture.
+ fair_sparse_schedule();
+ unsetenv("CGAR_GLOBAL_SAMPLES");unsetenv("CGAR_HRRN");
+ std::cout<<"GLOBAL_TASK_CANDIDATES passed local_nonempty=1 shorter_chain=1 unique_samples=1 fair_admission=1 bounded_pairs=1\n";
+}
+
 void weighted_pickup_assignment() {
  SharedEnvironment e;e.num_of_agents=1;e.rows=2;e.cols=11;e.map.assign(22,0);
  e.curr_states={State(0,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);
@@ -398,4 +423,129 @@ void movement_diagnostics() {
  std::cout<<"MOVEMENT_DIAGNOSTICS passed turn_dependency=1 actions_unchanged=1\n";
 }
 
-int main(){try{oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void temporal_kernel_regression() {
+ auto validate=[](const TemporalPibt& search,const std::vector<int>& starts,int cells){
+  std::vector<int> previous=starts,owner(cells,-1);
+  for(int t=0;t<5;++t){
+   for(size_t i=0;i<starts.size();++i){int v=search.choice(i).path->cells[t];if(v<0||v>=cells||owner[v]>=0)throw std::runtime_error("temporal test vertex conflict");owner[v]=i;}
+   for(size_t i=0;i<starts.size();++i){int j=owner[previous[i]];if(j>=0&&j!=static_cast<int>(i)&&previous[j]==search.choice(i).path->cells[t])throw std::runtime_error("temporal test swap");}
+   for(size_t i=0;i<starts.size();++i){previous[i]=search.choice(i).path->cells[t];owner[previous[i]]=-1;}
+  }
+ };
+ // A displacement chain longer than all earlier prototype depth limits.
+ const int n=1500;TemporalGeometry geometry;geometry.initialize(std::vector<char>(n+1,1),1,n+1,[]{});
+ std::vector<std::vector<TemporalChoice>> choices(n);std::vector<int> starts(n),order(n);std::vector<char> fixed(n,0);std::vector<double> power(n,1);
+ int forward=-1;const auto& ops=TemporalGeometry::operations();
+ for(int k=1;k<129;++k)if(ops[k]==std::array<uint8_t,5>{0,3,3,3,3})forward=k;
+ if(forward<0)throw std::runtime_error("missing forward temporal operation");
+ for(int i=0;i<n;++i){starts[i]=order[i]=i;const auto& paths=geometry.paths(i,0);choices[i]={{&paths[0],0,0},{&paths[forward],-1,forward}};}
+ TemporalPibt full(n+1,choices,fixed,power,8192,0);full.construct(order,[]{});validate(full,starts,n+1);
+ if(full.stats.max_depth!=n-1)throw std::runtime_error("temporal chain was truncated");
+ for(int i=0;i<n;++i)if(full.choice(i).path->cells[0]!=i+1)throw std::runtime_error("temporal chain did not advance");
+ TemporalPibt bounded(n+1,choices,fixed,power,8,0);bounded.construct(order,[]{});validate(bounded,starts,n+1);
+ if(!bounded.stats.budget_exhausted||bounded.selected(0)!=0)throw std::runtime_error("temporal bounded rollback failed");
+ bool timeout=false;try{TemporalPibt x(n+1,choices,fixed,power,8192,0);x.construct(order,[]{throw Timeout("temporal_test");});}catch(const Timeout&){timeout=true;}
+ if(!timeout)throw std::runtime_error("temporal deadline did not propagate");
+ // Random legal geometries, movable waits, immutable protected robots, and
+ // independent collision checks after both construction and fixed-count search.
+ TemporalGeometry small;small.initialize(std::vector<char>(36,1),6,6,[]{});
+ std::mt19937 random(202);
+ for(int seed=0;seed<48;++seed){
+  const int count=12;std::vector<int> locations(36);std::iota(locations.begin(),locations.end(),0);std::shuffle(locations.begin(),locations.end(),random);locations.resize(count);
+  std::vector<std::vector<TemporalChoice>> options(count);std::vector<char> protected_robot(count,0);protected_robot[seed%count]=1;
+  std::vector<double> weights(count,1);std::vector<int> ranks(count);std::iota(ranks.begin(),ranks.end(),0);
+  for(int i=0;i<count;++i){const auto& paths=small.paths(locations[i],random()%4);int goal=random()%36;
+   auto cost=[&](const TemporalPath& path,int op){int cell=path.cells[4];return int64_t(50)*(std::abs(cell/6-goal/6)+std::abs(cell%6-goal%6))-op;};
+   options[i].push_back({&paths[0],cost(paths[0],0),0});
+   for(int k=1;k<129;++k)if(paths[k].valid)options[i].push_back({&paths[k],cost(paths[k],k),k});
+   std::sort(options[i].begin()+1,options[i].end(),[](const auto& a,const auto& b){return std::tie(a.cost,a.operation)<std::tie(b.cost,b.operation);});
+  }
+  TemporalPibt search(36,options,protected_robot,weights,8192,seed);search.construct(ranks,[]{});validate(search,locations,36);search.repair(256,[]{});validate(search,locations,36);
+  if(search.selected(seed%count)!=0||search.stats.repairs!=256)throw std::runtime_error("temporal fixed-work or protection failed");
+  TemporalPibt work_a(36,options,protected_robot,weights,8192,seed),work_b(36,options,protected_robot,weights,8192,seed);
+  work_a.construct(ranks,[]{});work_b.construct(ranks,[]{});
+  const long long limit=work_a.stats.candidates+1000;
+  work_a.repair(10000,[]{},limit);
+  work_b.repair(10000,[]{check_deadline(std::chrono::steady_clock::time_point::max(),"work_counter_test");},limit);
+  validate(work_a,locations,36);validate(work_b,locations,36);
+  if(work_a.stats.candidates<limit||work_a.stats.repairs>=10000||work_a.stats.repairs!=work_b.stats.repairs)
+   throw std::runtime_error("candidate-work stop condition was not deterministic");
+  for(int i=0;i<count;++i)if(work_a.selected(i)!=work_b.selected(i))throw std::runtime_error("deadline observation changed candidate-work decisions");
+ }
+ std::cout<<"TEMPORAL_KERNEL passed chain_robots=1500 random_cases=48 bounded_rollback=1 explicit_timeout=1 deterministic_candidate_work=1\n";
+}
+
+void temporal_primary_regression() {
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);
+ SharedEnvironment e;e.num_of_agents=2;e.rows=3;e.cols=4;e.map.assign(12,0);
+ e.curr_states={State(6,0,3),State(5,0,2)};e.goal_locations={{},{{6,0}}};e.curr_task_schedule={-1,-1};
+ Cgar c;c.initialize(&e,1000);std::vector<Action> actions;
+ bool reached=false;
+ for(int t=0;t<30;++t){
+  e.curr_timestep=t;if(t==1)e.goal_locations[0]={{4,0}};
+  c.plan(&e,1000,actions);auto next=step(e,e.curr_states,actions);
+  if(next.empty())throw std::runtime_error("temporal primary fixture invalid");
+  e.curr_states=next;
+  if(e.curr_states[1].location==6){reached=true;break;}
+ }
+ if(!reached)throw std::runtime_error("temporal primary intent was not completed");
+ // The original pocket/recovery fixtures must also finish with the layer active.
+ pocket_case();persistent_primary();capacity_bootstrap();
+ unsetenv("CGAR_TEMPORAL");unsetenv("CGAR_ORIENTATION_GUIDANCE");unsetenv("CGAR_TEMPORAL_STEPS");
+ std::cout<<"TEMPORAL_INTEGRATION passed primary_intent=1 pockets=1 capacity=1\n";
+}
+
+void initialization_failure_recovery() {
+ SharedEnvironment e;e.num_of_agents=1;e.rows=2;e.cols=2;e.map.assign(4,0);
+ e.curr_states={State(0,0,0)};e.curr_task_schedule={-1};e.goal_locations={{{3,0}}};
+ Cgar c;setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","0",1);
+ bool failed=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){failed=true;}
+ unsetenv("CGAR_TEMPORAL");unsetenv("CGAR_ORIENTATION_GUIDANCE");
+ if(!failed)throw std::runtime_error("invalid initialization did not fail");
+ c.initialize(&e,1000);std::vector<Action> actions;c.plan(&e,1000,actions);
+ if(step(e,e.curr_states,actions).empty())throw std::runtime_error("failed initialization left a false ready state");
+ std::cout<<"INITIALIZATION_FAILURE_RECOVERY passed failed_state_not_ready=1 retry_valid=1\n";
+}
+
+void temporal_kernel_on_thread() {
+ std::exception_ptr error;
+ std::thread worker([&]{try{temporal_kernel_regression();}catch(...){error=std::current_exception();}});
+ worker.join();if(error)std::rethrow_exception(error);
+ std::cout<<"TEMPORAL_THREAD_STACK passed displacement_depth=1499\n";
+}
+
+void temporal_idle_blocker() {
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);
+ SharedEnvironment e;e.num_of_agents=2;e.rows=3;e.cols=4;e.map.assign(12,0);
+ e.curr_states={State(6,0,3),State(5,0,2)};e.goal_locations={{},{{6,0}}};e.curr_task_schedule={-1,-1};
+ Cgar c;c.initialize(&e,1000);std::vector<Action> actions;bool reached=false;
+ for(int t=0;t<100;++t){
+  e.curr_timestep=t;c.plan(&e,1000,actions);auto next=step(e,e.curr_states,actions);
+  if(next.empty())throw std::runtime_error("idle temporal blocker caused a collision");e.curr_states=next;
+  if(e.curr_states[1].location==6){reached=true;break;}
+ }
+ if(!reached)throw std::runtime_error("primary did not clear an idle temporal blocker");
+ for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS"})unsetenv(name);
+ std::cout<<"TEMPORAL_IDLE_BLOCKER passed goal_reached=1 transactions="<<c.stats().txns<<" steps="<<e.curr_timestep+1<<"\n";
+}
+
+void temporal_parallel_regression() {
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ setenv("CGAR_TEMPORAL_WORKERS","4",1);setenv("CGAR_TEMPORAL_STEPS","256",1);
+ SharedEnvironment e;e.rows=8;e.cols=8;e.num_of_agents=24;e.map.assign(64,0);e.curr_task_schedule.assign(24,-1);e.goal_locations.resize(24);
+ for(int i=0;i<24;++i){e.curr_states.emplace_back(i,0,i%4);e.goal_locations[i]={{63-i,0}};}
+ setenv("CGAR_TEMPORAL_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
+ setenv("CGAR_TEMPORAL_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
+ int comparisons=0;
+ for(int t=0;t<80;++t){
+  e.curr_timestep=t;std::vector<Action>a,b;serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
+  if(a!=b)throw std::runtime_error("temporal parallel scheduling changed decisions");
+  auto next=step(e,e.curr_states,a);if(next.empty())throw std::runtime_error("temporal parallel collision");e.curr_states=next;
+  for(int i=0;i<24;++i)if(e.curr_states[i].location==e.goal_locations[i][0].first)e.goal_locations[i][0].first=(e.goal_locations[i][0].first+37)%64;
+  comparisons+=a.size();
+ }
+ for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_WORKERS","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_THREADS"})unsetenv(name);
+ std::cout<<"TEMPORAL_PARALLEL passed workers=4 serial_vs_parallel_robot_decisions="<<comparisons<<"\n";
+}
+
+int main(){try{initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

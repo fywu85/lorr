@@ -19,11 +19,17 @@ from cpu_resources import cpu_resources
 
 ROOT = Path(__file__).resolve().parents[1]
 FIELDS = ("teamSize", "numTaskFinished", "makespan", "numPlannerErrors", "numScheduleErrors", "numEntryTimeouts")
+MAX_PROCESS_MEMORY_BYTES = 32_000_000_000
 
 def header(path):
     with path.open() as stream:
         text = stream.read(2048)
-    return {key: int(re.search(r'"' + key + r'"\s*:\s*(\d+)', text).group(1)) for key in FIELDS}
+    result = {key: int(re.search(r'"' + key + r'"\s*:\s*(\d+)', text).group(1)) for key in FIELDS}
+    for key in ['entryComputeSamples', 'entryComputeMaxSeconds']:
+        match = re.search(r'"' + key + r'"\s*:\s*([-+0-9.eE]+)', text)
+        if match:
+            result[key] = float(match.group(1)) if key.endswith('Seconds') else int(match.group(1))
+    return result
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -36,22 +42,27 @@ def main():
     parser.add_argument("--horizon-profile", type=Path, help="JSON mapping of instance names to shorter screening horizons")
     parser.add_argument("--plan-time-limit-ms", type=int, default=1000, help="Decision deadline; 1000 is the competition setting")
     parser.add_argument("--seed", type=int, help="Set CGAR_SEED explicitly")
-    parser.add_argument("--cpu-list", help="Comma-separated logical CPUs, one reserved for each concurrent run")
+    parser.add_argument("--log-detail-level", type=int, choices=[1, 2, 3], default=1, help="Simulator verbosity; 2 retains warnings and failures")
+    parser.add_argument("--cpu-list", help="Distinct allowed logical CPUs, grouped per concurrent run")
+    parser.add_argument("--cpus-per-instance", type=int, default=1, help="Reserved CPUs in each process affinity mask")
     args = parser.parse_args()
-    if args.jobs < 1 or args.plan_time_limit_ms < 1 or (args.steps is not None and args.steps < 1):
+    if args.jobs < 1 or args.cpus_per_instance < 1 or args.plan_time_limit_ms < 1 or (args.steps is not None and args.steps < 1):
         parser.error("jobs, steps, and time limits must be positive")
     if args.steps is not None and args.horizon_profile is not None:
         parser.error("steps and horizon-profile are mutually exclusive")
     resources = cpu_resources()
     cpus = [int(value) for value in args.cpu_list.split(",")] if args.cpu_list else []
-    if cpus and (len(cpus) < args.jobs or len(set(cpus)) != len(cpus) or
+    if cpus and (len(cpus) < args.jobs * args.cpus_per_instance or len(cpus) % args.cpus_per_instance or len(set(cpus)) != len(cpus) or
                  not set(cpus).issubset(resources["logical_cpu_affinity"])):
-        parser.error("cpu-list must contain distinct allowed CPUs, at least one per concurrent job")
+        parser.error("cpu-list must contain complete, distinct allowed CPU groups for every concurrent job")
+    if args.cpus_per_instance > 1 and not cpus:
+        parser.error("multiple CPUs per instance require an explicit cpu-list")
     if cpus and not shutil.which("taskset"):
         parser.error("taskset is required for explicit CPU binding")
     available_cpus = queue.Queue()
-    for cpu in cpus:
-        available_cpus.put(cpu)
+    for start in range(0, len(cpus), args.cpus_per_instance):
+        group = cpus[start:start + args.cpus_per_instance]
+        available_cpus.put(group[0] if args.cpus_per_instance == 1 else group)
     environment = os.environ.copy()
     if args.seed is not None:
         environment["CGAR_SEED"] = str(args.seed)
@@ -71,7 +82,8 @@ def main():
     binary = out / "lifelong"
     shutil.copy2(args.binary.resolve(), binary)
     instances = {p.stem: p.resolve() for p in (ROOT / "mr24").glob("*/*.json")}
-    sources = ([ROOT / "cgar/cgar_planner/cgar.cpp"] +
+    sources = ([ROOT / "cgar/CMakeLists.txt", ROOT / "cgar/inc/Entry.h", ROOT / "cgar/inc/CompetitionSystem.h",
+                ROOT / "cgar/src/CompetitionSystem.cpp", ROOT / "cgar/cgar_planner/cgar.cpp"] +
                sorted((ROOT / "cgar/cgar_planner").glob("*.hpp")) +
                [ROOT / "cgar/src/MAPFPlanner.cpp", ROOT / "cgar/src/TaskScheduler.cpp", ROOT / "cgar/src/Entry.cpp"])
     provenance = json.loads(args.source_manifest.read_text()) if args.source_manifest else None
@@ -80,11 +92,13 @@ def main():
         parser.error("source-manifest does not describe this executable")
     metadata = {"started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
+                "log_detail_level": args.log_detail_level,
+                "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES,
                 "binary_sha256": binary_hash,
                 "sources": provenance["sources"] if provenance else {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
                 "build_provenance": provenance,
                 "environment": {k: v for k, v in environment.items() if k.startswith("CGAR_")},
-                "cpu_resources": resources, "cpu_binding": cpus,
+                "cpu_resources": resources, "cpu_binding": cpus, "cpus_per_instance": args.cpus_per_instance,
                 "source_binary": str(args.binary.resolve()),
                 "instances": {name: {"input": str(instances[name]), "steps": times[name]} for name in names}}
     (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
@@ -112,10 +126,10 @@ def main():
     def run(name):
         steps = times[name]
         output = out / (name + ".json")
-        command = [str(binary), "-i", str(instances[name]), "-o", str(output), "-s", str(steps), "-t", str(args.plan_time_limit_ms), "-p", "30000"]
+        command = [str(binary), "-i", str(instances[name]), "-o", str(output), "-s", str(steps), "-t", str(args.plan_time_limit_ms), "-p", "30000", "-d", str(args.log_detail_level)]
         cpu = available_cpus.get() if cpus else None
         if cpu is not None:
-            command = ["taskset", "-c", str(cpu)] + command
+            command = ["taskset", "-c", ",".join(map(str, cpu)) if isinstance(cpu, list) else str(cpu)] + command
         usage_file = out / (name + ".resources.json")
         command = [sys.executable, str(ROOT / "tools/run_with_usage.py"),
                    "--output", str(usage_file), "--"] + command
@@ -134,7 +148,14 @@ def main():
         usage = json.loads(usage_file.read_text()) if usage_file.exists() else {}
         internal_timeout = result.returncode == 124
         valid = result.returncode == 0 and data["makespan"] == steps and all(data[key] == 0 for key in FIELDS[3:])
-        outcome = "success" if valid else ("timeout" if internal_timeout or data["numEntryTimeouts"] else "failed")
+        entry_time = data.get("entryComputeMaxSeconds")
+        entry_timing_valid = entry_time is None or (data.get("entryComputeSamples") == steps and
+                                                    0 <= entry_time <= args.plan_time_limit_ms / 1000.0)
+        peak_bytes = usage.get("peak_rss_kib", 0) * 1024
+        memory_valid = 0 < peak_bytes <= MAX_PROCESS_MEMORY_BYTES
+        valid = valid and entry_timing_valid and memory_valid
+        outcome = "success" if valid else ("timeout" if internal_timeout or data["numEntryTimeouts"] or not entry_timing_valid
+                                           else "memory_limit" if peak_bytes > MAX_PROCESS_MEMORY_BYTES else "failed")
         row = {"instance": name, "before": old["numTaskFinished"], "after": data["numTaskFinished"],
                "delta_percent": (100 * (data["numTaskFinished"] / old["numTaskFinished"] - 1)
                                  if valid and old["makespan"] == steps else None),
@@ -142,7 +163,10 @@ def main():
                "makespan": data["makespan"], "planner_errors": data["numPlannerErrors"],
                "schedule_errors": data["numScheduleErrors"], "timeouts": data["numEntryTimeouts"],
                "wall_seconds": round(elapsed, 3), "exit": result.returncode, "cpu": cpu,
-               "outcome": outcome, "internal_timeouts": int(internal_timeout), "valid": valid, "process_resources": usage}
+               "outcome": outcome, "internal_timeouts": int(internal_timeout), "valid": valid, "process_resources": usage,
+               "entry_compute_max_seconds": entry_time, "entry_compute_samples": data.get("entryComputeSamples"),
+               "entry_timing_valid": entry_timing_valid, "memory_valid": memory_valid,
+               "peak_process_rss_bytes": peak_bytes, "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES}
         return row
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:

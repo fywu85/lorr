@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:10:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-temporal-work-cold-small-9354-v8b-20260918/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-temporal-work-cold-small-9354-v8b-20260918/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8898330\n"
+}

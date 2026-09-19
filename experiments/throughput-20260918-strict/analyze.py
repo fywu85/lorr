@@ -54,7 +54,12 @@ def extract(item):
     summaries = [line for line in path.with_suffix(".log").read_text().splitlines()
                  if line.startswith("[cgar-scheduler]")]
     counters = {k: int(v) for k, v in (field.split("=", 1) for field in summaries[-1].split()[1:])} if summaries else {}
-    planning = data["plannerTimes"]
+    outer_planning = data["plannerTimes"]
+    planning = data.get("entryComputeTimes", outer_planning)
+    if "entryComputeTimes" in data:
+        assert len(planning) == horizon and all(x >= 0 for x in planning), 'incomplete entry timing series'
+        assert len(planning) == data["entryComputeSamples"]
+        assert max(planning) == data["entryComputeMaxSeconds"]
     result = {"case": case, "instance": path.stem, "steps": horizon, "tasks": len(completions),
               "curve": {str(step): bisect.bisect_right(times, step) for step in grid},
               "completed_per_1000": [bisect.bisect_right(times, min(horizon, start + 1000)) -
@@ -64,7 +69,9 @@ def extract(item):
               "observed_pickup_delay": distribution([pickups[t] - step + 1 for t, step in assignments.items() if t in pickups]),
               "assigned_without_pickup": sum(t not in pickups for t in assignments),
               "outstanding_task_age": distribution([horizon - task[1] for t, task in tasks.items() if t not in completions]),
-              "max_decision_seconds": max(planning), "total_decision_seconds": sum(planning)}
+              "max_decision_seconds": max(planning), "total_decision_seconds": sum(planning),
+              "decision_timing_source": "entry_completion" if "entryComputeTimes" in data else "simulator_outer_including_logging",
+              "max_outer_plan_seconds": max(outer_planning), "total_outer_plan_seconds": sum(outer_planning)}
     print(case, path.stem, result["tasks"], flush=True)
     return result
 

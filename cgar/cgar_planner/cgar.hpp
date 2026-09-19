@@ -23,6 +23,7 @@
 #include "ActionModel.h"
 #include "SharedEnv.h"
 #include "pibt_kernel.hpp"
+#include "temporal_geometry.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -187,6 +188,7 @@ struct Stats {
     long long candidate_node_limits = 0, candidate_deadlines = 0, empty_searches = 0;
     long long skipped_empty_searches = 0;
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
+    long long global_evaluations = 0, global_assignments = 0;
     long long estimated_pickup_cost = 0, estimated_chain_cost = 0;
     long long route_queries = 0, route_manhattan = 0, progress_basis_resets = 0;
     long long reassign_passes = 0, reassign_eligible = 0, reassign_sources = 0, reassign_nodes = 0;
@@ -248,6 +250,7 @@ private:
     Action action_toward(int i, int target) const;
     bool move_check(int i, std::vector<char>& checked, std::vector<Action>& actions);
     void make_safe(std::vector<Action>& actions);
+    void plan_temporal(std::vector<Action>& actions);
 
     int neighbor(int cell, int dir) const;
     bool adjacent_to_pocket(int cell, int pocket) const;
@@ -263,6 +266,12 @@ private:
     Certificate cert_;
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
+    TemporalGeometry temporal_geometry_;
+    std::mt19937_64 temporal_rng_{0};
+    bool temporal_ = false, temporal_equal_weight_ = false;
+    int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
+    int temporal_candidate_limit_ = 0;
+    int temporal_workers_ = 1, temporal_threads_ = 1;
     Stats stats_;
     std::mt19937 rng_{0};
 
@@ -307,6 +316,7 @@ private:
     bool scheduler_cache_peek_ = false;
     bool stable_stall_basis_ = false;
     int fallback_samples_ = 64;
+    int global_samples_ = 0;
     int pickup_weight_ = 1;
     bool reassign_ = false;
     int primary_ = -1;
