@@ -1,0 +1,33 @@
+{
+  "checked_utc": "2026-09-19T20:52:31.712242+00:00",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "65f7aa2c5695ebc923ef2c8170b479f3cc0cc111bc9ce6fbb1a122faf701d2ec",
+  "source_archive": "build-provenance/v46",
+  "all_three_quotas_accepted": true,
+  "all_prefixes_exact_confirmed64_reference": true,
+  "all_deadline_memory_and_binding_checks_pass": true,
+  "rows": [
+    {
+      "case": "flow4_pickupfull64_fthreads16_work4m-s0-r0",
+      "max_entry_seconds": 0.887550321,
+      "peak_rss_bytes": 5228490752,
+      "full_prefix_exact_reference": true,
+      "reserved_physical_cores": 16
+    },
+    {
+      "case": "flow4_pickupfull128_fthreads16_work4m-s0-r0",
+      "max_entry_seconds": 0.886090202,
+      "peak_rss_bytes": 5228683264,
+      "full_prefix_exact_reference": true,
+      "reserved_physical_cores": 16
+    },
+    {
+      "case": "flow4_pickupfull256_fthreads16_work4m-s0-r0",
+      "max_entry_seconds": 0.885803726,
+      "peak_rss_bytes": 5228687360,
+      "full_prefix_exact_reference": true,
+      "reserved_physical_cores": 16
+    }
+  ],
+  "limitations": "Only a200-step feasibility/equivalence screen. Larger quotas do not alter this prefix. No claim that64 binds during this screen or that128/256 improve throughput; full runs will assess that."
+}

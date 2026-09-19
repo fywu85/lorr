@@ -1,0 +1,486 @@
+{
+  "started_utc": "2026-09-19T20:48:54.361902+00:00",
+  "jobs": 1,
+  "plan_time_limit_ms": 1000,
+  "preprocess_time_limit_ms": 30000,
+  "log_detail_level": 2,
+  "max_process_memory_bytes": 32000000000,
+  "binary_sha256": "65f7aa2c5695ebc923ef2c8170b479f3cc0cc111bc9ce6fbb1a122faf701d2ec",
+  "sources": {
+    "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+    "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+    "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+    "cgar/src/CompetitionSystem.cpp": "dcb21890b66b8b41fb3b4239dd5ee95fab6c92e006e0d02437e46ffa33d058d6",
+    "cgar/cgar_planner/cgar.cpp": "04c3740da14c4f7c7ba1a11abab19facfab855fb4924a2d20e4c68f622e51130",
+    "cgar/cgar_planner/cgar.hpp": "433eefda3a168627cb6d967d702cae7f9e1333315e38ef866848f992860796fa",
+    "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+    "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+    "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+    "cgar/cgar_planner/pickup_full.hpp": "48dc178be988057469339970947f30b9d67e7091e0e7c014b0366bbfe1b5f52d",
+    "cgar/cgar_planner/pickup_search.hpp": "b089458709346e13d7901b7e743518f4fda5e6ef8e6c939ec910a75c1bf88b12",
+    "cgar/cgar_planner/temporal_adapter.hpp": "d9295a96d56c6a00abbe7a930d5a802790ca9492590b621ea03e2be49997ed52",
+    "cgar/cgar_planner/temporal_geometry.hpp": "09462e4949b3f9e3e11179cf654b714076afc5c1bc807539b98f5f42bb79b57b",
+    "cgar/cgar_planner/temporal_pibt.hpp": "17997c709569359f3ce74a5f8e1d99b363d671b23abcb24cd041bd3c1e0eaa9c",
+    "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+    "cgar/cgar_planner/temporal_regions.hpp": "554ac88ea2504a7251bfcb30a4e8510adf4bbece4eff869e9a8479446d62a252",
+    "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+    "cgar/cgar_planner/temporal_warm_start.hpp": "d08c23ce894a9c34170aaac1300b668e06fb82091e27eafc4d1aa4dd493b59f3",
+    "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+    "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+    "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+  },
+  "build_provenance": {
+    "source_commit": "c339e8b4b3896c18234be0b1d4120a00ffcca519",
+    "source_dirty": true,
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/CompetitionSystem.cpp": "dcb21890b66b8b41fb3b4239dd5ee95fab6c92e006e0d02437e46ffa33d058d6",
+      "cgar/cgar_planner/cgar.cpp": "04c3740da14c4f7c7ba1a11abab19facfab855fb4924a2d20e4c68f622e51130",
+      "cgar/cgar_planner/cgar.hpp": "433eefda3a168627cb6d967d702cae7f9e1333315e38ef866848f992860796fa",
+      "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/pickup_full.hpp": "48dc178be988057469339970947f30b9d67e7091e0e7c014b0366bbfe1b5f52d",
+      "cgar/cgar_planner/pickup_search.hpp": "b089458709346e13d7901b7e743518f4fda5e6ef8e6c939ec910a75c1bf88b12",
+      "cgar/cgar_planner/temporal_adapter.hpp": "d9295a96d56c6a00abbe7a930d5a802790ca9492590b621ea03e2be49997ed52",
+      "cgar/cgar_planner/temporal_geometry.hpp": "09462e4949b3f9e3e11179cf654b714076afc5c1bc807539b98f5f42bb79b57b",
+      "cgar/cgar_planner/temporal_pibt.hpp": "17997c709569359f3ce74a5f8e1d99b363d671b23abcb24cd041bd3c1e0eaa9c",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_regions.hpp": "554ac88ea2504a7251bfcb30a4e8510adf4bbece4eff869e9a8479446d62a252",
+      "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "d08c23ce894a9c34170aaac1300b668e06fb82091e27eafc4d1aa4dd493b59f3",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "d2c4a846b5eb8a0fd0952f2e3141226fc5df9ce7dcf2993bc30f0c87c0343f82"
+    },
+    "binary_sha256": "65f7aa2c5695ebc923ef2c8170b479f3cc0cc111bc9ce6fbb1a122faf701d2ec"
+  },
+  "environment": {
+    "CGAR_DIAGNOSTICS": "1",
+    "CGAR_ORIENTATION_GUIDANCE": "1",
+    "CGAR_TURN_FIRST": "1",
+    "CGAR_TURN_TABLE_MB": "8192",
+    "CGAR_TEMPORAL": "1",
+    "CGAR_TEMPORAL_STEPS": "1000000",
+    "CGAR_TEMPORAL_ORDER": "1",
+    "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+    "CGAR_TURN_COMPACT": "1",
+    "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+    "CGAR_FLOW_STRENGTH": "4",
+    "CGAR_FLOW_WARMUP": "128",
+    "CGAR_FLOW_MIN_SAMPLES": "8",
+    "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+    "CGAR_TEMPORAL_PREP_THREADS": "4",
+    "CGAR_FLOW_REFRESH_INTERVAL": "512",
+    "CGAR_TEMPORAL_WORKERS": "1",
+    "CGAR_TEMPORAL_THREADS": "1",
+    "CGAR_TEMPORAL_BRANCH_WORK": "0",
+    "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+    "CGAR_TURN_BUILD_LIMIT": "128",
+    "CGAR_FLOW_COST_SCALE": "4",
+    "CGAR_HRRN": "1",
+    "CGAR_PICKUP_WEIGHT": "1",
+    "CGAR_PICKUP_FLOW": "1",
+    "CGAR_PICKUP_FLOW_NODES": "8192",
+    "CGAR_PICKUP_FULL_ROBOTS": "64",
+    "CGAR_PICKUP_FULL_THREADS": "16",
+    "CGAR_PICKUP_FULL_COST_KEY": "0",
+    "CGAR_TURN_SURCHARGE": "0",
+    "CGAR_TEMPORAL_MIXED_START": "0",
+    "CGAR_TEMPORAL_WARM_START": "0",
+    "CGAR_TEMPORAL_REGIONS": "0",
+    "CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE": "0",
+    "CGAR_SEED": "0"
+  },
+  "cpu_resources": {
+    "hostname": "research52",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      40,
+      41,
+      42,
+      43,
+      48,
+      49,
+      50,
+      51,
+      56,
+      57,
+      58,
+      59,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      104,
+      105,
+      106,
+      107,
+      112,
+      113,
+      114,
+      115,
+      120,
+      121,
+      122,
+      123
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ],
+      [
+        1,
+        65
+      ],
+      [
+        2,
+        66
+      ],
+      [
+        3,
+        67
+      ],
+      [
+        4,
+        68
+      ],
+      [
+        5,
+        69
+      ],
+      [
+        6,
+        70
+      ],
+      [
+        7,
+        71
+      ],
+      [
+        8,
+        72
+      ],
+      [
+        9,
+        73
+      ],
+      [
+        10,
+        74
+      ],
+      [
+        11,
+        75
+      ],
+      [
+        12,
+        76
+      ],
+      [
+        13,
+        77
+      ],
+      [
+        14,
+        78
+      ],
+      [
+        15,
+        79
+      ],
+      [
+        16,
+        80
+      ],
+      [
+        17,
+        81
+      ],
+      [
+        18,
+        82
+      ],
+      [
+        19,
+        83
+      ],
+      [
+        20,
+        84
+      ],
+      [
+        21,
+        85
+      ],
+      [
+        22,
+        86
+      ],
+      [
+        23,
+        87
+      ],
+      [
+        24,
+        88
+      ],
+      [
+        25,
+        89
+      ],
+      [
+        26,
+        90
+      ],
+      [
+        27,
+        91
+      ],
+      [
+        28,
+        92
+      ],
+      [
+        29,
+        93
+      ],
+      [
+        30,
+        94
+      ],
+      [
+        31,
+        95
+      ],
+      [
+        32,
+        96
+      ],
+      [
+        33,
+        97
+      ],
+      [
+        34,
+        98
+      ],
+      [
+        35,
+        99
+      ],
+      [
+        40,
+        104
+      ],
+      [
+        41,
+        105
+      ],
+      [
+        42,
+        106
+      ],
+      [
+        43,
+        107
+      ],
+      [
+        48,
+        112
+      ],
+      [
+        49,
+        113
+      ],
+      [
+        50,
+        114
+      ],
+      [
+        51,
+        115
+      ],
+      [
+        56,
+        120
+      ],
+      [
+        57,
+        121
+      ],
+      [
+        58,
+        122
+      ],
+      [
+        59,
+        123
+      ]
+    ],
+    "address_space_limit_bytes": [
+      51539607552,
+      51539607552
+    ],
+    "physical_cores_visible": 48,
+    "representative_cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      40,
+      41,
+      42,
+      43,
+      48,
+      49,
+      50,
+      51,
+      56,
+      57,
+      58,
+      59
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "cpu_binding": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "cpus_per_instance": 16,
+  "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-quota-screen-v46-20260919/lifelong",
+  "instances": {
+    "WAREHOUSE": {
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+      "steps": 200
+    }
+  },
+  "finished_utc": "2026-09-19T20:49:56.407608+00:00"
+}

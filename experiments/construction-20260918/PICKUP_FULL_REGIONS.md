@@ -19,10 +19,28 @@ profiles, with each completed round preserving or improving the scalar score.
 These are feasibility/mechanism checks, not throughput acceptance.
 [Screen](results/pickup-full-regions-screen-v44/equivalence.json).
 
-Full8899002/analysis8899003 runs all three profiles on seeds0/2 concurrently:
-24 physical cores, four per process,96GiB aggregate reservation and32GB per-process
-RSS cap. Default controls must exactly reproduce141829/142988 and their full
-trajectories. Assess full totals, final1,000-step windows, outstanding task ages,
-loaded motion, all5,000 entry deadlines and memory. Any useful candidate needs the
-remaining four seeds before promotion.
-[Configuration](pickup-full-regions-variants.json).
+Full8899002/analysis8899003 is complete. All six runs are valid; all30,000 entries
+finish within1s, peakRSS13.909GB, four disjoint physical cores per process with no
+CPU quota. All22 source/test hashes match exactf6d0ae4, the binary matches the
+frozen build, and both disabled full trajectories exactly reproduce the V42/64
+reference. Twenty-five sampled regional counters per enabled run show real repair,
+fixed attempt counts, retained changes and nondecreasing merged scalar scores.
+
+| Rounds | Seed0 tasks | Seed2 tasks | Mean effect | Final1,000 differences |
+|---|---:|---:|---:|---|
+|Disabled|141,829|142,988|reference|reference|
+|One|142,237|141,623|−0.336%|−150 / −576|
+|Two|144,510|144,107|+1.334%|+287 / +120|
+
+Two rounds lower agep90 by3/2 steps, loaded turns by13.44%/5.12% and loaded waits
+by12.82%/4.68%. Empty robot-steps change+0.72%/−0.20%. Mean entry401.2–419.4ms,
+max953.19ms, CPU1.726–1.770 cores of four reserved, peakRSS13.909GB. These motion
+associations do not prove an additive causal decomposition of the throughput gain.
+One round is not promoted; two rounds need six seeds before promotion.
+[Verified comparison](results/pickup-full-regions-full-v44/comparison.json).
+
+Confirmation8899053/analysis8899054 runs disabled/two-round profiles on seeds1/3/4/5:
+eight concurrent cases, four disjoint physical cores each,32 total,128GiB aggregate
+reservation and32decimalGB per-process RSS cap. Same frozen V44 build. Controls
+must exactly reproduce their confirmed V42/64 full trajectories.
+[Confirmation configuration](pickup-full-regions-confirm-variants.json).

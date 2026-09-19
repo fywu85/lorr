@@ -48,9 +48,29 @@ peakRSS5.193GB. The enabled case emits exactly the67/134 frames; all robot/actio
 partitions conserve counts. This is a timing/equivalence check, not a full-run
 prevalence estimate. [Screen and assertions](results/service-audit-screen-v45/equivalence.json).
 
-Full8899017/analysis8899019 samples seeds0/2 with stride67, four disjoint physical
-cores per process,32GiB aggregate reservation and32decimalGB per-process cap.
-Stride67 samples74 frames over5,000 steps and is coprime to the512-step flow cycle.
-Both full trajectories must exactly reproduce the confirmed reference before
-interpreting the counts. No continuation policy is enabled.
-[Configuration](service-audit-full-variants.json).
+Full8899017/analysis8899019 is complete. Both full trajectories exactly reproduce
+the confirmed V42/64 reference:141829/142988 tasks. All10,000 complete entries are
+valid and<=1s; max884.17ms, peakRSS11.697GB, disjoint four-physical-core allocations,
+no CPU quota. All22 frozen source/test hashes match exactc339e8b. Stride67 yields
+74 frames per run, coprime to512; all robot/action partitions conserve counts.
+
+| Observed candidate class | Seed0 mean robots/frame | Seed2 mean robots/frame |
+|---|---:|---:|
+|Only post-service owners with a known next errand|8.47|8.41|
+|Only post-service owners finishing their task|23.88|22.80|
+|Mixed post-service owner types|0|0|
+|At least one other conflict|2,347.22|2,237.19|
+|Unblocked qualifying candidate|394.11|375.55|
+
+After step1,000, the known-next class averages7.32/7.70 robots per sampled frame,
+about0.073%/0.077% of eligible observations and0.306%/0.326% of observations with a
+qualifying improvement. Known-next arrivals in selected plans average160.5/161.9.
+This measured class is small and tempers expectations for this specific mechanism.
+It is not an upper bound on a different joint objective, which can also change arrival
+headings or earlier decisions. The larger finishing-owner class has no revealed
+next errand to use. Counts repeat robot observations across sampled frames.
+
+Changing the score also changes which candidates qualify as improving, so comparing
+this audit across different objectives would not isolate occupancy changes by itself.
+No production continuation policy has been enabled. [Full audit, frame data and
+validation](results/service-audit-full-v45/audit.json).

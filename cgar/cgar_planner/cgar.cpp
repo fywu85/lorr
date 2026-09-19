@@ -778,9 +778,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     pickup_flow_ = pickup_flow != 0;
     pickup_full_robots_ = env_int("CGAR_PICKUP_FULL_ROBOTS", 0);
     pickup_full_threads_ = env_int("CGAR_PICKUP_FULL_THREADS", 4);
-    if (pickup_full_robots_ < 0 || pickup_full_robots_ > 64 ||
+    if (pickup_full_robots_ < 0 || pickup_full_robots_ > 256 ||
         pickup_full_threads_ < 1 || pickup_full_threads_ > 32 || (pickup_full_robots_ && !pickup_flow_))
-        throw std::invalid_argument("complete pickup fields require pickup flow, 0-64 robots and 1-32 threads");
+        throw std::invalid_argument("complete pickup fields require pickup flow, 0-256 robots and 1-32 threads");
     pickup_full_workers_.resize(pickup_full_robots_ ? pickup_full_threads_ : 0);
     pickup_full_fields_.resize(pickup_full_robots_);
     const int pickup_full_cost_key = env_int("CGAR_PICKUP_FULL_COST_KEY", 0);

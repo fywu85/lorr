@@ -31,7 +31,10 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--prompt", type=Path, default=HERE / "prompt.md")
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--max-budget-usd", type=float, default=12.0, help="Per-turn CLI spending cap, fixed when preparing the payload")
     args = p.parse_args()
+    if not 0 < args.max_budget_usd < float("inf"):
+        p.error("--max-budget-usd must be finite and positive")
     SESSION.mkdir(parents=True, exist_ok=True)
     with (SESSION / "session.lock").open("a+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -72,7 +75,7 @@ def main():
                     "source_status": subprocess.check_output(["git", "status", "--short"], cwd=ROOT, text=True),
                     "sources": {k:digest(v) for k,v in snapshots.items()}, "changed_sources": len(records),
                     "payload_sha256": digest(prompt), "payload_bytes": len(prompt.encode()),
-                    "prompt_sha256": digest(args.prompt.read_text())}
+                    "prompt_sha256": digest(args.prompt.read_text()), "max_budget_usd": args.max_budget_usd}
             write(out / "prepared.json", meta)
             print(json.dumps(meta, indent=2))
             return
@@ -82,7 +85,7 @@ def main():
         assert not (out / "status.json").exists(), "Prepared turn already executed; prepare a follow-up instead"
         cmd = ["claude", "--print", "--model", "claude-fable-5-1", "--effort", "max", "--safe-mode",
                "--tools", "", "--strict-mcp-config", "--no-chrome", "--disable-slash-commands",
-               "--permission-mode", "dontAsk", "--max-budget-usd", "12",
+               "--permission-mode", "dontAsk", "--max-budget-usd", str(meta.get("max_budget_usd", 12)),
                "--output-format", "stream-json", "--verbose"]
         if session["initialized"]:
             cmd += ["--resume", session["session_id"]]

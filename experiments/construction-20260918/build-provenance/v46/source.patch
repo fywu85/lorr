@@ -1,0 +1,63 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -778,9 +778,9 @@
+     pickup_flow_ = pickup_flow != 0;
+     pickup_full_robots_ = env_int("CGAR_PICKUP_FULL_ROBOTS", 0);
+     pickup_full_threads_ = env_int("CGAR_PICKUP_FULL_THREADS", 4);
+-    if (pickup_full_robots_ < 0 || pickup_full_robots_ > 64 ||
++    if (pickup_full_robots_ < 0 || pickup_full_robots_ > 256 ||
+         pickup_full_threads_ < 1 || pickup_full_threads_ > 32 || (pickup_full_robots_ && !pickup_flow_))
+-        throw std::invalid_argument("complete pickup fields require pickup flow, 0-64 robots and 1-32 threads");
++        throw std::invalid_argument("complete pickup fields require pickup flow, 0-256 robots and 1-32 threads");
+     pickup_full_workers_.resize(pickup_full_robots_ ? pickup_full_threads_ : 0);
+     pickup_full_fields_.resize(pickup_full_robots_);
+     const int pickup_full_cost_key = env_int("CGAR_PICKUP_FULL_COST_KEY", 0);
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -407,7 +407,7 @@
+  setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+  setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
+  setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_HRRN","0",1);setenv("CGAR_PICKUP_WEIGHT","1",1);
+- for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_PICKUP_FULL_ROBOTS","-1"},{"CGAR_PICKUP_FULL_ROBOTS","65"},{"CGAR_PICKUP_FULL_THREADS","0"},{"CGAR_PICKUP_FULL_THREADS","33"},{"CGAR_PICKUP_FULL_COST_KEY","-1"},{"CGAR_PICKUP_FULL_COST_KEY","2"},{"CGAR_PICKUP_FULL_COST_KEY","1"}}){
++ for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_PICKUP_FULL_ROBOTS","-1"},{"CGAR_PICKUP_FULL_ROBOTS","257"},{"CGAR_PICKUP_FULL_THREADS","0"},{"CGAR_PICKUP_FULL_THREADS","33"},{"CGAR_PICKUP_FULL_COST_KEY","-1"},{"CGAR_PICKUP_FULL_COST_KEY","2"},{"CGAR_PICKUP_FULL_COST_KEY","1"}}){
+   setenv(invalid.first,invalid.second,1);auto e=blank();Cgar c;bool rejected=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}unsetenv(invalid.first);if(!rejected)throw std::runtime_error("invalid complete pickup configuration accepted");
+  }
+  setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);setenv("CGAR_PICKUP_FLOW","0",1);
+@@ -480,8 +480,36 @@
+   c.schedule(&e,1000,proposed);
+   if(proposed!=std::vector<int>{16}||c.stats().fair_assignments!=1||e.task_pool.at(16).t_revealed!=0||e.curr_task_schedule!=std::vector<int>{-1})throw std::runtime_error("cost-key shortlist bypassed fair admission or changed simulator metadata");
+  }
++ // Exercise real field storage and assignment above the old64-field ceiling.
++ // There are more eligible robots than every quota; all builders must finish,
++ // and the unselected robots must still receive unique tasks without metadata edits.
++ auto large_quota=[](int quota,int threads){
++  setenv("CGAR_PICKUP_FULL_ROBOTS",std::to_string(quota).c_str(),1);
++  setenv("CGAR_PICKUP_FULL_THREADS",std::to_string(threads).c_str(),1);
++  setenv("CGAR_PICKUP_FULL_COST_KEY","0",1);setenv("CGAR_HRRN","0",1);
++  SharedEnvironment e;e.rows=19;e.cols=79;e.num_of_agents=257;e.map.assign(e.rows*e.cols,0);
++  e.curr_task_schedule.assign(e.num_of_agents,-1);e.goal_locations.resize(e.num_of_agents);
++  for(int r=0;r<e.num_of_agents;++r)e.curr_states.emplace_back((2+2*(r/37))*e.cols+2+2*(r%37),0,0);
++  Cgar c;c.initialize(&e,5000);std::vector<Action>offered;
++  const std::array<Action,3>observed{Action::FW,Action::CR,Action::CR};
++  for(int t=0;t<3;++t){e.curr_timestep=t;c.plan(&e,5000,offered);
++   auto states=step(e,e.curr_states,std::vector<Action>(e.num_of_agents,observed[t]));
++   if(states.empty())throw std::runtime_error("large complete pickup fixture trace invalid");e.curr_states=states;}
++  e.curr_timestep=3;
++  for(int r=0;r<e.num_of_agents;++r){Task task;task.task_id=r;task.t_revealed=0;
++   task.locations={e.curr_states[r].location-1};e.task_pool.emplace(r,task);}
++  std::vector<int>proposed;c.schedule(&e,5000,proposed);
++  if(c.stats().pickup_full_fields!=quota||c.stats().pickup_flow_searches<1)
++   throw std::runtime_error("large complete pickup quota did not build prescribed fields and preserve fallback");
++  for(int r=0;r<e.num_of_agents;++r)
++   if(proposed[r]!=r||e.curr_task_schedule[r]!=-1||e.task_pool.at(r).agent_assigned!=-1)
++    throw std::runtime_error("large complete pickup quota lost nearest unique assignment or metadata isolation");
++  return proposed;
++ };
++ for(int quota:{64,128,256})if(large_quota(quota,1)!=large_quota(quota,4))
++  throw std::runtime_error("large complete pickup quotas changed assignments with parallel allocation");
+  for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_HRRN","CGAR_PICKUP_WEIGHT","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS","CGAR_PICKUP_FULL_COST_KEY"})unsetenv(key);
+- std::cout<<"COMPLETE_PICKUP_FIELDS passed serial_parallel_exact=1 in_search_timeout=1 joined_after_failure=1 scratch_reuse=1 invalid_costs=1 cold_default=1 beyond_local_shortlist=1 fair_admission=1 started_immutable=1 fixed_robot_quota=1 actual_cpu_affinity_guard=1 cost_key_and_hrrn=1\n";
++ std::cout<<"COMPLETE_PICKUP_FIELDS passed serial_parallel_exact=1 in_search_timeout=1 joined_after_failure=1 scratch_reuse=1 invalid_costs=1 cold_default=1 beyond_local_shortlist=1 fair_admission=1 started_immutable=1 fixed_robot_quota=1 actual_cpu_affinity_guard=1 cost_key_and_hrrn=1 large_quotas=64,128,256 large_serial_parallel_assignments=1542\n";
+ }
+ 
+ void weighted_pickup_assignment() {

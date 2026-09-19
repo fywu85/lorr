@@ -1,170 +1,174 @@
 # Continuing warehouse work
 
-Updated 2026-09-19 20:24 UTC. Active unbudgeted goal: meet/exceed local KittyKnight
-152,981 tasks over 5,000 steps / 10,000 robots repeatably across six seeds. Every
-complete schedule+plan entry <=1 second; explicit timeout failure; process RSS
-<32,000,000,000 bytes; isolated GRID physical cores. Generic policies only: no map
-identity/templates, supplied weights, hidden future tasks or map-specific fleet caps.
-KittyKnight used 38.858 GB, so this is not an official equal-resource comparison.
-Goal remains active and unmet. Work is progressing; no blocker.
+Updated 2026-09-19 20:56:23 UTC. Active unbudgeted goal: meet/exceed local KittyKnight152,981
+on full5,000-step/10,000-robot warehouse, repeatably across six seeds, every complete
+schedule+plan<=1s or explicit failure, processRSS<32,000,000,000 bytes, isolated GRID
+physical cores. Generic policies only; no map identities/templates/supplied weights,
+hidden future tasks or map-specific fleet caps. KK used38.858GB, so not an official
+equal-resource comparison. Goal active/unmet; concrete progress, no blocker.
 
-## Confirmed reference and strongest observed results
+## Current reference and new records
 
-The working reference remains graded strength4/scale4, margin25, refresh512,
-turn-build128, 8GiB cache, HRRN1 / pickup weight1, pickup flow ON, 64 complete pickup
-fields / four field threads, age-aware discovery key0, one planning worker4M and
-four preparation threads. Explicit configuration: warehouse-reference-variants.json.
-Exact V42 commit 4872d048dd8155927074ac2a4d27a55756266fd5, all22 source/test hashes
-verified; frozen runs/cgar-pickup-full-build-v42-r1-20260919.
+Working reference remains one4M planning worker/preparation4, graded strength4/scale4,
+margin25/refresh512, turn-build128/cache8GiB, HRRN1/pickupweight1, pickup flowON,
+64 complete pickup fields/four field threads, age-aware key0, warm/mixed/surcharge/
+regional repairOFF. warehouse-reference-variants.json. ExactV42 source4872d048dd8155927074ac2a4d27a55756266fd5;
+all22 hashes verified. Frozen runs/cgar-pickup-full-build-v42-r1-20260919.
+Seeds0..5:141829/143325/142988/141802/141988/142917, mean142474.8333, range
+141802–143325, +2.215% over preceding pickup-flow reference; all totals/tails/ages
+improve. results/pickup-full-six-seed-v42.json. Resources: mean272.4–317.4ms,
+p99557.3–602.0ms,max874.138ms,CPU1.425–1.494cores/4reserved,RSS11.934GB,
+wall23.93–27.70min. All30k entries<=1s. CPU=(user+system)/whole-process wall.
+User resource question already answered; do not keep repeating unprompted.
 
-Seeds0..5: 141829 / 143325 / 142988 / 141802 / 141988 / 142917; mean142474.8333.
-All six totals, final1,000-step windows and age improve over the preceding policy.
-results/pickup-full-six-seed-v42.json; PICKUP_FULL.md. Reference resource cohort:
-mean272.4–317.4ms, p99557.3–602.0ms, max874.138ms, CPU1.425–1.494 cores of4
-reserved, peakRSS11.934GB, wall23.93–27.70min; all30,000 entries<=1s.
-results/full64-reference-latency-six-seed-v42.json. CPU is whole-process
-(user+system)/wall including startup, simulation and logging. User already answered.
+Highest observed six-seed mean143111.1667 is16workers (exactV43 source1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9):
+143749/143241/143571/143643/141876/142587, +0.44663% vsreference,6.45% belowKK.
+Three total/two tail regressions, so not promoted as working reference. All12valid,
+all6controls exactV42. Mean326.1–392.0ms,max954.119ms,CPU6.267–7.680/16reserved,
+RSS12.048GB. PICKUP_FULL_WORKER_SCALING.md; pickup-full-workers16-six-seed-v43.json.
+Fourworkers also mixed:mean142742.1667, seed5loses3207total/1933tail,notpromoted.
 
-Sixteen workers completed all six seeds: 143749 / 143241 / 143571 / 143643 /
-141876 / 142587; mean143111.1667, +0.446629% versus reference and6.45% below KK.
-Paired totals +1920 / -84 / +583 / +1841 / -112 / -330; tails +227 / -87 / +199 /
-+280 / +47 / -101. Three total/two tail regressions: not promoted as working
-reference. This is our highest observed six-seed mean, not an all-seed improvement.
-All12 runs valid; all six one-worker controls exactly reproduce V42 full hashes;
-all22 source/test hashes match exact V43 1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9.
-All16-worker cases reserve16 disjoint physical cores. Their mean326.1–392.0ms,
-max954.119ms, CPU6.267–7.680 cores, peakRSS12.048GB. Quality comparison is not an
-equal-resource runtime-speedup claim. results/pickup-full-workers16-six-seed-v43.json;
-PICKUP_FULL_WORKER_SCALING.md. Jobs8898991/2 and8898993/4 are terminal complete.
+NEW two-regional-round first pair:144510/144107 vs141829/142988, mean144308.5,
++1.33419%, tails+287/+120, agep90−3/−2. All6cases valid, all30k entries<=1s,
+max953.192ms,RSS13.909GB,4physicalcores each,noquota. All22 hashes exactV44
+f6d0ae448504762136c4f5d85f25d7d207207965, actualbinary verified; both disabled
+controls full-hash exactV42. Loadedturns−13.44%/−5.12%,waits−12.82%/−4.68%,
+empty+0.72%/−0.20%. Candidate mean401.2–419.4ms,CPU1.726–1.770cores.
+One regional round mixed,mean141930(−.336%),tails−150/−576; not promoted.
+PICKUP_FULL_REGIONS.md; results/pickup-full-regions-full-v44/comparison.json.
+Jobs8899002/analysis8899003 complete, sampled regional work/retained scores verified.
 
-Four workers: mean142742.1667, +0.187635%, five wins but seed5 loses3207 total,
-1933 final-window tasks and agep90+53. Not promoted. Absolute best single run
-143767, seed1, completed2026-09-19T19:05:34.390519+00:00, exact1661176.
-Progress has40 increasing full-run records and seven confirmed reference milestones.
-WAREHOUSE_PROGRESS.md records mixed evidence explicitly. User editor swap
-.WAREHOUSE_PROGRESS.md.swp must stay excluded; do not delete. Preserve concurrent
-markdown edits using read/compare-before-write.
+Progress now42 increasing single-run records,7confirmed reference milestones.
+New records144107 at2026-09-19T20:30:36.444606+00:00 and144510 at20:32:02.316251UTC,
+both exactf6d0ae4. WAREHOUSE_PROGRESS.md and throughput-progress-provenance.json
+updated with timestamps/links. No new six-seed reference yet. Preserve user editor
+swap .WAREHOUSE_PROGRESS.md.swp; exclude, do not delete. Read/compare before edits.
 
-## Current source checkpoint
+## Live jobs
 
-Latest pushed commit47a0b12ad59c152db483289d24cde825af95e7d4 records worker scaling,
-fractional/mixed negatives, reversal audit and Fable turn12 request. Public fywu85/lorr.
-Exact V44 f6d0ae448504762136c4f5d85f25d7d207207965 is already pushed.
+Regional confirmation8899053/analysis8899054: started20:38:54UTC research57,
+seeds1/3/4/5 x disabled/two-round,8concurrentcases x4physicalcores=32,128GiB
+aggregate,32decimalGB process cap. FrozenV44f6d0ae4. Config
+pickup-full-regions-confirm-variants.json; raw
+runs/cgar-pickup-full-regions-confirm-v44-20260919; future
+results/pickup-full-regions-confirm-v44/. All4 controls must match V42 full hashes.
+This is the priority confirmation. Assess all six totals/tails/ages/motion and deadlines.
 
-V45 is built and tested but not yet committed at this note's timestamp. It adds
-only an optional const post-service reservation audit, defaultOFF. All22 source/test
-hashes independently reconstruct from47a0b12 plus the248-line source.patch and match
-the current workspace. Build8899006 terminal complete, every CGAR regression passes.
-Frozen runs/cgar-service-audit-build-v45-20260919; binary SHA256
+Larger pickup quotas: full seed0 job8899064/analysis8899065 and seed2
+job8899066/analysis8899067. Each matrix3concurrentcases:quota64/128/256,16field
+threads,16physicalcores/process,48total,48GiBaggregate,32decimalGB process cap.
+One global4M worker/prep4, regionalOFF. FrozenV46 (below). Config
+pickup-full-quota-variants.json. raw runs/cgar-pickup-full-quota-full-s0-v46-20260919
+and s2 analog; future results/pickup-full-quota-full-s0-v46 and s2 analog.
+Control64 must match V42 full hashes despite16fieldthreads. No quality claim yet.
+All three200-step prefixes are identical:64 may already cover most/all active demand.
+Full results can establish equivalence or a later effect; do not assume more quota helps.
+
+## Source, builds and checkpoints
+
+Latest pushed exactV45 commitc339e8b4b3896c18234be0b1d4120a00ffcca519 contains
+readonly audit, all regressions/screens,16worker six-seed evidence and finite probe.
+All22 frozen source/test hashes match; exact-source-commit.json records this.
+Frozen runs/cgar-service-audit-build-v45-20260919, binary
 b3fbb35a2eec4968a5ea7bc5e8135c3d553597832eec14232b6a437661b3e18a.
-Archive build-provenance/v45/, including independent-reconstruction.json. No build
-active and no source edits since the V45 build. Next checkpoint should commit/push
-V45 source/tests plus all verified reports/docs, then bind all22 hashes to that commit.
+Public fywu85/lorr; prior47a0b12 andf6d0ae4 also pushed.
 
-The audit observes the final complete reservation table, consumes no RNG, and changes
-no cache/search/reservations. First selected current-goal hit is predicted service;
-only later slots count as post-service. Eligible robots include selected-forward
-robots. Candidate improvement removes operation ties and requires one full physical
-heuristic unit, but need not improve the full native scalar score. Classify easiest
-free / post-service-only / other conflicts; known-next / finishing / mixed owner tags.
-Own reservations excluded; service-slot and fixed-owner conflicts are other. Both
-cell and edge conflicts included. Gains overlap and are not removable-blocker or
-recoverable-throughput bounds. Search action precedes the final seed-turn projection.
+V46 is built/tested but NOTYETCOMMITTED at this note's timestamp. Only production
+change: generic CGAR_PICKUP_FULL_ROBOTS maximum64->256; defaults unchanged.
+Quota257 remains invalid. Added real257-robot assignment fixtures at64/128/256,
+one/four builder threads, correct field counts, unselected fallback robot, unique
+nearest assignments and unchanged simulator metadata. All CGAR regressions pass,
+including1542 serial/parallel production assignments. Build8899056 complete.
+Frozen runs/cgar-pickup-quota-build-v46-20260919; archivebuild-provenance/v46;
+binary65f7aa2c5695ebc923ef2c8170b479f3cc0cc111bc9ce6fbb1a122faf701d2ec.
+The63-line patch reconstructs all22 source/test hashes fromc339e8b and matches current
+workspace. No active build/no source changes since freeze. Commit/push this checkpoint
+with verified reports/docs, then bind22 hashes to exact newcommit before new source edits.
 
-Thirteen hand-counted fixtures, unit boundaries, immutable subsequent RNG/search,
-explicit interruption and4,800 protected serial/parallel production decisions pass,
-along with all prior regressions. Screen8899012: audit0/67 both exact V44 200-step
-hash0941646ba4985c0d4d18ad713e9563ac3edae7eac77aa50072c9fea59bcc0837, both valid,
-max879.95ms, peakRSS5.193GB; sampled67/134 partitions conserve all counts.
-POST_SERVICE_AUDIT.md; results/service-audit-screen-v45/equivalence.json.
+Initial quota screen8899044 usingV45 rejected128/256 at initialization because the
+actual old cap was64. This was a setup mistake, not a performance failure. Its64case
+was valid and exact-prefix. Preserve results/pickup-full-quota-screen-v45/.
+Corrected V46 screen8899059 all3valid, max887.55ms,RSS5.229GB, disjoint16physical
+cores each,noquota, all3fullprefixhashes exact reference0941646ba4985c0d4d18ad713e9563ac3edae7eac77aa50072c9fea59bcc0837.
+Equivalent prefixes are not throughput evidence. PICKUP_FULL_QUOTA.md and
+results/pickup-full-quota-screen-v46/equivalence.json.
 
-## Live full experiments
+New verify_full.py checks finished full matrices: exactcommit22hashes/binary,
+5000entries<=1s,32GBRSS,50Mphaseactionconservation, matching fullmetadata,
+physical-core nonoverlap during concurrent execution,noquota, then extracts rows.
+Used successfully for regional and V45audit results. It does not itself check control
+hashes or treatment-specific diagnostics; those are additionally checked in reports.
 
-- Regional repair8899002, held analysis8899003, started19:56:06UTC research46.
-  Frozen V44 exactf6d0ae4. Six concurrent cases, seeds0/2 with disabled / one round /
-  two rounds, four regions, four threads,25k fixed attempts per region per round.
-  One complete4M-worker plan before repair; all confirmed64-field settings retained.
-  Four disjoint physical cores/process,24 total,96GiB aggregate,32decimalGB cap.
-  raw runs/cgar-pickup-full-regions-full-v44-20260919; future archive
-  results/pickup-full-regions-full-v44/. Zero controls must exactly reproduce reference
-  full hashes and141829/142988. Screen8899001 all3 valid, zero-control exact V44,
-  max875.99/922.75/961.48ms, peak5.277GB; actual retained regional search verified.
-  PICKUP_FULL_REGIONS.md; pickup-full-regions-variants.json.
-- Post-service audit8899017, held analysis8899019, started20:07:54UTC research44.
-  Frozen V45, only stride67, seeds0/2, two concurrent cases, four disjoint physical
-  cores/process,8 total,32GiB aggregate,32decimalGB cap. raw
-  runs/cgar-service-audit-full-v45-20260919; future results/service-audit-full-v45/.
-  Each must exactly reproduce the reference full trajectory, tasks141829/142988.
-  Seventy-four sampled frames per5,000 steps;67 is coprime to512. Check all robot/action
-  partitions and report steady/full distributions with no additive counterfactual.
-  service-audit-full-variants.json. No production continuation policy exists yet.
+## Completed post-service audit and next scoring hypothesis
 
-## Known-next-errand objective and review
+Full8899017/analysis8899019 complete: stride67, seeds0/2,74frames each; trajectories
+exactV42 with141829/142988. All10k complete entries valid,max884.17ms,RSS11.697GB,
+4physicalcores each,noquota,22sourcehashes exactc339e8b. Allframe/action partitions
+conserve counts. POST_SERVICE_AUDIT.md; results/service-audit-full-v45/audit.json.
+Only-known-next post-service conflicts average8.47/8.41 robots perframe,
+7.32/7.70 afterstep1000 (0.073%/0.077%eligibleobservations). Finishing-only averages
+23.88/22.80, mixed0. Otherconflicts~2347/2237. Arrivingknownnext~155/158 overall.
+This specific class is small; not a bound on a different objective's throughput.
+Audit uses easiest qualifying candidate, removes op ties, includes selectedFW, ignores
+own reservations, counts service-slot/fixed/no-arrival owners asother, tests cellsand
+edges, no RNG/cache/search mutation. Actions precede final seed-turn projection.
+Different scores change its qualifying-candidate set; bucket movement alone does not
+isolate occupancy improvements. Overlapping gains are not additive counterfactuals.
 
-Offline goal_holding_probe.cpp exhaustively minimizes production129-operation score
-on two-robot small grids, with independent oriented distances. Fixed1500 draws yield
-987 valid inputs and two3x7 examples where native objective prefers holding the
-current goal while a collision-free witness continues a visible next errand and lets
-the other robot first-forward. Native/witness cost -1040/-912 and -840/-564.
-GOAL_HOLDING.md; results/goal-holding-probe-v1.json. Not a production search episode,
-warehouse prevalence estimate or throughput gain. Fable's separate3x9 first-rotation
-claim does not reproduce under exact native minimization; local3x7 examples do.
+Finite goal_holding_probe.cpp found two3x7 native-score examples among987valid inputs:
+native/witness costs−1040/−912 and−840/−564. Witnesscontinues knownnexterrands and
+lets other robot firstFW; native holdsfirstgoal/turnsother. GOAL_HOLDING.md and
+results/goal-holding-probe-v1.json. Pure score minimization, no warehouse gain claim.
+Fable's old3x9 first-rotation claim failed exact minimization; it now acknowledges this.
 
-Before implementing continuation: use only revealed current-task errands, advance
-at most one errand per physical tick, charge every actual turn and forward surcharge,
-and keep a comparable objective across current-goal arrival headings. Fable's
-candidate-dependent next-leg baseline could reward a bad approach; investigate with
-an independent oracle. Post-service holds are not automatically removable. Existing
-full audit measures a related opportunity, not a bound on a different policy.
-Task_chain_cost still uses spatial known-leg costs; cached oriented chain pricing is
-another unimplemented hypothesis. TurnDistanceOracle::peek exists and does not touch
-LRU. Any such change needs common units and no extra table builds or hidden future.
+Fable turn13 suggests common next-leg baseline B=min_heading D_next(currentgoal,h),
+for arriving candidates only: d=−4U+D_next_star(endpoint)−B, plus ALLactualturn/toll
+extras; native terminal-wait virtual rotation discount. Nonarriving candidates native.
+Enable only for nonpinned, exact-oriented, nonguided robots with knownnext!=current,
+resident nexttable via serial non-LRU peek afterbuilds and finite needed costs.
+No nexttablebuilds/LRU effects. Candidate-dependent arrivalheading baseline creates
+spurious credit; commonBavoids that specific bias. But arrivalbranch discontinuity,
+cache-dependent eligibility and next-service approximation remain. Do not claimpaths
+passingnextgoalandleavingaredominated under reservations/finitepool.
 
-Persistent Fable session1ebb1075-3538-49d1-93d1-a00c94fa256a, name
-lorr-warehouse-cgar-fable51, viaClaudeCodeCLI, explicit source-sharing authorization.
-Turns01–11 successful. Turn12 terminal FAILED19:47:26UTC, error_max_budget_usd,
-configured12USD, CLI reportedtotal59.438321,387.751s, no permissions denied. Visible
-findings, metadata/status and qualified assessment archived fable-flow-session/turn12/;
-no successful review.md. Reported cost may be cumulative for the resumed session.
-No live CLI process. Do not restart turn12. Source-cache advanced toV44 despite
-failure; next request is turn13 / followup-12.md and should refresh source-spec for
-V45 audit and shifted lines. Do not commit raw protocol or hidden reasoning.
-Runner fable-flow-session/run_review.py. Findings prompted regional interaction and
-known-next audit, not a reproduced implementation bug. User encourages more Fable.
+No continuation production implementation or new continuation probe exists yet.
+Next useful local work: independently evaluate Fable's new handpair (3x7,start(2,0)N,
+current(1,1),next(1,6); FRFFF vsRFCFW, U=T4); commonBphysicalgap2U vs oldcandidate-
+dependent gapU, then evaluate commonBobjective on our native-holding examples.
+Use independent weighted oriented distances, all paid extras and explicit terminal
+wait alternatives, at mostoneerrandservicepertick. DefaultOFF must be exact.
+Neutral-tail score (set d=−4U atfirstgoalhit, prefixextras only) is a separate optional
+hypothesis for known/finishing owners; do not fold into commonB treatment.
+Task_chain_cost is still spatial; cached oriented known-chain pricing remains untested.
 
-## Established negative evidence
+## Persistent Fable
 
-- V44 fractional turn extras1/2 both seeds lose; means141773/141931 vsone-worker
-  142408.5. Extra2 cuts loaded turns9.04/9.54% but raises waits12.86/10.93%.
-  Four-worker warm/mixed means142381.5/142770.5 versusfour-cold143374.5, both seeds
-  lose. All12 runs valid, all4 cold controls exact V43, all22 hashes exactf6d0ae4.
-  Keep surcharge0, warmOFF/mixedOFF. FRACTIONAL_MIXED.md and full comparison.
-- Flow strength2/6/8: mixed +.0604% / -.308% / -1.052%; retain4. No six-seed extension.
-- Pickup discovery key1: fields32 loses2.248% versus healthy zero-field; fields64
-  seed2 collapses79601. Retain original age-aware key0. PICKUP_COST_KEY.md.
-- Quota32 seed0 collapse70043 reproduced; quota response nonmonotone. Quota16 wins
-  all six versus0 but64 beats16 every full total. Higher128/256 not tested.
-- 8/16GiB cache has exact full trajectories despite fewer rebuilds. Keep8GiB.
-- Graded margin0 collapses; sampled publication churn did not predict collapse.
-- Orientation table batch128 mixed six seeds;512 fails despite100% sampled coverage.
-  These are distinct from complete pickup-field quota.
-- Pool and transaction experiments mixed six seeds; not promoted. Old no-flow
-  distance-coefficient/turn-weight failures do not prove failure under current policy.
-- Opposite-turn and loaded action audits conserve all50M robot-steps and match logs.
-  Fewer reversals associate with some wins, but this is not causal proof. Native
-  planner selects >99.5% of loaded turns; final tied-wait turns only54–83 per full run.
-  TURN_REVERSALS.md; LOADED_MOTION.md. Completed-cohort decomposition is censored
-  and not an additive cross-policy savings estimate.
+Session1ebb1075-3538-49d1-93d1-a00c94fa256a, lorr-warehouse-cgar-fable51,
+Fable5.1max viaClaudeCodeCLI, explicit user permission persists. No live CLI process.
+Turn12 terminalfailed error_max_budget_usd aftervisiblefindings; archivedqualified.
+Turn13 successful2026-09-19T20:35:20.267191UTC,265.831s,no tools/denials,reported
+sessiontotal61.3675335USD. New runner configurable per-turncap, default12, turn13cap24;
+prepared capfixedinmetadata andusedonexecute. Cumulative reported costs should not
+be presented as each turn's incremental spend. Archivedturn13review/metadata/status/
+localassessment; rawprotocol stays ignored. Source-cache nowV45+goalholdingprobe;
+V46 cap/test changes not yet sent. Next request would turn14/followup-13.md. No need
+for another broad review now; use it for concrete hard scoring questions.
 
-## Operating rules
+## Negative evidence and operation
 
-Every configured search completes or the entry/run fails; no clock-selected partial
-solution. Full5,000-step horizon for quality;200 steps only timing/equivalence screens.
-Before interpretation verify all timings, validation, RSS, exact source/binary hashes,
-disjoint physical bindings, no quota and full control trajectory hashes. Compare
-full totals, final1,000, outstanding ages and motion. Heavy replay belongs onGRID.
-Per-process32decimalGB cap is distinct from aggregate job memory reservation.
-All exec_command calls require sandbox_permissions=require_escalated; local bwrap is
-broken. No proactive subagents. Avoid tools/waits blocking commentary for>60 seconds.
-Commit/push authorized; exclude binaries, environments, raw trajectories/protocol.
-Do not change deliberate public repository visibility. Keep goal active/unmet.
+Do not repeat unchanged negatives: fractionalturnextra1/2 andwarm/mixedstart loseboth
+firstpair; strength2mixed,6/8lose; age-removingcostkey regresses/collapses; quota32seed0
+collapse real; tablecache8/16GiB samefulltrajectories; orientationbatch128mixedsixseeds
+and512fails; pools/transactionsmixedsix. Original no-flow tests are not current-flow
+proofs. Details in FRACTIONAL_MIXED.md, PICKUP_FULL_FLOW_STRENGTH.md,
+PICKUP_COST_KEY.md, PICKUP_FULL.md and earlier comparison reports.
+Turn reversal/loaded action audits are associations, not additive causal savings.
+>99.5%loaded turns come from planned actions; tiedfinalseedturns only54–83/fullrun.
+
+All exec_command calls require sandbox_permissions=require_escalated (bwrapbroken).
+No proactive subagents. Fullhorizon forquality;200steps onlyfeasibility/equivalence.
+Heavy fulltrajectoryreplay onGRID; small logs/JSON/toyfixture work locally is fine.
+Always complete fixed work or explicitlyfail; no anytime partial output. Reservephysical
+cores perprocess; aggregate memory reservation may exceed32GB but processRSSmaynot.
+Commit/push authorized; preserve deliberate PUBLICvisibility. Exclude binaries,
+environments, rawtrajectories/protocol and user swap. Goal active/unmet, notblocked.
