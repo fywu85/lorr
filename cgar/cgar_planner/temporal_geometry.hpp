@@ -25,6 +25,17 @@ public:
         return value;
     }
 
+    // Orient an ordinary wait seed without changing occupancy. The legacy
+    // rule prefers a turn on equal distances and can oscillate between tied
+    // headings. Strict mode retains the current heading unless one turn
+    // strictly lowers the remaining distance; equal improving turns keep the
+    // existing clockwise tie-break. Values are in the oracle's own cost units.
+    static uint8_t wait_action(int wait, int right, int left, bool strict_improvement) {
+        const int best = std::min({right, left, wait});
+        if (strict_improvement && best == wait) return 3;
+        return best == right ? 1 : best == left ? 2 : 3;
+    }
+
     // This local approximation knows only the first useful turn, not future
     // corners. Keep it in unit-action units; a weighted surcharge would charge
     // unseen corner turns without matching potential credit.

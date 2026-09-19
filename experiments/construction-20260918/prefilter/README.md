@@ -54,3 +54,19 @@ global profile uses one search thread within its four-core allowance; the
 regional profile uses all four during regional work.
 [Production screens](../results/prefilter-screen-v27/),
 [exact short trajectories](../results/prefilter-trajectory-equivalence.json).
+
+
+## Full validation
+
+Full matrix8898566 and analysis8898567 complete. Global4M reproduces109244 tasks
+and fingerprint b27300836b4200a0c70db8abf7f581024fb6ad8bdf6c77546af068fbf9bd8a6d;
+global25k/two-region-rounds reproduces111997 and fingerprint
+46dd018de881b7572f563821ad9afea6edd59b9db9eb92da07027c7db8322c34.
+These include paths, schedules, events and task records, not just totals.
+Both have all5000 entry/movement samples, zero errors/timeouts and RSS below32GB.
+Max entry times are0.803237632s and0.686009314s; wall times1105.555s and1381.954s.
+These full runs verify preservation and feasibility, not an isolated speedup
+across different hosts/runs. The separate paired kernel probe is the evidence
+for the regional filtering speed improvement.
+
+[Full equivalence](../results/prefilter-full-v27/equivalence.json).

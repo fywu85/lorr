@@ -10,3 +10,13 @@ One additional code-level question: TemporalPibt::blocker returns-2 and rejects 
 
 
 Important new full result since the above: same-build seed0 refresh512 reaches134511 versus exact-reproduced frozen122896. Windows22523/27754/28022/27997/28215; maxentry0.765267s; RSS11.84GB; taskagep90=653 versus743. All5000 samples valid. The failing seed2 is not yet finished. This is+9.45% over frozenflow on seed0, not a robust promotion. Refresh BOTH changes costs AND invalidates old-metric tables, so improvement could partly involve temporary fallback-to-unit heuristics. Please distinguish those mechanisms when updating your recommendation.
+
+
+Corrections to your first review, from the tested configuration and existing independent regressions:
+- CGAR_TEMPORAL_EQUAL_WEIGHT=1 in ALL compared 4M flow profiles. `power` is exactly1 for each active robot, not distance-rank weighting. Distance still orders construction. Please explicitly retract the rank-weight starvation claim and update the diagnosis accordingly.
+- Cumulative fields can become neutral and reverse; v30 regression independently hand-counts a clockwise loop followed by four anticlockwise loops and verifies five complete publications, one unchanged field, four actual cache invalidations, neutral and reversed costs, and correct recomputed distances. A feedback tendency is plausible; 'never un-tolled' is not a code invariant.
+- Outstanding task age is measured from task release and includes exposed tasks waiting unassigned in the pool. 5000-minus-age does NOT identify when particular robots entered a jam.
+- Small portfolio/regional gains show the tested search changes were modest; they do not prove all useful search neighborhoods are saturated.
+- Your tied-heading wait-seed finding matches both expressions in our actual adapter. I will independently reproduce it and test a strict-improvement-only rotation option with separate seed/planned/protected rotation counters. Its throughput effect remains unknown. We have not applied this change to the frozen v30/v31 results.
+
+Please prioritize a corrected, concise assessment using the retained context and these results. No need to reread unchanged source or repeat your full first review. Does refresh512's valid134511 change your next-step recommendation? We still need the failing seed2 before confidence. Which ONE causal control should precede further tuning? Keep the final answer under700words.

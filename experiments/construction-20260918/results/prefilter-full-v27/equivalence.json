@@ -1,0 +1,31 @@
+{
+  "comparisons": [
+    {
+      "case": "equal_work4m_compact-s0-r0",
+      "tasks": 109244,
+      "trajectory_sha256": "b27300836b4200a0c70db8abf7f581024fb6ad8bdf6c77546af068fbf9bd8a6d",
+      "all_four_trajectory_fields_match_original": true,
+      "movement_diagnostics": {
+        "complete": true,
+        "required_steps": 5000,
+        "observed_steps": [
+          5000
+        ]
+      }
+    },
+    {
+      "case": "global25k_regions4_rounds2_compact-s0-r0",
+      "tasks": 111997,
+      "trajectory_sha256": "46dd018de881b7572f563821ad9afea6edd59b9db9eb92da07027c7db8322c34",
+      "all_four_trajectory_fields_match_original": true,
+      "movement_diagnostics": {
+        "complete": true,
+        "required_steps": 5000,
+        "observed_steps": [
+          5000
+        ]
+      }
+    }
+  ],
+  "timing_limitation": "This full check establishes deterministic trajectory preservation and deadline/memory feasibility. Different runs/hosts do not isolate a full runtime speedup. The separate paired kernel benchmark measured regional-only benefit."
+}

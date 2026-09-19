@@ -1,8 +1,8 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 11:00:41 UTC.
+Updated: 2026-09-19 12:15:34 UTC.
 
-**Best observed full run: 134,511 completed tasks** — refresh interval 512, seed 0. **Best mean confirmed over three seeds: 109,225** — no-flow fixed 4M (109,244 / 109,249 / 109,182). The new peak still needs the previously failing seed and broader confirmation.
+**Best observed full run: 134,519 completed tasks** — refresh interval 512, seed 2. The same policy reaches **134,511** on seed 0, for a two-seed mean of **134,515**. It recovers the previously failing seed; six-seed confirmation is queued. **Best mean confirmed over three seeds remains 109,225** — no-flow fixed 4M (109,244 / 109,249 / 109,182).
 
 The local KittyKnight reference is **152,981**, so the experimental peak is **12.07% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
@@ -33,6 +33,7 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 05:17:05 | 112,164 | Regional repair, two rounds / 0 | [593f7f3](https://github.com/fywu85/lorr/commit/593f7f3ad5b685fc1b69d62b8791b3743863246b) | [data](experiments/construction-20260918/results/review-full-v14/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v14/) · full run |
 | 2026-09-19 08:11:17 | 122,896 | Frozen learned flow, margin 50 / 0 | [fafd9f5](https://github.com/fywu85/lorr/commit/fafd9f5cb028ccd87a848a0338cc5e126e2f8d62) | [data](experiments/construction-20260918/results/flow-margin-full-v20/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v20/) · not robust |
 | 2026-09-19 10:49:30 | 134,511 | Learned flow, refresh every 512 / 0 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-first-pair-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seed 0 only |
+| 2026-09-19 11:26:47 | 134,519 | Learned flow, refresh every 512 / 2 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-full-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seeds 0/2 confirmed |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -44,9 +45,11 @@ This log backfills every increasing single-run record from the full warehouse ca
 |---|---|---|
 | No-flow fixed 4M | Seeds 0/1/2: 109,244 / 109,249 / 109,182; mean **109,225** | Stable current three-seed control; six-seed confirmation outstanding. |
 | Frozen margin-50 flow | Seeds 0/1/2: 122,896 / 122,195 / 70,171; mean **105,087.3** | Historical peak retained, but **not promoted**: seed 2 collapses late and the mean loses to its matched control. |
-| Refresh every 512 | Seed 0: **134,511**; final 1,000 steps: 28,215; max entry 0.765267 s; RSS 11,838,496,768 bytes | New experimental peak; seed 2 and broader confirmation pending. |
+| Refresh every 512 | Seeds 0/2: **134,511 / 134,519**; mean **134,515**; final windows 28,215 / 28,214; max entry <=0.765267 s; RSS <11.89 GB | Both improve over frozen and no-flow controls. Six-seed paired confirmation **8898647/8898648** queued; no six-seed claim yet. |
+| Refresh every 1,024 | Seeds 0/2: 133,652 / 131,316; mean 132,484 | Both recover steady final-window throughput, but interval 512 wins both full totals. |
+| Frozen flow with warm reuse | Seeds 0/2: 123,373 / 123,251; mean 123,312 | Recovers seed 2 without updating the field; below refresh512 on both tested seeds. |
 
-[Matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [new peak and exact control reproduction](experiments/construction-20260918/results/flow-refresh-first-pair-v30/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
+[Matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
 ## Updating this log
 

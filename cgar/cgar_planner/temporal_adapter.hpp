@@ -254,11 +254,25 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         for (int i = 0; i < n_; ++i) owners[search.choice(i).path->cells[t]] = -1;
     }
     for (int i = 0; i < n_; ++i) {
-        if (pinned[i]) continue;
+        if (pinned[i]) {
+            stats_.temporal_protected_rotations += actions[i] == Action::CR || actions[i] == Action::CCR;
+            continue;
+        }
         const auto& path = *search.choice(i).path;
         actions[i] = static_cast<Action>(path.first_action); next_[i] = path.cells[0];
         agents_[i].committed = -1; agents_[i].commit_age = 0;
+        if (search.selected(i) != 0)
+            stats_.temporal_planned_rotations += actions[i] == Action::CR || actions[i] == Action::CCR;
+        else ++stats_.temporal_wait_seeds;
         if (search.selected(i) == 0 && agents_[i].goal >= 0) {
+            auto orient_wait = [&](int wait, int right, int left) {
+                const int chosen = TemporalGeometry::wait_action(wait, right, left, temporal_strict_wait_turns_);
+                actions[i] = static_cast<Action>(chosen);
+                if (chosen != 3) {
+                    ++stats_.temporal_seed_rotations;
+                    stats_.temporal_tied_seed_rotations += (chosen == 1 ? right : left) == wait;
+                }
+            };
             // Waiting ordinary robots may orient toward their goal without
             // changing any occupied cell or claiming a future destination.
             const auto* table = turn_oracle_.find(agents_[i].goal);
@@ -267,14 +281,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 const int left = guide_routes_.distance(i, loc_[i], (ori_[i] + 3) % 4);
                 const int wait = guide_routes_.distance(i, loc_[i], ori_[i]);
                 if (std::min({right, left, wait}) < 0) throw std::logic_error("missing guide rotation distance");
-                const int best = std::min({right, left, wait});
-                actions[i] = best == right ? Action::CR : best == left ? Action::CCR : Action::W;
+                orient_wait(wait, right, left);
             } else if (table) {
                 const int right = turn_oracle_.value(*table, loc_[i], (ori_[i] + 1) % 4);
                 const int left = turn_oracle_.value(*table, loc_[i], (ori_[i] + 3) % 4);
                 const int wait = turn_oracle_.value(*table, loc_[i], ori_[i]);
-                const int best = std::min({right, left, wait});
-                actions[i] = best == right ? Action::CR : best == left ? Action::CCR : Action::W;
+                orient_wait(wait, right, left);
             }
         }
     }
@@ -298,6 +310,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     env_->curr_timestep + 1, seconds(candidate_started, search_started), seconds(search_started, global_finished),
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
+        std::printf("[cgar-temporal-rotation] steps=%d strict_wait_turns=%d wait_seeds=%lld seed_rotations=%lld tied_seed_rotations=%lld planned_rotations=%lld protected_rotations=%lld\n",
+                    env_->curr_timestep + 1, int(temporal_strict_wait_turns_), stats_.temporal_wait_seeds,
+                    stats_.temporal_seed_rotations, stats_.temporal_tied_seed_rotations,
+                    stats_.temporal_planned_rotations, stats_.temporal_protected_rotations);
         if (guide_enabled_)
             std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d heuristic_weight=%d goal_resets=%d protected_resets=%d deviation_resets=%d reconnect_limit=%d reconnect_attempts=%d reconnected=%d reconnect_actions=%lld reconnect_expanded=%lld refine_batch=%d refine_attempted=%d refined=%d refine_limited=%d refine_expanded=%lld refine_cost_saved=%lld\n",
                 env_->curr_timestep + 1, seconds(candidate_started, guides_finished), guide_stats.attempted,

@@ -20,7 +20,7 @@ All edge costs remain positive. A changed field invalidates every old-metric
 orientation table and speculative prefetch; an identical field preserves them.
 The full ordinary solve still completes. Deadline checks reject an overrun;
 there is no time-dependent publication or partial-action return. Refreshing has
-an important unmeasured tradeoff: it removes stale costs but repeatedly makes
+an important tradeoff: it removes stale costs but repeatedly makes
 the orientation cache cold. Full validation must measure both throughput and
 worst-case decision time, including those cache resets.
 
@@ -49,13 +49,38 @@ interval-512 cases exactly preserve the prior v20 frozen-field screen trajectory
 The latter has not yet refreshed by step 200; its update timing is untested by
 this screen. No prefix task counts are used to rank policies.
 
-Full **8898624**, analysis **8898625**, tests intervals 0, 512 and 1,024 at seeds
-0 and 2. Each case uses 5,000 steps, four reserved physical cores, a one-second
-complete decision limit, and a 32,000,000,000-byte process RSS limit. Two cases
-run concurrently inside 24 GiB total reservation. The matrix follows the nearby
-frozen-flow settings and precedes the pending v27/v28 exact-policy efficiency
-checks; only a verified pending job was reordered. No full refresh outcome or
-throughput recovery is established yet.
+Full **8898624**, analysis **8898625**, is complete. All six cases pass the
+5,000-step, one-second decision and 32 GB process checks. Four physical cores per
+case and two concurrent cases use 24 GiB on exclusive research31, with no CPU quota.
+
+| Seed | Frozen | Refresh 512 | Refresh 1,024 |
+|---|---:|---:|---:|
+| 0 | 122,896 | **134,511** | 133,652 |
+| 2 | 70,171 | **134,519** | 131,316 |
+
+Both frozen controls exactly reproduce the prior full trajectories. Refresh512
+finishes with 28,215 / 28,214 tasks in the final 1,000 steps, outstanding-task
+age p90 653 / 652, max entry 0.765267 / 0.762019 seconds, and peak RSS
+11,838,496,768 / 11,888,349,184 bytes. Its two-seed mean is 134,515, 23.17%
+above the matched no-flow mean 109,213 from the earlier exact-control study.
+This comparison recovers the previously failing seed; it does not establish six-seed
+robustness. Refresh1024 final windows are 28,386 / 27,969; all six max entries
+are below 0.782 seconds and RSS below 11.925 GB.
+
+Confirmation **8898647 / 8898648** compares refresh512 and no-flow at all six
+seeds (1,3,4,5,0,2), using the same frozen v30 binary. Four cases run concurrently
+on 16 reserved physical cores under a 48 GiB matrix allocation; each planner
+still has its own 32 GB validity limit. It follows the scale study on an exclusive
+host. Repeated seeds 0/2 also test exact reproduction in the new allocation.
+
+The mechanism remains partly confounded: changed costs also clear the orientation
+cache. The recorded fallback counts spike after refresh. Frozen flow with warm
+reuse separately recovers seed2 to 123,251, so the initial field is not inevitably
+fatal under every local policy. A fixed-field, cache-only refresh control is next.
+
+[Full results](results/flow-refresh-full-v30/),
+[exact control checks](results/flow-recovery-controls-v30-v31.json),
+[cache observations](results/flow-refresh-cache-observations-v30.json).
 
 [Build](build-provenance/v30/), [screens](results/flow-refresh-screen-v30/),
 [default equivalence](results/flow-refresh-default-equivalence.json),
@@ -70,7 +95,7 @@ and trajectory records. Frozen control exactly reproduces the v20 trajectory and
 windows22,523 /27,754 /28,022 /27,997 /28,215 and outstanding-task agep90 **653**
 (control743). Maximum complete entry is **0.765266707s**, RSS **11,838,496,768bytes**;
 there are no errors or timeouts. This is a new single-seed experimental peak,
-12.07% below the local152,981 target. Seed2 and the complete matrix remain pending.
+12.07% below the local152,981 target. This was the first completed pair; the complete matrix above now confirms seed2 recovery.
 
 The gain does not isolate a mechanism: each changed field also clears old-metric
 tables, temporarily increasing use of the fallback heuristic. Future diagnosis

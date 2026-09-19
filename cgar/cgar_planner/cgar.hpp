@@ -229,6 +229,8 @@ struct Stats {
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
     long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0;
     long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0;
+    long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
+    long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
     long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0, guide_refinements = 0;
     long long txns = 0;
@@ -330,7 +332,7 @@ private:
     bool guide_enabled_ = false;
     TemporalGeometry temporal_geometry_;
     TemporalWarmStart temporal_history_;
-    bool temporal_warm_start_ = false;
+    bool temporal_warm_start_ = false, temporal_strict_wait_turns_ = false;
     std::mt19937_64 temporal_rng_{0};
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;

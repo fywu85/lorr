@@ -1,121 +1,86 @@
 # Continuing warehouse work
 
-Goal: at least 152,981 completed tasks over all 5,000 steps, repeatably over six
-seeds, complete one-second decisions, process RSS below 32,000,000,000 bytes.
-No map-name branches, aisle templates, supplied weights, future tasks or map-specific
-fleet caps. The local KittyKnight target used 16 physical / 32 logical CPUs and
-38.858 GB RSS, above our memory limit; it is not an equal-resource official score.
-The active goal is not complete.
+Goal: at least 152,981 tasks over all 5,000 steps, repeatably over six seeds,
+complete one-second decisions, process RSS below 32,000,000,000 bytes. No map-name
+branches, aisle templates, supplied weights, future tasks or map-specific fleet caps.
+The local KittyKnight target used 16 physical / 32 logical CPUs and 38.858 GB RSS;
+this is a local reference, not an equal-resource official score. Goal remains active.
 
-Maintain ../../WAREHOUSE_PROGRESS.md after every completed full evaluation: append
-new peaks with actual UTC completion time, seed, evidence and a verified source
-or frozen-archive commit; update cross-seed confirmation and failure status.
-Do not confuse a dirty build base with the exact tested source.
+Maintain ../../WAREHOUSE_PROGRESS.md after each full evaluation, including failures,
+actual completion timestamps, verified source/archive commits and seed confirmation.
+Never present a dirty build's base HEAD as the exact tested source.
 
-## Established results and decisions
+## Verified results at the resumed checkpoint
 
-- No-flow fixed 4M: **109,244 / 109,249 / 109,182** at seeds 0–2, mean **109,225**.
-  Every full run passes deadlines and memory, and final-window rates stay stable.
-- Frozen strength-1, margin-50, warmup-128 flow: **122,896 / 122,195 / 70,171**,
-  mean **105,087.3**, **3.79% below the matched 4M control**. The large seed-2
-  collapse is introduced by the flow policy in this comparison. Which traffic
-  edges/feedback mechanism causes it is unisolated. **Do not promote.**
-- Regional two-round seed 0: 112,164, max entry 0.891 seconds. Global 25k plus
-  two rounds: 111,997, max 0.725 seconds. Four cores, about 11.82 GB. Still only
-  seed 0. Temperature changes and warm-start-only changes add no material gain.
-- Corrected full guides all lose: unit 39,066, opposing-cost 42,051, reconnect
-  28,071, refine 33,507, against 109,244. All runs are valid; no guide profile is
-  promoted. Reconnect's optional movement logs end at 4,800 because normal
-  `_exit` can discard stdout, but all 5,000 trajectory/timing records exist.
-  Recovery explicitly marks partial diagnostics; V29 fixes periodic flushing.
-- Compact turn tables preserve complete control trajectories while lowering RSS
-  from 16.208 to 11.883 GB. V27 regional-only candidate filtering preserves short
-  trajectories and improves an isolated regional kernel 6.9%; no full speedup
-  is established. V28 parallel preparation preserves all short trajectory fields
-  and lowers single-pair 200-step wall times 13.9% / 8.3%; full checks are pending.
+- No-flow fixed 4M: 109,244 / 109,249 / 109,182, mean **109,225** over seeds0/1/2.
+- Frozen margin50 flow: 122,896 / 122,195 / 70,171, mean105,087.3. Do not promote.
+- **Refresh512: 134,511 / 134,519 over seeds0/2**, final windows28,215 /28,214,
+  max entries<=0.765267s, RSS<11.89GB, exact frozen controls. New best134,519.
+  Refresh1024:133,652 /131,316. All six full cases pass. See FLOW_REFRESH.md.
+- Frozen flow with warm reuse:123,373 /123,251 over seeds0/2, both valid,
+  exact controls. Recovers bad seed but below refresh512. See FLOW_WARM_REUSE.md.
+- Nearby frozen-flow margins25/75 and strength2 lose to margin50 at seed0;
+  all valid, no promotion. Corrected guide profiles all lose badly; remain off.
+- Regional best seed0:112,164. Global25k/two rounds:111,997. Broader seeds pending.
+- V27 regional candidate prefilter preserves both FULL trajectories109,244/111,997.
+  Isolated regional kernel gain6.9%; no isolated full speedup claim.
+- Compact turn tables preserve trajectories and lower RSS16.208GB to11.883GB.
+- Independent flow audit: neutral directed graphs are strongly connected on all
+  three seeds. Seed2 fails through slow/churning movement; not mass static deadlock.
 
-## Active full queue
+## Active queue
 
-Every matrix reserves 24 GiB total and runs two independent instances concurrently
-on reserved EPYC 9354 physical cores. Two independent matrix queues now run on
-separate exclusive GRID hosts. The competition memory requirement is per planner;
-serializing all experimental matrices was unnecessary. Each case still uses
-5,000 steps, a complete one-second decision and the 32 GB process limit.
-The installed GRID EXCL definition and actual simultaneous research44/research31
-allocations verify host separation. See results/parallel-matrix-queue-update.json.
+Matrices run concurrently on separate exclusive GRID hosts. Each instance has
+four reserved physical EPYC9354 cores and no CPU quota. Previously serialized
+matrices unnecessarily treated the 32GB per-process rule as aggregate experiment
+memory. Three independent matrices now run simultaneously, two cases each under
+24GiB per matrix. Actual allocations are archived; no running job was interrupted.
 
-1. **8898554/8898555**, frozen v20-r1, one core per instance: margin-50 control
-   against margins 25/75 and strength 2, seed 0. Complete: 122,896 control,
-   55,344 margin25, 119,528 margin75, 119,294 strength2. All valid; no new best.
-   No neighbor is promoted. See FLOW_MARGIN.md.
-2. **8898624/8898625**, frozen v30, four cores per instance: frozen flow against
-   cumulative refresh intervals 512/1024, seeds 0 and 2. Seed0 refresh512 reaches
-   **134,511**, final1,000=28,215, all decisions valid; the exact frozen control
-   remains 122,896. Other cases including failing seed2 remain pending. All preparation work
-   completes on four threads before unchanged fixed-work search. Tests and
-   screens pass; seed2 and the complete matrix remain pending. See FLOW_REFRESH.md.
-3. **8898566/8898567**, frozen v27, four-core allowances: exact full validation
-   of regional candidate filtering, global 4M and global 25k/two regional rounds.
-   This job follows the nearby-margin matrix/analysis in queue A. It was
-   verified pending before removing its dependency on the independent refresh
-   matrix. No running benchmark was interrupted. The earlier serialized queue
-   record remains preserved; parallel-matrix-queue-update.json supersedes it.
-4. **8898606/8898607**, frozen v28, four cores per instance: paired one-/four-worker
-   preparation for the same two policies. Now follows the matched flow/warm
-   diagnosis below; no running job was interrupted. See PARALLEL_PREPARATION.md.
-5. **8898628/8898629**, frozen v31, four cores per instance: frozen flow at scales
-   1/4/8, seeds 0 and 2. This follows the refresh matrix/analysis in queue B.
-   All four short screens pass, including exact default and neutral fingerprints.
-   See FLOW_COST_SCALE.md. No full scale throughput result exists yet.
+- **8898637 /8898638**, v32 strict wait turns: refresh0/512 crossed with strict0/1,
+  seeds2 then0, exclusive research46. Four seed2 summaries pass: frozen70,171
+  ->121,534 strict; refresh134,519 ->133,672 strict. Full analysis/seed0 pending.
+- **8898628 /8898629**, v31 gentler costs1/4/8, seeds0/2, research44. Still running.
+  Four initial summaries pass; no completed full analysis or promotion yet.
+- **8898606 /8898607**, v28 one/four-worker preparation, global4M and regional,
+  research52. Global summaries109,244 each, wall1101.855/970.680s. Full trajectory
+  analysis and regional cases pending; do not treat this single timing pair as robust.
+- **8898647 /8898648**, v30 refresh512 confirmation versus no-flow on ALL six
+  seeds1/3/4/5/0/2, follows8898628/8898629. Four concurrent cases on16 physical
+  cores under48GiB matrix allocation. Both policies use the same frozen v30 binary;
+  repeated seeds0/2 additionally check reproducibility. All cases5000steps/1second.
 
-Completed no-flow confirmation **8898558/8898559** establishes the matched
-three-seed control. Completed guide full **8898550**, original failed analysis
-8898552, and explicit recovery **8898620** are preserved with all limitations.
+Completed refresh8898624/8898625 and warm8898632/8898633 analyses include every
+trajectory/entry/movement record. Frozen controls match previous full hashes.
+New record134519 has exact source e14ecfd and actual completion11:26:47UTC.
 
 ## Current source and next decisions
 
-V30 adds optional `CGAR_FLOW_REFRESH_INTERVAL` (default 0). V31 separately adds
-`CGAR_FLOW_COST_SCALE` (default 1), scaling all physical score units consistently
-to test gentler integer penalties; see FLOW_COST_SCALE.md. For refresh, complete cumulative
-fields publish only after fixed numbers of consecutive observations. A changed
-metric discards stale tables; an unchanged field preserves them. Cache rebuilding
-is a real cost to measure. Build 8898622 passes independent hand-counted traffic,
-640 transformed-edge checks, skipped-observation handling and protected serial/
-four-thread warm-start episodes. Its source patch reconstructs all hashes.
+V32 build8898635 and screen8898636 PASS. Source archive patch reconstructs all
+requested hashes. Default-off CGAR_TEMPORAL_STRICT_WAIT_TURNS retains heading
+on equal-cost wait-seed ties, plus separate seed/tied/planned/protected counters.
+Independent blocked fixtures reproduce128 oscillating turns, prevent them all,
+retain16 useful turns; production episodes validate9600 actions including warm
+reuse, refreshed flow, protection, parallel preparation and counter conservation.
+Default screen fingerprint is unchanged. Full effect above is still being analyzed.
+C++ sources may now be edited; all running matrices use their own frozen binaries.
 
-Screen 8898623 passes default/64/512 intervals. Only interval 64 actually
-refreshes within 200 steps (at 192); interval 512 exactly matches the default
-prefix and must test its first refresh in the full run. No prefix-throughput
-ranking is used. Load-cost guide screen 8898605 also passes four cases, but no
-full load-cost guide performance is established. Existing guides remain off.
+Next: isolate changed metric from cache flush/fallback effects using a fixed-field
+cache-only control. No future-run field transplant in eligible performance runs.
+Then test combinations only if full evidence supports them. Refresh and strict
+turns are not automatically additive. Keep defaults unchanged until validated.
+No time-dependent early return or partial-action publication; overrun is failure.
+After full runs inspect windows, task age, exact fingerprints, RSS and all timings.
 
-After each full matrix, preserve failures and check all entry timings, actual
-RSS, trajectory fingerprints, final-window rates, age and movement efficiency.
-For a promising refresh setting, confirm against its same-build frozen control
-and stable no-flow controls before broader seed validation. Require six seeds
-before claiming the goal. Defaults remain unchanged until validated.
+## Persistent Fable consultation
 
-Fable's guide CLI review emitted findings but failed its configured cost budget;
-it is not a completed signoff. Visible findings and independent assessments are
-in fable-guides/. The confirmed waypoint defect is fixed. Route concentration,
-retry backoff and salted guide ties remain hypotheses/future experiments.
+Use Claude Code CLI, model claude-fable-5-1, effort max, SAME session
+1ebb1075-3538-49d1-93d1-a00c94fa256a. Explicit standing user permission covers
+relevant project information and source. Use fable-flow-session/run_review.py,
+which sends changed source diffs and new findings; raw protocol/session data stays
+in ignored runs/. Preserve only visible reviews/metadata in Git.
 
-The user explicitly authorizes continued Fable consultation through Claude Code
-and requests one persistent session. `fable-flow-session/run_review.py` bootstraps
-only the relevant source excerpts and findings, then sends source diffs plus new
-results on `--resume` in the same session. Initial turn is running at max effort;
-its initialized model and session ID were verified. Raw protocol/session data
-stays in ignored runs/. Do not start unrelated fresh review sessions for updates.
-
-Offline flow-field audit 8898630 completes with exact production counter checks.
-All three neutral-cost graphs remain strongly connected; seed2's late failure is
-slow/churning motion with many waits and opposite turns. See FLOW_FIELD_AUDIT.md.
-Screen 8898631 tests the existing warm-start flag with frozen flow, seeds0/2,
-frozen v31, before any full follow-up. This is separate from scale and refresh.
-
-Warm-flow screen 8898631 passes all four seed0/2 cases, max entry <=0.778s and
-RSS <3.69GB. Full 8898632 / analysis 8898633 compares frozen flow with/without
-warm reuse at seeds2 then0, prioritizing the known failing seed. It follows v27
-in queue A; the pending v28 timing job follows it. See flow-warm-queue-update.json.
-Refresh seed0 first-pair analysis8898634 independently confirms the new134511
-peak, improved agep90=653 and exact control reproduction. No multi-seed promotion.
+Turns01/02 completed successfully. Turn02 sent5337bytes and ZERO changed source
+files. Fable retracted rank-weight, irreversible-flow-ratchet and age-onset claims;
+our independent tests/results remain authoritative. Wait-turn issue independently
+reproduced. Cache-only ablation remains useful. Multi-blocker search should first
+measure rejection causes, rather than assuming saturation. See assessment.md.
