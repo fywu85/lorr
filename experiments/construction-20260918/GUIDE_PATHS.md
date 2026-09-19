@@ -80,8 +80,9 @@ for unit/opposite1/opposite4, with peak RSS below 4.82 GB. Active guides at step
 limit in 321/512 and 327/512 attempts at that sampled step. Guide preparation
 costs 0.189/0.187 seconds there. These are feasibility diagnostics only.
 
-Full **8898527**, with analysis **8898528**, is queued after the existing v20
-matrix/analysis. It compares control and those three batch-512 profiles over
+Full **8898527**, with analysis **8898528**, was initially queued after v20.
+While still pending it was moved behind v24 full/analysis **8898535/8898536**
+to prioritize the fixed-work guidance test. It compares control and those three batch-512 profiles over
 all 5,000 steps, two independent single-core instances, 24 GiB total reservation,
 and the same EPYC 9354/one-second/memory requirements.
 
@@ -159,5 +160,46 @@ Batch 128 and load-cost-1 profiles complete their 200-step screens. At step 200,
 batch 128 retains 9,996 guides and reconnects 2,040 deviations, needing only 26
 new-route attempts. This saves route rebuilding but can increase temporal
 conflict-search work; it is not evidence of better throughput. The final weight-4
-case is still running. A follow-up will test the existing prescribed candidate
-work limit, with construction and every repair attempt still completed in full.
+case also passes, with maximum entry 0.863 seconds. Complete evidence is in
+[guide-reconnect-screen-v23](results/guide-reconnect-screen-v23/).
+The disabled-reconnection control exactly preserves the v22 weight-2 trajectory.
+
+
+## Fixed-work follow-up, frozen v24
+
+V24 changes failure diagnostics only. A temporal worker now records search work
+before propagating a timeout; workers still join and the entire decision fails.
+No failed case returns a partial plan or receives a throughput score. Build
+**8898533** passes all regressions and its patch reconstructs all requested hashes.
+
+Screen **8898534** reproduces the batch-512 reconnection failure at timestep 90:
+preparation 0.111459 seconds (including guides 0.044973), search 0.836690 seconds,
+69,229,435 candidate inspections, 1,174,478 recursive calls, maximum depth 144,
+and 48,162 of 50,000 repair attempts reached. Entry time is 1001.438 ms. The
+measured bottleneck is temporal conflict search, not the route-preparation phase.
+
+The follow-up uses the existing fixed candidate-work threshold of 4,000,000,
+with a 1,000,000-attempt ceiling. Construction completes before repair; the
+threshold is checked only between complete repair attempts and can be exceeded
+by the final attempt. It does not depend on elapsed time. A global deadline
+overrun still fails the decision. All five 200-step cases pass:
+
+| Profile | Maximum entry seconds | Peak RSS bytes |
+|---|---:|---:|
+| Disabled-guide 4M control | 0.811717422 | 4,675,309,568 |
+| Opposite 1, weight 2, batch 512 | 0.830158231 | 4,651,270,144 |
+| Reconnect 16, batch 128 | 0.801487935 | 4,459,360,256 |
+| Reconnect 16, batch 512 | 0.820137948 | 4,368,236,544 |
+| Reconnect 16, batch 512, load 1 | 0.819225129 | 4,492,075,008 |
+
+These are feasibility results, not throughput rankings. The disabled-guide
+control exactly matches the previous v20 4M screen. Evidence:
+[screen](results/guide-work-screen-v24/),
+[equivalence](results/guide-work-default-equivalence.json).
+
+Full **8898535**, analysis **8898536**, follows v20 **8898517/8898518**. It tests
+these five frozen profiles at seed 0 over all 5,000 steps, two independent
+single-core EPYC 9354 instances and 24 GiB total reserved memory. V21 full
+**8898527/8898528** then follows unchanged. The verified pending-job dependency
+update is recorded in [guide-queue-update.json](results/guide-queue-update.json).
+No full intended-route throughput result is established yet.

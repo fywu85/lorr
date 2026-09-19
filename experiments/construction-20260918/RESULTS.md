@@ -250,3 +250,27 @@ See [WARM_START.md](WARM_START.md) for complete resource and fairness details.
 The disabled control has the exact prior full trajectory, validating v18's
 static reverse-neighbor cache on the complete horizon. No end-to-end speedup or
 six-seed repeatability claim follows from this seed-0 experiment.
+
+
+## Completed regional-temperature ablation (v17)
+
+The paired one-round default completes 111,411 tasks, temperature 100 completes
+111,573 (+0.15%), and temperature 0 completes 111,289 (-0.11%). Two zero-temperature
+rounds complete 112,131, below the prior default's 112,164. All four full runs
+pass the exact deadline and memory checks; no temperature setting is promoted.
+[TEMPERATURE.md](TEMPERATURE.md) records timing, memory, final-window rates,
+outstanding-task age and exact default trajectory equivalence.
+
+## Higher fixed-attempt feasibility screen (v24)
+
+Equal weights with 100,000 repair attempts pass all 200 entry samples, maximum
+0.743589597 seconds and peak RSS 4,729,602,048 bytes. At 150,000 attempts the
+same policy fails at timestep 32 in temporal repair, exit 124, entry 1001.471 ms.
+Preparation takes 0.073452 seconds and search 0.842391 seconds; it examines
+61,724,655 candidates, with 140,139 of 150,000 attempts reached. The failed case
+gets no score. These screens do not establish full-run feasibility or throughput
+improvement. [Complete evidence](results/higher-work-screen-v24/).
+
+The separate [intended-route study](GUIDE_PATHS.md) now includes failure-only
+search diagnostics and five passing fixed-candidate-work screens, with full
+matrices queued. Short-horizon task counts are not used to rank those policies.

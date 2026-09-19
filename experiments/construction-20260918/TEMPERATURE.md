@@ -32,9 +32,32 @@ using two four-core instances and 24 GiB total reserved memory. Analysis
 **8898447** follows. Its first analysis submission used an incorrect dependency
 and was rejected before execution; that failed submission is retained in the
 raw directory alongside the successful one.
-No new-temperature throughput evidence exists yet.
+The full matrix and analysis are complete; results follow.
 
 The pending temperature job was moved behind warm-start validation to prioritize
 that larger standalone mechanism. Profiles, binary, resource allocation and seed
 remain identical. The scheduler dependency update is retained in
 [temperature-queue-update.json](results/temperature-queue-update.json).
+
+
+## Completed full results
+
+All four seed-0 cases finish 5,000 steps with zero errors/timeouts, all 5,000
+entry samples below one second, and measured process RSS below 32 decimal GB.
+The default exactly preserves the prior v14 full trajectory. These are four-core
+runs on research31, within the 24 GiB aggregate reservation.
+
+| Profile | Tasks | Final 1,000 steps | Max entry seconds | Peak RSS bytes | Wall seconds | Outstanding age p90 |
+|---|---:|---:|---:|---:|---:|---:|
+| One round, temperature 1000 | 111,411 | 22,699 | 0.693137313 | 11,819,732,992 | 1,293.186 | 847 |
+| One round, temperature 100 | 111,573 | 22,736 | 0.688629763 | 11,916,713,984 | 1,252.704 | 846 |
+| One round, temperature 0 | 111,289 | 22,738 | 0.690622553 | 11,820,183,552 | 1,286.278 | 845 |
+| Two rounds, temperature 0 | 112,131 | 22,810 | 0.866846172 | 11,916,840,960 | 1,581.632 | 841 |
+
+Temperature 100 adds only 162 tasks (+0.15%) over the paired one-round control;
+temperature 0 loses 122. Two zero-temperature rounds finish 33 tasks below the
+prior two-round default (112,164). This ablation finds no material throughput
+gain and does not justify promotion or a six-seed repeatability claim. The
+internal-score observation did not predict a useful full-run temperature change.
+[Complete matrix](results/temperature-full-v17/),
+[exact default equivalence](results/temperature-full-default-equivalence.json).

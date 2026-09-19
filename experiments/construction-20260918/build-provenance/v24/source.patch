@@ -1,0 +1,31 @@
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -161,13 +161,27 @@
+         for (;;) {
+             const int worker = next_worker.fetch_add(1);
+             if (worker >= temporal_workers_) return;
++            std::unique_ptr<TemporalPibt> run;
+             try {
+-                auto run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker],
++                run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker],
+                     initial.empty() ? nullptr : &initial);
+                 run->construct(order, [&] { check_deadline(deadline_, "temporal_construction"); });
+                 if (temporal_steps_) run->repair(temporal_steps_, [&] { check_deadline(deadline_, "temporal_repair"); }, temporal_candidate_limit_);
+                 check_deadline(deadline_, "temporal_worker_complete");
+                 results[worker] = std::move(run);
++            } catch (const Timeout& failure) {
++                if (diagnostics_ && run) {
++                    const auto& partial = run->stats;
++                    std::fprintf(stderr, "CGAR_TEMPORAL_FAILURE timestep=%d worker=%d stage=%s guide_seconds=%.6f preparation_seconds=%.6f search_seconds=%.6f guided=%d roots=%lld accepted=%lld recursion=%lld candidates=%lld max_depth=%d exhausted=%lld repairs=%lld repair_accept=%lld candidate_limit=%d\n",
++                        env_->curr_timestep, worker, failure.what(),
++                        std::chrono::duration<double>(guides_finished - candidate_started).count(),
++                        std::chrono::duration<double>(search_started - candidate_started).count(),
++                        std::chrono::duration<double>(Clock::now() - search_started).count(), guide_stats.active,
++                        partial.roots, partial.accepted, partial.recursive_calls, partial.candidates,
++                        partial.max_depth, partial.budget_exhausted, partial.repairs, partial.repairs_accepted,
++                        temporal_candidate_limit_);
++                }
++                errors[worker] = std::current_exception();
+             } catch (...) { errors[worker] = std::current_exception(); }
+         }
+     };

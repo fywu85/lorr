@@ -16,55 +16,49 @@ Established results:
   and about 11.82 GB RSS. No six-seed confirmation.
 - Regional gains persist in the final 1,000 steps and improve outstanding-task
   age. Earlier mixed scheduler/4M work reaches 111,118 but worsens the age tail.
-- Corrected turn cost 2 yields 100,323; cost 4 fails at step 902, cost 8 fails its
-  screen. No failed case gets a partial score. Prefetch remains off after finding
-  no benefit. The approved Fable v11 review is complete and its proven issues fixed.
+- Completed regional-temperature tests reach 111,573 (one round, 100), 111,289
+  (one round, 0), and 112,131 (two rounds, 0). No material gain or promotion.
+  Their paired default is 111,411 with an exactly preserved full trajectory.
+- Warm 50k reaches 108,492 (+0.96% over 107,457), maximum entry 0.515 seconds,
+  RSS 12.59 GB. Warm 25k/10k fall to 104,548/94,510. Lower work loses throughput.
+- Corrected turn cost 2 yields 100,323; cost 4 fails at step 902; cost 8 fails its
+  screen. Distance scales 256/1024 yield 105,891/105,811 and are not promoted.
+- The v18 predecessor cache cuts isolated table-build time by 19–26%, with
+  matching checksums and exact v19 full control trajectories. This establishes
+  no whole-planner speedup. See ORACLE.md.
 
-Active full queue:
+Active full queue (two independent single-core EPYC 9354 instances, 24 GiB total):
 
-1. **8898445**, frozen v17, is running on research31. It tests one-round control,
-   regional temperatures 100/0, and two rounds at 0. Two four-core instances,
-   24 GiB total. Analysis **8898447** follows. Completed first pair: control
-   111,411 and temperature 100 at 111,573 (+0.15%), both valid. Temperature 0
-   cases remain running. See TEMPERATURE.md.
-2. **8898517**, corrected frozen v20, follows temperature analysis. It tests 4M-work
-   control, original learned flow, margin 50, and margin 50 with freeze at 1,024
-   observations. Two single-core instances, 24 GiB total. Analysis **8898518** follows.
-   Early-freeze/work screens pass; late guidance activates only in the full run.
-   See FLOW_MARGIN.md. The incomplete first v20 build was canceled and never benchmarked.
+1. **8898517/8898518**, frozen v20, running on research38: 4M-work control,
+   original frozen flow, margin 50, and margin 50 with freeze at 1,024 observations.
+   First pair completes 109,244 (control) and 46,186 (flow), both valid full runs;
+   the flow policy loses heavily. Later variants and full motion analysis remain
+   pending. Early screens did not establish this behavior. See FLOW_MARGIN.md.
+2. **8898535/8898536**, frozen v24: 4M-work control, weight-2 intended routes,
+   reconnection at batches 128/512, and reconnection with load cost 1. All five
+   screens pass; no full throughput result yet. See GUIDE_PATHS.md.
+3. **8898527/8898528**, frozen v21: 50k-attempt control and intended routes with
+   batch 512 and opposing costs 0/1/4. This still-pending pair was moved after
+   v24; source/profiles/resources are unchanged. See results/guide-queue-update.json.
 
-3. **8898527**, frozen v21, follows v20 analysis. It compares control and generic
-   intended routes with batch 512 and opposing costs 0/1/4. Two single-core
-   instances, 24 GiB total. Analysis **8898528** follows. All feasibility cases pass;
-   no full guide throughput result yet. See GUIDE_PATHS.md.
+The original learned-flow strengths 1/2/4 fail late v16 deadlines. The traffic
+audit finds 30.6% of directions favored after 128 steps have the opposite
+cumulative majority at 1,024. Stricter margins/later observation are hypotheses,
+not established remedies. The full fixed-work flow result above is negative.
 
-The v19 full warm-start matrix and analysis are complete: control 107,457,
-warm 50k 108,492 (+0.96%), warm 25k 104,548, warm 10k 94,510. All pass, but
-lower work loses throughput. Warm 50k max entry is 0.515 seconds and RSS 12.59 GB.
-The disabled control exactly preserves the earlier full trajectory, including
-v18's static reverse-neighbor optimization. See WARM_START.md.
+V22 route search weight 2 solves all 512 attempts in its step-200 sample, but
+415 deviations cause route rebuilding. V23 reconnection reduces those rebuilds;
+batch 128 reconnects 2,040 deviations at step 200. Batch 512 at 50k attempts
+fails at timestep 90. V24 diagnostics reproduce the failure and attribute most
+work to temporal search: 69.2 million candidate inspections, preparation 0.111
+seconds versus search 0.837. Fixed 4M candidate-work cases pass their screens;
+full validation is queued above. This is prescribed work, never clock-selected
+partial success. Equal-weight 100k also passes a screen, while 150k fails at
+step 32 with 61.7 million candidate inspections. No higher-work full result yet.
 
-The v16 matrix is complete: control 107,457; distance scales 256/1024 yield
-105,891/105,811 and are not promoted. Flow strengths 1/2/4 all fail late deadlines.
-The control trajectory is unchanged. Its traffic audit finds 30.6% of directions
-favored after 128 steps have the opposite cumulative majority at 1,024, motivating
-stricter margins/later observation; this does not prove the cause of failure.
-
-The v18 static predecessor cache cuts isolated table build time by 19–26% with
-matching checksums; the v19 control now validates exact full trajectories. No
-whole-planner speedup is established. See ORACLE.md. Generic intended-route
-guidance is implemented in frozen v21, passes the full regression suite, and
-passes all five 200-step feasibility cases in **8898525**. Batch 128 guides only
-36–41% of robots at step 200; batch 256 reaches 62%. A prescribed batch of 512
-passes **8898526**, reaches 73–86% coverage, and is queued for full runs above.
-V22 passes all five screens; weight 2 solves all 512 admitted searches at its
-step-200 sample, but 415 route deviations cause unnecessary rebuilds. V23 adds
-optional bounded reconnection, passes regressions, and is in screen **8898532**
-(one EPYC 9354 core, 8 GiB).
-V23 batch-512 reconnection fails at timestep 90 in temporal repair and gets no
-score; batch 128 and load-cost-1 pass their screens. Candidate-work follow-up
-will diagnose the heavier conflict search. No guide throughput gain is established.
-See GUIDE_PATHS.md.
+Fable's approved v11 review is complete and its proven issues fixed. A new
+Fable 5.1 max review through Claude Code is running on verified-public frozen
+commit 00bada6. It has no tools or filesystem access and has not completed.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,
 timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.
