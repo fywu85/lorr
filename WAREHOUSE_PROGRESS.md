@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 22:46:14 UTC.
+Updated: 2026-09-19 23:16:49 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
@@ -119,6 +119,7 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | Revealed next-errand scoring | Seeds0/2:143,529 /144,090 versus144,510 /144,107 | **Not promoted.** Both totals and final windows lose; paired mean−0.346%. All20k complete entries valid and controls exact. [Evidence](experiments/construction-20260918/results/next-errand-full-v47/comparison.json). |
 | Zero-temperature regional repair | Seeds0/2:143,600 /144,083 | **Not promoted.** Both totals lose; paired mean−0.324%. All20k entries valid and controls exact. Full audit finds only9/10 discarded peaks per40k reference batches. [Evidence](experiments/construction-20260918/results/regional-peak-full-v48/comparison.json). |
 | Eight regions / eight threads | Seeds0/2:144,096 /143,553 | **Not promoted.** Both totals and final windows lose despite twice the regional work; paired mean−0.335%. All20k entries valid; four-region controls and cumulative counters exact. [Evidence](experiments/construction-20260918/results/regional-eight-full-v48/comparison.json). |
+| Physical-score dominance, scale513 | Seed0 explicit timeout at2230; seed2:142,171 versus144,107 | **Rejected.** The completed seed loses1,936tasks and the other has no full quality result. Both controls exact; all15k completed entries valid. No two-seed mean is reported. [Evidence](experiments/construction-20260918/results/regional-score-scale-full-v48/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 

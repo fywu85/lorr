@@ -1,0 +1,31 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:15:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "kernel_profile",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-kernel-profile-v49-20260919/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-kernel-profile-v49-20260919/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899186\n"
+}

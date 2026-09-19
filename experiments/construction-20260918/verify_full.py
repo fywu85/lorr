@@ -2,6 +2,7 @@
 import datetime
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -13,7 +14,7 @@ def read(path):
     return json.loads(path.read_text())
 
 
-def verify(raw, archive, commit):
+def verify(raw, archive, commit, allow_failed=False):
     raw, archive = Path(raw).resolve(), Path(archive).resolve()
     build = read(raw / 'build.json')
     sources = dict(build['sources'])
@@ -27,26 +28,22 @@ def verify(raw, archive, commit):
     assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] == 1000
     count = len(spec['cases'])
     completion = read(raw / 'completion.json')
-    assert completion['returncode'] == 0 and completion['case_returncodes'] == [0] * count
+    assert len(completion['case_returncodes']) == count
+    assert completion['returncode'] == int(any(completion['case_returncodes']))
+    if not allow_failed:
+        assert completion['returncode'] == 0 and completion['case_returncodes'] == [0] * count
     metrics = {m['case']: m for m in read(archive / 'metrics.json')}
     summaries, metadata = read(archive / 'run-summaries.json'), read(archive / 'run-metadata.json')
-    assert len(metrics) == len(summaries) == len(metadata) == count
+    assert len(summaries) == len(metadata) == count
+    assert set(metrics) == {name for name, records in summaries.items() if records[0]['valid']}
     allocation = read(archive / 'allocation.json')
-    rows, intervals = [], []
+    rows, intervals, failures = [], [], []
     for case in spec['cases']:
         name = case['name']
-        m, meta = metrics[name], metadata[name]
+        meta = metadata[name]
         assert len(summaries[name]) == 1
         s = summaries[name][0]
-        assert s['valid'] and s['outcome'] == 'success', name
-        assert s['makespan'] == s['entry_compute_samples'] == m['steps'] == 5000, name
-        assert meta['instances']['WAREHOUSE']['steps'] == 5000
-        assert all(s[k] == 0 for k in ['planner_errors', 'schedule_errors', 'timeouts', 'internal_timeouts', 'exit']), name
-        assert s['entry_timing_valid'] and s['entry_compute_max_seconds'] <= 1, name
-        assert s['memory_valid'] and s['peak_process_rss_bytes'] < 32000000000, name
-        assert s['after'] == m['tasks'] and s['entry_compute_max_seconds'] == m['max_decision_seconds'], name
-        assert m['movement_diagnostics']['complete'], name
-        assert sum(m['movement_phases'][str(k)][a] for k in range(3) for a in ['fw', 'cr', 'ccr', 'wait']) == 50000000, name
+        assert completion['case_returncodes'][spec['cases'].index(case)] == int(not s['valid']), name
         assert meta['build_provenance'] == build and meta['binary_sha256'] == binary, name
         assert meta['plan_time_limit_ms'] == 1000 and meta['max_process_memory_bytes'] == 32000000000
         resources = meta['cpu_resources']
@@ -63,6 +60,33 @@ def verify(raw, archive, commit):
         for other, a, b, occupied in intervals:
             assert not (begin < b and a < end and cores.intersection(occupied)), ('overlapping physical allocation', name, other)
         intervals.append((name, begin, end, cores))
+        assert meta['instances']['WAREHOUSE']['steps'] == 5000
+        assert s['memory_valid'] and s['peak_process_rss_bytes'] < 32000000000
+        if not s['valid']:
+            assert allow_failed, ('invalid full run', name)
+            assert s['outcome'] == 'timeout' and s['exit'] == 124 and s['internal_timeouts'] > 0, name
+            assert s['after'] is None and s['makespan'] is None, ('partial result', name)
+            log = (raw / name / 'WAREHOUSE.log').read_text()
+            matches = re.findall(r'CGAR_TIMEOUT timestep=(\d+) elapsed_ms=([\d.]+) stage=(\S+)', log)
+            assert len(matches) == 1, ('missing explicit timeout', name)
+            step, elapsed, stage = matches[0]
+            assert float(elapsed) >= 1000
+            failures.append({'case': name, 'seed': case['seed'], 'variant': case['variant'],
+                             'environment': case['environment'], 'outcome': s['outcome'],
+                             'failed_timestep': int(step), 'elapsed_ms': float(elapsed), 'stage': stage,
+                             'peak_rss_bytes': s['peak_process_rss_bytes'], 'finished_utc': meta['finished_utc'],
+                             'reserved_physical_cores': len(cores), 'raw_case': str(raw / name)})
+            continue
+        m = metrics[name]
+        assert s['valid'] and s['outcome'] == 'success', name
+        assert s['makespan'] == s['entry_compute_samples'] == m['steps'] == 5000, name
+        assert meta['instances']['WAREHOUSE']['steps'] == 5000
+        assert all(s[k] == 0 for k in ['planner_errors', 'schedule_errors', 'timeouts', 'internal_timeouts', 'exit']), name
+        assert s['entry_timing_valid'] and s['entry_compute_max_seconds'] <= 1, name
+        assert s['memory_valid'] and s['peak_process_rss_bytes'] < 32000000000, name
+        assert s['after'] == m['tasks'] and s['entry_compute_max_seconds'] == m['max_decision_seconds'], name
+        assert m['movement_diagnostics']['complete'], name
+        assert sum(m['movement_phases'][str(k)][a] for k in range(3) for a in ['fw', 'cr', 'ccr', 'wait']) == 50000000, name
         process = s['process_resources']
         empty, loaded = m['movement_phases']['1'], m['movement_phases']['2']
         rows.append({'case': name, 'seed': case['seed'], 'variant': case['variant'],
@@ -83,7 +107,9 @@ def verify(raw, archive, commit):
         shutil.copy2(raw / name, archive / name)
     return {'checked_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'exact_production_source_commit': commit, 'verified_source_and_test_files': len(sources),
-            'binary_sha256': binary, 'full_cases': count, 'complete_entry_samples': count * 5000,
-            'all_valid_within_deadline_and_memory': True,
+            'binary_sha256': binary, 'full_cases': count, 'complete_entry_samples': len(rows) * 5000,
+            'failed_cases': len(failures), 'failures': failures,
+            'all_valid_within_deadline_and_memory': not failures,
+            'all_completed_runs_valid_within_deadline_and_memory': True,
             'disjoint_physical_bindings_during_concurrent_execution': True,
             'no_cpu_quota': True, 'rows': rows}

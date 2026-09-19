@@ -39,3 +39,8 @@ runs (seeds0/2 xthreeprofiles), four physical cores each,24cores/96GiB aggregate
 32decimalGB cap per process. Raw runs/cgar-regional-work-balance-full-v48-20260919,
 future archive results/regional-work-balance-full-v48. Compare with
 compare_regional.py --variable CGAR_TEMPORAL_CANDIDATE_LIMIT --control4000000.
+
+The2M/four-round seed0 full case fails explicitly at timestep36, elapsed1000.580ms,
+stage planning_complete. The other five cases continue. No partial result is used;
+this arm cannot meet the acceptance criterion as measured. Use compare_failed_regional.py
+for the completed matrix so the failure remains visible alongside verified valid runs.

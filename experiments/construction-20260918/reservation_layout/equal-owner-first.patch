@@ -1,0 +1,17 @@
+--- a/temporal_pibt.hpp
++++ b/temporal_pibt.hpp
+@@ -291,10 +291,10 @@
+     int blocker(int r) const {
+         int answer = -1;
+         auto take = [&](int other) {
+-            if (other >= 0) {
+-                if (answer >= 0 && answer != other) return false;
+-                answer = other;
+-            }
++            // Repeated slots usually have the same owner (including -1).
++            if (other == answer || other < 0) return true;
++            if (answer >= 0) return false;
++            answer = other;
+             return true;
+         };
+         const auto& path = *choice(r).path;

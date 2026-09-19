@@ -1,0 +1,24 @@
+{
+  "source_commit": "df3f8f192a527fdace697399d6775eea263d52bd",
+  "source_hashes": {
+    "baseline": {
+      "temporal_geometry.hpp": "d8ddd5ce4b7c7b158c127b871eb7b6e9000f18726221e50199597c561fab8294",
+      "temporal_pibt.hpp": "bffb1ac01bf096dbbec5789235bea9e7abae0ca499b06f508ec9673fcd83ad58"
+    },
+    "candidate": {
+      "temporal_geometry.hpp": "d8ddd5ce4b7c7b158c127b871eb7b6e9000f18726221e50199597c561fab8294",
+      "temporal_pibt.hpp": "ad34fb540ebafb064e34c275dc25730bbb8f71d459d93d79ccd63d03921f287d"
+    }
+  },
+  "driver_sha256": "cfe59fde8c775d740e93e84dabc004b3740bec992618849dc82da301c6a01613",
+  "patch_sha256": "d96f4d1fa2d959f44e540b6c9711651dc37621624e7084fe40adbdb9496ca010",
+  "cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "repetitions": 12,
+  "modes": {
+    "0": "cold equal-weight global search",
+    "1": "region-filtered search",
+    "2": "valid warm initial plan and unequal weights",
+    "3": "regional search with actual clock callbacks"
+  },
+  "purpose": "Synthetic fixed-work duplicate-clock-check comparison; clocked regional mode3 is the timing hypothesis. No warehouse speedup or quality claim."
+}

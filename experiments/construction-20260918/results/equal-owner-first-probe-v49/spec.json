@@ -1,0 +1,23 @@
+{
+  "source_commit": "df3f8f192a527fdace697399d6775eea263d52bd",
+  "source_hashes": {
+    "baseline": {
+      "temporal_geometry.hpp": "d8ddd5ce4b7c7b158c127b871eb7b6e9000f18726221e50199597c561fab8294",
+      "temporal_pibt.hpp": "bffb1ac01bf096dbbec5789235bea9e7abae0ca499b06f508ec9673fcd83ad58"
+    },
+    "candidate": {
+      "temporal_geometry.hpp": "d8ddd5ce4b7c7b158c127b871eb7b6e9000f18726221e50199597c561fab8294",
+      "temporal_pibt.hpp": "bccf266ac56349493f2da0bbc688028a7097d62ef9adab1f7e4c54f44a77d6e5"
+    }
+  },
+  "driver_sha256": "8e2eb9902b54d959afbc78e70211f9f0efa2edaef27157900e69a5225bec97fb",
+  "patch_sha256": "7b5b6106d10e1b7286ebc54a6c728784021bb44e382f23541c32f6b5d311c462",
+  "cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "repetitions": 30,
+  "modes": {
+    "0": "cold equal-weight global search",
+    "1": "region-filtered search",
+    "2": "valid warm initial plan and unequal weights"
+  },
+  "purpose": "Synthetic fixed-work reservation-layout comparison, including initialization/free; not lifelong throughput or warehouse speedup."
+}

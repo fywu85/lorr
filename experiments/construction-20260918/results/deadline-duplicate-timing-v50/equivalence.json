@@ -1,0 +1,235 @@
+{
+  "checked_utc": "2026-09-19T23:20:03.761778+00:00",
+  "scope": "Same-core A/B/A200-step feasibility, trajectory/search equivalence and timing only. Full warehouse verification still required; no throughput gain.",
+  "all_trajectories_exact": true,
+  "all_sampled_search_counts_and_scores_exact": true,
+  "all600_complete_entries_meet_one_second": true,
+  "same_four_physical_cores_sequentially": true,
+  "no_cpu_quota": true,
+  "baseline_exact_source_commit": "8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd",
+  "candidate_source_binding": "V50 reconstructed from df3f8f1 plus build-provenance/v50/source.patch; all22 current hashes checked. Exact commit follows.",
+  "rows": {
+    "original_a": {
+      "wall_seconds": 102.609,
+      "max_entry_seconds": 0.953128958,
+      "peak_rss_bytes": 5268320256,
+      "binary_sha256": "7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c",
+      "source_test_hashes_checked": 22,
+      "cpu_binding": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "optimized": {
+      "wall_seconds": 100.64,
+      "max_entry_seconds": 0.90536825,
+      "peak_rss_bytes": 5268533248,
+      "binary_sha256": "530feb4e02759c7dc248e649eaa2915cb3da6400dbc934ebabd50b32eedd3456",
+      "source_test_hashes_checked": 22,
+      "cpu_binding": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "original_b": {
+      "wall_seconds": 102.353,
+      "max_entry_seconds": 0.967954964,
+      "peak_rss_bytes": 5268348928,
+      "binary_sha256": "7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c",
+      "source_test_hashes_checked": 22,
+      "cpu_binding": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "sampled_search_diagnostics": {
+    "original_a": {
+      "[cgar-temporal]": [
+        {
+          "step": 200,
+          "workers": 1,
+          "threads": 1,
+          "selected_worker": 0,
+          "candidate_limit": 4000000,
+          "roots": 5315,
+          "accepted": 5163,
+          "recursion": 243216,
+          "candidates": 4003653,
+          "max_depth": 69,
+          "exhausted": 4,
+          "repairs": 81259,
+          "repair_accept": 36673,
+          "score": 13015668.0
+        }
+      ],
+      "[cgar-temporal-regions]": [
+        {
+          "step": 200,
+          "regions": 4,
+          "rounds": 2,
+          "threads": 4,
+          "temperature_ppm": 1000,
+          "active": 19611,
+          "candidates": 8741715,
+          "repairs": 200000,
+          "attempts_accepted": 89741,
+          "kept": 6,
+          "reverted": 2,
+          "frozen_crossers": 387,
+          "score_before": 13015668.0,
+          "score_after": 13101422.0
+        }
+      ],
+      "[cgar-temporal-rotation]": [
+        {
+          "steps": 200,
+          "strict_wait_turns": 0,
+          "wait_seeds": 160,
+          "seed_rotations": 58,
+          "tied_seed_rotations": 1,
+          "planned_rotations": 206393,
+          "protected_rotations": 21
+        }
+      ],
+      "[cgar-orientation]": [
+        {
+          "steps": 200,
+          "enabled": 1,
+          "turn_first": 1,
+          "build_limit": 128,
+          "builds": 15606,
+          "guided": 1750563,
+          "fallback": 249350
+        }
+      ]
+    },
+    "optimized": {
+      "[cgar-temporal]": [
+        {
+          "step": 200,
+          "workers": 1,
+          "threads": 1,
+          "selected_worker": 0,
+          "candidate_limit": 4000000,
+          "roots": 5315,
+          "accepted": 5163,
+          "recursion": 243216,
+          "candidates": 4003653,
+          "max_depth": 69,
+          "exhausted": 4,
+          "repairs": 81259,
+          "repair_accept": 36673,
+          "score": 13015668.0
+        }
+      ],
+      "[cgar-temporal-regions]": [
+        {
+          "step": 200,
+          "regions": 4,
+          "rounds": 2,
+          "threads": 4,
+          "temperature_ppm": 1000,
+          "active": 19611,
+          "candidates": 8741715,
+          "repairs": 200000,
+          "attempts_accepted": 89741,
+          "kept": 6,
+          "reverted": 2,
+          "frozen_crossers": 387,
+          "score_before": 13015668.0,
+          "score_after": 13101422.0
+        }
+      ],
+      "[cgar-temporal-rotation]": [
+        {
+          "steps": 200,
+          "strict_wait_turns": 0,
+          "wait_seeds": 160,
+          "seed_rotations": 58,
+          "tied_seed_rotations": 1,
+          "planned_rotations": 206393,
+          "protected_rotations": 21
+        }
+      ],
+      "[cgar-orientation]": [
+        {
+          "steps": 200,
+          "enabled": 1,
+          "turn_first": 1,
+          "build_limit": 128,
+          "builds": 15606,
+          "guided": 1750563,
+          "fallback": 249350
+        }
+      ]
+    },
+    "original_b": {
+      "[cgar-temporal]": [
+        {
+          "step": 200,
+          "workers": 1,
+          "threads": 1,
+          "selected_worker": 0,
+          "candidate_limit": 4000000,
+          "roots": 5315,
+          "accepted": 5163,
+          "recursion": 243216,
+          "candidates": 4003653,
+          "max_depth": 69,
+          "exhausted": 4,
+          "repairs": 81259,
+          "repair_accept": 36673,
+          "score": 13015668.0
+        }
+      ],
+      "[cgar-temporal-regions]": [
+        {
+          "step": 200,
+          "regions": 4,
+          "rounds": 2,
+          "threads": 4,
+          "temperature_ppm": 1000,
+          "active": 19611,
+          "candidates": 8741715,
+          "repairs": 200000,
+          "attempts_accepted": 89741,
+          "kept": 6,
+          "reverted": 2,
+          "frozen_crossers": 387,
+          "score_before": 13015668.0,
+          "score_after": 13101422.0
+        }
+      ],
+      "[cgar-temporal-rotation]": [
+        {
+          "steps": 200,
+          "strict_wait_turns": 0,
+          "wait_seeds": 160,
+          "seed_rotations": 58,
+          "tied_seed_rotations": 1,
+          "planned_rotations": 206393,
+          "protected_rotations": 21
+        }
+      ],
+      "[cgar-orientation]": [
+        {
+          "steps": 200,
+          "enabled": 1,
+          "turn_first": 1,
+          "build_limit": 128,
+          "builds": 15606,
+          "guided": 1750563,
+          "fallback": 249350
+        }
+      ]
+    }
+  },
+  "wall_change_vs_mean_brackets_percent": -1.7964305578594963
+}

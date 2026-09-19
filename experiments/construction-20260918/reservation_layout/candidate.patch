@@ -1,0 +1,78 @@
+--- a/temporal_pibt.hpp
++++ b/temporal_pibt.hpp
+@@ -76,10 +76,12 @@
+                  const std::vector<std::vector<int>>* choice_regions = nullptr, int region = -1)
+         : choices_(choices), fixed_(fixed), power_(power), limit_(displacement_limit), rng_(seed),
+           selected_(initial ? *initial : std::vector<int>(choices.size(), 0)), visited_(choices.size(), 0),
+-          used_cells_(cells), used_edges_(2 * cells), choice_regions_(choice_regions), region_(region) {
++          reservations_(cells), choice_regions_(choice_regions), region_(region) {
+         if (selected_.size() != choices.size()) throw std::logic_error("invalid temporal initial size");
+-        for (auto& x : used_cells_) x.fill(-1);
+-        for (auto& x : used_edges_) x.fill(-1);
++        for (auto& x : reservations_) {
++            x.vertex.fill(-1);
++            for (auto& edge : x.edge) edge.fill(-1);
++        }
+         for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
+             if (selected_[r] < 0 || selected_[r] >= static_cast<int>(choices_[r].size()) ||
+                 !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
+@@ -196,8 +198,8 @@
+                 };
+                 const auto& path = *candidate.path;
+                 for (int t = 0; t < kTemporalHorizon; ++t) {
+-                    take(used_cells_[path.cells[t]][t]);
+-                    if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t]);
++                    take(reservations_[path.cells[t]].vertex[t]);
++                    if (path.edges[t] >= 0) take(reservations_[path.edges[t] >> 1].edge[path.edges[t] & 1][t]);
+                 }
+                 int category = count;
+                 for (int i = 0; i < count; ++i) if (fixed_[owners[i]]) category = protected_class;
+@@ -256,8 +258,8 @@
+                 };
+                 const auto& path = *candidate.path;
+                 for (int t = 0; t < kTemporalHorizon; ++t) {
+-                    take(used_cells_[path.cells[t]][t], t);
+-                    if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t], t);
++                    take(reservations_[path.cells[t]].vertex[t], t);
++                    if (path.edges[t] >= 0) take(reservations_[path.edges[t] >> 1].edge[path.edges[t] & 1][t], t);
+                 }
+                 const int category = !blocked ? 0 : real ? 2 : 1;
+                 if (category < best_class || (category == best_class &&
+@@ -299,16 +301,16 @@
+         };
+         const auto& path = *choice(r).path;
+         for (int t = 0; t < kTemporalHorizon; ++t)
+-            if (!take(used_cells_[path.cells[t]][t])) return -2;
++            if (!take(reservations_[path.cells[t]].vertex[t])) return -2;
+         for (int t = 0; t < kTemporalHorizon; ++t)
+-            if (path.edges[t] >= 0 && !take(used_edges_[path.edges[t]][t])) return -2;
++            if (path.edges[t] >= 0 && !take(reservations_[path.edges[t] >> 1].edge[path.edges[t] & 1][t])) return -2;
+         return answer;
+     }
+     void reserve(int r, bool insert) {
+         const auto& path = *choice(r).path;
+         for (int t = 0; t < kTemporalHorizon; ++t) {
+-            used_cells_[path.cells[t]][t] = insert ? r : -1;
+-            if (path.edges[t] >= 0) used_edges_[path.edges[t]][t] = insert ? r : -1;
++            reservations_[path.cells[t]].vertex[t] = insert ? r : -1;
++            if (path.edges[t] >= 0) reservations_[path.edges[t] >> 1].edge[path.edges[t] & 1][t] = insert ? r : -1;
+         }
+         const auto gain = choices_[r][0].cost - choice(r).cost;
+         score_ += (insert ? 1 : -1) * static_cast<double>(gain) * power_[r];
+@@ -377,7 +379,15 @@
+     std::vector<int> selected_, candidate_order_;
+     std::vector<std::array<size_t, 4>> candidate_offsets_;
+     std::vector<uint64_t> visited_;
+-    std::vector<std::array<int, kTemporalHorizon>> used_cells_, used_edges_;
++    // Two undirected grid edges have IDs2*min(endpoint)+axis. Keep their
++    // slots on the same cache line as that cell's vertex slots. Values and
++    // the vertex-then-edge blocker scan order are unchanged.
++    struct alignas(64) Reservations {
++        std::array<int, kTemporalHorizon> vertex;
++        std::array<std::array<int, kTemporalHorizon>, 2> edge;
++    };
++    static_assert(sizeof(Reservations) == 64, "reservation cache-line layout");
++    std::vector<Reservations> reservations_;
+     const std::vector<std::vector<int>>* choice_regions_ = nullptr;
+     int region_ = -1;
+     uint64_t generation_ = 0;

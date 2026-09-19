@@ -1,0 +1,12 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  us/call  us/call  name
+ 99.05      1.01     1.01                             int cgar::TemporalPibt::build<false, main::{lambda()#1}>(int, int, int&, bool, main::{lambda()#1}&)
+  0.98      1.02     0.01     8332     1.20     1.20  std::mersenne_twister_engine<unsigned long, 64ul, 312ul, 156ul, 31ul, 13043109905998158313ul, 29ul, 6148914691236517205ul, 17ul, 8202884508482404352ul, 37ul, 18444473444759240704ul, 43ul, 6364136223846793005ul>::_M_gen_rand()
+  0.00      1.02     0.00    67018     0.00     0.00  mix(unsigned long)
+  0.00      1.02     0.00        9     0.00     0.00  void std::vector<std::array<unsigned char, 5ul>, std::allocator<std::array<unsigned char, 5ul> > >::_M_realloc_insert<std::array<unsigned char, 5ul> const&>(__gnu_cxx::__normal_iterator<std::array<unsigned char, 5ul>*, std::vector<std::array<unsigned char, 5ul>, std::allocator<std::array<unsigned char, 5ul> > > >, std::array<unsigned char, 5ul> const&)
+  0.00      1.02     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z3mixm
+  0.00      1.02     0.00        1     0.00     0.00  cgar::TemporalGeometry::operations()
+  0.00      1.02     0.00        1     0.00     0.00  std::vector<std::array<cgar::TemporalPath, 129ul>, std::allocator<std::array<cgar::TemporalPath, 129ul> > >::_M_default_append(unsigned long)

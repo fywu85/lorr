@@ -39,3 +39,10 @@ RSS was9.324GB. It cannot satisfy the1s acceptance criterion; no partial-through
 comparison is accepted. Other cases continue. The failure occurred after the2176
 field refresh; sampled regional time had risen to395.2ms at step2200 versus140.5ms
 at step200. These sparse observations do not isolate the cause of the failing tick.
+
+Full matrix8899167 completed2026-09-19T23:04:27.701703UTC. Verification preserves the
+failed seed0 with no throughput result. Seed2 completes142,171 versus144,107 exact
+control (−1,936tasks), finalwindow−281, agep90+6, turns+17.51%,waits+21.77%.
+Both50 controls reproduce the confirmed regional hashes. All15,000 entries of the
+three completed runs meet1s and memory limits; the failed treatment cannot be averaged
+as a full pair or promoted. Reject513 and retain50. [Verified mixed outcome](results/regional-score-scale-full-v48/comparison.json).

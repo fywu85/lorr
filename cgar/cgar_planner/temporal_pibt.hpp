@@ -325,7 +325,9 @@ private:
     int build(int r, int depth, int& counter, bool repairing, Deadline& check) {
         ++stats.recursive_calls;
         stats.max_depth = std::max(stats.max_depth, depth);
-        if ((counter & 15) == 0) check();
+        // construct/repair checked immediately before this root attempt.
+        // Keep the existing checks every16 recursive displacements.
+        if (counter && (counter & 15) == 0) check();
         if (counter > (repairing ? std::min(limit_, 1000) : limit_)) { ++stats.budget_exhausted; return 2; }
         visited_[r] = generation_;
         const int old = selected_[r];
