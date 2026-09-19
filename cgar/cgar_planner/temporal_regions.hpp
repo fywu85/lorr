@@ -10,6 +10,7 @@
 namespace cgar {
 struct TemporalRegionOptions {
     int parts = 4, rounds = 2, steps = 25000, threads = 4;
+    int temperature_ppm = 1000;
 };
 
 struct TemporalRegionStats {
@@ -28,7 +29,8 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         const TemporalRegionOptions& options, std::mt19937_64& rng,
         TemporalRegionStats& stats, Deadline check) {
     if (options.parts < 1 || options.parts > 32 || options.rounds < 1 ||
-        options.steps < 0 || options.threads < 1 || options.threads > options.parts)
+        options.steps < 0 || options.threads < 1 || options.threads > options.parts ||
+        options.temperature_ppm < 0 || options.temperature_ppm > 10000)
         throw std::invalid_argument("invalid temporal region work limits");
     const int count = static_cast<int>(choices.size()), cells = rows * cols;
     int row_parts = 1, col_parts = options.parts;
@@ -87,7 +89,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
                     check();
                     auto search = std::make_unique<TemporalPibt>(cells, choices, fixed[region], power,
                         displacement_limit, seeds[region], &selected, &choice_regions, region);
-                    search->repair(options.steps, check, 0, &roots[region]);
+                    search->repair(options.steps, check, 0, &roots[region], options.temperature_ppm);
                     check(); results[region] = std::move(search);
                 } catch (...) { errors[region] = std::current_exception(); }
             }

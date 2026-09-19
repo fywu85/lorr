@@ -64,11 +64,14 @@ public:
     }
 
     template<class Deadline>
-    void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr) {
+    void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr,
+                int temperature_ppm = 1000) {
+        if (temperature_ppm < 0 || temperature_ppm > 1000000)
+            throw std::invalid_argument("temporal repair temperature must be in [0,1000000] ppm");
         if (roots && roots->empty()) return;
         double best_score = score_;
         auto best = selected_;
-        temperature_ = 0.001;
+        temperature_ = static_cast<double>(temperature_ppm) / 1000000.0;
         // A positive limit prescribes a deterministic amount of candidate work,
         // including construction. Check only between complete repair attempts:
         // the last attempt may overshoot, and every root has already finished.

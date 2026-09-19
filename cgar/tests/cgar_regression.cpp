@@ -663,8 +663,9 @@ void temporal_region_adapter_regression() {
 void temporal_regions_regression() {
  const int rows=9,cols=11,cells=rows*cols,count=48;
  std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
- int checked=0,boundary_cases=0,improved_cases=0;long long searched_candidates=0;
- for(int trial=0;trial<24;++trial){
+ int checked=0,boundary_cases=0,improved_cases=0,temperature_changes=0;long long searched_candidates=0;
+ std::vector<std::vector<int>> default_results(24);
+ for(int temperature:{1000,100,0})for(int trial=0;trial<24;++trial){
   std::mt19937_64 random(trial+77);std::vector<int> locations(cells);std::iota(locations.begin(),locations.end(),0);
   std::shuffle(locations.begin(),locations.end(),random);locations.resize(count);
   std::vector<std::vector<TemporalChoice>> choices(count);std::vector<char> fixed(count,false);std::vector<double> power(count,1);
@@ -679,7 +680,7 @@ void temporal_regions_regression() {
   }
   TemporalPibt initial(cells,choices,fixed,power,8192,trial);initial.construct(order,[]{});initial.repair(512,[]{});
   fixed[trial%count]=true; // Protect a complete path that may already be moving.
-  TemporalRegionOptions options;options.parts=4;options.rounds=trial%2?4:1;options.steps=256;options.threads=1;
+  TemporalRegionOptions options;options.parts=4;options.rounds=trial%2?4:1;options.steps=256;options.threads=1;options.temperature_ppm=temperature;
   std::mt19937_64 serial_rng(trial+100),parallel_rng(trial+100);TemporalRegionStats a_stats,b_stats;
   auto serial=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,serial_rng,a_stats,[]{});
   options.threads=4;
@@ -688,6 +689,8 @@ void temporal_regions_regression() {
    throw std::runtime_error("regional parallel scheduling changed the complete result");
   if(serial->score()+1e-6<initial.score())throw std::runtime_error("regional complete-plan score decreased");
   if(serial->score()>initial.score()+1e-6)++improved_cases;
+  if(temperature==1000)default_results[trial]=serial->selections();
+  else temperature_changes+=default_results[trial]!=serial->selections();
   searched_candidates+=a_stats.candidates;
   if(a_stats.kept_regions!=b_stats.kept_regions||a_stats.reverted_regions!=b_stats.reverted_regions||
      a_stats.frozen_crossers!=b_stats.frozen_crossers||a_stats.round_scores!=b_stats.round_scores||
@@ -725,8 +728,8 @@ void temporal_regions_regression() {
   }
   checked+=count;
  }
- if(!boundary_cases||!improved_cases||!searched_candidates)throw std::runtime_error("regional fixture was vacuous");
- std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" improved_cases="<<improved_cases<<" searched_candidates="<<searched_candidates<<" complete_merge_valid=1 protected_paths=1 explicit_timeout=1\n";
+ if(!boundary_cases||!improved_cases||!searched_candidates||!temperature_changes)throw std::runtime_error("regional fixture was vacuous");
+ std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" improved_cases="<<improved_cases<<" searched_candidates="<<searched_candidates<<" temperature_changes="<<temperature_changes<<" temperatures=1000,100,0 complete_merge_valid=1 protected_paths=1 explicit_timeout=1\n";
  // Exercise the production adapter, including primary/pocket/capacity protection.
  setenv("CGAR_TEMPORAL_REGIONS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
  setenv("CGAR_TEMPORAL_REGION_STEPS","128",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","2",1);
@@ -880,4 +883,4 @@ void temporal_distance_scale_regression() {
  std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
 }
 
-int main(){try{temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

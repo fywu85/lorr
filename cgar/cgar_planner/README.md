@@ -226,14 +226,19 @@ Additional optional experiments are undergoing full-run evaluation:
   `CGAR_TEMPORAL_REGION_STEPS` sets attempts per region (default 25,000),
   `CGAR_TEMPORAL_REGION_ROUNDS` sets complete rounds with shifted boundaries
   (default 2, range 1–16), and `CGAR_TEMPORAL_REGION_THREADS` sets concurrent
-  execution (default the region count). Every worker finishes before merging;
-  the complete merged reservations are checked for collisions. Thread scheduling
-  does not change seeds, prescribed work, or the selected result.
+  execution (default the region count). `CGAR_TEMPORAL_REGION_TEMPERATURE_PPM`
+  sets the initial annealing temperature in millionths (default 1000; range
+  0–10,000); zero permits only nondecreasing-score repair attempts. This setting
+  changes only regional repair, and is an unvalidated tuning experiment.
+  Every worker finishes before merging; the complete merged reservations are
+  checked for collisions. Thread scheduling does not change seeds, prescribed
+  work, or the selected result.
 
-Turn costs 2/4 and four-region repair with one/two 25k-attempt rounds passed
-50-step deadline screens on reserved EPYC 9354 cores. Larger tested settings
-failed explicitly. These are feasibility checks, not throughput evidence; see
-[the pending experiment record](../../experiments/construction-20260918/ROUTING.md).
+Full seed-0 runs reach 111,411 tasks with one regional round and 112,164 with two,
+against a 107,457 control. Both fit the deadline and memory limits; multiple-seed
+confirmation remains outstanding. Corrected turn cost 2 reduces throughput and
+cost 4 fails explicitly at step 902 despite passing its short screen. See the
+[full experiment record](../../experiments/construction-20260918/RESULTS.md).
 
 A deadline overrun propagates as `Timeout`; no partial worker portfolio, regional
 merge, or clock-truncated search is returned successfully. The [study](../../experiments/construction-20260918/README.md)

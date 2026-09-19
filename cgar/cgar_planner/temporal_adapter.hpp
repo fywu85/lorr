@@ -204,9 +204,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
         if (temporal_regions_) {
-            std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d active=%lld candidates=%lld repairs=%lld attempts_accepted=%lld kept=%lld reverted=%lld frozen_crossers=%lld score_before=%.3f score_after=%.3f\n",
+            std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d temperature_ppm=%d active=%lld candidates=%lld repairs=%lld attempts_accepted=%lld kept=%lld reverted=%lld frozen_crossers=%lld score_before=%.3f score_after=%.3f\n",
                         env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,
-                        temporal_region_options_.threads, region_stats.active_robots, region_stats.candidates,
+                        temporal_region_options_.threads, temporal_region_options_.temperature_ppm, region_stats.active_robots, region_stats.candidates,
                         region_stats.repairs, region_stats.accepted, region_stats.kept_regions, region_stats.reverted_regions,
                         region_stats.frozen_crossers, region_stats.score_before, region_stats.score_after);
             for (size_t round = 0; round < region_stats.round_scores.size(); ++round)

@@ -665,10 +665,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
     temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
     temporal_region_options_.steps = env_int("CGAR_TEMPORAL_REGION_STEPS", 25000);
+    temporal_region_options_.temperature_ppm = env_int("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM", 1000);
     temporal_region_options_.threads = env_int("CGAR_TEMPORAL_REGION_THREADS", temporal_region_options_.parts);
     if (temporal_regions_ && (!temporal_ || temporal_region_options_.parts < 1 || temporal_region_options_.parts > 32 ||
         temporal_region_options_.rounds < 1 || temporal_region_options_.rounds > 16 ||
         temporal_region_options_.steps < 1 || temporal_region_options_.steps > 1000000 ||
+        temporal_region_options_.temperature_ppm < 0 || temporal_region_options_.temperature_ppm > 10000 ||
         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
         throw std::invalid_argument("invalid CGAR temporal region configuration");
     if (temporal_ || turn_prefetch_threads_) {
