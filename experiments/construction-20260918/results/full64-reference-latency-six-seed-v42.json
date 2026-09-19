@@ -1,0 +1,153 @@
+{
+  "checked_utc": "2026-09-19T18:20:17.129662+00:00",
+  "source_report": "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/pickup-full-six-seed-v42.json",
+  "source_report_sha256": "82588ece50bb1012e79ab1c1290bf12e89a9f5dedabdeb861d30477b2c7f81ab",
+  "script_sha256": "96a3dd5768a974c622806467af741abd76b9eab2e593dbcccecfcf9b5ccd4f17",
+  "scope": "Complete scheduler plus planner wall latency, 5000 samples per run. CPU is whole-process user+system time divided by wall time, including simulator, startup and logging; not a sampled instantaneous CPU value. RSS is the whole-process high-water mark. Quantiles use nearest rank.",
+  "rows": [
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 141829,
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s0-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 287.11310429040014,
+        "p50_ms": 261.12457700000004,
+        "p90_ms": 487.33894399999997,
+        "p95_ms": 535.344524,
+        "p99_ms": 581.6722570000001,
+        "max_ms": 874.138202
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 440,
+      "average_cpu_cores": 1.4655847879721273,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 36.63961969930318,
+      "peak_rss_bytes": 11897610240,
+      "wall_seconds": 1510.028
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 143325,
+      "evidence": "experiments/construction-20260918/results/pickup-full-confirm-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-confirm-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s1-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 317.4469986564004,
+        "p50_ms": 298.609339,
+        "p90_ms": 514.4567460000001,
+        "p95_ms": 565.3416249999999,
+        "p99_ms": 602.042398,
+        "max_ms": 861.687922
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 556,
+      "average_cpu_cores": 1.4252372366683226,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 35.63093091670807,
+      "peak_rss_bytes": 11376185344,
+      "wall_seconds": 1662.28
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 142988,
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s2-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 285.0741942365996,
+        "p50_ms": 256.766108,
+        "p90_ms": 498.41734399999996,
+        "p95_ms": 536.275983,
+        "p99_ms": 577.280581,
+        "max_ms": 846.69293
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 491,
+      "average_cpu_cores": 1.4731963954253673,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 36.82990988563418,
+      "peak_rss_bytes": 11378692096,
+      "wall_seconds": 1498.942
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 141802,
+      "evidence": "experiments/construction-20260918/results/pickup-full-confirm-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-confirm-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s3-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 283.3976397772006,
+        "p50_ms": 254.51560499999997,
+        "p90_ms": 496.867662,
+        "p95_ms": 540.1407820000001,
+        "p99_ms": 576.75493,
+        "max_ms": 872.686693
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 488,
+      "average_cpu_cores": 1.4751089571985734,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 36.87772392996433,
+      "peak_rss_bytes": 11871682560,
+      "wall_seconds": 1491.73
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 141988,
+      "evidence": "experiments/construction-20260918/results/pickup-full-confirm-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-confirm-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s4-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 272.4079038851998,
+        "p50_ms": 241.246468,
+        "p90_ms": 489.01356699999997,
+        "p95_ms": 524.757282,
+        "p99_ms": 557.28378,
+        "max_ms": 870.543936
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 426,
+      "average_cpu_cores": 1.4935516529732875,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 37.338791324332185,
+      "peak_rss_bytes": 11933241344,
+      "wall_seconds": 1435.877
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 142917,
+      "evidence": "experiments/construction-20260918/results/pickup-full-confirm-v42",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-confirm-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s5-r0",
+      "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 278.73513055139966,
+        "p50_ms": 249.121422,
+        "p90_ms": 489.667666,
+        "p95_ms": 531.047612,
+        "p99_ms": 568.0899870000001,
+        "max_ms": 863.631848
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 448,
+      "average_cpu_cores": 1.4798267281185498,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 36.99566820296374,
+      "peak_rss_bytes": 11376336896,
+      "wall_seconds": 1467.126
+    }
+  ]
+}

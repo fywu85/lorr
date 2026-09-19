@@ -1,0 +1,112 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_fthreads4_work4m_prep4-s0-r0/WAREHOUSE.json",
+  "team_size": 10000,
+  "steps": 5000,
+  "completed_tasks": 70043,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "empty": {
+      "fw": 5173672,
+      "cr": 1088182,
+      "ccr": 503012,
+      "wait": 2691808,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 22466955,
+      "cr": 4122983,
+      "ccr": 1962189,
+      "wait": 11991199,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "unassigned_robot_steps": 0,
+  "empty_forward_actions": 5173672,
+  "empty_turn_actions": 1591194,
+  "empty_wait_actions": 2691808,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 9456674,
+  "loaded_robot_steps_including_unfinished_tasks": 40543326,
+  "robot_steps_per_completed_task": 713.847208143569,
+  "revealed_chain_shortest": {
+    "n": 85043,
+    "mean": 248.40665310489987,
+    "p90": 445,
+    "sum": 21125247
+  },
+  "completed_chain_shortest": {
+    "n": 70043,
+    "mean": 235.28576731436402,
+    "p90": 434,
+    "sum": 16480121
+  },
+  "assigned_chain_shortest": {
+    "n": 80034,
+    "mean": 244.56166129395007,
+    "p90": 441,
+    "sum": 19573248
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 80034,
+    "mean": 50.707499312792066,
+    "p90": 99,
+    "sum": 4058324
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 80034,
+    "mean": 50.707499312792066,
+    "p90": 99,
+    "sum": 4058324
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 78242,
+    "mean": 90.93192914291556,
+    "p90": 141,
+    "sum": 7114696
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 78242,
+    "mean": 90.93192914291556,
+    "p90": 141,
+    "sum": 7114696
+  },
+  "completed_loaded_steps": {
+    "n": 70043,
+    "mean": 392.71543194894565,
+    "p90": 649,
+    "sum": 27506967
+  },
+  "completed_loaded_action_totals": {
+    "fw": 18971729,
+    "cr": 2037720,
+    "ccr": 1046693,
+    "wait": 5450825,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 270.8583156061277,
+    "cr": 29.092414659566266,
+    "ccr": 14.943577516668332,
+    "wait": 77.82112416658339,
+    "other": 0.0
+  },
+  "completed_loaded_forward_excess_over_shortest": 2491608,
+  "observed_pickup_steps_per_shortest_cell": 1.8104482724048412,
+  "completed_loaded_steps_per_shortest_cell": 1.6690998203229213,
+  "tasks_with_multiple_assignments": 0,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 1792,
+  "distance_queries": 245111,
+  "complete_bfs_tables": 24292,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic."
+}

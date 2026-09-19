@@ -1,0 +1,325 @@
+{
+  "scope": "Eight complete5000-step/10000-robot runs. All entries valid<=1s,RSS<32decimalGB, fourcores each. All four default-key0/32controls exactly reproduce v42 full trajectories, including the32-field seed0collapse.",
+  "checked_utc": "2026-09-19T18:24:10.757745+00:00",
+  "exact_production_source_commit": "1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "f6d2a8ef5963e27a2408b503efb283ceb2d686155688d886fa81301a9e29313f",
+  "rows": [
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull0_costkey0_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 0,
+      "cost_key": 0,
+      "tasks": 138963,
+      "completed_per_1000": [
+        22398,
+        28970,
+        29138,
+        29141,
+        29316
+      ],
+      "trajectory_sha256": "ec55f6ccc9e766186eb9337c62ffe2277dad0632f1642a14e02dddd86dddf723",
+      "mean_entry_ms": 265.77916369539975,
+      "max_entry_seconds": 0.881290247,
+      "average_cpu_cores": 1.181741893543753,
+      "peak_rss_bytes": 11355074560,
+      "wall_seconds": 1402.68,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 318.59453333333335,
+        "p90": 656
+      },
+      "finished_utc": "2026-09-19T18:14:01.089708+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 8790299,
+        "empty_turn_actions": 633744,
+        "empty_wait_actions": 535890
+      },
+      "full_empty_robot_steps": 9959933
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_costkey0_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 32,
+      "cost_key": 0,
+      "tasks": 70043,
+      "completed_per_1000": [
+        21858,
+        24389,
+        12269,
+        6094,
+        5433
+      ],
+      "trajectory_sha256": "0fa2caaab5ac8ef02a532cace1cde0715895e10654cf61f25fdb077dd6ab92c4",
+      "mean_entry_ms": 226.11848699179995,
+      "max_entry_seconds": 0.8775205,
+      "average_cpu_cores": 1.4407168014967238,
+      "peak_rss_bytes": 10868985856,
+      "wall_seconds": 1203.856,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1804.3158,
+        "p90": 3327
+      },
+      "finished_utc": "2026-09-19T18:10:42.259147+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 5173672,
+        "empty_turn_actions": 1591194,
+        "empty_wait_actions": 2691808
+      },
+      "full_empty_robot_steps": 9456674
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_costkey1_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 32,
+      "cost_key": 1,
+      "tasks": 135244,
+      "completed_per_1000": [
+        23975,
+        28097,
+        27910,
+        27631,
+        27631
+      ],
+      "trajectory_sha256": "cbaa3c941117824f18b4904298535ee2fdfcdbda4b3a86cbc0aae17c07121712",
+      "mean_entry_ms": 266.8459756747999,
+      "max_entry_seconds": 0.874548813,
+      "average_cpu_cores": 1.5192296564183303,
+      "peak_rss_bytes": 11893354496,
+      "wall_seconds": 1408.858,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1016.3242,
+        "p90": 3441
+      },
+      "finished_utc": "2026-09-19T18:14:07.261113+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 10364917,
+        "empty_turn_actions": 732787,
+        "empty_wait_actions": 649683
+      },
+      "full_empty_robot_steps": 11747387
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_costkey1_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 64,
+      "cost_key": 1,
+      "tasks": 135773,
+      "completed_per_1000": [
+        24304,
+        28174,
+        27994,
+        27696,
+        27605
+      ],
+      "trajectory_sha256": "b92914cfc2e8e59ef081d6e4d89018188700006bbcfc417b4c348325e81b3f47",
+      "mean_entry_ms": 267.4823067433995,
+      "max_entry_seconds": 0.872413027,
+      "average_cpu_cores": 1.5275098384171004,
+      "peak_rss_bytes": 11889373184,
+      "wall_seconds": 1411.809,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1113.6882666666668,
+        "p90": 3907
+      },
+      "finished_utc": "2026-09-19T18:14:10.215420+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 10368578,
+        "empty_turn_actions": 724564,
+        "empty_wait_actions": 641309
+      },
+      "full_empty_robot_steps": 11734451
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull0_costkey0_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 0,
+      "cost_key": 0,
+      "tasks": 139677,
+      "completed_per_1000": [
+        23039,
+        29153,
+        29303,
+        29116,
+        29066
+      ],
+      "trajectory_sha256": "455361244a747c6e6de26fa0c0123ad5df8bbb5b5b2040af53b1b98f70065a81",
+      "mean_entry_ms": 250.9802223983992,
+      "max_entry_seconds": 0.847899863,
+      "average_cpu_cores": 1.1964252272307752,
+      "peak_rss_bytes": 11890876416,
+      "wall_seconds": 1328.188,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 320.02206666666666,
+        "p90": 659
+      },
+      "finished_utc": "2026-09-19T18:12:46.592781+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 8882301,
+        "empty_turn_actions": 653012,
+        "empty_wait_actions": 535888
+      },
+      "full_empty_robot_steps": 10071201
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_costkey0_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 32,
+      "cost_key": 0,
+      "tasks": 142735,
+      "completed_per_1000": [
+        23688,
+        29699,
+        29921,
+        29748,
+        29679
+      ],
+      "trajectory_sha256": "8a082325b046b70e3b84a3992808b774f68c8ad0e2c4f680a91a56df46b9d13f",
+      "mean_entry_ms": 284.66749309140073,
+      "max_entry_seconds": 0.845320362,
+      "average_cpu_cores": 1.4996055554490484,
+      "peak_rss_bytes": 11915149312,
+      "wall_seconds": 1496.868,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.8314,
+        "p90": 646
+      },
+      "finished_utc": "2026-09-19T18:15:35.274838+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 8142716,
+        "empty_turn_actions": 664661,
+        "empty_wait_actions": 508675
+      },
+      "full_empty_robot_steps": 9316052
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_costkey1_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 32,
+      "cost_key": 1,
+      "tasks": 137131,
+      "completed_per_1000": [
+        24580,
+        28404,
+        28203,
+        27990,
+        27954
+      ],
+      "trajectory_sha256": "2fdebb17af747d1b1ecdc8a35d7b0025baa67ea8a2225794efa5dc891813c6b3",
+      "mean_entry_ms": 270.87453170779986,
+      "max_entry_seconds": 0.849671786,
+      "average_cpu_cores": 1.5135446253485159,
+      "peak_rss_bytes": 11943645184,
+      "wall_seconds": 1429.228,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1007.1574666666667,
+        "p90": 3414
+      },
+      "finished_utc": "2026-09-19T18:14:27.638888+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 10473135,
+        "empty_turn_actions": 731721,
+        "empty_wait_actions": 624550
+      },
+      "full_empty_robot_steps": 11829406
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_costkey1_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 64,
+      "cost_key": 1,
+      "tasks": 79601,
+      "completed_per_1000": [
+        23921,
+        25122,
+        17288,
+        7730,
+        5540
+      ],
+      "trajectory_sha256": "0b518ef8d475b9c078c209a2c9c281d500d309246073f25157d4552f645b5bb1",
+      "mean_entry_ms": 217.58165840000098,
+      "max_entry_seconds": 0.853390712,
+      "average_cpu_cores": 1.4872839232831623,
+      "peak_rss_bytes": 11937386496,
+      "wall_seconds": 1161.772,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 2288.5706,
+        "p90": 4514
+      },
+      "finished_utc": "2026-09-19T18:10:00.179944+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-cost-key-full-v43",
+      "full_empty_actions": {
+        "empty_forward_actions": 7523777,
+        "empty_turn_actions": 2025408,
+        "empty_wait_actions": 3129221
+      },
+      "full_empty_robot_steps": 12678406
+    }
+  ],
+  "groups": [
+    {
+      "full_fields": 32,
+      "candidate_mean_tasks": 136187.5,
+      "same_fields_default_mean_tasks": 106389.0,
+      "healthy_no_field_mean_tasks": 139320.0,
+      "relative_to_healthy_no_field_percent": -2.248420901521675,
+      "pairs": [
+        {
+          "seed": 0,
+          "same_fields_task_difference": 65201,
+          "healthy_no_field_task_difference": -3719,
+          "empty_robot_steps_vs_healthy_percent": 17.946446025289518,
+          "age_p90_vs_healthy_difference": 2785
+        },
+        {
+          "seed": 2,
+          "same_fields_task_difference": -5604,
+          "healthy_no_field_task_difference": -2546,
+          "empty_robot_steps_vs_healthy_percent": 17.45774908077,
+          "age_p90_vs_healthy_difference": 2755
+        }
+      ],
+      "status": "rejected"
+    },
+    {
+      "full_fields": 64,
+      "candidate_mean_tasks": 107687.0,
+      "same_fields_default_mean_tasks": 142408.5,
+      "healthy_no_field_mean_tasks": 139320.0,
+      "relative_to_healthy_no_field_percent": -22.705282802182026,
+      "pairs": [
+        {
+          "seed": 0,
+          "same_fields_task_difference": -6056,
+          "healthy_no_field_task_difference": -3190,
+          "empty_robot_steps_vs_healthy_percent": 17.81656563352385,
+          "age_p90_vs_healthy_difference": 3251
+        },
+        {
+          "seed": 2,
+          "same_fields_task_difference": -63387,
+          "healthy_no_field_task_difference": -60076,
+          "empty_robot_steps_vs_healthy_percent": 25.887726796436695,
+          "age_p90_vs_healthy_difference": 3855
+        }
+      ],
+      "status": "rejected"
+    }
+  ],
+  "promoted_as_benchmark_reference": false,
+  "interpretation": "Cost-key32 rescues the previously collapsed seed0 but loses on both seeds to the healthy no-field control. Cost-key64 loses both to the original64policy and collapses seed2. Empty travel and outstanding ages rise. Reject both tested cost-key profiles; retain default age-aware ranking. A favorable mean against a collapsed32-field control is not a promotion criterion."
+}

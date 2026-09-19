@@ -68,7 +68,7 @@ seeds0/2,5000steps. Eight cases run concurrently on disjoint four-core allocatio
 128GiB aggregate reservation and32decimalGB individual limit. Configurations:
 [pickup-full-variants.json](pickup-full-variants.json).
 The original control was v41's graded pickup-flow policy, then under evaluation.
-Its separate six-seed confirmation subsequently passed and it is now the benchmark
+Its separate six-seed confirmation subsequently passed, establishing the preceding
 reference; the first two full-field comparisons still use their matched controls.
 
 ## Full results and confirmation
@@ -92,9 +92,32 @@ valid. The response is not monotone in quota, and64's improvement contradicts
 a blanket claim that global HRRN discovery must hurt. No causal explanation yet.
 [Complete comparison](results/pickup-full-full-v42/comparison.json).
 
-Job8898882/analysis8898883 confirms0/16/64 on seeds1/3/4/5:12simultaneous cases
-on48reserved physical cores, four cores per process,192GiB aggregate reservation
-and32decimalGB per-process cap. Both candidate policies remain unpromoted until
-that completes. The CPU-affinity guard omission found by Fable is fixed in v43;
-v42benchmarks explicitly allocate four cores to four threads, so their allocation
-is valid. See [cost-key follow-up](PICKUP_COST_KEY.md).
+Job 8898882/analysis 8898883 completed the remaining seeds 1/3/4/5: twelve
+simultaneous cases on 48 reserved physical cores, four per process, 192 GiB
+aggregate reservation and a 32 decimal GB per-process cap. Together with the
+first pair, all 18 runs pass and all six disabled trajectories exactly reproduce
+the preceding pickup-flow reference. All 22 source/test hashes match 4872d04.
+
+| Fields | Seeds 0/1/2/3/4/5 | Mean | Change vs disabled |
+|---|---|---:|---:|
+|0|138963 /140002 /139677 /138671 /139241 /139773|139387.8|reference|
+|16|139697 /141925 /141725 /140734 /140928 /141878|141147.8|+1.263%|
+|64|141829 /143325 /142988 /141802 /141988 /142917|142474.8|+2.215%|
+
+Both candidates improve every full total, final 1,000-step window and outstanding
+age p90. Fields64 also beats fields16 in every full total and becomes the reference.
+Its empty robot-steps fall 7.43–7.84%, final-window gains are 355–670 tasks, and
+age p90 falls 5–14 steps versus disabled. The rejected32 policy remains separate
+evidence; the quota response is not monotone.
+[Six-seed evidence](results/pickup-full-six-seed-v42.json).
+
+The promoted policy averages 272.4–317.4 ms per complete decision, p99
+557.3–602.0 ms and maximum 874.2 ms. CPU averages 1.425–1.494 cores out of four,
+peak RSS is 11.934 GB, and full wall time is 23.93–27.70 minutes. All 30,000
+candidate entries meet one second.
+[Full quantiles and resources](results/full64-reference-latency-six-seed-v42.json).
+
+The CPU-affinity guard omission found by Fable is fixed in v43; v42 benchmarks
+explicitly allocate four cores to four threads, so their allocation is valid.
+The cost-based shortlist follow-up loses and is rejected; retain the original
+age-aware key. See [cost-key results](PICKUP_COST_KEY.md).

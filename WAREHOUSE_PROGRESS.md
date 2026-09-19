@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 18:05:49 UTC.
+Updated: 2026-09-19 18:42:20 UTC.
 
-**Current six-seed reference: 139,387.8 mean tasks**, graded strength4/scale4 with margin25, turn-build128 and heading/traffic-aware pickup selection, range **138,671–140,002**. All six full totals and final1,000-step windows improve over the preceding graded reference (**+0.317%** in the mean); empty robot-steps fall on every seed. Outstanding agep90 rises7–20steps, with the existing fairness policy retained. Complete pickup fields improve further on the first two seeds:16fields mean140,711 (+0.998%) and64fields mean142,408.5 (+2.217%) against their matched pickup-ON control; six-seed confirmation is running. The32-field policy collapses seed0 and is rejected. The absolute high is **142,988**, a two-seed candidate result. The target remains unmet.
+**Current six-seed reference: 142,474.8 mean tasks**, graded strength 4/scale 4 with margin 25, turn-build 128, heading/traffic-aware pickup selection, and 64 complete pickup fields per step. The six-seed range is **141,802–143,325**. All six full totals and final 1,000-step windows improve over the preceding pickup-flow reference (**+2.215%** in the mean); empty robot-steps fall 7.43–7.84% and outstanding age p90 falls 5–14 steps. Sixteen fields also improve all six seeds, but 64 fields win every full total. The absolute high is **143,409**, from a four-worker candidate now entering six-seed confirmation. The 32-field policy and both tested cost-based discovery profiles are rejected. The target remains unmet.
 
-The local KittyKnight reference is **152,981**. The confirmed mean is **8.89% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**. The confirmed mean is **6.87% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -45,9 +45,12 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 15:55:29 | 139,037 | Margin25 + turn builds128 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
 | 2026-09-19 16:13:44 | 139,303 | Graded scale4/strength4, margin25 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
 | 2026-09-19 16:13:53 | 139,796 | Graded scale4/strength4, margin0 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · rejected: seed0 collapses |
-| 2026-09-19 17:42:42 | 141,725 | Complete pickup fields16 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · two seeds; confirmation running |
+| 2026-09-19 17:42:42 | 141,725 | Complete pickup fields16 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · six-seed improvement confirmed |
 | 2026-09-19 17:43:24 | 142,735 | Complete pickup fields32 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · rejected: seed0 collapses |
-| 2026-09-19 17:43:34 | 142,988 | Complete pickup fields64 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · two seeds; confirmation running |
+| 2026-09-19 17:43:34 | 142,988 | Complete pickup fields64 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · six-seed improvement confirmed |
+| 2026-09-19 18:13:40 | 143,325 | Complete pickup fields64 / 1 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-confirm-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · six-seed reference confirmed |
+| 2026-09-19 18:31:17 | 143,340 | Complete fields64 + four 4M workers / 0 | [1661176](https://github.com/fywu85/lorr/commit/1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9) | [data](experiments/construction-20260918/results/pickup-full-workers-full-v43/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v43/) · two seeds; confirmation running |
+| 2026-09-19 18:32:22 | 143,409 | Complete fields64 + four 4M workers / 2 | [1661176](https://github.com/fywu85/lorr/commit/1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9) | [data](experiments/construction-20260918/results/pickup-full-workers-full-v43/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v43/) · two seeds; confirmation running |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -64,6 +67,8 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | 2026-09-19 16:34:42 | 138,104.2 | 137,149–139,037 | Binary margin25, build128 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json) |
 | 2026-09-19 16:47:34 | 138,948.0 | 138,304–139,716 | Graded strength4/scale4, margin25/build128 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-six-seed-v39.json) |
 | 2026-09-19 17:57:50 | 139,387.8 | 138,671–140,002 | Graded margin25/build128 + pickup flow | [eb5b382](https://github.com/fywu85/lorr/commit/eb5b3827b9daf9f91aba88c78bef7be0d17cd07c) | [data](experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json) |
+| 2026-09-19 18:12:34 | 141,147.8 | 139,697–141,925 | Graded pickup + complete fields16 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-six-seed-v42.json) |
+| 2026-09-19 18:13:40 | 142,474.8 | 141,802–143,325 | Graded pickup + complete fields64 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-six-seed-v42.json) |
 
 ## Confirmation and reversals
 
@@ -94,24 +99,34 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | Heading/traffic pickup costs, ordinary HRRN | Seeds0/2: **137,508 /137,923**, mean **137,715.5** | Both totals/final windows improve over binary margin50/build128 (**+0.559%**); outstanding agep90 rises. The graded combination is now confirmed on all six seeds. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
 | Heading/traffic pickup costs, direct cost/weight5 | Seeds0/2: **138,242 /49,732** | **Rejected.** Seed2 ends with4,522tasks in its final window; matched disabled controls137,603/136,560 stay healthy. All decisions valid, so this is a policy collapse. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
 | Double orientation-cache allowance |8/16GiB produce the same full trajectories on both binary-margin25 seeds | Saves197/217rebuilds without changing guided/fallback counts or throughput. Retain8GiB. [Evidence](experiments/construction-20260918/results/turn-cache-capacity-full-v39/comparison.json). |
-| Graded pickup flow | Six seeds: **138,963 /140,002 /139,677 /138,671 /139,241 /139,773**, mean **139,387.8** | **Current benchmark reference.** All six totals/finalwindows improve, mean+0.317%; empty robot-steps fall1.46–2.15%, agep90 rises7–20steps. All12runs valid; all six controls exactly reproduce. [Evidence](experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json). |
-| Complete pickup fields16 | Seeds0/2: **139,697 /141,725**, mean140,711 | +0.998% above graded pickup ON; both totals/final windows/agep90 improve. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
+| Graded pickup flow | Six seeds: **138,963 /140,002 /139,677 /138,671 /139,241 /139,773**, mean **139,387.8** | **Confirmed intermediate reference.** All six totals/finalwindows improve, mean+0.317%; empty robot-steps fall1.46–2.15%, agep90 rises7–20steps. All12runs valid; all six controls exactly reproduce. [Evidence](experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json). |
+| Complete pickup fields16 | Six seeds: **139,697 /141,925 /141,725 /140,734 /140,928 /141,878**, mean **141,147.8** | Confirmed improvement of **1.263%** over graded pickup ON; all six totals/final windows/age p90 improve. Fields64 wins every full total. [Evidence](experiments/construction-20260918/results/pickup-full-six-seed-v42.json). |
 | Complete pickup fields32 | Seeds0/2: **70,043 /142,735** | **Rejected.** Seed0 finalwindow5,433 despite valid complete decisions. Historical high retained. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
-| Complete pickup fields64 | Seeds0/2: **141,829 /142,988**, mean142,408.5 | +2.217% above graded pickup ON; both totals/final windows/agep90 improve. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
+| Complete pickup fields64 | Six seeds: **141,829 /143,325 /142,988 /141,802 /141,988 /142,917**, mean **142,474.8** | **Current benchmark reference.** Mean **+2.215%** over graded pickup ON; all six totals/final windows/age p90 improve. All 18 paired runs valid, all six disabled controls exactly reproduce. [Evidence](experiments/construction-20260918/results/pickup-full-six-seed-v42.json). |
+| Cost-based complete-field discovery | Fields32 seeds0/2: **135,244 /137,131**; fields64: **135,773 /79,601** | **Both rejected.** Fields32 loses 2.248% to the healthy disabled control despite rescuing its collapsed counterpart. Fields64 loses both seeds to original64 and collapses seed2. Empty travel and outstanding ages rise. All four default controls exactly reproduce v42. [Evidence](experiments/construction-20260918/results/pickup-cost-key-full-v43/comparison.json). |
+| Complete fields64 + four planning workers | Seeds0/2: **143,340 /143,409**, mean **143,374.5** | **Candidate**, +0.678% over matched one-worker controls. Both totals and final windows improve; ages unchanged. Two workers loses both full totals. All six runs valid and both one-worker trajectories exact. Four-worker six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-full-workers-full-v43/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
 ## Resource cost of the current benchmark reference
 
-The current graded pickup-flow reference averages **241.5–284.0ms** per complete
-schedule+plan step, with median **210.1–262.9ms**, p99 **529.8–570.6ms**, and
-maximum **872.4ms**. Whole-process CPU averages **1.171–1.204cores** of four
-reserved, peak RSS **11.901GB**, and full runs take **21.36–24.91minutes**.
-All30000candidate entries meet1second. CPU includes startup/simulation/logging
-and is user+system seconds divided by wall time; it is not instantaneous usage.
-[Six-seed confirmation](experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json),
-[all-step quantiles](experiments/construction-20260918/results/graded-pickup-reference-latency-six-seed-v41.json),
+The current 64-field reference averages **272.4–317.4 ms** per complete
+schedule+plan step, with median **241.2–298.6 ms**, p99 **557.3–602.0 ms**, and
+maximum **874.2 ms**. Whole-process CPU averages **1.425–1.494 cores** of four
+reserved (35.6–37.3% of the allocation), peak RSS **11.934 GB**, and full runs take
+**23.93–27.70 minutes**. All 30,000 candidate entries meet one second. Each entry
+covers all 10,000 robots. CPU includes startup, simulation and logging and is
+user+system seconds divided by wall time; it is not instantaneous usage.
+[Six-seed confirmation](experiments/construction-20260918/results/pickup-full-six-seed-v42.json),
+[all-step quantiles](experiments/construction-20260918/results/full64-reference-latency-six-seed-v42.json),
 [explicit configuration](experiments/construction-20260918/warehouse-reference-variants.json).
+
+The preceding graded pickup-flow reference averages 241.5–284.0 ms, with median
+210.1–262.9 ms, p99 529.8–570.6 ms and maximum 872.4 ms. CPU averages
+1.171–1.204 cores, peak RSS is 11.901 GB, and full runs take 21.36–24.91 minutes.
+All 30,000 entries meet one second.
+[Preceding confirmation](experiments/construction-20260918/results/graded-pickup-flow-six-seed-v41.json),
+[preceding quantiles](experiments/construction-20260918/results/graded-pickup-reference-latency-six-seed-v41.json).
 
 The preceding graded strength4/scale4, margin25/build128 reference averages
 **229.3–277.3ms** per complete scheduling plus planning step. Median latency is
@@ -156,10 +171,13 @@ Four full-size search workers average271–277ms per decision and2.60–2.63CPU
 cores, but add only0.204% throughput on seeds0/2; they are not promoted.
 [Parallel-search evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json).
 
-The unconfirmed64-field candidate averages285.1–287.1ms, uses1.466–1.473CPU
-cores, reaches11.898GB RSS, and takes24.98–25.17minutes on its two full seeds.
-Its peak entry is874.2ms; these are candidate resources, distinct from the
-six-seed confirmed reference above. [Candidate evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json).
+An independent full-trajectory action audit finds 10.36–11.19 loaded turns and
+14.10–15.31 loaded waits per completed task on the 64-field seeds 0/2, compared
+with 5.68 turns and 8.41 waits in the local KittyKnight run. Loaded forward travel
+also exceeds the unweighted shortest-chain bound by 8.20–9.12 steps versus 4.59.
+These are different completed-task cohorts, with unfinished work censored; the
+component differences are not causal savings. They motivate the next motion tests.
+[Audit and limits](experiments/construction-20260918/LOADED_MOTION.md).
 
 ## Updating this log
 

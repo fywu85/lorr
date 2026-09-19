@@ -18,6 +18,7 @@ struct TaskInfo {
     std::vector<int> stops;
     std::vector<Assignment> assignments;
     long long chain = 0;
+    std::array<long long, 5> loaded_actions{};
     int first_pickup_distance = -1, last_pickup_distance = -1;
 };
 struct Query { int target, source, task, kind; };
@@ -75,6 +76,9 @@ int main(int argc, char** argv) {
             if (stop == 1) task.pickup = event[0];
             if (stop == int(task.stops.size())) task.finished = event[0];
         }
+        const std::array<std::string, 5> action_names{"fw", "cr", "ccr", "wait", "other"};
+        auto action_kind = [](char action) { return action == 'F' ? 0 : action == 'R' ? 1 : action == 'C' ? 2 : action == 'W' ? 3 : 4; };
+        std::array<std::array<long long, 5>, 3> phase_actions{};  // idle, empty, loaded
         long long non_motion_actions = 0;
         long long idle_steps = 0, empty_forward = 0, empty_turns = 0, empty_waits = 0, empty_other = 0;
         for (size_t robot = 0; robot < data.at("actualSchedule").size(); ++robot) {
@@ -98,6 +102,14 @@ int main(int argc, char** argv) {
             for (size_t slot = 0; slot < entries.size(); ++slot) {
                 int step = entries[slot].first, task_id = entries[slot].second;
                 int end = slot + 1 < entries.size() ? entries[slot + 1].first - 1 : data.at("makespan").get<int>();
+                for (int at = std::max(1, step); at <= end; ++at) {
+                    const int kind = action_kind(path.at(2 * (at - 1)));
+                    if (task_id < 0) { ++phase_actions[0][kind]; continue; }
+                    auto& task = tasks.at(index.at(task_id));
+                    const bool loaded = task.pickup >= 0 && at > task.pickup;
+                    ++phase_actions[loaded ? 2 : 1][kind];
+                    if (loaded && task.finished >= 0 && at <= task.finished) ++task.loaded_actions[kind];
+                }
                 if (task_id < 0) idle_steps += std::max(0, end - std::max(1, step) + 1);
                 else {
                     int pickup = tasks.at(index.at(task_id)).pickup;
@@ -121,6 +133,20 @@ int main(int argc, char** argv) {
                 if (task_id >= 0) tasks.at(index.at(task_id)).assignments.push_back({step, int(robot), cell});
             }
         }
+        long long classified = 0;
+        for (int phase = 0; phase < 3; ++phase) {
+            const std::string name = phase == 0 ? "idle" : phase == 1 ? "empty" : "loaded";
+            for (int kind = 0; kind < 5; ++kind) {
+                report["full_phase_actions"][name][action_names[kind]] = phase_actions[phase][kind];
+                classified += phase_actions[phase][kind];
+            }
+        }
+        if (classified != data.at("teamSize").get<long long>() * data.at("makespan").get<int>())
+            throw std::runtime_error("phase accounting did not cover every robot-step");
+        if (std::accumulate(phase_actions[0].begin(), phase_actions[0].end(), 0LL) != idle_steps ||
+            phase_actions[1][0] != empty_forward || phase_actions[1][1] + phase_actions[1][2] != empty_turns ||
+            phase_actions[1][3] != empty_waits || phase_actions[1][4] != empty_other)
+            throw std::runtime_error("independent empty/idle action accounting differs");
         report["non_motion_action_markers_before_last_assignment"] = non_motion_actions;
         report["unassigned_robot_steps"] = idle_steps;
         report["empty_forward_actions"] = empty_forward;
@@ -172,6 +198,7 @@ int main(int argc, char** argv) {
     std::vector<long long> first_pickup_delay, last_pickup_delay, loaded_steps;
     long long pickup_elapsed = 0, pickup_distance = 0, loaded_elapsed = 0, loaded_distance = 0;
     int changes = 0, assigned_unpicked = 0, assignments_after_pickup = 0;
+    std::array<long long, 5> completed_loaded_actions{};
     for (auto& task : tasks) {
         revealed_chain.push_back(task.chain);
         if (task.finished >= 0) {
@@ -179,6 +206,9 @@ int main(int argc, char** argv) {
             completed_chain.push_back(task.chain);
             loaded_steps.push_back(task.finished - task.pickup);
             loaded_elapsed += task.finished - task.pickup; loaded_distance += task.chain;
+            if (std::accumulate(task.loaded_actions.begin(), task.loaded_actions.end(), 0LL) != task.finished - task.pickup)
+                throw std::runtime_error("completed task action accounting differs from event elapsed time");
+            for (size_t kind = 0; kind < task.loaded_actions.size(); ++kind) completed_loaded_actions[kind] += task.loaded_actions[kind];
         }
         if (task.assignments.empty()) continue;
         assigned_chain.push_back(task.chain);
@@ -202,6 +232,14 @@ int main(int argc, char** argv) {
     report["observed_first_assignment_pickup_delay"] = distribution(first_pickup_delay);
     report["observed_last_assignment_pickup_delay"] = distribution(last_pickup_delay);
     report["completed_loaded_steps"] = distribution(loaded_steps);
+    const std::array<std::string, 5> action_names{"fw", "cr", "ccr", "wait", "other"};
+    for (size_t kind = 0; kind < completed_loaded_actions.size(); ++kind) {
+        report["completed_loaded_action_totals"][action_names[kind]] = completed_loaded_actions[kind];
+        report["completed_loaded_action_means"][action_names[kind]] = completed_chain.empty() ? json(nullptr) : json(double(completed_loaded_actions[kind]) / completed_chain.size());
+    }
+    report["completed_loaded_forward_excess_over_shortest"] = completed_loaded_actions[0] - loaded_distance;
+    if (completed_loaded_actions[4] == 0 && completed_loaded_actions[0] < loaded_distance)
+        throw std::runtime_error("completed loaded forward actions are below a physical shortest-path bound");
     report["observed_pickup_steps_per_shortest_cell"] = pickup_distance ? json(double(pickup_elapsed) / pickup_distance) : json(nullptr);
     report["completed_loaded_steps_per_shortest_cell"] = loaded_distance ? json(double(loaded_elapsed) / loaded_distance) : json(nullptr);
     report["tasks_with_multiple_assignments"] = changes;

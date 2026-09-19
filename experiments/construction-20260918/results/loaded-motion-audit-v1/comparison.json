@@ -1,0 +1,47 @@
+{
+  "scope": "Four complete trajectories. New phase accounting conserves50Mrobot-steps per run, agrees with old report fields exactly and with all CGAR full phase/action counters. Every completed task action count equals its event elapsed time. Both hand-counted fixtures passed. No planner code changed.",
+  "checked_utc": "2026-09-19T18:24:10.802547+00:00",
+  "rows": [
+    {
+      "case": "full64_seed0",
+      "tasks": 141829,
+      "completed_chain_mean": 241.7579902558715,
+      "loaded_forward_excess_mean": 9.124847527656543,
+      "loaded_turn_mean": 11.191413603705872,
+      "loaded_wait_mean": 15.311114088091998,
+      "loaded_elapsed_mean": 277.3853654753259,
+      "mean_components_sum": 277.3853654753259
+    },
+    {
+      "case": "full64_seed2",
+      "tasks": 142988,
+      "completed_chain_mean": 241.80891403474416,
+      "loaded_forward_excess_mean": 8.195079307354463,
+      "loaded_turn_mean": 10.355148683805634,
+      "loaded_wait_mean": 14.099973424343302,
+      "loaded_elapsed_mean": 274.45911545024757,
+      "mean_components_sum": 274.45911545024757
+    },
+    {
+      "case": "full32_failed_seed0",
+      "tasks": 70043,
+      "completed_chain_mean": 235.28576731436402,
+      "loaded_forward_excess_mean": 35.57254829176363,
+      "loaded_turn_mean": 44.0359921762346,
+      "loaded_wait_mean": 77.82112416658339,
+      "loaded_elapsed_mean": 392.71543194894565,
+      "mean_components_sum": 392.7154319489456
+    },
+    {
+      "case": "kittyknight",
+      "tasks": 152981,
+      "completed_chain_mean": 233.8357050875599,
+      "loaded_forward_excess_mean": 4.593563906628928,
+      "loaded_turn_mean": 5.678476412103464,
+      "loaded_wait_mean": 8.410684987024533,
+      "loaded_elapsed_mean": 252.5184303933168,
+      "mean_components_sum": 252.5184303933168
+    }
+  ],
+  "limitations": "Components add exactly within each observed completed-task cohort. Their differences across solvers are observational, not causal savings or a matched-cohort counterfactual. Unfinished work is censored; turns include necessary heading changes. KittyKnight used38.858GB versus our32GB cap."
+}

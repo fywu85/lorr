@@ -44,6 +44,22 @@ def main():
     assert result['unassigned_robot_steps'] == 7 and result['empty_robot_steps_including_reassignments'] == 2
     assert result['empty_forward_actions'] == 1 and result['empty_wait_actions'] == 1
     assert result['loaded_robot_steps_including_unfinished_tasks'] == 1
+    assert result['completed_loaded_action_totals'] == {'fw': 1, 'cr': 0, 'ccr': 0, 'wait': 0, 'other': 0}
+    # Independent hand-counted loaded turn/wait fixture: pickup at step2, then
+    # turn, wait and forward to delivery at step5. The other robot remains idle.
+    mixed = {'teamSize': 2, 'makespan': 5, 'numTaskFinished': 1,
+             'numPlannerErrors': 0, 'numScheduleErrors': 0, 'numEntryTimeouts': 0,
+             'start': [[0, 0, 'E'], [0, 4, 'W']],
+             'actualPaths': ['F,F,R,W,F', 'W,W,W,W,W'],
+             'actualSchedule': ['1:0', '0:-1'],
+             'tasks': [[0, 0, [0, 2, 1, 2]]], 'events': [[2, 0, 0, 1], [5, 0, 0, 2]]}
+    (out / 'loaded-fixture.json').write_text(json.dumps(mixed))
+    subprocess.run([str(binary), str(out / 'fixture.map'), str(out / 'loaded-fixture.json'), str(out / 'loaded-fixture-result.json')], check=True)
+    checked = json.loads((out / 'loaded-fixture-result.json').read_text())
+    assert checked['completed_loaded_action_totals'] == {'fw': 1, 'cr': 1, 'ccr': 0, 'wait': 1, 'other': 0}
+    assert checked['completed_loaded_steps']['mean'] == 3 and checked['completed_loaded_forward_excess_over_shortest'] == 0
+    assert checked['full_phase_actions']['idle']['wait'] == 5 and checked['full_phase_actions']['empty']['fw'] == 2
+    assert checked['full_phase_actions']['loaded'] == checked['completed_loaded_action_totals']
     cases = {
         'cgar_cache': 'runs/cgar-temporal-full-v1-20260918/orientation_8192-s0-r0/WAREHOUSE.json',
         'cgar_equal_50000': 'runs/cgar-temporal-validation-v5-20260918/equal_50000-s0-r0/WAREHOUSE.json',
@@ -53,7 +69,7 @@ def main():
     if a.cases:
         cases = json.loads(a.cases.read_text())
         assert isinstance(cases, dict) and cases
-        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture-result', 'provenance') for name in cases)
+        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture', 'fixture-result', 'loaded-fixture', 'loaded-fixture-result', 'provenance') for name in cases)
     inputs = {}
     for name, path in cases.items():
         target = ROOT / path
@@ -66,8 +82,9 @@ def main():
                         str(target), str(out / (name + '.json'))], check=True)
     (out / 'provenance.json').write_text(json.dumps({
         'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+        'script_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
-        'command': command, 'fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
+        'command': command, 'fixture_passed': True, 'loaded_action_fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
         'map': str(a.map.resolve()), 'map_sha256': hashlib.sha256(a.map.read_bytes()).hexdigest()}, indent=2) + '\n')
 
 

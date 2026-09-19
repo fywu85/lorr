@@ -1,11 +1,11 @@
 # Parallel planning on the complete-field policy
 
-The64-field policy improves both initial seeds by2.217%, with1.47average CPU
-cores out of four allocated. The full travel audit finds7.6–7.8%less empty travel;
-loaded elapsed time changes much less. This motivates spending the spare cores
-on complete alternative motion plans. The policy itself is still in six-seed
-confirmation. An earlier four-worker test on binary50/build32 gained only0.204%;
-that does not settle the interaction with this newer routing/assignment policy.
+The64-field policy is now confirmed on all six seeds, with a2.215% mean gain and
+1.425–1.494 average CPU cores out of four allocated. The full travel audit finds
+7.43–7.84% fewer empty robot-steps; loaded elapsed time changes much less on the
+first pair. This motivates spending spare cores on complete alternative motion
+plans. An earlier four-worker test on binary50/build32 gained only0.204%; that
+does not settle the interaction with this newer routing/assignment policy.
 
 Use existing temporal workers1/2/4, each with the same4M candidate-work allowance,
 with1/2/4execution threads. Every configured worker finishes before deterministic
@@ -20,8 +20,25 @@ No new implementation change. All three200-step deadline screens pass, maximum
 [Screen](results/pickup-full-workers-screen-v43/). These prefixes do not establish
 throughput, full-horizon memory, or complete-horizon deadline feasibility.
 
-Full8898924/analysis8898927 compares all three settings on seeds0/2, six cases
-running concurrently on24reserved physical cores. Each process gets four cores
-and a32decimalGB RSS cap; aggregate reservation96GiB. The one-worker full control
-must exactly reproduce v42/64fields141829/142988 before interpreting differences.
-[Configuration](pickup-full-workers-variants.json).
+Full8898924/analysis8898927 completed all six cases on24 reserved physical cores,
+four per process and96GiB aggregate. All six full runs meet the entry/RSS limits;
+both one-worker trajectories exactly reproduce v42/64. All22 source/test hashes
+match1661176. [Complete comparison](results/pickup-full-workers-full-v43/comparison.json).
+
+| Workers, each4M | Seed0 | Seed2 | Mean change | Final1000 differences |
+|---|---:|---:|---:|---|
+|1|141829|142988|control|control|
+|2|141432|142935|−0.158%|−944/+26|
+|4|143340|143409|+0.678%|+60/+83|
+
+Two workers loses both full totals and is not promoted. Four workers improves
+both totals/final windows with unchanged outstanding age p90. Empty robot-steps
+change+0.65%/−0.76%; this is not an established empty-travel mechanism. Four-worker
+mean entry latency is316.0–329.1ms, maximum912.7ms, CPU2.619–2.679cores and peak
+RSS11.885GB; full wall time is27.39–28.47minutes. Quality evidence remains two seeds.
+
+Confirmation8898962/analysis8898963 compares one/four workers on seeds1/3/4/5,
+eight simultaneous runs with32 physical cores and128GiB aggregate reservation.
+Every process retains four cores and the32decimalGB cap. Controls must reproduce
+the remaining confirmed v42/64 full trajectories. Only after six seeds may this
+candidate become the reference. [Confirmation configuration](pickup-full-workers-confirm-variants.json).

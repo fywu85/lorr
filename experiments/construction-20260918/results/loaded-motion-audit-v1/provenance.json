@@ -1,0 +1,67 @@
+{
+  "source_sha256": "1305c5a09195a686e8127599ea3da8b62b23bc0e4bb4d072c7672d6b77ca7e82",
+  "script_sha256": "127e9af9cb6ed3e924e6a3f67e17495d3e00ec30e462a34fea53077d9822bdcc",
+  "binary_sha256": "97d51be7303a56bc90d9cfee7e8ccdd20d5e911b3c3d27ca6375b4bc0f7cadab",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-loaded-motion-audit-v1-20260919/results/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-loaded-motion-audit-v1-20260919/results/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "allocation": {
+    "hostname": "research38",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      64
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ]
+    ],
+    "address_space_limit_bytes": [
+      4294967296,
+      4294967296
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "full64_seed0": {
+      "path": "runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s0-r0/WAREHOUSE.json",
+      "sha256": "db5425d58668d1b0ce567c56f7f4fec2b39d13df9ae615121ab771b955f5c7eb"
+    },
+    "full64_seed2": {
+      "path": "runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s2-r0/WAREHOUSE.json",
+      "sha256": "7faf7e3d649ab746a5e9bbcf9f97b87dd80ef405b7e0f5936156cf3c039c3956"
+    },
+    "full32_failed_seed0": {
+      "path": "runs/cgar-pickup-full-full-v42-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_fthreads4_work4m_prep4-s0-r0/WAREHOUSE.json",
+      "sha256": "b08c5ee370aef3f889b43c25342102f2b1bec959485e506f0bffe34ab3639c52"
+    },
+    "kittyknight": {
+      "path": "runs/warehouse-leaders-full-20260918/kk-WAREHOUSE/result.json",
+      "sha256": "1b3c1cf93ad9c0e5502e22b4e455d9ee18fb0a94740104bbd92e0e9bb6f2c2d8"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}
