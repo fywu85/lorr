@@ -8,8 +8,9 @@ A traffic-field change invalidates old tables, and the planner builds at most32
 new turn tables in each complete step. Missing tables use the complete fallback
 heuristic; they are not partially built distance tables or partial action sets.
 
-The warehouse has38586free cells. A compact table uses308688bytes, so the8GiB
-cache can hold more than27000tables. At most16384new tables can be built within
+The warehouse has38586free cells. A compact table physically uses308688bytes.
+Eviction conservatively accounts for wide tables of617376bytes, so the8GiB
+cache permits more than13000tables, above the10000current robot goals. At most16384new tables can be built within
 a512-step refresh interval at the existing limit. Thus raising cache memory alone
 cannot remove this rebuild-rate limit. More exact guidance could help, but it can
 also change traffic feedback; full paired runs are required.

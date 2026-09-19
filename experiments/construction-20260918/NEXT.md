@@ -101,11 +101,19 @@ Claude Code CLI, claude-fable-5-1, effort max, SAME UUID
 Standing permission covers relevant project source/info. Prepare bounded hashed
 payloads, update excerpt ranges after source edits, and send only changed context.
 Tools and edits are disabled. Archive visible review/usage/status only; raw protocol
-remains under ignored runs/. Turns01–07 complete; no Fable process is running.
+remains under ignored runs/. Turns01–07 complete. Turn08 is running in the same
+session from15:24:28UTC, raw runs/fable-cgar-session/turn08, exec session37448.
+Initialized model is claude-fable-5-1 with tools disabled. The92771-byte hashed
+payload contains five changed source excerpts and the corrected completed results.
 
 Fable07 found no concrete pool safety defect. Its pending-primary context concern
 was resolved: select_primary does not exclude pending robots merely due to locks
 or recovery. Claims about global fairness, all robot cycles and static-score savings
 remain qualified. Suggested extra boundary/round-trip tests are not observed bugs.
-The next review should inspect v40 admission and joined parallel behavior and use
-completed six-seed transaction/pool evidence plus the new turn-build/margin gains.
+Turn08 reviews v40 admission and joined parallel behavior, with completed six-seed
+transaction/pool evidence and new turn-build/margin gains. Await the existing
+process; do not restart the session. Archive only visible review/metadata/status.
+
+Checkpoint50e8e6e4cef1495a4054590e613cf762eb39009c is pushed and exactly matches
+all20 recorded v40 production/test hashes. All three full matrices remain active;
+no full batch cases have completed as of15:24:58UTC.
