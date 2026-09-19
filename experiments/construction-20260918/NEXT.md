@@ -31,6 +31,11 @@ Active full queue:
    Early-freeze/work screens pass; late guidance activates only in the full run.
    See FLOW_MARGIN.md. The incomplete first v20 build was canceled and never benchmarked.
 
+3. **8898527**, frozen v21, follows v20 analysis. It compares control and generic
+   intended routes with batch 512 and opposing costs 0/1/4. Two single-core
+   instances, 24 GiB total. Analysis **8898528** follows. All feasibility cases pass;
+   no full guide throughput result yet. See GUIDE_PATHS.md.
+
 The v19 full warm-start matrix and analysis are complete: control 107,457,
 warm 50k 108,492 (+0.96%), warm 25k 104,548, warm 10k 94,510. All pass, but
 lower work loses throughput. Warm 50k max entry is 0.515 seconds and RSS 12.59 GB.
@@ -49,7 +54,9 @@ whole-planner speedup is established. See ORACLE.md. Generic intended-route
 guidance is implemented in frozen v21, passes the full regression suite, and
 passes all five 200-step feasibility cases in **8898525**. Batch 128 guides only
 36–41% of robots at step 200; batch 256 reaches 62%. A prescribed batch of 512
-is now in coverage/deadline screen **8898526** (one EPYC 9354 core, 8 GiB).
+passes **8898526**, reaches 73–86% coverage, and is queued for full runs above.
+V22 adds cached orientation lower bounds and fixed weighted A* alternatives,
+passes regressions, and is in screen **8898530** (one EPYC 9354 core, 8 GiB).
 No guide throughput gain is established. See GUIDE_PATHS.md.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,

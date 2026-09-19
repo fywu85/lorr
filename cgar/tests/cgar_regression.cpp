@@ -1023,15 +1023,26 @@ void guide_routes_regression() {
   audit();
  }
  if(guides.route_states(1).size()<=7)throw std::runtime_error("opposing-flow fixture did not change the intended route");
+ for(int weight:{2,4}){
+  auto weighted_options=options;weighted_options.heuristic_weight=weight;GuideRoutes weighted;weighted.initialize(core,rows,cols,2,weighted_options);
+  for(int r=0;r<2;++r){const auto previous=weighted.flow();const auto best=optimum(r,previous);
+   auto stats=weighted.update(loc,ori,goals,eligible,heuristic,[]{});const auto& path=weighted.route_states(r);int64_t cost=0;
+   if(stats.solved!=1||path.empty()||path.back()/4!=goals[r])throw std::runtime_error("weighted guide did not finish a complete route");
+   for(size_t k=1;k<path.size();++k){int a=path[k-1],b=path[k];cost+=options.base_cost;
+    if(a/4!=b/4){int rev=previous[b/4*4+(a%4+2)%4];cost+=int64_t(options.opposite_cost)*rev+int64_t(options.load_cost)*(previous[a]+rev);}}
+   if(cost<best||cost>weight*best)throw std::runtime_error("weighted guide exceeded the independent route-cost bound");
+  }
+ }
  // Execute one edge, change a goal, revoke admission, and deviate off a route.
  const auto first=guides.route_states(0);loc[0]=first[1]/4;ori[0]=first[1]%4;
  guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
  goals[0]=0;auto changed=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
- if(!changed.invalidated)throw std::runtime_error("changed guide goal retained old flow");
- eligible[0]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(!changed.invalidated||!changed.goal_resets)throw std::runtime_error("changed guide goal retained old flow");
+ eligible[0]=false;auto protected_reset=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(!protected_reset.protected_resets)throw std::runtime_error("protected guide reset was not recorded");
  if(guides.guided(0)||!guides.route_states(0).empty())throw std::runtime_error("protected robot retained guide influence");
  loc[1]=34;auto deviated=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
- if(!deviated.invalidated)throw std::runtime_error("off-route location retained stale flow");
+ if(!deviated.invalidated||!deviated.deviation_resets)throw std::runtime_error("off-route location retained stale flow");
  eligible[1]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
  if(guides.directed_uses())throw std::runtime_error("retired guides leaked directed flow");
 
@@ -1050,10 +1061,11 @@ void guide_routes_regression() {
 
  setenv("CGAR_GUIDE_ROUTES","1",1);setenv("CGAR_GUIDE_BATCH","32",1);
  temporal_region_adapter_regression();
+ setenv("CGAR_GUIDE_HEURISTIC_WEIGHT","2",1);
  setenv("CGAR_TEMPORAL_WARM_START","1",1);temporal_region_adapter_regression();unsetenv("CGAR_TEMPORAL_WARM_START");
- temporal_primary_regression();
+ unsetenv("CGAR_GUIDE_HEURISTIC_WEIGHT");temporal_primary_regression();
  unsetenv("CGAR_GUIDE_ROUTES");unsetenv("CGAR_GUIDE_BATCH");
- std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
+ std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 weighted_bounds=4 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
 }
 
 int main(){try{guide_routes_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

@@ -12,11 +12,12 @@
 namespace cgar {
 struct GuideRouteOptions {
     int batch = 128, expansions = 4096, lookahead = 8;
-    int base_cost = 16, opposite_cost = 1, load_cost = 0;
+    int base_cost = 16, opposite_cost = 1, load_cost = 0, heuristic_weight = 1;
 };
 
 struct GuideRouteStats {
     int attempted = 0, solved = 0, limited = 0, invalidated = 0, windows = 0, active = 0;
+    int goal_resets = 0, protected_resets = 0, deviation_resets = 0;
     long long expanded = 0, directed_uses = 0;
 };
 
@@ -27,7 +28,8 @@ public:
         if (rows < 1 || cols < 1 || core.size() != size_t(rows) * cols || robots < 0 ||
             options.batch < 1 || options.batch > 4096 || options.expansions < 1 || options.expansions > 1000000 ||
             options.lookahead < 1 || options.lookahead > 32 || options.base_cost < 1 || options.base_cost > 1024 ||
-            options.opposite_cost < 0 || options.opposite_cost > 64 || options.load_cost < 0 || options.load_cost > 64)
+            options.opposite_cost < 0 || options.opposite_cost > 64 || options.load_cost < 0 || options.load_cost > 64 ||
+            options.heuristic_weight < 1 || options.heuristic_weight > 8)
             throw std::invalid_argument("invalid guide-route configuration");
         core_ = core; rows_ = rows; cols_ = cols; options_ = options;
         routes_.clear(); routes_.resize(robots); cursor_ = 0; epoch_ = 0; uses_ = 0;
@@ -56,12 +58,15 @@ public:
             if (orientations[r] < 0 || orientations[r] > 3) throw std::invalid_argument("invalid guide orientation");
             auto& route = routes_[r];
             if (!admitted[r] || (!route.states.empty() && route.goal != goal)) {
-                if (!route.states.empty()) { invalidate(route); ++stats.invalidated; }
+                if (!route.states.empty()) {
+                    invalidate(route); ++stats.invalidated;
+                    if (!admitted[r]) ++stats.protected_resets; else ++stats.goal_resets;
+                }
             }
             if (route.states.empty()) continue;
             size_t found = route.begin;
             while (found < route.states.size() && route.states[found] / 4 != from) ++found;
-            if (found == route.states.size()) { invalidate(route); ++stats.invalidated; continue; }
+            if (found == route.states.size()) { invalidate(route); ++stats.invalidated; ++stats.deviation_resets; continue; }
             // Rotations do not contribute edge flow; consume them at the same
             // cell even when execution chose a different equivalent heading.
             while (found + 1 < route.states.size() && route.states[found + 1] / 4 == from) ++found;
@@ -153,12 +158,12 @@ private:
         if (++epoch_ == 0) { std::fill(stamp_.begin(), stamp_.end(), 0); ++epoch_; }
         std::priority_queue<Node> open;
         stamp_[start] = epoch_; distance_[start] = 0; parent_[start] = -1;
-        open.push({int64_t(std::max(0, heuristic(start))) * options_.base_cost, 0, start});
+        open.push({int64_t(std::max(0, heuristic(start))) * options_.base_cost * options_.heuristic_weight, 0, start});
         int expanded = 0;
         auto relax = [&](int to, int from, int64_t value) {
             if (stamp_[to] == epoch_ && distance_[to] <= value) return;
             stamp_[to] = epoch_; distance_[to] = value; parent_[to] = from;
-            open.push({value + int64_t(std::max(0, heuristic(to))) * options_.base_cost, value, to});
+            open.push({value + int64_t(std::max(0, heuristic(to))) * options_.base_cost * options_.heuristic_weight, value, to});
         };
         while (!open.empty()) {
             const Node node = open.top(); open.pop();

@@ -1,0 +1,156 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -676,6 +676,7 @@
+     guide_options_.base_cost = env_int("CGAR_GUIDE_BASE_COST", 16);
+     guide_options_.opposite_cost = env_int("CGAR_GUIDE_OPPOSITE_COST", 1);
+     guide_options_.load_cost = env_int("CGAR_GUIDE_LOAD_COST", 0);
++    guide_options_.heuristic_weight = env_int("CGAR_GUIDE_HEURISTIC_WEIGHT", 1);
+     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
+     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
+         throw std::invalid_argument("temporal distance scale must be in [1,4096]");
+--- a/cgar/cgar_planner/guide_routes.hpp
++++ b/cgar/cgar_planner/guide_routes.hpp
+@@ -12,11 +12,12 @@
+ namespace cgar {
+ struct GuideRouteOptions {
+     int batch = 128, expansions = 4096, lookahead = 8;
+-    int base_cost = 16, opposite_cost = 1, load_cost = 0;
++    int base_cost = 16, opposite_cost = 1, load_cost = 0, heuristic_weight = 1;
+ };
+ 
+ struct GuideRouteStats {
+     int attempted = 0, solved = 0, limited = 0, invalidated = 0, windows = 0, active = 0;
++    int goal_resets = 0, protected_resets = 0, deviation_resets = 0;
+     long long expanded = 0, directed_uses = 0;
+ };
+ 
+@@ -27,7 +28,8 @@
+         if (rows < 1 || cols < 1 || core.size() != size_t(rows) * cols || robots < 0 ||
+             options.batch < 1 || options.batch > 4096 || options.expansions < 1 || options.expansions > 1000000 ||
+             options.lookahead < 1 || options.lookahead > 32 || options.base_cost < 1 || options.base_cost > 1024 ||
+-            options.opposite_cost < 0 || options.opposite_cost > 64 || options.load_cost < 0 || options.load_cost > 64)
++            options.opposite_cost < 0 || options.opposite_cost > 64 || options.load_cost < 0 || options.load_cost > 64 ||
++            options.heuristic_weight < 1 || options.heuristic_weight > 8)
+             throw std::invalid_argument("invalid guide-route configuration");
+         core_ = core; rows_ = rows; cols_ = cols; options_ = options;
+         routes_.clear(); routes_.resize(robots); cursor_ = 0; epoch_ = 0; uses_ = 0;
+@@ -56,12 +58,15 @@
+             if (orientations[r] < 0 || orientations[r] > 3) throw std::invalid_argument("invalid guide orientation");
+             auto& route = routes_[r];
+             if (!admitted[r] || (!route.states.empty() && route.goal != goal)) {
+-                if (!route.states.empty()) { invalidate(route); ++stats.invalidated; }
++                if (!route.states.empty()) {
++                    invalidate(route); ++stats.invalidated;
++                    if (!admitted[r]) ++stats.protected_resets; else ++stats.goal_resets;
++                }
+             }
+             if (route.states.empty()) continue;
+             size_t found = route.begin;
+             while (found < route.states.size() && route.states[found] / 4 != from) ++found;
+-            if (found == route.states.size()) { invalidate(route); ++stats.invalidated; continue; }
++            if (found == route.states.size()) { invalidate(route); ++stats.invalidated; ++stats.deviation_resets; continue; }
+             // Rotations do not contribute edge flow; consume them at the same
+             // cell even when execution chose a different equivalent heading.
+             while (found + 1 < route.states.size() && route.states[found + 1] / 4 == from) ++found;
+@@ -153,12 +158,12 @@
+         if (++epoch_ == 0) { std::fill(stamp_.begin(), stamp_.end(), 0); ++epoch_; }
+         std::priority_queue<Node> open;
+         stamp_[start] = epoch_; distance_[start] = 0; parent_[start] = -1;
+-        open.push({int64_t(std::max(0, heuristic(start))) * options_.base_cost, 0, start});
++        open.push({int64_t(std::max(0, heuristic(start))) * options_.base_cost * options_.heuristic_weight, 0, start});
+         int expanded = 0;
+         auto relax = [&](int to, int from, int64_t value) {
+             if (stamp_[to] == epoch_ && distance_[to] <= value) return;
+             stamp_[to] = epoch_; distance_[to] = value; parent_[to] = from;
+-            open.push({value + int64_t(std::max(0, heuristic(to))) * options_.base_cost, value, to});
++            open.push({value + int64_t(std::max(0, heuristic(to))) * options_.base_cost * options_.heuristic_weight, value, to});
+         };
+         while (!open.empty()) {
+             const Node node = open.top(); open.pop();
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -42,12 +42,21 @@
+     if (guide_enabled_) {
+         std::vector<char> eligible(n_, false);
+         std::vector<const std::vector<int>*> tables(n_, nullptr);
++        std::vector<const TurnTable*> unit_tables(n_, nullptr);
+         for (int r = 0; r < n_; ++r) {
+             goals[r] = agents_[r].goal; eligible[r] = !pinned[r];
+-            if (goals[r] >= 0) tables[r] = oracle_.peek(goals[r]);
++            if (goals[r] >= 0) {
++                tables[r] = oracle_.peek(goals[r]); unit_tables[r] = turn_oracle_.find(goals[r]);
++            }
+         }
+         guide_stats = guide_routes_.update(loc_, ori_, goals, eligible,
+-            [&](int r, int cell, int) { return tables[r] ? oracle_.value(*tables[r], cell) : oracle_.manhattan(cell, goals[r]); },
++            [&](int r, int cell, int orientation) {
++                if (unit_tables[r]) {
++                    const int d = turn_oracle_.value(*unit_tables[r], cell, orientation);
++                    if (d < kInf) return d;
++                }
++                return tables[r] ? oracle_.value(*tables[r], cell) : oracle_.manhattan(cell, goals[r]);
++            },
+             [&] { check_deadline(deadline_, "temporal_guide_routes"); });
+         stats_.guide_attempts += guide_stats.attempted; stats_.guide_solved += guide_stats.solved;
+         stats_.guide_robot_steps += guide_stats.active; stats_.guide_expanded += guide_stats.expanded;
+@@ -246,11 +255,12 @@
+                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
+                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
+         if (guide_enabled_)
+-            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d\n",
++            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d heuristic_weight=%d goal_resets=%d protected_resets=%d deviation_resets=%d\n",
+                 env_->curr_timestep + 1, seconds(candidate_started, guides_finished), guide_stats.attempted,
+                 guide_stats.solved, guide_stats.limited, guide_stats.invalidated, guide_stats.windows, guide_stats.active,
+                 guide_stats.expanded, guide_stats.directed_uses, guide_options_.batch, guide_options_.expansions,
+-                guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost);
++                guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost,
++                guide_options_.heuristic_weight, guide_stats.goal_resets, guide_stats.protected_resets, guide_stats.deviation_resets);
+         if (temporal_warm_start_)
+             std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
+                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -1023,15 +1023,26 @@
+   audit();
+  }
+  if(guides.route_states(1).size()<=7)throw std::runtime_error("opposing-flow fixture did not change the intended route");
++ for(int weight:{2,4}){
++  auto weighted_options=options;weighted_options.heuristic_weight=weight;GuideRoutes weighted;weighted.initialize(core,rows,cols,2,weighted_options);
++  for(int r=0;r<2;++r){const auto previous=weighted.flow();const auto best=optimum(r,previous);
++   auto stats=weighted.update(loc,ori,goals,eligible,heuristic,[]{});const auto& path=weighted.route_states(r);int64_t cost=0;
++   if(stats.solved!=1||path.empty()||path.back()/4!=goals[r])throw std::runtime_error("weighted guide did not finish a complete route");
++   for(size_t k=1;k<path.size();++k){int a=path[k-1],b=path[k];cost+=options.base_cost;
++    if(a/4!=b/4){int rev=previous[b/4*4+(a%4+2)%4];cost+=int64_t(options.opposite_cost)*rev+int64_t(options.load_cost)*(previous[a]+rev);}}
++   if(cost<best||cost>weight*best)throw std::runtime_error("weighted guide exceeded the independent route-cost bound");
++  }
++ }
+  // Execute one edge, change a goal, revoke admission, and deviate off a route.
+  const auto first=guides.route_states(0);loc[0]=first[1]/4;ori[0]=first[1]%4;
+  guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+  goals[0]=0;auto changed=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+- if(!changed.invalidated)throw std::runtime_error("changed guide goal retained old flow");
+- eligible[0]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
++ if(!changed.invalidated||!changed.goal_resets)throw std::runtime_error("changed guide goal retained old flow");
++ eligible[0]=false;auto protected_reset=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
++ if(!protected_reset.protected_resets)throw std::runtime_error("protected guide reset was not recorded");
+  if(guides.guided(0)||!guides.route_states(0).empty())throw std::runtime_error("protected robot retained guide influence");
+  loc[1]=34;auto deviated=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+- if(!deviated.invalidated)throw std::runtime_error("off-route location retained stale flow");
++ if(!deviated.invalidated||!deviated.deviation_resets)throw std::runtime_error("off-route location retained stale flow");
+  eligible[1]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+  if(guides.directed_uses())throw std::runtime_error("retired guides leaked directed flow");
+ 
+@@ -1050,10 +1061,11 @@
+ 
+  setenv("CGAR_GUIDE_ROUTES","1",1);setenv("CGAR_GUIDE_BATCH","32",1);
+  temporal_region_adapter_regression();
++ setenv("CGAR_GUIDE_HEURISTIC_WEIGHT","2",1);
+  setenv("CGAR_TEMPORAL_WARM_START","1",1);temporal_region_adapter_regression();unsetenv("CGAR_TEMPORAL_WARM_START");
+- temporal_primary_regression();
++ unsetenv("CGAR_GUIDE_HEURISTIC_WEIGHT");temporal_primary_regression();
+  unsetenv("CGAR_GUIDE_ROUTES");unsetenv("CGAR_GUIDE_BATCH");
+- std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
++ std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 weighted_bounds=4 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
+ }
+ 
+ int main(){try{guide_routes_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

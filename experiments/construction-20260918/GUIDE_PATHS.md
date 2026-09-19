@@ -73,3 +73,42 @@ enabled profiles. A batch of 128 leaves much of the fleet on the baseline metric
 This coverage finding motivates screen **8898526**, queued after the first screen:
 unit/opposite1/opposite4 with a fixed batch of 512. This is a mechanism and
 deadline test, not a choice based on prefix throughput.
+
+The batch-512 screen also passed: maximum entries 0.645 / 0.703 / 0.816 seconds
+for unit/opposite1/opposite4, with peak RSS below 4.82 GB. Active guides at step
+200 were 8,639 / 7,331 / 7,305. The opposing-cost cases hit their fixed expansion
+limit in 321/512 and 327/512 attempts at that sampled step. Guide preparation
+costs 0.189/0.187 seconds there. These are feasibility diagnostics only.
+
+Full **8898527**, with analysis **8898528**, is queued after the existing v20
+matrix/analysis. It compares control and those three batch-512 profiles over
+all 5,000 steps, two independent single-core instances, 24 GiB total reservation,
+and the same EPYC 9354/one-second/memory requirements.
+
+## Search efficiency follow-up, frozen v22
+
+A separate revision reuses already cached complete unit-orientation distances as
+A* lower bounds, falling back to the spatial metric when absent. No extra table
+build or time-selected admission is introduced. Even at search weight 1 this can
+change which equal-cost route is selected, so policy preservation is not claimed
+for enabled guidance. The original v21 full matrix remains frozen for comparison.
+
+`CGAR_GUIDE_HEURISTIC_WEIGHT=1` is the default. Fixed weights 2/4 favor progress
+in the route search; they still publish only complete current-goal routes and
+obey the same expansion cap. They are alternative routing policies, not an
+elapsed-time early-return mode. Candidate scoring still uses the unit-action
+waypoint metric, and the full temporal solve/validation remains mandatory.
+Diagnostics now distinguish goal, protected/ineligible, and deviation resets.
+
+Build **8898529** passes the full suite, including four weighted-route bounds
+checked against independent Dijkstra and the existing serial/parallel production
+fixtures. Its source patch reconstructs all frozen hashes. Screen **8898530**
+compares disabled control, unit routes, and opposing-cost routes at search
+weights 1/2/4, all with batch 512. No v22 performance result is established yet.
+
+The completed v22 unit-guide screen reports 8,693 active guides at step 200,
+107,516 expanded route states, and 0.0368 seconds of guide preparation. Of 472
+invalidations, 47 follow goal changes and **425 follow route deviations**. This
+motivates a separate bounded reconnection experiment: reconnect nearby deviations
+to a still-current route using its local distance field, with exact flow-count
+updates and complete path validation. It is not yet implemented in v22.

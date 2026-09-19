@@ -42,12 +42,21 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     if (guide_enabled_) {
         std::vector<char> eligible(n_, false);
         std::vector<const std::vector<int>*> tables(n_, nullptr);
+        std::vector<const TurnTable*> unit_tables(n_, nullptr);
         for (int r = 0; r < n_; ++r) {
             goals[r] = agents_[r].goal; eligible[r] = !pinned[r];
-            if (goals[r] >= 0) tables[r] = oracle_.peek(goals[r]);
+            if (goals[r] >= 0) {
+                tables[r] = oracle_.peek(goals[r]); unit_tables[r] = turn_oracle_.find(goals[r]);
+            }
         }
         guide_stats = guide_routes_.update(loc_, ori_, goals, eligible,
-            [&](int r, int cell, int) { return tables[r] ? oracle_.value(*tables[r], cell) : oracle_.manhattan(cell, goals[r]); },
+            [&](int r, int cell, int orientation) {
+                if (unit_tables[r]) {
+                    const int d = turn_oracle_.value(*unit_tables[r], cell, orientation);
+                    if (d < kInf) return d;
+                }
+                return tables[r] ? oracle_.value(*tables[r], cell) : oracle_.manhattan(cell, goals[r]);
+            },
             [&] { check_deadline(deadline_, "temporal_guide_routes"); });
         stats_.guide_attempts += guide_stats.attempted; stats_.guide_solved += guide_stats.solved;
         stats_.guide_robot_steps += guide_stats.active; stats_.guide_expanded += guide_stats.expanded;
@@ -246,11 +255,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
         if (guide_enabled_)
-            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d\n",
+            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d heuristic_weight=%d goal_resets=%d protected_resets=%d deviation_resets=%d\n",
                 env_->curr_timestep + 1, seconds(candidate_started, guides_finished), guide_stats.attempted,
                 guide_stats.solved, guide_stats.limited, guide_stats.invalidated, guide_stats.windows, guide_stats.active,
                 guide_stats.expanded, guide_stats.directed_uses, guide_options_.batch, guide_options_.expansions,
-                guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost);
+                guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost,
+                guide_options_.heuristic_weight, guide_stats.goal_resets, guide_stats.protected_resets, guide_stats.deviation_resets);
         if (temporal_warm_start_)
             std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,

@@ -400,3 +400,9 @@ It requires temporal planning, unit turns and `CGAR_FLOW_STRENGTH=0`.
 Limited route searches publish no guide; the complete temporal solve and
 one-second failure contract still apply. This is unpromoted experimental code;
 see [the design and evidence](../../experiments/construction-20260918/GUIDE_PATHS.md).
+
+`CGAR_GUIDE_HEURISTIC_WEIGHT=1` controls the fixed guide-search heuristic weight
+(range 1–8). Larger values can select different, nonoptimal routing-cost paths;
+only complete routes are admitted. Cached unit-orientation distances provide
+lower bounds when available. This changes guide search ordering and requires
+separate full-horizon evaluation even at weight 1.
