@@ -2400,4 +2400,177 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+struct NextErrandOracle {
+ int rows,cols,U,T,tolls,n;TemporalGeometry geometry;std::vector<std::vector<int>> dist;
+ NextErrandOracle(int r,int c,int unit,int extra,int toll):rows(r),cols(c),U(unit),T(unit+extra),tolls(toll),n(r*c){
+  geometry.initialize(std::vector<char>(n,true),r,c,[]{});
+  dist.assign(n,std::vector<int>(4*n,1000000));
+  // Independent Bellman relaxation of the explicit directed orientation graph.
+  for(int goal=0;goal<n;++goal){auto& d=dist[goal];for(int h=0;h<4;++h)d[4*goal+h]=0;
+   bool changed=true;int passes=0;
+   while(changed){changed=false;if(++passes>4*n+1)throw std::runtime_error("distance relaxation did not converge");
+    for(int cell=0;cell<n;++cell)for(int h=0;h<4;++h){int z=4*cell+h,best=d[z];
+     best=std::min({best,T+d[4*cell+(h+1)%4],T+d[4*cell+(h+3)%4]});
+     int to=neighbor(cell,h);if(to>=0)best=std::min(best,forward(cell,h)+d[4*to+h]);
+     if(best<d[z]){d[z]=best;changed=true;}
+    }
+   }
+  }
+ }
+ int neighbor(int cell,int h)const{int r=cell/cols,c=cell%cols;if(h==0)++c;else if(h==1)++r;else if(h==2)--c;else --r;return r<0||r>=rows||c<0||c>=cols?-1:r*cols+c;}
+ int forward(int cell,int h)const{return U+(tolls?(cell*7+h*3)%3:0);}
+ int direction(int a,int b)const{for(int h=0;h<4;++h)if(neighbor(a,h)==b)return h;throw std::runtime_error("nonadjacent move");}
+ int value(int goal,int cell,int h)const{return dist[goal][4*cell+h];}
+ int baseline(int goal,int next)const{int b=1000000;for(int h=0;h<4;++h)b=std::min(b,value(next,goal,h));return b;}
+ int operation(const std::string& word)const{for(int op=0;op<129;++op){std::string s;for(int a:TemporalGeometry::operations()[op])s+="FRCW"[a];if(s==word)return op;}throw std::runtime_error("missing operation");}
+ int64_t native(const TemporalPath&p,int op,int start,int goal)const{
+  const int extra=TemporalGeometry::forward_surcharge(p,start,goal,[&](int from,int to){return forward(from,direction(from,to));},U);
+  return TemporalGeometry::cost(p,op,goal,T,[&](int c,int h){return value(goal,c,h);},50,U)+int64_t(extra)*50;
+ }
+ int64_t proposed(const TemporalPath&p,int op,int start,int goal,int next,int mode)const{
+  if(!mode||next<0||next==goal||TemporalGeometry::first_goal_hit(p,goal)<0)return native(p,op,start,goal);
+  return TemporalGeometry::next_errand_cost(p,op,start,T,baseline(goal,next),
+   [&](int cell,int h){return value(next,cell,h);},
+   [&](int from,int to){return forward(from,direction(from,to));},50,U);
+ }
+ // Independently replay complete weighted actions, explicitly replacing up to
+ // two trailing waits by all wait/right/left combinations. The next-goal terminal
+ // potential deliberately persists after service: this is the proposed surrogate,
+ // not an exact multi-errand completion-time objective.
+ int oracle_tail(const TemporalPath&p,int op,int start,int heading,int next)const{
+  auto original=TemporalGeometry::operations()[op];if(op==0)original[0]=p.first_action;
+  int suffix=0;if(original[4]==3){suffix=1;if(original[3]==3)suffix=2;}
+  int variants=suffix==2?9:suffix==1?3:1,best=1000000;
+  for(int v=0;v<variants;++v){auto actions=original;int code=v;
+   for(int k=0;k<suffix;++k){actions[4-k]=std::array<int,3>{3,1,2}[code%3];code/=3;}
+   int cell=start,h=heading,cost=0;
+   for(int a:actions){if(a==0){cost+=forward(cell,h);cell=neighbor(cell,h);if(cell<0)throw std::runtime_error("oracle left grid");}
+    else if(a==1){cost+=T;h=(h+1)%4;}else if(a==2){cost+=T;h=(h+3)%4;}else cost+=U;}
+   best=std::min(best,cost+value(next,cell,h)-5*U);
+  }
+  return best;
+ }
+};
+
+void temporal_next_errand_regression() {
+ long long arriving=0;
+ for(int U:{1,4,8})for(int extra:{0,1,2})for(int toll:{0,1}){
+  NextErrandOracle m(3,7,U,extra,toll);
+  for(int goal:{8,10,11}){const int next=(goal+7)%m.n;
+   for(int start=0;start<m.n;++start)for(int h=0;h<4;++h){const auto& paths=m.geometry.paths(start,h);
+    for(int op=0;op<129;++op){const auto&p=paths[op];if(!p.valid)continue;
+     const auto first=std::find(p.cells.begin(),p.cells.end(),goal);
+     const int expected=first==p.cells.end()?-1:int(first-p.cells.begin());
+     if(TemporalGeometry::first_goal_hit(p,goal)!=expected)throw std::runtime_error("next-errand first service slot incorrect");
+     if(expected<0)continue;
+     const auto score=m.proposed(p,op,start,goal,next,1);
+     const int64_t physical=(score+int64_t(op)*U)/50+4*U+m.baseline(goal,next);
+     if(physical!=m.oracle_tail(p,op,start,h,next))throw std::runtime_error("next-errand score disagrees with independent paid-action replay");
+     ++arriving;
+    }
+   }
+  }
+ }
+ NextErrandOracle m(3,7,4,0,0);
+ const int pa=m.operation("FRFFF"),pb=m.operation("RFCFW");const auto& paths=m.geometry.paths(14,3);
+ const auto physical=[&](int op){return (m.proposed(paths[op],op,14,8,13,1)+op*4)/50;};
+ if(physical(pa)!=-24||physical(pb)!=-16)throw std::runtime_error("next-errand common baseline refunded bad arrival heading");
+ auto compatible=[](const TemporalPath&a,const TemporalPath&b){for(int t=0;t<5;++t)
+  if(a.cells[t]==b.cells[t]||(a.edges[t]>=0&&a.edges[t]==b.edges[t]))return false;return true;};
+ for(int fixture=0;fixture<2;++fixture){int sa=fixture?12:11,ga=fixture?11:10,next=fixture?4:3,gb=fixture?7:8;
+  const auto&A=m.geometry.paths(sa,2);const auto&B=m.geometry.paths(5,1);
+  for(int mode:{0,1}){int ai=-1,bi=-1;int64_t best=INT64_MAX;
+   for(int i=0;i<129;++i)if(A[i].valid)for(int j=0;j<129;++j)if(B[j].valid&&compatible(A[i],B[j])){
+    const auto score=m.proposed(A[i],i,sa,ga,next,mode)+m.native(B[j],j,5,gb);
+    if(score<best){best=score;ai=i;bi=j;}}
+   const auto expected=mode?(fixture?-1364:-1564):(fixture?-840:-1040);
+   if(best!=expected||ai<0||bi<0||(mode&&(A[ai].first_action!=0||B[bi].first_action!=0)))
+    throw std::runtime_error("next-errand joint collision-free fixture did not reproduce");
+  }
+ }
+ for(auto values:std::vector<std::array<int,4>>{{0,4,4,50},{4,3,4,50},{4,4,-1,50},{4,4,4,0}}){bool failed=false;
+  try{TemporalGeometry::next_errand_cost(paths[pa],pa,14,values[1],values[2],[](int,int){return 4;},[](int,int){return 4;},values[3],values[0]);}
+  catch(const std::invalid_argument&){failed=true;}if(!failed)throw std::runtime_error("invalid next-errand units accepted");}
+ bool interrupted=false;try{TemporalGeometry::next_errand_cost(paths[pa],pa,14,4,4,[](int,int)->int{throw Timeout("next_distance_fixture");},[](int,int){return 4;},50,4);}
+ catch(const Timeout&){interrupted=true;}if(!interrupted)throw std::runtime_error("next-errand lookup failure was swallowed");
+ for(const char* invalid:{"-1","2","1"}){
+  setenv("CGAR_TEMPORAL_NEXT_ERRAND",invalid,1);setenv("CGAR_TEMPORAL",invalid[0]=='1'?"0":"1",1);
+  SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid/non-temporal next-errand option accepted");
+ }
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);
+ setenv("CGAR_TEMPORAL_STEPS","256",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);setenv("CGAR_TURN_TABLE_MB","1",1);
+ setenv("CGAR_TEMPORAL_TABLE_BATCH","32",1);setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);
+ auto environment=[](int kind){
+  SharedEnvironment e;e.rows=e.cols=7;e.num_of_agents=4;e.map.assign(49,0);
+  e.curr_states={State(0,0,1),State(24,0,2),State(6,0,1),State(42,0,0)};
+  std::vector<int> goals{48,23,16,44};
+  if(kind==5){e.rows=3;e.cols=9;e.map.assign(27,0);for(int r=0;r<3;++r)e.map[r*9+4]=1;
+   e.curr_states={State(0,0,1),State(11,0,2),State(6,0,1),State(8,0,1)};goals={18,10,16,26};}
+  e.curr_task_schedule={0,1,2,3};e.goal_locations.resize(4);
+  for(int r=0;r<4;++r){Task task;task.task_id=r;task.t_revealed=0;task.agent_assigned=r;task.locations={goals[r]};
+   if(r==1&&kind!=4)task.locations.push_back(kind==1?17:kind==2?goals[r]:16);
+   if(r==0&&kind==4)task.locations.push_back(16);
+   e.task_pool.emplace(r,task);e.goal_locations[r]={{goals[r],0}};}
+  return e;
+ };
+ // 0 resident next table,1 absent,2 repeated location,3 current fallback,
+ // 4 only a pinned primary has a next errand,5 disconnected next,6 guided metric.
+ for(int kind=0;kind<7;++kind){
+  setenv("CGAR_TEMPORAL_TABLE_BATCH",kind==3?"0":"32",1);setenv("CGAR_TURN_BUILD_LIMIT",kind==3?"0":"32",1);
+  setenv("CGAR_GUIDE_ROUTES",kind==6?"1":"0",1);auto e=environment(kind);
+  setenv("CGAR_TEMPORAL_NEXT_ERRAND","0",1);Cgar native;native.initialize(&e,1000);
+  setenv("CGAR_TEMPORAL_NEXT_ERRAND","1",1);Cgar changed;changed.initialize(&e,1000);
+  std::vector<Action>a,b;native.plan(&e,1000,a);changed.plan(&e,1000,b);
+  if(step(e,e.curr_states,b).empty())throw std::runtime_error("next-errand adapter caused a collision");
+  if(native.primary()!=changed.primary()||native.primary()<0||a[native.primary()]!=b[changed.primary()])
+   throw std::runtime_error("next-errand adapter changed protected primary action");
+  const auto&s=changed.stats();
+  if(s.temporal_next_known!=s.temporal_next_eligible+s.temporal_next_unavailable)
+   throw std::runtime_error("next-errand metric partition lost robots");
+  if(kind==0){if(!s.temporal_next_eligible||!s.temporal_next_arriving_choices||!s.temporal_next_changed_choices)
+   throw std::runtime_error("next-errand production fixture was vacuous");}
+  else if(a!=b||s.temporal_next_eligible||s.temporal_next_changed_choices||native.stats().oriented_builds!=s.oriented_builds)
+   throw std::runtime_error("next-errand fall-through changed native planning, kind="+std::to_string(kind));
+  if(native.stats().temporal_next_known||native.stats().temporal_next_changed_choices)
+   throw std::runtime_error("disabled next-errand option performed optional scoring");
+  for(int r=0;r<4;++r)if(e.curr_task_schedule[r]!=r||e.task_pool.at(r).idx_next_loc!=0||e.task_pool.at(r).agent_assigned!=r)
+   throw std::runtime_error("next-errand preparation changed visible task metadata");
+ }
+ unsetenv("CGAR_GUIDE_ROUTES");setenv("CGAR_TURN_BUILD_LIMIT","32",1);setenv("CGAR_TEMPORAL_TABLE_BATCH","32",1);
+ setenv("CGAR_FLOW_STRENGTH","4",1);setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_FLOW_WARMUP","1",1);
+ setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","4",1);
+ auto e=environment(0);e.task_pool.at(3).locations.push_back(44);
+ setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
+ setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
+ int next_id=4,services=0,repeated=0;
+ for(int t=0;t<80;++t){e.curr_timestep=t;std::vector<Action>a,b;serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
+  if(a!=b)throw std::runtime_error("next-errand serial/parallel preparation changed decisions");
+  auto next=step(e,e.curr_states,a);if(next.empty())throw std::runtime_error("next-errand multistep collision");e.curr_states=next;
+  // Exactly one service per tick, including consecutive equal locations.
+  for(int r=0;r<4;++r){int id=e.curr_task_schedule[r];auto& task=e.task_pool.at(id);
+   if(e.curr_states[r].location==task.locations[task.idx_next_loc]){
+    ++services;const int prior=task.idx_next_loc;++task.idx_next_loc;
+    if(task.idx_next_loc<int(task.locations.size())){repeated+=task.locations[prior]==task.locations[task.idx_next_loc];}
+    else{Task fresh;fresh.task_id=next_id++;fresh.t_revealed=t+1;fresh.agent_assigned=r;
+     fresh.locations={(e.curr_states[r].location+11+r*3)%49,(e.curr_states[r].location+23+r*5)%49};
+     e.task_pool.erase(id);e.task_pool.emplace(fresh.task_id,fresh);e.curr_task_schedule[r]=fresh.task_id;}
+   }
+   const auto& current=e.task_pool.at(e.curr_task_schedule[r]);e.goal_locations[r]={{current.locations[current.idx_next_loc],0}};
+  }
+ }
+ const auto&a=serial.stats();const auto&b=parallel.stats();
+ if(!services||!repeated||!a.temporal_next_changed_choices||!a.temporal_next_unavailable||a.flow_publications<2||
+    a.temporal_next_known!=b.temporal_next_known||a.temporal_next_eligible!=b.temporal_next_eligible||
+    a.temporal_next_arriving_choices!=b.temporal_next_arriving_choices||a.temporal_next_changed_choices!=b.temporal_next_changed_choices||
+    a.oriented_builds!=b.oriented_builds||a.flow_cache_resets!=b.flow_cache_resets||a.oriented_guided!=b.oriented_guided||a.oriented_fallback!=b.oriented_fallback)
+  throw std::runtime_error("next-errand publication/cache/lifecycle replay failed");
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TURN_FIRST","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TURN_TABLE_MB",
+     "CGAR_TEMPORAL_TABLE_BATCH","CGAR_TEMPORAL_PREP_THREADS","CGAR_TURN_BUILD_LIMIT","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_FLOW_WARMUP",
+     "CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
+ temporal_region_adapter_regression();temporal_primary_regression();unsetenv("CGAR_TEMPORAL_NEXT_ERRAND");
+ std::cout<<"TEMPORAL_NEXT_ERRAND passed independent_weighted_scores="<<arriving<<" common_heading_baseline=1 joint_fixtures=2 native_fallback_cases=6 primary_preserved=1 metadata_immutable=1 service_events="<<services<<" repeated_location_services="<<repeated<<" serial_parallel_actions=320 changing_publications=1 explicit_lookup_failure=1 protected_regional_actions=4800\n";
+}
+
+int main(){try{temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

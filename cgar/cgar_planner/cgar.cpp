@@ -672,6 +672,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (temporal_service_audit_stride_ < 0 || temporal_service_audit_stride_ > 4096 ||
         (temporal_service_audit_stride_ && !temporal_))
         throw std::invalid_argument("temporal service audit requires temporal planning and stride 1-4096");
+    const int next_errand = env_int("CGAR_TEMPORAL_NEXT_ERRAND", 0);
+    if (next_errand < 0 || next_errand > 1 || (next_errand && !temporal_))
+        throw std::invalid_argument("next-errand scoring requires temporal planning and a boolean setting");
+    temporal_next_errand_ = next_errand != 0;
     temporal_history_.clear();
     if (temporal_warm_start_ && !temporal_) throw std::invalid_argument("temporal warm start requires temporal planning");
     turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);

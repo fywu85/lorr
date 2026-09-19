@@ -1,7 +1,8 @@
 # Independent checks of the proposed continuation objective
 
-This is an offline score experiment. The production CGAR planner still scores only
-the current errand; no continuation or neutral-tail policy has been implemented.
+This began as an offline score experiment. V47 now implements the common-baseline
+continuation score as an optional, default-OFF production mode. No neutral-tail
+policy has been implemented.
 Fable turn13 supplied the hypothesis, and the local probe checks its arithmetic and
 small joint-choice examples. The rejected arrival-heading baseline was a proposal,
 not an existing production bug.
@@ -48,12 +49,21 @@ extras only to that first hit; it can prefer an arbitrary departure because of t
 operation tie term. It is a separate hypothesis, checked here only on the two joint
 fixtures, not by the weighted common-baseline oracle.
 
-A production prototype still needs one metric decision for the whole robot candidate
-set, cache/publication-safe non-LRU reads, missing/unreachable-table fallback, pinned
-robot protection, serial/parallel preparation checks and exact disabled trajectories.
+The V47 production prototype uses one metric decision for the whole robot candidate
+set, cache/publication-safe non-LRU reads, missing/unreachable-table fallback and
+pinned robot protection. The full regression suite passes, including54,378 production
+score checks against the independent oracle, six exact native fallbacks, real changing
+task/flow lifecycle replay and4,800 protected regional decisions. The200-step
+ON/OFF feasibility screen precedes full matched regional-reference0/2 evaluations.
 The post-service audit's eligible candidate set would change with a different score,
 so its bucket movement would not by itself demonstrate a reservation improvement.
 Full throughput, tail, age, deadline and memory checks remain required.
 
 [Probe source](continuation_probe.cpp), [commands, output and source hashes](results/continuation-probe-v1.json),
 [original goal-holding examples](GOAL_HOLDING.md), [Fable review and assessment](fable-flow-session/turn13/).
+
+Build8899126 passed every CGAR regression; all22 source/test hashes reconstruct
+from3a5594a plus the archived patch. The production policy does not build next-goal
+tables, alter recency, inspect hidden tasks, release reservations or return partial
+work. It uses only already-resident complete tables after normal builds finish.
+[Build and regressions](build-provenance/v47/), [experiment profiles](next-errand-variants.json).

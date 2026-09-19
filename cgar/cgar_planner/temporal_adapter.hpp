@@ -80,6 +80,27 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
         }
     }
+    // All builds are finished. These optional peeks neither promote recency nor
+    // admit tables; references are consumed only during this preparation phase.
+    std::vector<int> known_next;
+    std::vector<const TurnTable*> prepared_next;
+    if (temporal_next_errand_) {
+        known_next.assign(n_, -1); prepared_next.assign(n_, nullptr);
+        for (int i = 0; i < n_; ++i) {
+            if (!(i % 64)) check_deadline(deadline_, "temporal_next_tables");
+            if (pinned[i] || agents_[i].goal < 0) continue;
+            const auto found = env_->task_pool.find(agents_[i].task);
+            if (found == env_->task_pool.end()) continue;
+            const auto& task = found->second;
+            const int stop = task.idx_next_loc;
+            if (stop < 0 || stop >= static_cast<int>(task.locations.size()) - 1 ||
+                task.locations[stop] != agents_[i].goal) continue;
+            const int next = task.locations[stop + 1];
+            if (next < 0 || next >= cells || !cert_.free[next] || next == agents_[i].goal) continue;
+            known_next[i] = next; prepared_next[i] = turn_oracle_.peek(next);
+        }
+    }
+    std::vector<std::array<long long, 5>> next_metrics(temporal_prepare_threads_, {0, 0, 0, 0, 0});
     std::vector<std::array<int, 2>> prepared_metrics(temporal_prepare_threads_, {0, 0});
     run_temporal_preparation(temporal_prepare_threads_, [&](int worker) {
         std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
@@ -114,13 +135,49 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 }
                 return heuristic_value[state];
             };
+            const TurnTable* next_table = nullptr;
+            int next_baseline = kInf;
+            bool use_next = false;
+            std::array<char, 129> arrives{};
+            if (temporal_next_errand_ && known_next[i] >= 0) {
+                ++next_metrics[worker][0]; next_table = prepared_next[i];
+                use_next = oriented && !guided && next_table;
+                if (use_next) {
+                    for (int h = 0; h < 4; ++h) {
+                        const int d = turn_oracle_.value(*next_table, goal, h);
+                        if (d >= kInf) use_next = false;
+                        next_baseline = std::min(next_baseline, d);
+                    }
+                    if (use_next && oracle_.manhattan(loc_[i], goal) <= 5) {
+                        const auto& paths = temporal_geometry_.paths(loc_[i], ori_[i]);
+                        // Decide once for the whole set. No candidate switches
+                        // to another metric because its own endpoint is missing.
+                        for (int op = 0; op < 129; ++op) if (paths[op].valid && TemporalGeometry::first_goal_hit(paths[op], goal) >= 0) {
+                            arrives[op] = true;
+                            for (int h = 0; h < 4; ++h)
+                                if (turn_oracle_.value(*next_table, paths[op].cells[4], h) >= kInf) use_next = false;
+                        }
+                    }
+                }
+                ++next_metrics[worker][use_next ? 1 : 2];
+            }
             auto cost = [&](const TemporalPath& path, int op) {
                 const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
                     TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
                         return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
                     }, flow_cost_scale_) : 0;
-                return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_, flow_cost_scale_) +
-                       int64_t(extra) * temporal_distance_scale_;
+                const auto native = TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_, flow_cost_scale_) +
+                                    int64_t(extra) * temporal_distance_scale_;
+                if (use_next && arrives[op]) {
+                    ++next_metrics[worker][3];
+                    const auto continued = TemporalGeometry::next_errand_cost(path, op, loc_[i], robot_turn_cost, next_baseline,
+                        [&](int cell, int h) { return turn_oracle_.value(*next_table, cell, h); },
+                        [&](int from, int to) { return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols)); },
+                        temporal_distance_scale_, flow_cost_scale_);
+                    next_metrics[worker][4] += continued != native;
+                    return continued;
+                }
+                return native;
             };
             priorities[i] = goal < 0 ? kInf : original_distance(loc_[i], ori_[i]);
             if (temporal_order_ == 2 && goal >= 0) {
@@ -162,6 +219,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     });
     for (const auto& count : prepared_metrics) {
         exact_metric_robots += count[0]; fallback_metric_robots += count[1];
+    }
+    for (const auto& count : next_metrics) {
+        stats_.temporal_next_known += count[0]; stats_.temporal_next_eligible += count[1];
+        stats_.temporal_next_unavailable += count[2]; stats_.temporal_next_arriving_choices += count[3];
+        stats_.temporal_next_changed_choices += count[4];
     }
     stats_.temporal_prepared_robots += n_;
     if (temporal_prepare_threads_ > 1) ++stats_.temporal_parallel_preparations;
@@ -372,6 +434,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     construction_stats.repairs, construction_stats.repairs_accepted, results[best]->score());
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0) {
         auto seconds = [](auto start, auto end) { return std::chrono::duration<double>(end - start).count(); };
+        if (temporal_next_errand_)
+            std::printf("[cgar-temporal-next-errand] step=%d enabled=1 known=%lld eligible=%lld unavailable=%lld arriving_choices=%lld changed_choices=%lld\n",
+                env_->curr_timestep + 1, stats_.temporal_next_known, stats_.temporal_next_eligible,
+                stats_.temporal_next_unavailable, stats_.temporal_next_arriving_choices, stats_.temporal_next_changed_choices);
         std::printf("[cgar-temporal-starts] step=%d mixed=%d warm=%d cold=%d selected_warm=%d warm_runs=%lld cold_runs=%lld unit_cost=%d turn_cost=%d turn_surcharge=%d\n",
                     env_->curr_timestep + 1, int(temporal_mixed_start_), warm_workers, temporal_workers_ - warm_workers,
                     int(warm_started[best]), stats_.temporal_warm_worker_runs, stats_.temporal_cold_worker_runs,

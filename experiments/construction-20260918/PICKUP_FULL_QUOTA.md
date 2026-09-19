@@ -48,3 +48,12 @@ Full seed0 jobs8899064/8899065 and seed2 jobs8899066/8899067 now compare all thr
 quotas. Each matrix runs three concurrent16-core cases (48cores/48GiB aggregate),
 with the same32decimalGB per-process cap. Full controls must exactly reproduce the
 reference before interpreting any effect or equivalence.
+
+Both full matrices and their analyses are complete. All six runs are valid, all30,000
+entries meet1s, maximum892.70ms and peakRSS12.159GB. All22 source/test hashes match
+exact0b8361c, actual binaries match, each process has16 disjoint physical cores and
+no CPU quota. Quotas64/128/256 produce **exactly identical full trajectories** for
+each seed, including exact agreement with the four-thread64 reference. Tasks remain
+141,829 /142,988, tails29,717 /29,736, agep90644 /645. Larger quotas provide no
+observed effect on these two full runs; this does not prove64 never binds on other
+workloads. Retain64 fields and four field threads. [Verified comparison](results/pickup-full-quota-full-v46.json).

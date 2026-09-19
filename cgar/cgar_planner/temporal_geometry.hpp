@@ -95,6 +95,42 @@ public:
         return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * distance_scale - int64_t(op) * unit_cost;
     }
 
+    static int first_goal_hit(const TemporalPath& path, int goal) {
+        if (goal < 0) return -1;
+        for (int t = 0; t < 5; ++t) if (path.cells[t] == goal) return t;
+        return -1;
+    }
+
+    // Caller has verified current service and one immutable finite next metric
+    // for the robot's entire candidate set. The baseline is common to all arrival
+    // headings. This two-errand surrogate keeps next as the terminal destination
+    // even when a path visits it and later leaves; it is not a task-time oracle.
+    template<class Distance, class EdgeCost>
+    static int64_t next_errand_cost(const TemporalPath& path, int op, int start,
+            int turn_cost, int baseline, Distance next_distance, EdgeCost edge_cost,
+            int distance_scale = 50, int unit_cost = 1) {
+        if (unit_cost <= 0 || turn_cost < unit_cost || baseline < 0 || distance_scale <= 0)
+            throw std::invalid_argument("invalid next-errand score units");
+        const auto& actions = operations()[op];
+        const int extra = turn_cost - unit_cost;
+        int tail = next_distance(path.cells[4], path.orientation);
+        if (actions[4] == 3) {
+            tail = std::min({tail, next_distance(path.cells[4], (path.orientation + 1) % 4) + extra,
+                            next_distance(path.cells[4], (path.orientation + 3) % 4) + extra});
+            if (actions[3] == 3)
+                tail = std::min(tail, next_distance(path.cells[4], (path.orientation + 2) % 4) + 2 * extra);
+        }
+        int paid = 0, from = start;
+        for (int t = 0; t < 5; ++t) {
+            const int action = op == 0 && t == 0 ? path.first_action : actions[t];
+            if (action == 1 || action == 2) paid += extra;
+            const int to = path.cells[t];
+            if (to != from) paid += edge_cost(from, to) - unit_cost;
+            from = to;
+        }
+        return (int64_t(tail) - baseline - 4 * unit_cost + paid) * distance_scale - int64_t(op) * unit_cost;
+    }
+
     template<class Deadline>
     void initialize(const std::vector<char>& free, int rows, int cols, Deadline check) {
         rows_ = rows; cols_ = cols; free_ = free; index_.assign(free.size() * 4, -1);
