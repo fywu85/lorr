@@ -1,0 +1,166 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -721,6 +721,12 @@
+     temporal_prepare_threads_ = env_int("CGAR_TEMPORAL_PREP_THREADS", 1);
+     if (temporal_prepare_threads_ < 1 || temporal_prepare_threads_ > 32)
+         throw std::invalid_argument("temporal preparation threads must be in [1,32]");
++    temporal_table_batch_ = env_int("CGAR_TEMPORAL_TABLE_BATCH", 0);
++    temporal_table_threads_ = env_int("CGAR_TEMPORAL_TABLE_THREADS", 1);
++    if (temporal_table_batch_ < 0 || temporal_table_batch_ > 1024 ||
++        temporal_table_threads_ < 1 || temporal_table_threads_ > 32 ||
++        (temporal_table_batch_ && (!temporal_ || !orientation_guidance_)))
++        throw std::invalid_argument("temporal table batches require temporal guidance, 0-1024 tables and 1-32 threads");
+     temporal_regions_ = env_int("CGAR_TEMPORAL_REGIONS", 0) != 0;
+     temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
+     temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
+@@ -734,12 +740,12 @@
+         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
+         throw std::invalid_argument("invalid CGAR temporal region configuration");
+     if (temporal_ || turn_prefetch_threads_) {
+-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_});
++        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1});
+         cpu_set_t affinity; CPU_ZERO(&affinity);
+         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
+             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
+-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d allowed_cpus=%d\n",
+-                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
++        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d table_threads=%d allowed_cpus=%d\n",
++                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, temporal_table_batch_ ? temporal_table_threads_ : 0, CPU_COUNT(&affinity));
+     }
+     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
+     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));
+@@ -934,6 +940,51 @@
+     for (size_t k = 0; k < capacity; ++k) oriented_goals_.insert(ranked[k].goal);
+     turn_oracle_.retain(oriented_goals_);
+     check_deadline(deadline_, "orientation_cache_admission");
++}
++
++// Admit a fixed batch of complete current-goal tables before temporal scoring.
++// This is a distinct admission policy from demand-triggered PIBT construction;
++// all selected results are admitted, in a deterministic order, after workers join.
++void Cgar::prepare_temporal_tables(const std::vector<char>& pinned) {
++    if (!temporal_table_batch_) return;
++    const auto started = Clock::now();
++    struct Goal { int goal = -1, count = 0; long long ticket = kIdleTicket; };
++    std::unordered_map<int, Goal> missing;
++    for (int r = 0; r < n_; ++r) {
++        if ((r & 63) == 0) check_deadline(deadline_, "temporal_table_batch_candidates");
++        const auto& agent = agents_[r];
++        if (pinned[r] || agent.goal < 0 || turn_oracle_.has(agent.goal) ||
++            (orientation_guidance_ == 2 && !oriented_goals_.count(agent.goal))) continue;
++        auto& goal = missing[agent.goal]; goal.goal = agent.goal; ++goal.count;
++        goal.ticket = std::min(goal.ticket, agent.ticket);
++    }
++    std::vector<Goal> ranked; ranked.reserve(missing.size());
++    for (const auto& entry : missing) ranked.push_back(entry.second);
++    std::sort(ranked.begin(), ranked.end(), [](const Goal& a, const Goal& b) {
++        if (a.count != b.count) return a.count > b.count;
++        if (a.ticket != b.ticket) return a.ticket < b.ticket;
++        return a.goal < b.goal;
++    });
++    const int count = std::min<int>(temporal_table_batch_, ranked.size());
++    int covered = 0;
++    // The existing oracle bounds parallel scratch to32tables. Complete chunks
++    // are admitted before proceeding; a later exception still fails the entry.
++    for (int begin = 0; begin < count; begin += 32) {
++        check_deadline(deadline_, "temporal_table_batch_build");
++        std::vector<int> goals;
++        for (int k = begin; k < std::min(count, begin + 32); ++k) goals.push_back(ranked[k].goal);
++        turn_oracle_.prefetch(goals, temporal_table_threads_, deadline_);
++        for (int k = begin; k < std::min(count, begin + 32); ++k) {
++            turn_oracle_.table(ranked[k].goal, deadline_); covered += ranked[k].count;
++        }
++    }
++    check_deadline(deadline_, "temporal_table_batch_complete");
++    ++stats_.temporal_batch_passes; stats_.temporal_batch_built += count;
++    stats_.temporal_batch_covered += covered; stats_.oriented_builds += count;
++    if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
++        std::printf("[cgar-temporal-table-batch] step=%d limit=%d threads=%d missing_goals=%zu built=%d covered=%d seconds=%.6f\n",
++            env_->curr_timestep + 1, temporal_table_batch_, temporal_table_threads_, ranked.size(), count, covered,
++            std::chrono::duration<double>(Clock::now() - started).count());
+ }
+ 
+ void Cgar::update_pibt_priorities() {
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -258,6 +258,7 @@
+     long long reassign_pairs = 0, reassign_swaps = 0, reassign_saving = 0;
+     long long reassign_table_pairs = 0, reassign_manhattan_pairs = 0;
+     long long reassign_primary_protected = 0, reassign_recovery_protected = 0, reassign_fair_protected = 0;
++    long long temporal_batch_passes = 0, temporal_batch_built = 0, temporal_batch_covered = 0;
+     long long pool_passes = 0, pool_eligible = 0, pool_sources = 0, pool_nodes = 0, pool_pairs = 0;
+     long long pool_exchanges = 0, pool_pickup_saving = 0, pool_chain_delta = 0, pool_total_saving = 0;
+     long long pool_missing_pickup = 0, pool_missing_chain = 0, pool_short_pickup = 0;
+@@ -290,6 +291,7 @@
+     int select_primary();
+     void compute_order(int primary);
+     void refresh_orientation_cache();
++    void prepare_temporal_tables(const std::vector<char>& pinned);
+     void update_pibt_priorities();
+ 
+     // routing
+@@ -403,6 +405,7 @@
+     int global_samples_ = 0;
+     int pickup_weight_ = 1;
+     int turn_build_limit_ = 32;
++    int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
+     bool reassign_ = false, reassign_pool_ = false;
+     int primary_ = -1;
+     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -29,6 +29,7 @@
+         const int other = occ_now_[neighbor(loc_[r], ori_[r])];
+         if (other >= 0 && !pinned[other]) { pinned[other] = true; queue.push_back(other); }
+     }
++    prepare_temporal_tables(pinned);
+     std::vector<int> intent_owner(cells, -1);
+     for (int i : order_) if (fixed[i] && agents_[i].committed >= 0) {
+         const int target = agents_[i].committed;
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -1217,6 +1217,38 @@
+  std::cout<<"TEMPORAL_TRANSACTION passed two_owner_backtracking=1 aggregate_score_rejection=1 exact_owner_rollback=1 fixed_owner=1 missing_escape=1 work_cutoffs=3 exception_propagation=1 independent_paths=1 protected_serial_parallel_actions=9600\n";
+ }
+ 
++void temporal_table_batch_regression() {
++ auto fixture=[](){SharedEnvironment e;e.rows=e.cols=50;e.num_of_agents=160;e.map.assign(2500,0);e.curr_task_schedule.assign(160,-1);e.goal_locations.resize(160);
++  for(int r=0;r<160;++r){e.curr_states.emplace_back(r*7,0,r%4);e.goal_locations[r]={{2499-r*3,0}};}return e;};
++ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);
++ setenv("CGAR_TEMPORAL_STEPS","512",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);setenv("CGAR_TEMPORAL_ORDER","1",1);
++ setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);setenv("CGAR_TURN_COMPACT","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);
++ setenv("CGAR_FLOW_WARMUP","8",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);
++ for(const char* value:{"-1","1025"}){setenv("CGAR_TEMPORAL_TABLE_BATCH",value,1);auto e=fixture();bool invalid=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid temporal table batch accepted");}
++ setenv("CGAR_TEMPORAL_TABLE_BATCH","64",1);
++ for(const char* value:{"0","33"}){setenv("CGAR_TEMPORAL_TABLE_THREADS",value,1);auto e=fixture();bool invalid=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid temporal table batch thread count accepted");}
++ auto e=fixture();setenv("CGAR_TEMPORAL_TABLE_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
++ setenv("CGAR_TEMPORAL_TABLE_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);int checked=0;
++ for(int t=0;t<80;++t){
++  e.curr_timestep=t;const auto before=serial.stats().temporal_batch_built;std::vector<Action>a,b;
++  serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
++  const auto& x=serial.stats();const auto& y=parallel.stats();
++  if(a!=b||x.oriented_builds!=y.oriented_builds||x.temporal_batch_built!=y.temporal_batch_built||x.temporal_batch_covered!=y.temporal_batch_covered||
++     x.temporal_batch_built-before>64||(t==0&&x.temporal_batch_built!=64)||serial.primary()!=parallel.primary())
++   throw std::runtime_error("parallel complete-table admission changed actions, protection, order or fixed work");
++  auto states=step(e,e.curr_states,a);if(states.empty())throw std::runtime_error("temporal batch fixture has an independent collision");e.curr_states=states;checked+=160;
++  for(int r=0;r<160;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+997)%2500;
++ }
++ if(serial.stats().temporal_batch_passes!=80||serial.stats().flow_publications!=5||serial.stats().temporal_batch_built<=64||!serial.stats().flow_cache_resets)
++  throw std::runtime_error("temporal table batch did not exercise refresh invalidation and multiple complete chunks");
++ for(const char* key:{"CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_TEMPORAL_TABLE_BATCH","CGAR_TEMPORAL_TABLE_THREADS","CGAR_TEMPORAL_PREP_THREADS","CGAR_TURN_COMPACT","CGAR_TURN_FIRST","CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_ORDER"})unsetenv(key);
++ // Exercise primary, recovery and capacity paths under the enabled policy too.
++ setenv("CGAR_TEMPORAL_TABLE_BATCH","64",1);setenv("CGAR_TEMPORAL_TABLE_THREADS","4",1);
++ temporal_primary_regression();temporal_region_adapter_regression();
++ unsetenv("CGAR_TEMPORAL_TABLE_BATCH");unsetenv("CGAR_TEMPORAL_TABLE_THREADS");
++ std::cout<<"TEMPORAL_TABLE_BATCH passed identical_robot_decisions="<<checked<<" threads=1,4 fixed_work=1 multiple_chunks=1 refreshed_fields=5 protected_episodes=1 invalid_configuration=1\n";
++}
++
+ void turn_build_limit_regression() {
+  auto fixture=[](){SharedEnvironment e;e.rows=e.cols=20;e.num_of_agents=80;e.map.assign(400,0);e.curr_task_schedule.assign(80,-1);e.goal_locations.resize(80);
+   for(int r=0;r<80;++r){e.curr_states.emplace_back(r,0,r%4);e.goal_locations[r]={{399-r,0}};}return e;};
+@@ -1991,4 +2023,4 @@
+           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+ }
+ 
+-int main(){try{turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

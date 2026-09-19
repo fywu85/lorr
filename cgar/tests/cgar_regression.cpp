@@ -1217,6 +1217,38 @@ void temporal_transaction_regression() {
  std::cout<<"TEMPORAL_TRANSACTION passed two_owner_backtracking=1 aggregate_score_rejection=1 exact_owner_rollback=1 fixed_owner=1 missing_escape=1 work_cutoffs=3 exception_propagation=1 independent_paths=1 protected_serial_parallel_actions=9600\n";
 }
 
+void temporal_table_batch_regression() {
+ auto fixture=[](){SharedEnvironment e;e.rows=e.cols=50;e.num_of_agents=160;e.map.assign(2500,0);e.curr_task_schedule.assign(160,-1);e.goal_locations.resize(160);
+  for(int r=0;r<160;++r){e.curr_states.emplace_back(r*7,0,r%4);e.goal_locations[r]={{2499-r*3,0}};}return e;};
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);
+ setenv("CGAR_TEMPORAL_STEPS","512",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);setenv("CGAR_TEMPORAL_ORDER","1",1);
+ setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);setenv("CGAR_TURN_COMPACT","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);
+ setenv("CGAR_FLOW_WARMUP","8",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);
+ for(const char* value:{"-1","1025"}){setenv("CGAR_TEMPORAL_TABLE_BATCH",value,1);auto e=fixture();bool invalid=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid temporal table batch accepted");}
+ setenv("CGAR_TEMPORAL_TABLE_BATCH","64",1);
+ for(const char* value:{"0","33"}){setenv("CGAR_TEMPORAL_TABLE_THREADS",value,1);auto e=fixture();bool invalid=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid temporal table batch thread count accepted");}
+ auto e=fixture();setenv("CGAR_TEMPORAL_TABLE_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
+ setenv("CGAR_TEMPORAL_TABLE_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);int checked=0;
+ for(int t=0;t<80;++t){
+  e.curr_timestep=t;const auto before=serial.stats().temporal_batch_built;std::vector<Action>a,b;
+  serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
+  const auto& x=serial.stats();const auto& y=parallel.stats();
+  if(a!=b||x.oriented_builds!=y.oriented_builds||x.temporal_batch_built!=y.temporal_batch_built||x.temporal_batch_covered!=y.temporal_batch_covered||
+     x.temporal_batch_built-before>64||(t==0&&x.temporal_batch_built!=64)||serial.primary()!=parallel.primary())
+   throw std::runtime_error("parallel complete-table admission changed actions, protection, order or fixed work");
+  auto states=step(e,e.curr_states,a);if(states.empty())throw std::runtime_error("temporal batch fixture has an independent collision");e.curr_states=states;checked+=160;
+  for(int r=0;r<160;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+997)%2500;
+ }
+ if(serial.stats().temporal_batch_passes!=80||serial.stats().flow_publications!=5||serial.stats().temporal_batch_built<=64||!serial.stats().flow_cache_resets)
+  throw std::runtime_error("temporal table batch did not exercise refresh invalidation and multiple complete chunks");
+ for(const char* key:{"CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_TEMPORAL_TABLE_BATCH","CGAR_TEMPORAL_TABLE_THREADS","CGAR_TEMPORAL_PREP_THREADS","CGAR_TURN_COMPACT","CGAR_TURN_FIRST","CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_ORDER"})unsetenv(key);
+ // Exercise primary, recovery and capacity paths under the enabled policy too.
+ setenv("CGAR_TEMPORAL_TABLE_BATCH","64",1);setenv("CGAR_TEMPORAL_TABLE_THREADS","4",1);
+ temporal_primary_regression();temporal_region_adapter_regression();
+ unsetenv("CGAR_TEMPORAL_TABLE_BATCH");unsetenv("CGAR_TEMPORAL_TABLE_THREADS");
+ std::cout<<"TEMPORAL_TABLE_BATCH passed identical_robot_decisions="<<checked<<" threads=1,4 fixed_work=1 multiple_chunks=1 refreshed_fields=5 protected_episodes=1 invalid_configuration=1\n";
+}
+
 void turn_build_limit_regression() {
  auto fixture=[](){SharedEnvironment e;e.rows=e.cols=20;e.num_of_agents=80;e.map.assign(400,0);e.curr_task_schedule.assign(80,-1);e.goal_locations.resize(80);
   for(int r=0;r<80;++r){e.curr_states.emplace_back(r,0,r%4);e.goal_locations[r]={{399-r,0}};}return e;};
@@ -1991,4 +2023,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

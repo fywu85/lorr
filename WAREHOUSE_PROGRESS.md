@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 14:55:12 UTC.
+Updated: 2026-09-19 15:19:29 UTC.
 
-**Best observed full run: 136,149 completed tasks** — direct-cost dispatch with pickup weight5, seed0. **This policy is not promoted:** seed2 collapses to52,444 despite valid decisions. The two-owner transaction pass reaches135,357, but its completed six-seed mean loses0.288%; it is also not promoted. Ordinary refresh remains the configuration confirmed on **all six seeds (0–5)**: **134,590.3 mean**, range **134,061–134,966**, with no deadline or memory failures. The throughput target remains unmet.
+**Best observed full run: 137,490 completed tasks** — refreshed flow with 96 turn-table builds per step, seed 0. The 128-build setting has the strongest two-seed mean, **136,950.5** (+1.811% against paired controls); refreshed margin 25 reaches **136,424** (+1.419%). Their remaining-seed confirmations are running. Ordinary refresh remains the current six-seed reference: **134,590.3 mean**, range **134,061–134,966**. Pool exchange has a slightly higher six-seed mean of 134,840.8, but wins only four seeds, loses two, and worsens task-age tails; it is not promoted. The throughput target remains unmet.
 
-The local KittyKnight reference is **152,981**, so the experimental peak is **11.00% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**, so the experimental peak is **10.13% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -37,6 +37,9 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 12:37:41 | 135,177 | Refresh512 + strict wait turns /0 | [846360e](https://github.com/fywu85/lorr/commit/846360ec9f8f0fddbd2d5d52544113e799945f43) | [data](experiments/construction-20260918/results/strict-wait-turn-full-v32/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v32/) · mixed two-seed effect |
 | 2026-09-19 14:13:43 | 135,357 | Refresh512 + two-owner transactions /2 | [45ebea2](https://github.com/fywu85/lorr/commit/45ebea2680e393a1e3ae060f29194b494bedc254) | [data](experiments/construction-20260918/results/temporal-transaction-full-v36/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v36/) · not promoted: six-seed mean loses |
 | 2026-09-19 14:19:27 | 136,149 | Direct cost + pickup weight5 /0 | [348b92f](https://github.com/fywu85/lorr/commit/348b92fd27b528a71c956d09d638cc40ebe33e0c) | [data](experiments/construction-20260918/results/flow-refresh-pickup-full-v33/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v33/) · not robust: seed2 collapses |
+| 2026-09-19 14:58:29 | 136,888 | Refreshed flow, margin 25 / 0 | [45ebea2](https://github.com/fywu85/lorr/commit/45ebea2680e393a1e3ae060f29194b494bedc254) | [data](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v36/) · two seeds only |
+| 2026-09-19 15:08:42 | 137,190 | Refresh512, turn builds 64 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
+| 2026-09-19 15:10:30 | 137,490 | Refresh512, turn builds 96 / 0 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds only |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -60,7 +63,9 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Direct-cost dispatch | Seeds 0/2: 131,199 / 130,947; mean 131,073 | Loses 2.559%; chain refinement leaves both trajectories unchanged. Shorter loaded chains accompany about 17% more empty robot-steps. [Evidence](experiments/construction-20260918/results/flow-refresh-dispatch-full-v33/comparison.json). |
 | Two-owner temporal transactions | Six seeds:134,584 /135,299 /135,357 /132,125 /133,325 /134,525; mean134,202.5 | Wins3of6, loses0.288% in the mean. All12paired runs valid and all six controls exactly reproduce. Not promoted. [Evidence](experiments/construction-20260918/results/temporal-transaction-six-seed-v36.json). |
 | Direct cost, pickup weights3/5 | Weight3:134,397 /134,194; weight5:136,149 /52,444 | Weight3 loses0.163%. Weight5 seed2 collapses to4,447 tasks in the final window. Historical peak retained; both rejected. [Evidence](experiments/construction-20260918/results/flow-refresh-pickup-full-v33/comparison.json). |
-| Unopened pool exchange | Seeds0/2:135,409 /134,762, mean135,085.5 | +0.424%; final-window throughput improves, but outstanding age p90 rises to702/722. No six-seed promotion. [Evidence](experiments/construction-20260918/results/pool-exchange-full-v37/comparison.json). |
+| Unopened pool exchange | Six seeds: 135,409 / 135,476 / 134,762 / 135,078 / 134,311 / 134,009; mean 134,840.8 | +0.186%; wins four, loses two. Outstanding age p90 rises on every seed. Not promoted. [Evidence](experiments/construction-20260918/results/pool-exchange-six-seed-v37.json). |
+| Refreshed margin 25 | Seeds 0/2: **136,888 / 135,960**, mean **136,424** | +1.419%, both full totals and final windows improve. Six-seed confirmation running. Refreshed margin 75 and doubled strength lose. [Evidence](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/comparison.json). |
+| Larger turn-table rebuild allowance | Counts 64/96/128 have two-seed means **136,302.5 / 136,600 / 136,950.5** | All beat both controls; count 128 wins the mean (+1.811%). Sampled exact-metric coverage rises from 75.7% to 97.4%. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/turn-build-limit-full-v39/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
@@ -78,6 +83,14 @@ much of the remaining work is serial. A separate repeated control reached 792.9 
 so 776.3 ms is the maximum of this confirmation, not of every repeated run.
 [Six-seed resource evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json),
 [independent latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
+
+The newer two-seed turn-build128 experiment averages **251.0–264.0 ms**,
+with maximum **870.9 ms**, **1.18–1.19 CPU cores**, and **11.905 GB** peak RSS.
+It takes **22.14–23.25 minutes** per full run. Refreshed margin25 averages
+247.1–248.4 ms and uses 11.324–11.814 GB peak RSS. Neither has completed
+six-seed confirmation yet.
+[Turn-build resources](experiments/construction-20260918/results/turn-build-limit-full-v39/comparison.json),
+[margin resources](experiments/construction-20260918/results/flow-refresh-neighbors-full-v36/comparison.json).
 
 Four full-size search workers average 271–277 ms per decision and 2.60–2.63 CPU
 cores, but add only 0.204% throughput on seeds 0/2; they are not promoted.

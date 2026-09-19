@@ -29,6 +29,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         const int other = occ_now_[neighbor(loc_[r], ori_[r])];
         if (other >= 0 && !pinned[other]) { pinned[other] = true; queue.push_back(other); }
     }
+    prepare_temporal_tables(pinned);
     std::vector<int> intent_owner(cells, -1);
     for (int i : order_) if (fixed[i] && agents_[i].committed >= 0) {
         const int target = agents_[i].committed;

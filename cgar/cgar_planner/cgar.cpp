@@ -721,6 +721,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_prepare_threads_ = env_int("CGAR_TEMPORAL_PREP_THREADS", 1);
     if (temporal_prepare_threads_ < 1 || temporal_prepare_threads_ > 32)
         throw std::invalid_argument("temporal preparation threads must be in [1,32]");
+    temporal_table_batch_ = env_int("CGAR_TEMPORAL_TABLE_BATCH", 0);
+    temporal_table_threads_ = env_int("CGAR_TEMPORAL_TABLE_THREADS", 1);
+    if (temporal_table_batch_ < 0 || temporal_table_batch_ > 1024 ||
+        temporal_table_threads_ < 1 || temporal_table_threads_ > 32 ||
+        (temporal_table_batch_ && (!temporal_ || !orientation_guidance_)))
+        throw std::invalid_argument("temporal table batches require temporal guidance, 0-1024 tables and 1-32 threads");
     temporal_regions_ = env_int("CGAR_TEMPORAL_REGIONS", 0) != 0;
     temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
     temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
@@ -734,12 +740,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
         throw std::invalid_argument("invalid CGAR temporal region configuration");
     if (temporal_ || turn_prefetch_threads_) {
-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_});
+        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1});
         cpu_set_t affinity; CPU_ZERO(&affinity);
         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d allowed_cpus=%d\n",
-                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, CPU_COUNT(&affinity));
+        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d table_threads=%d allowed_cpus=%d\n",
+                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, temporal_table_batch_ ? temporal_table_threads_ : 0, CPU_COUNT(&affinity));
     }
     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));
@@ -934,6 +940,51 @@ void Cgar::refresh_orientation_cache() {
     for (size_t k = 0; k < capacity; ++k) oriented_goals_.insert(ranked[k].goal);
     turn_oracle_.retain(oriented_goals_);
     check_deadline(deadline_, "orientation_cache_admission");
+}
+
+// Admit a fixed batch of complete current-goal tables before temporal scoring.
+// This is a distinct admission policy from demand-triggered PIBT construction;
+// all selected results are admitted, in a deterministic order, after workers join.
+void Cgar::prepare_temporal_tables(const std::vector<char>& pinned) {
+    if (!temporal_table_batch_) return;
+    const auto started = Clock::now();
+    struct Goal { int goal = -1, count = 0; long long ticket = kIdleTicket; };
+    std::unordered_map<int, Goal> missing;
+    for (int r = 0; r < n_; ++r) {
+        if ((r & 63) == 0) check_deadline(deadline_, "temporal_table_batch_candidates");
+        const auto& agent = agents_[r];
+        if (pinned[r] || agent.goal < 0 || turn_oracle_.has(agent.goal) ||
+            (orientation_guidance_ == 2 && !oriented_goals_.count(agent.goal))) continue;
+        auto& goal = missing[agent.goal]; goal.goal = agent.goal; ++goal.count;
+        goal.ticket = std::min(goal.ticket, agent.ticket);
+    }
+    std::vector<Goal> ranked; ranked.reserve(missing.size());
+    for (const auto& entry : missing) ranked.push_back(entry.second);
+    std::sort(ranked.begin(), ranked.end(), [](const Goal& a, const Goal& b) {
+        if (a.count != b.count) return a.count > b.count;
+        if (a.ticket != b.ticket) return a.ticket < b.ticket;
+        return a.goal < b.goal;
+    });
+    const int count = std::min<int>(temporal_table_batch_, ranked.size());
+    int covered = 0;
+    // The existing oracle bounds parallel scratch to32tables. Complete chunks
+    // are admitted before proceeding; a later exception still fails the entry.
+    for (int begin = 0; begin < count; begin += 32) {
+        check_deadline(deadline_, "temporal_table_batch_build");
+        std::vector<int> goals;
+        for (int k = begin; k < std::min(count, begin + 32); ++k) goals.push_back(ranked[k].goal);
+        turn_oracle_.prefetch(goals, temporal_table_threads_, deadline_);
+        for (int k = begin; k < std::min(count, begin + 32); ++k) {
+            turn_oracle_.table(ranked[k].goal, deadline_); covered += ranked[k].count;
+        }
+    }
+    check_deadline(deadline_, "temporal_table_batch_complete");
+    ++stats_.temporal_batch_passes; stats_.temporal_batch_built += count;
+    stats_.temporal_batch_covered += covered; stats_.oriented_builds += count;
+    if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+        std::printf("[cgar-temporal-table-batch] step=%d limit=%d threads=%d missing_goals=%zu built=%d covered=%d seconds=%.6f\n",
+            env_->curr_timestep + 1, temporal_table_batch_, temporal_table_threads_, ranked.size(), count, covered,
+            std::chrono::duration<double>(Clock::now() - started).count());
 }
 
 void Cgar::update_pibt_priorities() {

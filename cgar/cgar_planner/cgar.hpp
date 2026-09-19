@@ -258,6 +258,7 @@ struct Stats {
     long long reassign_pairs = 0, reassign_swaps = 0, reassign_saving = 0;
     long long reassign_table_pairs = 0, reassign_manhattan_pairs = 0;
     long long reassign_primary_protected = 0, reassign_recovery_protected = 0, reassign_fair_protected = 0;
+    long long temporal_batch_passes = 0, temporal_batch_built = 0, temporal_batch_covered = 0;
     long long pool_passes = 0, pool_eligible = 0, pool_sources = 0, pool_nodes = 0, pool_pairs = 0;
     long long pool_exchanges = 0, pool_pickup_saving = 0, pool_chain_delta = 0, pool_total_saving = 0;
     long long pool_missing_pickup = 0, pool_missing_chain = 0, pool_short_pickup = 0;
@@ -290,6 +291,7 @@ private:
     int select_primary();
     void compute_order(int primary);
     void refresh_orientation_cache();
+    void prepare_temporal_tables(const std::vector<char>& pinned);
     void update_pibt_priorities();
 
     // routing
@@ -403,6 +405,7 @@ private:
     int global_samples_ = 0;
     int pickup_weight_ = 1;
     int turn_build_limit_ = 32;
+    int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
