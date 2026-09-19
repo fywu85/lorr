@@ -33,17 +33,19 @@ Never present a dirty build's base HEAD as the exact tested source.
 Matrices run concurrently on separate exclusive GRID hosts. Each instance has
 four reserved physical EPYC9354 cores and no CPU quota. Previously serialized
 matrices unnecessarily treated the 32GB per-process rule as aggregate experiment
-memory. Three independent matrices now run simultaneously, two cases each under
-24GiB per matrix. Actual allocations are archived; no running job was interrupted.
+memory. Independent matrices now run on separate hosts, with two, four or six concurrent
+cases. Reservations scale with case count:24/48/72GiB for2/4/6cases. Actual
+allocations are archived; no running job was interrupted.
 
 - **8898637 /8898638**, v32 strict wait turns: refresh0/512 crossed with strict0/1,
   seeds2 then0, exclusive research46. Four seed2 summaries pass: frozen70,171
   ->121,534 strict; refresh134,519 ->133,672 strict. Full analysis/seed0 pending.
-- **8898628 /8898629**, v31 gentler costs1/4/8, seeds0/2, research44. Still running.
-  Four initial summaries pass; no completed full analysis or promotion yet.
-- **8898606 /8898607**, v28 one/four-worker preparation, global4M and regional,
-  research52. Global summaries109,244 each, wall1101.855/970.680s. Full trajectory
-  analysis and regional cases pending; do not treat this single timing pair as robust.
+- **8898628 /8898629 COMPLETE**, v31 gentler costs1/4/8, seeds0/2.
+  Scale4=121812/119927;scale8=119337/117897. All valid, exact default controls.
+  They recover seed2 but lose healthy-seed throughput; remain below refresh512.
+- **8898606 /8898607 COMPLETE**, v28 one/four-worker preparation, research52.
+  All full hashes match v27 and within pairs. Global109244 wall1101.855/970.680s;
+  regional111997 wall1371.622/1264.205s. Gains11.90%/7.83% are one pair each.
 - **8898647 /8898648**, v30 refresh512 confirmation versus no-flow on ALL six
   seeds1/3/4/5/0/2, follows8898628/8898629. Four concurrent cases on16 physical
   cores under48GiB matrix allocation. Both policies use the same frozen v30 binary;
@@ -84,3 +86,24 @@ files. Fable retracted rank-weight, irreversible-flow-ratchet and age-onset clai
 our independent tests/results remain authoritative. Wait-turn issue independently
 reproduced. Cache-only ablation remains useful. Multi-blocker search should first
 measure rejection causes, rather than assuming saturation. See assessment.md.
+
+
+V33 cache-only refresh build8898651 and screen8898652 PASS; source patch hashes
+verified. Full8898653/8898654 crosses frozen/cache-only512/real512 with strict0/1,
+seeds0/2, six concurrent cases on24physicalcores/72GiB, exclusive research31.
+All12cases use4cores and the usual individual1s/32GB limits. See FLOW_CACHE_ONLY.md.
+
+Full8898655/8898657 separately compares refresh512,refresh256,refresh512+warm,
+seeds0/2, frozen v30, all six cases concurrent on24physicalcores/72GiB, research50.
+These are bounded existing-policy follow-ups, independent of cache-only diagnosis.
+Six-seed confirmation8898647 is running on exclusive research57 with four cases
+concurrent. All running matrices use frozen binaries, so workspace editing is safe.
+
+Persistent Fable turn03 completed in the same verified session,397.255seconds,
+$3.95705,12582bytes/four changed excerpts. It supports cache-only/strict crossed
+controls and an offline dwell audit before new congestion costs. Be precise:
+cache-only still uses the first learned field; a matching score would not prove
+that field unnecessary. Remaining scheduler/branching ideas are untested hypotheses.
+Current resource costs are recorded in WAREHOUSE_PROGRESS.md and
+results/flow-refresh-resource-summary-v30.json:237–257ms mean,765ms max,
+1.20–1.22average CPU cores of4reserved,11.84–11.89GB peak RSS per instance.

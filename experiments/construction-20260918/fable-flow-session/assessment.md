@@ -40,3 +40,22 @@ rotations while retaining16useful orientation improvements. Full production
 fixtures validate9600serial/four-worker actions with protection, warm reuse and
 refreshed flow; rotation-attribution totals match executed actions. All regression
 checks pass. The short production screen passes, including exact default equivalence. Seed2 full summaries show strict mode reaches121534 against70171 frozen control, but133672 against134519 with refresh512. Independent full trajectory analysis and seed0 remain pending; no additive gain is established.
+
+
+Turn03 completes in the same session: one turn,397.255seconds,$3.95705,
+12582bytes and four changed source excerpts. It supports a cache-only control,
+and points out that a missing turn table disables BOTH weighted candidate scoring
+and wait-seed orientation. The fixed-field control therefore tests the combined
+cache effect; strict-mode arms help separate tied rotations. Seed0 is the clean
+comparison because frozen-legacy seed2 already collapses. Genuine refresh logs
+must confirm actual reset schedules. Exact reproduction and fixed work remain
+required. A cache-only score near122k on seed2 is merely another recovery; it
+would not reproduce the134.5k refresh gain.
+
+We do not adopt the review's statement that matching refresh makes "the learned
+field a red herring": cache-only still uses the FIRST learned field, so equality
+would implicate later changes, not prove the initial field unnecessary. The proposed
+5%,25% and one-third thresholds are heuristic screening suggestions, not established
+statistical bounds. Planned follow-ups: interval256 and an offline congestion/dwell
+audit before adding new costs. Scheduler-metric and branching suggestions remain
+hypotheses; cached-only scoring may introduce cache-availability bias.

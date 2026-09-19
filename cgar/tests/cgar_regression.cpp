@@ -672,6 +672,10 @@ void temporal_region_adapter_regression() {
   const int refresh=std::getenv("CGAR_FLOW_REFRESH_INTERVAL")?std::atoi(std::getenv("CGAR_FLOW_REFRESH_INTERVAL")):0;
   const int warmup=std::getenv("CGAR_FLOW_WARMUP")?std::atoi(std::getenv("CGAR_FLOW_WARMUP")):128;
   const int expected=99<warmup?0:1+(refresh?(99-warmup)/refresh:0);
+  const bool cache_only=std::getenv("CGAR_FLOW_CACHE_ONLY_REFRESH")&&std::atoi(std::getenv("CGAR_FLOW_CACHE_ONLY_REFRESH"));
+  const int expected_cache_only=cache_only?std::max(0,expected-1):0;
+  if(serial.stats().flow_cache_only_resets!=expected_cache_only||parallel.stats().flow_cache_only_resets!=expected_cache_only)
+   throw std::runtime_error("production cache-only reset count differs from fixed observation schedule");
   if(serial.stats().flow_freezes!=(refresh?0:expected)||parallel.stats().flow_freezes!=(refresh?0:expected)||
      serial.stats().flow_publications!=expected||parallel.stats().flow_publications!=expected||
      !serial.stats().flow_penalized_edges||serial.stats().flow_penalized_edges!=parallel.stats().flow_penalized_edges||
@@ -1073,6 +1077,78 @@ void flow_cost_scale_regression() {
  std::cout<<"FLOW_COST_SCALE passed independent_weighted_distances="<<distances_checked<<" paid_progress_scores="<<scores_checked
           <<" exact_uniform_scores="<<uniform_scores<<" neutral_robot_decisions="<<identical
           <<" scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+}
+
+void flow_cache_only_regression() {
+ const std::vector<char> free(4,true);std::vector<int> observed{0,1,3,2,0};
+ for(int loop=0;loop<4;++loop)for(int u:{2,3,1,0})observed.push_back(u);
+ int publications=0,rebuilt_values=0,prefetch_discards=0;
+ for(int scale:{1,4,8}){
+  FlowGuidance control;control.initialize(free,2,2,4,4,1,0,4,scale,true);
+  std::vector<uint8_t> expected(16,scale);
+  for(auto [u,d]:std::vector<std::pair<int,int>>{{0,0},{1,1},{3,2},{2,3}}){
+   const int v=nb(u,d,2,2);expected[v*4+(d+2)%4]=scale+4;
+  }
+  Certificate cert;cert.rows=cert.cols=2;cert.free=free;cert.core=free;cert.pocket.assign(4,-1);
+  TurnDistanceOracle oracle;oracle.init(&cert,1<<20,scale,true,scale);
+  const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(5);
+  std::vector<int> reference;
+  for(int t=0;t<=20;++t){
+   const bool published=control.observe(t,{observed[t]});
+   if(published!=(t>0&&t%4==0)||control.observe(t,{observed[t]}))
+    throw std::runtime_error("cache-only publication advanced on a duplicate or wrong observation count");
+   if(!published)continue;
+   ++publications;
+   if(control.costs()!=expected||control.penalized_edges()!=4||!control.cache_only_refresh()||control.moves()!=uint64_t(t))
+    throw std::runtime_error("cache-only control incorporated later reversed evidence into its initial metric");
+   if(oracle.set_forward_costs(control.costs())!=(t==4))
+    throw std::runtime_error("cache-only control changed the metric after its first publication");
+   const auto* before=oracle.table(1,deadline);
+   if(t==4)for(int u=0;u<4;++u)for(int d=0;d<4;++d)reference.push_back(oracle.value(*before,u,d));
+   oracle.prefetch({0,3},2,deadline);
+   const auto old_discarded=oracle.prefetched_discarded,old_hits=oracle.prefetched_hits;
+   oracle.clear_tables();
+   if(oracle.has(1)||oracle.find(1)||oracle.prefetched_discarded!=old_discarded+2)
+    throw std::runtime_error("explicit cache clear retained an ordinary or speculative table");
+   prefetch_discards+=2;
+   for(int u=0;u<4;++u)for(int d=0;d<4;++d)
+    if(oracle.forward_cost(u,d)!=expected[u*4+d])throw std::runtime_error("cache clear changed a forward cost");
+   const auto* after=oracle.table(1,deadline);
+   for(int u=0;u<4;++u)for(int d=0;d<4;++d){
+    if(oracle.value(*after,u,d)!=reference[u*4+d])throw std::runtime_error("cache rebuild changed an exact oriented distance");
+    ++rebuilt_values;
+   }
+   if(oracle.value(*after,0,0)!=scale)throw std::runtime_error("cache-only control lost the hand-counted forward distance");
+   const auto* zero=oracle.table(0,deadline);
+   if(oracle.value(*zero,1,2)!=scale+4||oracle.prefetched_hits!=old_hits)
+    throw std::runtime_error("cache-only rebuild used a discarded speculative result or changed reverse distance");
+   // Clear admitted goals so the next pair of speculative results is nonempty.
+   oracle.clear_tables();
+  }
+ }
+ FlowGuidance skipped;skipped.initialize(free,2,2,2,4,1,0,2,1,true);
+ skipped.observe(0,{0});skipped.observe(2,{3});skipped.observe(3,{2});
+ if(!skipped.observe(4,{0}))throw std::runtime_error("cache-only first publication counted a gap");
+ const auto initial=skipped.costs();skipped.observe(6,{3});skipped.observe(7,{1});
+ if(skipped.publications()!=1||!skipped.observe(8,{0})||skipped.costs()!=initial||skipped.samples()!=4)
+  throw std::runtime_error("cache-only gap handling changed its schedule or retained field");
+ bool reversed=false;try{skipped.observe(7,{0});}catch(const std::logic_error&){reversed=true;}
+ if(!reversed||skipped.costs()!=initial)throw std::runtime_error("cache-only reversed time mutated its field");
+ bool invalid=false;try{FlowGuidance f;f.initialize(free,2,2,4,1,1,0,0,1,true);}catch(const std::invalid_argument&){invalid=true;}
+ if(!invalid)throw std::runtime_error("cache-only without a refresh interval was accepted");
+ for(const char* setting:{"-1","2","1"}){
+  setenv("CGAR_FLOW_CACHE_ONLY_REFRESH",setting,1);SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};
+  invalid=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}
+  if(!invalid)throw std::runtime_error("invalid or disabled-flow cache-only configuration was accepted");
+ }
+ setenv("CGAR_FLOW_CACHE_ONLY_REFRESH","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","8",1);
+ setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);setenv("CGAR_TURN_COMPACT","1",1);
+ temporal_region_adapter_regression();temporal_primary_regression();
+ for(const char*name:{"CGAR_FLOW_CACHE_ONLY_REFRESH","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
+     "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_TEMPORAL_WARM_START","CGAR_TURN_COMPACT"})unsetenv(name);
+ std::cout<<"FLOW_CACHE_ONLY passed fixed_publications="<<publications<<" rebuilt_values="<<rebuilt_values
+          <<" speculative_discards="<<prefetch_discards<<" initial_costs_preserved=1 reversed_later_traffic=1 skipped_observations=1 invalid_configuration=1 protected_parallel_warm_actions=4800\n";
 }
 
 void flow_refresh_regression() {
@@ -1566,4 +1642,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

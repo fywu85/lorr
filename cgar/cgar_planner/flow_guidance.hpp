@@ -13,12 +13,12 @@ class FlowGuidance {
 public:
     void initialize(const std::vector<char>& free, int rows, int cols,
                     int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0,
-                    int refresh_interval = 0, int cost_scale = 1) {
+                    int refresh_interval = 0, int cost_scale = 1, bool cache_only_refresh = false) {
         if (rows < 1 || cols < 1 || free.size() != size_t(rows) * cols ||
             warmup < 1 || warmup > 4096 || strength < 1 || strength > 8 ||
             minimum_samples < 1 || minimum_samples > 65536 ||
             minimum_margin_percent < 0 || minimum_margin_percent > 100 ||
-            refresh_interval < 0 || refresh_interval > 4096 ||
+            refresh_interval < 0 || refresh_interval > 4096 || (cache_only_refresh && !refresh_interval) ||
             (cost_scale != 1 && cost_scale != 2 && cost_scale != 4 && cost_scale != 8))
             throw std::invalid_argument("invalid learned flow configuration");
         free_ = free; rows_ = rows; cols_ = cols; warmup_ = warmup;
@@ -26,7 +26,7 @@ public:
         counts_.assign(free.size() * 4, 0); costs_.clear(); previous_.clear();
         last_step_ = -1; samples_ = 0; frozen_ = false;
         moves_ = 0; penalized_edges_ = 0; refresh_interval_ = refresh_interval; cost_scale_ = cost_scale;
-        publications_ = last_publication_samples_ = 0;
+        publications_ = last_publication_samples_ = 0; cache_only_refresh_ = cache_only_refresh;
     }
 
     // Returns true only at a prescribed publication point after all edge costs
@@ -52,23 +52,27 @@ public:
         // A skipped observation never invents intermediate movement.
         previous_ = locations; last_step_ = timestep;
         if (samples_ < warmup_ || (publications_ && samples_ - last_publication_samples_ < refresh_interval_)) return false;
-        std::vector<uint8_t> next_costs(free_.size() * 4, cost_scale_);
-        int next_penalized = 0;
-        for (int u = 0; u < int(free_.size()); ++u) if (free_[u])
-            for (int dir = 0; dir < 4; ++dir) {
-                const int v = neighbor(u, dir);
-                if (v < 0 || !free_[v]) continue;
-                const uint64_t forward = counts_[size_t(u) * 4 + dir];
-                const uint64_t reverse = counts_[size_t(v) * 4 + (dir + 2) % 4];
-                const uint64_t total = forward + reverse;
-                if (total < uint64_t(minimum_samples_) || reverse <= forward) continue;
-                if ((reverse - forward) * 100 <= uint64_t(minimum_margin_percent_) * total) continue;
-                // Penalize going against observed dominant flow. Equal or
-                // unobserved traffic stays neutral; every edge stays usable.
-                const int extra = int((strength_ * (reverse - forward) + total - 1) / total);
-                next_costs[size_t(u) * 4 + dir] += extra; ++next_penalized;
-            }
-        costs_ = std::move(next_costs); penalized_edges_ = next_penalized;
+        // Diagnostic control: retain the first complete metric but publish at
+        // the same fixed observation counts, allowing cache-only invalidation.
+        if (!cache_only_refresh_ || !publications_) {
+            std::vector<uint8_t> next_costs(free_.size() * 4, cost_scale_);
+            int next_penalized = 0;
+            for (int u = 0; u < int(free_.size()); ++u) if (free_[u])
+                for (int dir = 0; dir < 4; ++dir) {
+                    const int v = neighbor(u, dir);
+                    if (v < 0 || !free_[v]) continue;
+                    const uint64_t forward = counts_[size_t(u) * 4 + dir];
+                    const uint64_t reverse = counts_[size_t(v) * 4 + (dir + 2) % 4];
+                    const uint64_t total = forward + reverse;
+                    if (total < uint64_t(minimum_samples_) || reverse <= forward) continue;
+                    if ((reverse - forward) * 100 <= uint64_t(minimum_margin_percent_) * total) continue;
+                    // Penalize going against observed dominant flow. Equal or
+                    // unobserved traffic stays neutral; every edge stays usable.
+                    const int extra = int((strength_ * (reverse - forward) + total - 1) / total);
+                    next_costs[size_t(u) * 4 + dir] += extra; ++next_penalized;
+                }
+            costs_ = std::move(next_costs); penalized_edges_ = next_penalized;
+        }
         last_publication_samples_ = samples_; ++publications_;
         frozen_ = refresh_interval_ == 0;
         if (frozen_) { std::vector<uint64_t>().swap(counts_); std::vector<int>().swap(previous_); }
@@ -84,6 +88,7 @@ public:
     int refresh_interval() const { return refresh_interval_; }
     int publications() const { return publications_; }
     int cost_scale() const { return cost_scale_; }
+    bool cache_only_refresh() const { return cache_only_refresh_; }
 
 private:
     int neighbor(int u, int dir) const {
@@ -95,7 +100,7 @@ private:
     int rows_ = 0, cols_ = 0, warmup_ = 0, strength_ = 0, minimum_samples_ = 0;
     int last_step_ = -1, samples_ = 0, penalized_edges_ = 0, minimum_margin_percent_ = 0;
     int refresh_interval_ = 0, publications_ = 0, last_publication_samples_ = 0, cost_scale_ = 1;
-    bool frozen_ = false;
+    bool frozen_ = false, cache_only_refresh_ = false;
     uint64_t moves_ = 0;
     std::vector<char> free_;
     std::vector<uint64_t> counts_;

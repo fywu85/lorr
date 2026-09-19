@@ -422,6 +422,10 @@ void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int tur
     prefetched_.clear(); prefetched_builds = prefetched_hits = prefetched_discarded = 0;
 }
 
+void TurnDistanceOracle::clear_tables() {
+    tables_.clear(); lru_.clear(); discard_prefetch();
+}
+
 bool TurnDistanceOracle::set_forward_costs(std::vector<uint8_t> costs) {
     if (!cert_ || costs.size() != cert_->free.size() * 4)
         throw std::invalid_argument("invalid forward guidance dimensions");
@@ -433,7 +437,7 @@ bool TurnDistanceOracle::set_forward_costs(std::vector<uint8_t> costs) {
     if (maximum == forward_base_) costs.clear();
     if (costs == forward_costs_) return false;
     // No old-metric table or speculative result may survive a metric change.
-    tables_.clear(); lru_.clear(); discard_prefetch();
+    clear_tables();
     forward_costs_ = std::move(costs); max_edge_cost_ = std::max(turn_cost_, maximum);
     buckets_.assign(max_edge_cost_ + 1, {});
     return true;
@@ -669,6 +673,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     flow_strength_ = env_int("CGAR_FLOW_STRENGTH", 0);
     if (flow_strength_ < 0 || flow_strength_ > 8 || (flow_strength_ && !orientation_guidance_))
         throw std::invalid_argument("learned flow requires orientation guidance and strength 1-8");
+    const int cache_only_refresh = env_int("CGAR_FLOW_CACHE_ONLY_REFRESH", 0);
+    if (cache_only_refresh < 0 || cache_only_refresh > 1 ||
+        (cache_only_refresh && (!flow_strength_ || !env_int("CGAR_FLOW_REFRESH_INTERVAL", 0))))
+        throw std::invalid_argument("cache-only flow refresh requires enabled flow, a positive interval and a boolean setting");
     turn_cost_ = env_int("CGAR_TURN_COST", 1);
     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
@@ -766,7 +774,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         turn_oracle_.init(&cert_, mb << 20, turn_cost_ * flow_cost_scale_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
         if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
-            env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0), env_int("CGAR_FLOW_REFRESH_INTERVAL", 0), flow_cost_scale_);
+            env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0), env_int("CGAR_FLOW_REFRESH_INTERVAL", 0), flow_cost_scale_, cache_only_refresh != 0);
     }
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
@@ -1386,12 +1394,15 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     sync_agents();
     if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
         const bool changed = turn_oracle_.set_forward_costs(flow_guidance_.costs());
-        ++stats_.flow_publications; stats_.flow_cache_resets += changed;
+        const bool cache_only = flow_guidance_.cache_only_refresh() && flow_guidance_.publications() > 1;
+        if (cache_only && !changed) turn_oracle_.clear_tables();
+        const bool reset = changed || cache_only;
+        ++stats_.flow_publications; stats_.flow_cache_resets += reset; stats_.flow_cache_only_resets += cache_only;
         stats_.flow_freezes += flow_guidance_.frozen(); stats_.flow_penalized_edges = flow_guidance_.penalized_edges();
-        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d margin_percent=%d penalized_edges=%d cache_reset=%d frozen=%d publications=%d refresh_interval=%d cost_scale=%d\n",
+        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d margin_percent=%d penalized_edges=%d cache_reset=%d frozen=%d publications=%d refresh_interval=%d cost_scale=%d metric_changed=%d cache_only_refresh=%d\n",
             env_->curr_timestep, flow_guidance_.samples(), static_cast<unsigned long long>(flow_guidance_.moves()),
-            flow_strength_, flow_guidance_.minimum_margin_percent(), flow_guidance_.penalized_edges(), changed,
-            int(flow_guidance_.frozen()), flow_guidance_.publications(), flow_guidance_.refresh_interval(), flow_cost_scale_);
+            flow_strength_, flow_guidance_.minimum_margin_percent(), flow_guidance_.penalized_edges(), reset,
+            int(flow_guidance_.frozen()), flow_guidance_.publications(), flow_guidance_.refresh_interval(), flow_cost_scale_, changed, int(flow_guidance_.cache_only_refresh()));
         check_deadline(deadline_, "flow_guidance_published");
     }
     advance_txn();

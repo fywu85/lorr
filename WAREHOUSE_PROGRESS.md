@@ -48,8 +48,20 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Refresh every 512 | Seeds 0/2: **134,511 / 134,519**; mean **134,515**; final windows 28,215 / 28,214; max entry <=0.765267 s; RSS <11.89 GB | Both improve over frozen and no-flow controls. Six-seed paired confirmation **8898647/8898648** queued; no six-seed claim yet. |
 | Refresh every 1,024 | Seeds 0/2: 133,652 / 131,316; mean 132,484 | Both recover steady final-window throughput, but interval 512 wins both full totals. |
 | Frozen flow with warm reuse | Seeds 0/2: 123,373 / 123,251; mean 123,312 | Recovers seed 2 without updating the field; below refresh512 on both tested seeds. |
+| Gentler frozen-flow penalties | Scale4 seeds0/2: 121,812 /119,927; scale8: 119,337 /117,897 | Both recover seed2, but lower healthy-seed throughput and remain below refresh512. |
 
 [Matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
+
+## Resource cost of the current leading configuration
+
+Refresh512, seeds0/2, all5,000steps: mean complete scheduling+planning latency
+**237.3 /256.8ms**, maximum **765.3 /762.0ms**; average CPU **1.216 /1.197cores**
+with four physical cores reserved per instance (about30% average utilization).
+Peak process RSS **11.838 /11.888GB**; elapsed full run **20.99 /22.65minutes**.
+CPU is measured user+system time divided by process wall time, not an instantaneous
+sample. Hosts were exclusive and unthrottled. Preparation uses multiple workers;
+much of the remaining work is serial. Allocation does not imply four busy cores.
+[Machine-readable resource evidence](experiments/construction-20260918/results/flow-refresh-resource-summary-v30.json).
 
 ## Updating this log
 

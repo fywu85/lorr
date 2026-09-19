@@ -39,10 +39,29 @@ phase at step 200 falls from 0.055178 to 0.021928 seconds; do not treat one phas
 sample as a run-wide average. Regional search already uses four workers in both
 regional cases; its preparation is the changed thread count.
 
-Full **8898606**, analysis **8898607**, queues both pairs after v27, with two
+Full **8898606**, analysis **8898607**, completes both pairs, with two
 independent four-core instances and 24 GiB total reservation. All cases use
 5,000 steps and the same one-second/32,000,000,000-byte process limits.
 
 [Source provenance](build-provenance/v28/),
 [screen evidence](results/parallel-prepare-screen-v28/),
 [exact equivalence](results/parallel-prepare-screen-equivalence.json).
+
+
+## Full results
+
+Both policies preserve every trajectory, schedule, event and task field across
+one/four preparation workers and against frozen v27. All four runs pass 5,000
+complete decisions and the memory limit on exclusive research52.
+
+| Policy | Tasks (both) | One-worker wall (s) | Four-worker wall (s) | Reduction | Max entry one/four (s) |
+|---|---:|---:|---:|---:|---:|
+| Global 4M | 109,244 | 1,101.855 | 970.680 | 11.90% | 0.803148 / 0.770470 |
+| Global25k + two regional rounds | 111,997 | 1,371.622 | 1,264.205 | 7.83% | 0.674428 / 0.645945 |
+
+RSS stays below 11.917 GB. These are single full timing pairs on disjoint physical
+cores of the same reserved host. They support an implementation efficiency gain;
+repeated timing distributions have not been measured. Throughput is unchanged.
+
+[Full results](results/parallel-prepare-full-v28/),
+[independent equivalence and timing pairs](results/parallel-prepare-full-v28/equivalence.json).

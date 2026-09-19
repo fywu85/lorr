@@ -148,6 +148,7 @@ public:
     void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false, int forward_base = 1);
     void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
     void discard_prefetch();
+    void clear_tables();  // discard cached results while preserving the metric
     bool set_forward_costs(std::vector<uint8_t> costs);
     int forward_cost(int cell, int orientation) const {
         return forward_costs_.empty() ? forward_base_ : forward_costs_.at(size_t(cell) * 4 + orientation);
@@ -227,7 +228,7 @@ struct Stats {
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
-    long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0;
+    long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0, flow_cache_only_resets = 0;
     long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0;
     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
     long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;

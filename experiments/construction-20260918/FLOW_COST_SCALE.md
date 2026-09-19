@@ -53,3 +53,21 @@ No full scale result exists at submission.
 [Build evidence](build-provenance/v31/validation.json),
 [screen evidence](results/flow-cost-scale-screen-v31/),
 [full configuration](flow-cost-scale-full-variants.json).
+
+
+## Complete full matrix
+
+Full8898628/analysis8898629 passes all six runs and exactly reproduces both
+scale1 controls. All maximum entries are below0.787seconds, RSS below11.922GB.
+
+| Scale (relative penalty) | Seed0 | Seed2 | Final1,000 seed0/2 |
+|---|---:|---:|---:|
+| 1 (+100%) | 122,896 | 70,171 | 25,254 /3,659 |
+| 4 (+25%) | 121,812 | 119,927 | 25,015 /24,654 |
+| 8 (+12.5%) | 119,337 | 117,897 | 24,502 /24,205 |
+
+Gentler penalties recover seed2 but lower healthy seed0 throughput. Both tested
+means remain below refresh512. No gentler frozen-field profile is promoted.
+This further shows that the original seed2 trajectory can be avoided by several
+local-policy changes; it does not identify a unique cause of collapse.
+[Full evidence](results/flow-cost-scale-full-v31/).

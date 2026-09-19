@@ -1,0 +1,30 @@
+{
+  "scope": "Full refresh512 runs, seeds0/2. Entry includes task scheduling, goal update and planner. CPU is complete-process user+system time divided by process wall time, averaged over the run; no claim of instantaneous utilization. RSS is process peak, not allocation. Exclusive GRID EPYC9354, no CPU quota.",
+  "source": "flow-refresh-full-v30",
+  "rows": [
+    {
+      "case": "flow1_margin50_refresh512_work4m_prep4-s0-r0",
+      "tasks": 134511,
+      "steps": 5000,
+      "mean_entry_ms": 237.26435808319977,
+      "max_entry_ms": 765.266707,
+      "average_cpu_cores": 1.2155895317069172,
+      "reserved_physical_cores": 4,
+      "mean_reserved_core_utilization_percent": 30.38973829267293,
+      "peak_rss_bytes": 11838496768,
+      "wall_seconds": 1259.487
+    },
+    {
+      "case": "flow1_margin50_refresh512_work4m_prep4-s2-r0",
+      "tasks": 134519,
+      "steps": 5000,
+      "mean_entry_ms": 256.8411053649997,
+      "max_entry_ms": 762.019024,
+      "average_cpu_cores": 1.196514328822135,
+      "reserved_physical_cores": 4,
+      "mean_reserved_core_utilization_percent": 29.912858220553375,
+      "peak_rss_bytes": 11888349184,
+      "wall_seconds": 1358.736
+    }
+  ]
+}
