@@ -701,9 +701,17 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     guide_options_.heuristic_weight = env_int("CGAR_GUIDE_HEURISTIC_WEIGHT", 1);
     guide_options_.reconnect_steps = env_int("CGAR_GUIDE_RECONNECT_STEPS", 0);
     guide_options_.refine_batch = env_int("CGAR_GUIDE_REFINE_BATCH", 0);
+    temporal_transaction_options_.work = env_int("CGAR_TEMPORAL_BRANCH_WORK", 0);
+    temporal_transaction_options_.max_owners = env_int("CGAR_TEMPORAL_BRANCH_OWNERS", 2);
+    if (temporal_transaction_options_.work < 0 || temporal_transaction_options_.work > 2000000 ||
+        temporal_transaction_options_.max_owners < 1 || temporal_transaction_options_.max_owners > 2 ||
+        (temporal_transaction_options_.work && !temporal_))
+        throw std::invalid_argument("temporal branching requires temporal planning, work in [0,2000000] and one or two owners");
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
         throw std::invalid_argument("temporal distance scale must be in [1,4096]");
+    temporal_transaction_options_.distance_scale = temporal_distance_scale_;
+    temporal_transaction_options_.unit_cost = flow_cost_scale_;
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));

@@ -26,6 +26,7 @@
 #include "temporal_geometry.hpp"
 #include "temporal_prepare.hpp"
 #include "temporal_regions.hpp"
+#include "temporal_transactions.hpp"
 #include "temporal_warm_start.hpp"
 #include "flow_guidance.hpp"
 #include "guide_routes.hpp"
@@ -230,6 +231,8 @@ struct Stats {
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
     long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0, flow_cache_only_resets = 0;
     long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0, temporal_conflict_audits = 0;
+    long long temporal_transaction_calls = 0, temporal_transaction_roots = 0, temporal_transaction_candidates = 0;
+    long long temporal_transaction_accepted = 0, temporal_transaction_rollbacks = 0, temporal_transaction_exhausted = 0;
     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
     long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
@@ -341,6 +344,7 @@ private:
     int temporal_workers_ = 1, temporal_threads_ = 1, temporal_prepare_threads_ = 1;
     bool temporal_regions_ = false;
     TemporalRegionOptions temporal_region_options_;
+    TemporalTransactionOptions temporal_transaction_options_;
     Stats stats_;
     std::mt19937 rng_{0};
 

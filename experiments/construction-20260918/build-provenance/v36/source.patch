@@ -1,0 +1,354 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -701,9 +701,17 @@
+     guide_options_.heuristic_weight = env_int("CGAR_GUIDE_HEURISTIC_WEIGHT", 1);
+     guide_options_.reconnect_steps = env_int("CGAR_GUIDE_RECONNECT_STEPS", 0);
+     guide_options_.refine_batch = env_int("CGAR_GUIDE_REFINE_BATCH", 0);
++    temporal_transaction_options_.work = env_int("CGAR_TEMPORAL_BRANCH_WORK", 0);
++    temporal_transaction_options_.max_owners = env_int("CGAR_TEMPORAL_BRANCH_OWNERS", 2);
++    if (temporal_transaction_options_.work < 0 || temporal_transaction_options_.work > 2000000 ||
++        temporal_transaction_options_.max_owners < 1 || temporal_transaction_options_.max_owners > 2 ||
++        (temporal_transaction_options_.work && !temporal_))
++        throw std::invalid_argument("temporal branching requires temporal planning, work in [0,2000000] and one or two owners");
+     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
+     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
+         throw std::invalid_argument("temporal distance scale must be in [1,4096]");
++    temporal_transaction_options_.distance_scale = temporal_distance_scale_;
++    temporal_transaction_options_.unit_cost = flow_cost_scale_;
+     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
+     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
+     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -26,6 +26,7 @@
+ #include "temporal_geometry.hpp"
+ #include "temporal_prepare.hpp"
+ #include "temporal_regions.hpp"
++#include "temporal_transactions.hpp"
+ #include "temporal_warm_start.hpp"
+ #include "flow_guidance.hpp"
+ #include "guide_routes.hpp"
+@@ -230,6 +231,8 @@
+     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
+     long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0, flow_cache_only_resets = 0;
+     long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0, temporal_conflict_audits = 0;
++    long long temporal_transaction_calls = 0, temporal_transaction_roots = 0, temporal_transaction_candidates = 0;
++    long long temporal_transaction_accepted = 0, temporal_transaction_rollbacks = 0, temporal_transaction_exhausted = 0;
+     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
+     long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;
+     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
+@@ -341,6 +344,7 @@
+     int temporal_workers_ = 1, temporal_threads_ = 1, temporal_prepare_threads_ = 1;
+     bool temporal_regions_ = false;
+     TemporalRegionOptions temporal_region_options_;
++    TemporalTransactionOptions temporal_transaction_options_;
+     Stats stats_;
+     std::mt19937 rng_{0};
+ 
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -236,7 +236,26 @@
+         temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
+         [&] { check_deadline(deadline_, "temporal_region_repair"); });
+     const auto regions_finished = Clock::now();
+-    auto& search = regional ? *regional : *results[best];
++    TemporalTransactionStats transaction_stats;
++    auto transaction = repair_temporal_transactions(cells, choices, pinned, power, temporal_budget_,
++        regional ? *regional : *results[best], temporal_transaction_options_, order, env_->curr_timestep,
++        transaction_stats, [&] { check_deadline(deadline_, "temporal_branch_transaction"); });
++    if (temporal_transaction_options_.work) {
++        ++stats_.temporal_transaction_calls;
++        stats_.temporal_transaction_roots += transaction_stats.roots;
++        stats_.temporal_transaction_candidates += transaction_stats.candidates;
++        stats_.temporal_transaction_accepted += transaction_stats.accepted;
++        stats_.temporal_transaction_rollbacks += transaction_stats.rollbacks;
++        stats_.temporal_transaction_exhausted += transaction_stats.work_exhausted;
++        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
++            std::printf("[cgar-temporal-transaction] step=%d owners=%d work=%d roots=%lld candidates=%lld accepted=%lld terminals=%lld rollbacks=%lld exhausted=%lld multi_owner=%lld max_agents=%d score_before=%.3f score_after=%.3f seconds=%.6f\n",
++                env_->curr_timestep + 1, temporal_transaction_options_.max_owners, temporal_transaction_options_.work,
++                transaction_stats.roots, transaction_stats.candidates, transaction_stats.accepted, transaction_stats.terminals,
++                transaction_stats.rollbacks, transaction_stats.work_exhausted, transaction_stats.multi_owner_choices,
++                transaction_stats.max_agents, transaction_stats.score_before, transaction_stats.score_after,
++                std::chrono::duration<double>(Clock::now() - regions_finished).count());
++    }
++    auto& search = transaction ? *transaction : (regional ? *regional : *results[best]);
+     // Validate the complete temporal result before exposing its first action.
+     std::vector<int> owners(cells, -1), previous(n_);
+     for (int t = 0; t < 5; ++t) {
+--- /dev/null
++++ b/cgar/cgar_planner/temporal_transactions.hpp
+@@ -0,0 +1,195 @@
++#pragma once
++// Bounded multi-owner repair of a complete temporal plan. Input reservations and
++// selections are immutable; a result is published only after every move commits.
++#include "temporal_pibt.hpp"
++#include <memory>
++
++namespace cgar {
++struct TemporalTransactionOptions {
++    int work = 0, roots = 256, per_root = 2048, max_agents = 8, max_owners = 2;
++    int distance_scale = 50, unit_cost = 1;
++};
++struct TemporalTransactionStats {
++    long long roots = 0, candidates = 0, accepted = 0, terminals = 0;
++    long long rollbacks = 0, work_exhausted = 0, multi_owner_choices = 0;
++    int max_agents = 0;
++    double score_before = 0, score_after = 0;
++};
++
++class TemporalTransactionSearch {
++    struct Change { int robot, selected; bool active, locked; };
++public:
++    TemporalTransactionSearch(int cells, const std::vector<std::vector<TemporalChoice>>& choices,
++            const std::vector<char>& fixed, const std::vector<double>& power,
++            const std::vector<int>& selected, const TemporalTransactionOptions& options)
++        : choices_(choices), fixed_(fixed), power_(power), selected_(selected), options_(options),
++          active_(selected.size(), false), locked_(selected.size(), false),
++          cells_(cells), edges_(2 * cells) {
++        if (options.work < 0 || options.work > 2000000 || options.roots < 1 || options.roots > 4096 ||
++            options.per_root < 1 || options.per_root > 1000000 || options.max_agents < 1 || options.max_agents > 32 ||
++            options.max_owners < 1 || options.max_owners > 2 || options.distance_scale < 1 || options.unit_cost < 1)
++            throw std::invalid_argument("invalid temporal transaction limits");
++        if (choices.size() != selected.size() || fixed.size() != selected.size() || power.size() != selected.size())
++            throw std::invalid_argument("invalid temporal transaction input size");
++        for (auto& row : cells_) row.fill(-1);
++        for (auto& row : edges_) row.fill(-1);
++        for (int r = 0; r < int(selected.size()); ++r) {
++            if (selected[r] < 0 || selected[r] >= int(choices[r].size()) || !choices[r][selected[r]].path->valid)
++                throw std::invalid_argument("invalid temporal transaction selection");
++            apply(r, selected[r], true, false);
++        }
++        stats.score_before = stats.score_after = score_;
++    }
++
++    template<class Check>
++    void run(const std::vector<int>& order, int timestep, Check check) {
++        check();
++        if (!options_.work || order.empty()) return;
++        const size_t start = (uint64_t(std::max(0, timestep)) * options_.roots) % order.size();
++        for (size_t offset = 0; offset < order.size() && stats.roots < options_.roots && stats.candidates < options_.work; ++offset) {
++            const int r = order[(start + offset) % order.size()];
++            if (r < 0 || r >= int(selected_.size())) throw std::invalid_argument("invalid temporal transaction root");
++            const auto& old = choices_[r][selected_[r]];
++            const int from = choices_[r][0].path->cells[0];
++            if (fixed_[r] || power_[r] <= 0 || old.path->cells[0] != from) continue;
++            check(); ++stats.roots; root_work_ = 0; before_ = score_;
++            const int old_selected = selected_[r];
++            const int64_t old_physical = old.cost + int64_t(old.operation) * options_.unit_cost;
++            change(r, old_selected, false, false);
++            bool accepted = false;
++            for (int k = 1; k < int(choices_[r].size()) && !exhausted(); ++k) {
++                consume(check);
++                const auto& candidate = choices_[r][k];
++                if (!candidate.path->valid || candidate.path->cells[0] == from || candidate.cost >= old.cost) continue;
++                const int64_t physical = candidate.cost + int64_t(candidate.operation) * options_.unit_cost;
++                if (old_physical - physical < int64_t(options_.distance_scale) * options_.unit_cost) continue;
++                if (place(r, k, {}, 1, check)) { accepted = true; break; }
++            }
++            if (accepted) {
++                if (active_count_ != int(selected_.size()) || score_ <= before_ + 1e-6)
++                    throw std::logic_error("incomplete or non-improving temporal transaction");
++                // Locks apply only to one transaction; preserve the committed
++                // plan while allowing later roots to use its movable robots.
++                for (const auto& entry : trail_) locked_[entry.robot] = false;
++                trail_.clear(); ++stats.accepted;
++            } else {
++                undo(0); score_ = before_; ++stats.rollbacks;
++                stats.work_exhausted += exhausted();
++            }
++        }
++        stats.score_after = score_;
++        check();
++    }
++    const std::vector<int>& selections() const { return selected_; }
++    double score() const { return score_; }
++    TemporalTransactionStats stats;
++
++private:
++    bool exhausted() const { return stats.candidates >= options_.work || root_work_ >= options_.per_root; }
++    template<class Check> void consume(Check& check) {
++        if ((stats.candidates & 63) == 0) check();
++        ++stats.candidates; ++root_work_;
++    }
++    void reserve(int r, bool insert) {
++        const auto& choice = choices_[r][selected_[r]];
++        const auto& path = *choice.path;
++        for (int t = 0; t < kTemporalHorizon; ++t) {
++            auto update = [&](int& owner) {
++                if (owner != (insert ? -1 : r)) throw std::logic_error("temporal transaction reservation ownership violated");
++                owner = insert ? r : -1;
++            };
++            update(cells_.at(path.cells[t])[t]);
++            if (path.edges[t] >= 0) update(edges_.at(path.edges[t])[t]);
++        }
++        score_ += (insert ? 1 : -1) * double(choices_[r][0].cost - choice.cost) * power_[r];
++    }
++    void apply(int r, int selected, bool active, bool locked) {
++        if (active_[r]) { reserve(r, false); --active_count_; }
++        selected_[r] = selected; active_[r] = active; locked_[r] = locked;
++        if (active) { reserve(r, true); ++active_count_; }
++    }
++    void change(int r, int selected, bool active, bool locked) {
++        trail_.push_back({r, selected_[r], bool(active_[r]), bool(locked_[r])});
++        apply(r, selected, active, locked);
++    }
++    void undo(size_t checkpoint) {
++        while (trail_.size() > checkpoint) {
++            const auto entry = trail_.back(); trail_.pop_back();
++            apply(entry.robot, entry.selected, entry.active, entry.locked);
++        }
++    }
++    template<class Check>
++    bool place(int r, int k, std::vector<int> pending, int moved, Check& check) {
++        std::array<int, 2 * kTemporalHorizon> owners{}; int count = 0;
++        auto take = [&](int owner) {
++            if (owner < 0) return;
++            for (int i = 0; i < count; ++i) if (owners[i] == owner) return;
++            owners[count++] = owner;
++        };
++        const auto& path = *choices_[r][k].path;
++        for (int t = 0; t < kTemporalHorizon; ++t) {
++            take(cells_.at(path.cells[t])[t]);
++            if (path.edges[t] >= 0) take(edges_.at(path.edges[t])[t]);
++        }
++        if (count > options_.max_owners || moved + count > options_.max_agents) return false;
++        for (int i = 0; i < count; ++i) if (fixed_[owners[i]] || locked_[owners[i]]) return false;
++        const size_t checkpoint = trail_.size(); const double old_score = score_;
++        for (int i = 0; i < count; ++i) {
++            const int other = owners[i];
++            change(other, selected_[other], false, false); pending.push_back(other);
++        }
++        stats.multi_owner_choices += count == 2;
++        stats.max_agents = std::max(stats.max_agents, moved + count);
++        change(r, k, true, true);
++        bool accepted = false;
++        if (pending.empty()) {
++            ++stats.terminals;
++            if (active_count_ != int(selected_.size())) throw std::logic_error("temporal transaction lost a displaced robot");
++            accepted = score_ > before_ + 1e-6;
++        } else if (!exhausted()) accepted = resolve(std::move(pending), moved + count, check);
++        if (!accepted) { undo(checkpoint); score_ = old_score; }
++        return accepted;
++    }
++    template<class Check>
++    bool resolve(std::vector<int> pending, int moved, Check& check) {
++        const int r = pending.back(); pending.pop_back();
++        if (active_[r] || locked_[r]) throw std::logic_error("temporal transaction duplicate pending owner");
++        // Native candidates are already sorted. The wait seed remains available
++        // last; it can differ from the displaced robot's previously selected path.
++        for (int offset = 1; offset <= int(choices_[r].size()) && !exhausted(); ++offset) {
++            const int k = offset == int(choices_[r].size()) ? 0 : offset;
++            consume(check);
++            if (choices_[r][k].path->valid && place(r, k, pending, moved, check)) return true;
++        }
++        return false;
++    }
++    const std::vector<std::vector<TemporalChoice>>& choices_;
++    const std::vector<char>& fixed_;
++    const std::vector<double>& power_;
++    std::vector<int> selected_;
++    TemporalTransactionOptions options_;
++    std::vector<char> active_, locked_;
++    std::vector<std::array<int, kTemporalHorizon>> cells_, edges_;
++    std::vector<Change> trail_;
++    int active_count_ = 0, root_work_ = 0;
++    double score_ = 0, before_ = 0;
++};
++
++template<class Check>
++std::unique_ptr<TemporalPibt> repair_temporal_transactions(int cells,
++        const std::vector<std::vector<TemporalChoice>>& choices, const std::vector<char>& fixed,
++        const std::vector<double>& power, int displacement_limit, const TemporalPibt& baseline,
++        const TemporalTransactionOptions& options, const std::vector<int>& order, int timestep,
++        TemporalTransactionStats& stats, Check check) {
++    if (!options.work) return nullptr;
++    check();
++    TemporalTransactionSearch trial(cells, choices, fixed, power, baseline.selections(), options);
++    trial.run(order, timestep, check); stats = trial.stats;
++    if (!stats.accepted) return nullptr;
++    auto result = std::make_unique<TemporalPibt>(cells, choices, fixed, power, displacement_limit, 0, &trial.selections());
++    if (result->score() <= baseline.score() + 1e-6) throw std::logic_error("transaction result failed complete-score improvement");
++    for (int r = 0; r < int(fixed.size()); ++r) if (fixed[r] && result->selected(r) != baseline.selected(r))
++        throw std::logic_error("transaction changed a protected robot");
++    check(); return result;
++}
++}  // namespace cgar
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -1083,6 +1083,70 @@
+           <<" scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+ }
+ 
++void temporal_transaction_regression() {
++ TemporalGeometry geometry;geometry.initialize(std::vector<char>(12,true),3,4,[]{});
++ auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
++  for(int k=0;k<int(ops.size());++k)if(ops[k]==actions)return k;
++  throw std::runtime_error("missing transaction fixture operation");};
++ const int root=operation({0,0,3,3,3}),down=operation({0,3,3,3,3}),trap=operation({0,1,0,3,3});
++ std::vector<std::vector<TemporalChoice>> choices(3);
++ choices[0]={{&geometry.paths(0,0)[0],1000,0},{&geometry.paths(0,0)[root],0,root}};
++ choices[1]={{&geometry.paths(1,1)[0],0,0},{&geometry.paths(1,1)[down],100,down}};
++ choices[2]={{&geometry.paths(2,1)[0],0,0},{&geometry.paths(2,1)[trap],0,trap},{&geometry.paths(2,1)[down],100,down}};
++ std::vector<char> fixed(3,false);std::vector<double> power(3,1);std::vector<int> order{0};
++ TemporalPibt baseline(12,choices,fixed,power,8192,123);const auto original=baseline.selections();
++ TemporalTransactionOptions options;options.work=1000;options.roots=1;options.per_root=1000;
++ TemporalTransactionStats stats;options.max_owners=1;
++ auto single=repair_temporal_transactions(12,choices,fixed,power,8192,baseline,options,order,0,stats,[]{});
++ if(single||stats.accepted||baseline.selections()!=original)throw std::runtime_error("one-owner repair displaced two owners or changed its input");
++ options.max_owners=2;
++ auto result=repair_temporal_transactions(12,choices,fixed,power,8192,baseline,options,order,0,stats,[]{});
++ if(!result||result->selections()!=std::vector<int>({1,1,2})||result->score()!=800||stats.accepted!=1||baseline.selections()!=original)
++  throw std::runtime_error("atomic two-owner repair failed sibling backtracking or complete score accounting");
++ // Independently replay the three paths, checking positions and reverse edges.
++ for(int t=0;t<5;++t)for(int a=0;a<3;++a)for(int b=a+1;b<3;++b){
++  const auto& pa=*result->choice(a).path;const auto& pb=*result->choice(b).path;
++  const int froma=t?pa.cells[t-1]:a,fromb=t?pb.cells[t-1]:b;
++  if(pa.cells[t]==pb.cells[t]||(pa.cells[t]==fromb&&pb.cells[t]==froma))
++   throw std::runtime_error("transaction fixture has an independent vertex or swap conflict");
++ }
++ // Rejected aggregate scores must restore every moved sibling and reservation.
++ choices[1][1].cost=2000;TemporalPibt bad_score(12,choices,fixed,power,8192,123);
++ auto rejected=repair_temporal_transactions(12,choices,fixed,power,8192,bad_score,options,order,0,stats,[]{});
++ if(rejected||stats.accepted||!stats.terminals||bad_score.selections()!=original)
++  throw std::runtime_error("transaction committed a root-only gain with aggregate score loss");
++ choices[1][1].cost=100;
++ for(int work:{1,2,3}){
++  options.work=work;TemporalPibt budgeted(12,choices,fixed,power,8192,123);
++  auto limited=repair_temporal_transactions(12,choices,fixed,power,8192,budgeted,options,order,0,stats,[]{});
++  if(limited||stats.candidates>work||!stats.work_exhausted||budgeted.selections()!=original)
++   throw std::runtime_error("transaction work exhaustion leaked a partial sibling plan");
++ }
++ options.work=1000;
++ fixed[1]=true;TemporalPibt protected_owner(12,choices,fixed,power,8192,123);
++ if(repair_temporal_transactions(12,choices,fixed,power,8192,protected_owner,options,order,0,stats,[]{}))
++  throw std::runtime_error("transaction displaced a protected owner");
++ fixed[1]=false;choices[1].resize(1);TemporalPibt missing_exit(12,choices,fixed,power,8192,123);
++ if(repair_temporal_transactions(12,choices,fixed,power,8192,missing_exit,options,order,0,stats,[]{}))
++  throw std::runtime_error("transaction abandoned an owner without an escape");
++ choices[1].push_back({&geometry.paths(1,1)[down],100,down});
++ int checks=0;bool threw=false;
++ try {repair_temporal_transactions(12,choices,fixed,power,8192,baseline,options,order,0,stats,[&]{
++  if(++checks==5)throw std::runtime_error("injected transaction deadline");});}
++ catch(const std::runtime_error& e){threw=std::string(e.what())=="injected transaction deadline";}
++ if(!threw||baseline.selections()!=original||baseline.score()!=0)
++  throw std::runtime_error("transaction deadline did not propagate without mutating the complete input");
++ for(int value:{-1,2000001}){
++  setenv("CGAR_TEMPORAL_BRANCH_WORK",std::to_string(value).c_str(),1);SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool invalid=false;
++  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){invalid=true;}
++  if(!invalid)throw std::runtime_error("invalid branching work accepted");
++ }
++ setenv("CGAR_TEMPORAL_BRANCH_WORK","10000",1);
++ for(const char* owners:{"1","2"}){setenv("CGAR_TEMPORAL_BRANCH_OWNERS",owners,1);temporal_region_adapter_regression();temporal_primary_regression();}
++ unsetenv("CGAR_TEMPORAL_BRANCH_WORK");unsetenv("CGAR_TEMPORAL_BRANCH_OWNERS");
++ std::cout<<"TEMPORAL_TRANSACTION passed two_owner_backtracking=1 aggregate_score_rejection=1 exact_owner_rollback=1 fixed_owner=1 missing_escape=1 work_cutoffs=3 exception_propagation=1 independent_paths=1 protected_serial_parallel_actions=9600\n";
++}
++
+ void temporal_forward_audit_regression() {
+  TemporalGeometry geometry;geometry.initialize(std::vector<char>(7,true),1,7,[]{});
+  auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
+@@ -1730,4 +1794,4 @@
+           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+ }
+ 
+-int main(){try{temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

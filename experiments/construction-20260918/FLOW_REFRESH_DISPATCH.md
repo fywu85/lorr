@@ -20,3 +20,43 @@ cores per process, and128GiB aggregate reservation. Every planner still has the
 [Configuration](flow-refresh-dispatch-variants.json),
 [screens](results/flow-refresh-dispatch-screen-v33/),
 [Fable assessment](fable-flow-session/assessment.md).
+
+
+## Full comparison complete
+
+All eight runs and independent analyses pass. Both ordinary controls exactly
+reproduce previous full trajectories. Direct-cost assignment scores131,199 /
+130,947, mean131,073, losing2.559% against the134,515 control mean. Its final
+1,000-step counts fall to26,695 /26,652, versus28,215 /28,214. HRRN remains on.
+
+Refinement gives the exact same full trajectories as unrefined direct cost on
+both seeds. With HRRN it scores134,508 /134,519: just three fewer tasks on
+seed0 and an exact seed2 trajectory. This does not support chain-estimate
+refinement as a throughput improvement. Fable's predicted positive direct-cost
+effect is falsified in these two refreshed-flow runs. A separate travel audit
+will distinguish task-mix and movement changes without claiming causal additivity.
+
+[Full scores, task ages, motion and equivalence](results/flow-refresh-dispatch-full-v33/comparison.json).
+
+
+## Travel explanation
+
+The independent travel audit8898716 passes its fixture and full replay. Direct
+cost reduces completed-chain shortest distance to235.265 /235.270, versus
+242.324 /242.320 with HRRN. Completed loaded elapsed time falls to279.193 /
+279.163 steps, versus284.622 /284.599. However, total empty robot-steps rise
+to12,049,483 /12,115,340 from10,298,959 /10,302,897: about17.0% /17.6% more.
+Different completed cohorts prevent treating these as an additive causal split,
+but the empty-travel increase motivates testing the existing pickup weight3/5
+under refreshed flow. This is a global objective parameter, not a map rule.
+
+[Independent travel evidence](results/dispatch-travel-v1/).
+
+
+Pickup-weight screen8898719 passes HRRN1/weight1 and direct-cost weights1/3/5.
+Both weight1 controls match their previous fingerprints. Max entries are
+0.7800 /0.7748 /0.7870 /0.8083 seconds. Full matrix8898721 /8898722 runs all
+eight seed0/2 cases concurrently on32 physical cores under128 GiB aggregate
+reservation. Each planner has four disjoint cores and individual1s/32GB checks.
+[Pickup profiles](flow-refresh-pickup-variants.json),
+[pickup screens](results/flow-refresh-pickup-screen-v33/).

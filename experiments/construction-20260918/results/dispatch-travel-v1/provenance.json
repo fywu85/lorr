@@ -1,0 +1,57 @@
+{
+  "source_sha256": "860fb749849c32054aed947ea17d37d14c2cb71deb6206744c956a59b17fffad",
+  "binary_sha256": "5c09d5989c1ce7821a927de38ad590673a17e7f5f1f169db765040e4290018f2",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-dispatch-travel-v1-20260919/results/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-dispatch-travel-v1-20260919/results/decompose"
+  ],
+  "fixture_passed": true,
+  "allocation": {
+    "hostname": "research17",
+    "cpu_model": "AMD EPYC 7532 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      64
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ]
+    ],
+    "address_space_limit_bytes": [
+      4294967296,
+      4294967296
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "direct_cost_seed0": {
+      "path": "runs/cgar-flow-refresh-dispatch-full-v33-20260919/flow1_margin50_refresh512_hrrn0_refine0_work4m_prep4-s0-r0/WAREHOUSE.json",
+      "sha256": "a8fd833db2ceca126fc2068d0c4b668d7a8b343e0281af4ce2d36f65add135d6"
+    },
+    "direct_cost_seed2": {
+      "path": "runs/cgar-flow-refresh-dispatch-full-v33-20260919/flow1_margin50_refresh512_hrrn0_refine0_work4m_prep4-s2-r0/WAREHOUSE.json",
+      "sha256": "0f7948d97b9e42caa744d35ad2934bbf1fdd87f32b7c56f7d617fed2678b8ad3"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}

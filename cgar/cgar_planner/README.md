@@ -427,3 +427,16 @@ plan snapshots, not rejected-attempt histories or estimates of recoverable tasks
 The audit changes no search state, randomness or cache entries. A stride coprime
 to the flow refresh interval avoids always sampling the same publication phases.
 See the [audit study](../../experiments/construction-20260918/FORWARD_CONFLICT_AUDIT.md).
+
+
+## Experimental temporal displacement transactions
+
+`CGAR_TEMPORAL_BRANCH_WORK=65536` enables a bounded pass after the existing
+complete temporal search. `CGAR_TEMPORAL_BRANCH_OWNERS=1|2` limits blockers per
+candidate. Work defaults to 0 (disabled). Each transaction uses separate
+reservations, backtracks over all displaced robots, and commits only a complete
+collision-free scalar-score improvement. Pinned robots remain unchanged. Fixed
+candidate limits end by rolling back any unfinished branch; a deadline exception
+fails the entire decision through the existing entry layer. No elapsed-time
+selection or partial result is returned. Full throughput is still experimental.
+See the [transaction study](../../experiments/construction-20260918/TEMPORAL_TRANSACTIONS.md).

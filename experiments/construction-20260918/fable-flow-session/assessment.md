@@ -84,3 +84,30 @@ Fable's numerical split is illustrative and cannot establish that one-third
 to one-half of the causal gap lies in assignment. Unopened-task exchange with
 the free pool remains a separate hypothesis requiring simulator-contract and
 protection checks. No new reassignment behavior has been enabled.
+
+
+Turn05 completes in the same session: one turn,243.802seconds,$7.90448025,
+17973payload bytes and three changed/new source excerpts. It prefers exchanging
+unopened assignments with free tasks, and correctly identifies that a shorter
+chain alone can pay for a longer pickup under the proposed total-cost rule.
+Require an independent pickup-distance saving and consistent distance bases.
+The simulator permits releasing unopened tasks; it rejects changing started tasks.
+An incoming task and the released task must retain age and finite-retargeting
+protections. Assignment validation alone does not establish liveness.
+
+Several claims need qualification. Snapshot counts are not a1.75% hard ceiling
+on a closed-loop throughput effect; removing a blockage can change later traffic.
+The proposed transaction pass preserves the existing pinned robots and recovery
+mechanism rather than altering the certificate itself. A pickup-saving condition
+still changes the task mix, so it does not eliminate that confound. It also does
+not price the released task's future pickup exactly; the suggested guards remain
+a heuristic requiring full evaluation. Offline credited savings cannot be treated
+as achieved system-wide benefit.
+
+Fable's direct-cost prediction is now falsified: full HRRN0 loses2.559%, and
+chain refinement preserves both HRRN0 trajectories exactly. HRRN stays enabled.
+The bounded two-owner transaction prototype was developed independently while
+this review ran. Its immutable input, separate reservations, undo journal, locked
+placed robots and complete-score acceptance address the atomicity concerns.
+One-owner and two-owner arms will measure the neighborhood effect directly;
+no throughput result is inferred from kernel tests or the advisor's prediction.

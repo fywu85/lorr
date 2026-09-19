@@ -36,43 +36,50 @@ The goal remains active. Maintain ../../WAREHOUSE_PROGRESS.md after full results
   completed chain lengths 242.32 versus 233.84. Cohorts differ, so this is not
   a causal decomposition. Dwell concentration does not justify new cell tolls.
 
-## Running work at the 13:34 UTC checkpoint
+## Running work at the 13:55 UTC checkpoint
 
-- **8898684 / 8898685**, full assignment matrix on exclusive research46:
-  HRRN 0/1 crossed with chain-cost refinement 0/1, seeds 0/2. Eight cases run
-  concurrently on 32 physical cores and 128 GiB aggregate allocation; each
-  process gets four disjoint cores and its own 32 GB RSS validity check.
-  All four short screens pass. Default matches the prior fingerprint.
-  Frozen v33 binary. See FLOW_REFRESH_DISPATCH.md.
-- **8898688 / 8898689**, expanded read-only forward audit on research38:
-  v35, stride67, seeds 0/2, two concurrent cases, four physical cores each,
-  24 GiB aggregate reservation. Find the easiest alternative among all strict
-  improvements, separately requiring one full physical objective unit after
-  removing operation tie terms. Full trajectory equivalence is still required.
-  See FORWARD_CONFLICT_AUDIT.md.
+- **8898717 / 8898718**: v36 transaction repair, disabled / one-owner /
+  two-owner, seeds 0/2. All six full cases run concurrently on exclusive
+  research50, 24 physical cores / 72 GiB aggregate. Each has four disjoint cores
+  and individual 1-second / 32 GB checks. Build8898706 and screen8898715 pass.
+  Immutable input, separate reservation table, bounded backtracking and exact
+  rollback; no partial result on deadline. See TEMPORAL_TRANSACTIONS.md.
+- **8898721 / 8898722**: pickup-weight full matrix on frozen v33. HRRN1/weight1,
+  direct-cost weights1/3/5, seeds0/2; eight concurrent cases, 32 physical cores
+  and 128 GiB aggregate reservation. Screen8898719 passes all four cases,
+  including both exact controls; maximum entry is 0.8084 seconds.
 
-All earlier matrices through refreshed scales and fixed workers are fully
-analyzed. No C++ build remains active; all running benchmarks use frozen binaries.
-V35 build8898686 passes all regressions and its patch reconstructs every source
-hash. Screen8898687 preserves both exact fingerprints and partition conservation.
-No branching search or free-forward sweep has been implemented.
+All earlier matrices are fully analyzed. The HRRN/refinement matrix loses with
+HRRN disabled: 131199/130947 versus 134511/134519. Refinement makes no change to
+both direct-cost trajectories and only a three-task change under HRRN. The travel
+audit8898716 finds shorter completed chains235.27 versus242.32, but 17–18% more
+empty robot-steps. Test stronger pickup weighting before crediting a shorter chain
+mix as a throughput improvement. HRRN remains enabled in the leading policy.
+
+Expanded v35 full audit8898688/8898689 is complete and exactly reproduces both
+baseline trajectories. Final-window physical opportunities per step are roughly
+4 free, 350–356 one-owner, 171–175 two-owner and 44–47 three-plus. No new best.
+No C++ build remains active. Every running benchmark uses its own frozen binary.
 
 ## Next decisions
 
-1. Finish assignment and expanded-audit analyses; verify full fingerprints,
-   all 5,000 timing samples, memory, task-age tails and final windows.
-2. If many stationary robots have an unblocked physical improvement, test a
-   bounded deterministic monotone sweep. If easiest improvements require two
-   movable owners, consider a bounded branching transaction with exact rollback.
-   Non-fixed owners are not guaranteed to be displaceable.
-3. Investigate exchanging an unopened assignment with an available task, using
-   only current information. The simulator permits releasing unopened tasks;
-   started tasks cannot move. Require consistent distance bases and preserve
-   primary, recovery, pocket, capacity, fair-admission and finite-retargeting
-   protections. First assess opportunities; no new release behavior is enabled.
+1. Finish the one-owner/two-owner transaction and pickup-weight matrices. Verify
+   all full trajectories, complete timing samples, memory, task-age tails and
+   final windows. Keep the current leading configuration until an improvement
+   survives appropriate seed confirmation.
+2. Develop a bounded exchange of an en-route robot's unopened task with an
+   available task if the pickup results still leave this useful. Require a pickup
+   saving independently of chain cost, and a non-worsening total estimate. Use
+   consistent complete core distances; never compare Manhattan to exact BFS.
+   Preserve primary, recovery, pocket, capacity and fair-admission protections,
+   original reveal times, robot cooldowns and a finite release limit per task.
+   Account for the released task remaining in the pool. No pool exchange is
+   currently implemented. See Fable turn05 and its independent assessment.
+3. Get a source review of the implemented transaction logic in the SAME Fable
+   session, supplying only new/changed files and the relevant regression excerpt.
 4. Keep full horizons for quality claims: both frozen flow and reduced search
-   work can look reasonable early and collapse late. More CPU alone has not
-   closed the gap. Do not claim saturation of all search neighborhoods.
+   can collapse late. More CPU alone has not closed the gap. Do not claim that
+   every alternative search neighborhood is saturated.
 
 ## Persistent Fable consultation
 
@@ -82,5 +89,15 @@ Standing explicit user permission covers relevant project information and source
 Prepare bounded, hashed payloads; resume the existing session and send changed
 source excerpts only. No tools or edits are allowed in the consultation. Raw
 protocol/session data stays under ignored runs/. Archive visible reviews and
-usage/status metadata only. Turns 01–04 complete; turn04 uses one CLI turn,
-325.870 seconds and $6.29122725. Independently assess advice and predictions.
+usage/status metadata only. Turns 01–05 complete. Independently assess advice and predictions; reviews are
+not a substitute for complete benchmark and correctness evidence.
+
+
+Fable turn05 is complete in the same UUID: 243.802 seconds, $7.90448025, three
+changed/new source excerpts, 17973 payload bytes. It favors pool exchanges and
+requires a pickup-saving guard independent of chain length. Its claimed snapshot
+throughput ceiling and claim that this guard eliminates task-mix effects are not
+established. See fable-flow-session/assessment.md for the independent assessment.
+The existing TaskManager validates releasing unopened tasks and preserves their
+reveal times; changing started tasks is rejected. A future pool pass must also
+preserve primary, recovery, pocket, fair-admission and finite-retargeting rules.

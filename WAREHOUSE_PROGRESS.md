@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 13:33:23 UTC.
+Updated: 2026-09-19 13:55:28 UTC.
 
 **Best observed full run: 135,177 completed tasks** — refresh512 with strict wait turns, seed 0. Its two-seed mean is **134,424.5**, slightly below ordinary refresh512 on the same seeds. Ordinary refresh is now confirmed on **all six seeds (0–5)**: **134,590.3 mean**, range **134,061–134,966**, with no deadline or memory failures. The throughput target remains unmet.
 
@@ -55,6 +55,7 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Cache-only resets | Four strict-mode/seed contrasts: actual refresh beats cache-only every time | Actual traffic-cost updates add8.74–9.84% above cache-only in healthy controls; legacy seed2 still deteriorates with cache-only. [Evidence](experiments/construction-20260918/results/flow-cache-only-full-v33/causal-comparison.json). |
 | Additional parallel search | Four4M workers:134,975 /134,603, mean134,789 | Only+0.204% over one worker; four1M workers collapse despite valid decisions. [Full evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json). |
 | Gentler refreshed costs | Scale2 mean132,957; scale4 mean130,823.5 | Lose1.16% /2.74% to ordinary refresh512; not promoted. |
+| Direct-cost dispatch | Seeds 0/2: 131,199 / 130,947; mean 131,073 | Loses 2.559%; chain refinement leaves both trajectories unchanged. Shorter loaded chains accompany about 17% more empty robot-steps. [Evidence](experiments/construction-20260918/results/flow-refresh-dispatch-full-v33/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 

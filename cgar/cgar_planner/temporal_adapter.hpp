@@ -236,7 +236,26 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
         [&] { check_deadline(deadline_, "temporal_region_repair"); });
     const auto regions_finished = Clock::now();
-    auto& search = regional ? *regional : *results[best];
+    TemporalTransactionStats transaction_stats;
+    auto transaction = repair_temporal_transactions(cells, choices, pinned, power, temporal_budget_,
+        regional ? *regional : *results[best], temporal_transaction_options_, order, env_->curr_timestep,
+        transaction_stats, [&] { check_deadline(deadline_, "temporal_branch_transaction"); });
+    if (temporal_transaction_options_.work) {
+        ++stats_.temporal_transaction_calls;
+        stats_.temporal_transaction_roots += transaction_stats.roots;
+        stats_.temporal_transaction_candidates += transaction_stats.candidates;
+        stats_.temporal_transaction_accepted += transaction_stats.accepted;
+        stats_.temporal_transaction_rollbacks += transaction_stats.rollbacks;
+        stats_.temporal_transaction_exhausted += transaction_stats.work_exhausted;
+        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+            std::printf("[cgar-temporal-transaction] step=%d owners=%d work=%d roots=%lld candidates=%lld accepted=%lld terminals=%lld rollbacks=%lld exhausted=%lld multi_owner=%lld max_agents=%d score_before=%.3f score_after=%.3f seconds=%.6f\n",
+                env_->curr_timestep + 1, temporal_transaction_options_.max_owners, temporal_transaction_options_.work,
+                transaction_stats.roots, transaction_stats.candidates, transaction_stats.accepted, transaction_stats.terminals,
+                transaction_stats.rollbacks, transaction_stats.work_exhausted, transaction_stats.multi_owner_choices,
+                transaction_stats.max_agents, transaction_stats.score_before, transaction_stats.score_after,
+                std::chrono::duration<double>(Clock::now() - regions_finished).count());
+    }
+    auto& search = transaction ? *transaction : (regional ? *regional : *results[best]);
     // Validate the complete temporal result before exposing its first action.
     std::vector<int> owners(cells, -1), previous(n_);
     for (int t = 0; t < 5; ++t) {

@@ -98,3 +98,27 @@ The policy is unchanged; no free-move sweep or branching search is enabled.
 [Expanded source archive](build-provenance/v35/),
 [expanded screen](results/forward-options-screen-v35/),
 [expanded full configuration](forward-options-full-variants.json).
+
+
+## Expanded full audit complete
+
+Both full fingerprints match the ordinary baseline, with 134,511 / 134,519 tasks,
+no timing/memory failures, and 74 samples per seed. All 296 scalar/physical
+partitions conserve the stationary count. The final 1,000 steps contain 15 samples.
+
+| Late mean per sampled step | Seed 0 | Seed 2 |
+|---|---:|---:|
+| Stationary eligible robots | 938.73 | 928.33 |
+| No full-unit improving forward option | 359.00 | 356.33 |
+| Easiest full-unit option has no owner | 4.00 | 3.87 |
+| Easiest full-unit option has one owner | 355.93 | 349.40 |
+| Easiest full-unit option has two owners | 175.47 | 171.40 |
+| Easiest full-unit option has three or more | 44.27 | 47.20 |
+
+Scalar-only free options are 37.20 / 36.33 per step, mostly below the physical
+threshold. A free-only physical sweep has little measured immediate opportunity.
+Two-owner search still must show positive net displacement benefit and actual
+full-run throughput. These are not mathematical bounds on later traffic effects.
+
+[Full exact equivalence and samples](results/forward-options-full-v35/forward-options-audit.json),
+[controlled transaction experiment](TEMPORAL_TRANSACTIONS.md).
