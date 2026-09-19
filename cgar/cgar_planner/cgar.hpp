@@ -24,6 +24,7 @@
 #include "SharedEnv.h"
 #include "pibt_kernel.hpp"
 #include "pickup_search.hpp"
+#include "pickup_full.hpp"
 #include "temporal_geometry.hpp"
 #include "temporal_prepare.hpp"
 #include "temporal_regions.hpp"
@@ -258,6 +259,9 @@ struct Stats {
     long long pickup_flow_cells = 0, pickup_flow_candidates = 0, pickup_flow_limits = 0;
     long long pickup_flow_cached_estimates = 0, pickup_flow_approximate_estimates = 0;
     long long pickup_flow_warmup_calls = 0, pickup_flow_snapshot_publication = 0;
+    long long pickup_full_fields = 0, pickup_full_pops = 0, pickup_full_states = 0;
+    long long pickup_full_searches = 0, pickup_full_scans = 0, pickup_full_candidates = 0;
+    long long pickup_full_estimates = 0;
     long long skipped_empty_searches = 0;
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
     long long global_evaluations = 0, global_assignments = 0;
@@ -416,6 +420,9 @@ private:
     bool pickup_flow_ = false;
     int pickup_flow_nodes_ = 8192;
     OrientedPickupSearch pickup_search_;
+    int pickup_full_robots_ = 0, pickup_full_threads_ = 4;
+    std::vector<CompletePickupSearch> pickup_full_workers_;
+    std::vector<FullPickupField> pickup_full_fields_;
     int turn_build_limit_ = 32;
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false;

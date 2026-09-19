@@ -46,3 +46,15 @@ steady throughput. Graded margin0 scores56537/139796 and collapses on seed0
 Remaining four seeds run as8898785 with analysis8898786, comparing graded and
 binary margin25 on the same frozenv39 source. The confirmed reference remains
 margin50/build128 until six-seed evidence supports a change.
+
+
+## Six-seed confirmation
+
+Graded strength4/scale4 at margin25/build128 scores138402/139716/139303/138506/
+138304/139457, mean138948. It improves all six full totals over binary margin25/
+build128 (+0.611%). Four final1000windows improve; seeds2/4 are153/134tasks lower
+but remain29060/28750. Agep90 rises on seed4. All12paired runs meet complete-entry,
+validity and32GB limits; all six binary control trajectories exactly reproduce.
+This becomes the explicit benchmark reference. Goal152981 remains unmet.
+[Six-seed evidence](results/flow-graded-six-seed-v39.json),
+[latency quantiles](results/graded-reference-latency-six-seed-v39.json).

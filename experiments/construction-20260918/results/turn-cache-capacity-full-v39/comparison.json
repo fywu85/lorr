@@ -1,0 +1,132 @@
+{
+  "scope": "Four independently analyzed complete5000-step warehouse runs, all valid. Both cache sizes exactly reproduce established binary-margin25/build128 full trajectories and guided/fallback counts.",
+  "checked_utc": "2026-09-19T17:21:20.945296+00:00",
+  "exact_production_source_commit": "5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27",
+  "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+  "rows": [
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_cache8192_work4m_prep4-s0-r0",
+      "seed": 0,
+      "cache_mib": 8192,
+      "tasks": 137149,
+      "completed_per_1000": [
+        21977,
+        28523,
+        28860,
+        28837,
+        28952
+      ],
+      "trajectory_sha256": "822c996bdb46aee38c667e242e7d7e85fd4cdfe882568741c7c54ddbf9d74c54",
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 149656,
+        "guided": 47456061,
+        "fallback": 2540317
+      },
+      "mean_entry_ms": 252.37430270620024,
+      "max_entry_seconds": 0.881618617,
+      "average_cpu_cores": 1.1856469456564134,
+      "peak_rss_bytes": 11359043584,
+      "wall_seconds": 1335.419,
+      "finished_utc": "2026-09-19T17:10:38.822637+00:00"
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_cache16384_work4m_prep4-s0-r0",
+      "seed": 0,
+      "cache_mib": 16384,
+      "tasks": 137149,
+      "completed_per_1000": [
+        21977,
+        28523,
+        28860,
+        28837,
+        28952
+      ],
+      "trajectory_sha256": "822c996bdb46aee38c667e242e7d7e85fd4cdfe882568741c7c54ddbf9d74c54",
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 149459,
+        "guided": 47456061,
+        "fallback": 2540317
+      },
+      "mean_entry_ms": 250.15050480219983,
+      "max_entry_seconds": 0.873749688,
+      "average_cpu_cores": 1.1892998771399397,
+      "peak_rss_bytes": 11677278208,
+      "wall_seconds": 1324.729,
+      "finished_utc": "2026-09-19T17:10:28.130235+00:00"
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_cache8192_work4m_prep4-s2-r0",
+      "seed": 2,
+      "cache_mib": 8192,
+      "tasks": 139037,
+      "completed_per_1000": [
+        23105,
+        28689,
+        28986,
+        29044,
+        29213
+      ],
+      "trajectory_sha256": "63f3f60986555f9c0b4d5e766bac7d20b12c89192706f9da2340fd11efe13760",
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 150401,
+        "guided": 47453486,
+        "fallback": 2543220
+      },
+      "mean_entry_ms": 252.68851645800038,
+      "max_entry_seconds": 0.850794192,
+      "average_cpu_cores": 1.190461780195996,
+      "peak_rss_bytes": 11933605888,
+      "wall_seconds": 1337.765,
+      "finished_utc": "2026-09-19T17:10:41.165925+00:00"
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_cache16384_work4m_prep4-s2-r0",
+      "seed": 2,
+      "cache_mib": 16384,
+      "tasks": 139037,
+      "completed_per_1000": [
+        23105,
+        28689,
+        28986,
+        29044,
+        29213
+      ],
+      "trajectory_sha256": "63f3f60986555f9c0b4d5e766bac7d20b12c89192706f9da2340fd11efe13760",
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 150184,
+        "guided": 47453486,
+        "fallback": 2543220
+      },
+      "mean_entry_ms": 252.07768543479983,
+      "max_entry_seconds": 0.838092437,
+      "average_cpu_cores": 1.1911304704008396,
+      "peak_rss_bytes": 11835453440,
+      "wall_seconds": 1334.591,
+      "finished_utc": "2026-09-19T17:10:37.992323+00:00"
+    }
+  ],
+  "all_full_trajectories_exact": true,
+  "guided_and_fallback_counts_exact": true,
+  "build_count_differences_16_minus_8_gib": [
+    -197,
+    -217
+  ],
+  "promoted_as_benchmark_reference": false,
+  "interpretation": "Doubling the cache saves197/217 table rebuilds, about0.13-0.14%, but changes neither trajectory nor guided/fallback counts. Keep8GiB. This does not establish that capacity is irrelevant in other policies or workloads."
+}

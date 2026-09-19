@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 16:42:52 UTC.
+Updated: 2026-09-19 17:21:20 UTC.
 
-**Current six-seed benchmark reference: 138,104.2 mean tasks**, margin25 with turn-build128, range **137,149–139,037**. It improves all six full totals over margin50/build128 (**+0.752%** in the mean), with five of six final windows improving. The newest graded-penalty candidate scores **138,402 /139,303** on seeds0/2 (mean **138,852.5**); remaining-seed confirmation is running. The absolute historical peak is **139,796**, from a zero-threshold policy that collapses on its other seed and is **rejected**. Parallel batch128 loses0.085% in the six-seed mean against margin50/build128 and is not promoted. The target remains unmet.
+**Current six-seed reference: 138,948 mean tasks**, graded strength4/scale4 with margin25 and turn-build128, range **138,304–139,716**. It improves all six full totals over binary margin25/build128 (**+0.611%** in the mean); four of six final windows improve. Normal pickup-flow alignment adds0.559% on its first two matched binary-margin50 seeds and is now being tested with graded costs. Its aggressive HRRN0/weight5 setting collapses on seed2 and is rejected. The absolute historical peak remains **139,796**, also from a rejected policy. The target remains unmet.
 
-The local KittyKnight reference is **152,981**. The confirmed six-seed mean is **9.72% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**. The confirmed mean is **9.17% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -43,12 +43,23 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 15:37:18 | 137,848 | Parallel batch512 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · not robust: seed2 regresses |
 | 2026-09-19 15:38:41 | 138,003 | Parallel batch128 / 0 | [50e8e6e](https://github.com/fywu85/lorr/commit/50e8e6e4cef1495a4054590e613cf762eb39009c) | [data](experiments/construction-20260918/results/temporal-table-batch-full-v40/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v40/) · not promoted: six-seed mean loses |
 | 2026-09-19 15:55:29 | 139,037 | Margin25 + turn builds128 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
-| 2026-09-19 16:13:44 | 139,303 | Graded scale4/strength4, margin25 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · two seeds; confirmation running |
+| 2026-09-19 16:13:44 | 139,303 | Graded scale4/strength4, margin25 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
 | 2026-09-19 16:13:53 | 139,796 | Graded scale4/strength4, margin0 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · rejected: seed0 collapses |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
 “Legacy timing” means that the original run predates complete entry-time instrumentation. Its configured deadline, explicit timeout result, simulator validity and measured RSS are retained, but it does not supply the later per-decision timing evidence. CPU models and core counts also vary; this table tracks task completions, not runtime speedups.
+
+## Confirmed reference milestones
+
+Each row uses all six full warehouse seeds. Completion is the last candidate run finishing; these are policy comparisons, not runtime-speedup claims.
+
+| Completed (UTC) | Mean tasks | Range | Policy | Exact source | Evidence |
+|---|---:|---:|---|---|---|
+| 2026-09-19 15:28:50 | 136,426.2 | 135,838–136,888 | Binary margin25, build32 | [45ebea2](https://github.com/fywu85/lorr/commit/45ebea2680e393a1e3ae060f29194b494bedc254) | [data](experiments/construction-20260918/results/flow-refresh-margin25-six-seed-v36.json) |
+| 2026-09-19 15:40:34 | 137,073.3 | 136,841–137,271 | Binary margin50, build128 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json) |
+| 2026-09-19 16:34:42 | 138,104.2 | 137,149–139,037 | Binary margin25, build128 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json) |
+| 2026-09-19 16:47:34 | 138,948.0 | 138,304–139,716 | Graded strength4/scale4, margin25/build128 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-six-seed-v39.json) |
 
 ## Confirmation and reversals
 
@@ -73,25 +84,33 @@ This log backfills every increasing single-run record from the full warehouse ca
 | Larger turn-table rebuild allowance | Count128 six seeds: **137,060 / 137,271 / 136,841 / 137,227 / 136,949 / 137,092**, mean **137,073.3** | **Confirmed intermediate reference.** +1.845% over build32, winning all six totals and final windows. Also exceeds margin25/build32 on every seed. [Evidence](experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json). |
 | Complete parallel table batches | Batch128 seeds0/2: **138,003 / 136,701**; batch512: **137,848 / 119,685** | Batch128 serial and parallel reproduce both full trajectories exactly; parallel wall time falls5.86–6.37%. Batch512 has100% sampled exact coverage but regresses, so coverage is not a monotone quality measure. [Evidence](experiments/construction-20260918/results/temporal-table-batch-full-v40/comparison.json). |
 | Parallel batch128, six-seed confirmation | **138,003 /137,388 /136,701 /137,477 /134,785 /137,390**, mean **136,957.3** | Four wins/two losses; mean **0.085% below** demand-build128. Seed4 erases the gain. All decisions valid; four repeated stronger controls exact. Not promoted. [Evidence](experiments/construction-20260918/results/temporal-table-batch-six-seed-v40.json). |
-| Margin25 + turn-build128 | Six seeds: **137,149 /138,572 /139,037 /137,535 /137,875 /138,457**, mean **138,104.2** | **Current benchmark reference.** All six full totals and five final windows improve, mean **+0.752%** over margin50/build128. Seed3 final window is109tasks lower. All12runs valid and all six controls exact. [Evidence](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json). |
-| Graded penalties, strength4/scale4, margin25 | Seeds0/2: **138,402 /139,303**, mean **138,852.5** | Both totals improve over binary margin25; mean **+0.550%**. Seed2's final window is153tasks lower, so this is not yet a confirmed improvement. Four-seed confirmation running. [Evidence](experiments/construction-20260918/results/flow-graded-turn128-full-v39/comparison.json). |
+| Margin25 + turn-build128 | Six seeds: **137,149 /138,572 /139,037 /137,535 /137,875 /138,457**, mean **138,104.2** | **Confirmed intermediate reference.** All six full totals and five final windows improve, mean **+0.752%** over margin50/build128. Seed3 final window is109tasks lower. All12runs valid and all six controls exact. [Evidence](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json). |
+| Graded penalties, strength4/scale4, margin25 | Six seeds: **138,402 /139,716 /139,303 /138,506 /138,304 /139,457**, mean **138,948** | **Current benchmark reference.** All six totals improve; mean **+0.611%**. Final windows improve on four seeds; seeds2/4 lose153/134tasks. All12runs valid and six controls exact. [Evidence](experiments/construction-20260918/results/flow-graded-six-seed-v39.json). |
 | Graded penalties, zero confidence threshold | Seeds0/2: **56,537 /139,796** | **Rejected.** Seed0 final window collapses to5,770tasks despite all complete decisions meeting time/memory limits. Its historical peak stays visible. [Evidence](experiments/construction-20260918/results/flow-graded-turn128-full-v39/comparison.json). |
+| Heading/traffic pickup costs, ordinary HRRN | Seeds0/2: **137,508 /137,923**, mean **137,715.5** | Both totals/final windows improve over binary margin50/build128 (**+0.559%**); outstanding agep90 rises. Testing the combination with graded costs. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
+| Heading/traffic pickup costs, direct cost/weight5 | Seeds0/2: **138,242 /49,732** | **Rejected.** Seed2 ends with4,522tasks in its final window; matched disabled controls137,603/136,560 stay healthy. All decisions valid, so this is a policy collapse. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
+| Double orientation-cache allowance |8/16GiB produce the same full trajectories on both binary-margin25 seeds | Saves197/217rebuilds without changing guided/fallback counts or throughput. Retain8GiB. [Evidence](experiments/construction-20260918/results/turn-cache-capacity-full-v39/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
 ## Resource cost of the current benchmark reference
 
-The confirmed margin25/build128 profile averages **228.0–265.1ms** per complete
-scheduling plus planning step across six seeds. Median latency is **197.3–242.4ms**,
-p99 **507.0–557.1ms**, and the maximum **872.0ms**. The slowest step is step0 in
-each run. Average CPU use is **1.183–1.212cores** out of four reserved, peak process
-RSS **11.933GB**, and full runs take **20.23–23.32minutes**. All30000 complete
-entries stay within one second. CPU is whole-process user+system time divided by
-wall time, including startup, simulator and logging; it is not an instantaneous
-sample or a planner-only CPU measurement. Hosts were exclusive and unthrottled.
-[Current six-seed resources](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json),
-[all-step quantiles](experiments/construction-20260918/results/margin25-reference-latency-six-seed-v39.json),
-[explicit benchmark configuration](experiments/construction-20260918/warehouse-reference-variants.json).
+The current graded strength4/scale4, margin25/build128 reference averages
+**229.3–277.3ms** per complete scheduling plus planning step. Median latency is
+**198.2–257.5ms**, p99 **509.0–567.5ms**, and maximum **874.2ms**. Average process
+CPU is **1.174–1.215cores** out of four reserved, peak RSS **11.936GB**, and full
+runs take **20.33–24.36minutes**. All30000entries meet the one-second limit.
+CPU includes startup, simulator and logging, calculated as process user+system
+seconds divided by wall seconds; it is not instantaneous or planner-only usage.
+Hosts were exclusive and unthrottled.
+[Current six-seed resources](experiments/construction-20260918/results/flow-graded-six-seed-v39.json),
+[all-step quantiles](experiments/construction-20260918/results/graded-reference-latency-six-seed-v39.json),
+[explicit configuration](experiments/construction-20260918/warehouse-reference-variants.json).
+
+The preceding binary margin25/build128 cohort averages228.0–265.1ms, median
+197.3–242.4ms, p99 507.0–557.1ms, max872.0ms, CPU1.183–1.212cores, peak11.933GB
+and20.23–23.32minutes. Those were the latest figures in the resource answer before
+graded confirmation completed. [Binary-reference quantiles](experiments/construction-20260918/results/margin25-reference-latency-six-seed-v39.json).
 
 The preceding margin50/build128 cohort averages234.8–269.9ms, median206.3–248.6ms,
 p99 514.1–554.0ms, maximum873.1ms, CPU1.182–1.210cores, peak12.013GB RSS and

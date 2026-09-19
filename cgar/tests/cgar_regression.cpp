@@ -281,7 +281,7 @@ void global_task_candidates() {
 }
 
 void oriented_pickup_search_regression() {
- OrientedPickupSearch search;int compared=0;
+ OrientedPickupSearch search;CompletePickupSearch complete;FullPickupField full;int compared=0;
  constexpr int R=7,C=8,N=R*C;
  for(int field=0;field<12;++field)for(int scale:{1,2,4,8}){
   std::vector<char> free(N,true);for(int u=0;u<N;++u)if((u*17+field*13)%11<2)free[u]=false;
@@ -304,8 +304,12 @@ void oriented_pickup_search_regression() {
     [&](int u,int d){return nb(u,d,R,C);},[&](int u){return free[u];},[&](int u,int d){return costs[u*4+d];},
     [&](int u,int cost){if(got[u]>=0)throw std::runtime_error("pickup cell published twice");got[u]=cost;return false;},[]{});
    if(stats.limited||stats.stopped||stats.pops>8192)throw std::runtime_error("complete small pickup graph hit a work bound");
+   complete.run(N,start,heading,turn,kInf,[&](int u,int d){return nb(u,d,R,C);},
+    [&](int u){return free[u];},[&](int u,int d){return costs[u*4+d];},[]{},full);
+   long long reachable=0;for(int value:expected)reachable+=value<kInf;
+   if(full.states!=reachable||full.pops<full.states)throw std::runtime_error("complete pickup field did not settle every reachable state");
    for(int goal=0;goal<N;++goal){int want=kInf;for(int d=0;d<4;++d)want=std::min(want,expected[goal*4+d]);
-    if((want==kInf? -1:want)!=got[goal])throw std::runtime_error("oriented pickup cost differs from independent graph relaxation");++compared;
+    if((want==kInf? -1:want)!=got[goal]||full.distance[goal]!=want)throw std::runtime_error("pickup cost differs from independent graph relaxation");++compared;
    }
   }}
  }
@@ -321,7 +325,7 @@ void oriented_pickup_search_regression() {
  int recovered=-1;search.run(2,0,2,128,2,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[](int,int){return 3;},[&](int u,int cost){if(u==1)recovered=cost;return false;},[]{});
  if(recovered!=7)throw std::runtime_error("pickup scratch reuse after failure or turn cost is incorrect");
  for(int bound:{0,65537}){bool invalid=false;try{search.run(2,0,0,bound,1,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[](int,int){return 1;},[](int,int){return false;},[]{});}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("invalid pickup work bound accepted");}
- std::cout<<"ORIENTED_PICKUP_SEARCH passed independent_goal_costs="<<compared<<" scales=1,2,4,8 all_headings=1 obstacles_disconnection=1 settled_only=1 fixed_queue_pops=1 early_endpoint_stop=1 injected_mid_search_timeout=1 scratch_reuse=1\n";
+ std::cout<<"ORIENTED_PICKUP_SEARCH passed independent_goal_costs="<<compared<<" complete_dial_field=1 scales=1,2,4,8 all_headings=1 obstacles_disconnection=1 settled_only=1 fixed_queue_pops=1 early_endpoint_stop=1 injected_mid_search_timeout=1 scratch_reuse=1\n";
 }
 
 void pickup_flow_scheduler_regression() {
@@ -368,6 +372,73 @@ void pickup_flow_scheduler_regression() {
  }
  for(const char* key:{"CGAR_PICKUP_FLOW","CGAR_PICKUP_FLOW_NODES","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_FLOW_COST_SCALE","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE"})unsetenv(key);
  std::cout<<"PICKUP_FLOW_SCHEDULER passed cold_default_equivalence=1 heading_choice=1 published_toll_choice=1 scaled_units=1 fair_admission=1 started_immutable=1 metadata_unchanged=1 invalid_configuration=1\n";
+}
+
+void complete_pickup_scheduler_regression() {
+ // Each worker owns reusable scratch; task order changes with worker count.
+ auto fields=[](int threads){std::vector<CompletePickupSearch>workers(threads);std::vector<FullPickupField>out(12);
+  run_temporal_preparation(threads,[&](int worker){for(int i=worker;i<12;i+=threads)
+   workers[worker].run(400,i*13,i%4,4,kInf,[](int u,int d){return nb(u,d,20,20);},
+    [](int u){return u%23!=7;},[](int u,int d){return 4+(u*7+d*3)%5;},[]{},out[i]);});return out;};
+ auto serial=fields(1),parallel=fields(4);
+ for(size_t i=0;i<serial.size();++i)if(serial[i].distance!=parallel[i].distance||serial[i].pops!=parallel[i].pops||serial[i].states!=parallel[i].states)
+  throw std::runtime_error("complete pickup fields changed with parallel allocation");
+ std::atomic<int>finished{0};bool failed=false;
+ try{run_temporal_preparation(4,[&](int worker){CompletePickupSearch search;FullPickupField out;int checks=0;
+  search.run(400,0,worker,1,kInf,[](int u,int d){return nb(u,d,20,20);},[](int){return true;},[](int,int){return 1;},
+   [&]{if(worker==2&&++checks==3)throw Timeout("injected_complete_pickup");},out);++finished;});}catch(const Timeout&){failed=true;}
+ if(!failed||finished!=3)throw std::runtime_error("complete pickup failure did not join other field builders");
+ CompletePickupSearch reusable;FullPickupField recovered;int checks=0;failed=false;
+ try{reusable.run(400,0,0,1,kInf,[](int u,int d){return nb(u,d,20,20);},[](int){return true;},[](int,int){return 1;},
+  [&]{if(++checks==3)throw Timeout("injected_complete_pickup_reuse");},recovered);}catch(const Timeout&){failed=true;}
+ if(!failed)throw std::runtime_error("complete pickup in-search timeout not propagated");
+ reusable.run(2,0,2,2,kInf,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[](int,int){return 3;},[]{},recovered);
+ if(recovered.distance!=std::vector<int>({0,7}))throw std::runtime_error("complete pickup scratch retained a failed field");
+ for(int edge:{0,17}){bool invalid=false;try{reusable.run(2,0,0,1,kInf,[](int u,int d){return nb(u,d,1,2);},[](int){return true;},[&](int,int){return edge;},[]{},recovered);}catch(const std::invalid_argument&){invalid=true;}if(!invalid)throw std::runtime_error("complete pickup accepted invalid edge cost");}
+ auto blank=[](){SharedEnvironment e;e.rows=9;e.cols=41;e.num_of_agents=1;e.map.assign(e.rows*e.cols,0);e.curr_states={State(4*41+20,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);return e;};
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
+ setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_HRRN","0",1);setenv("CGAR_PICKUP_WEIGHT","1",1);
+ for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_PICKUP_FULL_ROBOTS","-1"},{"CGAR_PICKUP_FULL_ROBOTS","65"},{"CGAR_PICKUP_FULL_THREADS","0"},{"CGAR_PICKUP_FULL_THREADS","33"}}){
+  setenv(invalid.first,invalid.second,1);auto e=blank();Cgar c;bool rejected=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}unsetenv(invalid.first);if(!rejected)throw std::runtime_error("invalid complete pickup configuration accepted");
+ }
+ setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);setenv("CGAR_PICKUP_FLOW","0",1);
+ {auto e=blank();Cgar c;bool rejected=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}if(!rejected)throw std::runtime_error("complete pickup accepted missing published metric provider");}
+ setenv("CGAR_PICKUP_FLOW","1",1);
+ // Before publication, enabling complete fields leaves the candidate policy alone.
+ {auto e=blank();Task t;t.task_id=0;t.locations={e.curr_states[0].location+1};e.task_pool.emplace(0,t);Cgar c;c.initialize(&e,1000);std::vector<int>proposed;c.schedule(&e,1000,proposed);
+  if(proposed!=std::vector<int>{0}||c.stats().pickup_full_fields)throw std::runtime_error("complete pickup bypassed publication warmup");}
+ for(const char* count:{"0","1"}){
+  setenv("CGAR_PICKUP_FULL_ROBOTS",count,1);auto e=blank();Cgar c;c.initialize(&e,1000);std::vector<Action>offered;
+  const std::array<Action,3> observed{Action::FW,Action::CR,Action::CR};
+  for(int t=0;t<3;++t){e.curr_timestep=t;c.plan(&e,1000,offered);auto states=step(e,e.curr_states,{observed[t]});if(states.empty())throw std::runtime_error("complete pickup fixture trace invalid");e.curr_states=states;}
+  e.curr_timestep=3;const int at=e.curr_states[0].location;
+  if(e.curr_states[0].orientation!=2)throw std::runtime_error("complete pickup fixture heading incorrect");
+  // The nearest16 endpoints all lead to longer chains; task16 is farther away
+  // but has the smallest complete pickup+chain cost, outside that shortlist.
+  for(int id=0;id<17;++id){Task task;task.task_id=id;task.t_revealed=0;task.locations=id<16?std::vector<int>{at-1,at+16}:std::vector<int>{at-10,at-10};e.task_pool.emplace(id,task);}
+  std::vector<int>proposed;c.schedule(&e,1000,proposed);
+  if(proposed!=std::vector<int>{count[0]=='1'?16:0})throw std::runtime_error("complete pickup failed to rank a better task beyond the local shortlist");
+  if(count[0]=='1'){
+   if(c.stats().pickup_full_fields!=1||c.stats().pickup_full_scans<17||c.stats().pickup_full_candidates!=16)throw std::runtime_error("complete pickup budget or candidate count incorrect");
+   c.schedule(&e,1000,proposed);if(proposed!=std::vector<int>{0}||c.stats().fair_assignments!=1)throw std::runtime_error("complete pickup bypassed oldest-task admission");
+   e.curr_task_schedule={16};e.task_pool.at(16).agent_assigned=0;e.task_pool.at(16).idx_next_loc=1;e.curr_states[0].location=at-10;e.goal_locations={{{at-10,0}}};
+   c.schedule(&e,1000,proposed);if(proposed!=std::vector<int>{16})throw std::runtime_error("complete pickup changed a started assignment");
+  }
+ }
+ // With more free robots than the quota, one gets a complete field and the
+ // other still receives a distinct task through the existing candidate search.
+ {setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);auto e=blank();e.num_of_agents=2;
+  e.curr_states={State(2*41+20,0,0),State(6*41+20,0,0)};e.curr_task_schedule={-1,-1};e.goal_locations.resize(2);
+  Cgar c;c.initialize(&e,1000);std::vector<Action>offered;const std::array<Action,3>observed{Action::FW,Action::CR,Action::CR};
+  for(int t=0;t<3;++t){e.curr_timestep=t;c.plan(&e,1000,offered);auto states=step(e,e.curr_states,{observed[t],observed[t]});if(states.empty())throw std::runtime_error("complete pickup quota trace invalid");e.curr_states=states;}
+  e.curr_timestep=3;for(int id=0;id<2;++id){Task task;task.task_id=id;task.t_revealed=0;task.locations={e.curr_states[id].location-1};e.task_pool.emplace(id,task);}
+  std::vector<int>proposed;c.schedule(&e,1000,proposed);
+  if(proposed!=std::vector<int>({0,1})||c.stats().pickup_full_fields!=1||c.stats().pickup_flow_searches<1||e.curr_task_schedule!=std::vector<int>({-1,-1})||e.task_pool.at(0).agent_assigned!=-1||e.task_pool.at(1).agent_assigned!=-1)
+   throw std::runtime_error("complete pickup quota lost an assignment, uniqueness or metadata isolation");
+ }
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_HRRN","CGAR_PICKUP_WEIGHT","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS"})unsetenv(key);
+ std::cout<<"COMPLETE_PICKUP_FIELDS passed serial_parallel_exact=1 in_search_timeout=1 joined_after_failure=1 scratch_reuse=1 invalid_costs=1 cold_default=1 beyond_local_shortlist=1 fair_admission=1 started_immutable=1 fixed_robot_quota=1\n";
 }
 
 void weighted_pickup_assignment() {
@@ -2113,4 +2184,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{oriented_pickup_search_regression();pickup_flow_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

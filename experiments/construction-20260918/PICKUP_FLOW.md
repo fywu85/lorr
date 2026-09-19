@@ -79,3 +79,38 @@ The tested source and all21 source/test hashes match
 [our assessment](fable-flow-session/assessment.md) qualifies its measurement claims.
 While this full experiment was running, margin25/build128 completed confirmation
 as the stronger reference. This matrix retains its frozen margin50 baseline.
+
+
+## Full results
+
+All eight full cases independently validate. HRRN1/weight1 pickup flow improves
+137060/136841 to137508/137923 (+0.559% in the two-seed mean), including both
+final1000windows. Whole-run empty robot-steps fall about2.0%/1.5%, while task-age
+p90 rises from647/646 to653/661. That is a paired policy result, not isolated
+causal savings from a particular cost term. Mean entry latency rises about17ms.
+
+HRRN0/weight5 pickup flow scores138242/49732 against stable disabled controls
+137603/136560. Seed2 final1000 falls to4522 despite all valid complete decisions;
+reject that profile. The failure is not explained by a planner timeout.
+
+At the final t4800scheduler snapshot, normal weighted searches settle1274/1270
+cells per search and about34% hit the8192pop bound. Cached fallback probes are
+96.44%/96.64%, contrary to Fable's rare-cache assumption; these are probe shares,
+not assignment-selection shares. Estimated pickup counters include different
+cost terms across modes and are not a physical travel comparison.
+[Full comparison](results/pickup-flow-full-v41/comparison.json).
+
+The stronger graded reference now has six-seed confirmation. Normal pickup flow
+is being compared with it on seeds0/2 as8898831/8898832. Its disabled200-step
+control exactly reproduces v39graded costs. In parallel, v42tests complete pickup
+fields and all-visible-task ranking; see [PICKUP_FULL.md](PICKUP_FULL.md).
+
+## Graded reference combination
+
+All four full graded strength4/scale4 margin25/build128 tests completed. Pickup
+flow ON scores138963/139677 against exact OFF controls138402/139303: mean
+139320vs138852.5 (+0.337%). Final1000windows improve244/6. Empty robot-steps
+fall1.63%/1.46%, while outstanding agep90 rises18/20steps. All entries finish
+within1second, all RSS below32GB; source is the same tested v41commit. This is
+a promising two-seed result; retain the confirmed OFF reference pending the
+remaining four seeds. [Comparison](results/graded-pickup-flow-full-v41/comparison.json).
