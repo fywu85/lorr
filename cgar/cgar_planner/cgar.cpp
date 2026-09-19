@@ -402,7 +402,8 @@ void DistanceOracle::trim() {
 void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost, bool compact) {
     if (turn_cost < 1 || turn_cost > 16) throw std::invalid_argument("turn guidance cost must be in [1,16]");
     cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost; compact_ = compact;
-    buckets_.assign(turn_cost_ + 1, {});
+    max_edge_cost_ = turn_cost_; forward_costs_.clear();
+    buckets_.assign(max_edge_cost_ + 1, {});
     index_.assign(cert->free.size(), -1); cells_.clear();
     for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
         index_[u] = static_cast<int>(cells_.size()); cells_.push_back(u);
@@ -410,6 +411,23 @@ void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int tur
     table_bytes_ = std::max<size_t>(1, cells_.size() * 4 * sizeof(int));
     tables_.clear(); lru_.clear(); queue_.reserve(cells_.size() * 4);
     prefetched_.clear(); prefetched_builds = prefetched_hits = prefetched_discarded = 0;
+}
+
+bool TurnDistanceOracle::set_forward_costs(std::vector<uint8_t> costs) {
+    if (!cert_ || costs.size() != cert_->free.size() * 4)
+        throw std::invalid_argument("invalid forward guidance dimensions");
+    int maximum = 1;
+    for (int cost : costs) {
+        if (cost < 1 || cost > 16) throw std::invalid_argument("forward guidance costs must be in [1,16]");
+        maximum = std::max(maximum, cost);
+    }
+    if (maximum == 1) costs.clear();
+    if (costs == forward_costs_) return false;
+    // No old-metric table or speculative result may survive a metric change.
+    tables_.clear(); lru_.clear(); discard_prefetch();
+    forward_costs_ = std::move(costs); max_edge_cost_ = std::max(turn_cost_, maximum);
+    buckets_.assign(max_edge_cost_ + 1, {});
+    return true;
 }
 
 const TurnTable* TurnDistanceOracle::find(int goal) {
@@ -432,7 +450,7 @@ std::vector<int> TurnDistanceOracle::compute(int goal, std::chrono::steady_clock
             pred[2] = index_[backward] * 4 + d;
         return pred;
     };
-    if (turn_cost_ == 1) {
+    if (turn_cost_ == 1 && forward_costs_.empty()) {
         // Preserve the original unit-cost traversal and cache contents exactly.
         for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue.push_back(root + d); }
         for (size_t head = 0; head < queue.size(); ++head) {
@@ -455,7 +473,7 @@ std::vector<int> TurnDistanceOracle::compute(int goal, std::chrono::steady_clock
             if (dist[node] != distance) continue;
             const auto pred = predecessors(node);
             for (int k = 0; k < 3; ++k) if (pred[k] >= 0) {
-                const int next_distance = distance + (k == 2 ? 1 : turn_cost_);
+                const int next_distance = distance + (k == 2 ? forward_cost(cells_[pred[k] / 4], node % 4) : turn_cost_);
                 if (next_distance >= dist[pred[k]]) continue;
                 dist[pred[k]] = next_distance;
                 buckets[next_distance % buckets.size()].push_back(pred[k]); ++pending;
@@ -497,7 +515,7 @@ void TurnDistanceOracle::prefetch(const std::vector<int>& goals, int threads,
     std::vector<std::exception_ptr> errors(worklist.size());
     std::atomic<size_t> next{0};
     auto work = [&] {
-        std::vector<int> queue; std::vector<std::vector<int>> buckets(turn_cost_ + 1);
+        std::vector<int> queue; std::vector<std::vector<int>> buckets(max_edge_cost_ + 1);
         for (;;) {
             const size_t item = next.fetch_add(1);
             if (item >= worklist.size()) return;
@@ -631,9 +649,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (turn_prefetch_threads_ < 0 || turn_prefetch_threads_ > 32 ||
         (turn_prefetch_threads_ && !orientation_guidance_))
         throw std::invalid_argument("turn prefetch requires orientation guidance and 1-32 threads");
+    flow_strength_ = env_int("CGAR_FLOW_STRENGTH", 0);
+    if (flow_strength_ < 0 || flow_strength_ > 8 || (flow_strength_ && !orientation_guidance_))
+        throw std::invalid_argument("learned flow requires orientation guidance and strength 1-8");
     turn_cost_ = env_int("CGAR_TURN_COST", 1);
     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
+    temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
+    if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
+        throw std::invalid_argument("temporal distance scale must be in [1,4096]");
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
@@ -701,6 +725,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
         turn_oracle_.init(&cert_, mb << 20, turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0);
+        if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
+            env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8));
     }
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
@@ -1004,7 +1030,7 @@ PibtCandidates Cgar::pibt_candidates(int i) {
                 const int v = cands[k].cell;
                 const int d = v == u ? ori_[i] : direction(u, v, cert_.cols);
                 const int remaining = turn_oracle_.value(*table, v, d);
-                cands[k].h = remaining >= kInf ? kInf : remaining + 1 + turn_cost_ * cands[k].turns;
+                cands[k].h = remaining >= kInf ? kInf : remaining + (v == u ? 1 : turn_oracle_.forward_cost(u, d)) + turn_cost_ * cands[k].turns;
             }
         } else ++stats_.oriented_fallback;
     }
@@ -1316,6 +1342,14 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     turn_table_budget_ = 32;
     if (orientation_guidance_) turn_oracle_.trim();
     sync_agents();
+    if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
+        const bool changed = turn_oracle_.set_forward_costs(flow_guidance_.costs());
+        ++stats_.flow_freezes; stats_.flow_penalized_edges = flow_guidance_.penalized_edges();
+        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d penalized_edges=%d cache_reset=%d frozen=1\n",
+            env_->curr_timestep, flow_guidance_.samples(), static_cast<unsigned long long>(flow_guidance_.moves()),
+            flow_strength_, flow_guidance_.penalized_edges(), changed);
+        check_deadline(deadline_, "flow_guidance_frozen");
+    }
     advance_txn();
     prepare_capacity_mode();
     update_locks();

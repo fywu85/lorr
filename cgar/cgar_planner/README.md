@@ -349,11 +349,26 @@ The [sequential repeat](../../benchmarks/mr24-sequential-repeat-20260918/summary
 
 `CGAR_TURN_COMPACT=1` optionally packs complete orientation tables losslessly into
 16 bits, with a 32-bit fallback whenever a finite distance reaches 65,535. Logical
-cache capacity stays unchanged. Regression and matched short-trajectory checks
-pass; full-run memory validation is pending. This is a storage optimization,
-not a routing policy.
+cache capacity stays unchanged. Regression and complete 5,000-step warehouse
+trajectory checks pass. The seed-0 control uses 11.883 GB RSS versus 16.208 GB
+with wide tables and preserves every path, schedule, event and task. It also
+passes the one-second complete-entry limit during a concurrent two-instance run.
 
 `CGAR_TURN_PREFETCH_THREADS=1..32` speculatively builds complete tables using
 reserved threads before demand admission. It defaults to zero. Repeated cold
 checks found no timing benefit, so leave it disabled. See the
 [routing study](../../experiments/construction-20260918/ROUTING.md) for all outcomes.
+
+## Experimental learned traffic and objective scaling
+
+`CGAR_FLOW_STRENGTH=1..8` enables a one-time frozen guidance field learned only
+from executed movement. `CGAR_FLOW_WARMUP` defaults to 128 observed steps and
+`CGAR_FLOW_MIN_SAMPLES` to 8 observations per edge. It defaults off. Exact-table
+path costs include the same forward penalties, while the certified spatial
+potential remains unchanged. Strengths 1/2/4 pass regression and deadline screens;
+full performance is pending. [Traffic study](../../experiments/construction-20260918/FLOW.md).
+
+`CGAR_TEMPORAL_DISTANCE_SCALE` changes goal-distance emphasis relative to the
+native operation-index bonus (default 50, allowed 1–4096). Scales 256/1024 pass
+regression/deadline screens; full performance is pending. This is tested
+separately from learned traffic. [Scoring study](../../experiments/construction-20260918/SCALE.md).

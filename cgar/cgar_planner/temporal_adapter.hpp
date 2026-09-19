@@ -66,7 +66,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             return heuristic_value[state];
         };
         auto cost = [&](const TemporalPath& path, int op) {
-            return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance);
+            const int extra = oriented && turn_oracle_.weighted_forward() ?
+                TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
+                    return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
+                }) : 0;
+            return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_) +
+                   int64_t(extra) * temporal_distance_scale_;
         };
         priorities[i] = goal < 0 ? kInf : distance(loc_[i], ori_[i]);
         if (temporal_order_ == 2 && goal >= 0) {
@@ -194,10 +199,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     construction_stats.repairs, construction_stats.repairs_accepted, results[best]->score());
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0) {
         auto seconds = [](auto start, auto end) { return std::chrono::duration<double>(end - start).count(); };
-        std::printf("[cgar-temporal-timing] step=%d candidates=%.6f global=%.6f regions=%.6f validation=%.6f exact_metric=%d fallback_metric=%d\n",
+        std::printf("[cgar-temporal-timing] step=%d candidates=%.6f global=%.6f regions=%.6f validation=%.6f exact_metric=%d fallback_metric=%d distance_scale=%d\n",
                     env_->curr_timestep + 1, seconds(candidate_started, search_started), seconds(search_started, global_finished),
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
-                    exact_metric_robots, fallback_metric_robots);
+                    exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
         if (temporal_regions_) {
             std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d active=%lld candidates=%lld repairs=%lld attempts_accepted=%lld kept=%lld reverted=%lld frozen_crossers=%lld score_before=%.3f score_after=%.3f\n",
                         env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,

@@ -6,38 +6,42 @@ seeds, complete one-second decisions, and measured process RSS below
 map-specific fleet caps. The local leader reference exceeds the memory target;
 retain that resource difference when comparing.
 
-The established equal-weight 50k profile averages 107,413.3 over seeds 0–2.
-The strongest exploratory seed-0 result is 111,118: 4M fixed candidate work plus
-direct-cost dispatch, pickup weight 5, and a global shortlist of 64. Its paired
-control is 107,457. All complete 5,000 steps and pass timing/memory/error checks,
-but direct-cost dispatch leaves older outstanding tasks. This is not a six-seed
-promotion. See [RESULTS.md](RESULTS.md).
+Established results:
 
-Active queue:
+- Equal-weight 50k averages 107,413.3 across seeds 0–2. The compact seed-0
+  implementation preserves every full trajectory field at 107,457 and reduces
+  RSS from 16.208 to 11.883 GB. Two full instances now run concurrently on
+  disjoint reserved cores inside one 24 GiB total allocation.
+- Strongest exploratory seed-0 result: 111,118, using 4M candidate work plus
+  direct-cost dispatch, pickup weight 5, global shortlist 64. Paired control:
+  107,457. Its outstanding-task age is worse; no six-seed promotion.
+- Corrected turn cost 2 yields 100,323. Fewer turns are outweighed by more waits
+  and detours. Cost 4 fails explicitly at timestep 902 in temporal repair;
+  cost 8 fails its screen. Neither failed case receives a partial score.
+- The approved Fable v11 review is complete; its fallback scoring defect and
+  regional observability/testing gaps are fixed. Prefetch found no benefit and
+  stays off. See fable-regions/assessment.md and RESULTS.md.
 
-- Full reviewed matrix **8898387**, frozen build v14: six profiles, two concurrent
-  instances, four disjoint physical cores each, 24 GiB total reserved memory.
-  Compare compact control, turn costs 2/4, one/two regional rounds, and 25k global
-  plus two regional rounds. Cost 8 failed its screen and is excluded.
-- One-core analysis **8898389** after completion.
-- The approved Fable review is complete. Both old fallback corner defects are
-  reproduced and fixed; regional diagnostics and non-vacuous tests pass. See
-  fable-regions/assessment.md. Prefetch/compact storage were outside review scope.
+Active full queue:
 
-Build v14 passes the complete regressions and six 200-step deadline screens.
-All three unit-cost profiles preserve exact v13 50-step trajectories. Compact
-storage has verified lossless overflow fallback, but actual full RSS and complete
-control trajectory equality still need checking. Prefetch had no measured
-benefit and stays off. Earlier held full jobs were replaced with specs and
-cancellation records preserved; no running experiment was canceled.
+1. Job **8898387**, frozen v14, still runs the regional profiles: one round,
+   two rounds, and 25k global plus two rounds. The control/turn cases above are
+   done. Analysis **8898389** follows completion of the entire matrix.
+2. Job **8898410**, frozen v16, is held after 8898387/8898389. It tests one
+   control, learned-flow strengths 1/2/4, and distance scales 256/1024 separately.
+   Two concurrent instances, four disjoint physical cores each, 24 GiB total.
+   Analysis **8898411** follows.
 
-Prioritize loaded-motion efficiency: the earlier audit found 1.4888 steps per
-shortest-path cell for CGAR versus 1.0799 for KittyKnight. The 4M profile reduces
-loaded moves away from the spatial goal from 3.335M to 3.183M, a modest gain.
-Evaluate the weighted-turn and regional full results before combining features.
-Generic learned directional traffic costs, using only observed executed movement
-and a fixed warm-up before freezing costs, remain an unimplemented follow-up.
+The v16 complete regression suite passes, including 7,200 independent shortest
+paths, 610,224 physical-progress bounds, 33,282 actual-scorer dominance pairs,
+and protected/threaded episodes. All relevant 200-step screens pass. Default
+control and flow-1 trajectories exactly match v15; disabled flow matches v14.
+Every source archive reconstructs all tested hashes. No full traffic/scaling
+performance result exists yet. See FLOW.md and SCALE.md.
 
-After each full matrix: check complete entry samples, all errors/timeouts, RSS,
-trajectory fingerprints, final-1,000-step rates, and seed effects. Confirm the
-strongest candidate across all six seeds before claiming repeatability.
+After each matrix: preserve every failure, check all 5,000 entry samples,
+errors/timeouts, actual RSS, trajectory fingerprints, final-1,000-step rates and
+movement efficiency. Keep full-run throughput claims separate from short deadline
+screens. Compare variants before combining features. Six-seed confirmation of
+the strongest candidate remains required before claiming repeatability or meeting
+the leader target. The active goal is not complete.

@@ -25,6 +25,7 @@
 #include "pibt_kernel.hpp"
 #include "temporal_geometry.hpp"
 #include "temporal_regions.hpp"
+#include "flow_guidance.hpp"
 
 #include <chrono>
 #include <cstdint>
@@ -136,14 +137,19 @@ private:
     std::vector<uint16_t> narrow_;
 };
 
-// Shortest guidance costs over (cell, orientation), with unit forward cost and
-// an optional integer turn cost. The certified spatial potential remains in
+// Shortest guidance costs over (cell, orientation), with positive integer
+// turn costs and optional learned forward costs. The certified spatial potential remains in
 // DistanceOracle. Every cached reverse traversal is complete.
 class TurnDistanceOracle {
 public:
     void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false);
     void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
     void discard_prefetch();
+    bool set_forward_costs(std::vector<uint8_t> costs);
+    int forward_cost(int cell, int orientation) const {
+        return forward_costs_.empty() ? 1 : forward_costs_.at(size_t(cell) * 4 + orientation);
+    }
+    bool weighted_forward() const { return !forward_costs_.empty(); }
     long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
     const TurnTable* find(int goal);
     const TurnTable* table(int goal, std::chrono::steady_clock::time_point deadline);
@@ -157,8 +163,9 @@ private:
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
     std::vector<int> cells_, index_, queue_;
-    int turn_cost_ = 1;
+    int turn_cost_ = 1, max_edge_cost_ = 1;
     bool compact_ = false;
+    std::vector<uint8_t> forward_costs_;
     std::vector<std::vector<int>> buckets_;
     std::vector<int> compute(int goal, std::chrono::steady_clock::time_point deadline,
                              std::vector<int>& queue, std::vector<std::vector<int>>& buckets) const;
@@ -217,6 +224,7 @@ struct Stats {
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
+    long long flow_freezes = 0, flow_penalized_edges = 0;
     long long txns = 0;
     long long txn_aborts = 0;
     long long txn_no_hole = 0;
@@ -309,10 +317,12 @@ private:
     Certificate cert_;
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
+    FlowGuidance flow_guidance_;
+    int flow_strength_ = 0;
     TemporalGeometry temporal_geometry_;
     std::mt19937_64 temporal_rng_{0};
     bool temporal_ = false, temporal_equal_weight_ = false;
-    int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
+    int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
     int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0;
     int temporal_workers_ = 1, temporal_threads_ = 1;
     bool temporal_regions_ = false;

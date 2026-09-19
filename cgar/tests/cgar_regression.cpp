@@ -376,8 +376,12 @@ void oriented_distances() {
  const auto cert=build_certificate(map,rows,cols,2);TurnDistanceOracle oracle;
  TemporalGeometry geometry;geometry.initialize(cert.free,rows,cols,[]{});
  int checked=0,score_checks=0;
- for(int turn_cost:{1,2,4,8}){
+ for(int flow:{0,1}){
+  std::vector<uint8_t> edge_costs(rows*cols*4,1);
+  if(flow)for(int u=0;u<rows*cols;++u)for(int dir=0;dir<4;++dir)edge_costs[u*4+dir]=1+(u*11+dir*7)%3;
+  for(int turn_cost:{1,2,4,8}){
   oracle.init(&cert,1,turn_cost,true);
+  if(flow)oracle.set_forward_costs(edge_costs);
   for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
    const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
    auto distance=[&](int cell,int dir){return oracle.value(*table,cell,dir);};
@@ -395,7 +399,7 @@ void oriented_distances() {
        if(action==Action::FW)v=nb(cell,dir,rows,cols);
        else d=(dir+(action==Action::CR?1:3))%4;
        if(v<0||map[v]||(!cert.core[v]&&cert.pocket[v]!=cert.pocket[goal]))continue;
-       int node=v*4+d,new_cost=cost+(action==Action::FW?1:turn_cost);
+       int node=v*4+d,new_cost=cost+(action==Action::FW?edge_costs[cell*4+dir]:turn_cost);
        if(new_cost>=distances[node])continue;distances[node]=new_cost;q.push({new_cost,node});
       }
      }
@@ -411,9 +415,15 @@ void oriented_distances() {
      if(!domain||completed)continue;
      // Over five slots, physically attainable progress cannot exceed five
      // after charging extra turns, including virtual terminal-wait rotations.
-     const int64_t score=TemporalGeometry::cost(path,op,goal,turn_cost,distance);
-     if(score+op<int64_t(expected-5)*50)throw std::runtime_error("temporal score rewards an unpaid weighted turn");
-     ++score_checks;
+     const int extra=TemporalGeometry::forward_surcharge(path,from,goal,[&](int u,int v){
+      for(int dir=0;dir<4;++dir)if(nb(u,dir,rows,cols)==v)return int(edge_costs[u*4+dir]);
+      throw std::runtime_error("invalid directed cost test edge");
+     });
+     for(int scale:{50,256,1024}){
+      const int64_t score=TemporalGeometry::cost(path,op,goal,turn_cost,distance,scale)+int64_t(extra)*scale;
+      if(score+op<int64_t(expected-5)*scale)throw std::runtime_error("temporal score rewards unpaid weighted movement");
+      ++score_checks;
+     }
     }
    }
    oracle.trim();if(oracle.find(goal))throw std::runtime_error("oriented cache exceeded its retained limit");
@@ -421,13 +431,14 @@ void oriented_distances() {
   bool timed_out=false;try{oracle.table(0,std::chrono::steady_clock::now());}catch(const Timeout&){timed_out=true;}
   if(!timed_out||oracle.find(0))throw std::runtime_error("expired oriented traversal entered the cache");
  }
+ }
  // Demand admission can explicitly retain one resident and evict another.
  TurnDistanceOracle retained;retained.init(&cert,1<<20);
  retained.table(0,std::chrono::steady_clock::now()+std::chrono::seconds(1));
  retained.table(1,std::chrono::steady_clock::now()+std::chrono::seconds(1));
  retained.retain({1});
  if(retained.has(0)||!retained.has(1)||retained.capacity()<2)throw std::runtime_error("orientation retention failed");
- std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" weighted_score_checks="<<score_checks<<" turn_costs=1,2,4,8 explicit_timeout=1 bounded_cache=1\n";
+ std::cout<<"ORIENTED_DISTANCES passed state_goal_pairs="<<checked<<" weighted_score_checks="<<score_checks<<" turn_costs=1,2,4,8 directed_weights=1 explicit_timeout=1 bounded_cache=1\n";
 }
 
 void movement_diagnostics() {
@@ -641,6 +652,10 @@ void temporal_region_adapter_regression() {
   for(int r=0;r<48;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+37)%99;
   checked+=48;
  }
+ if(std::getenv("CGAR_FLOW_STRENGTH")&&
+    (serial.stats().flow_freezes!=1||parallel.stats().flow_freezes!=1||!serial.stats().flow_penalized_edges||
+     serial.stats().flow_penalized_edges!=parallel.stats().flow_penalized_edges))
+  throw std::runtime_error("production learned-flow episode did not freeze an identical nontrivial field");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
 }
@@ -783,4 +798,86 @@ void compact_turn_tables() {
  std::cout<<"COMPACT_TURN_TABLES passed sentinel=1 finite_boundaries=1 wide_fallback_cells=70000 storage_halved_when_safe=1\n";
 }
 
-int main(){try{temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void flow_guidance_regression() {
+ const std::vector<int> cycle{0,1,3,2,0};std::vector<char> free(4,true);
+ FlowGuidance flow;flow.initialize(free,2,2,4,4,1);
+ for(int t=0;t<=4;++t){
+  if(flow.observe(t,{cycle[t]})!=(t==4))throw std::runtime_error("flow freeze was not tied to fixed observed work");
+  if(flow.observe(t,{cycle[t]}))throw std::runtime_error("duplicate observation changed flow work");
+ }
+ if(!flow.frozen()||flow.samples()!=4||flow.moves()!=4||flow.penalized_edges()!=4)
+  throw std::runtime_error("flow failed to learn the observed cycle");
+ const auto original=flow.costs();
+ for(auto [u,dir]:std::vector<std::pair<int,int>>{{0,0},{1,1},{3,2},{2,3}}){
+  int v=nb(u,dir,2,2);
+  if(original[u*4+dir]!=1||original[v*4+(dir+2)%4]!=5)throw std::runtime_error("flow penalized the observed dominant direction");
+ }
+ for(int t=5;t<20;++t)if(flow.observe(t,{cycle[(20-t)%4]})||flow.costs()!=original)
+  throw std::runtime_error("frozen flow changed with later movement");
+ // Rotation and reflection equivariance exclude absolute-direction templates.
+ for(bool reflection:{false,true})for(int rotation=0;rotation<4;++rotation){
+  auto transform_cell=[&](int u){int r=u/2,c=u%2;if(reflection)c=1-c;for(int k=0;k<rotation;++k){int old_r=r;r=c;c=1-old_r;}return r*2+c;};
+  auto transform_dir=[&](int dir){if(reflection)dir=(2-dir+4)%4;return (dir+rotation)%4;};
+  FlowGuidance transformed;transformed.initialize(free,2,2,4,4,1);
+  for(int t=0;t<=4;++t)transformed.observe(t,{transform_cell(cycle[t])});
+  for(int u=0;u<4;++u)for(int dir=0;dir<4;++dir)
+   if(transformed.costs()[transform_cell(u)*4+transform_dir(dir)]!=original[u*4+dir])
+    throw std::runtime_error("learned flow used an absolute-direction template");
+ }
+ FlowGuidance neutral;neutral.initialize(free,2,2,4,4,1);
+ for(int t=0;t<=4;++t)neutral.observe(t,{t%2});
+ if(neutral.penalized_edges()||*std::max_element(neutral.costs().begin(),neutral.costs().end())!=1)
+  throw std::runtime_error("equal opposing flows received a directional preference");
+ FlowGuidance sparse;sparse.initialize(free,2,2,2,4,2);sparse.observe(0,{0});sparse.observe(1,{1});sparse.observe(2,{3});
+ if(sparse.penalized_edges())throw std::runtime_error("insufficient evidence received a directional preference");
+ FlowGuidance skipped;skipped.initialize(free,2,2,2,4,1);skipped.observe(0,{0});skipped.observe(2,{3});
+ if(skipped.samples()||skipped.moves())throw std::runtime_error("missing observations invented intermediate moves");
+ skipped.observe(3,{2});skipped.observe(4,{0});if(skipped.moves()!=2||!skipped.frozen())throw std::runtime_error("consecutive flow observations were lost");
+ Certificate cert;cert.rows=2;cert.cols=2;cert.free=free;cert.core=free;cert.pocket.assign(4,-1);
+ TurnDistanceOracle oracle;oracle.init(&cert,1<<20,1,true);auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(1);
+ oracle.table(0,deadline);if(oracle.set_forward_costs(neutral.costs())||!oracle.has(0))throw std::runtime_error("neutral flow unnecessarily invalidated the cache");
+ oracle.prefetch({1},1,deadline);
+ if(!oracle.set_forward_costs(original)||oracle.has(0)||oracle.prefetched_discarded!=1)
+  throw std::runtime_error("a metric change retained old-metric table data");
+ const auto* weighted=oracle.table(0,deadline);
+ // From 1 facing west: costly reverse edge takes 5, clockwise three-edge
+ // detour requires three turns and costs 6. Independent hand-computed optimum.
+ if(oracle.value(*weighted,1,2)!=5)throw std::runtime_error("directed learned costs produced a wrong distance");
+ if(oracle.set_forward_costs(original)||!oracle.has(0))throw std::runtime_error("unchanged flow invalidated the cache");
+ auto invalid=original;invalid[0]=0;bool rejected=false;
+ try{oracle.set_forward_costs(invalid);}catch(const std::invalid_argument&){rejected=true;}
+ if(!rejected||!oracle.has(0))throw std::runtime_error("invalid flow altered the existing metric");
+ setenv("CGAR_FLOW_STRENGTH","2",1);setenv("CGAR_FLOW_WARMUP","8",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ temporal_region_adapter_regression();temporal_primary_regression();
+ for(const char* name:{"CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES"})unsetenv(name);
+ std::cout<<"FLOW_GUIDANCE passed observed_moves_only=1 fixed_freeze=1 rotation_reflection=1 neutral_evidence=1 cache_invalidation=1 protected_progress=1 threaded_replay=1\n";
+}
+
+void temporal_distance_scale_regression() {
+ TemporalGeometry geometry;geometry.initialize(std::vector<char>(144,true),12,12,[]{});
+ const auto& paths=geometry.paths(65,0);int checked=0;
+ for(int scale:{256,1024}){
+  // Over the whole native operation index range, one extra distance unit must
+  // lose to a lower-distance choice. At legacy scale 50 it need not do so.
+  for(int better_op=0;better_op<129;++better_op)for(int worse_op=0;worse_op<129;++worse_op){
+   const auto better=TemporalGeometry::cost(paths[better_op],better_op,143,1,[](int,int){return 10;},scale);
+   const auto worse=TemporalGeometry::cost(paths[worse_op],worse_op,143,1,[](int,int){return 11;},scale);
+   if(better>=worse)
+    throw std::runtime_error("operation preference overrode scaled distance progress");
+   ++checked;
+  }
+  auto distance=[](int cell,int){return 100+cell;};
+  for(int op=0;op<129;++op)if(paths[op].valid){
+   const int64_t legacy=TemporalGeometry::cost(paths[op],op,143,1,distance);
+   const int64_t weighted=TemporalGeometry::cost(paths[op],op,143,1,distance,scale);
+   if((legacy+op)*scale!=(weighted+op)*50)throw std::runtime_error("scale changed the native operation tie term");
+  }
+ }
+ if(TemporalGeometry::cost(paths[0],0,143,1,[](int,int){return 10;})<=
+    TemporalGeometry::cost(paths[128],128,143,1,[](int,int){return 11;}))throw std::runtime_error("legacy operation-weight example was not reproduced");
+ setenv("CGAR_TEMPORAL_DISTANCE_SCALE","256",1);temporal_primary_regression();temporal_region_adapter_regression();
+ unsetenv("CGAR_TEMPORAL_DISTANCE_SCALE");
+ std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
+}
+
+int main(){try{temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

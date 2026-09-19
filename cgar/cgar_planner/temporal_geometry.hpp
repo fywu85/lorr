@@ -44,11 +44,22 @@ public:
         return d + turns;
     }
 
+    template<class EdgeCost>
+    static int forward_surcharge(const TemporalPath& path, int start, int goal, EdgeCost edge_cost) {
+        int extra = 0, from = start;
+        for (int to : path.cells) {
+            if (to != from) extra += edge_cost(from, to) - 1;
+            if (to == goal) break;
+            from = to;
+        }
+        return extra;
+    }
+
     // All candidates consume five unit-time slots. Charge only the extra cost
     // of real or terminal-wait rotations, so a costly turn cannot manufacture
     // heuristic progress. Goal completion retains the native terminal reward.
     template<class Distance>
-    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance) {
+    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance, int distance_scale = 50) {
         if (goal < 0) return op;
         const auto& actions = operations()[op];
         const int extra = turn_cost - 1;
@@ -68,7 +79,7 @@ public:
                 d = -t;
             }
         }
-        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * 50 - op;
+        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * distance_scale - op;
     }
 
     template<class Deadline>

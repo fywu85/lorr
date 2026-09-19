@@ -1,9 +1,10 @@
 # Generic routing and shared-plan repair experiments
 
-These optional settings are implemented and regression-tested, but have no
-completed full-run performance result yet. They do not change the established
-107,413-task three-seed recommendation or its defaults. Full warehouse runs,
-then six-seed confirmation of the strongest candidate, remain required.
+These settings are optional and regression-tested. Compact storage now has a
+complete, identical 5,000-step control trajectory with 11.883 GB RSS. Corrected
+turn cost 2 loses throughput and cost 4 fails a later deadline; regional full
+results remain pending. The established 107,413-task three-seed recommendation
+and defaults are unchanged. Six-seed confirmation remains required.
 
 ## Weighted turns (build v9)
 
@@ -83,8 +84,9 @@ Both compact control repeats use approximately 2.21 GiB RSS at step 50, versus
 2.67 GiB for wide tables, with similar timing. [Screen evidence](results/compact-cold-v13/).
 A generic BFS diameter bound proves all orientation tables for this workload and
 turn costs 1–4 fit 16 bits; no policy setting is derived from map structure.
-[Memory-planning bound](compact-distance-bound.json). Actual full-run RSS still
-needs measurement; the expected filled-cache saving is about 4 GiB.
+[Memory-planning bound](compact-distance-bound.json). The complete v14 control now measures 11.883 GB RSS versus 16.208 GB with
+wide storage, with every full trajectory field identical.
+[Full equivalence](results/compact-full-equivalence.json).
 
 `CGAR_TURN_PREFETCH_THREADS` is a disabled-by-default speculative experiment.
 Workers build complete tables privately and join before normal serial demand
@@ -136,8 +138,11 @@ causal explanation: bucket-Dijkstra work can also vary with edge weights.
   passing profiles above over all 5,000 steps. **Two concurrent instances use
   four disjoint physical cores each, with 24 GiB total reserved memory.**
   The frozen source is v14. Cost 8 is excluded solely because it timed out.
-- One-core analysis job **8898389** waits for that matrix. The actual full RSS,
-  complete control trajectory, and all timing/error checks remain to be measured.
+- One-core analysis job **8898389** waits for the whole matrix. The first-pair
+  analysis is already complete: the compact control has identical full
+  trajectories, 11.883 GB RSS and a 0.506-second maximum entry time. Turn cost 2
+  reaches 100,323, while cost 4 fails at timestep 902 in temporal repair.
+  Regional full outcomes are still pending.
 - Every full profile uses seed 0, the EPYC 9354 host allowlist and explicit
   CPU-model verification, a one-second complete-entry limit, and measured process
   RSS below 32,000,000,000 bytes. Six-seed confirmation remains outstanding.

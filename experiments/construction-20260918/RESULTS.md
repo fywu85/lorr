@@ -167,3 +167,30 @@ The tested checkpoint is the optional equal-weight 50k profile. Source patches
 for every build are in [build-provenance](build-provenance/). Defaults remain
 unchanged. Further work must retain the 1-second failure contract, 32 GB process
 target, generic policies, and full-run validation.
+
+## First completed compact full cases (v14, remaining matrix running)
+
+| Seed-0 profile | Tasks | Maximum entry time | Peak RSS bytes | Wall seconds |
+|---|---:|---:|---:|---:|
+| Compact 50k control | 107,457 | 0.506047297 s | 11,883,474,944 | 942.419 |
+| Corrected turn cost 2 | 100,323 | 0.592729302 s | 11,805,106,176 | 1,130.568 |
+
+Both complete 5,000 steps with all entry samples and zero errors/timeouts. The
+compact control reduces measured process RSS from approximately 16.2 to 11.88 GB
+and preserves every path, schedule, event and task over all 5,000 steps.
+[Exact full comparison](results/compact-full-equivalence.json). The
+two processes run concurrently on disjoint physical cores inside one 24 GiB
+reservation. Their wall times are not a same-process sequential/parallel speedup
+measurement. Turn cost 2 loses 6.64% against its paired control and is not promoted.
+Other v14 profiles continue; this is explicitly a partial matrix report.
+
+The turn-cost-2 motion analysis explains the negative tradeoff: loaded turns
+fall from 3,831,662 to 3,012,168 (−21.4%), but loaded waits rise from 2,848,136
+to 4,178,808 (+46.7%) and moves away from the spatial goal rise from 3,335,096
+to 4,001,234 (+20.0%). [Completed first-pair analysis](results/review-v14-first-pair/).
+
+Turn cost 4 subsequently fails explicitly at timestep 902 in temporal repair
+(exit 124). At step 800 its 50,000 attempts inspect 48,641,995 candidates and
+global repair takes 0.486 seconds; all 10,000 robots then have an exact metric.
+Thus this late failure is not the earlier cold-cache fallback defect. No partial
+score is accepted. [Failure record](results/turn4-full-v14-failure/).
