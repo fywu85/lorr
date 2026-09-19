@@ -413,3 +413,17 @@ current-goal suffix and updates intended-edge counts exactly. Goal/protection
 changes invalidate the route; failed connectors use ordinary route admission.
 The experiment uses 16 actions. No action plan is exposed before complete
 search and collision validation.
+
+
+## Read-only temporal conflict audit
+
+`CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE` defaults to0 (disabled), or accepts1–4096
+with temporal planning enabled. At fixed sample steps it examines stationary,
+non-fixed robots with goals in the completed reservation table. It reports the
+blocker count for the cheapest improving forward candidate and the least-conflicted
+candidate among all improvements. A separate partition requires one full unit of
+physical objective improvement after removing operation tie terms. These are
+plan snapshots, not rejected-attempt histories or estimates of recoverable tasks.
+The audit changes no search state, randomness or cache entries. A stride coprime
+to the flow refresh interval avoids always sampling the same publication phases.
+See the [audit study](../../experiments/construction-20260918/FORWARD_CONFLICT_AUDIT.md).

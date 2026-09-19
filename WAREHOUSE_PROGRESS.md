@@ -1,8 +1,8 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 13:01:39 UTC.
+Updated: 2026-09-19 13:33:23 UTC.
 
-**Best observed full run: 135,177 completed tasks** — refresh512 with strict wait turns, seed0. Its two-seed mean is **134,424.5** (135,177 /133,672), slightly below ordinary refresh512's **134,515** (134,511 /134,519). Ordinary refresh is now confirmed on four seeds (0–3): **134,487.5 mean**, range **134,061–134,859**. The final two seeds are running.
+**Best observed full run: 135,177 completed tasks** — refresh512 with strict wait turns, seed 0. Its two-seed mean is **134,424.5**, slightly below ordinary refresh512 on the same seeds. Ordinary refresh is now confirmed on **all six seeds (0–5)**: **134,590.3 mean**, range **134,061–134,966**, with no deadline or memory failures. The throughput target remains unmet.
 
 The local KittyKnight reference is **152,981**, so the experimental peak is **11.64% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
@@ -44,27 +44,38 @@ This log backfills every increasing single-run record from the full warehouse ca
 
 | Policy | Full-run evidence | Current interpretation |
 |---|---|---|
-| No-flow fixed 4M | Seeds 0/1/2: 109,244 / 109,249 / 109,182; mean **109,225** | Stable current three-seed control; six-seed confirmation outstanding. |
+| No-flow fixed 4M | Six seeds: 109,244 / 109,249 / 109,182 / 109,110 / 109,071 / 109,182; mean **109,173** | Stable matched control; full timing and memory checks pass. |
 | Frozen margin-50 flow | Seeds 0/1/2: 122,896 / 122,195 / 70,171; mean **105,087.3** | Historical peak retained, but **not promoted**: seed 2 collapses late and the mean loses to its matched control. |
-| Refresh every 512 | Seeds0/1/2/3: **134,511 /134,859 /134,519 /134,061**; mean **134,487.5** | Four fully analyzed seeds pass. Final1,000 windows28,215 /28,223 /28,214 /28,227. Six-seed confirmation8898647/8898648 running. |
+| Refresh every 512 | Six seeds: **134,511 / 134,859 / 134,519 / 134,061 / 134,626 / 134,966**; mean **134,590.3** | All six independently analyzed; repeated controls exactly reproduce. Final windows 28,167–28,368. |
 | Refresh every 1,024 | Seeds 0/2: 133,652 / 131,316; mean 132,484 | Both recover steady final-window throughput, but interval 512 wins both full totals. |
 | Frozen flow with warm reuse | Seeds 0/2: 123,373 / 123,251; mean 123,312 | Recovers seed 2 without updating the field; below refresh512 on both tested seeds. |
 | Gentler frozen-flow penalties | Scale4 seeds0/2: 121,812 /119,927; scale8: 119,337 /117,897 | Both recover seed2, but lower healthy-seed throughput and remain below refresh512. |
 | Strict wait turns + refresh512 | Seeds0/2: **135,177 /133,672**, mean134,424.5; all decisions valid | New single-run peak; mean is0.067% below ordinary refresh on these seeds. No additive gain established. |
 | Refresh512 + warm reuse | Seeds0/2: 134,997 /134,794; mean134,895.5 | Small positive paired effect (+0.283%); broader confirmation pending. Refresh256 slightly loses on both seeds. |
+| Cache-only resets | Four strict-mode/seed contrasts: actual refresh beats cache-only every time | Actual traffic-cost updates add8.74–9.84% above cache-only in healthy controls; legacy seed2 still deteriorates with cache-only. [Evidence](experiments/construction-20260918/results/flow-cache-only-full-v33/causal-comparison.json). |
+| Additional parallel search | Four4M workers:134,975 /134,603, mean134,789 | Only+0.204% over one worker; four1M workers collapse despite valid decisions. [Full evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json). |
+| Gentler refreshed costs | Scale2 mean132,957; scale4 mean130,823.5 | Lose1.16% /2.74% to ordinary refresh512; not promoted. |
 
-[Four-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-four-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
+[Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
-## Resource cost of the leading configuration (measured on seeds0/2)
+## Resource cost of the leading configuration
 
-Refresh512, seeds0/2, all5,000steps: mean complete scheduling+planning latency
-**237.3 /256.8ms**, p95 **303.1 /322.8ms**, p99 **323.8 /340.1ms**, maximum **765.3 /762.0ms**; average CPU **1.216 /1.197cores**
-with four physical cores reserved per instance (about30% average utilization).
-Peak process RSS **11.838 /11.888GB**; elapsed full run **20.99 /22.65minutes**.
-CPU is measured user+system time divided by process wall time, not an instantaneous
+Across the six-seed confirmation, mean complete scheduling plus planning latency
+is **239.4–258.1 ms**, with a maximum of **776.3 ms**.
+The independent seeds 0/2 latency audit measured p99 at **323.8 / 340.1 ms**.
+Average CPU use is **1.195–1.211 cores** with four physical cores reserved
+per instance (about 30% average utilization). Peak process RSS reaches **13.121 GB**,
+and full runs take **21.19–22.75 minutes**.
+CPU is process user plus system time divided by wall time, not an instantaneous
 sample. Hosts were exclusive and unthrottled. Preparation uses multiple workers;
-much of the remaining work is serial. Allocation does not imply four busy cores.
-[Machine-readable resource evidence](experiments/construction-20260918/results/flow-refresh-resource-summary-v30.json), [independent latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
+much of the remaining work is serial. A separate repeated control reached 792.9 ms,
+so 776.3 ms is the maximum of this confirmation, not of every repeated run.
+[Six-seed resource evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json),
+[independent latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
+
+Four full-size search workers average 271–277 ms per decision and 2.60–2.63 CPU
+cores, but add only 0.204% throughput on seeds 0/2; they are not promoted.
+[Parallel-search evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json).
 
 ## Updating this log
 

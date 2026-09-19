@@ -26,10 +26,16 @@ struct TemporalChoice {
     int operation = 0;
 };
 
+struct TemporalForwardPartition {
+    int no_lower_forward = 0, unblocked = 0;
+    int one_movable = 0, two_movable = 0, many_movable = 0, protected_blocker = 0;
+};
+
 // A read-only snapshot of the finished reservation table, not rejection history.
 struct TemporalForwardAudit {
     int stationary = 0, no_lower_forward = 0, unblocked = 0;
     int one_movable = 0, two_movable = 0, many_movable = 0, protected_blocker = 0;
+    TemporalForwardPartition easiest, physical;
 };
 
 struct TemporalStats {
@@ -121,44 +127,55 @@ public:
     int selected(int r) const { return selected_[r]; }
     const std::vector<int>& selections() const { return selected_; }
     double score() const { return score_; }
-    // Classify the best strictly lower-cost first-forward alternative for each
-    // stationary, ordinary, goal-bearing robot in the completed plan. Occupancy
-    // belonging to that same robot is excluded. This never runs a search, changes
-    // reservations, promotes cache entries or consumes randomness. Necessary turns
-    // can be stationary too; these counts are opportunity bounds, not lost tasks.
-    TemporalForwardAudit audit_forward_blockers() const {
+    // Preserve the best-cost classification and also report the least-conflicted
+    // improving alternative. The physical partition requires one full unit of
+    // distance/turn cost after removing operation tie terms. Fixed owners rank
+    // after every non-fixed class. This is const: no search, cache or RNG changes.
+    TemporalForwardAudit audit_forward_blockers(int distance_scale = 50, int unit_cost = 1) const {
+        if (distance_scale <= 0 || unit_cost <= 0) throw std::invalid_argument("invalid forward audit cost units");
         TemporalForwardAudit out;
+        constexpr int protected_class = 2 * kTemporalHorizon + 1, absent = protected_class + 1;
+        auto tally = [](auto& counts, int category) {
+            if (category == absent) ++counts.no_lower_forward;
+            else if (category == protected_class) ++counts.protected_blocker;
+            else if (!category) ++counts.unblocked;
+            else if (category == 1) ++counts.one_movable;
+            else if (category == 2) ++counts.two_movable;
+            else ++counts.many_movable;
+        };
         for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
             const int start = choices_[r][0].path->cells[0];
             if (fixed_[r] || power_[r] <= 0 || choice(r).path->cells[0] != start) continue;
             ++out.stationary;
-            int best = -1;
+            int best = -1, best_class = absent, easiest = absent, physical = absent;
+            const int64_t old_physical = choice(r).cost + int64_t(choice(r).operation) * unit_cost;
             for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
                 const auto& candidate = choices_[r][k];
                 if (candidate.path->cells[0] == start || candidate.cost >= choice(r).cost) continue;
+                std::array<int, 2 * kTemporalHorizon> owners{};
+                int count = 0;
+                auto take = [&](int owner) {
+                    if (owner < 0 || owner == r) return;
+                    for (int i = 0; i < count; ++i) if (owners[i] == owner) return;
+                    owners[count++] = owner;
+                };
+                const auto& path = *candidate.path;
+                for (int t = 0; t < kTemporalHorizon; ++t) {
+                    take(used_cells_[path.cells[t]][t]);
+                    if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t]);
+                }
+                int category = count;
+                for (int i = 0; i < count; ++i) if (fixed_[owners[i]]) category = protected_class;
+                easiest = std::min(easiest, category);
+                const int64_t candidate_physical = candidate.cost + int64_t(candidate.operation) * unit_cost;
+                if (old_physical - candidate_physical >= int64_t(distance_scale) * unit_cost)
+                    physical = std::min(physical, category);
                 if (best < 0 || candidate.cost < choices_[r][best].cost ||
-                    (candidate.cost == choices_[r][best].cost && candidate.operation < choices_[r][best].operation)) best = k;
+                    (candidate.cost == choices_[r][best].cost && candidate.operation < choices_[r][best].operation)) {
+                    best = k; best_class = category;
+                }
             }
-            if (best < 0) { ++out.no_lower_forward; continue; }
-            std::array<int, 2 * kTemporalHorizon> owners{};
-            int count = 0;
-            auto take = [&](int owner) {
-                if (owner < 0 || owner == r) return;
-                for (int i = 0; i < count; ++i) if (owners[i] == owner) return;
-                owners[count++] = owner;
-            };
-            const auto& path = *choices_[r][best].path;
-            for (int t = 0; t < kTemporalHorizon; ++t) {
-                take(used_cells_[path.cells[t]][t]);
-                if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t]);
-            }
-            bool protected_owner = false;
-            for (int i = 0; i < count; ++i) protected_owner |= fixed_[owners[i]];
-            if (protected_owner) ++out.protected_blocker;
-            else if (!count) ++out.unblocked;
-            else if (count == 1) ++out.one_movable;
-            else if (count == 2) ++out.two_movable;
-            else ++out.many_movable;
+            tally(out, best_class); tally(out.easiest, easiest); tally(out.physical, physical);
         }
         return out;
     }

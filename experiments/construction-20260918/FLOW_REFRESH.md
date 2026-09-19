@@ -134,3 +134,19 @@ Refreshing twice as often loses0.294% by paired means. Warm reuse adds0.283%,
 positive on both seeds, but remains only a small two-seed effect. It has not passed
 the broader confirmation applied to ordinary refresh. No new single-run record.
 [Full evidence](results/flow-refresh-followup-v30/).
+
+
+## Six-seed confirmation complete
+
+The full matched v30 matrix8898647 /8898648 passes all twelve cases. Refreshed
+flow scores134511 /134859 /134519 /134061 /134626 /134966 on seeds0–5,
+mean134,590.333; matched no-flow mean109,173.000.
+The refreshed mean is23.282% higher, and every
+paired seed improves. Final windows stay between28167 and28368 completed tasks.
+All four previously analyzed refreshed trajectories and the three established
+no-flow controls reproduce exactly. All complete entries are below one second
+and process RSS stays below32GB. This confirms this policy over six seeds; it
+does not meet the152981-task leader target.
+
+[Six-seed scores, reproducibility and resource measurements](results/flow-refresh-six-seed-v30.json),
+[full independent analysis](results/flow-refresh-confirm-v30/).

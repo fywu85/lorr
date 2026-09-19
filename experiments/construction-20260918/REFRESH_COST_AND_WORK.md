@@ -48,3 +48,35 @@ has an outcome at submission; no new setting is promoted.
 [worker screen](results/flow-refresh-workers-screen-v33/),
 [cost profiles](flow-refresh-scale-variants.json),
 [worker profiles](flow-refresh-workers-variants.json).
+
+
+## Completed refreshed-cost comparison
+
+All six full cases pass, and both scale1 controls reproduce the prior complete
+trajectory fingerprints. Scale2 scores133,232 /132,682 (mean132,957), and
+scale4 scores130,359 /131,288 (mean130,823.5). Against scale1's134,515 mean,
+these lose1.16% and2.74% respectively. Gentler penalties are not promoted.
+[Full contrast and validity evidence](results/flow-refresh-scale-full-v33/comparison.json).
+
+The four-worker1M summaries have also finished at51,791 /42,001 tasks, with
+valid deadlines. Final selected-worker construction counts exceed the nominal
+1M allowance and leave zero repair attempts at step5000. This arm therefore
+is not an exact equal-work comparison: construction is mandatory and may
+overshoot. Full trajectory analysis waits for the4M-per-worker arm to finish.
+
+
+## Completed fixed-worker comparison
+
+All six cases and independent analyses pass, and both one-worker controls
+reproduce prior full fingerprints. Four workers with4M allowance each score
+134,975 /134,603 (mean134,789), only0.204% above the one-worker134,515 mean.
+Their final1,000-step counts are28,244 /28,248. The four1M workers deteriorate
+to4,812 /4,835 in the final window; both are valid completed runs, not timeouts.
+
+The4x4M arm uses additional fixed search work but supplies little paired gain,
+so it is not the next default. More CPU by itself does not close the gap.
+The1M arm's final selected workers inspect9.51M /4.46M candidates in construction
+and perform zero repair attempts. Actual total work across all workers was not
+logged; these selected-worker counts cannot establish an equal-compute test.
+
+[Full throughput, resource costs and selected-worker work](results/flow-refresh-workers-full-v33/comparison.json).

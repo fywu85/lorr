@@ -44,3 +44,57 @@ No branching policy is included in this change.
 
 [Build](build-provenance/v34/), [screen](results/forward-audit-screen-v34/),
 [full configuration](forward-audit-full-variants.json).
+
+
+## Completed v34 full results
+
+Both full fingerprints match ordinary refresh512 exactly, with134511 /134519
+tasks, all decisions valid. Each seed has78samples, with16in the final1,000steps.
+Every partition conserves the eligible stationary-robot count.
+
+| Late-window mean per sampled step | Seed0 | Seed2 |
+|---|---:|---:|
+| Eligible stationary |935.81|921.75|
+| No improving first-forward candidate |283.06|283.88|
+| Best candidate unblocked |1.00|0.56|
+| Best candidate touches one movable owner |306.25|294.94|
+| Best candidate touches two movable owners |194.50|201.56|
+| Best candidate touches three or more |150.88|140.62|
+| Best candidate touches a fixed owner |0.13|0.19|
+
+The cheapest candidate is rarely free, but a slightly more expensive improving
+one might be free. These counts cannot yet decide whether extra single-chain
+search, a free-move sweep, or branching is the useful change. The expanded v35
+audit will inspect every improving alternative, remove operation tie terms before
+testing a full physical-step gain, and use stride67 to cover different phases of
+the512-step publication cycle. The policy remains unchanged.
+
+[Full fingerprints and samples](results/forward-audit-full-v34/forward-audit.json).
+
+
+## Expanded audit v35
+
+The optional audit now retains the original best-cost partition and adds the
+least-conflicted alternative over all strictly improving forward choices. Any
+alternative containing a fixed owner ranks after every movable-owner class.
+A second partition additionally requires a full unit of the distance/turn
+objective after removing the operation-index term. Merely comparing scalar
+gain to50 would be insufficient: the operation term itself can exceed50.
+The physical partition still measures a heuristic objective, not actual future
+travel time or guaranteed throughput.
+
+Build8898686 passes all regressions. New independent fixtures distinguish a
+three-owner cheapest path from a one-owner alternative, a protected cheapest
+path from a movable alternative, and a two-owner path from a free alternative.
+Nine gain-boundary checks across three cost scales reject tie-only changes.
+The frozen patch reconstructs every requested source hash.
+
+Screen8898687 passes both audit-off and stride67 cases with the exact v30
+200-step fingerprint. All scalar and physical partitions conserve counts at
+steps67 and134. Full jobs8898688 /8898689 audit seeds0/2 with stride67, which
+is coprime to512, on exclusive research38, four physical cores per case.
+The policy is unchanged; no free-move sweep or branching search is enabled.
+
+[Expanded source archive](build-provenance/v35/),
+[expanded screen](results/forward-options-screen-v35/),
+[expanded full configuration](forward-options-full-variants.json).

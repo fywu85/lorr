@@ -59,3 +59,28 @@ would implicate later changes, not prove the initial field unnecessary. The prop
 statistical bounds. Planned follow-ups: interval256 and an offline congestion/dwell
 audit before adding new costs. Scheduler-metric and branching suggestions remain
 hypotheses; cached-only scoring may introduce cache-availability bias.
+
+
+Turn04 completes in the same session: one turn,325.870seconds,$6.29122725,
+48383payload bytes and five changed source excerpts. It retracts the claim that
+tied seed turns explain most collapsed-run rotations: these are only0.62% of
+late-window turns. It also accepts that actual traffic updates outperform a
+cache-only reset on healthy seed0. Seed2 full confirmation is still pending.
+
+The audit correctly labels its single best first-forward candidate, but that is
+not the easiest improving candidate to repair. Before using it to choose a
+branching policy, count the least-conflicted alternative over all improvements,
+separate at least one physical step of cost from operation tie terms, and sample
+at stride67 so refresh512 is not always observed at the same offsets. Its
+reservations are the completed plan, not rejected search attempts. A free local
+improvement is evidence of opportunity in that plan, not a measured task gain.
+
+The suggested direct-cost assignment is already implemented. It slightly lost
+in the older no-flow50k-repair study (107083 versus107457 on seed0), so a gain
+is a hypothesis, not established evidence. Test it under refreshed flow with
+and without existing chain-cost refinement to expose stale underestimate bias.
+The task-length and empty-travel comparisons use different completed cohorts;
+Fable's numerical split is illustrative and cannot establish that one-third
+to one-half of the causal gap lies in assignment. Unopened-task exchange with
+the free pool remains a separate hypothesis requiring simulator-contract and
+protection checks. No new reassignment behavior has been enabled.

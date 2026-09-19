@@ -299,11 +299,18 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         temporal_history_.remember(env_->curr_timestep, search, goals, expected_orientation);
     }
     if (temporal_conflict_audit_stride_ && (env_->curr_timestep + 1) % temporal_conflict_audit_stride_ == 0) {
-        const auto audit = search.audit_forward_blockers();
+        const auto audit = search.audit_forward_blockers(temporal_distance_scale_, flow_cost_scale_);
         ++stats_.temporal_conflict_audits;
         if (diagnostics_) std::printf("[cgar-temporal-forward-audit] step=%d stationary=%d no_lower_forward=%d unblocked=%d one_movable=%d two_movable=%d many_movable=%d protected_blocker=%d\n",
             env_->curr_timestep + 1, audit.stationary, audit.no_lower_forward, audit.unblocked,
             audit.one_movable, audit.two_movable, audit.many_movable, audit.protected_blocker);
+        auto log_partition = [&](const char* basis, const TemporalForwardPartition& part) {
+            if (diagnostics_) std::printf("[cgar-temporal-forward-options] step=%d basis=%s stationary=%d no_lower_forward=%d unblocked=%d one_movable=%d two_movable=%d many_movable=%d protected_blocker=%d distance_scale=%d unit_cost=%d\n",
+                env_->curr_timestep + 1, basis, audit.stationary, part.no_lower_forward, part.unblocked,
+                part.one_movable, part.two_movable, part.many_movable, part.protected_blocker,
+                temporal_distance_scale_, flow_cost_scale_);
+        };
+        log_partition("scalar", audit.easiest); log_partition("physical", audit.physical);
     }
     const auto& construction_stats = results[best]->stats;
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)

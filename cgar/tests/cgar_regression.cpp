@@ -1126,13 +1126,45 @@ void temporal_forward_audit_regression() {
  if(equal.audit_forward_blockers().no_lower_forward!=1)throw std::runtime_error("forward audit treated an equal-cost alternative as a strict improvement");
  power[0]=0;TemporalPibt idle(7,choices,fixed,power,8192,1);
  if(idle.audit_forward_blockers().stationary)throw std::runtime_error("forward audit included an idle zero-weight robot");
+ // The cheapest forward path crosses three owners; a smaller improvement
+ // crosses only one. Count the easiest alternative, not just the cheapest one.
+ choices.assign(4,{});fixed.assign(4,false);power.assign(4,1);
+ for(int r=0;r<4;++r)choices[r].push_back({&geometry.paths(r,0)[0],r?0:1000,0});
+ choices[0].push_back({&geometry.paths(0,0)[forward],0,forward});
+ choices[0].push_back({&geometry.paths(0,0)[one_step],500,one_step});
+ TemporalPibt easier(7,choices,fixed,power,8192,1);auto split=easier.audit_forward_blockers();
+ if(split.many_movable!=1||split.easiest.one_movable!=1||split.physical.one_movable!=1)
+  throw std::runtime_error("forward audit missed the easier improving alternative");
+ fixed[2]=true;TemporalPibt protected_best(7,choices,fixed,power,8192,1);split=protected_best.audit_forward_blockers();
+ if(split.protected_blocker!=1||split.easiest.one_movable!=1||split.physical.one_movable!=1)
+  throw std::runtime_error("forward audit let a protected best alternative hide a movable one");
+ choices[1][0].path=&geometry.paths(4,0)[0];fixed[2]=false;
+ TemporalPibt free_second(7,choices,fixed,power,8192,1);split=free_second.audit_forward_blockers();
+ if(split.two_movable!=1||split.easiest.unblocked!=1||split.physical.unblocked!=1)
+  throw std::runtime_error("forward audit missed a free non-best alternative");
+ // Operation tie terms can exceed one scalar distance step. Remove them before
+ // applying the physical threshold, and check its boundary under cost scaling.
+ choices.resize(1);fixed.assign(1,false);power.assign(1,1);
+ for(int scale:{1,4,8})for(int gain:{0,49,50}){
+  choices[0]={{&geometry.paths(0,0)[0],int64_t(1000)*scale,0},
+              {&geometry.paths(0,0)[one_step],int64_t(1000-gain-one_step)*scale,one_step}};
+  TemporalPibt boundary(7,choices,fixed,power,8192,1);split=boundary.audit_forward_blockers(50,scale);
+  if(split.easiest.unblocked!=1||split.physical.unblocked!=int(gain==50)||
+     split.physical.no_lower_forward!=int(gain<50))
+   throw std::runtime_error("forward audit confused operation ties with scaled physical gain");
+ }
+ for(auto units:std::vector<std::pair<int,int>>{{0,1},{1,0},{-1,1},{1,-1}}){
+  TemporalPibt invalid(7,choices,fixed,power,8192,1);bool rejected=false;
+  try{invalid.audit_forward_blockers(units.first,units.second);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("forward audit accepted invalid cost units");
+ }
  for(const char* value:{"-1","4097","1"}){
   setenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE",value,1);SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool rejected=false;
   try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
   if(!rejected)throw std::runtime_error("invalid or non-temporal conflict audit was accepted");
  }
  setenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE","7",1);temporal_region_adapter_regression();temporal_primary_regression();unsetenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE");
- std::cout<<"TEMPORAL_FORWARD_AUDIT passed hand_counted_blocker_fixtures="<<fixtures<<" owner_deduplication=1 own_future_reservations_excluded=1 strict_cost_boundary=1 fixed_and_idle_excluded=1 search_rng_and_selections_unchanged=1 fixed_sample_schedule=1 protected_serial_parallel_actions=4800\n";
+ std::cout<<"TEMPORAL_FORWARD_AUDIT passed hand_counted_blocker_fixtures="<<fixtures<<" owner_deduplication=1 own_future_reservations_excluded=1 strict_cost_boundary=1 fixed_and_idle_excluded=1 search_rng_and_selections_unchanged=1 fixed_sample_schedule=1 easiest_alternative=1 tie_terms_removed=1 physical_gain_boundaries=9 protected_serial_parallel_actions=4800\n";
 }
 
 void flow_cache_only_regression() {

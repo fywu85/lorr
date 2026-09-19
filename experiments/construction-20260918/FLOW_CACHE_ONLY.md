@@ -46,3 +46,30 @@ is unnecessary. No full causal result exists at submission.
 [Build](build-provenance/v33/), [screens](results/flow-cache-only-screen-v33/),
 [full configuration](flow-cache-only-full-variants.json),
 [persistent Fable assessment](fable-flow-session/assessment.md).
+
+
+## Completed full comparison
+
+All12 runs and independent analyses pass. All eight frozen/real-refresh controls
+match their v32 complete trajectory fingerprints exactly. Maximum complete entry
+is0.782713seconds; peak RSS11.917GB. Each refresh arm publishes and clears
+tables at the same ten sample counts128,640,...,4736. Cache-only preserves the
+initial penalized edges; the nine later publications report no metric change.
+
+| Strict wait turns | Seed | Frozen | Cache-only512 | Actual refresh512 |
+|---|---:|---:|---:|---:|
+| Off |0|122,896|123,505|134,511|
+| Off |2|70,171|102,988|134,519|
+| On |0|122,076|123,063|135,177|
+| On |2|121,534|122,923|133,672|
+
+Actual refresh beats cache-only in all four matched comparisons. In the three
+healthy frozen controls, cache clearing adds0.50–1.14%, while actual updates
+add a further8.74–9.84% over cache-only. Under legacy wait turns, cache-only
+partly rescues seed2, but it still deteriorates to10,650 tasks in the final1,000
+steps, versus28,214 with actual refresh. The improved traffic costs matter beyond
+cache resets. This does not separate metric quality from the behavioral effect of
+changing it, and two seeds do not establish a universal causal effect.
+
+[Full evidence](results/flow-cache-only-full-v33/),
+[within-mode contrasts and reset schedules](results/flow-cache-only-full-v33/causal-comparison.json).
