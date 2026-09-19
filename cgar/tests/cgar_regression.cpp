@@ -2516,16 +2516,21 @@ void temporal_next_errand_regression() {
   std::vector<int> goals{48,23,16,44};
   if(kind==5){e.rows=3;e.cols=9;e.map.assign(27,0);for(int r=0;r<3;++r)e.map[r*9+4]=1;
    e.curr_states={State(0,0,1),State(11,0,2),State(6,0,1),State(8,0,1)};goals={18,10,16,26};}
+  if(kind==7){e.rows=7;e.cols=9;e.map.assign(63,1);
+   for(int r=0;r<7;++r)for(int c=0;c<7;++c)e.map[r*9+c]=0;e.map[34]=e.map[35]=0;
+   e.curr_states={State(0,0,1),State(32,0,0),State(6,0,1),State(54,0,0)};goals={60,33,11,56};}
+  if(kind==8)goals[1]=24;
   e.curr_task_schedule={0,1,2,3};e.goal_locations.resize(4);
   for(int r=0;r<4;++r){Task task;task.task_id=r;task.t_revealed=0;task.agent_assigned=r;task.locations={goals[r]};
-   if(r==1&&kind!=4)task.locations.push_back(kind==1?17:kind==2?goals[r]:16);
+   if(r==1&&kind!=4)task.locations.push_back(kind==1?17:kind==2?goals[r]:kind==7?11:16);
    if(r==0&&kind==4)task.locations.push_back(16);
    e.task_pool.emplace(r,task);e.goal_locations[r]={{goals[r],0}};}
   return e;
  };
  // 0 resident next table,1 absent,2 repeated location,3 current fallback,
- // 4 only a pinned primary has a next errand,5 disconnected next,6 guided metric.
- for(int kind=0;kind<7;++kind){
+ // 4 only a pinned primary has a next errand,5 disconnected next,6 guided metric,
+ // 7 finite current goal but an excluded pocket endpoint,8 assigned at current cell.
+ for(int kind=0;kind<9;++kind){
   setenv("CGAR_TEMPORAL_TABLE_BATCH",kind==3?"0":"32",1);setenv("CGAR_TURN_BUILD_LIMIT",kind==3?"0":"32",1);
   setenv("CGAR_GUIDE_ROUTES",kind==6?"1":"0",1);auto e=environment(kind);
   setenv("CGAR_TEMPORAL_NEXT_ERRAND","0",1);Cgar native;native.initialize(&e,1000);
@@ -2537,7 +2542,7 @@ void temporal_next_errand_regression() {
   const auto&s=changed.stats();
   if(s.temporal_next_known!=s.temporal_next_eligible+s.temporal_next_unavailable)
    throw std::runtime_error("next-errand metric partition lost robots");
-  if(kind==0){if(!s.temporal_next_eligible||!s.temporal_next_arriving_choices||!s.temporal_next_changed_choices)
+  if(kind==0||kind==8){if(!s.temporal_next_eligible||!s.temporal_next_arriving_choices||!s.temporal_next_changed_choices)
    throw std::runtime_error("next-errand production fixture was vacuous");}
   else if(a!=b||s.temporal_next_eligible||s.temporal_next_changed_choices||native.stats().oriented_builds!=s.oriented_builds)
    throw std::runtime_error("next-errand fall-through changed native planning, kind="+std::to_string(kind));
@@ -2545,6 +2550,44 @@ void temporal_next_errand_regression() {
    throw std::runtime_error("disabled next-errand option performed optional scoring");
   for(int r=0;r<4;++r)if(e.curr_task_schedule[r]!=r||e.task_pool.at(r).idx_next_loc!=0||e.task_pool.at(r).agent_assigned!=r)
    throw std::runtime_error("next-errand preparation changed visible task metadata");
+  if(kind==7){
+   const auto cert=build_certificate(e.map,e.rows,e.cols,4);TurnDistanceOracle oracle;oracle.init(&cert,1024*1024);
+   const auto* table=oracle.table(11,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+   TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
+   if(!cert.valid||!cert.core[33]||cert.core[35]||cert.pocket[35]<0||s.temporal_next_known!=1||s.temporal_next_unavailable!=1)
+    throw std::runtime_error("next-errand pocket fallback fixture did not exercise the intended robot/domain");
+   for(int h=0;h<4;++h)if(oracle.value(*table,33,h)>=kInf||oracle.value(*table,35,h)!=kInf)
+    throw std::runtime_error("next-errand pocket fixture lacks finite goal and infinite endpoint");
+   bool witness=false;for(const auto& path:geometry.paths(32,0))
+    witness|=path.valid&&TemporalGeometry::first_goal_hit(path,33)>=0&&path.cells[4]==35;
+   if(!witness||a!=b||s.temporal_next_changed_choices||s.temporal_next_eligible)
+    throw std::runtime_error("finite-goal/infinite-endpoint fallback changed the complete native plan");
+  }
+  if(kind==8){
+   const auto cert=build_certificate(e.map,e.rows,e.cols,4);TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
+   const auto& own=geometry.paths(24,2);
+   if(TemporalGeometry::first_goal_hit(own[0],24)!=0)throw std::runtime_error("own-cell wait seed did not serve at first action");
+   bool departing=false;for(const auto& path:own)if(path.valid&&path.first_action==0&&
+    std::find(path.cells.begin(),path.cells.end(),24)==path.cells.end()){
+     departing=true;if(TemporalGeometry::first_goal_hit(path,24)!=-1)throw std::runtime_error("departure was credited with own-cell service");}
+   // The next errand is northwest, and the robot already faces west. WFRFW
+   // serves the current cell before departing, reaches next at t=3, and scores
+   // (0-3-4)*50-59=-409. A first clockwise turn requires two turns overall.
+   NextErrandOracle independent(7,7,1,0,0);int best=-1;int64_t best_score=INT64_MAX;
+   for(int op=0;op<129;++op)if(own[op].valid){const auto score=independent.proposed(own[op],op,24,24,16,1);
+    if(score<best_score){best_score=score;best=op;}}
+   if(!departing||best!=59||best_score!=-409||own[best].first_action!=3||b[1]!=Action::W||
+      a[1]!=Action::CR||native.stats().temporal_wait_seeds!=1||native.stats().temporal_tied_seed_rotations!=1)
+    throw std::runtime_error("own-cell service disagreed with independent continuation score or native seed projection");
+   auto after=step(e,e.curr_states,b);if(after.empty()||after[1].location!=24||after[1].orientation!=2)
+    throw std::runtime_error("own-cell wait did not preserve the service location and useful west heading");
+   // TaskManager advances once AFTER the action. The planner did not alter it.
+   e.curr_states=after;e.curr_timestep=1;++e.task_pool.at(1).idx_next_loc;e.goal_locations[1]={{16,0}};
+   const auto prior_known=changed.stats().temporal_next_known;std::vector<Action>second;changed.plan(&e,1000,second);
+   if(step(e,e.curr_states,second).empty()||e.task_pool.at(1).idx_next_loc!=1||
+      changed.stats().temporal_next_known!=prior_known)
+    throw std::runtime_error("own-cell service left stale next-errand metadata in the following plan");
+  }
  }
  unsetenv("CGAR_GUIDE_ROUTES");setenv("CGAR_TURN_BUILD_LIMIT","32",1);setenv("CGAR_TEMPORAL_TABLE_BATCH","32",1);
  setenv("CGAR_FLOW_STRENGTH","4",1);setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_FLOW_WARMUP","1",1);
@@ -2578,7 +2621,7 @@ void temporal_next_errand_regression() {
      "CGAR_TEMPORAL_TABLE_BATCH","CGAR_TEMPORAL_PREP_THREADS","CGAR_TURN_BUILD_LIMIT","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_FLOW_WARMUP",
      "CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
  temporal_region_adapter_regression();temporal_primary_regression();unsetenv("CGAR_TEMPORAL_NEXT_ERRAND");
- std::cout<<"TEMPORAL_NEXT_ERRAND passed independent_weighted_scores="<<arriving<<" common_heading_baseline=1 joint_fixtures=2 native_fallback_cases=6 primary_preserved=1 metadata_immutable=1 service_events="<<services<<" repeated_location_services="<<repeated<<" serial_parallel_actions=320 changing_publications=1 explicit_lookup_failure=1 protected_regional_actions=4800\n";
+ std::cout<<"TEMPORAL_NEXT_ERRAND passed independent_weighted_scores="<<arriving<<" common_heading_baseline=1 joint_fixtures=2 native_fallback_cases=7 excluded_pocket_endpoint=1 own_cell_service=1 primary_preserved=1 metadata_immutable=1 service_events="<<services<<" repeated_location_services="<<repeated<<" serial_parallel_actions=320 changing_publications=1 explicit_lookup_failure=1 protected_regional_actions=4800\n";
 }
 
 void temporal_peak_audit_regression() {

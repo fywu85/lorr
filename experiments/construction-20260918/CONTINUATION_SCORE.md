@@ -74,3 +74,45 @@ OFF exactly reproduces the confirmed regional prefix, ON alters candidate scores
 and maxima are961.20/959.32ms with peakRSS5.273GB. Full8899141/analysis8899143
 runs ON/OFF on seeds0/2 with four physical cores per process. It remains incomplete;
 there is no full-run quality conclusion. [Screen](results/next-errand-screen-v47/equivalence.json).
+
+V49 closes two review edge cases with tests only; production source and the lifelong
+binary are byte-identical to V48. A real seven-by-nine core with a two-cell pocket
+has finite next-table distance at the current goal but infinite distance at a valid
+geometric endpoint. The entire candidate set falls back to native scoring, every
+planned action matches OFF, and no table builds or metadata changes are introduced.
+
+A task assigned at the robot's own cell is serviced only after the first action.
+The seed hits at slot0; a departing path with no revisit gets no service credit.
+In the fixture, the robot faces west and its next errand lies northwest. The native
+seed projects to a tied clockwise rotation; continuation instead waits, retaining
+the useful west heading. The independent distance model ranks WFRFW at−409, ahead
+of RFCFW at−385. After one actual service, the following plan consumes the updated
+stop index without stale next-errand scoring or metadata writes.
+
+The first two test builds incorrectly demanded a clockwise turn in that fixture.
+They failed that assertion, not planner validity. The independent score calculation
+identified waiting as the correct expectation; the corrected full suite passes in
+build8899162. Failed test snapshots and their explanation remain archived. All22
+corrected hashes reconstruct fromf888c87; all21 production hashes and the binary
+match V48 exactly. No additional performance rerun is needed for these test-only
+changes. [Passing build](build-provenance/v49/),
+[initial failed expectation](build-provenance/v49-failed/failure.json),
+[diagnostic rerun](build-provenance/v49-r2-failed/failure.json).
+
+The full V47 ON/OFF comparison is now complete and verified. All four5,000-step runs
+are valid; every20,000 entry finishes within1s, maximum967.45ms, peakRSS12.013GB.
+All22 source/test hashes match3946d33; controls reproduce the confirmed regional
+full trajectories exactly. Twenty-five next-errand counter frames per enabled run
+show actual use of the policy and conserved/monotone diagnostic counts.
+
+| Seed | OFF | ON | Task change | Final1,000 change | Agep90 change |
+|---|---:|---:|---:|---:|---:|
+|0|144,510|143,529|−981|−204|+1|
+|2|144,107|144,090|−17|−55|−5|
+
+The paired mean falls0.3458%, so this common-baseline policy stays disabled and is
+not promoted. Loaded turns rise5.61%/1.14%; loaded waits change+9.13%/−0.02%, while
+empty robot-steps fall0.81%/0.47%. These are associations after a policy change,
+not causal decomposition. The toy score improvements did not transfer to warehouse
+throughput. No six-seed confirmation is warranted for this losing first pair.
+[Verified full comparison](results/next-errand-full-v47/comparison.json).

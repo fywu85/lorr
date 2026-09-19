@@ -52,9 +52,23 @@ audited prefix, lost_peaks and discarded_gain are zero. The0ppm cumulative scala
 gain is larger, but this is not a throughput acceptance or causal savings estimate.
 [Screen verification](results/regional-peak-screen-v48/equivalence.json).
 
-Full8899147/analysis8899148 now compares audited1000ppm versus0ppm on seeds0/2:
+Full8899147/analysis8899148 compared audited1000ppm versus0ppm on seeds0/2:
 four simultaneous full runs, four physical cores each,16cores/64GiB aggregate,32GB
 processRSS cap. The1000ppm controls must match confirmed regional full hashes.
 No best-selection retention was added; its warehouse value remains unestablished.
 
 All22 frozen V48 source/test hashes match exact commit [8ba2484](https://github.com/fywu85/lorr/commit/8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd).
+
+The full comparison is complete and verified:1000ppm controls exactly reproduce
+144,510/144,107 tasks. Temperature0 completes143,600/144,083, down910/24tasks and
+0.3236% in the paired mean. Final-window changes are−315/+75; agep90 changes0/−2.
+All20,000 complete entries meet1s, maximum968.76ms, peakRSS11.380GB, with isolated
+physical cores and all22 frozen source/test hashes verified. Retain1000ppm.
+
+Cumulative audit at step5,000 covers40,000batches and1billion attempts per run.
+The reference loses only9/10 peaks, with600/662 discarded scalar units. All these
+are batches whose final score does not improve initial. Temperature0 loses none,
+but its larger internal gains do not improve throughput. Different trajectories
+prevent treating those gain differences as a causal decomposition. No retention
+journal is justified by this measurement; keep the read-only audit optional.
+[Verified full comparison](results/regional-peak-full-v48/comparison.json).

@@ -26,10 +26,23 @@ attempts over200steps; only one batch loses a peak, by256 scalar units. These ar
 feasibility and mechanism observations, not throughput acceptance.
 [Screen verification](results/regional-eight-screen-v48/equivalence.json).
 
-Full8899150/analysis8899151 now compares four versus eight regions on full seeds0/2:
+Full8899150/analysis8899151 compared four versus eight regions on full seeds0/2:
 four simultaneous cases, eight physical cores each,32cores/64GiB aggregate,32GB
 processRSS cap. Same frozen V48 binary in all cases. Four-region full trajectories
 must reproduce the confirmed regional reference; assess complete totals, tails,
 ages, motion, limits and all cumulative peak counters before accepting any effect.
 
 All22 frozen V48 source/test hashes match exact commit [8ba2484](https://github.com/fywu85/lorr/commit/8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd).
+
+The full comparison completed2026-09-19T22:35:09.487641UTC and is verified.
+Eight regions completes144,096/143,553 versus exact four-region controls
+144,510/144,107:−414/−554tasks and−0.3354% paired mean. Both final windows lose
+103/154tasks; agep90 changes−1/+2. Loaded turns rise3.44%/2.30%. Retain four regions;
+no six-seed confirmation is warranted for this losing pair.
+
+All20,000 complete entries meet1s, maximum982.76ms, peakRSS11.945GB, all source/test
+hashes and physical allocations verified. Four-region cumulative counters exactly
+reproduce the four-core audit:9/10 lost peaks out of40,000batches. Eight regions
+loses5/6 out of80,000batches, discarding412/900scalar units. Doubling regional work
+and increasing internal gains did not increase completed tasks in these runs.
+[Verified full comparison](results/regional-eight-full-v48/comparison.json).

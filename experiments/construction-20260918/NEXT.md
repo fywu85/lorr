@@ -1,6 +1,6 @@
 # Continuing warehouse work
 
-Updated 2026-09-19 21:59:37 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
+Updated 2026-09-19 22:48:22 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
 reference of152,981 tasks repeatably across six full5,000-step/10,000-robot warehouse
 seeds. Every complete scheduler+planner entry must finish within1s or fail explicitly;
 process RSS must stay below32,000,000,000bytes. Use isolated GRID physical cores and
@@ -40,30 +40,50 @@ RSS12.159GB, exact V46 source0b8361c1d28429f8fd9918a3470046d4414ad83f. Retain64
 fields/four threads; larger quotas provide no observed benefit on these two seeds.
 results/pickup-full-quota-full-v46.json. This does not prove64 never binds elsewhere.
 
-## Live full experiments
+## Completed comparisons and live experiments
 
-1. Next errand: matrix8899141, analysis8899143, raw
-   runs/cgar-next-errand-full-v47-20260919, future results/next-errand-full-v47.
-   Seeds0/2 x ON/OFF,4cases x4physical cores =16,64GiB aggregate reservation.
-   V47 frozen binary; OFF must exactly match regional totals144510/144107 and hashes.
-   The source is committed/pushed as3946d3340ddae324b3ba77eb6a1d23b1418f0fbc.
-2. Regional temperature: matrix8899147, analysis8899148, raw
-   runs/cgar-regional-peak-full-v48-20260919, future results/regional-peak-full-v48.
-   Seeds0/2 x1000ppm/0ppm, both with read-only peak audit.4cases x4cores =16,
-   64GiB aggregate. The1000ppm controls must exactly match the regional reference.
-3. Eight regions: matrix8899150, analysis8899151, raw
-   runs/cgar-regional-eight-full-v48-20260919, future results/regional-eight-full-v48.
-   Seeds0/2 x4regions/8regions, matching4/8repair threads, both auditON and1000ppm.
-   All4cases reserve8physical cores each =32,64GiB aggregate. Regional attempts rise
-   from200k to400k per entry; this is a work/policy experiment, not equal-work speedup.
-   Four-region full trajectories must match the prior four-core regional reference.
+V47 next-errand ON loses both full seeds0/2:143529/144090 versus exact144510/144107,
+mean−0.345787%, tails−204/−55, agep90+1/−5. All20k complete entries valid, max967.454ms,
+RSS12.013GB. Exact3946d33. results/next-errand-full-v47/comparison.json. Keep OFF.
+V48 temperature0 loses both:143600/144083, mean−0.323612%, tails−315/+75, ages0/−2.
+All20k valid, max968.764ms, RSS11.380GB, exact regional controls. Final cumulative
+reference audit9/10 lost peaks out of40000batches, discarded600/662scalar units.
+Zero-temperature loses no peaks but does not improve throughput. Keep1000ppm;
+no best-state retention implemented. results/regional-peak-full-v48/comparison.json.
+V48 eight regions loses both:144096/143553, mean−0.335393%, tails−103/−154,
+ages−1/+2. All20k valid,max982.765ms,RSS11.945GB. Four-region controls AND cumulative
+counters reproduce the four-core reference. Eight regions loses5/6 peaks out of80k
+batches; extra work does not yield extra throughput. Keep four regions. Completed
+22:35:09.487641UTC. results/regional-eight-full-v48/comparison.json.
 
-All cases have the32decimalGB process RSS cap and1s complete-entry deadline.
-After each matrix and analysis finish, use verify_full.py with its exact committed
-source, then additionally check control hashes and25 cumulative feature-counter frames.
-Compare full totals, final1,000 tasks, outstanding ages, loaded/empty motion and limits.
-Useful candidates require the remaining four seeds before reference promotion. Short
-prefixes are only feasibility/equivalence checks; no quality ranking from them.
+Live score-scale513: matrix8899167/analysis8899168, raw
+runs/cgar-regional-score-scale-full-v48-20260919. Four cases, seeds0/2 x50/513,
+four physical cores each/16cores/64GiB aggregate. Exact V48 source8ba2484.
+Screen8899165 valid:50 exact regional prefix, maxima972.248/943.047ms,RSS5.292GB.
+BUT full513seed0 failed explicitly at timestep2230,1003.435ms, temporal_region_repair.
+The remaining cases continue. This treatment cannot pass the1s acceptance criterion;
+archive failure evidence, do not report partial throughput as a quality comparison.
+REGIONAL_SCORE_SCALE.md, results/regional-score-scale-screen-v48/equivalence.json.
+
+Work rebalance: screen8899177, raw
+runs/cgar-regional-work-balance-screen-v48-20260919, three V48 profiles:
+global4M/regions2rounds control,3M/4rounds,2M/4rounds. Four regions/threads,25k
+attempts/region/round,1000ppm,peakauditON,nextOFF.12cores/48GiB aggregate.
+Screen complete and verified (max962.235/969.932/993.561ms), exact regional control,
+all22 source hashes, binary, physical bindings and work counters. Full8899182 /
+analysis8899183 started22:50:01UTC, raw runs/cgar-regional-work-balance-full-v48-20260919,
+six simultaneous0/2 xthreeprofile cases,24cores/96GiB aggregate. Archive will be
+results/regional-work-balance-full-v48; use compare_regional.py CANDIDATE_LIMIT control4000000.
+2M margin is only6.4ms in the screen: late failure remains a risk, not a partial-plan
+fallback. REGIONAL_WORK_BALANCE.md; regional-work-balance-variants.json.
+
+All cases have the32decimalGB processRSS cap and1s complete-entry deadline.
+compare_regional.py calls verify_full.py for every complete entry, all22source/test
+hashes, actual binary, RSS, CPU allocation and50M action conservation. It additionally
+checks exact confirmed controls,25 cumulative feature-counter frames and changed
+configuration keys. It now supports3-arm work-rebalance via CANDIDATE_LIMIT, allowing
+REGION_ROUNDS to vary too. Useful first pairs require remaining four seeds before
+reference promotion. Short screens are feasibility only.
 
 ## V47 next-errand mode
 
@@ -82,7 +102,7 @@ candidate counts are not altered executed-action counts.
 Build8899126 passed all regressions; all22 hashes reconstruct and match exact3946d33.
 Archive build-provenance/v47; raw runs/cgar-next-errand-build-v47-20260919.
 Binary4e7fac8db72a4c4ac24f8c673b54cb32ba74d1cd30b851f38d8eaf666a946467.
-Tests include54,378 independent weighted production scores, two exhaustive joint
+V47 tests include54,378 independent weighted production scores, two exhaustive joint
 fixtures, six exact native fallbacks,46 real task services, repeated-location service,
 changing flow/caches,320 serial/parallel robot actions and4,800 protected decisions.
 Screen8899133: both valid; OFF prefix exact a4bfe67f610e2451bb40e68da0e9fad0b75985d3f7701528334fee73f93cea8b,
@@ -121,34 +141,37 @@ Eight regions max974.06ms,RSS5.289GB;3,200batches/80M attempts; one lost peak of
 scalar units. REGIONAL_EIGHT.md; results/regional-eight-screen-v48. No quality claim.
 collect_cold.py now also retains the cgar-regional-peaks marker in screen evidence.
 
-## Persistent Fable and follow-ups
+## V49 tests and persistent Fable
+
+V49 changes ONLY cgar/tests/cgar_regression.cpp. Build8899162 passed all regressions;
+all21 production sources and binary match V48 exactly, all22 hashes reconstruct from
+f888c87 plus build-provenance/v49/source.patch. No build live. Raw
+runs/cgar-next-errand-edge-build-v49-r3-20260919. Add exact22 binding after commit.
+The real7x9 excluded-pocket fixture proves finite next distance at currentG but
+infinite distance at a geometrically valid arriving endpoint: whole candidate set
+falls back exactly to native. The own-cell fixture shows nativeCR versus nextW,
+service index advances once and the next plan uses updated metadata. Independent
+weighted oracle ranks WFRFW−409 ahead of RFCFW−385. Earlier builds8899154/8899155
+failed a mistaken test expectation of CR, not production validity; archives explain
+the correction. Regression marker native_fallback_cases=7, excluded_pocket_endpoint=1,
+own_cell_service=1. CONTINUATION_SCORE.md and build-provenance/v49*/.
 
 Session1ebb1075-3538-49d1-93d1-a00c94fa256a, lorr-warehouse-cgar-fable51,
-Fable5.1/max through Claude Code CLI; explicit user permission to share source persists.
-Turn14 completed2026-09-19T21:40:57.435658UTC after242.668s, correct model/session,
-no tools or denials. Reported74.9763435USD is cumulative session cost, not turn cost.
-Per-turn cap24. Archived visible review/metadata/status/local assessment in turn14;
-raw protocol ignored. No live CLI request. Source-cache is V47 plus regional header;
-V48 changes not sent. Next request would turn15/followup-14.md if useful.
+Fable5.1/max via Claude Code CLI; explicit user permission to share source persists.
+Turn15 completed22:31:20.411231UTC, correct model/session, no tools/denials. Reported
+76.655394USD is cumulative session cost. Visible review/metadata/status/qualified
+assessment archived in turn15. Source-cache now includes V48 production and V49 test
+context. No live CLI; next turn16/followup-15.md if useful,24USD request cap.
 
-Fable found no demonstrable V47 bug, with no tests run by Fable. It correctly cautioned
-that many accepted moves/rollbacks do not prove discarded improvements; hence V48.
-Its temperature0 claim 'never reverts' was qualified: equal final scores still count
-as reverted, and worsening proposals still consume existing RNG draws. Its thermal
-phase account is qualitative, not evidence of exact monotonicity.
-
-Remaining useful V47 tests: already-on-current-goal assignment and whole-set fallback
-for a geometrically valid endpoint in an excluded pocket. Source inspection confirms
-TurnDistanceOracle limits predecessor cells to core or the goal's pocket, so finite
-current-goal distance does not guarantee a geometric endpoint is finite. The current
-fallback is conservative before admissibility filters; existing kind5 tests the
-separate infinite-current-goal case. Add focused tests if continuing that policy.
-
-Only implement best-state retention if full audit counts justify it. A higher scalar
-score still needs throughput validation. Alternative future hypothesis, unlaunched:
-physical-score dominance (distance_scale129 vs50) under the new flow/regional policy;
-older256/1024 no-flow losses do not establish the current interaction. Avoid blind
-parameter sweeps; inspect the three full comparisons first.
+Fable recommended the bounded global/regional work rebalance now screening. It also
+confirmed the optional finishing-only neutral-tail identity native−(4-last_hit)*U*S,
+but no production neutral policy is implemented and it is lower priority. Its claim
+that next/neutral scoring cannot change the subject robot's own first action is
+false: V49 is a counterexample. Four table peeks do not recover exact full-chain
+arrival-heading coupling, and its sub-ms estimate is unmeasured. Repeating a geometric
+partition can still change repair. These qualifications are in turn15/assessment.md.
+Do not treat review speculation as test evidence. Do not prioritize a retention
+journal: full lost-peak counts are tiny. Higher scalar scores are not throughput.
 
 ## Evidence to preserve
 

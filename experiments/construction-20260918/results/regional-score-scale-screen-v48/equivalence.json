@@ -1,0 +1,33 @@
+{
+  "scope": "200-step feasibility only, no quality acceptance. Scale50 exactly reproduces the regional reference; scale513 is active in diagnostics.",
+  "checked_utc": "2026-09-19T22:26:10.143442+00:00",
+  "exact_production_source_commit": "8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c",
+  "all_valid": true,
+  "control_exact": true,
+  "disjoint_four_physical_cores": true,
+  "no_cpu_quota": true,
+  "sampled_timing": {
+    "flow4_pickupfull64_regions4_rounds2_scale50-s0-r0": {
+      "step": 200,
+      "candidates": 0.026151,
+      "global": 0.114819,
+      "regions": 0.128835,
+      "validation": 0.002221,
+      "exact_metric": 10000,
+      "fallback_metric": 0,
+      "distance_scale": 50
+    },
+    "flow4_pickupfull64_regions4_rounds2_scale513-s0-r0": {
+      "step": 200,
+      "candidates": 0.02357,
+      "global": 0.10316,
+      "regions": 0.140509,
+      "validation": 0.001103,
+      "exact_metric": 10000,
+      "fallback_metric": 0,
+      "distance_scale": 513
+    }
+  }
+}

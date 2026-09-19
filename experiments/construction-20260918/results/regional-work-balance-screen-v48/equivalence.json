@@ -1,0 +1,219 @@
+{
+  "scope": "200-step feasibility and exact-control check only; no throughput acceptance. Two extra rounds complete fixed work. The 2M treatment has only6.4ms observed margin.",
+  "checked_utc": "2026-09-19T22:49:35.967590+00:00",
+  "exact_production_source_commit": "8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c",
+  "all_valid": true,
+  "control_exact": true,
+  "disjoint_four_physical_cores": true,
+  "no_cpu_quota": true,
+  "sampled_diagnostics": {
+    "flow4_pickupfull64_work4m_regions4_rounds2-s0-r0": {
+      "global": {
+        "step": 200,
+        "workers": 1,
+        "threads": 1,
+        "selected_worker": 0,
+        "candidate_limit": 4000000,
+        "roots": 5315,
+        "accepted": 5163,
+        "recursion": 243216,
+        "candidates": 4003653,
+        "max_depth": 69,
+        "exhausted": 4,
+        "repairs": 81259,
+        "repair_accept": 36673,
+        "score": 13015668.0
+      },
+      "regional": {
+        "step": 200,
+        "regions": 4,
+        "rounds": 2,
+        "threads": 4,
+        "temperature_ppm": 1000,
+        "active": 19611,
+        "candidates": 8741715,
+        "repairs": 200000,
+        "attempts_accepted": 89741,
+        "kept": 6,
+        "reverted": 2,
+        "frozen_crossers": 387,
+        "score_before": 13015668.0,
+        "score_after": 13101422.0
+      },
+      "cumulative_peaks": {
+        "step": 200,
+        "batches": 1600,
+        "attempts": 40000000,
+        "peak_updates": 640403,
+        "lost_peaks": 0,
+        "lost_improvements": 0,
+        "peak_gain": 169582046.0,
+        "final_gain": 167534374.0,
+        "discarded_gain": 0.0,
+        "peak_attempt_sum": 33752288,
+        "max_peak_attempt": 25000
+      },
+      "timing": {
+        "step": 200,
+        "candidates": 0.023155,
+        "global": 0.113679,
+        "regions": 0.122991,
+        "validation": 0.002196,
+        "exact_metric": 10000,
+        "fallback_metric": 0,
+        "distance_scale": 50
+      }
+    },
+    "flow4_pickupfull64_work3m_regions4_rounds4-s0-r0": {
+      "global": {
+        "step": 200,
+        "workers": 1,
+        "threads": 1,
+        "selected_worker": 0,
+        "candidate_limit": 3000000,
+        "roots": 5295,
+        "accepted": 5146,
+        "recursion": 115447,
+        "candidates": 3021418,
+        "max_depth": 45,
+        "exhausted": 10,
+        "repairs": 30761,
+        "repair_accept": 17399,
+        "score": 12462134.0
+      },
+      "regional": {
+        "step": 200,
+        "regions": 4,
+        "rounds": 4,
+        "threads": 4,
+        "temperature_ppm": 1000,
+        "active": 39191,
+        "candidates": 31793586,
+        "repairs": 400000,
+        "attempts_accepted": 178396,
+        "kept": 9,
+        "reverted": 7,
+        "frozen_crossers": 801,
+        "score_before": 12462134.0,
+        "score_after": 13075690.0
+      },
+      "cumulative_peaks": {
+        "step": 200,
+        "batches": 3200,
+        "attempts": 80000000,
+        "peak_updates": 842378,
+        "lost_peaks": 2,
+        "lost_improvements": 2,
+        "peak_gain": 233038634.0,
+        "final_gain": 223368274.0,
+        "discarded_gain": 120.0,
+        "peak_attempt_sum": 51714469,
+        "max_peak_attempt": 25000
+      },
+      "timing": {
+        "step": 200,
+        "candidates": 0.024495,
+        "global": 0.057003,
+        "regions": 0.2752,
+        "validation": 0.002228,
+        "exact_metric": 10000,
+        "fallback_metric": 0,
+        "distance_scale": 50
+      }
+    },
+    "flow4_pickupfull64_work2m_regions4_rounds4-s0-r0": {
+      "global": {
+        "step": 200,
+        "workers": 1,
+        "threads": 1,
+        "selected_worker": 0,
+        "candidate_limit": 2000000,
+        "roots": 5350,
+        "accepted": 5185,
+        "recursion": 85970,
+        "candidates": 2059934,
+        "max_depth": 42,
+        "exhausted": 11,
+        "repairs": 21338,
+        "repair_accept": 13276,
+        "score": 12005674.0
+      },
+      "regional": {
+        "step": 200,
+        "regions": 4,
+        "rounds": 4,
+        "threads": 4,
+        "temperature_ppm": 1000,
+        "active": 39188,
+        "candidates": 22001624,
+        "repairs": 400000,
+        "attempts_accepted": 181861,
+        "kept": 10,
+        "reverted": 6,
+        "frozen_crossers": 800,
+        "score_before": 12005674.0,
+        "score_after": 13087216.0
+      },
+      "cumulative_peaks": {
+        "step": 200,
+        "batches": 3200,
+        "attempts": 80000000,
+        "peak_updates": 1071080,
+        "lost_peaks": 2,
+        "lost_improvements": 2,
+        "peak_gain": 330979396.0,
+        "final_gain": 322749024.0,
+        "discarded_gain": 240.0,
+        "peak_attempt_sum": 53545846,
+        "max_peak_attempt": 25000
+      },
+      "timing": {
+        "step": 200,
+        "candidates": 0.025399,
+        "global": 0.042994,
+        "regions": 0.243474,
+        "validation": 0.001045,
+        "exact_metric": 10000,
+        "fallback_metric": 0,
+        "distance_scale": 50
+      }
+    }
+  },
+  "rows": {
+    "flow4_pickupfull64_work4m_regions4_rounds2-s0-r0": {
+      "max_entry_seconds": 0.962234649,
+      "peak_rss_bytes": 5268271104,
+      "cpu_binding": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "trajectory_sha256": "a4bfe67f610e2451bb40e68da0e9fad0b75985d3f7701528334fee73f93cea8b"
+    },
+    "flow4_pickupfull64_work3m_regions4_rounds4-s0-r0": {
+      "max_entry_seconds": 0.969931973,
+      "peak_rss_bytes": 5254426624,
+      "cpu_binding": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "trajectory_sha256": "55adcdf050f535d4d18fa9c1d7bcc4732912fffb2dcea54f295e5ca9d6cc17f8"
+    },
+    "flow4_pickupfull64_work2m_regions4_rounds4-s0-r0": {
+      "max_entry_seconds": 0.993561287,
+      "peak_rss_bytes": 5300043776,
+      "cpu_binding": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "trajectory_sha256": "5de9bc986fc5aed26f6e772bed97beeef53adde36e264d0616f386bdfb5f9264"
+    }
+  }
+}

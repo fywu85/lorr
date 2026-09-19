@@ -1,0 +1,12 @@
+{
+  "completed": false,
+  "cause": "New regression incorrectly expected a clockwise first turn for own-cell service. Existing next-errand policy waits, preserves west heading and services the current errand. No production source change or planner failure.",
+  "observed_action": 3,
+  "native_action": 1,
+  "independent_minimum": {
+    "operation": 59,
+    "actions": "WFRFW",
+    "score": -409
+  },
+  "resolution": "Correct the expectation using the independent distance model and production score; retain native seed-projection and one-service-per-tick checks. Rerun the full regression suite."
+}
