@@ -3,65 +3,74 @@
 Goal: at least 152,981 completed tasks over all 5,000 steps, repeatably over six
 seeds, complete one-second decisions, and measured process RSS below
 32,000,000,000 bytes. No map-name branches, aisle templates, supplied weights or
-map-specific fleet caps. The local leader reference exceeds the memory target;
-retain that resource difference when comparing.
+map-specific fleet caps. The local leader uses more cores and exceeds the memory
+target; retain that difference when comparing. The active goal is not complete.
 
-Established results:
+## Established full results
 
-- Equal-weight 50k averages 107,413.3 across seeds 0–2. Compact seed 0 preserves
+- **New strongest seed 0: 122,896**, using executed-flow strength 1, margin 50,
+  freeze 128, minimum 8 samples and fixed 4M candidate work. No warm start or
+  regions. All 5,000 entries pass, max 0.881398 seconds, RSS 12.106 GB, one core.
+  Its paired 4M control is 109,244 (+12.50%); earlier regional best is 112,164.
+  Final-window count improves 22,456 to 25,254 and task-age p90 850 to 743.
+  Still 30,085 below the leader and only one seed. See FLOW_MARGIN.md.
+- The no-margin flow field completes at only 46,186 and degrades late. A late
+  freeze with margin 50 reaches 110,649. All pass deadlines; better timing alone
+  does not make a routing policy useful. The 4M control exactly matches v8.
+- Equal-weight 50k averages 107,413.3 over seeds 0–2. Compact seed 0 preserves
   every full trajectory field at 107,457 and reduces RSS from 16.208 to 11.883 GB.
-- Strongest completed seed-0 result: 112,164 with two regional rounds, maximum
-  entry 0.891 seconds. One round reaches 111,411 at 0.680 seconds. Reducing global
-  work to 25k with two rounds reaches 111,997 at 0.725 seconds. All use four cores
-  and about 11.82 GB RSS. No six-seed confirmation.
-- Regional gains persist in the final 1,000 steps and improve outstanding-task
-  age. Earlier mixed scheduler/4M work reaches 111,118 but worsens the age tail.
-- Completed regional-temperature tests reach 111,573 (one round, 100), 111,289
-  (one round, 0), and 112,131 (two rounds, 0). No material gain or promotion.
-  Their paired default is 111,411 with an exactly preserved full trajectory.
-- Warm 50k reaches 108,492 (+0.96% over 107,457), maximum entry 0.515 seconds,
-  RSS 12.59 GB. Warm 25k/10k fall to 104,548/94,510. Lower work loses throughput.
-- Corrected turn cost 2 yields 100,323; cost 4 fails at step 902; cost 8 fails its
-  screen. Distance scales 256/1024 yield 105,891/105,811 and are not promoted.
-- The v18 predecessor cache cuts isolated table-build time by 19–26%, with
-  matching checksums and exact v19 full control trajectories. This establishes
-  no whole-planner speedup. See ORACLE.md.
+- Two regional rounds reach 112,164, max entry 0.891 seconds. One round reaches
+  111,411 at 0.680 seconds. Global 25k plus two rounds reaches 111,997 at 0.725
+  seconds, four cores and about 11.82 GB RSS. No six-seed confirmation.
+- Regional temperature 100/0 yields 111,573/111,289 in one round and 112,131 at
+  zero with two rounds. No material gain. Warm 50k reaches 108,492 (+0.96%), but
+  warm 25k/10k fall to 104,548/94,510. Neither changes the leading profile.
+- Turn cost 2 and distance scales 256/1024 lose throughput; larger turn costs
+  and the original 50k learned-flow profiles fail deadlines. Failures have no
+  partial score. V18 cuts isolated table-build time 19–26% with exact full control
+  trajectories; no whole-planner speedup follows from that component measurement.
 
-Active full queue (two independent single-core EPYC 9354 instances, 24 GiB total):
+## Active full queue
 
-1. **8898517/8898518**, frozen v20, running on research38: 4M-work control,
-   original frozen flow, margin 50, and margin 50 with freeze at 1,024 observations.
-   First pair completes 109,244 (control) and 46,186 (flow), both valid full runs;
-   the flow policy loses heavily. Later variants and full motion analysis remain
-   pending. Early screens did not establish this behavior. See FLOW_MARGIN.md.
-2. **8898535/8898536**, frozen v24: 4M-work control, weight-2 intended routes,
-   reconnection at batches 128/512, and reconnection with load cost 1. All five
-   screens pass; no full throughput result yet. See GUIDE_PATHS.md.
-3. **8898527/8898528**, frozen v21: 50k-attempt control and intended routes with
-   batch 512 and opposing costs 0/1/4. This still-pending pair was moved after
-   v24; source/profiles/resources are unchanged. See results/guide-queue-update.json.
+All full matrices use two independent single-core EPYC 9354 instances and
+24 GiB aggregate reserved memory, one-second decisions and 5,000 steps.
 
-The original learned-flow strengths 1/2/4 fail late v16 deadlines. The traffic
-audit finds 30.6% of directions favored after 128 steps have the opposite
-cumulative majority at 1,024. Stricter margins/later observation are hypotheses,
-not established remedies. The full fixed-work flow result above is negative.
+1. **8898544/8898545**, frozen v20-r1, running on research52: independent seeds
+   1/2 for the exact new best margin-50 profile. No completed new seed yet.
+2. **8898550/8898552**, frozen v26-r1: corrected route-to-go metric, comparing
+   disabled control, unit routes, opposing-cost routes, reconnection, and bounded
+   refinement 64. All five screens pass; no full guide throughput result yet.
+3. **8898554/8898555**, frozen v20-r1: unchanged best control versus margins
+   25/75 and strength 2 at margin 50. All three new feasibility screens pass.
 
-V22 route search weight 2 solves all 512 attempts in its step-200 sample, but
-415 deviations cause route rebuilding. V23 reconnection reduces those rebuilds;
-batch 128 reconnects 2,040 deviations at step 200. Batch 512 at 50k attempts
-fails at timestep 90. V24 diagnostics reproduce the failure and attribute most
-work to temporal search: 69.2 million candidate inspections, preparation 0.111
-seconds versus search 0.837. Fixed 4M candidate-work cases pass their screens;
-full validation is queued above. This is prescribed work, never clock-selected
-partial success. Equal-weight 100k also passes a screen, while 150k fails at
-step 32 with 61.7 million candidate inspections. No higher-work full result yet.
+The old v21/v24 guide full matrices and analysis jobs
+8898527/8898528/8898535/8898536 were confirmed pending and canceled. No running
+job was interrupted; all frozen source/specifications and completed screens
+remain available. See results/guide-pending-matrices-superseded.json.
 
-Fable's approved v11 review is complete and its proven issues fixed. A new
-Fable 5.1 max review through Claude Code is running on verified-public frozen
-commit 00bada6. It has no tools or filesystem access and has not completed.
+## Review and new source
 
-After each matrix: preserve failures, check all 5,000 entry samples, errors,
-timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.
-Keep deadline screens separate from throughput evidence. Compare standalone
-variants before combining them. Six-seed confirmation remains required before
-claiming repeatability or meeting the leader target. The active goal is not complete.
+Fable's new CLI run emitted six findings but failed its configured cost budget;
+it is not a successful final review. Visible findings, actual usage/status and
+an independent assessment are in fable-guides/. No retry was submitted.
+
+Its waypoint-scoring defect is independently reproduced: the old code prefers
+stopping at a nearby waypoint to passing it. V26 seeds all remaining route states
+in the local box and fixes that ranking. A bounded shortest-connector BFS keeps
+reconnection independent of the new route-to-go score. V25 separately adds
+optional, fixed-count refinement that accepts only complete strictly cheaper
+routes, excluding self flow exactly. All changes remain optional with guides.
+
+The complete corrected suite passes, including 3,912 oriented window states,
+four rotated forward-over-parking checks, exact flow conservation, explicit
+timeout propagation, fixed-work fairness, and nonzero serial/four-thread
+production refinement with warm starts and protected actions. All five 200-step
+screens pass at max 0.849 seconds; disabled guidance exactly preserves the prior
+screen trajectory. These establish correctness/feasibility, not throughput gain.
+See GUIDE_PATHS.md and the source-hash-verified build archives.
+
+After each matrix: preserve failures, check every entry sample, errors/timeouts,
+actual RSS, trajectory fingerprints, final-window rates and movement efficiency.
+Do not rank policies by short prefixes. Confirm additional seeds before promoting
+an improvement, and six before claiming the goal has been achieved. Future
+combinations of flow, regional repair or warm reuse require independent validation.

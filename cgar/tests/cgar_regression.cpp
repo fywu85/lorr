@@ -667,6 +667,9 @@ void temporal_region_adapter_regression() {
  if(std::getenv("CGAR_GUIDE_RECONNECT_STEPS")&&std::atoi(std::getenv("CGAR_GUIDE_RECONNECT_STEPS"))>0&&
     (!serial.stats().guide_reconnections||serial.stats().guide_reconnections!=parallel.stats().guide_reconnections))
   throw std::runtime_error("production guide reconnection was vacuous or changed with thread count");
+ if(std::getenv("CGAR_GUIDE_REFINE_BATCH")&&std::atoi(std::getenv("CGAR_GUIDE_REFINE_BATCH"))>0&&
+    (!serial.stats().guide_refinements||serial.stats().guide_refinements!=parallel.stats().guide_refinements))
+  throw std::runtime_error("production guide refinement was vacuous or changed with thread count");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
 }
@@ -1126,4 +1129,151 @@ void guide_reconnect_regression() {
  std::cout<<"GUIDE_RECONNECT passed complete_suffix=1 exact_flow_conservation=1 no_astar_on_reconnect=1 candidate_orientations="<<covered<<" fixed_limit=1 stale_goal=1 protected=1 explicit_timeout_no_partial_changes=1 production_actions=4800\n";
 }
 
-int main(){try{guide_routes_regression();guide_reconnect_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void guide_refine_regression() {
+ const int rows=5,cols=7,cells=rows*cols;
+ std::vector<char> core(cells,true),eligible(2,true);
+ std::vector<int> loc{14,20},ori{0,2},goals{20,14};
+ GuideRouteOptions options;options.batch=1;options.base_cost=1;options.opposite_cost=8;
+ options.load_cost=1;options.refine_batch=1;
+ GuideRoutes guides;guides.initialize(core,rows,cols,2,options);
+ auto neighbor=[&](int cell,int dir){if(dir==0)return cell%cols+1<cols?cell+1:-1;if(dir==1)return cell/cols+1<rows?cell+cols:-1;
+  if(dir==2)return cell%cols>0?cell-1:-1;return cell/cols>0?cell-cols:-1;};
+ auto heuristic=[&](int r,int cell,int){return std::abs(cell/cols-goals[r]/cols)+std::abs(cell%cols-goals[r]%cols);};
+ auto audit=[&](const GuideRoutes& value,int robots){
+  std::vector<int> expected(cells*4);long long uses=0;
+  for(int r=0;r<robots;++r){const auto& path=value.route_states(r);
+   for(size_t k=value.route_begin(r)+1;k<path.size();++k){int a=path[k-1],b=path[k];
+    if(a/4==b/4){if((a%4+1)%4!=b%4&&(a%4+3)%4!=b%4)throw std::runtime_error("refined guide has an invalid turn");}
+    else{if(neighbor(a/4,a%4)!=b/4||a%4!=b%4)throw std::runtime_error("refined guide has an invalid edge");++expected[a];++uses;}
+   }
+  }
+  if(expected!=value.flow()||uses!=value.directed_uses())throw std::runtime_error("refined guide violated exact flow conservation");
+ };
+ auto first=guides.update(loc,ori,goals,eligible,heuristic,[]{});
+ if(first.solved!=1||first.refine_attempted)throw std::runtime_error("new guide was immediately refined");
+ guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides,2);
+ if(guides.route_states(1).size()<=7)throw std::runtime_error("refinement fixture failed to create a congestion detour");
+ const int expected_saved=int(guides.route_states(1).size())-1-6;
+ eligible[0]=false;
+ auto changed=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides,2);
+ const auto improved=guides.route_states(1);
+ if(changed.protected_resets!=1||changed.refine_attempted!=1||changed.refined!=1||changed.refine_cost_saved!=expected_saved||
+    improved.size()!=7||improved.front()!=loc[1]*4+ori[1]||improved.back()/4!=goals[1])
+  throw std::runtime_error("refinement did not remove a newly unnecessary detour at strictly lower actual cost");
+ // Independent unit-action BFS: after the other guide retires, excluding self
+ // flow must give exactly the physical shortest path, despite positive load.
+ std::vector<int> distance(cells*4,-1),queue{loc[1]*4+ori[1]};distance[queue[0]]=0;int optimum=-1;
+ for(size_t head=0;head<queue.size();++head){int u=queue[head];if(u/4==goals[1]){optimum=distance[u];break;}
+  auto push=[&](int v){if(distance[v]<0){distance[v]=distance[u]+1;queue.push_back(v);}};
+  push(u/4*4+(u%4+1)%4);push(u/4*4+(u%4+3)%4);int v=neighbor(u/4,u%4);if(v>=0)push(v*4+u%4);
+ }
+ if(optimum!=int(improved.size())-1)throw std::runtime_error("refined route disagrees with independent shortest-path BFS");
+ for(int t=0;t<4;++t){auto same=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides,2);
+  if(same.refine_attempted!=1||same.refined||same.refine_cost_saved||guides.route_states(1)!=improved)
+   throw std::runtime_error("refinement penalized its own flow or replaced an equal-cost route");
+ }
+ TemporalGeometry geometry;geometry.initialize(core,rows,cols,[]{});int covered=0;
+ for(const auto& candidate:geometry.paths(loc[1],ori[1]))if(candidate.valid)for(int d=0;d<4;++d){
+  if(guides.distance(1,candidate.cells[4],d)<0)throw std::runtime_error("refined window omitted a candidate");++covered;
+ }
+ const auto old_flow=guides.flow();bool failed=false;int heuristic_calls=0;
+ try{guides.update(loc,ori,goals,eligible,[&](int,int,int)->int{++heuristic_calls;throw Timeout("refine_search_fixture");},[]{});}
+ catch(const Timeout&){failed=true;}
+ if(!failed||!heuristic_calls||guides.flow()!=old_flow||guides.route_states(1)!=improved)
+  throw std::runtime_error("interrupted refinement changed a complete route or its flow");
+ audit(guides,2);
+ goals[1]=0;auto new_goal=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides,2);
+ if(new_goal.goal_resets!=1||new_goal.refine_attempted||guides.route_states(1).back()/4!=0)
+  throw std::runtime_error("refinement retained a stale goal or refined a new route");
+ eligible[1]=false;auto retired=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides,2);
+ if(retired.refine_attempted||guides.directed_uses())throw std::runtime_error("refinement acted on an ineligible guide");
+
+ // Two complete one-edge routes are admitted within a one-expansion limit.
+ // Turning both robots away then makes refinement hit that exact limit. A
+ // separate cursor must give each eligible robot its turn, retaining both paths.
+ GuideRoutes bounded;auto limited_options=options;limited_options.batch=2;limited_options.expansions=1;
+ bounded.initialize(core,rows,cols,2,limited_options);
+ loc={14,28};ori={0,0};goals={15,29};eligible={true,true};
+ auto initial=bounded.update(loc,ori,goals,eligible,heuristic,[]{});audit(bounded,2);
+ if(initial.solved!=2||initial.refine_attempted)throw std::runtime_error("refinement limit fixture failed to admit two complete routes");
+ auto path0=bounded.route_states(0),path1=bounded.route_states(1),counts=bounded.flow();
+ ori={2,2};std::vector<int> visited;
+ for(int t=0;t<2;++t){auto limited=bounded.update(loc,ori,goals,eligible,[&](int r,int cell,int dir){visited.push_back(r);return heuristic(r,cell,dir);},[]{});
+  if(limited.refine_attempted!=1||limited.refine_limited!=1||limited.refine_expanded!=1||limited.refined||
+     bounded.route_states(0)!=path0||bounded.route_states(1)!=path1||bounded.flow()!=counts)
+   throw std::runtime_error("bounded refinement replaced a route after an incomplete search");
+  audit(bounded,2);
+ }
+ if(std::find(visited.begin(),visited.end(),0)==visited.end()||std::find(visited.begin(),visited.end(),1)==visited.end())
+  throw std::runtime_error("bounded refinement starved an eligible route");
+
+ setenv("CGAR_GUIDE_ROUTES","1",1);setenv("CGAR_GUIDE_BATCH","32",1);setenv("CGAR_GUIDE_HEURISTIC_WEIGHT","2",1);
+ setenv("CGAR_GUIDE_RECONNECT_STEPS","16",1);setenv("CGAR_GUIDE_REFINE_BATCH","16",1);
+ setenv("CGAR_GUIDE_BASE_COST","1",1);setenv("CGAR_GUIDE_OPPOSITE_COST","8",1);setenv("CGAR_GUIDE_LOAD_COST","1",1);
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);temporal_region_adapter_regression();temporal_primary_regression();
+ for(const char* name:{"CGAR_GUIDE_ROUTES","CGAR_GUIDE_BATCH","CGAR_GUIDE_HEURISTIC_WEIGHT","CGAR_GUIDE_RECONNECT_STEPS",
+     "CGAR_GUIDE_REFINE_BATCH","CGAR_GUIDE_BASE_COST","CGAR_GUIDE_OPPOSITE_COST","CGAR_GUIDE_LOAD_COST","CGAR_TEMPORAL_WARM_START"})unsetenv(name);
+ std::cout<<"GUIDE_REFINE passed strict_cost_improvement="<<expected_saved<<" independent_unit_bfs=1 self_flow_excluded=1 equal_cost_retained=1 exact_flow_conservation=1 candidate_orientations="<<covered<<" stale_goal=1 protected=1 bounded_fairness=2 explicit_timeout_no_partial_changes=1 production_actions=4800\n";
+}
+
+void guide_window_regression() {
+ int covered=0,rankings=0;
+ // Rotate the straight corridor through all headings. Cached windows remain
+ // active as the robot approaches a waypoint; every horizon state beyond that
+ // waypoint must still receive its true remaining action distance.
+ for(int direction=0;direction<4;++direction){
+  const int rows=direction%2?49:1,cols=direction%2?1:49,cells=49;
+  const int start=direction<2?0:48,delta=direction<2?1:-1,goal=start+40*delta;
+  std::vector<char> core(cells,true);GuideRouteOptions options;options.lookahead=8;options.batch=1;
+  GuideRoutes guides;guides.initialize(core,rows,cols,1,options);
+  TemporalGeometry geometry;geometry.initialize(core,rows,cols,[]{});
+  auto heuristic=[&](int,int cell,int){return std::abs(cell-goal);};
+  for(int k=0;k<=40;++k){const int current=start+k*delta;
+   guides.update({current},{direction},{goal},{true},heuristic,[]{});
+   for(int m=0;m<=5&&k+m<=40;++m)for(int d=0;d<4;++d){
+    const int remaining=40-k-m,turn=(direction-d+4)%4;
+    const int expected=remaining?remaining+std::min(turn,4-turn):0;
+    if(guides.distance(0,current+m*delta,d)!=expected)
+     throw std::runtime_error("cached guide waypoint penalized a valid forward continuation");
+    ++covered;
+   }
+   if(k==5){
+    const auto& paths=geometry.paths(current,direction);const auto& operations=TemporalGeometry::operations();
+    int forward=-1,park=-1;
+    for(int op=0;op<int(operations.size());++op){
+     if(operations[op]==std::array<uint8_t,5>{0,0,0,0,0})forward=op;
+     if(operations[op]==std::array<uint8_t,5>{0,0,0,3,3})park=op;
+    }
+    auto distance=[&](int cell,int d){return guides.distance(0,cell,d);};
+    if(forward<0||park<0||TemporalGeometry::cost(paths[forward],forward,goal,1,distance)>=
+                            TemporalGeometry::cost(paths[park],park,goal,1,distance))
+     throw std::runtime_error("guide candidate preferred phantom parking over forward progress");
+    ++rankings;
+   }
+  }
+ }
+ // The whole small obstacle graph fits in the local box. Independently run
+ // unit-action reverse BFS from all four terminal headings; merged seed/FIFO
+ // propagation must agree for every reachable orientation, including corners.
+ const int rows=7,cols=9,cells=rows*cols,goal=62;
+ std::vector<char> core(cells,true);for(int u:{12,13,14,21,30,31,32,41,50})core[u]=false;
+ auto neighbor=[&](int u,int d){if(d==0)return u%cols+1<cols?u+1:-1;if(d==1)return u/cols+1<rows?u+cols:-1;
+  if(d==2)return u%cols>0?u-1:-1;return u/cols>0?u-cols:-1;};
+ GuideRoutes guides;guides.initialize(core,rows,cols,1);
+ auto stats=guides.update({0},{0},{goal},{true},[&](int,int u,int){return std::abs(u/cols-goal/cols)+std::abs(u%cols-goal%cols);},[]{});
+ if(stats.solved!=1)throw std::runtime_error("obstacle guide-window fixture failed to find a complete route");
+ std::vector<int> expected(cells*4,-1),queue;
+ for(int d=0;d<4;++d){expected[goal*4+d]=0;queue.push_back(goal*4+d);}
+ for(size_t head=0;head<queue.size();++head){int state=queue[head],u=state/4,d=state%4;
+  auto push=[&](int cell,int dir){if(cell<0||!core[cell])return;int v=cell*4+dir;
+   if(expected[v]<0){expected[v]=expected[state]+1;queue.push_back(v);}};
+  push(u,(d+1)%4);push(u,(d+3)%4);push(neighbor(u,(d+2)%4),d);
+ }
+ for(int u=0;u<cells;++u)if(core[u])for(int d=0;d<4;++d){
+  if(guides.distance(0,u,d)!=expected[u*4+d])throw std::runtime_error("multi-source guide window disagrees with independent BFS");
+  ++covered;
+ }
+ std::cout<<"GUIDE_WINDOW passed rotated_forward_states="<<covered<<" forward_over_parking_rankings="<<rankings<<" independent_obstacle_bfs=1 all_goal_headings=1\n";
+}
+
+int main(){try{guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

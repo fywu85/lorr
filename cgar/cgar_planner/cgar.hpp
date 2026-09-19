@@ -228,7 +228,7 @@ struct Stats {
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
     long long flow_freezes = 0, flow_penalized_edges = 0;
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
-    long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0;
+    long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0, guide_refinements = 0;
     long long txns = 0;
     long long txn_aborts = 0;
     long long txn_no_hole = 0;

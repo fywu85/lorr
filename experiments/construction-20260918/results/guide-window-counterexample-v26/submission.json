@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:05:00,h_vmem=2G",
+    "-m",
+    "n",
+    "-N",
+    "guide_window_probe",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-guide-window-probe-v26-20260919/probe.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-guide-window-probe-v26-20260919/job.sh"
+  ],
+  "stdout": "8898543\n",
+  "stderr": "",
+  "probe_sha256": "a8204f52ae64528537a4b30c0fdc3e9381d672e2a75efb23995a58c9dae72d78"
+}

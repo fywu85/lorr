@@ -47,5 +47,51 @@ reserved memory. Warm starts and regional repair are disabled in every case.
 The 4M threshold is checked only between complete attempts, includes construction,
 and permits the last attempt to overshoot. Construction always completes and
 there is a fixed attempt cap. Elapsed time never decides successful stopping;
-an absolute deadline overrun still fails the whole decision. Full throughput,
-late feasibility and six-seed validation remain outstanding.
+an absolute deadline overrun still fails the whole decision. Full seed-0 results
+are now complete; six-seed validation remains outstanding.
+
+
+## Full seed-0 results
+
+All four profiles complete 5,000 steps with zero errors/timeouts, every entry
+sample below one second, and peak process RSS below 32 decimal GB. They run on
+research38, on two disjoint physical EPYC 9354 cores without a CPU quota.
+Warm starts and regional repair remain off. The compact 4M control exactly
+preserves the original v8 full trajectory.
+
+| Profile | Tasks | Final 1,000 steps | Max entry seconds | Peak RSS bytes | Wall seconds | Outstanding age p90 |
+|---|---:|---:|---:|---:|---:|---:|
+| No flow, 4M control | 109,244 | 22,456 | 0.899637074 | 11,808,178,176 | 1,193.844 | 850 |
+| Flow 1, no margin, freeze 128 | 46,186 | 4,017 | 0.881542455 | 11,787,059,200 | 1,079.368 | 4,234 |
+| Flow 1, margin 50, freeze 128 | **122,896** | **25,254** | **0.881397952** | **12,105,699,328** | **1,300.347** | **743** |
+| Flow 1, margin 50, freeze 1,024 | 110,649 | 22,655 | 0.873728801 | 12,131,840,000 | 1,268.023 | 850 |
+
+Margin 50 at freeze 128 adds 13,652 tasks (+12.50%) over the paired 4M control
+and exceeds the earlier regional best of 112,164 by 10,732 (+9.57%). It remains
+30,085 tasks below the 152,981 local leader reference and has only one seed.
+Its final-window gain and improved age tail argue against an early burst or
+starvation tradeoff in this run. They do not establish repeatability.
+
+The motion change is consistent with more efficient loaded travel: turns fall
+from 3,675,264 to 2,695,199, waits from 2,772,123 to 2,700,542, and forward moves
+away from the spatial goal from 3,183,258 to 1,970,601. In contrast, the no-margin
+field deteriorates throughout the run, ending at 4,017 tasks per 1,000 steps,
+with 14,563,439 loaded waits and age p90 4,234. Bounding its repair work prevents
+a deadline failure but does not repair its bad routing behavior.
+
+[Complete full matrix](results/flow-margin-full-v20/),
+[exact full control equivalence](results/flow-work-full-equivalence.json).
+Full independent seeds 1/2 are running in **8898544**, with analysis **8898545**,
+using the exact frozen v20-r1 binary and unchanged margin-50 settings. No
+additional-seed score is available yet; six-seed confirmation remains required.
+
+
+Three one-variable follow-ups pass screen **8898549**: margin 25 (max entry
+0.771101494 s), margin 75 (0.776795199 s), and strength 2 at margin 50
+(0.794536410 s). Each retains freeze 128, minimum samples 8 and the fixed 4M
+candidate-work threshold. These 200-step screens do not rank throughput.
+Full **8898554**, analysis **8898555**, compares them against the unchanged
+margin-50/strength-1 control after corrected-guide jobs **8898550/8898552**.
+It retains the same frozen v20-r1 binary, seed 0, 5,000 steps, exact deadline,
+two disjoint physical cores and 24 GiB total reservation.
+[Screen evidence](results/flow-margin-neighbors-screen-v20/).

@@ -274,3 +274,22 @@ improvement. [Complete evidence](results/higher-work-screen-v24/).
 The separate [intended-route study](GUIDE_PATHS.md) now includes failure-only
 search diagnostics and five passing fixed-candidate-work screens, with full
 matrices queued. Short-horizon task counts are not used to rank those policies.
+
+
+## Completed evidence-margin / fixed-work full matrix (v20)
+
+The new strongest completed seed-0 profile is **122,896 tasks**: strength 1,
+evidence margin 50, freeze after 128 observations, and prescribed 4M candidate
+work. This is +12.50% over its exact-trajectory 109,244 control, and +9.57% over
+the previous regional best of 112,164. It completes all 5,000 decisions with
+zero errors/timeouts, maximum entry 0.881397952 seconds, and RSS 12,105,699,328
+bytes on one reserved physical EPYC 9354 core. It remains below the local
+152,981 leader reference, which uses more cores and exceeds our memory target.
+
+The final 1,000-step count improves from 22,456 to 25,254, age p90 from 850 to
+743, loaded turns from 3,675,264 to 2,695,199, and loaded moves away from the goal
+from 3,183,258 to 1,970,601. The no-margin field collapses to 46,186 despite
+passing deadlines; late-freeze/margin-50 yields 110,649. Margin 50 is a
+count-imbalance rule, not a statistical confidence guarantee. Full independent
+seeds 1/2 are running; no additional-seed outcome or six-seed claim is available.
+[FULL details and all outcomes](FLOW_MARGIN.md).

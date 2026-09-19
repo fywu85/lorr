@@ -203,3 +203,74 @@ single-core EPYC 9354 instances and 24 GiB total reserved memory. V21 full
 **8898527/8898528** then follows unchanged. The verified pending-job dependency
 update is recorded in [guide-queue-update.json](results/guide-queue-update.json).
 No full intended-route throughput result is established yet.
+
+
+## Retained-route refinement, frozen v25
+
+`CGAR_GUIDE_REFINE_BATCH=0` defaults off. A positive batch (up to 4,096) scans
+pre-existing eligible routes in a separate fair rotation. A sparse exact count
+of the selected robot's remaining edges is subtracted only when evaluating
+routing costs; shared flow is not mutated during search. This handles repeated
+edges as well as ordinary simple routes. The fixed expansion limit and heuristic
+weight still apply. Only a complete current-goal route with strictly lower cost
+is installed; limited searches and equal-cost alternatives retain the old route.
+The old cost includes alignment from the robot's actual orientation. Newly
+admitted routes are not immediately refined in the same decision.
+
+Build **8898541** passes all regressions. New checks verify an independently
+measured five-action improvement after opposing flow disappears, exact count
+conservation, no self-congestion penalty, equal-cost retention, fixed-count
+fairness, limited/timeout retention, and protected/changed-goal handling. An
+additional 4,800 production actions compare serial/four-thread decisions with
+nonzero refinement and warm starts. The first build's erroneous four-action
+fixture expectation is retained separately; it was not benchmarked.
+
+## Correct route-to-go windows and bounded connectors, frozen v26
+
+Fable's emitted findings identify a reproduced metric defect: a candidate that
+passes a cached waypoint is penalized for being beyond that waypoint. The
+standalone old/fixed probe prefers FFFWW before the fix and FFFFF afterwards.
+The new window seeds **every remaining route state inside the box**, with its
+remaining suffix length, and computes the minimum unit-action cost to any such
+continuation. This permits both forward crossing and bypass/rejoin candidates.
+Sorted seed distances and a FIFO of unit-edge relaxations avoid a priority heap.
+Distances use int storage because full suffix offsets can exceed uint16 range.
+The local box size, cache refresh condition, prescribed work and global deadline
+failure contract are unchanged. See the [independent review assessment](fable-guides/assessment.md).
+
+The corrected potential can legitimately point along a parallel row toward a
+farther join. Reconnection therefore now uses an independent shortest-connector
+BFS within its fixed action limit and the existing local box, terminating at an
+aligned remaining-route state, or the final goal in any orientation. All complete
+suffix and flow-conservation checks remain in force. Its explored-state count is
+recorded separately. The original nearby-connector regression caught this issue
+in the first v26 build and is retained unchanged in the correction.
+
+Build **8898546** passes the complete suite, including 3,912 oriented window
+states and four rotated candidate-ranking checks. Its source patch reconstructs
+all requested hashes. Screen **8898547** tests disabled control, unit routes,
+congestion routes, reconnection, and refinement batch 64 at the existing fixed
+4M work threshold. All use one reserved EPYC 9354 core, 8 GiB, 200 steps, and
+one-second complete decisions. It is a feasibility screen, not a throughput rank.
+
+The affected v21/v24 full matrices and their analysis jobs
+**8898527/8898528/8898535/8898536** were verified pending and canceled before
+execution; no running job was interrupted. Their frozen source/specifications
+and completed screens are preserved. They are superseded by corrected-window
+full tests after feasibility validation. [Scheduler record](results/guide-pending-matrices-superseded.json).
+
+
+All five v26 screens pass. Maximum entries are 0.808614661 (disabled control),
+0.848701178 (unit routes), 0.829822722 (opposing-cost routes), 0.807486145
+(reconnection), and 0.827943872 seconds (refinement 64). Peak RSS ranges from
+4.68 to 4.80 GB. The disabled control preserves every previous trajectory field.
+At step 200 the refinement case has 9,996 guides, reconnects all 2,713 observed
+deviations in 49,583 connector-state visits, and improves 28 of its 64 prescribed
+route refinements. These are nonvacuous mechanism/feasibility observations,
+not throughput evidence. [Screen records](results/guide-window-screen-v26/),
+[exact control equivalence](results/guide-window-default-equivalence.json).
+
+Corrected full **8898550**, analysis **8898552**, follows the independent flow
+confirmation **8898544/8898545**. It compares these same five profiles at seed 0,
+5,000 steps, two single-core EPYC 9354 instances and 24 GiB aggregate memory.
+The nearby flow-setting full matrix **8898554/8898555** follows it.
