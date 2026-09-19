@@ -24,7 +24,9 @@ Active full queue:
 
 1. **8898445**, frozen v17, is running on research31. It tests one-round control,
    regional temperatures 100/0, and two rounds at 0. Two four-core instances,
-   24 GiB total. Analysis **8898447** follows. See TEMPERATURE.md.
+   24 GiB total. Analysis **8898447** follows. Completed first pair: control
+   111,411 and temperature 100 at 111,573 (+0.15%), both valid. Temperature 0
+   cases remain running. See TEMPERATURE.md.
 2. **8898517**, corrected frozen v20, follows temperature analysis. It tests 4M-work
    control, original learned flow, margin 50, and margin 50 with freeze at 1,024
    observations. Two single-core instances, 24 GiB total. Analysis **8898518** follows.
@@ -55,9 +57,14 @@ guidance is implemented in frozen v21, passes the full regression suite, and
 passes all five 200-step feasibility cases in **8898525**. Batch 128 guides only
 36–41% of robots at step 200; batch 256 reaches 62%. A prescribed batch of 512
 passes **8898526**, reaches 73–86% coverage, and is queued for full runs above.
-V22 adds cached orientation lower bounds and fixed weighted A* alternatives,
-passes regressions, and is in screen **8898530** (one EPYC 9354 core, 8 GiB).
-No guide throughput gain is established. See GUIDE_PATHS.md.
+V22 passes all five screens; weight 2 solves all 512 admitted searches at its
+step-200 sample, but 415 route deviations cause unnecessary rebuilds. V23 adds
+optional bounded reconnection, passes regressions, and is in screen **8898532**
+(one EPYC 9354 core, 8 GiB).
+V23 batch-512 reconnection fails at timestep 90 in temporal repair and gets no
+score; batch 128 and load-cost-1 pass their screens. Candidate-work follow-up
+will diagnose the heavier conflict search. No guide throughput gain is established.
+See GUIDE_PATHS.md.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,
 timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.

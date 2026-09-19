@@ -60,6 +60,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             [&] { check_deadline(deadline_, "temporal_guide_routes"); });
         stats_.guide_attempts += guide_stats.attempted; stats_.guide_solved += guide_stats.solved;
         stats_.guide_robot_steps += guide_stats.active; stats_.guide_expanded += guide_stats.expanded;
+        stats_.guide_reconnections += guide_stats.reconnected;
     }
     const auto guides_finished = Clock::now();
     std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
@@ -255,12 +256,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
         if (guide_enabled_)
-            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d heuristic_weight=%d goal_resets=%d protected_resets=%d deviation_resets=%d\n",
+            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d heuristic_weight=%d goal_resets=%d protected_resets=%d deviation_resets=%d reconnect_limit=%d reconnect_attempts=%d reconnected=%d reconnect_actions=%lld\n",
                 env_->curr_timestep + 1, seconds(candidate_started, guides_finished), guide_stats.attempted,
                 guide_stats.solved, guide_stats.limited, guide_stats.invalidated, guide_stats.windows, guide_stats.active,
                 guide_stats.expanded, guide_stats.directed_uses, guide_options_.batch, guide_options_.expansions,
                 guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost,
-                guide_options_.heuristic_weight, guide_stats.goal_resets, guide_stats.protected_resets, guide_stats.deviation_resets);
+                guide_options_.heuristic_weight, guide_stats.goal_resets, guide_stats.protected_resets, guide_stats.deviation_resets,
+                guide_options_.reconnect_steps, guide_stats.reconnect_attempts, guide_stats.reconnected, guide_stats.reconnect_actions);
         if (temporal_warm_start_)
             std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,

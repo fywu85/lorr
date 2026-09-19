@@ -406,3 +406,10 @@ see [the design and evidence](../../experiments/construction-20260918/GUIDE_PATH
 only complete routes are admitted. Cached unit-orientation distances provide
 lower bounds when available. This changes guide search ordering and requires
 separate full-horizon evaluation even at weight 1.
+
+`CGAR_GUIDE_RECONNECT_STEPS=0` optionally allows a fixed number (1–128) of local
+connector actions after a nearby route deviation. It preserves a complete
+current-goal suffix and updates intended-edge counts exactly. Goal/protection
+changes invalidate the route; failed connectors use ordinary route admission.
+The experiment uses 16 actions. No action plan is exposed before complete
+search and collision validation.

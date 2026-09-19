@@ -677,6 +677,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     guide_options_.opposite_cost = env_int("CGAR_GUIDE_OPPOSITE_COST", 1);
     guide_options_.load_cost = env_int("CGAR_GUIDE_LOAD_COST", 0);
     guide_options_.heuristic_weight = env_int("CGAR_GUIDE_HEURISTIC_WEIGHT", 1);
+    guide_options_.reconnect_steps = env_int("CGAR_GUIDE_RECONNECT_STEPS", 0);
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
         throw std::invalid_argument("temporal distance scale must be in [1,4096]");

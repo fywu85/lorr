@@ -112,3 +112,52 @@ invalidations, 47 follow goal changes and **425 follow route deviations**. This
 motivates a separate bounded reconnection experiment: reconnect nearby deviations
 to a still-current route using its local distance field, with exact flow-count
 updates and complete path validation. It is not yet implemented in v22.
+
+All five v22 screens pass, and disabled guidance preserves the previous exact
+control trajectory. Maximum entries are 0.524 / 0.649 / 0.721 / 0.582 / 0.627
+seconds for control, unit, opposite1 weights 1/2/4. At step 200, weight 2 solves
+all 512 admitted route searches in 96,051 expansions, with 9,086 active guides
+and 0.0375 seconds of preparation. Weight 4 also solves all 512, using 61,433
+expansions and 8,692 active guides. These select different routes; lower search
+work does not establish better throughput. Evidence: `results/guide-search-screen-v22`.
+
+## Bounded reconnection, frozen v23
+
+`CGAR_GUIDE_RECONNECT_STEPS=0` remains the default. A positive fixed action limit
+(up to 128; experiment 16) allows an eligible robot with an unchanged goal to
+rejoin its still-current route after a nearby deviation. The connector descends
+the prior complete local distance field until first meeting the remaining route,
+then aligns with the outgoing orientation and preserves the full suffix.
+Reaching the final goal does not require a particular terminal orientation.
+
+Only the replaced prefix is removed from intended-edge counts; connector edges
+are added, and shared suffix counts remain intact. Preparation completes before
+counts/path replacement. A failed or too-long connector changes no route and
+uses ordinary invalidation/admission. A deadline exception fails the decision.
+Goal changes and protected/ineligible robots never reconnect stale guidance.
+A fresh complete local window covers the resulting route prefix and every
+five-action candidate. This is a guidance update, not an action reservation;
+the ordinary complete temporal search and collision checks still apply.
+
+Build **8898531** passes all regressions. New fixtures validate current-goal
+suffix completion, every physical transition, exact flow conservation during
+reconnection and execution, fixed connector limits, goal/protection invalidation,
+and a forced interrupted connector that publishes no partial flow/path changes.
+An additional 4,800 production robot actions validate nonzero reconnection and
+identical serial/parallel decisions with warm starts enabled. The frozen patch
+reconstructs every source hash.
+
+Screen **8898532** compares the v22 weight-2 control against reconnection with
+batch 512, batch 128, load cost 1, and search weight 4. It retains the same
+200-step feasibility-only purpose, one isolated EPYC 9354 core, 8 GiB reservation,
+and exact one-second deadline. Full throughput remains unmeasured.
+
+The first reconnection screen exposes a feasibility failure: batch 512, load 0,
+search weight 2 exits 124 at timestep 90, `temporal_repair`, 1001.413 ms.
+It receives no throughput score; see `results/guide-reconnect-v23-first-failure`.
+Batch 128 and load-cost-1 profiles complete their 200-step screens. At step 200,
+batch 128 retains 9,996 guides and reconnects 2,040 deviations, needing only 26
+new-route attempts. This saves route rebuilding but can increase temporal
+conflict-search work; it is not evidence of better throughput. The final weight-4
+case is still running. A follow-up will test the existing prescribed candidate
+work limit, with construction and every repair attempt still completed in full.

@@ -664,6 +664,9 @@ void temporal_region_adapter_regression() {
     (!serial.stats().guide_robot_steps||!serial.stats().guide_solved||serial.stats().guide_robot_steps!=parallel.stats().guide_robot_steps||
      serial.stats().guide_solved!=parallel.stats().guide_solved||serial.stats().guide_expanded!=parallel.stats().guide_expanded))
   throw std::runtime_error("production guide routes did not produce identical nontrivial guidance");
+ if(std::getenv("CGAR_GUIDE_RECONNECT_STEPS")&&std::atoi(std::getenv("CGAR_GUIDE_RECONNECT_STEPS"))>0&&
+    (!serial.stats().guide_reconnections||serial.stats().guide_reconnections!=parallel.stats().guide_reconnections))
+  throw std::runtime_error("production guide reconnection was vacuous or changed with thread count");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
 }
@@ -1068,4 +1071,59 @@ void guide_routes_regression() {
  std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 weighted_bounds=4 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
 }
 
-int main(){try{guide_routes_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void guide_reconnect_regression() {
+ const int rows=5,cols=19,cells=rows*cols;
+ std::vector<char> core(cells,true),eligible(1,true);
+ std::vector<int> loc{39},ori{0},goals{55};
+ GuideRouteOptions options;options.batch=1;options.reconnect_steps=16;
+ GuideRoutes guides;guides.initialize(core,rows,cols,1,options);
+ auto heuristic=[&](int,int cell,int){return std::abs(cell/cols-goals[0]/cols)+std::abs(cell%cols-goals[0]%cols);};
+ auto neighbor=[&](int cell,int dir){if(dir==0)return cell%cols+1<cols?cell+1:-1;if(dir==1)return cell/cols+1<rows?cell+cols:-1;
+  if(dir==2)return cell%cols>0?cell-1:-1;return cell/cols>0?cell-cols:-1;};
+ auto audit=[&](const GuideRoutes& value){
+  std::vector<int> flow(cells*4);long long uses=0;const auto& path=value.route_states(0);
+  if(!path.empty()&&path.back()/4!=goals[0])throw std::runtime_error("reconnected route lost its current goal");
+  for(size_t k=value.route_begin(0)+1;k<path.size();++k){int a=path[k-1],b=path[k];
+   if(a/4==b/4){if((a%4+1)%4!=b%4&&(a%4+3)%4!=b%4)throw std::runtime_error("reconnected route has an invalid turn");}
+   else{if(neighbor(a/4,a%4)!=b/4||a%4!=b%4)throw std::runtime_error("reconnected route has an invalid edge");++flow[a];++uses;}
+  }
+  if(flow!=value.flow()||uses!=value.directed_uses())throw std::runtime_error("reconnection violated exact flow conservation");
+ };
+ guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides);
+ const auto original=guides.route_states(0);
+ ori[0]=1;guides.update(loc,ori,goals,eligible,heuristic,[]{});loc[0]+=cols;
+ auto joined=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides);
+ if(joined.reconnect_attempts!=1||joined.reconnected!=1||joined.attempted||joined.invalidated||
+    joined.reconnect_actions<1||joined.reconnect_actions>16||guides.route_states(0).front()!=loc[0]*4+ori[0])
+  throw std::runtime_error("nearby guide deviation did not retain a complete route without A*");
+ TemporalGeometry geometry;geometry.initialize(core,rows,cols,[]{});int covered=0;
+ for(const auto& candidate:geometry.paths(loc[0],ori[0]))if(candidate.valid)for(int d=0;d<4;++d){
+  if(guides.distance(0,candidate.cells[4],d)<0)throw std::runtime_error("reconnected window omitted a candidate");++covered;}
+ const auto connected=guides.route_states(0);
+ for(size_t k=1;k<connected.size();++k){loc[0]=connected[k]/4;ori[0]=connected[k]%4;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides);}
+ if(guides.directed_uses())throw std::runtime_error("executed reconnected route retained consumed edges");
+ goals[0]=0;auto changed=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides);
+ if(changed.goal_resets!=1||changed.reconnected)throw std::runtime_error("reconnection reused a stale goal");
+ eligible[0]=false;auto protected_reset=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit(guides);
+ if(protected_reset.protected_resets!=1||protected_reset.reconnected||guides.guided(0))throw std::runtime_error("reconnection altered a protected guide");
+
+ GuideRoutes bounded;options.reconnect_steps=1;bounded.initialize(core,rows,cols,1,options);
+ loc={39};ori={0};goals={55};eligible={true};bounded.update(loc,ori,goals,eligible,heuristic,[]{});
+ loc[0]+=cols;ori[0]=1;auto limited=bounded.update(loc,ori,goals,eligible,heuristic,[]{});audit(bounded);
+ if(limited.reconnected||limited.reconnect_attempts!=1||limited.deviation_resets!=1)
+  throw std::runtime_error("reconnection exceeded its fixed action limit");
+ GuideRoutes interrupted;options.reconnect_steps=16;interrupted.initialize(core,rows,cols,1,options);
+ loc={39};ori={0};interrupted.update(loc,ori,goals,eligible,heuristic,[]{});const auto before=interrupted.flow();
+ loc[0]+=cols;ori[0]=1;int checks=0;bool failed=false;
+ try{interrupted.update(loc,ori,goals,eligible,heuristic,[&]{if(++checks==3)throw Timeout("reconnect_fixture");});}catch(const Timeout&){failed=true;}
+ if(!failed||interrupted.flow()!=before||interrupted.route_states(0)!=original)throw std::runtime_error("interrupted connector published partial flow/path changes");
+ audit(interrupted);
+
+ setenv("CGAR_GUIDE_ROUTES","1",1);setenv("CGAR_GUIDE_BATCH","32",1);setenv("CGAR_GUIDE_HEURISTIC_WEIGHT","2",1);
+ setenv("CGAR_GUIDE_RECONNECT_STEPS","16",1);setenv("CGAR_TEMPORAL_WARM_START","1",1);
+ temporal_region_adapter_regression();
+ for(const char* name:{"CGAR_GUIDE_ROUTES","CGAR_GUIDE_BATCH","CGAR_GUIDE_HEURISTIC_WEIGHT","CGAR_GUIDE_RECONNECT_STEPS","CGAR_TEMPORAL_WARM_START"})unsetenv(name);
+ std::cout<<"GUIDE_RECONNECT passed complete_suffix=1 exact_flow_conservation=1 no_astar_on_reconnect=1 candidate_orientations="<<covered<<" fixed_limit=1 stale_goal=1 protected=1 explicit_timeout_no_partial_changes=1 production_actions=4800\n";
+}
+
+int main(){try{guide_routes_regression();guide_reconnect_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

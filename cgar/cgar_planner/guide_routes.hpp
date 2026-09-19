@@ -11,13 +11,15 @@
 
 namespace cgar {
 struct GuideRouteOptions {
-    int batch = 128, expansions = 4096, lookahead = 8;
+    int batch = 128, expansions = 4096, lookahead = 8, reconnect_steps = 0;
     int base_cost = 16, opposite_cost = 1, load_cost = 0, heuristic_weight = 1;
 };
 
 struct GuideRouteStats {
     int attempted = 0, solved = 0, limited = 0, invalidated = 0, windows = 0, active = 0;
     int goal_resets = 0, protected_resets = 0, deviation_resets = 0;
+    int reconnect_attempts = 0, reconnected = 0;
+    long long reconnect_actions = 0;
     long long expanded = 0, directed_uses = 0;
 };
 
@@ -29,12 +31,14 @@ public:
             options.batch < 1 || options.batch > 4096 || options.expansions < 1 || options.expansions > 1000000 ||
             options.lookahead < 1 || options.lookahead > 32 || options.base_cost < 1 || options.base_cost > 1024 ||
             options.opposite_cost < 0 || options.opposite_cost > 64 || options.load_cost < 0 || options.load_cost > 64 ||
-            options.heuristic_weight < 1 || options.heuristic_weight > 8)
+            options.heuristic_weight < 1 || options.heuristic_weight > 8 ||
+            options.reconnect_steps < 0 || options.reconnect_steps > 128)
             throw std::invalid_argument("invalid guide-route configuration");
         core_ = core; rows_ = rows; cols_ = cols; options_ = options;
-        routes_.clear(); routes_.resize(robots); cursor_ = 0; epoch_ = 0; uses_ = 0;
+        routes_.clear(); routes_.resize(robots); cursor_ = 0; epoch_ = join_epoch_ = 0; uses_ = 0;
         flow_.assign(core.size() * 4, 0); stamp_.assign(core.size() * 4, 0);
         distance_.resize(core.size() * 4); parent_.resize(core.size() * 4);
+        join_stamp_.assign(core.size(), 0); join_index_.assign(core.size(), 0);
     }
 
     // An attempt that exhausts its prescribed expansion count produces no
@@ -66,7 +70,13 @@ public:
             if (route.states.empty()) continue;
             size_t found = route.begin;
             while (found < route.states.size() && route.states[found] / 4 != from) ++found;
-            if (found == route.states.size()) { invalidate(route); ++stats.invalidated; ++stats.deviation_resets; continue; }
+            if (found == route.states.size()) {
+                if (options_.reconnect_steps) {
+                    ++stats.reconnect_attempts;
+                    if (reconnect(r, from, orientations[r], check, stats)) continue;
+                }
+                invalidate(route); ++stats.invalidated; ++stats.deviation_resets; continue;
+            }
             // Rotations do not contribute edge flow; consume them at the same
             // cell even when execution chose a different equivalent heading.
             while (found + 1 < route.states.size() && route.states[found + 1] / 4 == from) ++found;
@@ -153,6 +163,67 @@ private:
         route.states.clear(); route.window.dist.clear(); route.goal = -1; route.begin = route.waypoint = 0;
     }
 
+    // Reuse a still-current route after a nearby execution deviation. Descend
+    // its complete local unit-distance field until first touching the remaining
+    // route, align with its outgoing orientation, and retain the full suffix.
+    // Only the replaced prefix changes flow counts. Every published path is
+    // complete; failure to connect within the fixed action count changes nothing.
+    template<class Deadline>
+    bool reconnect(int robot, int cell, int orientation, Deadline check, GuideRouteStats& stats) {
+        auto& route = routes_[robot];
+        int potential = distance(robot, cell, orientation);
+        if (potential < 0) return false;
+        if (++join_epoch_ == 0) { std::fill(join_stamp_.begin(), join_stamp_.end(), 0); ++join_epoch_; }
+        for (size_t k = route.begin; k < route.states.size(); ++k) {
+            if (!(k % 256)) check();
+            join_stamp_[route.states[k] / 4] = join_epoch_; join_index_[route.states[k] / 4] = k;
+        }
+        std::vector<int> connector{cell * 4 + orientation};
+        for (;;) {
+            const int used = int(connector.size()) - 1;
+            if (!(used % 16)) check();
+            if (join_stamp_[cell] == join_epoch_) {
+                const size_t join = join_index_[cell];
+                if (join + 1 < route.states.size()) {
+                    const int target_orientation = route.states[join] % 4;
+                    const int delta = (target_orientation - orientation + 4) % 4;
+                    const int turns = delta == 3 ? 1 : delta;
+                    if (used + turns > options_.reconnect_steps) return false;
+                    for (int k = 0; k < turns; ++k) {
+                        orientation = (orientation + (delta == 3 ? 3 : 1)) % 4;
+                        connector.push_back(cell * 4 + orientation);
+                    }
+                }
+                std::vector<int> joined = connector;
+                joined.reserve(connector.size() + route.states.size() - join - 1);
+                for (size_t k = join + 1; k < route.states.size(); ++k) {
+                    if (!(k % 256)) check();
+                    joined.push_back(route.states[k]);
+                }
+                check();  // Finish all interruptible preparation before replacing counts.
+                for (size_t k = route.begin + 1; k <= join; ++k)
+                    change_edge(route.states[k - 1], route.states[k], -1);
+                for (size_t k = 1; k < connector.size(); ++k) change_edge(connector[k - 1], connector[k], 1);
+                route.states = std::move(joined); route.begin = route.waypoint = 0; route.window.dist.clear();
+                ++stats.reconnected; stats.reconnect_actions += connector.size() - 1;
+                return true;
+            }
+            if (used == options_.reconnect_steps) return false;
+            const int forward = neighbor(cell, orientation);
+            bool moved = false;
+            for (int action = 0; action < 3; ++action) {
+                const int to = action == 0 ? forward : cell;
+                const int dir = action == 0 ? orientation : (orientation + (action == 1 ? 1 : 3)) % 4;
+                if (to < 0 || !core_[to]) continue;
+                const int value = distance(robot, to, dir);
+                if (value < 0 || value + 1 != potential) continue;
+                cell = to; orientation = dir; potential = value; connector.push_back(cell * 4 + orientation);
+                moved = true; break;
+            }
+            if (!moved) throw std::logic_error("guide reconnection lost a finite descending action");
+        }
+    }
+
     template<class Heuristic, class Deadline>
     std::vector<int> search(int start, int goal, Heuristic heuristic, Deadline check, GuideRouteStats& stats) {
         if (++epoch_ == 0) { std::fill(stamp_.begin(), stamp_.end(), 0); ++epoch_; }
@@ -223,12 +294,13 @@ private:
         }
     }
     int rows_ = 0, cols_ = 0, cursor_ = 0;
-    uint32_t epoch_ = 0;
+    uint32_t epoch_ = 0, join_epoch_ = 0;
     long long uses_ = 0;
     GuideRouteOptions options_;
     std::vector<char> core_;
     std::vector<int> flow_, parent_, queue_;
-    std::vector<uint32_t> stamp_;
+    std::vector<uint32_t> stamp_, join_stamp_;
+    std::vector<size_t> join_index_;
     std::vector<int64_t> distance_;
     std::vector<Route> routes_;
 };
