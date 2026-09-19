@@ -23,3 +23,18 @@ before interpreting effects. Inspect full totals, final windows, outstanding age
 and motion alongside complete-entry timing and memory. A promising policy still
 requires six seeds before promotion.
 [Configuration](pickup-full-flow-strength-variants.json), [motion audit](LOADED_MOTION.md).
+
+All eight full runs completed with valid complete decisions, and both strength4
+controls exactly reproduce v42/64. All22 source/test hashes match1661176.
+
+| Strength | Seed0 | Seed2 | Mean effect vs4 | Final1000 differences |
+|---|---:|---:|---:|---|
+|2|141776|143213|+0.060%|+35/+128|
+|4|141829|142988|control|control|
+|6|141085|142854|−0.308%|−96/+107|
+|8|139351|142470|−1.052%|+51/+39|
+
+**Retain strength4.** Strength6/8 loses both full totals. Strength2 has mixed totals
+and a small positive mean; its two improved final windows and lower age p90 do
+not establish a repeatable throughput gain. No six-seed promotion is claimed.
+[Complete comparison](results/pickup-full-flow-strength-full-v43/comparison.json).

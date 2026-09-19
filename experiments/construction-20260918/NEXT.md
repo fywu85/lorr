@@ -31,12 +31,19 @@ instantaneous sample. results/full64-reference-latency-six-seed-v42.json,
 audit8898959 complete. The user's resource question was answered with these new
 confirmed figures in commentary. Do not keep repeating without a reason.
 
-Progress now39 increasing full-run records, last143409 onfour-worker candidate,
-not promoted. Previous confirmed high143325 completed18:13:40.691469UTC, exact
-4872d04. Latest143340/143409 exact1661176 timestamps from full worker metadata.
+Progress now40 increasing full-run records, last143767 onfour-worker policy,
+not promoted aftersixseeds. Previous confirmed high143325 completed18:13:40.691469UTC, exact
+4872d04. Latest143767 completed19:05:34.390519UTC, exact1661176; source/hashvalidated.
 confirmed-reference-progress.json has seven increasing six-seed milestones.
 User editor swap .WAREHOUSE_PROGRESS.md.swp exists; exclude fromGit and do not
 delete. Preserve concurrent user markdown edits with read/compare-before-write.
+
+Latest checkpoints: d4ece2ebbf483678b6a8f837692ec58228c8b0ff and
+f6d0ae448504762136c4f5d85f25d7d207207965 bothpushedtoPUBLICfywu85/lorr.
+The latter EXACTLYmatchesall22V44source/testhashes; binary
+5e9c35b2a74e4cf441360a519167701e54db48e975152cba32defa0609a5e482.
+No C++buildactive; sourceunchangedsincebuild8898977. Userresourceanswerstill
+usesconfirmedone-worker64sixseedreference. Keepactivegoalunmet.
 
 ## New V44 source and review checkpoint
 
@@ -114,19 +121,19 @@ optionalcost discovery key. The default preserves V42 by full trajectory evidenc
 
 ## Live jobs and next comparisons
 
--8898962/analysis8898963: one/four planning workers,4M EACH, current64policy,
- seeds1/3/4/5. Starts18:35:21UTC research57,8cases x4physicalcores=32cores,
- 128GiBaggregate, eachprocess<32decimalGB. Raw
- runs/cgar-pickup-full-workers-confirm-v43-20260919.
- pickup-full-workers-confirm-variants.json. Fullcontrols must exactly match V42/64
- remainingseeds. Combine withfirstpair and inspect all totals/tails/age beforepromotion.
--8898971/analysis8898972: flow strengths2/4/6/8 atscale4,margin25,refresh512,
- turnbuild128,64fields,key0,one4M planningworker. Fullseeds0/2,8cases x4cores,
- 128GiBaggregate,32decimalGB/process. Raw
- runs/cgar-pickup-full-flow-strength-full-v43-20260919.
- Screen8898964 complete4/4valid,max888.135ms,RSS5.206GB; controlfullprefix
- exactV42/64. Fullstrength4 must match141829/142988. No shortprefixqualityclaim.
- PICKUP_FULL_FLOW_STRENGTH.md andpickup-full-flow-strength-variants.json.
+-8898962/analysis8898963 COMPLETE. Fourworkers sixseed143340/143767/143409/
+ 143359/142868/139710,mean142742.1667 (+0.187635%). Fivefull/tailwins, butseed5
+ loses3207total/1933final1000, agep90+53. NOTPROMOTED. All12valid, all6oneworker
+ fullhashesexactconfirmedV42/64,22sourcesmatch1661176. Report
+ results/pickup-full-workers-six-seed-v43.json. Newabsolutehigh143767at19:05:34UTC
+ source1661176; record40logged, confirmedmilestonesremain7. Results/docsawait
+ nextreportcommit; V44productionalreadycommitted/pushedf6d0ae4.
+-8898971/analysis8898972 COMPLETE. Strength2/4/6/8, all8valid, bothstrength4
+ controlsfullhashesexactV42/64,22sourcesmatch1661176. Seeds0/2:
+ 2=141776/143213 (+0.0604%mean,mixedtotals,final+35/+128,age−4/−3);
+ 4=141829/142988;6=141085/142854(−0.308%);8=139351/142470(−1.052%).
+ Retainstrength4;no repeatablegain established. Fullcomparison
+ results/pickup-full-flow-strength-full-v43/comparison.json. No newabsolutehigh.
 
 Additional V43worker scaling:8898975screen4/8/16workers complete, each16physical
 cores, max968.816ms,RSS5.283GB. Four-workerprefixexactunder4vs16coreallocation.
@@ -166,4 +173,4 @@ Guidereconnection/weightedguidevariants previouslycollapsed; do notrepeatsamepol
 
 Next: save completed reports/configs/history; assessFableturn11; collectlivefullruns,
 validate and confirm promising policies. Currentreportcheckpointd4ece2eispushed;
-V43plannerexact1661176ispublic. V44source/resultscheckpointisbeingprepared. Goal remains active/unmet, not blocked.
+V43plannerexact1661176ispublic. V44source/resultscheckpointf6d0ae4isalreadycommittedandpushed. Goal remains active/unmet, not blocked.

@@ -37,8 +37,17 @@ change+0.65%/−0.76%; this is not an established empty-travel mechanism. Four-w
 mean entry latency is316.0–329.1ms, maximum912.7ms, CPU2.619–2.679cores and peak
 RSS11.885GB; full wall time is27.39–28.47minutes. Quality evidence remains two seeds.
 
-Confirmation8898962/analysis8898963 compares one/four workers on seeds1/3/4/5,
-eight simultaneous runs with32 physical cores and128GiB aggregate reservation.
-Every process retains four cores and the32decimalGB cap. Controls must reproduce
-the remaining confirmed v42/64 full trajectories. Only after six seeds may this
-candidate become the reference. [Confirmation configuration](pickup-full-workers-confirm-variants.json).
+Confirmation8898962/analysis8898963 completed the remaining seeds1/3/4/5 with
+32 physical cores and128GiB aggregate. All12 full one/four-worker runs pass,
+and every one-worker control exactly matches the confirmed64-field reference.
+All22 source/test hashes match1661176.
+
+Four-worker seeds0..5 are143340/143767/143409/143359/142868/139710, mean142742.2
+versus142474.8 (+0.188%). Five seeds improve, but seed5 loses3207 tasks,1933 in the
+final1000, and age p90 rises53steps. The other final-window gains are60/130/83/195/165.
+**Do not promote this policy; retain the steadier one-worker reference.** The
+single-run record143767 remains in the history with this qualification.
+[Six-seed comparison](results/pickup-full-workers-six-seed-v43.json).
+
+Larger complete portfolios and mixed warm/cold workers are separate experiments;
+this result does not establish that either will improve throughput.
