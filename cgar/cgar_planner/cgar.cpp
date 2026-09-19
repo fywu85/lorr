@@ -408,6 +408,14 @@ void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int tur
     for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
         index_[u] = static_cast<int>(cells_.size()); cells_.push_back(u);
     }
+    // Reverse-forward topology is invariant across goals and guidance costs.
+    // Cache compact predecessor states once; pocket eligibility remains a
+    // per-goal check in compute(), exactly as in the direct neighbor traversal.
+    backward_.assign(cells_.size() * 4, -1);
+    for (size_t u = 0; u < cells_.size(); ++u) for (int d = 0; d < 4; ++d) {
+        const int from = grid_neighbor(cells_[u], (d + 2) % 4, cert->rows, cert->cols);
+        if (from >= 0 && index_[from] >= 0) backward_[u * 4 + d] = index_[from] * 4 + d;
+    }
     table_bytes_ = std::max<size_t>(1, cells_.size() * 4 * sizeof(int));
     tables_.clear(); lru_.clear(); queue_.reserve(cells_.size() * 4);
     prefetched_.clear(); prefetched_builds = prefetched_hits = prefetched_discarded = 0;
@@ -443,11 +451,12 @@ std::vector<int> TurnDistanceOracle::compute(int goal, std::chrono::steady_clock
     std::vector<int> dist(cells_.size() * 4, kInf); queue.clear();
     const int gp = cert_->pocket[goal], root = index_.at(goal) * 4;
     auto predecessors = [&](int node) {
-        const int cell = cells_[node / 4], d = node % 4;
-        const int backward = grid_neighbor(cell, (d + 2) % 4, cert_->rows, cert_->cols);
+        const int d = node % 4, backward = backward_[node];
         std::array<int, 3> pred{node / 4 * 4 + (d + 1) % 4, node / 4 * 4 + (d + 3) % 4, -1};
-        if (backward >= 0 && index_[backward] >= 0 && (cert_->core[backward] || cert_->pocket[backward] == gp))
-            pred[2] = index_[backward] * 4 + d;
+        if (backward >= 0) {
+            const int cell = cells_[backward / 4];
+            if (cert_->core[cell] || cert_->pocket[cell] == gp) pred[2] = backward;
+        }
         return pred;
     };
     if (turn_cost_ == 1 && forward_costs_.empty()) {

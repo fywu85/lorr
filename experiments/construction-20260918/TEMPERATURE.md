@@ -21,6 +21,15 @@ matched default. All 3,456 robot selections match between serial and four-thread
 execution. The fixtures independently check merged collisions, protected paths,
 boundaries and propagated timeouts. Production episodes also cover 100 and 0,
 with 4,800 matched actions each. The archived source patch reconstructs every
-tested hash. A 200-step screen is running as job 8898441 to check deadlines
-and default-trajectory equivalence, followed by full runs for passing profiles.
+tested hash. All four 200-step screens pass, with maxima 0.706/0.706/0.694/0.865 seconds
+for the control, temperature 100, temperature 0, and two rounds at temperature 0.
+Default regional trajectories exactly match v14 for every recorded field.
+[Screen evidence](results/temperature-screen-v17/),
+[equivalence](results/temperature-default-equivalence.json).
+
+Full job **8898445** tests all four profiles after guidance jobs 8898428/8898429,
+using two four-core instances and 24 GiB total reserved memory. Analysis
+**8898447** follows. Its first analysis submission used an incorrect dependency
+and was rejected before execution; that failed submission is retained in the
+raw directory alongside the successful one.
 No new-temperature throughput evidence exists yet.

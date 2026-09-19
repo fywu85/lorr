@@ -162,7 +162,7 @@ private:
     struct Entry { TurnTable dist; std::list<int>::iterator lru; };
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
-    std::vector<int> cells_, index_, queue_;
+    std::vector<int> cells_, index_, queue_, backward_;
     int turn_cost_ = 1, max_edge_cost_ = 1;
     bool compact_ = false;
     std::vector<uint8_t> forward_costs_;

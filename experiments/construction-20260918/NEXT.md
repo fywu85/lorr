@@ -8,43 +8,37 @@ retain that resource difference when comparing.
 
 Established results:
 
-- Equal-weight 50k averages 107,413.3 across seeds 0–2. The compact seed-0
-  implementation preserves every full trajectory field at 107,457 and reduces
-  RSS from 16.208 to 11.883 GB. Two full instances now run concurrently on
-  disjoint reserved cores inside one 24 GiB total allocation.
-- Strongest completed seed-0 result: 112,164 with two regional rounds (maximum
-  entry 0.891 seconds); one round reaches 111,411 (0.680 seconds). Both use four
-  physical cores per instance and about 11.82 GB RSS. No six-seed confirmation.
-- A separate exploratory seed-0 result is 111,118, using 4M candidate work plus
-  direct-cost dispatch, pickup weight 5, global shortlist 64. Paired control:
-  107,457. Its outstanding-task age is worse; no six-seed promotion.
-- Corrected turn cost 2 yields 100,323. Fewer turns are outweighed by more waits
-  and detours. Cost 4 fails explicitly at timestep 902 in temporal repair;
-  cost 8 fails its screen. Neither failed case receives a partial score.
-- The approved Fable v11 review is complete; its fallback scoring defect and
-  regional observability/testing gaps are fixed. Prefetch found no benefit and
-  stays off. See fable-regions/assessment.md and RESULTS.md.
+- Equal-weight 50k averages 107,413.3 across seeds 0–2. Compact seed 0 preserves
+  every full trajectory field at 107,457 and reduces RSS from 16.208 to 11.883 GB.
+- Strongest completed seed-0 result: 112,164 with two regional rounds, maximum
+  entry 0.891 seconds. One round reaches 111,411 at 0.680 seconds. Reducing global
+  work to 25k with two rounds reaches 111,997 at 0.725 seconds. All use four cores
+  and about 11.82 GB RSS. No six-seed confirmation.
+- Regional gains persist in the final 1,000 steps and improve outstanding-task
+  age. Earlier mixed scheduler/4M work reaches 111,118 but worsens the age tail.
+- Corrected turn cost 2 yields 100,323; cost 4 fails at step 902, cost 8 fails its
+  screen. No failed case gets a partial score. Prefetch remains off after finding
+  no benefit. The approved Fable v11 review is complete and its proven issues fixed.
 
 Active full queue:
 
-1. Job **8898387**, frozen v14, still runs 25k global plus two regional
-   rounds. One-round and two-round 50k-global profiles are now complete, as are
-   the control/turn cases above. Analysis **8898389** follows completion of the entire matrix.
-2. Job **8898428**, frozen v16, is held after 8898387/8898389. It tests one
-   control, learned-flow strengths 1/2/4, and distance scales 256/1024 separately.
-   Two concurrent instances, one disjoint physical core each, 24 GiB total.
-   Analysis **8898429** follows.
+1. **8898428**, frozen v16, runs control, learned-flow strengths 1/2/4, and distance
+   scales 256/1024 separately. Two concurrent instances, one distinct physical core
+   each, 24 GiB total. Actual EPYC 9354 bindings [0] and [1], no CPU quota. Analysis
+   **8898429** follows. No full guidance/scaling result yet.
+2. **8898445**, frozen v17, follows that matrix and analysis. It tests one-round
+   control, regional temperatures 100/0, and two rounds at 0. Two concurrent
+   instances, four cores each, 24 GiB total. Analysis **8898447** follows. All four
+   200-step screens pass; default trajectories exactly match v14. See TEMPERATURE.md.
 
-The v16 complete regression suite passes, including 7,200 independent shortest
-paths, 610,224 physical-progress bounds, 33,282 actual-scorer dominance pairs,
-and protected/threaded episodes. All relevant 200-step screens pass. Default
-control and flow-1 trajectories exactly match v15; disabled flow matches v14.
-Every source archive reconstructs all tested hashes. No full traffic/scaling
-performance result exists yet. See FLOW.md and SCALE.md.
+The v18 static predecessor cache passes regressions and cuts isolated table
+build time by 19–26% with matching checksums. All three integration screens pass with
+exact prior trajectories over 200 steps; no whole-planner speedup claim yet. See ORACLE.md. A possible next
+experiment is warm-starting from the unexecuted suffix of a valid prior plan,
+with cold resets for changed goals/protected paths and their collision closure.
 
-After each matrix: preserve every failure, check all 5,000 entry samples,
-errors/timeouts, actual RSS, trajectory fingerprints, final-1,000-step rates and
-movement efficiency. Keep full-run throughput claims separate from short deadline
-screens. Compare variants before combining features. Six-seed confirmation of
-the strongest candidate remains required before claiming repeatability or meeting
-the leader target. The active goal is not complete.
+After each matrix: preserve failures, check all 5,000 entry samples, errors,
+timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.
+Keep deadline screens separate from throughput evidence. Compare standalone
+variants before combining them. Six-seed confirmation remains required before
+claiming repeatability or meeting the leader target. The active goal is not complete.

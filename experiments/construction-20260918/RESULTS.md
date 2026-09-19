@@ -158,17 +158,17 @@ increment separately. [Full motion evidence](results/work-full-v8/). Short scree
 used only to reject infeasible deadlines.
 
 Compact orientation tables preserve all compared short trajectories and reduce
-storage without increasing the logical cache capacity. Their pending full matrix
-runs two instances concurrently on disjoint reserved cores, within 24 GiB total
-reserved memory. Weighted turns and regional repair remain experimental until
-those full results arrive. [Implementation and evidence](ROUTING.md).
+storage without increasing the logical cache capacity. Full validation below
+confirms exact control trajectories and lower memory. Two instances now run
+concurrently on disjoint reserved cores within 24 GiB total reserved memory.
+Weighted turns and regional repair have complete seed-0 evidence below. [Implementation and evidence](ROUTING.md).
 
 The tested checkpoint is the optional equal-weight 50k profile. Source patches
 for every build are in [build-provenance](build-provenance/). Defaults remain
 unchanged. Further work must retain the 1-second failure contract, 32 GB process
 target, generic policies, and full-run validation.
 
-## First completed compact full cases (v14, remaining matrix running)
+## Compact, turn-cost and regional full matrix (v14)
 
 | Seed-0 profile | Tasks | Maximum entry time | Peak RSS bytes | Wall seconds |
 |---|---:|---:|---:|---:|
@@ -182,7 +182,8 @@ and preserves every path, schedule, event and task over all 5,000 steps.
 two processes run concurrently on disjoint physical cores inside one 24 GiB
 reservation. Their wall times are not a same-process sequential/parallel speedup
 measurement. Turn cost 2 loses 6.64% against its paired control and is not promoted.
-Other v14 profiles continue; this is explicitly a partial matrix report.
+The complete matrix and movement analysis are retained in
+[review-full-v14](results/review-full-v14/), including the cost-4 failure.
 
 The turn-cost-2 motion analysis explains the negative tradeoff: loaded turns
 fall from 3,831,662 to 3,012,168 (−21.4%), but loaded waits rise from 2,848,136
@@ -206,5 +207,19 @@ The first completed regional profiles improve the same seed-0 control:
 Both complete all 5,000 steps, with zero errors/timeouts and all entry samples.
 Each uses four reserved physical cores. The second round adds 753 tasks (+0.68%)
 at a cost of 312.4 wall seconds in these runs and reduces deadline margin. The
-25k-global/two-round profile is still running. These are exploratory single-seed
-results, not a six-seed promotion. [Completed-case records](results/regional-first-results-v14/).
+25k-global/two-round profile reaches **111,997** tasks, maximum entry
+**0.724975088 s**, RSS **11,823,120,384 bytes**, wall **1,383.312 s**. It loses
+only 0.15% against 50k/two-rounds while reducing wall time by 12.5% in these
+paired-host runs. These are exploratory single-seed results, not a six-seed promotion. [Completed-case records](results/regional-first-results-v14/).
+
+The final-1,000-step counts are 22,002 for control, 22,699 for one round,
+22,904 for two rounds, and 22,866 for 25k/two-rounds. Outstanding-task age p90
+improves from 883 to 847, 834 and 838 respectively. Two-round repair reduces
+loaded turns from 3,831,662 to 3,362,940, waits from 2,848,136 to 2,550,570, and
+moves away from the goal from 3,335,096 to 3,029,737. Unlike the direct-cost
+scheduler experiment, these gains do not worsen the observed age tail.
+
+[Regional diagnostics](results/regional-diagnostics-v14.json) retain all 25 sampled
+decisions per profile. The first round contributes much more internal-score gain
+than the second. This motivates the separate [temperature ablation](TEMPERATURE.md);
+it does not prove the cause or replace full-run throughput measurements.
