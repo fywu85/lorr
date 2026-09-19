@@ -135,3 +135,34 @@ two-owner loses to one-owner on seed0. The remaining four seeds are being tested
 The pickup5 seed0 record136149 also accompanies a seed2 late collapse to52444;
 it cannot establish a robust pickup-weight benefit. Neither local scalar gains
 nor independent pickup guards establish full-run system throughput or liveness.
+
+
+Turn07 completes in the SAME session:286.965seconds,$12.4088865,49393payload
+bytes and three changed excerpts, source24a576c. It found no concrete pool
+safety counterexample and executed no code. The shared eligibility, proposed-ID
+availability, one-to-one matching, exact BFS domain and both cost guards match
+the implementation. A mid-pass timeout can leave private retarget records changed;
+this is permitted only because Entry rejects the whole run. Timeout recovery
+within a continuing run is not supported or claimed.
+
+The pending-primary uncertainty is resolved by direct source inspection:
+select_primary excludes only absent/reached goals and parked robots, and does
+NOT skip locked or recovery robots. Started episodes excluded by the pool pass
+are already immutable. The current and oldest unopened pending episodes stay
+protected. The proposed locked-oldest counterexample therefore does not apply.
+
+The claim that exchange does not weaken released-task fairness is not proven:
+release changes waiting time and task mix even though the existing HRRN and
+finite-retarget mechanisms remain. Likewise the finite task record prevents
+repeated unopened-task redirection, not every conceivable robot-level cycle.
+Static pickup distance ignores heading/tolls and future released-task costs;
+no end-to-end throughput guarantee follows. Additional authoritative round-trip,
+fresh-assignment contention and guard-boundary tests would improve coverage.
+Full simulator runs already invoke its validator; complete outcomes are pending.
+
+The v38 transaction suite independently covers two commit/rollback/reuse cases
+(equal and fractional weights), four later-work-exhaustion cases retaining an
+earlier complete commit, an edge-only reverse collision, exact displacement-size
+cutoffs and512tiny instances enumerating57200candidate combinations.211returned
+changes pass independent collision/protection/fresh-score replay. No fractional
+score failure was reproduced; the production comparison has not been changed.

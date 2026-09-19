@@ -1,97 +1,116 @@
 # Continuing warehouse work
 
-Goal: at least 152,981 tasks over all 5,000 steps, repeatably over six seeds,
-complete one-second decisions, process RSS below 32,000,000,000 bytes, and
-isolated GRID physical cores. No map-name branches, aisle templates, supplied
-weights, future tasks, or map-specific fleet caps. The local KittyKnight target
-used 38.858 GB RSS; it is a local reference, not an equal-resource official score.
-The goal remains active. Maintain ../../WAREHOUSE_PROGRESS.md after full results.
+Goal: at least152981tasks over all5000steps with10000robots, repeatably over six
+seeds, complete one-second decisions, process RSS below32000000000bytes, isolated
+GRID physical cores. No map identities, aisle templates, supplied weights, future
+tasks or map-specific fleet caps. The local KittyKnight target used38.858GBRSS;
+it is a local reference, not an equal-resource official score. Goal remains active.
+Maintain ../../WAREHOUSE_PROGRESS.md and exact source/commit/timestamp provenance.
 
-## Current evidence
+## Confirmed evidence
 
-- Ordinary refresh512 is confirmed on all six seeds: 134,511 / 134,859 /
-  134,519 / 134,061 / 134,626 / 134,966; mean **134,590.3**. All valid,
-  final windows 28,167–28,368. Same-work no-flow mean **109,173**. Repeated
-  trajectories exactly reproduce. This establishes six-seed consistency, not
-  achievement of the leader target. See results/flow-refresh-six-seed-v30.json.
-- Single-run peak **135,177**, strict wait turns plus refresh512, seed 0.
-  Its two-seed mean slightly loses to ordinary refresh; do not promote it.
-- Cache-only causal control is complete: real traffic updates beat cache-only
-  in all four strict-mode/seed contrasts. In healthy frozen controls, real
-  updates add 8.74–9.84% above cache-only. Legacy seed 2 still collapses late
-  with cache-only. See FLOW_CACHE_ONLY.md; do not attribute refresh to flushing.
-- Warm reuse plus refresh512 gains 0.283% on seeds 0/2. Refresh256 slightly
-  loses. Gentler refreshed costs lose 1.16% / 2.74%. None is a large next gain.
-- Four full-size fixed workers gain only 0.204% on seeds 0/2, using 2.60–2.63
-  average CPU cores and 271–277 ms mean decisions. Four smaller 1M workers
-  deteriorate severely; their mandatory construction often consumes or exceeds
-  the nominal allowance, leaving no repair. This is not exact equal work.
-- Ordinary refresh uses about 1.2 CPU cores, with four physical cores reserved.
-  Six-seed mean entries 239–258 ms, max 776 ms; a separate repeat reaches
-  793 ms. Peak RSS 13.12 GB. Full runs take 21.2–22.8 minutes.
-- Full v34 audit reproduces both baseline hashes. The best forward candidate
-  is rarely unblocked, but a non-best improving alternative may be. Do not use
-  these snapshots as rejected-attempt histories or predicted task gains.
-- Travel audit: loaded elapsed/shortest ratio 1.1745 versus local KK 1.0799;
-  completed chain lengths 242.32 versus 233.84. Cohorts differ, so this is not
-  a causal decomposition. Dwell concentration does not justify new cell tolls.
+- Leading ordinary refresh512:134511/134859/134519/134061/134626/134966 over
+  seeds0..5, mean134590.3. Matched no-flow mean109173. All decisions valid; exact
+  repeated trajectories; stable final windows. Still below the target.
+- Historical peak136149: direct-cost pickup5seed0, but seed2collapses to52444,
+  including4447in the final1000. Not promoted. Pickup3mean134295.5also loses.
+- Two-owner transactions finish all six seeds:134584/135299/135357/132125/
+  133325/134525, mean134202.5, -0.288% versus matched disabled. Wins3of6and
+  loses3of6. All12paired cases valid; all six controls exactly reproduce.
+  Not promoted. One-owner has only a small two-seed gain, not six-seed proof.
+- All prior cache-only, gentler cost, worker, HRRN/refinement and audit matrices
+  are complete. Actual traffic updates matter beyond cache flushing. Four full
+  workers add0.204% on two seeds; reduced per-worker work collapses. HRRN0
+  shortens chains but adds about17%empty travel. No broad search-saturation claim.
+- Confirmed resource usage:239–258ms mean complete step,324–340ms p99in a
+  separate two-seed audit,793ms worst recent repeat,1.2average CPU cores with
+  four reserved,13.12GBpeak RSS,21–23minute full runs. Hosts isolated/unthrottled.
 
-## Current checkpoint: 14:28 UTC
+## Running work
 
-- Transaction full8898717/8898718 is complete, all six cases valid and both
-  disabled trajectories exact. One-owner mean134867.5 (+0.262%); two-owner
-  mean134970.5 (+0.339%). Two-owner seed2 creates135357 at14:13:43UTC.
-  Remaining seeds1/3/4/5 are running as **8898725 /8898726**, two profiles,
-  eight concurrent cases,32physical cores/128GiB aggregate, exclusive research46.
-- Pickup full8898721/8898722 is complete. All eight cases valid, four weight1
-  control hashes exact. Weight3 mean134295.5 slightly loses. Weight5 seed0
-  creates136149 at14:19:27UTC, but seed2 collapses to52444 (final4447).
-  Neither weight is promoted. The chronological record retains both new peaks.
-- Optional pool exchangev37 is implemented. Build8898723 and screen8898727 pass;
-  disabled prefix is exact. Complete-source archive verified. Full **8898728 /8898729**
-  compares disabled/exchange/exchange+two-owner on seeds0/2 concurrently. Four
-  physical cores/process,72GiB aggregate, individual1-second/32GBchecks.
-  See POOL_EXCHANGE.md for cost guards, protection, release and retarget semantics.
-- Fable turn06 is complete, reviewed source45ebea2, same UUID. No concrete
-  atomicity counterexample. Potential fractional-score drift and multi-root
-  coverage need independent tests; no proven defect in tested integer profile.
-  Preserve and assess the visible review as recorded in fable-flow-session/.
+- Pool full8898728/8898729is complete, all six valid. Pool-only135409/134762,
+  mean135085.5 (+0.424%); combined134902/134926. Exact disabled controls. Empty
+  robot-steps fall only0.455%/0.430%; task-age p90rises to702/722. Each of14546/
+  14665reassigned tasks changes owner at most once; no changes after pickup.
+- **8898745 /8898746**: pool-only versus disabled confirmation, seeds1/3/4/5,
+  eight concurrent cases, four physical cores/process,128GiBaggregate, source24a576c.
+- **8898747**: independent four-case pool travel audit under one isolated core,
+  raw runs/cgar-pool-exchange-travel-v1-20260919/analysis. Copy only complete
+  result JSON/fixture/provenance/submission into results/pool-exchange-travel-v1.
+- **8898732 /8898733**: full refreshed flow neighbors on frozen v36 source,
+  strength1margin50control, strength1margin25/75, strength2margin50, seeds0/2,
+  eight concurrent cases,32physical cores/128GiBaggregate, exclusive research50.
+  Screen8898730 passes all four with exact control. Earlier losing frozen-field
+  versions do not settle effects under repeated actual field updates.
+- **8898743 /8898744**: full turn-table build allowances32/64/96/128, seeds0/2,
+  eight concurrent cases,32physical cores/160GiBaggregate. Per-process limit
+  remains32decimalGB. Screen8898739passes all, max0.881s/RSS5.21GB, default
+  prefix exact. Build8898734/archivedv39passes. See TURN_BUILD_LIMIT.md.
+
+All C++ builds are complete. Running benchmarks use frozen binaries. No Fable
+process remains running: turn07completed at14:33:37UTC in the SAME session.
+
+## New diagnosis and implementation
+
+Every200-step samples of ordinary refreshed controls have only75.7%exact
+turn-aware metric coverage on average, as low as16.1–16.8%after invalidations.
+The old hardcoded32table rebuilds/step is now optional CGAR_TURN_BUILD_LIMIT,
+range0–256, default32. Cache space alone cannot remove that count limit.
+No partial table enters the cache and a missed complete-entry deadline fails.
+V39changes only this configurable count and its diagnostics; no performance gain
+is claimed before full results. Source patch independently reconstructs all hashes.
+
+V38adds transaction soundness coverage: equal/fractional multi-root commit,
+rollback and owner reuse; retention of earlier commits after later work exhaustion;
+edge-only swap conflicts; exact size bounds;512tiny cases with57200enumerated
+candidate combinations and211valid accepted changes. Production logic unchanged;
+no fractional-score drift counterexample was reproduced. V39retains these tests.
+
+Fable07finds no concrete pool safety defect. Direct inspection of select_primary
+resolves its missing-context concern: locks/recovery do not exclude the oldest
+pending robot. Timeout recovery within a continuing run is not promised. Static
+pickup guards ignore heading/tolls and released-task future cost; task-mix and
+fairness claims remain qualified. All six initial full simulator runs validate. Age tails worsen while empty
+travel improves slightly; completed-chain decomposition and six-seed confirmation
+remain necessary before promotion.
 
 ## Next decisions
 
-1. Finish transaction six-seed confirmation and full exchange evaluation.
-   Verify complete trajectory hashes, timing, RSS, final windows, task ages and
-   release statistics. No short-prefix rankings or single-seed promotion.
-2. Get a read-only review of the new pool pass in the SAME Fable session, sending
-   only changed excerpts and completed-result corrections. Preserve source-based
-   critique separately from performance predictions and unproven liveness claims.
-3. Add meaningful transaction multi-root/unlock/rollback, edge-only conflict and
-   fractional-weight regressions before altering the proposed floating-point
-   comparison. Existing frozen binaries are unaffected by future source edits.
-4. Investigate any exchange benefit or late failure before increasing search work.
-   More CPU alone has yielded small gains; this does not prove all neighborhoods
-   are saturated. Pickup5 collapse reinforces the need for full horizons.
-5. Maintain ../../WAREHOUSE_PROGRESS.md and exact commit-linked source provenance;
-   the best robust six-seed policy remains ordinary refresh512, mean134590.3.
+1. Finish each full matrix and independently analyze trajectories, complete timing,
+   RSS, task ages, last1000steps and release counters. Controls must reproduce.
+   Do not rank200-step prefixes or promote a single high seed.
+2. If pool exchange helps, examine empty travel, changed task mix, release counts
+   and age tails; confirm promising settings on all six seeds. The pure two-owner
+   policy is rejected, though its interaction arm is already running.
+3. For larger table allowances, check actual exact/fallback coverage and build
+   counts before attributing any throughput effect. If helpful, improve the
+   construction implementation or parallel allocation based on measured cost;
+   do not assume more cache or speculative prefetch is equivalent.
+4. Apply concrete safety findings with meaningful regressions. Additional pool
+   fresh-assignment/round-trip/guard-boundary tests are useful if the policy is
+   retained. Do not describe successful local-score search as proof of task gains.
+5. Commit/push validated checkpoints and update throughput history, including
+   reversals. Only declare the goal complete after full six-seed target evidence.
 
 ## Persistent Fable consultation
 
-Use Claude Code CLI, claude-fable-5-1, effort max, SAME session
-1ebb1075-3538-49d1-93d1-a00c94fa256a, via fable-flow-session/run_review.py.
-Standing explicit user permission covers relevant project information and source.
-Prepare bounded, hashed payloads; resume the existing session and send changed
-source excerpts only. No tools or edits are allowed in the consultation. Raw
-protocol/session data stays under ignored runs/. Archive visible reviews and
-usage/status metadata only. Turns 01–06 complete. Independently assess advice and predictions; reviews are
-not a substitute for complete benchmark and correctness evidence.
+Claude Code CLI, claude-fable-5-1, effort max, SAME UUID
+1ebb1075-3538-49d1-93d1-a00c94fa256a via fable-flow-session/run_review.py.
+Standing user permission covers relevant project source/info. Prepare bounded,
+hashed payloads and send only changed excerpts with corrected completed evidence.
+Tools and edits are disabled. Archive visible review/usage/status only; raw
+protocol stays under ignored runs/. Turns01–07complete. No restart is warranted
+on an observation timeout. Current source-spec line ranges need refreshing before
+any new payload because regression/source line positions changed after turn07.
 
-
-Fable turn05 is complete in the same UUID: 243.802 seconds, $7.90448025, three
-changed/new source excerpts, 17973 payload bytes. It favors pool exchanges and
-requires a pickup-saving guard independent of chain length. Its claimed snapshot
-throughput ceiling and claim that this guard eliminates task-mix effects are not
-established. See fable-flow-session/assessment.md for the independent assessment.
-The existing TaskManager validates releasing unopened tasks and preserves their
-reveal times; changing started tasks is rejected. A future pool pass must also
-preserve primary, recovery, pocket, fair-admission and finite-retargeting rules.
-
+Potential next implementation: parallel admission of a fixed number of missing
+current-goal turn tables before temporal candidate preparation. Existing prefetch
+computes chunks of32in parallel but leaves them invisible until normal demand;
+that old speculation discarded93.47%. A future optional batch would admit every
+chosen complete table deterministically, then score candidates. Compare serial/
+parallel batch admission separately from the old demand policy. Keep the default
+unchanged, include thread count in allocation validation, join failures, and reject
+late complete decisions. This is not implemented. Wait for rebuild-limit evidence
+before choosing the production count; more guidance is a hypothesis, not a gain.
+The older assigned-to-assigned swap flag has never been tested with refresh512;
+it is another possible generic assignment ablation, not a proven improvement.

@@ -1,0 +1,184 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -681,6 +681,9 @@
+     if (cache_only_refresh < 0 || cache_only_refresh > 1 ||
+         (cache_only_refresh && (!flow_strength_ || !env_int("CGAR_FLOW_REFRESH_INTERVAL", 0))))
+         throw std::invalid_argument("cache-only flow refresh requires enabled flow, a positive interval and a boolean setting");
++    turn_build_limit_ = env_int("CGAR_TURN_BUILD_LIMIT", 32);
++    if (turn_build_limit_ < 0 || turn_build_limit_ > 256)
++        throw std::invalid_argument("CGAR_TURN_BUILD_LIMIT must be in [0,256]");
+     turn_cost_ = env_int("CGAR_TURN_COST", 1);
+     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
+     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
+@@ -1405,7 +1408,7 @@
+     distance_deadline_ = deadline_;
+     oracle_.trim();
+     table_budget_ = plan_tables_;
+-    turn_table_budget_ = 32;
++    turn_table_budget_ = turn_build_limit_;
+     if (orientation_guidance_) turn_oracle_.trim();
+     sync_agents();
+     if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
+@@ -1626,8 +1629,8 @@
+ }
+ 
+ void Cgar::log_movement() const {
+-    std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d builds=%lld guided=%lld fallback=%lld\n",
+-                env_->curr_timestep + 1, orientation_guidance_, turn_first_, stats_.oriented_builds,
++    std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d build_limit=%d builds=%lld guided=%lld fallback=%lld\n",
++                env_->curr_timestep + 1, orientation_guidance_, turn_first_, turn_build_limit_, stats_.oriented_builds,
+                 stats_.oriented_guided, stats_.oriented_fallback);
+     for (int phase = 0; phase < 3; ++phase) {
+         const auto& m = stats_.movement[phase];
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -402,6 +402,7 @@
+     int fallback_samples_ = 64;
+     int global_samples_ = 0;
+     int pickup_weight_ = 1;
++    int turn_build_limit_ = 32;
+     bool reassign_ = false, reassign_pool_ = false;
+     int primary_ = -1;
+     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -1217,6 +1217,133 @@
+  std::cout<<"TEMPORAL_TRANSACTION passed two_owner_backtracking=1 aggregate_score_rejection=1 exact_owner_rollback=1 fixed_owner=1 missing_escape=1 work_cutoffs=3 exception_propagation=1 independent_paths=1 protected_serial_parallel_actions=9600\n";
+ }
+ 
++void turn_build_limit_regression() {
++ auto fixture=[](){SharedEnvironment e;e.rows=e.cols=20;e.num_of_agents=80;e.map.assign(400,0);e.curr_task_schedule.assign(80,-1);e.goal_locations.resize(80);
++  for(int r=0;r<80;++r){e.curr_states.emplace_back(r,0,r%4);e.goal_locations[r]={{399-r,0}};}return e;};
++ setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);setenv("CGAR_TURN_COMPACT","1",1);
++ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","512",1);setenv("CGAR_TEMPORAL_ORDER","1",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);
++ int checked=0;
++ for(int limit:{0,1,16,32,64}){
++  setenv("CGAR_TURN_BUILD_LIMIT",std::to_string(limit).c_str(),1);auto e=fixture();Cgar c;c.initialize(&e,1000);
++  for(int t=0;t<3;++t){
++   e.curr_timestep=t;const auto before=c.stats().oriented_builds;std::vector<Action>a;c.plan(&e,1000,a);
++   const auto built=c.stats().oriented_builds-before;
++   if(built>limit||(t==0&&built!=limit))throw std::runtime_error("oriented table construction ignored the fixed per-step allowance");
++   auto states=step(e,e.curr_states,a);if(states.empty())throw std::runtime_error("fixed table build allowance produced an invalid complete action set");e.curr_states=states;++checked;
++  }
++ }
++ unsetenv("CGAR_TURN_BUILD_LIMIT");auto e=fixture();Cgar implicit;implicit.initialize(&e,1000);
++ setenv("CGAR_TURN_BUILD_LIMIT","32",1);Cgar explicit_default;explicit_default.initialize(&e,1000);
++ for(int t=0;t<3;++t){
++  e.curr_timestep=t;std::vector<Action>a,b;implicit.plan(&e,1000,a);explicit_default.plan(&e,1000,b);
++  if(a!=b||implicit.stats().oriented_builds!=explicit_default.stats().oriented_builds)throw std::runtime_error("explicit default turn build allowance changed decisions or cache admission");
++  auto states=step(e,e.curr_states,a);if(states.empty())throw std::runtime_error("default turn build allowance fixture collided");e.curr_states=states;
++ }
++ for(const char* value:{"-1","257"}){setenv("CGAR_TURN_BUILD_LIMIT",value,1);auto invalid=fixture();bool rejected=false;try{Cgar c;c.initialize(&invalid,1000);}catch(const std::invalid_argument&){rejected=true;}if(!rejected)throw std::runtime_error("invalid turn table build allowance accepted");}
++ for(const char* key:{"CGAR_TURN_BUILD_LIMIT","CGAR_ORIENTATION_GUIDANCE","CGAR_TURN_FIRST","CGAR_TURN_COMPACT","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_ORDER","CGAR_TEMPORAL_EQUAL_WEIGHT"})unsetenv(key);
++ std::cout<<"TURN_BUILD_LIMIT passed complete_steps="<<checked<<" limits=0,1,16,32,64 exact_default_actions=240 invalid_configuration=1\n";
++}
++
++void temporal_transaction_safety_regression() {
++ TemporalGeometry geometry;geometry.initialize(std::vector<char>(15,true),3,5,[]{});
++ auto operation=[](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
++  for(int k=0;k<int(ops.size());++k)if(ops[k]==actions)return k;
++  throw std::runtime_error("missing transaction safety fixture operation");};
++ const int one=operation({0,3,3,3,3}),two=operation({0,0,3,3,3}),bend=operation({0,1,0,3,3});
++ auto valid=[](const std::vector<std::vector<TemporalChoice>>& choices,const std::vector<int>& selected,const std::vector<int>& starts){
++  for(int t=0;t<5;++t)for(int a=0;a<int(selected.size());++a)for(int b=a+1;b<int(selected.size());++b){
++   const auto& pa=*choices[a][selected[a]].path;const auto& pb=*choices[b][selected[b]].path;
++   const int froma=t?pa.cells[t-1]:starts[a],fromb=t?pb.cells[t-1]:starts[b];
++   if(pa.cells[t]==pb.cells[t]||(pa.cells[t]==fromb&&pb.cells[t]==froma))return false;
++  }
++  return true;
++ };
++ auto score=[](const std::vector<std::vector<TemporalChoice>>& choices,const std::vector<int>& selected,const std::vector<double>& power){
++  long double total=0;for(int r=0;r<int(selected.size());++r)total+=(static_cast<long double>(choices[r][0].cost)-choices[r][selected[r]].cost)*power[r];return total;
++ };
++ TemporalTransactionOptions options;options.work=4096;options.roots=3;options.per_root=1024;options.max_owners=1;options.max_agents=2;
++ // A moves X, B tries to move X again but loses aggregate score, then C
++ // succeeds by taking that same escape. C requires X's prior lock to be gone.
++ std::vector<std::vector<TemporalChoice>> choices(4);
++ choices[0]={{&geometry.paths(0,0)[0],1000,0},{&geometry.paths(0,0)[one],0,one}};
++ choices[1]={{&geometry.paths(1,0)[0],0,0},{&geometry.paths(1,0)[two],100,two},{&geometry.paths(1,0)[bend],600,bend}};
++ choices[2]={{&geometry.paths(8,3)[0],300,0},{&geometry.paths(8,3)[one],0,one}};
++ choices[3]={{&geometry.paths(4,2)[0],1000,0},{&geometry.paths(4,2)[one],0,one}};
++ const std::vector<int> starts{0,1,8,4},order{0,2,3};std::vector<char> fixed(4,false);
++ for(const std::vector<double>& power:std::vector<std::vector<double>>{{1,1,1,1},{1.0/3,1.0/7,1.0/11,1.0/5}}){
++  TemporalPibt baseline(15,choices,fixed,power,8192,0);const auto original=baseline.selections();TemporalTransactionStats stats;
++  auto result=repair_temporal_transactions(15,choices,fixed,power,8192,baseline,options,order,0,stats,[]{});
++  if(!result||result->selections()!=std::vector<int>({1,2,0,1})||stats.roots!=3||stats.accepted!=2||stats.rollbacks!=1||stats.terminals<3||
++     !valid(choices,result->selections(),starts)||baseline.selections()!=original||std::abs(score(choices,result->selections(),power)-result->score())>1e-9L)
++   throw std::runtime_error("multi-root transaction failed commit, rollback or reuse of an unlocked owner");
++  for(int work:{3,5}){
++   options.work=work;auto partial_pass=repair_temporal_transactions(15,choices,fixed,power,8192,baseline,options,order,0,stats,[]{});
++   if(!partial_pass||partial_pass->selections()!=std::vector<int>({1,1,0,0})||stats.accepted!=1||!stats.work_exhausted||stats.candidates>work||!valid(choices,partial_pass->selections(),starts))
++    throw std::runtime_error("exhausted later transaction erased an earlier complete commit or leaked an unfinished branch");
++  }
++  options.work=4096;
++ }
++ // A reverse-edge collision without any simultaneous vertex collision. The
++ // owner's moving seed is valid before the root's change, and can wait safely.
++ choices.assign(2,{});choices[0]={{&geometry.paths(0,0)[0],1000,0},{&geometry.paths(0,0)[two],0,two}};
++ choices[1]={{&geometry.paths(3,2)[0],600,0},{&geometry.paths(3,2)[two],0,two}};
++ for(int t=0;t<5;++t)if(choices[0][1].path->cells[t]==choices[1][1].path->cells[t])throw std::runtime_error("edge-only fixture also has a vertex conflict");
++ if(valid(choices,{1,1},{0,3}))throw std::runtime_error("independent reverse-edge collision was not reproduced");
++ fixed.assign(2,false);std::vector<double> power(2,1);std::vector<int> initial{0,1};options.roots=1;
++ for(bool protect:{false,true}){
++  fixed[1]=protect;TemporalPibt baseline(15,choices,fixed,power,8192,0,&initial);TemporalTransactionStats stats;
++  auto result=repair_temporal_transactions(15,choices,fixed,power,8192,baseline,options,{0},0,stats,[]{});
++  if(protect?bool(result):(!result||result->selections()!=std::vector<int>({1,0})||result->score()!=1000||!valid(choices,result->selections(),{0,3})))
++   throw std::runtime_error("transaction failed edge-only owner detection or protection");
++  if(baseline.selections()!=initial||baseline.score()!=600)throw std::runtime_error("edge-only transaction mutated its input");
++ }
++ // A four-robot displacement chain succeeds at its exact size bound and
++ // restores the complete baseline when the bound is one robot too small.
++ choices.assign(4,{});fixed.assign(4,false);power.assign(4,1);
++ for(int r=0;r<4;++r)choices[r]={{&geometry.paths(r,0)[0],r?0:1000,0},{&geometry.paths(r,0)[one],r?100:0,one}};
++ for(int limit:{3,4}){
++  options.max_agents=limit;TemporalPibt baseline(15,choices,fixed,power,8192,0);TemporalTransactionStats stats;
++  auto result=repair_temporal_transactions(15,choices,fixed,power,8192,baseline,options,{0},0,stats,[]{});
++  if(limit==3?bool(result):(!result||result->selections()!=std::vector<int>({1,1,1,1})||result->score()!=700||!valid(choices,result->selections(),{0,1,2,3})))
++   throw std::runtime_error("transaction displacement-size cutoff leaked or rejected a complete legal chain");
++  if(baseline.selections()!=std::vector<int>(4,0))throw std::runtime_error("size-limited transaction mutated its input");
++ }
++ // Enumerate every candidate combination independently on tiny randomized
++ // problems. We require sound committed results, not search completeness.
++ std::mt19937 rng(719);int accepted=0;long long enumerated=0;
++ for(int fixture=0;fixture<512;++fixture){
++  const int n=2+fixture%3;std::vector<int> cells(15);for(int i=0;i<15;++i)cells[i]=i;std::shuffle(cells.begin(),cells.end(),rng);cells.resize(n);
++  choices.assign(n,{});fixed.assign(n,false);power.resize(n);
++  for(int r=0;r<n;++r){
++   const int direction=rng()%4;const auto& paths=geometry.paths(cells[r],direction);choices[r].push_back({&paths[0],1000,0});
++   std::vector<int> ops;for(int k=1;k<129;++k)if(paths[k].valid)ops.push_back(k);std::shuffle(ops.begin(),ops.end(),rng);
++   for(int j=0;j<std::min(3,int(ops.size()));++j){const int k=ops[j];choices[r].push_back({&paths[k],int(rng()%1600),k});}
++   std::sort(choices[r].begin()+1,choices[r].end(),[](const TemporalChoice& a,const TemporalChoice& b){return a.cost<b.cost||(a.cost==b.cost&&a.operation<b.operation);});
++   fixed[r]=rng()%7==0;power[r]=fixture%2?1.0/(1+r+fixture%17):1;
++  }
++  TemporalPibt baseline(15,choices,fixed,power,8192,fixture);
++  std::vector<int> roots(n);for(int r=0;r<n;++r)roots[r]=r;
++  if(fixture%3==0){baseline.construct(roots,[]{});baseline.repair(128,[]{},0,nullptr,0);}
++  const auto original=baseline.selections();const auto before=score(choices,original,power);std::set<std::vector<int>> feasible;
++  std::vector<int> candidate(n,0);
++  for(;;){
++   ++enumerated;bool protected_ok=true;for(int r=0;r<n;++r)if(fixed[r]&&candidate[r]!=original[r])protected_ok=false;
++   if(protected_ok&&valid(choices,candidate,cells))feasible.insert(candidate);
++   int digit=0;for(;digit<n;++digit){if(++candidate[digit]<int(choices[digit].size()))break;candidate[digit]=0;}if(digit==n)break;
++  }
++  options.work=32+(fixture%11)*64;options.per_root=16+(fixture%7)*32;options.roots=n;options.max_agents=n;options.max_owners=1+fixture%2;
++  TemporalTransactionStats stats;auto result=repair_temporal_transactions(15,choices,fixed,power,8192,baseline,options,roots,fixture,stats,[]{});
++  if(baseline.selections()!=original||stats.candidates>options.work||!feasible.count(original))throw std::runtime_error("tiny transaction mutated input or exceeded prescribed work");
++  if(result){
++   ++accepted;const auto after=score(choices,result->selections(),power);
++   if(!feasible.count(result->selections())||after<=before+1e-6L||std::abs(after-result->score())>1e-7L)
++    throw std::runtime_error("transaction failed exhaustive tiny-instance soundness or fractional-score replay");
++  }
++ }
++ if(!accepted)throw std::runtime_error("tiny transaction oracle exercised no accepted change");
++ std::cout<<"TEMPORAL_TRANSACTION_SAFETY passed multi_root_commit_rollback_reuse=2 later_budget_exhaustion=4 edge_only_conflict=1 size_boundary=1 fractional_scores=1 tiny_fixtures=512 enumerated="<<enumerated<<" accepted="<<accepted<<"\n";
++}
++
+ void temporal_forward_audit_regression() {
+  TemporalGeometry geometry;geometry.initialize(std::vector<char>(7,true),1,7,[]{});
+  auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
+@@ -1864,4 +1991,4 @@
+           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+ }
+ 
+-int main(){try{pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

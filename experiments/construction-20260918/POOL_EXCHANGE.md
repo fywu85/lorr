@@ -48,8 +48,36 @@ Short results are not used to rank throughput.
 Full8898728/8898729 compares the same profiles on seeds0/2 with all5000steps, six concurrent
 instances, four disjoint physical cores per planner and72GiB aggregate reservation.
 Each process retains its own one-second decision and32GBRSS validity checks.
-No full exchange result is available yet.
+All six cases are now independently analyzed and valid.
 
 [Source archive](build-provenance/v37/),
 [regressions and screen](results/pool-exchange-screen-v37/),
 [configuration](pool-exchange-variants.json).
+
+
+Fable's read-only turn07 source review found no concrete counterexample. Direct
+inspection resolves its pending-primary question: select_primary does not skip
+locked or recovering robots. Timeout failure aborts the run; this pass does not
+promise reusable private state after a rejected entry. The review and qualified
+assessment are archived in[fable-flow-session](fable-flow-session/assessment.md).
+
+
+| Policy | Seed0 | Seed2 | Mean | Versus disabled |
+|---|---:|---:|---:|---:|
+| Disabled | 134511 | 134519 | 134515 | — |
+| Pool exchange | 135409 | 134762 | 135085.5 | +0.424% |
+| Exchange + two-owner | 134902 | 134926 | 134914 | +0.297% |
+
+Both disabled trajectories exactly reproduce the prior full controls. Pool-only
+final windows improve to28597/28406against28215/28214, but outstanding-task
+age p90increases to702/722from653/652. Empty robot-steps fall only0.455%/0.430%,
+despite much larger static per-exchange credits. Changed task mix and released
+task externalities remain relevant. There are14546/14665reassigned tasks, each
+with at most one owner change; no assignment changes after pickup are observed.
+The full entry maximum is0.762s and RSS stays below12.31GB across all six cases.
+The combination does not improve the paired mean over exchange alone.
+[Complete comparison](results/pool-exchange-full-v37/comparison.json).
+
+Confirmation8898745/8898746runs pool-only and disabled on seeds1/3/4/5, eight
+concurrent cases. Travel audit8898747reuses the independently validated trajectory
+decomposition on both full controls and both pool-only runs. No promotion yet.

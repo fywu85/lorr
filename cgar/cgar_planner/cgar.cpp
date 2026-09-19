@@ -681,6 +681,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (cache_only_refresh < 0 || cache_only_refresh > 1 ||
         (cache_only_refresh && (!flow_strength_ || !env_int("CGAR_FLOW_REFRESH_INTERVAL", 0))))
         throw std::invalid_argument("cache-only flow refresh requires enabled flow, a positive interval and a boolean setting");
+    turn_build_limit_ = env_int("CGAR_TURN_BUILD_LIMIT", 32);
+    if (turn_build_limit_ < 0 || turn_build_limit_ > 256)
+        throw std::invalid_argument("CGAR_TURN_BUILD_LIMIT must be in [0,256]");
     turn_cost_ = env_int("CGAR_TURN_COST", 1);
     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
@@ -1405,7 +1408,7 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     distance_deadline_ = deadline_;
     oracle_.trim();
     table_budget_ = plan_tables_;
-    turn_table_budget_ = 32;
+    turn_table_budget_ = turn_build_limit_;
     if (orientation_guidance_) turn_oracle_.trim();
     sync_agents();
     if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
@@ -1626,8 +1629,8 @@ void Cgar::record_movement(const std::vector<Action>& offered, const std::vector
 }
 
 void Cgar::log_movement() const {
-    std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d builds=%lld guided=%lld fallback=%lld\n",
-                env_->curr_timestep + 1, orientation_guidance_, turn_first_, stats_.oriented_builds,
+    std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d build_limit=%d builds=%lld guided=%lld fallback=%lld\n",
+                env_->curr_timestep + 1, orientation_guidance_, turn_first_, turn_build_limit_, stats_.oriented_builds,
                 stats_.oriented_guided, stats_.oriented_fallback);
     for (int phase = 0; phase < 3; ++phase) {
         const auto& m = stats_.movement[phase];

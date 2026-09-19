@@ -68,10 +68,27 @@ step. See [comparison](results/temporal-transaction-full-v36/comparison.json).
 
 All entries stay below0.780seconds and RSS below11.78GB. The new peak135,357
 is from exact production source45ebea2, finished14:13:43UTC. Full confirmation
-on seeds1/3/4/5 is running as8898725 /8898726, eight concurrent cases with the
-matched disabled control. No six-seed improvement claim yet.
+on seeds1/3/4/5 has completed as8898725 /8898726, eight concurrent cases with
+the matched disabled control. All runs are valid and every control reproduces
+its prior full trajectory exactly. Two-owner totals across0..5are134584/135299/
+135357/132125/133325/134525, mean134202.5 against134590.3: **-0.288%**. It wins
+three seeds and loses three. The single-run record remains, but the policy is
+not promoted. [Six-seed evidence](results/temporal-transaction-six-seed-v36.json).
 
 [Source archive](build-provenance/v36/),
 [regression and screen evidence](results/temporal-transaction-screen-v36/),
 [full configuration](temporal-transaction-variants.json),
 [preceding audit](FORWARD_CONFLICT_AUDIT.md).
+
+
+Additional regression build8898731 (archivev38) passes the full suite. A first
+root commits, a second reaches a score-losing terminal and rolls back, and a
+third reuses the first displaced robot after its lock is cleared. Equal and
+fractional weights agree with independent fresh sums. Work exhaustion on the
+second root retains the first complete commit. An edge-only swap conflict is
+detected with and without a fixed owner; a four-robot chain obeys its exact size
+boundary. Exhaustive enumeration of57200combinations across512tiny instances
+checks211accepted changes against independent motion, protection and score
+constraints. These are soundness checks, not a completeness claim. No production
+logic changes were needed and the reported fractional-drift defect was not
+reproduced. [Validation](build-provenance/v38/validation.json).

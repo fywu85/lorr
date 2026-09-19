@@ -402,6 +402,7 @@ private:
     int fallback_samples_ = 64;
     int global_samples_ = 0;
     int pickup_weight_ = 1;
+    int turn_build_limit_ = 32;
     bool reassign_ = false, reassign_pool_ = false;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
