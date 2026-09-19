@@ -237,3 +237,16 @@ They reduce moves away from the goal but increase loaded turns and waits.
 These settings are not promoted. Peak RSS ranges from 11.88 to 13.26 GB across
 the accepted cases, with all 5,000 exact entry samples below one second.
 [Full matrix](results/guidance-full-v16/), [scoring interpretation](SCALE.md).
+
+## Completed warm-start ablation (v19)
+
+All four seed-0 full cases are valid: control 107,457; warm 50k **108,492**;
+warm 25k 104,548; warm 10k 94,510. Warm 50k gains 0.96%, while lower-work cases
+lose throughput despite lower runtime. Final-window counts are respectively
+22,002 / 22,137 / 21,370 / 19,371. Warm 50k lowers loaded turns but adds waiting
+and barely changes detours. Its maximum entry is 0.515 seconds and RSS 12.59 GB.
+The highest RSS in this matrix is 13.30 GB (warm 25k), below 32 decimal GB.
+See [WARM_START.md](WARM_START.md) for complete resource and fairness details.
+The disabled control has the exact prior full trajectory, validating v18's
+static reverse-neighbor cache on the complete horizon. No end-to-end speedup or
+six-seed repeatability claim follows from this seed-0 experiment.

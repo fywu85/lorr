@@ -660,6 +660,10 @@ void temporal_region_adapter_regression() {
     (!serial.stats().temporal_warm_retained||serial.stats().temporal_warm_retained!=parallel.stats().temporal_warm_retained||
      serial.stats().temporal_warm_collision_resets!=parallel.stats().temporal_warm_collision_resets))
   throw std::runtime_error("production warm start failed to reuse identical valid suffixes");
+ if(std::getenv("CGAR_GUIDE_ROUTES")&&
+    (!serial.stats().guide_robot_steps||!serial.stats().guide_solved||serial.stats().guide_robot_steps!=parallel.stats().guide_robot_steps||
+     serial.stats().guide_solved!=parallel.stats().guide_solved||serial.stats().guide_expanded!=parallel.stats().guide_expanded))
+  throw std::runtime_error("production guide routes did not produce identical nontrivial guidance");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
 }
@@ -971,4 +975,85 @@ void temporal_warm_start_regression() {
  std::cout<<"TEMPORAL_WARM_START passed shifted_operations=129 convoy_reuse=3 protected_cascade=2 filtered_closure=1 stale_history_rejected=1 explicit_timeout=1 protected_and_threaded_episodes=1\n";
 }
 
-int main(){try{flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void guide_routes_regression() {
+ const int rows=5,cols=7,cells=rows*cols;
+ std::vector<char> core(cells,true),eligible(2,true);
+ std::vector<int> loc{14,20},ori{0,2},goals{20,14};
+ GuideRouteOptions options;options.batch=1;options.base_cost=1;options.opposite_cost=8;options.load_cost=1;
+ GuideRoutes guides;guides.initialize(core,rows,cols,2,options);
+ auto neighbor=[&](int cell,int dir){int x=cell%cols,y=cell/cols;
+  if(dir==0)return x+1<cols?cell+1:-1;if(dir==1)return y+1<rows?cell+cols:-1;
+  if(dir==2)return x>0?cell-1:-1;return y>0?cell-cols:-1;};
+ auto heuristic=[&](int r,int cell,int){return std::abs(cell/cols-goals[r]/cols)+std::abs(cell%cols-goals[r]%cols);};
+ auto audit=[&]{
+  std::vector<int> expected(cells*4,0);long long uses=0;
+  for(int r=0;r<2;++r){const auto& path=guides.route_states(r);
+   for(size_t k=guides.route_begin(r)+1;k<path.size();++k){int a=path[k-1],b=path[k];
+    if(a/4==b/4){if((a%4+1)%4!=b%4&&(a%4+3)%4!=b%4)throw std::runtime_error("guide emitted invalid rotation");}
+    else{if(neighbor(a/4,a%4)!=b/4||a%4!=b%4)throw std::runtime_error("guide emitted invalid forward");++expected[a];++uses;}
+   }
+  }
+  if(expected!=guides.flow()||uses!=guides.directed_uses())throw std::runtime_error("guide flow conservation failed");
+ };
+ auto optimum=[&](int robot,const std::vector<int>& flow){
+  // Independent forward Dijkstra, including current orientation and exact
+  // marginal opposing/load costs from before this robot was admitted.
+  std::vector<int64_t>d(cells*4,INT64_MAX/4);using Item=std::pair<int64_t,int>;
+  std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;int start=loc[robot]*4+ori[robot];d[start]=0;q.push({0,start});
+  while(!q.empty()){auto item=q.top();q.pop();int u=item.second;if(item.first!=d[u])continue;
+   if(u/4==goals[robot])return item.first;
+   auto relax=[&](int v,int64_t w){if(item.first+w<d[v]){d[v]=item.first+w;q.push({d[v],v});}};
+   relax(u/4*4+(u%4+1)%4,options.base_cost);relax(u/4*4+(u%4+3)%4,options.base_cost);
+   int v=neighbor(u/4,u%4);if(v>=0&&core[v]){int reverse=flow[v*4+(u%4+2)%4];
+    relax(v*4+u%4,options.base_cost+int64_t(options.opposite_cost)*reverse+int64_t(options.load_cost)*(flow[u]+reverse));}
+  }
+  return INT64_MAX/4;
+ };
+ int covered=0;
+ TemporalGeometry geometry;geometry.initialize(core,rows,cols,[]{});
+ for(int r=0;r<2;++r){const auto previous=guides.flow();const auto best=optimum(r,previous);
+  auto stats=guides.update(loc,ori,goals,eligible,heuristic,[]{});
+  if(stats.attempted!=1||stats.solved!=1||stats.limited||stats.expanded>options.expansions)throw std::runtime_error("guide admission/expansion accounting failed");
+  const auto& path=guides.route_states(r);int64_t cost=0;
+  for(size_t k=1;k<path.size();++k){int a=path[k-1],b=path[k];cost+=options.base_cost;
+   if(a/4!=b/4){int rev=previous[b/4*4+(a%4+2)%4];cost+=int64_t(options.opposite_cost)*rev+int64_t(options.load_cost)*(previous[a]+rev);}}
+  if(path.front()!=loc[r]*4+ori[r]||path.back()/4!=goals[r]||cost!=best)throw std::runtime_error("guide A* disagrees with independent Dijkstra");
+  for(const auto& candidate:geometry.paths(loc[r],ori[r]))if(candidate.valid)
+   for(int d=0;d<4;++d){if(guides.distance(r,candidate.cells[4],d)<0)throw std::runtime_error("guide window omitted a valid candidate orientation");++covered;}
+  audit();
+ }
+ if(guides.route_states(1).size()<=7)throw std::runtime_error("opposing-flow fixture did not change the intended route");
+ // Execute one edge, change a goal, revoke admission, and deviate off a route.
+ const auto first=guides.route_states(0);loc[0]=first[1]/4;ori[0]=first[1]%4;
+ guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ goals[0]=0;auto changed=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(!changed.invalidated)throw std::runtime_error("changed guide goal retained old flow");
+ eligible[0]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(guides.guided(0)||!guides.route_states(0).empty())throw std::runtime_error("protected robot retained guide influence");
+ loc[1]=34;auto deviated=guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(!deviated.invalidated)throw std::runtime_error("off-route location retained stale flow");
+ eligible[1]=false;guides.update(loc,ori,goals,eligible,heuristic,[]{});audit();
+ if(guides.directed_uses())throw std::runtime_error("retired guides leaked directed flow");
+
+ GuideRoutes bounded;auto small=options;small.expansions=1;bounded.initialize(core,rows,cols,2,small);
+ loc={0,34};ori={0,2};goals={6,33};eligible={true,true};
+ auto one=bounded.update(loc,ori,goals,eligible,heuristic,[]{});
+ auto two=bounded.update(loc,ori,goals,eligible,heuristic,[]{});
+ if(one.attempted!=1||one.expanded!=1||one.limited!=1||one.solved||two.solved!=1||bounded.guided(0)||!bounded.guided(1))
+  throw std::runtime_error("fixed guide work failed to give the next robot an admission turn");
+ bool failed=false;try{bounded.update(loc,ori,goals,eligible,heuristic,[]{throw Timeout("guide_fixture");});}catch(const Timeout&){failed=true;}
+ if(!failed)throw std::runtime_error("guide deadline was swallowed");
+ // Disconnected core components must leave a complete baseline-only result.
+ std::vector<char> split(5,true);split[2]=false;GuideRoutes disconnected;disconnected.initialize(split,1,5,1,options);
+ auto no_path=disconnected.update({0},{0},{4},{true},[](int,int cell,int){return 4-cell;},[]{});
+ if(no_path.solved||disconnected.guided(0)||disconnected.directed_uses())throw std::runtime_error("unreachable guide was published");
+
+ setenv("CGAR_GUIDE_ROUTES","1",1);setenv("CGAR_GUIDE_BATCH","32",1);
+ temporal_region_adapter_regression();
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);temporal_region_adapter_regression();unsetenv("CGAR_TEMPORAL_WARM_START");
+ temporal_primary_regression();
+ unsetenv("CGAR_GUIDE_ROUTES");unsetenv("CGAR_GUIDE_BATCH");
+ std::cout<<"GUIDE_ROUTES passed independent_dijkstra=2 counter_conservation=1 candidate_orientations="<<covered<<" changed_goal=1 protected_reset=1 deviation_reset=1 fixed_work_fairness=1 explicit_timeout=1 production_actions=9600\n";
+}
+
+int main(){try{guide_routes_regression();flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

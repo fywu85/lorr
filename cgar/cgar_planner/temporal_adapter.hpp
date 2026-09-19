@@ -38,6 +38,21 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     std::vector<TemporalPath> seeds(n_);
     std::vector<std::vector<TemporalChoice>> choices(n_);
     std::vector<int> priorities(n_, kInf), goals(n_, -1);
+    GuideRouteStats guide_stats;
+    if (guide_enabled_) {
+        std::vector<char> eligible(n_, false);
+        std::vector<const std::vector<int>*> tables(n_, nullptr);
+        for (int r = 0; r < n_; ++r) {
+            goals[r] = agents_[r].goal; eligible[r] = !pinned[r];
+            if (goals[r] >= 0) tables[r] = oracle_.peek(goals[r]);
+        }
+        guide_stats = guide_routes_.update(loc_, ori_, goals, eligible,
+            [&](int r, int cell, int) { return tables[r] ? oracle_.value(*tables[r], cell) : oracle_.manhattan(cell, goals[r]); },
+            [&] { check_deadline(deadline_, "temporal_guide_routes"); });
+        stats_.guide_attempts += guide_stats.attempted; stats_.guide_solved += guide_stats.solved;
+        stats_.guide_robot_steps += guide_stats.active; stats_.guide_expanded += guide_stats.expanded;
+    }
+    const auto guides_finished = Clock::now();
     std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
     for (int i = 0; i < n_; ++i) {
         check_deadline(deadline_, "temporal_candidates");
@@ -45,9 +60,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         const auto* spatial = goal < 0 ? nullptr : oracle_.peek(goal);
         const auto* oriented = goal < 0 ? nullptr : turn_oracle_.find(goal);
         if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
-        const int robot_turn_cost = oriented ? turn_cost_ : 1;
+        const bool guided = guide_enabled_ && guide_routes_.guided(i);
+        const int robot_turn_cost = oriented && !guided ? turn_cost_ : 1;
         if (goal >= 0) { if (oriented) ++exact_metric_robots; else ++fallback_metric_robots; }
-        auto compute_distance = [&](int cell, int direction) {
+        auto original_distance = [&](int cell, int direction) {
             if (goal < 0) return 0;
             if (oriented) {
                 const int d = turn_oracle_.value(*oriented, cell, direction);
@@ -61,19 +77,20 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const int state = cell * 4 + direction;
             if (heuristic_stamp[state] != i) {
                 heuristic_stamp[state] = i;
-                heuristic_value[state] = compute_distance(cell, direction);
+                heuristic_value[state] = guided ? guide_routes_.distance(i, cell, direction) : original_distance(cell, direction);
+                if (heuristic_value[state] < 0) throw std::logic_error("guide window does not cover a temporal candidate");
             }
             return heuristic_value[state];
         };
         auto cost = [&](const TemporalPath& path, int op) {
-            const int extra = oriented && turn_oracle_.weighted_forward() ?
+            const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
                 TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
                     return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
                 }) : 0;
             return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_) +
                    int64_t(extra) * temporal_distance_scale_;
         };
-        priorities[i] = goal < 0 ? kInf : distance(loc_[i], ori_[i]);
+        priorities[i] = goal < 0 ? kInf : original_distance(loc_[i], ori_[i]);
         if (temporal_order_ == 2 && goal >= 0) {
             const auto found = env_->task_pool.find(agents_[i].task);
             if (found != env_->task_pool.end()) {
@@ -192,7 +209,14 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             // Waiting ordinary robots may orient toward their goal without
             // changing any occupied cell or claiming a future destination.
             const auto* table = turn_oracle_.find(agents_[i].goal);
-            if (table) {
+            if (guide_enabled_ && guide_routes_.guided(i)) {
+                const int right = guide_routes_.distance(i, loc_[i], (ori_[i] + 1) % 4);
+                const int left = guide_routes_.distance(i, loc_[i], (ori_[i] + 3) % 4);
+                const int wait = guide_routes_.distance(i, loc_[i], ori_[i]);
+                if (std::min({right, left, wait}) < 0) throw std::logic_error("missing guide rotation distance");
+                const int best = std::min({right, left, wait});
+                actions[i] = best == right ? Action::CR : best == left ? Action::CCR : Action::W;
+            } else if (table) {
                 const int right = turn_oracle_.value(*table, loc_[i], (ori_[i] + 1) % 4);
                 const int left = turn_oracle_.value(*table, loc_[i], (ori_[i] + 3) % 4);
                 const int wait = turn_oracle_.value(*table, loc_[i], ori_[i]);
@@ -221,6 +245,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     env_->curr_timestep + 1, seconds(candidate_started, search_started), seconds(search_started, global_finished),
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
+        if (guide_enabled_)
+            std::printf("[cgar-temporal-guide] step=%d seconds=%.6f attempted=%d solved=%d limited=%d invalidated=%d windows=%d active=%d expanded=%lld directed_uses=%lld batch=%d expansion_limit=%d lookahead=%d base=%d opposite=%d load=%d\n",
+                env_->curr_timestep + 1, seconds(candidate_started, guides_finished), guide_stats.attempted,
+                guide_stats.solved, guide_stats.limited, guide_stats.invalidated, guide_stats.windows, guide_stats.active,
+                guide_stats.expanded, guide_stats.directed_uses, guide_options_.batch, guide_options_.expansions,
+                guide_options_.lookahead, guide_options_.base_cost, guide_options_.opposite_cost, guide_options_.load_cost);
         if (temporal_warm_start_)
             std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,

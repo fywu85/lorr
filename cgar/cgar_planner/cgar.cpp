@@ -667,6 +667,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     turn_cost_ = env_int("CGAR_TURN_COST", 1);
     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
+    guide_enabled_ = env_int("CGAR_GUIDE_ROUTES", 0) != 0;
+    if (guide_enabled_ && (!temporal_ || turn_cost_ != 1 || flow_strength_))
+        throw std::invalid_argument("guide routes require temporal planning, unit turns and frozen flow disabled");
+    guide_options_.batch = env_int("CGAR_GUIDE_BATCH", 128);
+    guide_options_.expansions = env_int("CGAR_GUIDE_EXPANSIONS", 4096);
+    guide_options_.lookahead = env_int("CGAR_GUIDE_LOOKAHEAD", 8);
+    guide_options_.base_cost = env_int("CGAR_GUIDE_BASE_COST", 16);
+    guide_options_.opposite_cost = env_int("CGAR_GUIDE_OPPOSITE_COST", 1);
+    guide_options_.load_cost = env_int("CGAR_GUIDE_LOAD_COST", 0);
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
         throw std::invalid_argument("temporal distance scale must be in [1,4096]");
@@ -746,6 +755,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
         [&] { check_deadline(preprocess_deadline, "temporal_preprocess"); });
+
+    if (guide_enabled_) guide_routes_.initialize(cert_.core, cert_.rows, cert_.cols, n_, guide_options_);
 
     const size_t cells = cert_.free.size();
     occ_now_.assign(cells, -1);

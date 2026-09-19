@@ -32,3 +32,8 @@ implementation in all three cases. [Screen evidence](results/oracle-screen-v18/)
 [trajectory checks](results/oracle-trajectory-equivalence.json). Full planner
 timing and full-horizon trajectory preservation still need verification before
 attributing an end-to-end benefit.
+
+The v19 full control now completes all 5,000 steps at 107,457 tasks with the exact
+v14/v16 trajectory fingerprint. See `results/oracle-full-equivalence.json`.
+This validates policy preservation over the full horizon, not an end-to-end
+runtime speedup across different matrices.

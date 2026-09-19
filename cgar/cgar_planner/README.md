@@ -390,3 +390,13 @@ see [the controlled follow-up](../../experiments/construction-20260918/FLOW_MARG
 native operation-index bonus (default 50, allowed 1–4096). Scales 256/1024 pass
 regression/deadline screens; full performance is pending. This is tested
 separately from learned traffic. [Scoring study](../../experiments/construction-20260918/SCALE.md).
+
+Optional intended-route experiment: `CGAR_GUIDE_ROUTES=1` uses fixed-work,
+current-goal congestion-aware routes to guide ordinary temporal candidates.
+It requires temporal planning, unit turns and `CGAR_FLOW_STRENGTH=0`.
+`CGAR_GUIDE_BATCH=128`, `CGAR_GUIDE_EXPANSIONS=4096`,
+`CGAR_GUIDE_LOOKAHEAD=8`, `CGAR_GUIDE_BASE_COST=16`,
+`CGAR_GUIDE_OPPOSITE_COST=1`, and `CGAR_GUIDE_LOAD_COST=0` are the defaults.
+Limited route searches publish no guide; the complete temporal solve and
+one-second failure contract still apply. This is unpromoted experimental code;
+see [the design and evidence](../../experiments/construction-20260918/GUIDE_PATHS.md).

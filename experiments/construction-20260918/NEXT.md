@@ -22,19 +22,20 @@ Established results:
 
 Active full queue:
 
-1. **8898475**, frozen v19, is running control and warm starts with 50k/25k/10k
-   fixed attempts. Two single-core instances, 24 GiB total, EPYC 9354 on research38.
-   Analysis **8898476** follows. All 200-step screens pass, disabled warm starts
-   preserve prior trajectories. See WARM_START.md.
-2. **8898445**, frozen v17, follows warm-start analysis. It tests one-round control,
+1. **8898445**, frozen v17, is running on research31. It tests one-round control,
    regional temperatures 100/0, and two rounds at 0. Two four-core instances,
    24 GiB total. Analysis **8898447** follows. See TEMPERATURE.md.
-3. **8898517**, corrected frozen v20, follows temperature analysis. It tests 4M-work
+2. **8898517**, corrected frozen v20, follows temperature analysis. It tests 4M-work
    control, original learned flow, margin 50, and margin 50 with freeze at 1,024
    observations. Two single-core instances, 24 GiB total. Analysis **8898518** follows.
-   Three early-freeze/work screens pass, and the original 50k-flow default preserves
-   prior trajectories. The late-freeze guided phase is tested only in full runs.
+   Early-freeze/work screens pass; late guidance activates only in the full run.
    See FLOW_MARGIN.md. The incomplete first v20 build was canceled and never benchmarked.
+
+The v19 full warm-start matrix and analysis are complete: control 107,457,
+warm 50k 108,492 (+0.96%), warm 25k 104,548, warm 10k 94,510. All pass, but
+lower work loses throughput. Warm 50k max entry is 0.515 seconds and RSS 12.59 GB.
+The disabled control exactly preserves the earlier full trajectory, including
+v18's static reverse-neighbor optimization. See WARM_START.md.
 
 The v16 matrix is complete: control 107,457; distance scales 256/1024 yield
 105,891/105,811 and are not promoted. Flow strengths 1/2/4 all fail late deadlines.
@@ -42,11 +43,14 @@ The control trajectory is unchanged. Its traffic audit finds 30.6% of directions
 favored after 128 steps have the opposite cumulative majority at 1,024, motivating
 stricter margins/later observation; this does not prove the cause of failure.
 
-The v18 static predecessor cache passes regressions and cuts isolated table
-build time by 19–26% with matching checksums. All three integration screens pass with
-exact prior trajectories over 200 steps; no whole-planner speedup claim yet. See ORACLE.md. Warm starts are now implemented and validated for safety/reuse;
-full performance is pending. The fixed candidate-work/margin follow-up is queued above. GUIDE_PATHS.md records
-a sourced next routing direction, not an implemented feature or measured gain.
+The v18 static predecessor cache cuts isolated table build time by 19–26% with
+matching checksums; the v19 control now validates exact full trajectories. No
+whole-planner speedup is established. See ORACLE.md. Generic intended-route
+guidance is implemented in frozen v21, passes the full regression suite, and
+passes all five 200-step feasibility cases in **8898525**. Batch 128 guides only
+36–41% of robots at step 200; batch 256 reaches 62%. A prescribed batch of 512
+is now in coverage/deadline screen **8898526** (one EPYC 9354 core, 8 GiB).
+No guide throughput gain is established. See GUIDE_PATHS.md.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,
 timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.
