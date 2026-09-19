@@ -44,3 +44,21 @@ The2M/four-round seed0 full case fails explicitly at timestep36, elapsed1000.580
 stage planning_complete. The other five cases continue. No partial result is used;
 this arm cannot meet the acceptance criterion as measured. Use compare_failed_regional.py
 for the completed matrix so the failure remains visible alongside verified valid runs.
+
+
+## Full results: retain the reference
+
+The matrix finished 2026-09-19T23:31:32.947884UTC. All five completed runs pass
+full source, binary, allocation, memory, action and deadline verification: 25,000
+complete entries. Both reference controls exactly reproduce 144,510 / 144,107 tasks.
+All 25 sampled search and cumulative peak-audit frames are checked per valid run.
+
+The 3M/four-round candidate completes 143,056 / 143,421 tasks, a paired mean
+**0.741% below** the reference. Both final windows lose (581 / 146 tasks), and
+outstanding age p90 rises seven steps on seed 0 and ties on seed 2.
+The 2M/four-round seed 0 explicitly times out at step 36, elapsed 1,000.580 ms;
+seed 2 completes 143,046, losing 1,061 tasks and 280 in the final window.
+No two-seed mean is computed for the failed arm. Both candidates are rejected;
+the confirmed four-million/two-round configuration remains unchanged.
+
+[Full comparison and explicit failure](results/regional-work-balance-full-v48/comparison.json).

@@ -258,3 +258,25 @@ verify_full.py validates22source/testhashes,actualbinary,5000timings,32GBRSS,
 50Mactionconservation,noquota/coreoverlap;addcontrolhashandfeaturecounterchecks.
 Commit/pushauthorized,deliberatelyPUBLICfywu85/lorr. Excluderawruns/env/binaries/
 protocol/swap. Sourcefilesfrozenbeforebuild;do noteditwhilebuildlive.
+
+
+## Latest completed evidence (2026-09-19 23:40 UTC)
+
+Work rebalance8899182/8899183 is complete; results/regional-work-balance-full-v48/
+comparison.json verifies exact V48/8ba2484, five valid runs/25k entries, two exact
+regional controls and all sampled cumulative audits. 3M/four rounds143056/143421,
+mean−0.741%; both tails lose. 2M seed0 explicit timeout step36/1000.580ms;
+seed2 valid143046,−1061 tasks. Both rejected. Reference remains4M/two rounds.
+
+Offline chain-price replay8899212 and analysis8899213 complete. Archived in
+results/chain-price-audit-v50; code chain_price_audit/. All60 full publications and
+seven trajectory hashes exact. 3840 sampled known assigned tasks,3429 completed,
+411 censored. Leave-one-seed-out MSE286.1083→270.4558(−5.4708%); all6 folds improve;
+withinpublication permutation p1/201, early-assignment sensitivity−4.949%. Independent
+NumPy SVD versus stdlib QR errors/coefficients match1e−8. This is predictive evidence,
+NOT throughput or counterfactual assignment evidence; complete offline tables do not
+establish resident production coverage. See README limitations and archived provenance.
+Next implement/test optional A task-chain pricing using const resident-table peeks,
+keeping original spatial cache calls/admission, complete fallback and current metric
+units; compare raw covered costs and ratio-imputed missing costs against modeOFF.
+No production A implementation yet; B heading coupling remains deferred.

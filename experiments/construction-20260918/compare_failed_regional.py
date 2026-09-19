@@ -33,7 +33,21 @@ def main():
   for x in regions:
    assert x['regions']==int(env['CGAR_TEMPORAL_REGIONS']) and x['threads']==int(env['CGAR_TEMPORAL_REGION_THREADS']) and x['rounds']==int(env['CGAR_TEMPORAL_REGION_ROUNDS'])
    assert x['repairs']==(x['kept']+x['reverted'])*int(env['CGAR_TEMPORAL_REGION_STEPS']) and x['score_after']+1e-6>=x['score_before']
-  diagnostics[r['case']]={'global_samples':global_rows,'timing_samples':timing,'regional_samples':regions}
+  peaks=[fields(x) for x in lines if x.startswith('[cgar-regional-peaks]')]
+  if env.get('CGAR_TEMPORAL_REGION_PEAK_AUDIT','0')=='1':
+   assert [x['step'] for x in peaks]==list(range(200,5001,200))
+   prior=None
+   for x in peaks:
+    assert 0<x['batches']<=x['step']*int(env['CGAR_TEMPORAL_REGIONS'])*int(env['CGAR_TEMPORAL_REGION_ROUNDS'])
+    assert x['attempts']==x['batches']*int(env['CGAR_TEMPORAL_REGION_STEPS'])
+    assert 0<=x['lost_improvements']<=x['lost_peaks']<=x['batches']
+    assert x['peak_gain']>=x['final_gain']-1e-5 and 0<=x['discarded_gain']<=x['peak_gain']+1e-5
+    if prior:
+     for key in ['batches','attempts','peak_updates','lost_peaks','lost_improvements','peak_gain','discarded_gain']:
+      assert x[key]>=prior[key]
+    prior=x
+  else:assert not peaks
+  diagnostics[r['case']]={'global_samples':global_rows,'timing_samples':timing,'regional_samples':regions,'cumulative_peaks':peaks}
  groups=[]
  values=sorted({int(r['environment'][a.variable]) for r in report['rows']+report['failures']}-{a.control})
  for value in values:

@@ -1,0 +1,31 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "4",
+    "-binding",
+    "linear:4",
+    "-l",
+    "exclusive=true,h_rt=00:15:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "chain_analysis",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/analysis.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/analysis.sh"
+  ],
+  "response": "8899213\n",
+  "returncode": 0
+}

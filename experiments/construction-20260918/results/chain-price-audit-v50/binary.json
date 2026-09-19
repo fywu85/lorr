@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++17",
+    "-march=nocona",
+    "-mtune=haswell",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/include/cgar_planner",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/include/inc",
+    "-I/shared/share_mala/fw2449/lorr2024/env/include",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/replay.cpp",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/oracle.cpp",
+    "-pthread",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-chain-price-audit-v50-20260919/replay"
+  ],
+  "sha256": "c72af50854ea405c5579de4451cc4615ad7243974e7cbba52f7af5d51284a288"
+}

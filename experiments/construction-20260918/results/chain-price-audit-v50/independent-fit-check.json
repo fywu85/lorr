@@ -1,0 +1,46 @@
+{
+  "checked_utc": "2026-09-19T23:39:53.206630+00:00",
+  "method": "Independent NumPy SVD least-squares fits of complete baseline and augmented models, compared with the stdlib QR/residualization implementation.",
+  "numpy_version": "2.2.6",
+  "all_six_fold_mse_and_coefficients_match_within": 1e-08,
+  "mse_reduction_percent": 5.470823448457729,
+  "folds": [
+    {
+      "seed": 0,
+      "base_mse": 274.52639352678966,
+      "augmented_mse": 253.5602348741404,
+      "excess_coefficient": 1.2883236957914885
+    },
+    {
+      "seed": 1,
+      "base_mse": 236.60682493068657,
+      "augmented_mse": 231.68939290528866,
+      "excess_coefficient": 1.4006353661617408
+    },
+    {
+      "seed": 2,
+      "base_mse": 251.95912834695272,
+      "augmented_mse": 232.31616362932127,
+      "excess_coefficient": 1.326648441547039
+    },
+    {
+      "seed": 3,
+      "base_mse": 296.163165084482,
+      "augmented_mse": 279.551613964898,
+      "excess_coefficient": 1.3268095534721767
+    },
+    {
+      "seed": 4,
+      "base_mse": 265.20140487591834,
+      "augmented_mse": 248.30871005666597,
+      "excess_coefficient": 1.3442763499566652
+    },
+    {
+      "seed": 5,
+      "base_mse": 392.440440010494,
+      "augmented_mse": 377.53927187238503,
+      "excess_coefficient": 1.3433506335457688
+    }
+  ],
+  "scope": "Checks the regression arithmetic; does not remove cohort, censoring, cache-coverage or causal limitations."
+}

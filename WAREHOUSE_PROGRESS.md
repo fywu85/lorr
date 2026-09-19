@@ -121,6 +121,8 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | Eight regions / eight threads | Seeds0/2:144,096 /143,553 | **Not promoted.** Both totals and final windows lose despite twice the regional work; paired mean−0.335%. All20k entries valid; four-region controls and cumulative counters exact. [Evidence](experiments/construction-20260918/results/regional-eight-full-v48/comparison.json). |
 | Physical-score dominance, scale513 | Seed0 explicit timeout at2230; seed2:142,171 versus144,107 | **Rejected.** The completed seed loses1,936tasks and the other has no full quality result. Both controls exact; all15k completed entries valid. No two-seed mean is reported. [Evidence](experiments/construction-20260918/results/regional-score-scale-full-v48/comparison.json). |
 
+| More regional rounds / less global work | 3M:143,056 /143,421; 2M:seed0 timeout, seed2 143,046 | **Rejected.** 3M mean−0.741%, both final windows lose. 2M fails at step36; no two-seed mean. Both controls exact, all25k completed entries valid. [Evidence](experiments/construction-20260918/results/regional-work-balance-full-v48/comparison.json). |
+
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
 ## Resource cost of the current benchmark reference
