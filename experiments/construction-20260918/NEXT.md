@@ -181,7 +181,7 @@ callback (counter0) inside build, because construct/repair already checked immed
 before attempt. Nonzero16-displacement callbacks, completion checks and fixed work
 stay unchanged. Build8899199 PASSED allregressions, archive build-provenance/v50,
 all22 hashes reconstruct fromdf3f8f192a527fdace697399d6775eea263d52bd. No build live.
-Raw runs/cgar-deadline-duplicate-build-v50-20260919. Exactcommit binding pending.
+Raw runs/cgar-deadline-duplicate-build-v50-20260919. Exact22source/test binding is cb6a666da8aee461d5a34cab01d7b7ccaa76a201; v50/exact-source-commit.json.
 Same-core A/B/A200step timing8899204 is complete at
 runs/cgar-deadline-duplicate-timing-v50-20260919. All use confirmed referenceprofile:
 original_a(V48),optimized(V50),original_b(V48), four physicalcores sequentially.
