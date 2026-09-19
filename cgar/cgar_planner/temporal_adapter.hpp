@@ -37,11 +37,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     }
     std::vector<TemporalPath> seeds(n_);
     std::vector<std::vector<TemporalChoice>> choices(n_);
-    std::vector<int> priorities(n_, kInf);
+    std::vector<int> priorities(n_, kInf), goals(n_, -1);
     std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
     for (int i = 0; i < n_; ++i) {
         check_deadline(deadline_, "temporal_candidates");
-        const int goal = agents_[i].goal;
+        const int goal = agents_[i].goal; goals[i] = goal;
         const auto* spatial = goal < 0 ? nullptr : oracle_.peek(goal);
         const auto* oriented = goal < 0 ? nullptr : turn_oracle_.find(goal);
         if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
@@ -115,6 +115,15 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     std::vector<double> power(n_, 0);
     for (int rank = 0; rank < n_; ++rank) if (agents_[order[rank]].goal >= 0)
         power[order[rank]] = temporal_equal_weight_ ? 1.0 : static_cast<double>(n_ + 1 - rank) / (n_ + 1);
+    TemporalWarmStats warm_stats;
+    std::vector<int> initial;
+    if (temporal_warm_start_) {
+        initial = temporal_history_.selections(env_->curr_timestep, cells, loc_, ori_, goals, choices, pinned,
+            warm_stats, [&] { check_deadline(deadline_, "temporal_warm_start"); });
+        ++stats_.temporal_warm_calls;
+        stats_.temporal_warm_retained += warm_stats.retained;
+        stats_.temporal_warm_collision_resets += warm_stats.collision_resets;
+    }
     std::vector<uint64_t> seeds_for_workers(temporal_workers_);
     for (auto& seed : seeds_for_workers) seed = temporal_rng_();
     const auto search_started = Clock::now();
@@ -126,7 +135,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const int worker = next_worker.fetch_add(1);
             if (worker >= temporal_workers_) return;
             try {
-                auto run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker]);
+                auto run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker],
+                    initial.empty() ? nullptr : &initial);
                 run->construct(order, [&] { check_deadline(deadline_, "temporal_construction"); });
                 if (temporal_steps_) run->repair(temporal_steps_, [&] { check_deadline(deadline_, "temporal_repair"); }, temporal_candidate_limit_);
                 check_deadline(deadline_, "temporal_worker_complete");
@@ -191,6 +201,14 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
         }
     }
+    if (temporal_warm_start_) {
+        std::vector<int> expected_orientation = ori_;
+        for (int r = 0; r < n_; ++r) {
+            if (actions[r] == Action::CR) expected_orientation[r] = (ori_[r] + 1) % 4;
+            else if (actions[r] == Action::CCR) expected_orientation[r] = (ori_[r] + 3) % 4;
+        }
+        temporal_history_.remember(env_->curr_timestep, search, goals, expected_orientation);
+    }
     const auto& construction_stats = results[best]->stats;
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
         std::printf("[cgar-temporal] step=%d workers=%d threads=%d selected_worker=%d candidate_limit=%d roots=%lld accepted=%lld recursion=%lld candidates=%lld max_depth=%d exhausted=%lld repairs=%lld repair_accept=%lld score=%.3f\n",
@@ -203,6 +221,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     env_->curr_timestep + 1, seconds(candidate_started, search_started), seconds(search_started, global_finished),
                     seconds(global_finished, regions_finished), seconds(regions_finished, Clock::now()),
                     exact_metric_robots, fallback_metric_robots, temporal_distance_scale_);
+        if (temporal_warm_start_)
+            std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
+                env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,
+                warm_stats.initial_resets, warm_stats.collision_resets);
         if (temporal_regions_) {
             std::printf("[cgar-temporal-regions] step=%d regions=%d rounds=%d threads=%d temperature_ppm=%d active=%lld candidates=%lld repairs=%lld attempts_accepted=%lld kept=%lld reverted=%lld frozen_crossers=%lld score_before=%.3f score_after=%.3f\n",
                         env_->curr_timestep + 1, temporal_region_options_.parts, temporal_region_options_.rounds,

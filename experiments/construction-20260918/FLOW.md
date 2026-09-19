@@ -45,3 +45,12 @@ instances share a 24 GiB total reservation on two disjoint physical cores, one
 per single-threaded profile.
 Analysis 8898429 follows. The v16 default control and strength-1 flow exactly
 match v15 over 200 steps. No full flow performance claim is made.
+
+
+The first full learned-flow case (strength 1) fails explicitly at step 1,103 in
+temporal repair. It receives no accepted throughput score. At step 1,000, 50,000
+attempts inspect 63,107,599 candidates, with 0.646 seconds in global search and
+all robots using exact metrics. The passing short screen did not establish
+full-horizon feasibility. [Failure evidence](results/flow1-full-v16-failure/).
+The remaining full profiles continue. A deterministic candidate-work quota is
+a possible separate follow-up; no performance benefit has been established.

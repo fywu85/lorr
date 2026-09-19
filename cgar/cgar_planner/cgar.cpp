@@ -654,6 +654,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
+    temporal_warm_start_ = env_int("CGAR_TEMPORAL_WARM_START", 0) != 0;
+    temporal_history_.clear();
+    if (temporal_warm_start_ && !temporal_) throw std::invalid_argument("temporal warm start requires temporal planning");
     turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);
     if (turn_prefetch_threads_ < 0 || turn_prefetch_threads_ > 32 ||
         (turn_prefetch_threads_ && !orientation_guidance_))

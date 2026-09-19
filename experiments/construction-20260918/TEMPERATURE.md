@@ -27,9 +27,14 @@ Default regional trajectories exactly match v14 for every recorded field.
 [Screen evidence](results/temperature-screen-v17/),
 [equivalence](results/temperature-default-equivalence.json).
 
-Full job **8898445** tests all four profiles after guidance jobs 8898428/8898429,
+Full job **8898445** tests all four profiles after warm-start jobs 8898475/8898476,
 using two four-core instances and 24 GiB total reserved memory. Analysis
 **8898447** follows. Its first analysis submission used an incorrect dependency
 and was rejected before execution; that failed submission is retained in the
 raw directory alongside the successful one.
 No new-temperature throughput evidence exists yet.
+
+The pending temperature job was moved behind warm-start validation to prioritize
+that larger standalone mechanism. Profiles, binary, resource allocation and seed
+remain identical. The scheduler dependency update is retained in
+[temperature-queue-update.json](results/temperature-queue-update.json).

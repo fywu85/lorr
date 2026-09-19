@@ -1,0 +1,23 @@
+{
+  "reason": "Prioritize standalone warm-start mechanism after guidance. Temperature profiles are unchanged and remain pending; serialize full matrices within 24 GiB total reserved memory. No running job was interrupted.",
+  "job_id": "8898445",
+  "previous_state": "hqw",
+  "original_dependencies": [
+    "8898428",
+    "8898429"
+  ],
+  "replacement_dependencies": [
+    "8898475",
+    "8898476"
+  ],
+  "command": [
+    "qalter",
+    "-hold_jid",
+    "8898475,8898476",
+    "8898445"
+  ],
+  "returncode": 0,
+  "stdout": "modified job id hold list of job 8898445\n   blocking jobs: 8898475,8898476\n   exited jobs:   NONE\n",
+  "stderr": "",
+  "utc": "2026-09-19T05:54:00.204146+00:00"
+}

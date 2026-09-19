@@ -25,17 +25,23 @@ Active full queue:
 1. **8898428**, frozen v16, runs control, learned-flow strengths 1/2/4, and distance
    scales 256/1024 separately. Two concurrent instances, one distinct physical core
    each, 24 GiB total. Actual EPYC 9354 bindings [0] and [1], no CPU quota. Analysis
-   **8898429** follows. No full guidance/scaling result yet.
-2. **8898445**, frozen v17, follows that matrix and analysis. It tests one-round
+   **8898429** follows. The control has reproduced 107,457; flow strengths 1 and 2
+   fail late explicit repair deadlines and receive no accepted score. Flow 4 and
+   distance-scale cases continue.
+2. **8898475**, frozen v19, follows guidance. It tests control and warm starts
+   with 50k/25k/10k fixed attempts. Two single-core instances, 24 GiB total.
+   Analysis **8898476** follows. All 200-step screens pass, and disabled warm
+   starts preserve all prior trajectory fields. See WARM_START.md.
+3. **8898445**, frozen v17, follows the warm-start matrix and analysis. It tests one-round
    control, regional temperatures 100/0, and two rounds at 0. Two concurrent
    instances, four cores each, 24 GiB total. Analysis **8898447** follows. All four
    200-step screens pass; default trajectories exactly match v14. See TEMPERATURE.md.
 
 The v18 static predecessor cache passes regressions and cuts isolated table
 build time by 19–26% with matching checksums. All three integration screens pass with
-exact prior trajectories over 200 steps; no whole-planner speedup claim yet. See ORACLE.md. A possible next
-experiment is warm-starting from the unexecuted suffix of a valid prior plan,
-with cold resets for changed goals/protected paths and their collision closure.
+exact prior trajectories over 200 steps; no whole-planner speedup claim yet. See ORACLE.md. Warm starts are now implemented and validated for safety/reuse;
+full performance is pending. A separate fixed candidate-work quota may address
+the learned-flow repair explosion, but has not been tested with flow yet.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,
 timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.

@@ -195,6 +195,13 @@ off, and these results do not imply performance on other maps.
 
 - `CGAR_TEMPORAL_STEPS` prescribes repair attempts per worker (0–1,000,000).
   Construction always processes the complete order. Zero means construction only.
+- `CGAR_TEMPORAL_WARM_START=1` reuses the unexecuted suffix of the previous
+  complete plan (default off). Every suffix already exists in the generic action
+  pool. Changed goals, protected actions and unavailable candidates return to
+  their normal seeds; a deterministic closure resets every conflicting suffix.
+  State/time mismatches discard history. Construction and fixed repair still
+  finish completely, and the final plan still passes all collision checks.
+  This is experimental; full throughput validation is pending.
 - `CGAR_TEMPORAL_BUDGET` bounds displacements per construction root (default 8192);
   repair roots also have the native cap of 1000. A failed bounded attempt rolls
   back according to the algorithm, independently of elapsed time.

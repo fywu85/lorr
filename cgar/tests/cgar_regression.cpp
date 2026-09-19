@@ -656,6 +656,10 @@ void temporal_region_adapter_regression() {
     (serial.stats().flow_freezes!=1||parallel.stats().flow_freezes!=1||!serial.stats().flow_penalized_edges||
      serial.stats().flow_penalized_edges!=parallel.stats().flow_penalized_edges))
   throw std::runtime_error("production learned-flow episode did not freeze an identical nontrivial field");
+ if(std::getenv("CGAR_TEMPORAL_WARM_START")&&
+    (!serial.stats().temporal_warm_retained||serial.stats().temporal_warm_retained!=parallel.stats().temporal_warm_retained||
+     serial.stats().temporal_warm_collision_resets!=parallel.stats().temporal_warm_collision_resets))
+  throw std::runtime_error("production warm start failed to reuse identical valid suffixes");
  for(const char* name:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(name);
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 valid_episodes=1\n";
 }
@@ -883,4 +887,62 @@ void temporal_distance_scale_regression() {
  std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
 }
 
-int main(){try{for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void temporal_warm_start_regression() {
+ const int cells=8,count=3;std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,1,cells,[]{});
+ const auto& operations=TemporalGeometry::operations();int forward=-1;
+ for(int k=0;k<int(operations.size());++k){
+  if(operations[k]==std::array<uint8_t,5>{0,0,0,0,0})forward=k;
+  const int shifted=TemporalWarmStart::shifted_operation(k);
+  for(int t=0;t<4;++t)if(operations[shifted][t]!=operations[k][t+1])throw std::runtime_error("invalid shifted action suffix");
+  if(operations[shifted][4]!=3)throw std::runtime_error("shifted suffix did not append a wait");
+ }
+ if(forward<0)throw std::runtime_error("missing forward operation");
+ const int suffix=TemporalWarmStart::shifted_operation(forward);
+ std::vector<std::vector<TemporalChoice>> old_choices(count),choices(count);
+ std::vector<int> locations={1,2,3},orientations(count,0),goals(count,7),initial(count,1);
+ std::vector<char> fixed(count,false);std::vector<double> power(count,1);
+ for(int r=0;r<count;++r){
+  const auto& old_paths=geometry.paths(r,0);old_choices[r]={{&old_paths[0],250,0},{&old_paths[forward],0,forward}};
+  const auto& paths=geometry.paths(r+1,0);choices[r]={{&paths[0],200,0},{&paths[suffix],0,suffix}};
+ }
+ TemporalPibt prior(cells,old_choices,fixed,power,8192,0,&initial);TemporalWarmStart history;
+ history.remember(10,prior,goals,orientations);
+ auto seed=[&](const std::vector<int>& target,const std::vector<std::vector<TemporalChoice>>& pool,const std::vector<char>& protected_robots,TemporalWarmStats& stats){
+  return history.selections(11,cells,locations,orientations,target,pool,protected_robots,stats,[]{});
+ };
+ TemporalWarmStats kept_stats;auto kept=seed(goals,choices,fixed,kept_stats);
+ if(kept!=initial||!kept_stats.history_valid||kept_stats.retained!=3)throw std::runtime_error("warm start discarded valid convoy suffixes");
+ TemporalPibt reused(cells,choices,fixed,power,8192,0,&kept);
+ auto protected_robots=fixed;protected_robots[2]=true;TemporalWarmStats protected_stats;
+ auto stopped=seed(goals,choices,protected_robots,protected_stats);
+ if(stopped!=std::vector<int>(3,0)||protected_stats.initial_resets!=1||protected_stats.collision_resets!=2||protected_stats.retained)
+  throw std::runtime_error("protected seed did not reset the full conflicting convoy");
+ TemporalPibt protected_plan(cells,choices,protected_robots,power,8192,0,&stopped);
+ auto changed=goals;changed[2]=6;TemporalWarmStats goal_stats;
+ if(seed(changed,choices,fixed,goal_stats)!=stopped||goal_stats.collision_resets!=2)throw std::runtime_error("changed goal retained a stale conflicting suffix");
+ auto filtered=choices;filtered[1].resize(1);TemporalWarmStats filtered_stats;
+ auto subset=seed(goals,filtered,fixed,filtered_stats);
+ if(subset!=std::vector<int>({0,0,1})||filtered_stats.retained!=1||filtered_stats.collision_resets!=1)
+  throw std::runtime_error("filtered warm candidate did not reset only its conflict closure");
+ TemporalPibt filtered_plan(cells,filtered,fixed,power,8192,0,&subset);
+ for(int mismatch=0;mismatch<3;++mismatch){
+  auto positions=locations,dirs=orientations;int timestep=11;if(mismatch==0)++positions[0];if(mismatch==1)++dirs[0];if(mismatch==2)++timestep;
+  TemporalWarmStats stale;
+  if(!history.selections(timestep,cells,positions,dirs,goals,choices,fixed,stale,[]{}).empty()||stale.history_valid)
+   throw std::runtime_error("mismatched temporal warm history was reused");
+ }
+ bool failed=false;TemporalWarmStats timeout_stats;
+ try{history.selections(11,cells,locations,orientations,goals,choices,fixed,timeout_stats,[]{throw Timeout("warm_fixture");});}
+ catch(const Timeout&){failed=true;}
+ if(!failed)throw std::runtime_error("warm-start deadline was swallowed");
+ TemporalWarmStats unchanged;if(seed(goals,choices,fixed,unchanged)!=initial)throw std::runtime_error("failed warm lookup mutated remembered history");
+ history.clear();TemporalWarmStats empty;if(!seed(goals,choices,fixed,empty).empty())throw std::runtime_error("cleared warm history survived");
+ setenv("CGAR_TEMPORAL_WARM_START","1",1);
+ temporal_region_adapter_regression();temporal_primary_regression();temporal_parallel_regression();
+ setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","4",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ temporal_region_adapter_regression();
+ for(const char* name:{"CGAR_TEMPORAL_WARM_START","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES"})unsetenv(name);
+ std::cout<<"TEMPORAL_WARM_START passed shifted_operations=129 convoy_reuse=3 protected_cascade=2 filtered_closure=1 stale_history_rejected=1 explicit_timeout=1 protected_and_threaded_episodes=1\n";
+}
+
+int main(){try{temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
