@@ -81,3 +81,15 @@ The combination does not improve the paired mean over exchange alone.
 Confirmation8898745/8898746runs pool-only and disabled on seeds1/3/4/5, eight
 concurrent cases. Travel audit8898747reuses the independently validated trajectory
 decomposition on both full controls and both pool-only runs. No promotion yet.
+
+
+Travel audit8898747is complete and its reassignment fixture passes. Mean completed
+chains are242.59/242.52with exchange versus242.32/242.32without; there is no
+observed shift toward shorter completed chains in these runs. Loaded elapsed
+means are283.18/284.40versus284.62/284.60. Pickup delay measured from the latest
+assignment falls from71.48/71.48to64.57/64.70, while delay from the first
+assignment increases to71.70/72.06. The latest-assignment clock omits time before
+retargeting, and the first clock can include time a released task waits unassigned.
+Total empty robot-steps decrease only0.455%/0.430%. These measures use different
+cohorts and cannot form an additive causal decomposition.
+[Travel evidence](results/pool-exchange-travel-v1/comparison.json).

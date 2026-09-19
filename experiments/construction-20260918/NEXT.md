@@ -34,9 +34,10 @@ Maintain ../../WAREHOUSE_PROGRESS.md and exact source/commit/timestamp provenanc
   14665reassigned tasks changes owner at most once; no changes after pickup.
 - **8898745 /8898746**: pool-only versus disabled confirmation, seeds1/3/4/5,
   eight concurrent cases, four physical cores/process,128GiBaggregate, source24a576c.
-- **8898747**: independent four-case pool travel audit under one isolated core,
-  raw runs/cgar-pool-exchange-travel-v1-20260919/analysis. Copy only complete
-  result JSON/fixture/provenance/submission into results/pool-exchange-travel-v1.
+- Pool travel audit8898747is complete and archived in results/pool-exchange-travel-v1.
+  Completed chains are slightly longer. Latest-assignment pickup delay falls
+  about10%, but first-assignment delay rises slightly and total empty travel
+  falls only0.4%. Do not interpret restarted pickup clocks as full-fleet savings.
 - **8898732 /8898733**: full refreshed flow neighbors on frozen v36 source,
   strength1margin50control, strength1margin25/75, strength2margin50, seeds0/2,
   eight concurrent cases,32physical cores/128GiBaggregate, exclusive research50.
@@ -114,3 +115,6 @@ late complete decisions. This is not implemented. Wait for rebuild-limit evidenc
 before choosing the production count; more guidance is a hypothesis, not a gain.
 The older assigned-to-assigned swap flag has never been tested with refresh512;
 it is another possible generic assignment ablation, not a proven improvement.
+
+Validated source checkpoint5c7f0fa is pushed; v39exactly matches all20recorded
+production and test hashes. All C++ sources are currently complete and tested.
