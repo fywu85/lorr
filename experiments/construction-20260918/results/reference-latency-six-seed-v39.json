@@ -1,0 +1,153 @@
+{
+  "checked_utc": "2026-09-19T16:32:31.136279+00:00",
+  "source_report": "experiments/construction-20260918/results/turn-build-limit-six-seed-v39.json",
+  "source_report_sha256": "bf128205a308c37eaff96a245ff12b5acae708a338d7c4e3b9cba38680087734",
+  "script_sha256": "96a3dd5768a974c622806467af741abd76b9eab2e593dbcccecfcf9b5ccd4f17",
+  "scope": "Complete scheduler plus planner wall latency, 5000 samples per run. CPU is whole-process user+system time divided by wall time, including simulator, startup and logging; not a sampled instantaneous CPU value. RSS is the whole-process high-water mark. Quantiles use nearest rank.",
+  "rows": [
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 137060,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-full-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-full-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 264.0158628243998,
+        "p50_ms": 241.50686599999997,
+        "p90_ms": 455.327607,
+        "p95_ms": 504.83682100000004,
+        "p99_ms": 543.069709,
+        "max_ms": 870.9241089999999
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 276,
+      "average_cpu_cores": 1.184473530814794,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.61183827036985,
+      "peak_rss_bytes": 11904798720,
+      "wall_seconds": 1394.779
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 137271,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-confirm-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s1-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 269.9358276578007,
+        "p50_ms": 248.582763,
+        "p90_ms": 461.10675899999995,
+        "p95_ms": 511.82244,
+        "p99_ms": 554.007258,
+        "max_ms": 854.567922
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 308,
+      "average_cpu_cores": 1.182170575299316,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.5542643824829,
+      "peak_rss_bytes": 11814350848,
+      "wall_seconds": 1424.86
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 136841,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-full-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-full-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 250.95568258319878,
+        "p50_ms": 223.504507,
+        "p90_ms": 452.342958,
+        "p95_ms": 495.954768,
+        "p99_ms": 533.477443,
+        "max_ms": 837.535766
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 226,
+      "average_cpu_cores": 1.1949006858198978,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.872517145497447,
+      "peak_rss_bytes": 11449061376,
+      "wall_seconds": 1328.513
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 137227,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-confirm-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s3-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 243.73882432539938,
+        "p50_ms": 214.374113,
+        "p90_ms": 451.642986,
+        "p95_ms": 492.623345,
+        "p99_ms": 527.3920290000001,
+        "max_ms": 858.8950520000001
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 202,
+      "average_cpu_cores": 1.1985643166267184,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.96410791566796,
+      "peak_rss_bytes": 11864715264,
+      "wall_seconds": 1292.746
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 136949,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-confirm-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s4-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 239.20262484320054,
+        "p50_ms": 210.725872,
+        "p90_ms": 441.16724600000003,
+        "p95_ms": 475.20048599999996,
+        "p99_ms": 514.144578,
+        "max_ms": 873.054708
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 102,
+      "average_cpu_cores": 1.2057133917988039,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 30.142834794970096,
+      "peak_rss_bytes": 12012142592,
+      "wall_seconds": 1269.67
+    },
+    {
+      "case": "flow1_margin50_refresh512_turnbuild128_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 137092,
+      "evidence": "experiments/construction-20260918/results/turn-build-limit-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-turn-build-limit-confirm-v39-20260919/flow1_margin50_refresh512_turnbuild128_work4m_prep4-s5-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 234.81932462379987,
+        "p50_ms": 206.326492,
+        "p90_ms": 441.238626,
+        "p95_ms": 476.045362,
+        "p99_ms": 517.981065,
+        "max_ms": 855.185538
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 115,
+      "average_cpu_cores": 1.2100058576881707,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 30.25014644220427,
+      "peak_rss_bytes": 11935051776,
+      "wall_seconds": 1247.76
+    }
+  ]
+}

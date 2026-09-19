@@ -71,3 +71,11 @@ Full5000-step seeds0/2 are running as8898787, with independent analysis8898788.
 Eight simultaneous cases each have four disjoint physical cores, a32decimalGB
 process limit, and128GiB aggregate reservation. Profiles are in
 [pickup-flow-variants.json](pickup-flow-variants.json).
+
+
+The tested source and all21 source/test hashes match
+[eb5b382](https://github.com/fywu85/lorr/commit/eb5b3827b9daf9f91aba88c78bef7be0d17cd07c).
+[Fable turn09](fable-flow-session/turn09/review.md) found no reproducible bug;
+[our assessment](fable-flow-session/assessment.md) qualifies its measurement claims.
+While this full experiment was running, margin25/build128 completed confirmation
+as the stronger reference. This matrix retains its frozen margin50 baseline.

@@ -1,0 +1,1891 @@
+{
+  "checked_utc": "2026-09-19T16:41:03.309238+00:00",
+  "script_sha256": "7753d0acaea2e5db802bfb64776623663232b0346499c119b811c2cf483c7e4e",
+  "limitation": "Churn is observational and does not establish cause. Reconstructed fields match production move and penalized-edge counts at every publication; production does not log full field hashes. Pair churn counts flips once; directed membership churn counts both toggled directions in a flip. Dominance buckets use current cumulative observed counts.",
+  "cases": [
+    {
+      "case": "flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-graded-turn128-full-v39-20260919/flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "tasks": 56537,
+      "seed": 0,
+      "margin": 0,
+      "strength": 4,
+      "base": 4,
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "all_publication_move_and_penalized_counts_match": true,
+      "full_replayed_actions_match_movement_counters": true,
+      "publications": [
+        {
+          "step": 128,
+          "moves": 955862,
+          "penalized_directed_edges": 37258,
+          "field_sha256": "76d5ce22b3df7aa76c21851994e2ba60dace54eba9f054dea5c76956a81e5ee9"
+        },
+        {
+          "step": 640,
+          "moves": 5192095,
+          "penalized_directed_edges": 49803,
+          "field_sha256": "7d433764a4399a5ce96cbc5e17025529adf2a82ccbe23916b6ad61806b532491",
+          "churn": {
+            "union_penalized_pairs": 50022,
+            "direction_changed_pairs": 16597,
+            "sign_flips": 3614,
+            "appeared": 12764,
+            "vanished": 219,
+            "same_sign_weight_changed": 20958,
+            "pair_fraction": 0.33179401063532044,
+            "directed_membership_fraction": 0.37681780893429784,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 7763,
+                "direction_changed_pairs": 4929,
+                "sign_flips": 1759,
+                "appeared": 2951,
+                "vanished": 219,
+                "same_sign_weight_changed": 1253
+              },
+              "50": {
+                "union_penalized_pairs": 8764,
+                "direction_changed_pairs": 4076,
+                "sign_flips": 1029,
+                "appeared": 3047,
+                "vanished": 0,
+                "same_sign_weight_changed": 2928
+              },
+              "75": {
+                "union_penalized_pairs": 11591,
+                "direction_changed_pairs": 3493,
+                "sign_flips": 646,
+                "appeared": 2847,
+                "vanished": 0,
+                "same_sign_weight_changed": 5903
+              },
+              "100": {
+                "union_penalized_pairs": 21904,
+                "direction_changed_pairs": 4099,
+                "sign_flips": 180,
+                "appeared": 3919,
+                "vanished": 0,
+                "same_sign_weight_changed": 10874
+              }
+            }
+          }
+        },
+        {
+          "step": 1152,
+          "moves": 9349791,
+          "penalized_directed_edges": 50351,
+          "field_sha256": "5f3dca977f1ae3902e2145b5199abda64e768e45498fc4e428d9d0eb53f12606",
+          "churn": {
+            "union_penalized_pairs": 50480,
+            "direction_changed_pairs": 2150,
+            "sign_flips": 1344,
+            "appeared": 677,
+            "vanished": 129,
+            "same_sign_weight_changed": 16125,
+            "pair_fraction": 0.042591125198098254,
+            "directed_membership_fraction": 0.06742050015436864,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 4612,
+                "direction_changed_pairs": 1489,
+                "sign_flips": 1031,
+                "appeared": 329,
+                "vanished": 129,
+                "same_sign_weight_changed": 574
+              },
+              "50": {
+                "union_penalized_pairs": 6139,
+                "direction_changed_pairs": 447,
+                "sign_flips": 281,
+                "appeared": 166,
+                "vanished": 0,
+                "same_sign_weight_changed": 2859
+              },
+              "75": {
+                "union_penalized_pairs": 11379,
+                "direction_changed_pairs": 112,
+                "sign_flips": 32,
+                "appeared": 80,
+                "vanished": 0,
+                "same_sign_weight_changed": 6084
+              },
+              "100": {
+                "union_penalized_pairs": 28350,
+                "direction_changed_pairs": 102,
+                "sign_flips": 0,
+                "appeared": 102,
+                "vanished": 0,
+                "same_sign_weight_changed": 6608
+              }
+            }
+          }
+        },
+        {
+          "step": 1664,
+          "moves": 12850744,
+          "penalized_directed_edges": 50559,
+          "field_sha256": "256278c9467a7b67f13225e22f49238a39a58cc6acf491e72c4a9cbcd106e61f",
+          "churn": {
+            "union_penalized_pairs": 50642,
+            "direction_changed_pairs": 1057,
+            "sign_flips": 683,
+            "appeared": 291,
+            "vanished": 83,
+            "same_sign_weight_changed": 8095,
+            "pair_fraction": 0.02087200347537617,
+            "directed_membership_fraction": 0.03390160740379932,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3846,
+                "direction_changed_pairs": 890,
+                "sign_flips": 641,
+                "appeared": 166,
+                "vanished": 83,
+                "same_sign_weight_changed": 500
+              },
+              "50": {
+                "union_penalized_pairs": 5386,
+                "direction_changed_pairs": 110,
+                "sign_flips": 41,
+                "appeared": 69,
+                "vanished": 0,
+                "same_sign_weight_changed": 1614
+              },
+              "75": {
+                "union_penalized_pairs": 9991,
+                "direction_changed_pairs": 27,
+                "sign_flips": 1,
+                "appeared": 26,
+                "vanished": 0,
+                "same_sign_weight_changed": 2490
+              },
+              "100": {
+                "union_penalized_pairs": 31419,
+                "direction_changed_pairs": 30,
+                "sign_flips": 0,
+                "appeared": 30,
+                "vanished": 0,
+                "same_sign_weight_changed": 3491
+              }
+            }
+          }
+        },
+        {
+          "step": 2176,
+          "moves": 15277545,
+          "penalized_directed_edges": 50608,
+          "field_sha256": "5dba6016f4ee1dd4b9c1d2d4af5295c16bcb10bfb78b72b73f70c994dbdf6123",
+          "churn": {
+            "union_penalized_pairs": 50684,
+            "direction_changed_pairs": 528,
+            "sign_flips": 327,
+            "appeared": 125,
+            "vanished": 76,
+            "same_sign_weight_changed": 4349,
+            "pair_fraction": 0.010417488753847367,
+            "directed_membership_fraction": 0.016761090745133402,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3658,
+                "direction_changed_pairs": 495,
+                "sign_flips": 326,
+                "appeared": 93,
+                "vanished": 76,
+                "same_sign_weight_changed": 378
+              },
+              "50": {
+                "union_penalized_pairs": 5219,
+                "direction_changed_pairs": 15,
+                "sign_flips": 1,
+                "appeared": 14,
+                "vanished": 0,
+                "same_sign_weight_changed": 1065
+              },
+              "75": {
+                "union_penalized_pairs": 9727,
+                "direction_changed_pairs": 9,
+                "sign_flips": 0,
+                "appeared": 9,
+                "vanished": 0,
+                "same_sign_weight_changed": 1560
+              },
+              "100": {
+                "union_penalized_pairs": 32080,
+                "direction_changed_pairs": 9,
+                "sign_flips": 0,
+                "appeared": 9,
+                "vanished": 0,
+                "same_sign_weight_changed": 1346
+              }
+            }
+          }
+        },
+        {
+          "step": 2688,
+          "moves": 17124043,
+          "penalized_directed_edges": 50645,
+          "field_sha256": "2ead6d34838811d5a252a13cbb5726b03d3cb216c6dfdd0a1c3e7404f9a20e99",
+          "churn": {
+            "union_penalized_pairs": 50697,
+            "direction_changed_pairs": 315,
+            "sign_flips": 174,
+            "appeared": 89,
+            "vanished": 52,
+            "same_sign_weight_changed": 2692,
+            "pair_fraction": 0.0062133854074205574,
+            "directed_membership_fraction": 0.0096125493896326,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3648,
+                "direction_changed_pairs": 300,
+                "sign_flips": 173,
+                "appeared": 75,
+                "vanished": 52,
+                "same_sign_weight_changed": 301
+              },
+              "50": {
+                "union_penalized_pairs": 5150,
+                "direction_changed_pairs": 3,
+                "sign_flips": 1,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 630
+              },
+              "75": {
+                "union_penalized_pairs": 9825,
+                "direction_changed_pairs": 7,
+                "sign_flips": 0,
+                "appeared": 7,
+                "vanished": 0,
+                "same_sign_weight_changed": 1090
+              },
+              "100": {
+                "union_penalized_pairs": 32074,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 671
+              }
+            }
+          }
+        },
+        {
+          "step": 3200,
+          "moves": 18777954,
+          "penalized_directed_edges": 50655,
+          "field_sha256": "03cd1728bb04df757a92230a194da1dfaf09eb9a1fdb27d51d7030cf5c1759ed",
+          "churn": {
+            "union_penalized_pairs": 50701,
+            "direction_changed_pairs": 239,
+            "sign_flips": 137,
+            "appeared": 56,
+            "vanished": 46,
+            "same_sign_weight_changed": 2192,
+            "pair_fraction": 0.004713910968225479,
+            "directed_membership_fraction": 0.007396042330540147,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3671,
+                "direction_changed_pairs": 236,
+                "sign_flips": 137,
+                "appeared": 53,
+                "vanished": 46,
+                "same_sign_weight_changed": 219
+              },
+              "50": {
+                "union_penalized_pairs": 5059,
+                "direction_changed_pairs": 1,
+                "sign_flips": 0,
+                "appeared": 1,
+                "vanished": 0,
+                "same_sign_weight_changed": 467
+              },
+              "75": {
+                "union_penalized_pairs": 10101,
+                "direction_changed_pairs": 0,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 0,
+                "same_sign_weight_changed": 1026
+              },
+              "100": {
+                "union_penalized_pairs": 31870,
+                "direction_changed_pairs": 2,
+                "sign_flips": 0,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 480
+              }
+            }
+          }
+        },
+        {
+          "step": 3712,
+          "moves": 20386991,
+          "penalized_directed_edges": 50659,
+          "field_sha256": "1d1bbe359522e58d447b9d9c6ded7ce6d4d58cb7fe77e73edcef2f3533aaf450",
+          "churn": {
+            "union_penalized_pairs": 50701,
+            "direction_changed_pairs": 193,
+            "sign_flips": 105,
+            "appeared": 46,
+            "vanished": 42,
+            "same_sign_weight_changed": 1631,
+            "pair_fraction": 0.003806631032918483,
+            "directed_membership_fraction": 0.005865448962720938,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3724,
+                "direction_changed_pairs": 189,
+                "sign_flips": 105,
+                "appeared": 42,
+                "vanished": 42,
+                "same_sign_weight_changed": 185
+              },
+              "50": {
+                "union_penalized_pairs": 4939,
+                "direction_changed_pairs": 1,
+                "sign_flips": 0,
+                "appeared": 1,
+                "vanished": 0,
+                "same_sign_weight_changed": 336
+              },
+              "75": {
+                "union_penalized_pairs": 10220,
+                "direction_changed_pairs": 1,
+                "sign_flips": 0,
+                "appeared": 1,
+                "vanished": 0,
+                "same_sign_weight_changed": 718
+              },
+              "100": {
+                "union_penalized_pairs": 31818,
+                "direction_changed_pairs": 2,
+                "sign_flips": 0,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 392
+              }
+            }
+          }
+        },
+        {
+          "step": 4224,
+          "moves": 22021502,
+          "penalized_directed_edges": 50681,
+          "field_sha256": "efb1def0e903edb7fde20b54f0a17d7defe231a48b780fe53f15743b71cf8279",
+          "churn": {
+            "union_penalized_pairs": 50714,
+            "direction_changed_pairs": 168,
+            "sign_flips": 80,
+            "appeared": 55,
+            "vanished": 33,
+            "same_sign_weight_changed": 1587,
+            "pair_fraction": 0.0033126947194068697,
+            "directed_membership_fraction": 0.0048824664330432725,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3727,
+                "direction_changed_pairs": 159,
+                "sign_flips": 80,
+                "appeared": 46,
+                "vanished": 33,
+                "same_sign_weight_changed": 149
+              },
+              "50": {
+                "union_penalized_pairs": 4926,
+                "direction_changed_pairs": 3,
+                "sign_flips": 0,
+                "appeared": 3,
+                "vanished": 0,
+                "same_sign_weight_changed": 377
+              },
+              "75": {
+                "union_penalized_pairs": 10306,
+                "direction_changed_pairs": 4,
+                "sign_flips": 0,
+                "appeared": 4,
+                "vanished": 0,
+                "same_sign_weight_changed": 685
+              },
+              "100": {
+                "union_penalized_pairs": 31755,
+                "direction_changed_pairs": 2,
+                "sign_flips": 0,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 376
+              }
+            }
+          }
+        },
+        {
+          "step": 4736,
+          "moves": 23688364,
+          "penalized_directed_edges": 50704,
+          "field_sha256": "9e20cd9e56177a5899e798dd0672950c9375e3f08b9c462c6b6e32d3ab0c6cb5",
+          "churn": {
+            "union_penalized_pairs": 50727,
+            "direction_changed_pairs": 162,
+            "sign_flips": 93,
+            "appeared": 46,
+            "vanished": 23,
+            "same_sign_weight_changed": 1365,
+            "pair_fraction": 0.0031935655568040688,
+            "directed_membership_fraction": 0.005017709563164109,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3725,
+                "direction_changed_pairs": 159,
+                "sign_flips": 93,
+                "appeared": 43,
+                "vanished": 23,
+                "same_sign_weight_changed": 139
+              },
+              "50": {
+                "union_penalized_pairs": 4886,
+                "direction_changed_pairs": 1,
+                "sign_flips": 0,
+                "appeared": 1,
+                "vanished": 0,
+                "same_sign_weight_changed": 315
+              },
+              "75": {
+                "union_penalized_pairs": 10373,
+                "direction_changed_pairs": 2,
+                "sign_flips": 0,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 570
+              },
+              "100": {
+                "union_penalized_pairs": 31743,
+                "direction_changed_pairs": 0,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 0,
+                "same_sign_weight_changed": 341
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-graded-turn128-full-v39-20260919/flow4_scale4_margin0_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "tasks": 139796,
+      "seed": 2,
+      "margin": 0,
+      "strength": 4,
+      "base": 4,
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "all_publication_move_and_penalized_counts_match": true,
+      "full_replayed_actions_match_movement_counters": true,
+      "publications": [
+        {
+          "step": 128,
+          "moves": 961325,
+          "penalized_directed_edges": 37616,
+          "field_sha256": "1fbda4b8d4ce0eeebb738d3d6aa76ac08b655a20db1ea99c197187e4d0c4525f"
+        },
+        {
+          "step": 640,
+          "moves": 5365665,
+          "penalized_directed_edges": 49802,
+          "field_sha256": "3b070d39d1bc9424f014ef358c030f76f509295a9c44cd4c0e60f263e744703a",
+          "churn": {
+            "union_penalized_pairs": 50016,
+            "direction_changed_pairs": 15976,
+            "sign_flips": 3362,
+            "appeared": 12400,
+            "vanished": 214,
+            "same_sign_weight_changed": 21087,
+            "pair_fraction": 0.3194177863083813,
+            "directed_membership_fraction": 0.36228408707707294,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 6522,
+                "direction_changed_pairs": 4142,
+                "sign_flips": 1538,
+                "appeared": 2390,
+                "vanished": 214,
+                "same_sign_weight_changed": 933
+              },
+              "50": {
+                "union_penalized_pairs": 7807,
+                "direction_changed_pairs": 3266,
+                "sign_flips": 1011,
+                "appeared": 2255,
+                "vanished": 0,
+                "same_sign_weight_changed": 2774
+              },
+              "75": {
+                "union_penalized_pairs": 11160,
+                "direction_changed_pairs": 3117,
+                "sign_flips": 540,
+                "appeared": 2577,
+                "vanished": 0,
+                "same_sign_weight_changed": 5953
+              },
+              "100": {
+                "union_penalized_pairs": 24527,
+                "direction_changed_pairs": 5451,
+                "sign_flips": 273,
+                "appeared": 5178,
+                "vanished": 0,
+                "same_sign_weight_changed": 11427
+              }
+            }
+          }
+        },
+        {
+          "step": 1152,
+          "moves": 10027787,
+          "penalized_directed_edges": 50317,
+          "field_sha256": "7f17473df02ef86919e7082dafc2d4c6c2cf3e4831ba638ddbf2eb494077ff53",
+          "churn": {
+            "union_penalized_pairs": 50408,
+            "direction_changed_pairs": 1794,
+            "sign_flips": 1097,
+            "appeared": 606,
+            "vanished": 91,
+            "same_sign_weight_changed": 15168,
+            "pair_fraction": 0.03558958895413426,
+            "directed_membership_fraction": 0.05613047276963402,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3762,
+                "direction_changed_pairs": 1175,
+                "sign_flips": 823,
+                "appeared": 261,
+                "vanished": 91,
+                "same_sign_weight_changed": 505
+              },
+              "50": {
+                "union_penalized_pairs": 5476,
+                "direction_changed_pairs": 453,
+                "sign_flips": 256,
+                "appeared": 197,
+                "vanished": 0,
+                "same_sign_weight_changed": 2408
+              },
+              "75": {
+                "union_penalized_pairs": 9616,
+                "direction_changed_pairs": 98,
+                "sign_flips": 18,
+                "appeared": 80,
+                "vanished": 0,
+                "same_sign_weight_changed": 5113
+              },
+              "100": {
+                "union_penalized_pairs": 31554,
+                "direction_changed_pairs": 68,
+                "sign_flips": 0,
+                "appeared": 68,
+                "vanished": 0,
+                "same_sign_weight_changed": 7142
+              }
+            }
+          }
+        },
+        {
+          "step": 1664,
+          "moves": 14717023,
+          "penalized_directed_edges": 50509,
+          "field_sha256": "ff99303819ef5ba359d2277637b9f9c313c462944c3c829d56e089a90e335ccd",
+          "churn": {
+            "union_penalized_pairs": 50585,
+            "direction_changed_pairs": 911,
+            "sign_flips": 567,
+            "appeared": 268,
+            "vanished": 76,
+            "same_sign_weight_changed": 7952,
+            "pair_fraction": 0.018009291291884947,
+            "directed_membership_fraction": 0.028894275883640914,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 3029,
+                "direction_changed_pairs": 745,
+                "sign_flips": 522,
+                "appeared": 147,
+                "vanished": 76,
+                "same_sign_weight_changed": 340
+              },
+              "50": {
+                "union_penalized_pairs": 4043,
+                "direction_changed_pairs": 99,
+                "sign_flips": 40,
+                "appeared": 59,
+                "vanished": 0,
+                "same_sign_weight_changed": 1189
+              },
+              "75": {
+                "union_penalized_pairs": 8262,
+                "direction_changed_pairs": 31,
+                "sign_flips": 5,
+                "appeared": 26,
+                "vanished": 0,
+                "same_sign_weight_changed": 2598
+              },
+              "100": {
+                "union_penalized_pairs": 35251,
+                "direction_changed_pairs": 36,
+                "sign_flips": 0,
+                "appeared": 36,
+                "vanished": 0,
+                "same_sign_weight_changed": 3825
+              }
+            }
+          }
+        },
+        {
+          "step": 2176,
+          "moves": 19405638,
+          "penalized_directed_edges": 50641,
+          "field_sha256": "2f9ada3b3e4899eb0313499d6aeb3a7715ce0c498405b5e10ae786cf64b4c903",
+          "churn": {
+            "union_penalized_pairs": 50706,
+            "direction_changed_pairs": 601,
+            "sign_flips": 339,
+            "appeared": 197,
+            "vanished": 65,
+            "same_sign_weight_changed": 4889,
+            "pair_fraction": 0.011852640713130596,
+            "directed_membership_fraction": 0.018415123910275246,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 2532,
+                "direction_changed_pairs": 508,
+                "sign_flips": 321,
+                "appeared": 122,
+                "vanished": 65,
+                "same_sign_weight_changed": 256
+              },
+              "50": {
+                "union_penalized_pairs": 3576,
+                "direction_changed_pairs": 45,
+                "sign_flips": 18,
+                "appeared": 27,
+                "vanished": 0,
+                "same_sign_weight_changed": 872
+              },
+              "75": {
+                "union_penalized_pairs": 7081,
+                "direction_changed_pairs": 29,
+                "sign_flips": 0,
+                "appeared": 29,
+                "vanished": 0,
+                "same_sign_weight_changed": 1346
+              },
+              "100": {
+                "union_penalized_pairs": 37517,
+                "direction_changed_pairs": 19,
+                "sign_flips": 0,
+                "appeared": 19,
+                "vanished": 0,
+                "same_sign_weight_changed": 2415
+              }
+            }
+          }
+        },
+        {
+          "step": 2688,
+          "moves": 24081682,
+          "penalized_directed_edges": 50735,
+          "field_sha256": "5d267c4ae52192c34d07c6331999e8bcc3009f1e1313784476c83ed0e4d467e8",
+          "churn": {
+            "union_penalized_pairs": 50781,
+            "direction_changed_pairs": 399,
+            "sign_flips": 213,
+            "appeared": 140,
+            "vanished": 46,
+            "same_sign_weight_changed": 3204,
+            "pair_fraction": 0.007857269451172683,
+            "directed_membership_fraction": 0.01200141193081539,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 2219,
+                "direction_changed_pairs": 341,
+                "sign_flips": 203,
+                "appeared": 92,
+                "vanished": 46,
+                "same_sign_weight_changed": 177
+              },
+              "50": {
+                "union_penalized_pairs": 3227,
+                "direction_changed_pairs": 25,
+                "sign_flips": 10,
+                "appeared": 15,
+                "vanished": 0,
+                "same_sign_weight_changed": 606
+              },
+              "75": {
+                "union_penalized_pairs": 6443,
+                "direction_changed_pairs": 16,
+                "sign_flips": 0,
+                "appeared": 16,
+                "vanished": 0,
+                "same_sign_weight_changed": 952
+              },
+              "100": {
+                "union_penalized_pairs": 38892,
+                "direction_changed_pairs": 17,
+                "sign_flips": 0,
+                "appeared": 17,
+                "vanished": 0,
+                "same_sign_weight_changed": 1469
+              }
+            }
+          }
+        },
+        {
+          "step": 3200,
+          "moves": 28768436,
+          "penalized_directed_edges": 50800,
+          "field_sha256": "026e4da3a17a518cb7ac42a23648f166e37845095f41904f829da383740d9473",
+          "churn": {
+            "union_penalized_pairs": 50848,
+            "direction_changed_pairs": 321,
+            "sign_flips": 160,
+            "appeared": 113,
+            "vanished": 48,
+            "same_sign_weight_changed": 2544,
+            "pair_fraction": 0.006312932662051605,
+            "directed_membership_fraction": 0.009429893350062736,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 2084,
+                "direction_changed_pairs": 276,
+                "sign_flips": 155,
+                "appeared": 73,
+                "vanished": 48,
+                "same_sign_weight_changed": 190
+              },
+              "50": {
+                "union_penalized_pairs": 2935,
+                "direction_changed_pairs": 24,
+                "sign_flips": 5,
+                "appeared": 19,
+                "vanished": 0,
+                "same_sign_weight_changed": 464
+              },
+              "75": {
+                "union_penalized_pairs": 5854,
+                "direction_changed_pairs": 10,
+                "sign_flips": 0,
+                "appeared": 10,
+                "vanished": 0,
+                "same_sign_weight_changed": 703
+              },
+              "100": {
+                "union_penalized_pairs": 39975,
+                "direction_changed_pairs": 11,
+                "sign_flips": 0,
+                "appeared": 11,
+                "vanished": 0,
+                "same_sign_weight_changed": 1187
+              }
+            }
+          }
+        },
+        {
+          "step": 3712,
+          "moves": 33462529,
+          "penalized_directed_edges": 50848,
+          "field_sha256": "e215eddc45c5867133b5c82c10619013e27febb4167c67ed8483305c7d1408f4",
+          "churn": {
+            "union_penalized_pairs": 50892,
+            "direction_changed_pairs": 253,
+            "sign_flips": 117,
+            "appeared": 92,
+            "vanished": 44,
+            "same_sign_weight_changed": 1868,
+            "pair_fraction": 0.004971311797532028,
+            "directed_membership_fraction": 0.007253621909859045,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 1964,
+                "direction_changed_pairs": 218,
+                "sign_flips": 109,
+                "appeared": 65,
+                "vanished": 44,
+                "same_sign_weight_changed": 158
+              },
+              "50": {
+                "union_penalized_pairs": 2757,
+                "direction_changed_pairs": 14,
+                "sign_flips": 8,
+                "appeared": 6,
+                "vanished": 0,
+                "same_sign_weight_changed": 398
+              },
+              "75": {
+                "union_penalized_pairs": 5476,
+                "direction_changed_pairs": 12,
+                "sign_flips": 0,
+                "appeared": 12,
+                "vanished": 0,
+                "same_sign_weight_changed": 517
+              },
+              "100": {
+                "union_penalized_pairs": 40695,
+                "direction_changed_pairs": 9,
+                "sign_flips": 0,
+                "appeared": 9,
+                "vanished": 0,
+                "same_sign_weight_changed": 795
+              }
+            }
+          }
+        },
+        {
+          "step": 4224,
+          "moves": 38156082,
+          "penalized_directed_edges": 50881,
+          "field_sha256": "03eba85f1f3a4492a9c29cf6ded91d7421028fd8bd566864ceefd59bd932b59c",
+          "churn": {
+            "union_penalized_pairs": 50920,
+            "direction_changed_pairs": 212,
+            "sign_flips": 101,
+            "appeared": 72,
+            "vanished": 39,
+            "same_sign_weight_changed": 1388,
+            "pair_fraction": 0.0041633935585231735,
+            "directed_membership_fraction": 0.006134728837145489,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 1853,
+                "direction_changed_pairs": 192,
+                "sign_flips": 101,
+                "appeared": 52,
+                "vanished": 39,
+                "same_sign_weight_changed": 86
+              },
+              "50": {
+                "union_penalized_pairs": 2639,
+                "direction_changed_pairs": 8,
+                "sign_flips": 0,
+                "appeared": 8,
+                "vanished": 0,
+                "same_sign_weight_changed": 301
+              },
+              "75": {
+                "union_penalized_pairs": 5284,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 450
+              },
+              "100": {
+                "union_penalized_pairs": 41144,
+                "direction_changed_pairs": 7,
+                "sign_flips": 0,
+                "appeared": 7,
+                "vanished": 0,
+                "same_sign_weight_changed": 551
+              }
+            }
+          }
+        },
+        {
+          "step": 4736,
+          "moves": 42847722,
+          "penalized_directed_edges": 50922,
+          "field_sha256": "85370b90a184b677c059bb282875536ab18336f34608b08eae9e02fc3ff58506",
+          "churn": {
+            "union_penalized_pairs": 50945,
+            "direction_changed_pairs": 208,
+            "sign_flips": 121,
+            "appeared": 64,
+            "vanished": 23,
+            "same_sign_weight_changed": 1187,
+            "pair_fraction": 0.004082834429286485,
+            "directed_membership_fraction": 0.006442642854345357,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 1776,
+                "direction_changed_pairs": 196,
+                "sign_flips": 121,
+                "appeared": 52,
+                "vanished": 23,
+                "same_sign_weight_changed": 106
+              },
+              "50": {
+                "union_penalized_pairs": 2570,
+                "direction_changed_pairs": 2,
+                "sign_flips": 0,
+                "appeared": 2,
+                "vanished": 0,
+                "same_sign_weight_changed": 280
+              },
+              "75": {
+                "union_penalized_pairs": 5050,
+                "direction_changed_pairs": 6,
+                "sign_flips": 0,
+                "appeared": 6,
+                "vanished": 0,
+                "same_sign_weight_changed": 322
+              },
+              "100": {
+                "union_penalized_pairs": 41549,
+                "direction_changed_pairs": 4,
+                "sign_flips": 0,
+                "appeared": 4,
+                "vanished": 0,
+                "same_sign_weight_changed": 479
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-graded-turn128-full-v39-20260919/flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "tasks": 138402,
+      "seed": 0,
+      "margin": 25,
+      "strength": 4,
+      "base": 4,
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "all_publication_move_and_penalized_counts_match": true,
+      "full_replayed_actions_match_movement_counters": true,
+      "publications": [
+        {
+          "step": 128,
+          "moves": 955862,
+          "penalized_directed_edges": 27270,
+          "field_sha256": "8355ed89f96f0a3168b854432446582e51df508c5d674f50e3b269056a9912e3"
+        },
+        {
+          "step": 640,
+          "moves": 5281527,
+          "penalized_directed_edges": 42685,
+          "field_sha256": "db006e8c8596894237fa925e6f88cb52e509a379a27c8722a8634fbe806a834e",
+          "churn": {
+            "union_penalized_pairs": 44401,
+            "direction_changed_pairs": 19235,
+            "sign_flips": 388,
+            "appeared": 17131,
+            "vanished": 1716,
+            "same_sign_weight_changed": 13803,
+            "pair_fraction": 0.4332109637170334,
+            "directed_membership_fraction": 0.4381209672017683,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 1716,
+                "direction_changed_pairs": 1716,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 1716,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 8918,
+                "direction_changed_pairs": 6033,
+                "sign_flips": 246,
+                "appeared": 5787,
+                "vanished": 0,
+                "same_sign_weight_changed": 885
+              },
+              "75": {
+                "union_penalized_pairs": 11857,
+                "direction_changed_pairs": 5763,
+                "sign_flips": 121,
+                "appeared": 5642,
+                "vanished": 0,
+                "same_sign_weight_changed": 3843
+              },
+              "100": {
+                "union_penalized_pairs": 21910,
+                "direction_changed_pairs": 5723,
+                "sign_flips": 21,
+                "appeared": 5702,
+                "vanished": 0,
+                "same_sign_weight_changed": 9075
+              }
+            }
+          }
+        },
+        {
+          "step": 1152,
+          "moves": 9876693,
+          "penalized_directed_edges": 46062,
+          "field_sha256": "f402949c788da0db9e82d9203affe05bd1cce5d9ad93b3e4c6cc5eadd46dfd89",
+          "churn": {
+            "union_penalized_pairs": 46779,
+            "direction_changed_pairs": 4852,
+            "sign_flips": 41,
+            "appeared": 4094,
+            "vanished": 717,
+            "same_sign_weight_changed": 12602,
+            "pair_fraction": 0.10372175548857393,
+            "directed_membership_fraction": 0.10450662110209312,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 717,
+                "direction_changed_pairs": 717,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 717,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 5711,
+                "direction_changed_pairs": 2532,
+                "sign_flips": 37,
+                "appeared": 2495,
+                "vanished": 0,
+                "same_sign_weight_changed": 283
+              },
+              "75": {
+                "union_penalized_pairs": 11071,
+                "direction_changed_pairs": 1496,
+                "sign_flips": 4,
+                "appeared": 1492,
+                "vanished": 0,
+                "same_sign_weight_changed": 4829
+              },
+              "100": {
+                "union_penalized_pairs": 29280,
+                "direction_changed_pairs": 107,
+                "sign_flips": 0,
+                "appeared": 107,
+                "vanished": 0,
+                "same_sign_weight_changed": 7490
+              }
+            }
+          }
+        },
+        {
+          "step": 1664,
+          "moves": 14544133,
+          "penalized_directed_edges": 47197,
+          "field_sha256": "6ffde9505d29d4d876491aa8729694264be3f60a7bb467f65d7cb40978f0ed0c",
+          "churn": {
+            "union_penalized_pairs": 47640,
+            "direction_changed_pairs": 2027,
+            "sign_flips": 6,
+            "appeared": 1578,
+            "vanished": 443,
+            "same_sign_weight_changed": 7440,
+            "pair_fraction": 0.04254827875734677,
+            "directed_membership_fraction": 0.04266884943122193,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 443,
+                "direction_changed_pairs": 443,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 443,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 4390,
+                "direction_changed_pairs": 1315,
+                "sign_flips": 6,
+                "appeared": 1309,
+                "vanished": 0,
+                "same_sign_weight_changed": 258
+              },
+              "75": {
+                "union_penalized_pairs": 9032,
+                "direction_changed_pairs": 236,
+                "sign_flips": 0,
+                "appeared": 236,
+                "vanished": 0,
+                "same_sign_weight_changed": 2536
+              },
+              "100": {
+                "union_penalized_pairs": 33775,
+                "direction_changed_pairs": 33,
+                "sign_flips": 0,
+                "appeared": 33,
+                "vanished": 0,
+                "same_sign_weight_changed": 4646
+              }
+            }
+          }
+        },
+        {
+          "step": 2176,
+          "moves": 19221254,
+          "penalized_directed_edges": 47813,
+          "field_sha256": "e4afb8502b7a0856c3aeeceacbc6fdfeeaa030dcb6e90a923a4db5d3033800a1",
+          "churn": {
+            "union_penalized_pairs": 48054,
+            "direction_changed_pairs": 1106,
+            "sign_flips": 8,
+            "appeared": 857,
+            "vanished": 241,
+            "same_sign_weight_changed": 4399,
+            "pair_fraction": 0.023015773921005536,
+            "directed_membership_fraction": 0.023178394573675667,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 241,
+                "direction_changed_pairs": 241,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 241,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3675,
+                "direction_changed_pairs": 739,
+                "sign_flips": 8,
+                "appeared": 731,
+                "vanished": 0,
+                "same_sign_weight_changed": 161
+              },
+              "75": {
+                "union_penalized_pairs": 7811,
+                "direction_changed_pairs": 100,
+                "sign_flips": 0,
+                "appeared": 100,
+                "vanished": 0,
+                "same_sign_weight_changed": 1536
+              },
+              "100": {
+                "union_penalized_pairs": 36327,
+                "direction_changed_pairs": 26,
+                "sign_flips": 0,
+                "appeared": 26,
+                "vanished": 0,
+                "same_sign_weight_changed": 2702
+              }
+            }
+          }
+        },
+        {
+          "step": 2688,
+          "moves": 23897911,
+          "penalized_directed_edges": 48118,
+          "field_sha256": "e3991a21d7af9e69fc8de1738f89872dce3e1a6c26227a87863024d7d2500977",
+          "churn": {
+            "union_penalized_pairs": 48302,
+            "direction_changed_pairs": 673,
+            "sign_flips": 0,
+            "appeared": 489,
+            "vanished": 184,
+            "same_sign_weight_changed": 2797,
+            "pair_fraction": 0.013933170469131713,
+            "directed_membership_fraction": 0.013933170469131713,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 184,
+                "direction_changed_pairs": 184,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 184,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3311,
+                "direction_changed_pairs": 459,
+                "sign_flips": 0,
+                "appeared": 459,
+                "vanished": 0,
+                "same_sign_weight_changed": 167
+              },
+              "75": {
+                "union_penalized_pairs": 6918,
+                "direction_changed_pairs": 16,
+                "sign_flips": 0,
+                "appeared": 16,
+                "vanished": 0,
+                "same_sign_weight_changed": 944
+              },
+              "100": {
+                "union_penalized_pairs": 37889,
+                "direction_changed_pairs": 14,
+                "sign_flips": 0,
+                "appeared": 14,
+                "vanished": 0,
+                "same_sign_weight_changed": 1686
+              }
+            }
+          }
+        },
+        {
+          "step": 3200,
+          "moves": 28583639,
+          "penalized_directed_edges": 48326,
+          "field_sha256": "c22aa11da187ef38f2a0689a2f72eb698ccb27102ef96121eabaf2e6dba010fd",
+          "churn": {
+            "union_penalized_pairs": 48489,
+            "direction_changed_pairs": 535,
+            "sign_flips": 1,
+            "appeared": 371,
+            "vanished": 163,
+            "same_sign_weight_changed": 1962,
+            "pair_fraction": 0.011033430262533771,
+            "directed_membership_fraction": 0.011053825531037327,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 163,
+                "direction_changed_pairs": 163,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 163,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3037,
+                "direction_changed_pairs": 357,
+                "sign_flips": 1,
+                "appeared": 356,
+                "vanished": 0,
+                "same_sign_weight_changed": 129
+              },
+              "75": {
+                "union_penalized_pairs": 6432,
+                "direction_changed_pairs": 11,
+                "sign_flips": 0,
+                "appeared": 11,
+                "vanished": 0,
+                "same_sign_weight_changed": 733
+              },
+              "100": {
+                "union_penalized_pairs": 38857,
+                "direction_changed_pairs": 4,
+                "sign_flips": 0,
+                "appeared": 4,
+                "vanished": 0,
+                "same_sign_weight_changed": 1100
+              }
+            }
+          }
+        },
+        {
+          "step": 3712,
+          "moves": 33264150,
+          "penalized_directed_edges": 48463,
+          "field_sha256": "f8aff35f459635a20c79601e5db17a556b95fcc4270dce4f4d1e4cb2d9673f83",
+          "churn": {
+            "union_penalized_pairs": 48593,
+            "direction_changed_pairs": 397,
+            "sign_flips": 0,
+            "appeared": 267,
+            "vanished": 130,
+            "same_sign_weight_changed": 1677,
+            "pair_fraction": 0.008169901014549421,
+            "directed_membership_fraction": 0.008169901014549421,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 130,
+                "direction_changed_pairs": 130,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 130,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2828,
+                "direction_changed_pairs": 255,
+                "sign_flips": 0,
+                "appeared": 255,
+                "vanished": 0,
+                "same_sign_weight_changed": 146
+              },
+              "75": {
+                "union_penalized_pairs": 5932,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 586
+              },
+              "100": {
+                "union_penalized_pairs": 39703,
+                "direction_changed_pairs": 7,
+                "sign_flips": 0,
+                "appeared": 7,
+                "vanished": 0,
+                "same_sign_weight_changed": 945
+              }
+            }
+          }
+        },
+        {
+          "step": 4224,
+          "moves": 37944232,
+          "penalized_directed_edges": 48583,
+          "field_sha256": "54f16b82970c8368632661c0f3fe1aafd574bc6815a866d757d8ec6ee25a331d",
+          "churn": {
+            "union_penalized_pairs": 48715,
+            "direction_changed_pairs": 384,
+            "sign_flips": 0,
+            "appeared": 252,
+            "vanished": 132,
+            "same_sign_weight_changed": 1138,
+            "pair_fraction": 0.007882582366827465,
+            "directed_membership_fraction": 0.007882582366827465,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 132,
+                "direction_changed_pairs": 132,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 132,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2691,
+                "direction_changed_pairs": 240,
+                "sign_flips": 0,
+                "appeared": 240,
+                "vanished": 0,
+                "same_sign_weight_changed": 89
+              },
+              "75": {
+                "union_penalized_pairs": 5676,
+                "direction_changed_pairs": 8,
+                "sign_flips": 0,
+                "appeared": 8,
+                "vanished": 0,
+                "same_sign_weight_changed": 437
+              },
+              "100": {
+                "union_penalized_pairs": 40216,
+                "direction_changed_pairs": 4,
+                "sign_flips": 0,
+                "appeared": 4,
+                "vanished": 0,
+                "same_sign_weight_changed": 612
+              }
+            }
+          }
+        },
+        {
+          "step": 4736,
+          "moves": 42612753,
+          "penalized_directed_edges": 48687,
+          "field_sha256": "1b83d876b37ef7c14f0e27ba1b616179198a6829a72ac7c9d5b6d553d99a0ed6",
+          "churn": {
+            "union_penalized_pairs": 48817,
+            "direction_changed_pairs": 364,
+            "sign_flips": 0,
+            "appeared": 234,
+            "vanished": 130,
+            "same_sign_weight_changed": 1019,
+            "pair_fraction": 0.007456418870475449,
+            "directed_membership_fraction": 0.007456418870475449,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 130,
+                "direction_changed_pairs": 130,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 130,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2536,
+                "direction_changed_pairs": 216,
+                "sign_flips": 0,
+                "appeared": 216,
+                "vanished": 0,
+                "same_sign_weight_changed": 91
+              },
+              "75": {
+                "union_penalized_pairs": 5487,
+                "direction_changed_pairs": 10,
+                "sign_flips": 0,
+                "appeared": 10,
+                "vanished": 0,
+                "same_sign_weight_changed": 410
+              },
+              "100": {
+                "union_penalized_pairs": 40664,
+                "direction_changed_pairs": 8,
+                "sign_flips": 0,
+                "appeared": 8,
+                "vanished": 0,
+                "same_sign_weight_changed": 518
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-graded-turn128-full-v39-20260919/flow4_scale4_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "tasks": 139303,
+      "seed": 2,
+      "margin": 25,
+      "strength": 4,
+      "base": 4,
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "all_publication_move_and_penalized_counts_match": true,
+      "full_replayed_actions_match_movement_counters": true,
+      "publications": [
+        {
+          "step": 128,
+          "moves": 961325,
+          "penalized_directed_edges": 27493,
+          "field_sha256": "6f5b290c9ca4d98dbd4395dbbebf26c2747d5172a777ebf42df425bf69e49e41"
+        },
+        {
+          "step": 640,
+          "moves": 5346388,
+          "penalized_directed_edges": 43509,
+          "field_sha256": "5d13498e5e413c5e322d204a77ec5881efce54a10d98ef27dd59bcb2050f2d42",
+          "churn": {
+            "union_penalized_pairs": 45008,
+            "direction_changed_pairs": 19390,
+            "sign_flips": 376,
+            "appeared": 17515,
+            "vanished": 1499,
+            "same_sign_weight_changed": 13935,
+            "pair_fraction": 0.4308123000355492,
+            "directed_membership_fraction": 0.43552793936188966,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 1499,
+                "direction_changed_pairs": 1499,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 1499,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 8174,
+                "direction_changed_pairs": 5723,
+                "sign_flips": 245,
+                "appeared": 5478,
+                "vanished": 0,
+                "same_sign_weight_changed": 643
+              },
+              "75": {
+                "union_penalized_pairs": 11292,
+                "direction_changed_pairs": 5321,
+                "sign_flips": 81,
+                "appeared": 5240,
+                "vanished": 0,
+                "same_sign_weight_changed": 3783
+              },
+              "100": {
+                "union_penalized_pairs": 24043,
+                "direction_changed_pairs": 6847,
+                "sign_flips": 50,
+                "appeared": 6797,
+                "vanished": 0,
+                "same_sign_weight_changed": 9509
+              }
+            }
+          }
+        },
+        {
+          "step": 1152,
+          "moves": 10008283,
+          "penalized_directed_edges": 46567,
+          "field_sha256": "7e490f55d7348d954cc4107c07d49a726acfff0a745d300686dd9444581dc16b",
+          "churn": {
+            "union_penalized_pairs": 47117,
+            "direction_changed_pairs": 4176,
+            "sign_flips": 18,
+            "appeared": 3608,
+            "vanished": 550,
+            "same_sign_weight_changed": 12196,
+            "pair_fraction": 0.0886304306301335,
+            "directed_membership_fraction": 0.0889784661079877,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 550,
+                "direction_changed_pairs": 550,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 550,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 5210,
+                "direction_changed_pairs": 2346,
+                "sign_flips": 15,
+                "appeared": 2331,
+                "vanished": 0,
+                "same_sign_weight_changed": 300
+              },
+              "75": {
+                "union_penalized_pairs": 10217,
+                "direction_changed_pairs": 1143,
+                "sign_flips": 3,
+                "appeared": 1140,
+                "vanished": 0,
+                "same_sign_weight_changed": 4696
+              },
+              "100": {
+                "union_penalized_pairs": 31140,
+                "direction_changed_pairs": 137,
+                "sign_flips": 0,
+                "appeared": 137,
+                "vanished": 0,
+                "same_sign_weight_changed": 7200
+              }
+            }
+          }
+        },
+        {
+          "step": 1664,
+          "moves": 14700966,
+          "penalized_directed_edges": 47548,
+          "field_sha256": "c0d687edef48e220e689f682f9082bc891c8a88c3be3b89d85b0c8256b9aa19c",
+          "churn": {
+            "union_penalized_pairs": 47887,
+            "direction_changed_pairs": 1664,
+            "sign_flips": 5,
+            "appeared": 1320,
+            "vanished": 339,
+            "same_sign_weight_changed": 6826,
+            "pair_fraction": 0.03474847035729948,
+            "directed_membership_fraction": 0.034849244132631754,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 339,
+                "direction_changed_pairs": 339,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 339,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3937,
+                "direction_changed_pairs": 1116,
+                "sign_flips": 5,
+                "appeared": 1111,
+                "vanished": 0,
+                "same_sign_weight_changed": 211
+              },
+              "75": {
+                "union_penalized_pairs": 8477,
+                "direction_changed_pairs": 163,
+                "sign_flips": 0,
+                "appeared": 163,
+                "vanished": 0,
+                "same_sign_weight_changed": 2453
+              },
+              "100": {
+                "union_penalized_pairs": 35134,
+                "direction_changed_pairs": 46,
+                "sign_flips": 0,
+                "appeared": 46,
+                "vanished": 0,
+                "same_sign_weight_changed": 4162
+              }
+            }
+          }
+        },
+        {
+          "step": 2176,
+          "moves": 19390849,
+          "penalized_directed_edges": 48056,
+          "field_sha256": "3ba81e053f387681a40854c0d2a0bf4ba920b5e66f8cf748cebefd14a6b0ee3d",
+          "churn": {
+            "union_penalized_pairs": 48275,
+            "direction_changed_pairs": 949,
+            "sign_flips": 3,
+            "appeared": 727,
+            "vanished": 219,
+            "same_sign_weight_changed": 3950,
+            "pair_fraction": 0.01965820818228897,
+            "directed_membership_fraction": 0.01971912672438792,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 219,
+                "direction_changed_pairs": 219,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 219,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3341,
+                "direction_changed_pairs": 634,
+                "sign_flips": 3,
+                "appeared": 631,
+                "vanished": 0,
+                "same_sign_weight_changed": 180
+              },
+              "75": {
+                "union_penalized_pairs": 7243,
+                "direction_changed_pairs": 62,
+                "sign_flips": 0,
+                "appeared": 62,
+                "vanished": 0,
+                "same_sign_weight_changed": 1325
+              },
+              "100": {
+                "union_penalized_pairs": 37472,
+                "direction_changed_pairs": 34,
+                "sign_flips": 0,
+                "appeared": 34,
+                "vanished": 0,
+                "same_sign_weight_changed": 2445
+              }
+            }
+          }
+        },
+        {
+          "step": 2688,
+          "moves": 24079367,
+          "penalized_directed_edges": 48332,
+          "field_sha256": "98f123fd408a296e98c667a5c2c69d1a754264b9270ecfa97e610c85af84ea27",
+          "churn": {
+            "union_penalized_pairs": 48528,
+            "direction_changed_pairs": 669,
+            "sign_flips": 1,
+            "appeared": 472,
+            "vanished": 196,
+            "same_sign_weight_changed": 2582,
+            "pair_fraction": 0.013785855588526212,
+            "directed_membership_fraction": 0.013806177749386965,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 196,
+                "direction_changed_pairs": 196,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 196,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 3000,
+                "direction_changed_pairs": 444,
+                "sign_flips": 1,
+                "appeared": 443,
+                "vanished": 0,
+                "same_sign_weight_changed": 127
+              },
+              "75": {
+                "union_penalized_pairs": 6324,
+                "direction_changed_pairs": 19,
+                "sign_flips": 0,
+                "appeared": 19,
+                "vanished": 0,
+                "same_sign_weight_changed": 822
+              },
+              "100": {
+                "union_penalized_pairs": 39008,
+                "direction_changed_pairs": 10,
+                "sign_flips": 0,
+                "appeared": 10,
+                "vanished": 0,
+                "same_sign_weight_changed": 1633
+              }
+            }
+          }
+        },
+        {
+          "step": 3200,
+          "moves": 28770949,
+          "penalized_directed_edges": 48575,
+          "field_sha256": "40a0d99a8494536c6388f3bd07729b903b92f8e99227d4ae4cb2b42fdeb8da8e",
+          "churn": {
+            "union_penalized_pairs": 48701,
+            "direction_changed_pairs": 495,
+            "sign_flips": 0,
+            "appeared": 369,
+            "vanished": 126,
+            "same_sign_weight_changed": 1775,
+            "pair_fraction": 0.01016406233958235,
+            "directed_membership_fraction": 0.01016406233958235,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 126,
+                "direction_changed_pairs": 126,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 126,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2839,
+                "direction_changed_pairs": 352,
+                "sign_flips": 0,
+                "appeared": 352,
+                "vanished": 0,
+                "same_sign_weight_changed": 122
+              },
+              "75": {
+                "union_penalized_pairs": 5789,
+                "direction_changed_pairs": 12,
+                "sign_flips": 0,
+                "appeared": 12,
+                "vanished": 0,
+                "same_sign_weight_changed": 614
+              },
+              "100": {
+                "union_penalized_pairs": 39947,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 1039
+              }
+            }
+          }
+        },
+        {
+          "step": 3712,
+          "moves": 33458156,
+          "penalized_directed_edges": 48727,
+          "field_sha256": "a44c51af781d549dc1194b724ba32a0fa7e18a423bc79b07462cbac56efb0da1",
+          "churn": {
+            "union_penalized_pairs": 48855,
+            "direction_changed_pairs": 408,
+            "sign_flips": 0,
+            "appeared": 280,
+            "vanished": 128,
+            "same_sign_weight_changed": 1506,
+            "pair_fraction": 0.008351243475591035,
+            "directed_membership_fraction": 0.008351243475591035,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 128,
+                "direction_changed_pairs": 128,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 128,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2608,
+                "direction_changed_pairs": 267,
+                "sign_flips": 0,
+                "appeared": 267,
+                "vanished": 0,
+                "same_sign_weight_changed": 105
+              },
+              "75": {
+                "union_penalized_pairs": 5471,
+                "direction_changed_pairs": 10,
+                "sign_flips": 0,
+                "appeared": 10,
+                "vanished": 0,
+                "same_sign_weight_changed": 589
+              },
+              "100": {
+                "union_penalized_pairs": 40648,
+                "direction_changed_pairs": 3,
+                "sign_flips": 0,
+                "appeared": 3,
+                "vanished": 0,
+                "same_sign_weight_changed": 812
+              }
+            }
+          }
+        },
+        {
+          "step": 4224,
+          "moves": 38146141,
+          "penalized_directed_edges": 48900,
+          "field_sha256": "0c52e7d782da8af055a306a3c41da7833c1e802ad3d9e975546b5bf23b46f82f",
+          "churn": {
+            "union_penalized_pairs": 48989,
+            "direction_changed_pairs": 351,
+            "sign_flips": 0,
+            "appeared": 262,
+            "vanished": 89,
+            "same_sign_weight_changed": 1178,
+            "pair_fraction": 0.007164873747167732,
+            "directed_membership_fraction": 0.007164873747167732,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 89,
+                "direction_changed_pairs": 89,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 89,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2543,
+                "direction_changed_pairs": 251,
+                "sign_flips": 0,
+                "appeared": 251,
+                "vanished": 0,
+                "same_sign_weight_changed": 106
+              },
+              "75": {
+                "union_penalized_pairs": 5130,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 416
+              },
+              "100": {
+                "union_penalized_pairs": 41227,
+                "direction_changed_pairs": 6,
+                "sign_flips": 0,
+                "appeared": 6,
+                "vanished": 0,
+                "same_sign_weight_changed": 656
+              }
+            }
+          }
+        },
+        {
+          "step": 4736,
+          "moves": 42818634,
+          "penalized_directed_edges": 49014,
+          "field_sha256": "6bf1f5f1f658994305d67b1f1397619876257570912c9a7aa1d4d2953e4002d9",
+          "churn": {
+            "union_penalized_pairs": 49081,
+            "direction_changed_pairs": 248,
+            "sign_flips": 0,
+            "appeared": 181,
+            "vanished": 67,
+            "same_sign_weight_changed": 966,
+            "pair_fraction": 0.005052871783378497,
+            "directed_membership_fraction": 0.005052871783378497,
+            "dominance_buckets_upper_inclusive_percent": {
+              "25": {
+                "union_penalized_pairs": 67,
+                "direction_changed_pairs": 67,
+                "sign_flips": 0,
+                "appeared": 0,
+                "vanished": 67,
+                "same_sign_weight_changed": 0
+              },
+              "50": {
+                "union_penalized_pairs": 2412,
+                "direction_changed_pairs": 173,
+                "sign_flips": 0,
+                "appeared": 173,
+                "vanished": 0,
+                "same_sign_weight_changed": 69
+              },
+              "75": {
+                "union_penalized_pairs": 4979,
+                "direction_changed_pairs": 3,
+                "sign_flips": 0,
+                "appeared": 3,
+                "vanished": 0,
+                "same_sign_weight_changed": 406
+              },
+              "100": {
+                "union_penalized_pairs": 41623,
+                "direction_changed_pairs": 5,
+                "sign_flips": 0,
+                "appeared": 5,
+                "vanished": 0,
+                "same_sign_weight_changed": 491
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "checked_utc": "2026-09-19T16:37:58.031112+00:00",
+  "source_report": "experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json",
+  "source_report_sha256": "7c204fd1b92adbf88f3a84518da2de4718de7ded0c94e6d0920be2dc3bdd667d",
+  "script_sha256": "96a3dd5768a974c622806467af741abd76b9eab2e593dbcccecfcf9b5ccd4f17",
+  "scope": "Complete scheduler plus planner wall latency, 5000 samples per run. CPU is whole-process user+system time divided by wall time, including simulator, startup and logging; not a sampled instantaneous CPU value. RSS is the whole-process high-water mark. Quantiles use nearest rank.",
+  "rows": [
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "seed": 0,
+      "tasks": 137149,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-full-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-full-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s0-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 250.21824877619986,
+        "p50_ms": 226.795794,
+        "p90_ms": 447.871396,
+        "p95_ms": 506.721155,
+        "p99_ms": 545.552866,
+        "max_ms": 871.954329
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 286,
+      "average_cpu_cores": 1.190158546312434,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.75396365781085,
+      "peak_rss_bytes": 11362643968,
+      "wall_seconds": 1325.352
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s1-r0",
+      "seed": 1,
+      "tasks": 138572,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-confirm-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s1-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 265.13461302819934,
+        "p50_ms": 242.406557,
+        "p90_ms": 460.81861499999997,
+        "p95_ms": 518.994604,
+        "p99_ms": 557.066269,
+        "max_ms": 860.7395300000001
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 340,
+      "average_cpu_cores": 1.182533517258721,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.563337931468027,
+      "peak_rss_bytes": 11493904384,
+      "wall_seconds": 1399.417
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "seed": 2,
+      "tasks": 139037,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-full-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-full-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s2-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 251.21133802059967,
+        "p50_ms": 225.67683499999998,
+        "p90_ms": 455.42548100000005,
+        "p95_ms": 505.66690000000006,
+        "p99_ms": 543.7638489999999,
+        "max_ms": 837.5922959999999
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 288,
+      "average_cpu_cores": 1.1921172419432255,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.80293104858064,
+      "peak_rss_bytes": 11932200960,
+      "wall_seconds": 1330.44
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s3-r0",
+      "seed": 3,
+      "tasks": 137535,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-confirm-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s3-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 241.2683560370009,
+        "p50_ms": 214.00534199999998,
+        "p90_ms": 449.476695,
+        "p95_ms": 489.44877799999995,
+        "p99_ms": 528.5182510000001,
+        "max_ms": 867.083313
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 194,
+      "average_cpu_cores": 1.1983025909834277,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 29.957564774585695,
+      "peak_rss_bytes": 11428274176,
+      "wall_seconds": 1280.215
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s4-r0",
+      "seed": 4,
+      "tasks": 137875,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-confirm-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s4-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 227.99283078260004,
+        "p50_ms": 197.26949299999998,
+        "p90_ms": 434.77840299999997,
+        "p95_ms": 470.463058,
+        "p99_ms": 507.008719,
+        "max_ms": 865.555955
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 76,
+      "average_cpu_cores": 1.2104319958234333,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 30.260799895585833,
+      "peak_rss_bytes": 11906482176,
+      "wall_seconds": 1213.893
+    },
+    {
+      "case": "flow1_margin25_refresh512_turnbuild128_work4m_prep4-s5-r0",
+      "seed": 5,
+      "tasks": 138457,
+      "evidence": "experiments/construction-20260918/results/flow-turn-interaction-confirm-v39",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-turn-interaction-confirm-v39-20260919/flow1_margin25_refresh512_turnbuild128_work4m_prep4-s5-r0",
+      "binary_sha256": "62b9fd589cd6f60b46aeb780f1a54f76f2a92dcedbd991aa65bed22d3841be78",
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 233.70808257560037,
+        "p50_ms": 204.535413,
+        "p90_ms": 441.335353,
+        "p95_ms": 482.340642,
+        "p99_ms": 520.8087340000001,
+        "max_ms": 854.8965400000001
+      },
+      "slowest_step_zero_based": 0,
+      "steps_over_500ms": 134,
+      "average_cpu_cores": 1.211732792930992,
+      "reserved_physical_cores": 4,
+      "allocation_utilization_percent": 30.2933198232748,
+      "peak_rss_bytes": 11933102080,
+      "wall_seconds": 1242.191
+    }
+  ]
+}

@@ -220,3 +220,49 @@ It uses existing validated generic configuration, with no map rule. Full paired
 results are required. Margin25 has now independently passed all six seeds with
 mean136426.2 (+1.364%), all totals/final windows improved; this completed update
 postdates the payload's two-seed status.
+
+
+## Turn09: pickup-flow review
+
+Completed2026-09-19 16:34:51UTC in the same session, Fable5.1 max, source
+[eb5b382](https://github.com/fywu85/lorr/commit/eb5b3827b9daf9f91aba88c78bef7be0d17cd07c).
+Four changed excerpts,46617bytes,262.410seconds, actual25.497911USD. The CLI's
+requested12USD setting is not a reliable hard cap. No tool use, errors or denials.
+[Visible review](turn09/review.md), [metadata](turn09/metadata.json).
+
+Fable found no reproducible correctness bug. Its checks of settled cell minima,
+stale-pop accounting, scratch reuse, cost units and last-published field/table
+lifecycle agree with the implementation and our independent regressions. It ran
+no tests. Its mixed cached/exact versus uncached/approximate fallback example is
+a real approximation risk, already within the documented policy limits.
+
+Two claims require qualification. Cached fallback probes are not necessarily a
+minority: the running HRRN1 cases at t2200 have roughly96% cached probes. This is
+an intermediate diagnostic, not a full-run performance claim or an assignment
+selection share. Its estimate that the new search explores half as many cells is
+not measured; compare actual searches/cells/limits on complete matched runs.
+The claim that flow is the only source of gains ignores prior temporal and table
+allowance improvements. A shortage of exact counterfactual shortlist logs still
+prevents causal attribution from aggregate task counts alone.
+
+Per-robot work is bounded, but total work grows with the number of free robots.
+The hypothetical mass-free event is not a reproduced timeout. Preserve explicit
+whole-entry failure; do not add a map-specific robot cap merely from this concern.
+`limited` can include an all-stale remaining heap; its defined meaning is exhaustion
+of the heap-pop allowance, not proof that an unsettled reachable cell remains.
+
+A new offline audit reconstructs every cumulative field publication on the four
+completed graded runs and measures direction/weight changes. GRID8898800 runs
+flow_churn_audit.py; compare pre-decline churn before considering sign hysteresis.
+It verifies move and penalized-edge counts plus full movement totals, but production
+has no full field hashes, so those aggregate matches are not exact field-hash
+verification. Fable's10% rejection tolerance and target scores are heuristic
+suggestions, not measured statistical thresholds or required approval gates.
+
+
+The churn audit completed successfully: all40 publications and all four full
+movement totals match production counters. At first refresh640, collapsed margin0
+seed0 exceeds healthy seed2's pair churn by3.87% and sign flips by7.50%; later its
+churn is lower. This does not support the simple large-global-churn precursor,
+so no hysteresis change is made. Localized harm is still an untested possibility.
+See [churn assessment](../FLOW_CHURN.md).

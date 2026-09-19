@@ -1,0 +1,205 @@
+{
+  "scope": "Observational replay of four complete graded-cost warehouse runs, ten publications each; every move/penalized count and full movement-action total matches production diagnostics.",
+  "rows": [
+    {
+      "margin": 0,
+      "seed": 0,
+      "tasks": 56537,
+      "completed_per_1000": [
+        20744,
+        17188,
+        7324,
+        5511,
+        5770
+      ],
+      "first_transition_step": 640,
+      "first_pair_churn_fraction": 0.33179401063532044,
+      "first_sign_flips": 3614,
+      "later_pair_churn": [
+        {
+          "step": 1152,
+          "fraction": 0.042591125198098254
+        },
+        {
+          "step": 1664,
+          "fraction": 0.02087200347537617
+        },
+        {
+          "step": 2176,
+          "fraction": 0.010417488753847367
+        },
+        {
+          "step": 2688,
+          "fraction": 0.0062133854074205574
+        },
+        {
+          "step": 3200,
+          "fraction": 0.004713910968225479
+        },
+        {
+          "step": 3712,
+          "fraction": 0.003806631032918483
+        },
+        {
+          "step": 4224,
+          "fraction": 0.0033126947194068697
+        },
+        {
+          "step": 4736,
+          "fraction": 0.0031935655568040688
+        }
+      ]
+    },
+    {
+      "margin": 0,
+      "seed": 2,
+      "tasks": 139796,
+      "completed_per_1000": [
+        23466,
+        29009,
+        29053,
+        29087,
+        29181
+      ],
+      "first_transition_step": 640,
+      "first_pair_churn_fraction": 0.3194177863083813,
+      "first_sign_flips": 3362,
+      "later_pair_churn": [
+        {
+          "step": 1152,
+          "fraction": 0.03558958895413426
+        },
+        {
+          "step": 1664,
+          "fraction": 0.018009291291884947
+        },
+        {
+          "step": 2176,
+          "fraction": 0.011852640713130596
+        },
+        {
+          "step": 2688,
+          "fraction": 0.007857269451172683
+        },
+        {
+          "step": 3200,
+          "fraction": 0.006312932662051605
+        },
+        {
+          "step": 3712,
+          "fraction": 0.004971311797532028
+        },
+        {
+          "step": 4224,
+          "fraction": 0.0041633935585231735
+        },
+        {
+          "step": 4736,
+          "fraction": 0.004082834429286485
+        }
+      ]
+    },
+    {
+      "margin": 25,
+      "seed": 0,
+      "tasks": 138402,
+      "completed_per_1000": [
+        22424,
+        28868,
+        29016,
+        29022,
+        29072
+      ],
+      "first_transition_step": 640,
+      "first_pair_churn_fraction": 0.4332109637170334,
+      "first_sign_flips": 388,
+      "later_pair_churn": [
+        {
+          "step": 1152,
+          "fraction": 0.10372175548857393
+        },
+        {
+          "step": 1664,
+          "fraction": 0.04254827875734677
+        },
+        {
+          "step": 2176,
+          "fraction": 0.023015773921005536
+        },
+        {
+          "step": 2688,
+          "fraction": 0.013933170469131713
+        },
+        {
+          "step": 3200,
+          "fraction": 0.011033430262533771
+        },
+        {
+          "step": 3712,
+          "fraction": 0.008169901014549421
+        },
+        {
+          "step": 4224,
+          "fraction": 0.007882582366827465
+        },
+        {
+          "step": 4736,
+          "fraction": 0.007456418870475449
+        }
+      ]
+    },
+    {
+      "margin": 25,
+      "seed": 2,
+      "tasks": 139303,
+      "completed_per_1000": [
+        23140,
+        28993,
+        29052,
+        29058,
+        29060
+      ],
+      "first_transition_step": 640,
+      "first_pair_churn_fraction": 0.4308123000355492,
+      "first_sign_flips": 376,
+      "later_pair_churn": [
+        {
+          "step": 1152,
+          "fraction": 0.0886304306301335
+        },
+        {
+          "step": 1664,
+          "fraction": 0.03474847035729948
+        },
+        {
+          "step": 2176,
+          "fraction": 0.01965820818228897
+        },
+        {
+          "step": 2688,
+          "fraction": 0.013785855588526212
+        },
+        {
+          "step": 3200,
+          "fraction": 0.01016406233958235
+        },
+        {
+          "step": 3712,
+          "fraction": 0.008351243475591035
+        },
+        {
+          "step": 4224,
+          "fraction": 0.007164873747167732
+        },
+        {
+          "step": 4736,
+          "fraction": 0.005052871783378497
+        }
+      ]
+    }
+  ],
+  "first_transition_seed0_relative_pair_churn_excess_percent": 3.8746196540822897,
+  "first_transition_seed0_relative_flip_excess_percent": 7.49553837001784,
+  "hysteresis_change_supported_by_this_audit": false,
+  "interpretation": "At the first refresh640, the collapsed margin0 seed has only3.87% more pair-membership churn and7.50% more sign flips than the healthy seed. Later its churn becomes lower. Healthy margin25 has larger total membership churn but fewer direct sign reversals. This does not support the proposed simple large-global-churn precursor. It does not exclude localized harmful flips, feedback lock-in or other causes; no causal conclusion or new policy is justified by these aggregates."
+}
