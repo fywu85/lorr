@@ -56,3 +56,5 @@ Full8899147/analysis8899148 now compares audited1000ppm versus0ppm on seeds0/2:
 four simultaneous full runs, four physical cores each,16cores/64GiB aggregate,32GB
 processRSS cap. The1000ppm controls must match confirmed regional full hashes.
 No best-selection retention was added; its warehouse value remains unestablished.
+
+All22 frozen V48 source/test hashes match exact commit [8ba2484](https://github.com/fywu85/lorr/commit/8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd).

@@ -31,3 +31,5 @@ four simultaneous cases, eight physical cores each,32cores/64GiB aggregate,32GB
 processRSS cap. Same frozen V48 binary in all cases. Four-region full trajectories
 must reproduce the confirmed regional reference; assess complete totals, tails,
 ages, motion, limits and all cumulative peak counters before accepting any effect.
+
+All22 frozen V48 source/test hashes match exact commit [8ba2484](https://github.com/fywu85/lorr/commit/8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd).

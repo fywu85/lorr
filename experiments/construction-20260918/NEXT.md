@@ -96,7 +96,8 @@ Build8899144 passed every regression; all22 source/test hashes reconstruct from3
 plus build-provenance/v48/source.patch. No active build. Raw
 runs/cgar-regional-peak-audit-build-v48-20260919. Binary:
 7c46c79d3e4885dae07d9f2830365652d954d0b3fb2da1cf86ef87e31511458c.
-V48 needs its exact commit binding after the checkpoint commit.
+V48 is committed as exact8ba2484dd5f1b9bfc719f5f1e8f4533d7543a7bd; all22 source/test hashes
+match that commit. build-provenance/v48/exact-source-commit.json records the binding.
 
 CGAR_TEMPORAL_REGION_PEAK_AUDIT defaults0. It records initial/maximum/final/returned
 scalar score at COMPLETE attempt boundaries, never changes search/RNG/work/output,
