@@ -13,18 +13,19 @@ class FlowGuidance {
 public:
     void initialize(const std::vector<char>& free, int rows, int cols,
                     int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0,
-                    int refresh_interval = 0) {
+                    int refresh_interval = 0, int cost_scale = 1) {
         if (rows < 1 || cols < 1 || free.size() != size_t(rows) * cols ||
             warmup < 1 || warmup > 4096 || strength < 1 || strength > 8 ||
             minimum_samples < 1 || minimum_samples > 65536 ||
             minimum_margin_percent < 0 || minimum_margin_percent > 100 ||
-            refresh_interval < 0 || refresh_interval > 4096)
+            refresh_interval < 0 || refresh_interval > 4096 ||
+            (cost_scale != 1 && cost_scale != 2 && cost_scale != 4 && cost_scale != 8))
             throw std::invalid_argument("invalid learned flow configuration");
         free_ = free; rows_ = rows; cols_ = cols; warmup_ = warmup;
         strength_ = strength; minimum_samples_ = minimum_samples; minimum_margin_percent_ = minimum_margin_percent;
         counts_.assign(free.size() * 4, 0); costs_.clear(); previous_.clear();
         last_step_ = -1; samples_ = 0; frozen_ = false;
-        moves_ = 0; penalized_edges_ = 0; refresh_interval_ = refresh_interval;
+        moves_ = 0; penalized_edges_ = 0; refresh_interval_ = refresh_interval; cost_scale_ = cost_scale;
         publications_ = last_publication_samples_ = 0;
     }
 
@@ -51,7 +52,7 @@ public:
         // A skipped observation never invents intermediate movement.
         previous_ = locations; last_step_ = timestep;
         if (samples_ < warmup_ || (publications_ && samples_ - last_publication_samples_ < refresh_interval_)) return false;
-        std::vector<uint8_t> next_costs(free_.size() * 4, 1);
+        std::vector<uint8_t> next_costs(free_.size() * 4, cost_scale_);
         int next_penalized = 0;
         for (int u = 0; u < int(free_.size()); ++u) if (free_[u])
             for (int dir = 0; dir < 4; ++dir) {
@@ -82,6 +83,7 @@ public:
     int minimum_margin_percent() const { return minimum_margin_percent_; }
     int refresh_interval() const { return refresh_interval_; }
     int publications() const { return publications_; }
+    int cost_scale() const { return cost_scale_; }
 
 private:
     int neighbor(int u, int dir) const {
@@ -92,7 +94,7 @@ private:
     }
     int rows_ = 0, cols_ = 0, warmup_ = 0, strength_ = 0, minimum_samples_ = 0;
     int last_step_ = -1, samples_ = 0, penalized_edges_ = 0, minimum_margin_percent_ = 0;
-    int refresh_interval_ = 0, publications_ = 0, last_publication_samples_ = 0;
+    int refresh_interval_ = 0, publications_ = 0, last_publication_samples_ = 0, cost_scale_ = 1;
     bool frozen_ = false;
     uint64_t moves_ = 0;
     std::vector<char> free_;

@@ -91,7 +91,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const auto* oriented = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? turn_oracle_.find(goal) : prepared_oriented[i]);
             if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
             const bool guided = guide_enabled_ && guide_routes_.guided(i);
-            const int robot_turn_cost = oriented && !guided ? turn_cost_ : 1;
+            const int robot_turn_cost = (oriented && !guided ? turn_cost_ : 1) * flow_cost_scale_;
             if (goal >= 0) { if (oriented) ++prepared_metrics[worker][0]; else ++prepared_metrics[worker][1]; }
             auto original_distance = [&](int cell, int direction) {
                 if (goal < 0) return 0;
@@ -99,9 +99,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     const int d = turn_oracle_.value(*oriented, cell, direction);
                     if (d < kInf) return d;
                 }
-                return TemporalGeometry::fallback_distance(cell, direction, kInf,
+                const int d = TemporalGeometry::fallback_distance(cell, direction, kInf,
                     [&](int u) { return spatial ? oracle_.value(*spatial, u) : oracle_.manhattan(u, goal); },
                     [&](int u, int dir) { const int to = neighbor(u, dir); return to >= 0 && cert_.free[to] ? to : -1; });
+                return d >= kInf ? kInf : int(std::min<int64_t>(kInf - 1, int64_t(d) * flow_cost_scale_));
             };
             auto distance = [&](int cell, int direction) {
                 const int state = cell * 4 + direction;
@@ -116,8 +117,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
                     TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
                         return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
-                    }) : 0;
-                return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_) +
+                    }, flow_cost_scale_) : 0;
+                return TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_, flow_cost_scale_) +
                        int64_t(extra) * temporal_distance_scale_;
             };
             priorities[i] = goal < 0 ? kInf : original_distance(loc_[i], ori_[i]);
@@ -131,7 +132,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                         const int to = task.locations[k];
                         const auto* table = oracle_.peek(to);
                         const int leg = table ? oracle_.distance_from(*table, from) : oracle_.manhattan(from, to);
-                        priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, int64_t(priorities[i]) + leg));
+                        priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, int64_t(priorities[i]) + int64_t(leg) * flow_cost_scale_));
                         from = to;
                     }
                 }

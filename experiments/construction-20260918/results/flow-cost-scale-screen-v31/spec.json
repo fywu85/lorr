@@ -1,0 +1,156 @@
+{
+  "cases": [
+    {
+      "name": "flow1_margin50_scale1_work4m_prep4-s0-r0",
+      "variant": "flow1_margin50_scale1_work4m_prep4",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "1",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "50",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "0",
+        "CGAR_FLOW_COST_SCALE": "1"
+      }
+    },
+    {
+      "name": "flow1_margin50_scale4_work4m_prep4-s0-r0",
+      "variant": "flow1_margin50_scale4_work4m_prep4",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "1",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "50",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "0",
+        "CGAR_FLOW_COST_SCALE": "4"
+      }
+    },
+    {
+      "name": "flow1_margin50_scale8_work4m_prep4-s0-r0",
+      "variant": "flow1_margin50_scale8_work4m_prep4",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "1",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "50",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "0",
+        "CGAR_FLOW_COST_SCALE": "8"
+      }
+    },
+    {
+      "name": "flow1_neutral_scale8_work4m_prep4-s0-r0",
+      "variant": "flow1_neutral_scale8_work4m_prep4",
+      "seed": 0,
+      "repeat": 0,
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "1",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "100",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "0",
+        "CGAR_FLOW_COST_SCALE": "8"
+      }
+    }
+  ],
+  "build": {
+    "source_commit": "e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1",
+    "source_dirty": true,
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/CompetitionSystem.cpp": "dcb21890b66b8b41fb3b4239dd5ee95fab6c92e006e0d02437e46ffa33d058d6",
+      "cgar/cgar_planner/cgar.cpp": "221323d446abc91f9c6ce70d94693f1750d076e45644c031aac0614e0a0c2dc3",
+      "cgar/cgar_planner/cgar.hpp": "e620bef6901e16087fbd285561f8f7194b348cdc2fbd782acfac47697e659c5f",
+      "cgar/cgar_planner/flow_guidance.hpp": "2212b25701d158cf5b985981578596509eff6d03278bf7dd131df789b4342c8d",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/temporal_adapter.hpp": "64b791e67c49b59131c46989246503fb0546b27575e02120bee982aeef39102e",
+      "cgar/cgar_planner/temporal_geometry.hpp": "5b32368fc14d88e57ba8141838e2102427ff37e9a7bffdf530f34ca41e5e48c3",
+      "cgar/cgar_planner/temporal_pibt.hpp": "d4e995e8cd159b4146c305d3870e88dd15cddb87f2789b0076730c2681983720",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_regions.hpp": "554ac88ea2504a7251bfcb30a4e8510adf4bbece4eff869e9a8479446d62a252",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "d08c23ce894a9c34170aaac1300b668e06fb82091e27eafc4d1aa4dd493b59f3",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "test_sources": {
+      "cgar/tests/cgar_regression.cpp": "1e71ec7ccce5cf0ac580b464a0a7b5050f82efe438631374446d36b928f514f9"
+    },
+    "binary_sha256": "72c6bb3d43fb05b8663af97098ee5ed1872eca50af30fce2e0214cae885c2ed5"
+  },
+  "horizons": {
+    "WAREHOUSE": 200
+  },
+  "instances": [
+    "WAREHOUSE"
+  ],
+  "parallel_suites": 1,
+  "jobs_per_suite": 1,
+  "time_limit_ms": 1000,
+  "log_detail_level": 2,
+  "cpus_per_instance": 4,
+  "memory_gib_per_slot": 2,
+  "runtime": "00:20:00",
+  "hosts": [
+    "research31.grid.gsb",
+    "research38.grid.gsb",
+    "research44.grid.gsb",
+    "research46.grid.gsb",
+    "research50.grid.gsb",
+    "research52.grid.gsb",
+    "research57.grid.gsb"
+  ],
+  "expected_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "hold_job": null
+}

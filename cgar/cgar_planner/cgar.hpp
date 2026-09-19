@@ -145,12 +145,12 @@ private:
 // DistanceOracle. Every cached reverse traversal is complete.
 class TurnDistanceOracle {
 public:
-    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false);
+    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false, int forward_base = 1);
     void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
     void discard_prefetch();
     bool set_forward_costs(std::vector<uint8_t> costs);
     int forward_cost(int cell, int orientation) const {
-        return forward_costs_.empty() ? 1 : forward_costs_.at(size_t(cell) * 4 + orientation);
+        return forward_costs_.empty() ? forward_base_ : forward_costs_.at(size_t(cell) * 4 + orientation);
     }
     bool weighted_forward() const { return !forward_costs_.empty(); }
     long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
@@ -166,7 +166,7 @@ private:
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
     std::vector<int> cells_, index_, queue_, backward_;
-    int turn_cost_ = 1, max_edge_cost_ = 1;
+    int turn_cost_ = 1, max_edge_cost_ = 1, forward_base_ = 1;
     bool compact_ = false;
     std::vector<uint8_t> forward_costs_;
     std::vector<std::vector<int>> buckets_;
@@ -324,7 +324,7 @@ private:
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
     FlowGuidance flow_guidance_;
-    int flow_strength_ = 0;
+    int flow_strength_ = 0, flow_cost_scale_ = 1;
     GuideRoutes guide_routes_;
     GuideRouteOptions guide_options_;
     bool guide_enabled_ = false;

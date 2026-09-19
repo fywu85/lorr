@@ -910,6 +910,109 @@ void temporal_distance_scale_regression() {
  std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
 }
 
+void flow_cost_scale_regression() {
+ const int rows=5,cols=7,cells=rows*cols;std::vector<char> free(cells,true);
+ for(int row=1;row<4;++row)free[row*cols+3]=false;
+ Certificate cert;cert.rows=rows;cert.cols=cols;cert.free=cert.core=free;cert.pocket.assign(cells,-1);
+ TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
+ long long distances_checked=0,scores_checked=0,uniform_scores=0;
+ for(int unit:{1,2,4,8})for(bool biased:{false,true}){
+  std::vector<uint8_t> edge(cells*4,unit);
+  if(biased)for(int u=0;u<cells;++u)for(int d=0;d<4;++d)edge[u*4+d]+=(u*13+d*3)%5==0;
+  TurnDistanceOracle oracle;oracle.init(&cert,1<<20,unit,true,unit);
+  if(oracle.set_forward_costs(edge)!=biased)throw std::runtime_error("scaled neutral field changed the metric");
+  for(int goal:{0,16,18,34}){
+   const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+   std::vector<int> exact(cells*4,kInf);
+   // Independent forward heap search for each source state; production uses
+   // reverse BFS or integer buckets and compact goal tables.
+   for(int cell=0;cell<cells;++cell)if(free[cell])for(int dir=0;dir<4;++dir){
+    using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;
+    std::vector<int> d(cells*4,kInf);const int start=cell*4+dir;d[start]=0;q.push({0,start});
+    while(!q.empty()){
+     const auto [cost,state]=q.top();q.pop();if(cost!=d[state])continue;
+     if(state/4==goal){exact[start]=cost;break;}
+     auto relax=[&](int next,int step_cost){if(cost+step_cost<d[next]){d[next]=cost+step_cost;q.push({d[next],next});}};
+     relax(state/4*4+(state%4+1)%4,unit);relax(state/4*4+(state%4+3)%4,unit);
+     const int next=nb(state/4,state%4,rows,cols);
+     if(next>=0&&free[next])relax(next*4+state%4,edge[state]);
+    }
+    if(oracle.value(*table,cell,dir)!=exact[start])throw std::runtime_error("scaled distance disagreed with independent Dijkstra");
+    ++distances_checked;
+   }
+   auto distance=[&](int cell,int dir){return oracle.value(*table,cell,dir);};
+   for(int cell=0;cell<cells;++cell)if(free[cell])for(int dir=0;dir<4;++dir){
+    const auto& paths=geometry.paths(cell,dir);
+    for(int op=0;op<129;++op)if(paths[op].valid){
+     const auto& path=paths[op];const int extra=TemporalGeometry::forward_surcharge(path,cell,goal,[&](int from,int to){
+      for(int d=0;d<4;++d)if(nb(from,d,rows,cols)==to)return int(edge[from*4+d]);
+      throw std::runtime_error("invalid scaled-score edge");},unit);
+     const int64_t cost=TemporalGeometry::cost(path,op,goal,unit,distance,50,unit)+int64_t(extra)*50;
+     const bool reached=std::find(path.cells.begin(),path.cells.end(),goal)!=path.cells.end();
+     if(!reached&&cost+int64_t(op)*unit<int64_t(exact[cell*4+dir]-5*unit)*50)
+      throw std::runtime_error("scaled temporal score rewarded unpaid progress");
+     ++scores_checked;
+     if(!biased){
+      auto original=[&](int u,int d){return exact[u*4+d]/unit;};
+      const int64_t expected=TemporalGeometry::cost(path,op,goal,1,original)*unit;
+      if(extra||cost!=expected||TemporalGeometry::cost(path,op,-1,unit,distance,50,unit)!=int64_t(op)*unit)
+       throw std::runtime_error("pure unit scaling changed terminal, wait, completion or operation preferences");
+      ++uniform_scores;
+     }
+    }
+   }
+  }
+  auto invalid=edge;invalid[0]=unit-1;bool rejected=false;
+  try{oracle.set_forward_costs(invalid);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected||!oracle.has(34))throw std::runtime_error("below-base costs changed a valid scaled metric");
+ }
+ for(int unit:{2,4,8}){
+  FlowGuidance flow;flow.initialize(std::vector<char>(4,true),2,2,4,1,1,50,0,unit);
+  const int cycle[5]={0,1,3,2,0};for(int t=0;t<=4;++t)flow.observe(t,{cycle[t]});
+  for(auto [u,d]:std::vector<std::pair<int,int>>{{0,0},{1,1},{3,2},{2,3}}){
+   const int v=nb(u,d,2,2);
+   if(flow.costs()[u*4+d]!=unit||flow.costs()[v*4+(d+2)%4]!=unit+1)
+    throw std::runtime_error("scaled flow did not preserve a one-unit directional penalty");
+  }
+ }
+ for(int scale:{0,3,16}){bool rejected=false;try{FlowGuidance flow;flow.initialize(std::vector<char>(4,true),2,2,4,1,1,0,0,scale);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid flow unit scale was accepted");}
+
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","256",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);
+ setenv("CGAR_TEMPORAL_ORDER","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_TURN_FIRST","1",1);
+ setenv("CGAR_TURN_TABLE_MB","1",1);setenv("CGAR_TURN_COMPACT","1",1);setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);
+ setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","8",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","100",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);setenv("CGAR_TEMPORAL_WARM_START","1",1);
+ SharedEnvironment e;e.rows=50;e.cols=50;e.num_of_agents=48;e.map.assign(2500,0);e.curr_task_schedule.assign(48,-1);e.goal_locations.resize(48);
+ for(int r=0;r<48;++r){e.curr_states.emplace_back(r*17,0,r%4);e.goal_locations[r]={{2499-r*13,0}};}
+ Cgar planners[4];const int units[4]={1,2,4,8};
+ for(int k=0;k<4;++k){setenv("CGAR_FLOW_COST_SCALE",std::to_string(units[k]).c_str(),1);planners[k].initialize(&e,1000);}
+ int identical=0;
+ for(int t=0;t<80;++t){
+  e.curr_timestep=t;std::vector<Action> reference;
+  planners[0].plan(&e,1000,reference);
+  for(int k=1;k<4;++k){std::vector<Action> actions;planners[k].plan(&e,1000,actions);
+   if(actions!=reference)throw std::runtime_error("neutral unit scaling changed production decisions under cache eviction and warm reuse");identical+=48;}
+  auto next=step(e,e.curr_states,reference);if(next.empty())throw std::runtime_error("scaled-metric neutral episode collided");e.curr_states=next;
+  for(int r=0;r<48;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)e.goal_locations[r][0].first=(e.goal_locations[r][0].first+997)%2500;
+ }
+ const auto& reference=planners[0].stats();
+ for(const auto& planner:planners){const auto& stats=planner.stats();
+  if(stats.oriented_builds<=48||stats.oriented_builds!=reference.oriented_builds||stats.oriented_guided!=reference.oriented_guided||
+     stats.oriented_fallback!=reference.oriented_fallback||stats.flow_publications!=5||stats.flow_cache_resets||stats.flow_penalized_edges)
+   throw std::runtime_error("scaled neutral field changed cache behavior or failed to exercise refresh");
+ }
+ for(const char*name:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_ORDER","CGAR_ORIENTATION_GUIDANCE",
+      "CGAR_TURN_FIRST","CGAR_TURN_TABLE_MB","CGAR_TEMPORAL_PREP_THREADS"})unsetenv(name);
+ setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);
+ temporal_region_adapter_regression();temporal_primary_regression();
+ for(const char*name:{"CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL",
+      "CGAR_FLOW_COST_SCALE","CGAR_TEMPORAL_WARM_START","CGAR_TURN_COMPACT"})unsetenv(name);
+ std::cout<<"FLOW_COST_SCALE passed independent_weighted_distances="<<distances_checked<<" paid_progress_scores="<<scores_checked
+          <<" exact_uniform_scores="<<uniform_scores<<" neutral_robot_decisions="<<identical
+          <<" scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+}
+
 void flow_refresh_regression() {
  std::vector<char> free(4,true);std::vector<int> observed{0};
  for(int u:{1,3,2,0})observed.push_back(u);
@@ -1401,4 +1504,4 @@ void temporal_preparation_regression() {
           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
 }
 
-int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cost_scale_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

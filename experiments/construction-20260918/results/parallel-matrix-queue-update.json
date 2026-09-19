@@ -1,0 +1,177 @@
+{
+  "time_utc": "2026-09-19T10:28:27.893623+00:00",
+  "reason": "Run two independent full-matrix lanes on exclusive GRID hosts. The competition memory requirement is per planner; serializing all matrices behind a single 24-GiB allocation was unnecessary. Planner memory and decision limits, binaries, seeds, physical binding and per-matrix concurrency are unchanged. No running job is altered.",
+  "before_xml": "<?xml version='1.0'?>\n<job_info  xmlns:xsd=\"http://gridengine.sunsource.net/source/browse/*checkout*/gridengine/source/dist/util/resources/schemas/qstat/qstat.xsd?revision=1.11\">\n  <queue_info>\n    <job_list state=\"running\">\n      <JB_job_number>8898554</JB_job_number>\n      <JAT_prio>0.55500</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>r</state>\n      <JAT_start_time>2026-09-19T05:56:11</JAT_start_time>\n      <queue_name>debian.q@research44.grid.gsb</queue_name>\n      <slots>2</slots>\n    </job_list>\n    <job_list state=\"running\">\n      <JB_job_number>8898627</JB_job_number>\n      <JAT_prio>0.55500</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>r</state>\n      <JAT_start_time>2026-09-19T06:26:51</JAT_start_time>\n      <queue_name>debian.q@research46.grid.gsb</queue_name>\n      <slots>4</slots>\n    </job_list>\n  </queue_info>\n  <job_info>\n    <job_list state=\"pending\">\n      <JB_job_number>8898555</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:33:14</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898566</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:58:52</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898567</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:59:09</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898606</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T05:34:59</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898607</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T05:35:20</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898624</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T06:00:19</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898625</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T06:01:16</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n  </job_info>\n</job_info>\n",
+  "before_details": {
+    "8898566": "==============================================================\njob_number:                 8898566\nexec_file:                  job_scripts/8898566\nsubmission_time:            Sat Sep 19 04:58:52 2026\nowner:                      fw2449\nuid:                        578148740\ngroup:                      fw2449\ngid:                        578148740\nsge_o_home:                 /user/fw2449\nsge_o_log_name:             fw2449\nsge_o_path:                 /user/fw2449/.nvm/versions/node/v20.20.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/user/fw2449/.local/bin:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/apps/wrappers:/apps/bin:/opt/n1ge/bin/lx24-amd64:/opt/gurobi/linux64/bin\nsge_o_shell:                /bin/bash\nsge_o_workdir:              /shared/share_mala/fw2449/lorr2024\nsge_o_host:                 researchint01\naccount:                    sge\ncwd:                        /shared/share_mala/fw2449/lorr2024\nmerge:                      y\nhard resource_list:         exclusive=true,h_rt=10800,h_vmem=3G\nmail_list:                  fw2449@researchint01.grid.gsb\nnotify:                     FALSE\njob_name:                   lorr_matrix\nstdout_path_list:           NONE:NONE:/shared/share_mala/fw2449/lorr2024/runs/cgar-prefilter-full-v27-20260919/scheduler.log\njobshare:                   0\nhard_queue_list:            debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb\nshell_list:                 NONE:/bin/bash\nenv_list:                   \nscript_file:                /shared/share_mala/fw2449/lorr2024/runs/cgar-prefilter-full-v27-20260919/job.sh\nparallel environment:  threaded range: 8\njid_predecessor_list (req):  8898624,8898625\njid_predecessor_list:       8898624,8898625\njid_successor_list:          8898567,8898606\nversion:                    1\nscheduling info:            queue instance \"test.q@gridtest.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research30.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research29.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research02.grid.gsb\" dropped because it is disabled\n                            queue instance \"debian.q@research01.grid.gsb\" dropped because it is disabled\n                            job dropped because of job dependencies\n",
+    "8898624": "==============================================================\njob_number:                 8898624\nexec_file:                  job_scripts/8898624\nsubmission_time:            Sat Sep 19 06:00:19 2026\nowner:                      fw2449\nuid:                        578148740\ngroup:                      fw2449\ngid:                        578148740\nsge_o_home:                 /user/fw2449\nsge_o_log_name:             fw2449\nsge_o_path:                 /user/fw2449/.nvm/versions/node/v20.20.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/user/fw2449/.local/bin:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/apps/wrappers:/apps/bin:/opt/n1ge/bin/lx24-amd64:/opt/gurobi/linux64/bin\nsge_o_shell:                /bin/bash\nsge_o_workdir:              /shared/share_mala/fw2449/lorr2024\nsge_o_host:                 researchint01\naccount:                    sge\ncwd:                        /shared/share_mala/fw2449/lorr2024\nmerge:                      y\nhard resource_list:         exclusive=true,h_rt=10800,h_vmem=3G\nmail_list:                  fw2449@researchint01.grid.gsb\nnotify:                     FALSE\njob_name:                   lorr_matrix\nstdout_path_list:           NONE:NONE:/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/scheduler.log\njobshare:                   0\nhard_queue_list:            debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb\nshell_list:                 NONE:/bin/bash\nenv_list:                   \nscript_file:                /shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/job.sh\nparallel environment:  threaded range: 8\njid_predecessor_list (req):  8898554,8898555\njid_predecessor_list:       8898554,8898555\njid_successor_list:          8898625,8898566\nverify_suitable_queues:     2\nscheduling info:            queue instance \"test.q@gridtest.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research30.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research29.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research02.grid.gsb\" dropped because it is disabled\n                            queue instance \"debian.q@research01.grid.gsb\" dropped because it is disabled\n                            job dropped because of job dependencies\n"
+  },
+  "complex_definition": "#name               shortcut     type        relop   requestable consumable default  urgency \n#--------------------------------------------------------------------------------------------\narch                a            RESTRING    ==      YES         NO         NONE     0\ncalendar            c            RESTRING    ==      YES         NO         NONE     0\ncplex_license       cplex        INT         <=      YES         YES        0        0\ncplexconcurrent     ccj          INT         <=      YES         NO         0        0\ncpu                 cpu          DOUBLE      >=      YES         NO         0        0\ndisplay_win_gui     dwg          BOOL        ==      YES         NO         0        0\nexclusive           excl         BOOL        EXCL    YES         YES        0        0\ngpu                 gpu          INT         <=      YES         JOB        0        0\nh_core              h_core       MEMORY      <=      YES         NO         0        0\nh_cpu               h_cpu        TIME        <=      YES         NO         0:0:0    0\nh_data              h_data       MEMORY      <=      YES         NO         0        0\nh_fsize             h_fsize      MEMORY      <=      YES         NO         0        0\nh_rss               h_rss        MEMORY      <=      YES         NO         0        0\nh_rt                h_rt         TIME        <=      YES         NO         0:0:0    0\nh_stack             h_stack      MEMORY      <=      YES         NO         0        0\nh_vmem              h_vmem       MEMORY      <=      YES         YES        0        0\nhostname            h            HOST        ==      YES         NO         NONE     0\nload_avg            la           DOUBLE      >=      NO          NO         0        0\nload_long           ll           DOUBLE      >=      NO          NO         0        0\nload_medium         lm           DOUBLE      >=      NO          NO         0        0\nload_short          ls           DOUBLE      >=      NO          NO         0        0\nm_core              core         INT         <=      YES         NO         0        0\nm_socket            socket       INT         <=      YES         NO         0        0\nm_topology          topo         RESTRING    ==      YES         NO         NONE     0\nm_topology_inuse    utopo        RESTRING    ==      YES         NO         NONE     0\nmath_license        mathlic      INT         <=      YES         JOB        1        0\nmatlab_lic          matlablic    INT         <=      YES         JOB        0        0\nmem_free            mf           MEMORY      <=      YES         NO         0        0\nmem_total           mt           MEMORY      <=      YES         NO         0        0\nmem_used            mu           MEMORY      >=      YES         NO         0        0\nmin_cpu_interval    mci          TIME        <=      NO          NO         0:0:0    0\nnp_load_avg         nla          DOUBLE      >=      NO          NO         0        0\nnp_load_long        nll          DOUBLE      >=      NO          NO         0        0\nnp_load_medium      nlm          DOUBLE      >=      NO          NO         0        0\nnp_load_short       nls          DOUBLE      >=      NO          NO         0        0\nnum_proc            p            INT         ==      YES         NO         0        0\nqname               q            RESTRING    ==      YES         NO         NONE     0\nrerun               re           BOOL        ==      NO          NO         0        0\ns_core              s_core       MEMORY      <=      YES         NO         0        0\ns_cpu               s_cpu        TIME        <=      YES         NO         0:0:0    0\ns_data              s_data       MEMORY      <=      YES         NO         0        0\ns_fsize             s_fsize      MEMORY      <=      YES         NO         0        0\ns_rss               s_rss        MEMORY      <=      YES         NO         0        0\ns_rt                s_rt         TIME        <=      YES         NO         0:0:0    0\ns_stack             s_stack      MEMORY      <=      YES         NO         0        0\ns_vmem              s_vmem       MEMORY      <=      YES         NO         0        0\nseq_no              seq          INT         ==      NO          NO         0        0\nslots               s            INT         <=      YES         YES        1        0\nspsslic             spsslic      INT         <=      YES         YES        0        0\nswap_free           sf           MEMORY      <=      YES         NO         0        0\nswap_rate           sr           MEMORY      >=      YES         NO         0        0\nswap_rsvd           srsv         MEMORY      >=      YES         NO         0        0\nswap_total          st           MEMORY      <=      YES         NO         0        0\nswap_used           su           MEMORY      >=      YES         NO         0        0\ntmpdir              tmp          RESTRING    ==      NO          NO         NONE     0\nvirtual_free        vf           MEMORY      <=      YES         YES        0        0\nvirtual_total       vt           MEMORY      <=      YES         NO         0        0\nvirtual_used        vu           MEMORY      >=      YES         NO         0        0\n# >#< starts a comment but comments are not saved across edits --------\n",
+  "available_hosts": "HOSTNAME                ARCH         NCPU  LOAD  MEMTOT  MEMUSE  SWAPTO  SWAPUS\n-------------------------------------------------------------------------------\nglobal                  -               -     -       -       -       -       -\nresearch31              lx24-amd64    128  0.02 1511.5G   12.8G     0.0     0.0\n    Host Resource(s):      hc:exclusive=1.000000\nresearch38              lx24-amd64    128  0.03 1511.5G   10.5G     0.0     0.0\n    Host Resource(s):      hc:exclusive=1.000000\nresearch44              lx24-amd64    128  2.19 1511.5G   29.5G     0.0     0.0\n    Host Resource(s):      hc:exclusive=-1.000000\n   job-ID  prior   name       user         state submit/start at     queue      master ja-task-ID \n   ----------------------------------------------------------------------------------------------\n   8898554 0.55500 lorr_matri fw2449       r     09/19/2026 05:56:11 debian.q@r MASTER        \n                                                                     debian.q@r SLAVE         \nresearch46              lx24-amd64    128  0.45 1511.5G   13.8G     0.0     0.0\n    Host Resource(s):      hc:exclusive=-3.000000\n   8898627 0.55500 lorr_matri fw2449       r     09/19/2026 06:26:51 debian.q@r MASTER        \n                                                                     debian.q@r SLAVE         \n                                                                     debian.q@r SLAVE         \n                                                                     debian.q@r SLAVE         \nresearch50              lx24-amd64    128  0.03 1511.5G   11.3G     0.0     0.0\n    Host Resource(s):      hc:exclusive=1.000000\nresearch52              lx24-amd64    128  0.08 1511.5G   14.0G     0.0     0.0\n    Host Resource(s):      hc:exclusive=1.000000\nresearch57              lx24-amd64    128  0.04 1511.5G   17.8G     0.0     0.0\n    Host Resource(s):      hc:exclusive=1.000000\n",
+  "commands": [
+    {
+      "argv": [
+        "qalter",
+        "-hold_jid",
+        "8898554,8898555",
+        "8898566"
+      ],
+      "stdout": "modified job id hold list of job 8898566\n   blocking jobs: 8898554,8898555\n   exited jobs:   NONE\n"
+    },
+    {
+      "argv": [
+        "qalter",
+        "-hold_jid",
+        "0",
+        "8898624"
+      ],
+      "stdout": "modified job id hold list of job 8898624\n   blocking jobs: NONE\n   exited jobs:   0\n"
+    }
+  ],
+  "after_xml": "<?xml version='1.0'?>\n<job_info  xmlns:xsd=\"http://gridengine.sunsource.net/source/browse/*checkout*/gridengine/source/dist/util/resources/schemas/qstat/qstat.xsd?revision=1.11\">\n  <queue_info>\n    <job_list state=\"running\">\n      <JB_job_number>8898554</JB_job_number>\n      <JAT_prio>0.55500</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>r</state>\n      <JAT_start_time>2026-09-19T05:56:11</JAT_start_time>\n      <queue_name>debian.q@research44.grid.gsb</queue_name>\n      <slots>2</slots>\n    </job_list>\n    <job_list state=\"running\">\n      <JB_job_number>8898627</JB_job_number>\n      <JAT_prio>0.55500</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>r</state>\n      <JAT_start_time>2026-09-19T06:26:51</JAT_start_time>\n      <queue_name>debian.q@research46.grid.gsb</queue_name>\n      <slots>4</slots>\n    </job_list>\n  </queue_info>\n  <job_info>\n    <job_list state=\"pending\">\n      <JB_job_number>8898555</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:33:14</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898566</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:58:52</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898567</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T04:59:09</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898606</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T05:34:59</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898607</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T05:35:20</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898624</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>lorr_matrix</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>qw</state>\n      <JB_submission_time>2026-09-19T06:00:19</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>8</slots>\n    </job_list>\n    <job_list state=\"pending\">\n      <JB_job_number>8898625</JB_job_number>\n      <JAT_prio>0.00000</JAT_prio>\n      <JB_name>motion_analysis</JB_name>\n      <JB_owner>fw2449</JB_owner>\n      <state>hqw</state>\n      <JB_submission_time>2026-09-19T06:01:16</JB_submission_time>\n      <queue_name></queue_name>\n      <slots>1</slots>\n    </job_list>\n  </job_info>\n</job_info>\n",
+  "after_details": {
+    "8898566": "==============================================================\njob_number:                 8898566\nexec_file:                  job_scripts/8898566\nsubmission_time:            Sat Sep 19 04:58:52 2026\nowner:                      fw2449\nuid:                        578148740\ngroup:                      fw2449\ngid:                        578148740\nsge_o_home:                 /user/fw2449\nsge_o_log_name:             fw2449\nsge_o_path:                 /user/fw2449/.nvm/versions/node/v20.20.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/user/fw2449/.local/bin:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/apps/wrappers:/apps/bin:/opt/n1ge/bin/lx24-amd64:/opt/gurobi/linux64/bin\nsge_o_shell:                /bin/bash\nsge_o_workdir:              /shared/share_mala/fw2449/lorr2024\nsge_o_host:                 researchint01\naccount:                    sge\ncwd:                        /shared/share_mala/fw2449/lorr2024\nmerge:                      y\nhard resource_list:         exclusive=true,h_rt=10800,h_vmem=3G\nmail_list:                  fw2449@researchint01.grid.gsb\nnotify:                     FALSE\njob_name:                   lorr_matrix\nstdout_path_list:           NONE:NONE:/shared/share_mala/fw2449/lorr2024/runs/cgar-prefilter-full-v27-20260919/scheduler.log\njobshare:                   0\nhard_queue_list:            debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb\nshell_list:                 NONE:/bin/bash\nenv_list:                   \nscript_file:                /shared/share_mala/fw2449/lorr2024/runs/cgar-prefilter-full-v27-20260919/job.sh\nparallel environment:  threaded range: 8\njid_predecessor_list (req):  8898554,8898555\njid_predecessor_list:       8898554,8898555\njid_successor_list:          8898567,8898606\nversion:                    2\nscheduling info:            queue instance \"test.q@gridtest.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research30.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research29.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research02.grid.gsb\" dropped because it is disabled\n                            queue instance \"debian.q@research01.grid.gsb\" dropped because it is disabled\n                            job dropped because of job dependencies\n",
+    "8898624": "==============================================================\njob_number:                 8898624\nexec_file:                  job_scripts/8898624\nsubmission_time:            Sat Sep 19 06:00:19 2026\nowner:                      fw2449\nuid:                        578148740\ngroup:                      fw2449\ngid:                        578148740\nsge_o_home:                 /user/fw2449\nsge_o_log_name:             fw2449\nsge_o_path:                 /user/fw2449/.nvm/versions/node/v20.20.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/user/fw2449/.local/bin:/shared/share_mala/fw2449/texlive/bin/x86_64-linux:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/apps/wrappers:/apps/bin:/opt/n1ge/bin/lx24-amd64:/opt/gurobi/linux64/bin\nsge_o_shell:                /bin/bash\nsge_o_workdir:              /shared/share_mala/fw2449/lorr2024\nsge_o_host:                 researchint01\naccount:                    sge\ncwd:                        /shared/share_mala/fw2449/lorr2024\nmerge:                      y\nhard resource_list:         exclusive=true,h_rt=10800,h_vmem=3G\nmail_list:                  fw2449@researchint01.grid.gsb\nnotify:                     FALSE\njob_name:                   lorr_matrix\nstdout_path_list:           NONE:NONE:/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/scheduler.log\njobshare:                   0\nhard_queue_list:            debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb\nshell_list:                 NONE:/bin/bash\nenv_list:                   \nscript_file:                /shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/job.sh\nparallel environment:  threaded range: 8\njid_predecessor_list (req):  0\njid_successor_list:          8898625\nversion:                    1\nscheduling info:            queue instance \"test.q@gridtest.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research30.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research29.grid.gsb\" dropped because it is temporarily not available\n                            queue instance \"debian.q@research02.grid.gsb\" dropped because it is disabled\n                            queue instance \"debian.q@research01.grid.gsb\" dropped because it is disabled\n                            job dropped because of job dependencies\n"
+  },
+  "verified_parallel_allocations": {
+    "cgar-flow-margin-neighbors-full-v20-20260919": {
+      "started_utc": "2026-09-19T09:56:11.363504+00:00",
+      "resources": {
+        "hostname": "research44",
+        "cpu_model": "AMD EPYC 9354 32-Core Processor",
+        "logical_cpu_affinity": [
+          0,
+          1,
+          64,
+          65
+        ],
+        "logical_cpus_by_physical_core": [
+          [
+            0,
+            64
+          ],
+          [
+            1,
+            65
+          ]
+        ],
+        "address_space_limit_bytes": [
+          25769803776,
+          25769803776
+        ],
+        "physical_cores_visible": 2,
+        "representative_cpus": [
+          0,
+          1
+        ],
+        "cgroup_cpu_limits": [
+          {
+            "path": "/sys/fs/cgroup/cpu,cpuacct",
+            "quota_us": -1,
+            "period_us": 100000
+          }
+        ],
+        "effective_cpu_quota": null
+      },
+      "selected_cpus": [
+        0,
+        1
+      ],
+      "job_id": "8898554"
+    },
+    "cgar-flow-refresh-full-v30-20260919": {
+      "started_utc": "2026-09-19T10:28:31.319788+00:00",
+      "resources": {
+        "hostname": "research31",
+        "cpu_model": "AMD EPYC 9354 32-Core Processor",
+        "logical_cpu_affinity": [
+          0,
+          1,
+          2,
+          3,
+          24,
+          25,
+          26,
+          27,
+          64,
+          65,
+          66,
+          67,
+          88,
+          89,
+          90,
+          91
+        ],
+        "logical_cpus_by_physical_core": [
+          [
+            0,
+            64
+          ],
+          [
+            1,
+            65
+          ],
+          [
+            2,
+            66
+          ],
+          [
+            3,
+            67
+          ],
+          [
+            24,
+            88
+          ],
+          [
+            25,
+            89
+          ],
+          [
+            26,
+            90
+          ],
+          [
+            27,
+            91
+          ]
+        ],
+        "address_space_limit_bytes": [
+          25769803776,
+          25769803776
+        ],
+        "physical_cores_visible": 8,
+        "representative_cpus": [
+          0,
+          1,
+          2,
+          3,
+          24,
+          25,
+          26,
+          27
+        ],
+        "cgroup_cpu_limits": [
+          {
+            "path": "/sys/fs/cgroup/cpu,cpuacct",
+            "quota_us": -1,
+            "period_us": 100000
+          }
+        ],
+        "effective_cpu_quota": null
+      },
+      "selected_cpus": [
+        0,
+        1,
+        2,
+        3,
+        24,
+        25,
+        26,
+        27
+      ],
+      "job_id": "8898624"
+    }
+  },
+  "verified_utc": "2026-09-19T10:35:29.556698+00:00"
+}

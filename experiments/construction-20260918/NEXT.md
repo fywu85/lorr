@@ -32,8 +32,12 @@ The active goal is not complete.
 ## Active full queue
 
 Every matrix reserves 24 GiB total and runs two independent instances concurrently
-on reserved EPYC 9354 physical cores. Matrices are serialized. Each case uses
+on reserved EPYC 9354 physical cores. Two independent matrix queues now run on
+separate exclusive GRID hosts. The competition memory requirement is per planner;
+serializing all experimental matrices was unnecessary. Each case still uses
 5,000 steps, a complete one-second decision and the 32 GB process limit.
+The installed GRID EXCL definition and actual simultaneous research44/research31
+allocations verify host separation. See results/parallel-matrix-queue-update.json.
 
 1. **8898554/8898555**, frozen v20-r1, one core per instance: margin-50 control
    against margins 25/75 and strength 2, seed 0. All screens pass; full running.
@@ -43,10 +47,16 @@ on reserved EPYC 9354 physical cores. Matrices are serialized. Each case uses
    screens pass; no full refresh result exists yet. See FLOW_REFRESH.md.
 3. **8898566/8898567**, frozen v27, four-core allowances: exact full validation
    of regional candidate filtering, global 4M and global 25k/two regional rounds.
-   This job was verified pending and moved after the refresh diagnosis; no
-   running benchmark was interrupted. See results/flow-refresh-queue-update.json.
+   This job follows the nearby-margin matrix/analysis in queue A. It was
+   verified pending before removing its dependency on the independent refresh
+   matrix. No running benchmark was interrupted. The earlier serialized queue
+   record remains preserved; parallel-matrix-queue-update.json supersedes it.
 4. **8898606/8898607**, frozen v28, four cores per instance: paired one-/four-worker
    preparation for the same two policies. Follows v27. See PARALLEL_PREPARATION.md.
+5. **8898628/8898629**, frozen v31, four cores per instance: frozen flow at scales
+   1/4/8, seeds 0 and 2. This follows the refresh matrix/analysis in queue B.
+   All four short screens pass, including exact default and neutral fingerprints.
+   See FLOW_COST_SCALE.md. No full scale throughput result exists yet.
 
 Completed no-flow confirmation **8898558/8898559** establishes the matched
 three-seed control. Completed guide full **8898550**, original failed analysis
@@ -54,7 +64,9 @@ three-seed control. Completed guide full **8898550**, original failed analysis
 
 ## Current source and next decisions
 
-V30 adds optional `CGAR_FLOW_REFRESH_INTERVAL` (default 0). Complete cumulative
+V30 adds optional `CGAR_FLOW_REFRESH_INTERVAL` (default 0). V31 separately adds
+`CGAR_FLOW_COST_SCALE` (default 1), scaling all physical score units consistently
+to test gentler integer penalties; see FLOW_COST_SCALE.md. For refresh, Complete cumulative
 fields publish only after fixed numbers of consecutive observations. A changed
 metric discards stale tables; an unchanged field preserves them. Cache rebuilding
 is a real cost to measure. Build 8898622 passes independent hand-counted traffic,
@@ -77,3 +89,10 @@ Fable's guide CLI review emitted findings but failed its configured cost budget;
 it is not a completed signoff. Visible findings and independent assessments are
 in fable-guides/. The confirmed waypoint defect is fixed. Route concentration,
 retry backoff and salted guide ties remain hypotheses/future experiments.
+
+The user explicitly authorizes continued Fable consultation through Claude Code
+and requests one persistent session. `fable-flow-session/run_review.py` bootstraps
+only the relevant source excerpts and findings, then sends source diffs plus new
+results on `--resume` in the same session. Initial turn is running at max effort;
+its initialized model and session ID were verified. Raw protocol/session data
+stays in ignored runs/. Do not start unrelated fresh review sessions for updates.

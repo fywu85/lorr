@@ -45,10 +45,10 @@ public:
     }
 
     template<class EdgeCost>
-    static int forward_surcharge(const TemporalPath& path, int start, int goal, EdgeCost edge_cost) {
+    static int forward_surcharge(const TemporalPath& path, int start, int goal, EdgeCost edge_cost, int unit_cost = 1) {
         int extra = 0, from = start;
         for (int to : path.cells) {
-            if (to != from) extra += edge_cost(from, to) - 1;
+            if (to != from) extra += edge_cost(from, to) - unit_cost;
             if (to == goal) break;
             from = to;
         }
@@ -58,11 +58,13 @@ public:
     // All candidates consume five unit-time slots. Charge only the extra cost
     // of real or terminal-wait rotations, so a costly turn cannot manufacture
     // heuristic progress. Goal completion retains the native terminal reward.
+    // unit_cost scales every physical slot and the operation tie term together;
+    // changing units alone must multiply the whole score by that same factor.
     template<class Distance>
-    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance, int distance_scale = 50) {
-        if (goal < 0) return op;
+    static int64_t cost(const TemporalPath& path, int op, int goal, int turn_cost, Distance distance, int distance_scale = 50, int unit_cost = 1) {
+        if (goal < 0) return int64_t(op) * unit_cost;
         const auto& actions = operations()[op];
-        const int extra = turn_cost - 1;
+        const int extra = turn_cost - unit_cost;
         int d = distance(path.cells[4], path.orientation);
         if (actions[4] == 3) {
             d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4) + extra,
@@ -76,10 +78,10 @@ public:
             turns += action == 1 || action == 2;
             if (path.cells[t] == goal) {
                 if (turns_to_goal < 0) turns_to_goal = turns;
-                d = -t;
+                d = -t * unit_cost;
             }
         }
-        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * distance_scale - op;
+        return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * distance_scale - int64_t(op) * unit_cost;
     }
 
     template<class Deadline>
