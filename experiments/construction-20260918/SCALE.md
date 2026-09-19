@@ -19,11 +19,13 @@ The complete v16 suite passes: the actual scorer checks 33,282 dominance pairs,
 bounds, plus protected progress and deterministic regional episodes. The completed
 200-step screen passes: scale 256 peaks at 0.526716631 seconds and scale 1024
 at 0.580728203. The default control and strength-1 learned flow exactly preserve
-the v15 paths, schedules, events and tasks over all 200 steps. Only full 5,000-step runs rank throughput. Full job 8898410 (held after v14 and its analysis) compares three independently learned-flow strengths, the two
+the v15 paths, schedules, events and tasks over all 200 steps. Only full 5,000-step runs rank throughput. Full job 8898428 (held after v14 and its analysis) compares three independently learned-flow strengths, the two
 independent scale changes and one control, all from the same frozen build.
 
-It reserves two concurrent instances, four disjoint physical cores each, and
-24 GiB total. Analysis 8898411 runs after it. [Screen evidence](results/scale-screen-v16/),
+It reserves two concurrent instances, one disjoint physical core each, and
+24 GiB total. The originally queued eight-core allocation was replaced before
+starting because these profiles do not enable regional workers; the frozen build
+and cases are unchanged. [Reallocation record](results/reallocated-guidance-v16/). Analysis 8898429 runs after it. [Screen evidence](results/scale-screen-v16/),
 [default equivalence](results/scale-default-equivalence.json),
 [full specification](guidance-full-variants.json). No full guidance/scaling score
 is available yet.

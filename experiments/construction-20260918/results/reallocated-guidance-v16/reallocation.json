@@ -1,0 +1,29 @@
+{
+  "reason": "All six guidance/scaling profiles use one compute thread per instance; regional repair is off. Reduce unused reserved cores from eight to two while retaining two concurrent instances and 24 GiB total memory. No running experiment was interrupted.",
+  "old_physical_cores": 8,
+  "new_physical_cores": 2,
+  "parallel_instances": 2,
+  "total_memory_gib": 24,
+  "same_frozen_build": true,
+  "same_profile_cases": true,
+  "replacement_job_id": "8898428",
+  "replacement_raw": "runs/cgar-temporal-guidance-full-v16-cpu2-20260919",
+  "cancellations": [
+    {
+      "job_id": "8898411",
+      "previous_state": "hqw",
+      "returncode": 0,
+      "stdout": "fw2449 has deleted job 8898411\n",
+      "stderr": "",
+      "utc": "2026-09-19T05:10:02.804565+00:00"
+    },
+    {
+      "job_id": "8898410",
+      "previous_state": "hqw",
+      "returncode": 0,
+      "stdout": "fw2449 has deleted job 8898410\n",
+      "stderr": "",
+      "utc": "2026-09-19T05:10:02.945756+00:00"
+    }
+  ]
+}

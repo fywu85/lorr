@@ -38,9 +38,10 @@ and 0.517454741 seconds, versus 0.517035168 for the control. The disabled-flow
 control has identical 200-step paths, schedules, events and tasks to v14. It rejects missed deadlines and never ranks throughput.
 Full 5,000-step results are required before retaining or combining this policy.
 
-The full comparison is queued from frozen v16 as job 8898410, with three flow
+The full comparison is queued from frozen v16 as job 8898428, with three flow
 strengths and separate distance-scale ablations, held after the current v14
 matrix/analysis. The scale remains 50 for every flow profile. Two concurrent
-instances share a 24 GiB total reservation on eight disjoint physical cores.
-Analysis 8898411 follows. The v16 default control and strength-1 flow exactly
+instances share a 24 GiB total reservation on two disjoint physical cores, one
+per single-threaded profile.
+Analysis 8898429 follows. The v16 default control and strength-1 flow exactly
 match v15 over 200 steps. No full flow performance claim is made.

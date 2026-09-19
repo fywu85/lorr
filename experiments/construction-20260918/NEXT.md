@@ -12,7 +12,10 @@ Established results:
   implementation preserves every full trajectory field at 107,457 and reduces
   RSS from 16.208 to 11.883 GB. Two full instances now run concurrently on
   disjoint reserved cores inside one 24 GiB total allocation.
-- Strongest exploratory seed-0 result: 111,118, using 4M candidate work plus
+- Strongest completed seed-0 result: 112,164 with two regional rounds (maximum
+  entry 0.891 seconds); one round reaches 111,411 (0.680 seconds). Both use four
+  physical cores per instance and about 11.82 GB RSS. No six-seed confirmation.
+- A separate exploratory seed-0 result is 111,118, using 4M candidate work plus
   direct-cost dispatch, pickup weight 5, global shortlist 64. Paired control:
   107,457. Its outstanding-task age is worse; no six-seed promotion.
 - Corrected turn cost 2 yields 100,323. Fewer turns are outweighed by more waits
@@ -24,13 +27,13 @@ Established results:
 
 Active full queue:
 
-1. Job **8898387**, frozen v14, still runs the regional profiles: one round,
-   two rounds, and 25k global plus two rounds. The control/turn cases above are
-   done. Analysis **8898389** follows completion of the entire matrix.
-2. Job **8898410**, frozen v16, is held after 8898387/8898389. It tests one
+1. Job **8898387**, frozen v14, still runs 25k global plus two regional
+   rounds. One-round and two-round 50k-global profiles are now complete, as are
+   the control/turn cases above. Analysis **8898389** follows completion of the entire matrix.
+2. Job **8898428**, frozen v16, is held after 8898387/8898389. It tests one
    control, learned-flow strengths 1/2/4, and distance scales 256/1024 separately.
-   Two concurrent instances, four disjoint physical cores each, 24 GiB total.
-   Analysis **8898411** follows.
+   Two concurrent instances, one disjoint physical core each, 24 GiB total.
+   Analysis **8898429** follows.
 
 The v16 complete regression suite passes, including 7,200 independent shortest
 paths, 610,224 physical-progress bounds, 33,282 actual-scorer dominance pairs,

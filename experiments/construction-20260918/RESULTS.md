@@ -194,3 +194,17 @@ Turn cost 4 subsequently fails explicitly at timestep 902 in temporal repair
 global repair takes 0.486 seconds; all 10,000 robots then have an exact metric.
 Thus this late failure is not the earlier cold-cache fallback defect. No partial
 score is accepted. [Failure record](results/turn4-full-v14-failure/).
+
+
+The first completed regional profiles improve the same seed-0 control:
+
+| Regional repair after 50k global attempts | Tasks | Gain over control | Maximum entry | Peak RSS bytes | Wall seconds |
+|---|---:|---:|---:|---:|---:|
+| Four regions, one 25k round | 111,411 | +3.68% | 0.680494276 s | 11,819,802,624 | 1,268.278 |
+| Four regions, two 25k rounds | 112,164 | +4.38% | 0.891190221 s | 11,818,598,400 | 1,580.698 |
+
+Both complete all 5,000 steps, with zero errors/timeouts and all entry samples.
+Each uses four reserved physical cores. The second round adds 753 tasks (+0.68%)
+at a cost of 312.4 wall seconds in these runs and reduces deadline margin. The
+25k-global/two-round profile is still running. These are exploratory single-seed
+results, not a six-seed promotion. [Completed-case records](results/regional-first-results-v14/).
