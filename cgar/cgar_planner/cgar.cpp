@@ -739,14 +739,6 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         temporal_region_options_.temperature_ppm < 0 || temporal_region_options_.temperature_ppm > 10000 ||
         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
         throw std::invalid_argument("invalid CGAR temporal region configuration");
-    if (temporal_ || turn_prefetch_threads_) {
-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1});
-        cpu_set_t affinity; CPU_ZERO(&affinity);
-        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
-            throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
-        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d table_threads=%d allowed_cpus=%d\n",
-                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, temporal_table_batch_ ? temporal_table_threads_ : 0, CPU_COUNT(&affinity));
-    }
     temporal_candidate_limit_ = std::max(0, std::min(100000000, env_int("CGAR_TEMPORAL_CANDIDATE_LIMIT", 0)));
     temporal_steps_ = std::max(0, std::min(1000000, env_int("CGAR_TEMPORAL_STEPS", temporal_candidate_limit_ ? 1000000 : 0)));
     temporal_budget_ = std::max(1, std::min(32768, env_int("CGAR_TEMPORAL_BUDGET", 8192)));
@@ -772,6 +764,22 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("complete pickup fields require pickup flow, 0-64 robots and 1-32 threads");
     pickup_full_workers_.resize(pickup_full_robots_ ? pickup_full_threads_ : 0);
     pickup_full_fields_.resize(pickup_full_robots_);
+    const int pickup_full_cost_key = env_int("CGAR_PICKUP_FULL_COST_KEY", 0);
+    if (pickup_full_cost_key < 0 || pickup_full_cost_key > 1 ||
+        (pickup_full_cost_key && !pickup_full_robots_))
+        throw std::invalid_argument("complete pickup cost shortlist requires enabled full fields and a boolean setting");
+    pickup_full_cost_key_ = pickup_full_cost_key != 0;
+    if (temporal_ || turn_prefetch_threads_ || pickup_full_robots_) {
+        // The phases run sequentially. Complete pickup workers are additionally
+        // bounded by the fixed field quota and the total robot count.
+        const int pickup_threads = std::min({pickup_full_threads_, pickup_full_robots_, n_});
+        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1, pickup_threads});
+        cpu_set_t affinity; CPU_ZERO(&affinity);
+        if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
+            throw std::invalid_argument("planner or pickup threads exceed the allowed logical CPU affinity");
+        std::printf("[cgar-temporal-allocation] workers=%d threads=%d preparation_threads=%d region_threads=%d table_threads=%d pickup_threads=%d allowed_cpus=%d\n",
+                    temporal_workers_, temporal_threads_, temporal_prepare_threads_, temporal_regions_ ? temporal_region_options_.threads : 0, temporal_table_batch_ ? temporal_table_threads_ : 0, pickup_threads, CPU_COUNT(&affinity));
+    }
     refine_chain_costs_ = env_int("CGAR_REFINE_CHAIN_COSTS", 0) != 0;
     scheduler_cache_peek_ = env_int("CGAR_SCHEDULER_CACHE_PEEK", 0) != 0;
     stable_stall_basis_ = env_int("CGAR_STABLE_STALL_BASIS", 0) != 0;
@@ -1743,8 +1751,8 @@ void Cgar::log_summary() {
             stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
             stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
     if (pickup_full_robots_)
-        std::printf("[cgar-pickup-full] t=%d robot_limit=%d threads=%d fields=%lld pops=%lld states=%lld searches=%lld scans=%lld candidates=%lld estimates=%lld\n",
-            env_->curr_timestep, pickup_full_robots_, pickup_full_threads_, stats_.pickup_full_fields,
+        std::printf("[cgar-pickup-full] t=%d robot_limit=%d threads=%d cost_key=%d fields=%lld pops=%lld states=%lld searches=%lld scans=%lld candidates=%lld estimates=%lld\n",
+            env_->curr_timestep, pickup_full_robots_, pickup_full_threads_, pickup_full_cost_key_, stats_.pickup_full_fields,
             stats_.pickup_full_pops, stats_.pickup_full_states, stats_.pickup_full_searches,
             stats_.pickup_full_scans, stats_.pickup_full_candidates, stats_.pickup_full_estimates);
     std::printf("[cgar-estimates] t=%d refine=%d peek=%d stable_stall=%d refined_legs=%lld "
@@ -2184,6 +2192,14 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         if (tasks[a.task].id != tasks[b.task].id) return tasks[a.task].id < tasks[b.task].id;
         return a.robot < b.robot;
     };
+    // Optional cost-only discovery retains a broader low-cost shortlist while
+    // leaving age-weighted assignment ranking and fair admission unchanged.
+    auto retain_better = [&](const Pair& a, const Pair& b) {
+        if (!pickup_full_cost_key_) return better(a, b);
+        if (a.cost != b.cost) return a.cost < b.cost;
+        if (tasks[a.task].id != tasks[b.task].id) return tasks[a.task].id < tasks[b.task].id;
+        return a.robot < b.robot;
+    };
     for (auto& bucket : at_cell) std::sort(bucket.begin(), bucket.end(), [&](int a, int b) {
         return better(pair_for(0, a, 0), pair_for(0, b, 0));
     });
@@ -2277,12 +2293,12 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                 ++stats_.pickup_full_scans;
                 if (task_used[t] || field->distance[tasks[t].first] >= kInf) continue;
                 Pair candidate = pair_for(r, t, field->distance[tasks[t].first]);
-                // The heap root is the worst retained pair under better().
+                // The heap root is the worst retained discovery candidate.
                 if (static_cast<int>(result.size()) < limit) {
-                    result.push_back(candidate); std::push_heap(result.begin(), result.end(), better);
-                } else if (better(candidate, result.front())) {
-                    std::pop_heap(result.begin(), result.end(), better);
-                    result.back() = candidate; std::push_heap(result.begin(), result.end(), better);
+                    result.push_back(candidate); std::push_heap(result.begin(), result.end(), retain_better);
+                } else if (retain_better(candidate, result.front())) {
+                    std::pop_heap(result.begin(), result.end(), retain_better);
+                    result.back() = candidate; std::push_heap(result.begin(), result.end(), retain_better);
                 }
             }
             std::sort(result.begin(), result.end(), better);

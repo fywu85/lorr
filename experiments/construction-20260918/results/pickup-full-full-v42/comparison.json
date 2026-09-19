@@ -1,0 +1,848 @@
+{
+  "scope": "Eight complete5000-step/10000-robot warehouse runs, full fields0/16/32/64, four threads, seeds0/2. All decisions valid and below1second, all RSS below32decimalGB. Disabled controls exactly reproduce v41graded pickup ON.",
+  "checked_utc": "2026-09-19T17:48:16.157901+00:00",
+  "exact_production_source_commit": "4872d048dd8155927074ac2a4d27a55756266fd5",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "5e3571a2126be060ff8f79e2bcc27da2ff39487e1a2d1cac902c84731f121a48",
+  "rows": [
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull0_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 0,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 138963,
+      "completed_per_1000": [
+        22398,
+        28970,
+        29138,
+        29141,
+        29316
+      ],
+      "trajectory_sha256": "ec55f6ccc9e766186eb9337c62ffe2277dad0632f1642a14e02dddd86dddf723",
+      "mean_entry_ms": 263.2594684700005,
+      "max_entry_seconds": 0.878607484,
+      "average_cpu_cores": 1.1795413412936366,
+      "peak_rss_bytes": 11354324992,
+      "wall_seconds": 1391.526,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 318.59453333333335,
+        "p90": 656
+      },
+      "finished_utc": "2026-09-19T17:41:46.964612+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8790299,
+        "empty_turn_actions": 633744,
+        "empty_wait_actions": 535890
+      },
+      "full_empty_robot_steps": 9959933,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 150467,
+        "guided": 47453111,
+        "fallback": 2543563
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 132166,
+          "pops": 646602809,
+          "states": 641722627,
+          "cells": 169023869,
+          "candidates": 1447969,
+          "limits": 45716,
+          "cached_estimates": 2409373,
+          "approximate_estimates": 85611,
+          "warmup_calls": 108
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 101748,
+          "fallback": 41292,
+          "fair": 14,
+          "searches": 145354,
+          "nodes": 660061941,
+          "task_limits": 96706,
+          "node_limits": 48648,
+          "deadlines": 0,
+          "empty": 41301,
+          "skipped_empty": 41289,
+          "sampled": 2642688,
+          "sample_deadlines": 0,
+          "improved": 37035,
+          "pickup_estimate": 8593873,
+          "chain_estimate": 35320459,
+          "route_queries": 235110627,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull16_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 16,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 139697,
+      "completed_per_1000": [
+        22330,
+        29192,
+        29314,
+        29475,
+        29386
+      ],
+      "trajectory_sha256": "e9f2a8a0c1e9bdae4b3f73b4c33cdc2382ca5da02f13b15fd78dbcda875c5905",
+      "mean_entry_ms": 271.4588034910002,
+      "max_entry_seconds": 0.876830831,
+      "average_cpu_cores": 1.396805950405811,
+      "peak_rss_bytes": 11916800000,
+      "wall_seconds": 1431.37,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 310.6816,
+        "p90": 634
+      },
+      "finished_utc": "2026-09-19T17:42:26.808860+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8321327,
+        "empty_turn_actions": 664137,
+        "empty_wait_actions": 537421
+      },
+      "full_empty_robot_steps": 9522885,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 151315,
+        "guided": 47383788,
+        "fallback": 2613033
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 58253,
+          "pops": 270476985,
+          "states": 268577843,
+          "cells": 70877750,
+          "candidates": 656825,
+          "limits": 18317,
+          "cached_estimates": 1053514,
+          "approximate_estimates": 35326,
+          "warmup_calls": 108
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 16,
+          "threads": 4,
+          "fields": 74631,
+          "pops": 11694428940,
+          "states": 11518847064,
+          "searches": 74631,
+          "scans": 375279603,
+          "candidates": 1194096,
+          "estimates": 73
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 124101,
+          "fallback": 19660,
+          "fair": 14,
+          "searches": 146072,
+          "nodes": 283936117,
+          "task_limits": 50192,
+          "node_limits": 21249,
+          "deadlines": 0,
+          "empty": 19665,
+          "skipped_empty": 19660,
+          "sampled": 1258240,
+          "sample_deadlines": 0,
+          "improved": 16825,
+          "pickup_estimate": 8103359,
+          "chain_estimate": 35465665,
+          "route_queries": 235474794,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 32,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 70043,
+      "completed_per_1000": [
+        21858,
+        24389,
+        12269,
+        6094,
+        5433
+      ],
+      "trajectory_sha256": "0fa2caaab5ac8ef02a532cace1cde0715895e10654cf61f25fdb077dd6ab92c4",
+      "mean_entry_ms": 222.52302323059945,
+      "max_entry_seconds": 0.886370285,
+      "average_cpu_cores": 1.4290869753345676,
+      "peak_rss_bytes": 10869223424,
+      "wall_seconds": 1186.255,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 1804.3158,
+        "p90": 3327
+      },
+      "finished_utc": "2026-09-19T17:38:21.694539+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 5173672,
+        "empty_turn_actions": 1591194,
+        "empty_wait_actions": 2691808
+      },
+      "full_empty_robot_steps": 9456674,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 117034,
+        "guided": 47587477,
+        "fallback": 2388697
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 361,
+          "pops": 1666054,
+          "states": 1655264,
+          "cells": 436630,
+          "candidates": 3980,
+          "limits": 119,
+          "cached_estimates": 7023,
+          "approximate_estimates": 127,
+          "warmup_calls": 108
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 32,
+          "threads": 4,
+          "fields": 67636,
+          "pops": 10593017670,
+          "states": 10439210784,
+          "searches": 67636,
+          "scans": 339566450,
+          "candidates": 1082176,
+          "estimates": 57
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 75861,
+          "fallback": 3020,
+          "fair": 7,
+          "searches": 81185,
+          "nodes": 15125186,
+          "task_limits": 10498,
+          "node_limits": 3051,
+          "deadlines": 0,
+          "empty": 3020,
+          "skipped_empty": 3020,
+          "sampled": 193280,
+          "sample_deadlines": 0,
+          "improved": 2993,
+          "pickup_estimate": 4304133,
+          "chain_estimate": 19272625,
+          "route_queries": 225694098,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s0-r0",
+      "seed": 0,
+      "full_fields": 64,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 141829,
+      "completed_per_1000": [
+        22955,
+        29660,
+        29694,
+        29803,
+        29717
+      ],
+      "trajectory_sha256": "340be4c08e4f3469b5d8ce28cbc9785a215896919fcfbaa253d2ee5288938d6c",
+      "mean_entry_ms": 287.1131042904002,
+      "max_entry_seconds": 0.874138202,
+      "average_cpu_cores": 1.4655847879721273,
+      "peak_rss_bytes": 11897610240,
+      "wall_seconds": 1510.028,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 312.01393333333334,
+        "p90": 644
+      },
+      "finished_utc": "2026-09-19T17:43:45.464841+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8037560,
+        "empty_turn_actions": 654750,
+        "empty_wait_actions": 510525
+      },
+      "full_empty_robot_steps": 9202835,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 152580,
+        "guided": 47349768,
+        "fallback": 2647081
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 0,
+          "pops": 0,
+          "states": 0,
+          "cells": 0,
+          "candidates": 0,
+          "limits": 0,
+          "cached_estimates": 0,
+          "approximate_estimates": 0,
+          "warmup_calls": 108
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 64,
+          "threads": 4,
+          "fields": 135065,
+          "pops": 21169892566,
+          "states": 20846472360,
+          "searches": 135065,
+          "scans": 679381461,
+          "candidates": 2161040,
+          "estimates": 214
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 143032,
+          "fallback": 2910,
+          "fair": 14,
+          "searches": 148253,
+          "nodes": 13459132,
+          "task_limits": 10256,
+          "node_limits": 2932,
+          "deadlines": 0,
+          "empty": 2910,
+          "skipped_empty": 2910,
+          "sampled": 186240,
+          "sample_deadlines": 0,
+          "improved": 2909,
+          "pickup_estimate": 7883271,
+          "chain_estimate": 35997069,
+          "route_queries": 235087523,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull0_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 0,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 139677,
+      "completed_per_1000": [
+        23039,
+        29153,
+        29303,
+        29116,
+        29066
+      ],
+      "trajectory_sha256": "455361244a747c6e6de26fa0c0123ad5df8bbb5b5b2040af53b1b98f70065a81",
+      "mean_entry_ms": 251.6973665804009,
+      "max_entry_seconds": 0.842997343,
+      "average_cpu_cores": 1.193852579552617,
+      "peak_rss_bytes": 11890946048,
+      "wall_seconds": 1331.913,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 320.02206666666666,
+        "p90": 659
+      },
+      "finished_utc": "2026-09-19T17:40:47.353129+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8882301,
+        "empty_turn_actions": 653012,
+        "empty_wait_actions": 535888
+      },
+      "full_empty_robot_steps": 10071201,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 150744,
+        "guided": 47445034,
+        "fallback": 2552272
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 132826,
+          "pops": 648314656,
+          "states": 643161629,
+          "cells": 169415863,
+          "candidates": 1453206,
+          "limits": 45907,
+          "cached_estimates": 2443631,
+          "approximate_estimates": 93809,
+          "warmup_calls": 110
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 101797,
+          "fallback": 41950,
+          "fair": 14,
+          "searches": 146062,
+          "nodes": 661830585,
+          "task_limits": 97214,
+          "node_limits": 48848,
+          "deadlines": 0,
+          "empty": 41957,
+          "skipped_empty": 41946,
+          "sampled": 2684800,
+          "sample_deadlines": 0,
+          "improved": 37646,
+          "pickup_estimate": 8660026,
+          "chain_estimate": 35489848,
+          "route_queries": 236107372,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull16_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 16,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 141725,
+      "completed_per_1000": [
+        23667,
+        29490,
+        29519,
+        29605,
+        29444
+      ],
+      "trajectory_sha256": "27672360cd4508975f6fc756daff211a634a84d9e73c59ce6c0e224d1fbc18b6",
+      "mean_entry_ms": 274.55820109179945,
+      "max_entry_seconds": 0.860277068,
+      "average_cpu_cores": 1.393428842739905,
+      "peak_rss_bytes": 11933315072,
+      "wall_seconds": 1446.834,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 313.8861333333333,
+        "p90": 644
+      },
+      "finished_utc": "2026-09-19T17:42:42.270841+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8444423,
+        "empty_turn_actions": 659626,
+        "empty_wait_actions": 515881
+      },
+      "full_empty_robot_steps": 9619930,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 152144,
+        "guided": 47379483,
+        "fallback": 2617795
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 60271,
+          "pops": 279138150,
+          "states": 277048295,
+          "cells": 73103763,
+          "candidates": 677539,
+          "limits": 19057,
+          "cached_estimates": 1096419,
+          "approximate_estimates": 39676,
+          "warmup_calls": 110
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 16,
+          "threads": 4,
+          "fields": 74670,
+          "pops": 11699765096,
+          "states": 11524866480,
+          "searches": 74670,
+          "scans": 375508080,
+          "candidates": 1194720,
+          "estimates": 63
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 125474,
+          "fallback": 20392,
+          "fair": 14,
+          "searches": 148177,
+          "nodes": 292654079,
+          "task_limits": 51509,
+          "node_limits": 21998,
+          "deadlines": 0,
+          "empty": 20398,
+          "skipped_empty": 20392,
+          "sampled": 1305088,
+          "sample_deadlines": 0,
+          "improved": 17467,
+          "pickup_estimate": 8251293,
+          "chain_estimate": 35986837,
+          "route_queries": 236213329,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull32_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 32,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 142735,
+      "completed_per_1000": [
+        23688,
+        29699,
+        29921,
+        29748,
+        29679
+      ],
+      "trajectory_sha256": "8a082325b046b70e3b84a3992808b774f68c8ad0e2c4f680a91a56df46b9d13f",
+      "mean_entry_ms": 283.0565551549989,
+      "max_entry_seconds": 0.863581749,
+      "average_cpu_cores": 1.4710454624828762,
+      "peak_rss_bytes": 11936342016,
+      "wall_seconds": 1489.426,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.8314,
+        "p90": 646
+      },
+      "finished_utc": "2026-09-19T17:43:24.869257+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8142716,
+        "empty_turn_actions": 664661,
+        "empty_wait_actions": 508675
+      },
+      "full_empty_robot_steps": 9316052,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 152923,
+        "guided": 47349938,
+        "fallback": 2647402
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 5505,
+          "pops": 25477756,
+          "states": 25285934,
+          "cells": 6672421,
+          "candidates": 61648,
+          "limits": 1740,
+          "cached_estimates": 101346,
+          "approximate_estimates": 3773,
+          "warmup_calls": 110
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 32,
+          "threads": 4,
+          "fields": 130502,
+          "pops": 20450277429,
+          "states": 20142200688,
+          "searches": 130502,
+          "scans": 656415354,
+          "candidates": 2088032,
+          "estimates": 179
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 142400,
+          "fallback": 4532,
+          "fair": 14,
+          "searches": 149243,
+          "nodes": 38993685,
+          "task_limits": 14060,
+          "node_limits": 4681,
+          "deadlines": 0,
+          "empty": 4532,
+          "skipped_empty": 4532,
+          "sampled": 290048,
+          "sample_deadlines": 0,
+          "improved": 4088,
+          "pickup_estimate": 7987115,
+          "chain_estimate": 36243731,
+          "route_queries": 236375982,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    },
+    {
+      "case": "flow4_scale4_margin25_refresh512_turnbuild128_pickupfull64_fthreads4_work4m_prep4-s2-r0",
+      "seed": 2,
+      "full_fields": 64,
+      "full_threads": 4,
+      "cost_key": 0,
+      "tasks": 142988,
+      "completed_per_1000": [
+        23866,
+        29750,
+        29906,
+        29730,
+        29736
+      ],
+      "trajectory_sha256": "882365d6d38f20545c330706461c18ec8035710ba58b9f41a1ce8dd6e7d9d0b6",
+      "mean_entry_ms": 285.0741942365996,
+      "max_entry_seconds": 0.84669293,
+      "average_cpu_cores": 1.4731963954253673,
+      "peak_rss_bytes": 11378692096,
+      "wall_seconds": 1498.942,
+      "outstanding_task_age": {
+        "n": 15000,
+        "mean": 314.34473333333335,
+        "p90": 645
+      },
+      "finished_utc": "2026-09-19T17:43:34.384352+00:00",
+      "evidence": "experiments/construction-20260918/results/pickup-full-full-v42",
+      "full_empty_actions": {
+        "empty_forward_actions": 8117573,
+        "empty_turn_actions": 661359,
+        "empty_wait_actions": 503091
+      },
+      "full_empty_robot_steps": 9282023,
+      "orientation": {
+        "steps": 5000,
+        "enabled": 1,
+        "turn_first": 1,
+        "build_limit": 128,
+        "builds": 152953,
+        "guided": 47342966,
+        "fallback": 2653842
+      },
+      "last_counters": {
+        "cgar-pickup-flow": {
+          "t": 4800,
+          "enabled": 1,
+          "node_limit": 8192,
+          "snapshot_publication": 10,
+          "searches": 0,
+          "pops": 0,
+          "states": 0,
+          "cells": 0,
+          "candidates": 0,
+          "limits": 0,
+          "cached_estimates": 0,
+          "approximate_estimates": 0,
+          "warmup_calls": 110
+        },
+        "cgar-pickup-full": {
+          "t": 4800,
+          "robot_limit": 64,
+          "threads": 4,
+          "fields": 136234,
+          "pops": 21347984913,
+          "states": 21026900496,
+          "searches": 136234,
+          "scans": 685295090,
+          "candidates": 2179744,
+          "estimates": 177
+        },
+        "cgar-scheduler": {
+          "t": 4800,
+          "repair": 1,
+          "samples": 64,
+          "pickup_weight": 1,
+          "calls": 4801,
+          "local": 144244,
+          "fallback": 2915,
+          "fair": 14,
+          "searches": 149470,
+          "nodes": 13515929,
+          "task_limits": 10295,
+          "node_limits": 2941,
+          "deadlines": 0,
+          "empty": 2915,
+          "skipped_empty": 2915,
+          "sampled": 186560,
+          "sample_deadlines": 0,
+          "improved": 2914,
+          "pickup_estimate": 7966553,
+          "chain_estimate": 36300319,
+          "route_queries": 236171800,
+          "route_manhattan": 11079,
+          "global_samples": 0,
+          "global_evaluations": 0,
+          "global_assignments": 0
+        }
+      }
+    }
+  ],
+  "control_mean_tasks": 139320.0,
+  "groups": [
+    {
+      "full_fields": 16,
+      "mean_tasks": 140711.0,
+      "mean_effect_percent": 0.9984209015216683,
+      "pairs": [
+        {
+          "seed": 0,
+          "task_difference": 734,
+          "final1000_difference": 70,
+          "empty_robot_steps_percent": -4.388061646599429,
+          "age_p90_difference": -22
+        },
+        {
+          "seed": 2,
+          "task_difference": 2048,
+          "final1000_difference": 378,
+          "empty_robot_steps_percent": -4.480806211692134,
+          "age_p90_difference": -15
+        }
+      ],
+      "status": "two-seed candidate; six-seed confirmation required"
+    },
+    {
+      "full_fields": 32,
+      "mean_tasks": 106389.0,
+      "mean_effect_percent": -23.636950904392762,
+      "pairs": [
+        {
+          "seed": 0,
+          "task_difference": -68920,
+          "final1000_difference": -23883,
+          "empty_robot_steps_percent": -5.052835194774907,
+          "age_p90_difference": 2671
+        },
+        {
+          "seed": 2,
+          "task_difference": 3058,
+          "final1000_difference": 613,
+          "empty_robot_steps_percent": -7.498102758548852,
+          "age_p90_difference": -13
+        }
+      ],
+      "status": "rejected: seed0 collapse"
+    },
+    {
+      "full_fields": 64,
+      "mean_tasks": 142408.5,
+      "mean_effect_percent": 2.2168389319552118,
+      "pairs": [
+        {
+          "seed": 0,
+          "task_difference": 2866,
+          "final1000_difference": 401,
+          "empty_robot_steps_percent": -7.601436676331053,
+          "age_p90_difference": -12
+        },
+        {
+          "seed": 2,
+          "task_difference": 3311,
+          "final1000_difference": 670,
+          "empty_robot_steps_percent": -7.835986989039345,
+          "age_p90_difference": -14
+        }
+      ],
+      "status": "two-seed candidate; six-seed confirmation required"
+    }
+  ],
+  "promoted_as_benchmark_reference": false,
+  "interpretation": "Fields16 and64 improve both totals and final windows, with lower outstanding agep90. Fields32 collapses seed0 despite valid time/memory. This is not monotone in field count and does not establish that global HRRN dispatch is intrinsically bad. Counters are last logged snapshots; compare full travel separately."
+}

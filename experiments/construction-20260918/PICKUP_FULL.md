@@ -69,3 +69,31 @@ seeds0/2,5000steps. Eight cases run concurrently on disjoint four-core allocatio
 [pickup-full-variants.json](pickup-full-variants.json).
 The control is v41's graded pickup-flow policy, still under evaluation against the
 confirmed graded reference; it is not silently substituted for that reference.
+
+## Full results and confirmation
+
+All eight full tests completed with valid decisions, maximum0.886371s and peak
+RSS11.937GB. Both disabled controls exactly reproduce the v41graded/pickup-ON
+full trajectories. Exact tested source:[4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5).
+
+| Fields | Seed0 | Seed2 | Mean vs disabled | Final1000 differences |
+|---|---:|---:|---:|---|
+|0|138963|139677|reference|reference|
+|16|139697|141725|+0.998%|+70/+378|
+|32|70043|142735|−23.637%|−23883/+613|
+|64|141829|142988|+2.217%|+401/+670|
+
+Fields16/64 also lower outstanding agep90 on both seeds. Fields64 reduces total
+empty robot-steps7.60%/7.84%, averages285.1–287.1ms per entry and1.466–1.473CPU
+cores, reaches11.898GB RSS and takes24.98–25.17minutes. The32-field seed0 failure
+is a policy collapse, ending with5433tasks in its final1000steps; decisions remain
+valid. The response is not monotone in quota, and64's improvement contradicts
+a blanket claim that global HRRN discovery must hurt. No causal explanation yet.
+[Complete comparison](results/pickup-full-full-v42/comparison.json).
+
+Job8898882/analysis8898883 confirms0/16/64 on seeds1/3/4/5:12simultaneous cases
+on48reserved physical cores, four cores per process,192GiB aggregate reservation
+and32decimalGB per-process cap. Both candidate policies remain unpromoted until
+that completes. The CPU-affinity guard omission found by Fable is fixed in v43;
+v42benchmarks explicitly allocate four cores to four threads, so their allocation
+is valid. See [cost-key follow-up](PICKUP_COST_KEY.md).

@@ -1,0 +1,66 @@
+{
+  "scope": "Four full graded pickup OFF/ON trajectories. Independent assignment/loaded-travel accounting passes the release/reassignment fixture and matches every full empty-motion counter. Different completed cohorts prevent a causal additive split.",
+  "checked_utc": "2026-09-19T17:43:57.800053+00:00",
+  "exact_production_source_commit": "eb5b3827b9daf9f91aba88c78bef7be0d17cd07c",
+  "rows": [
+    {
+      "seed": 0,
+      "pickup_flow": 0,
+      "tasks": 138402,
+      "completed_chain_mean": 242.3339402609789,
+      "completed_loaded_elapsed_mean": 278.1580251730466,
+      "loaded_elapsed_per_shortest_cell": 1.1478294161910931,
+      "empty_robot_steps": 10124626,
+      "first_assignment_pickup_delay": 68.36386478311633,
+      "first_assignment_pickup_shortest": 56.60616272173397,
+      "input_sha256": "6d115ceccc5a736802664d5b2022ecd9748fb44f5548e31174baa84c7ab5c852"
+    },
+    {
+      "seed": 0,
+      "pickup_flow": 1,
+      "tasks": 138963,
+      "completed_chain_mean": 242.5524779977404,
+      "completed_loaded_elapsed_mean": 278.17760123198263,
+      "loaded_elapsed_per_shortest_cell": 1.14687594011954,
+      "empty_robot_steps": 9959933,
+      "first_assignment_pickup_delay": 66.98744601992587,
+      "first_assignment_pickup_shortest": 56.245417433225455,
+      "input_sha256": "a8859c9695480c4bc4845763cfc251367dfe287ca65ecd43339dd477598562b3"
+    },
+    {
+      "seed": 2,
+      "pickup_flow": 0,
+      "tasks": 139303,
+      "completed_chain_mean": 242.31753802861388,
+      "completed_loaded_elapsed_mean": 275.602047335664,
+      "loaded_elapsed_per_shortest_cell": 1.137359060255555,
+      "empty_robot_steps": 10220869,
+      "first_assignment_pickup_delay": 68.5961558046535,
+      "first_assignment_pickup_shortest": 56.702603301355914,
+      "input_sha256": "387e4e7c6968a1f33d5efad072ca1dc156ce14d78f2d95043c2ce443de361244"
+    },
+    {
+      "seed": 2,
+      "pickup_flow": 1,
+      "tasks": 139677,
+      "completed_chain_mean": 242.59523758385419,
+      "completed_loaded_elapsed_mean": 275.97682510363194,
+      "loaded_elapsed_per_shortest_cell": 1.137601990262646,
+      "empty_robot_steps": 10071201,
+      "first_assignment_pickup_delay": 67.44095106561595,
+      "first_assignment_pickup_shortest": 56.373198259904974,
+      "input_sha256": "77aeffb62bc83955c448cb802bc139e210dbdf991806d4a0d3b23da501e1713f"
+    }
+  ],
+  "kittyknight_local_reference": {
+    "tasks": 152981,
+    "completed_chain_mean": 233.8357050875599,
+    "completed_loaded_elapsed_mean": 252.5184303933168,
+    "loaded_elapsed_per_shortest_cell": 1.0798968031796563,
+    "empty_robot_steps": 10049537,
+    "evidence": "experiments/construction-20260918/results/travel/kittyknight.json",
+    "limitation": "Local KittyKnight used38.858GB, above the CGAR32GB cap; not an official equal-resource comparison. Last-assignment delay is affected by frequent reassignment and is not comparable to whole empty travel."
+  },
+  "diagnostic_map_matches_all_simulator_inputs": true,
+  "diagnostic_cpp_matches_archived_provenance": true
+}

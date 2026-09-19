@@ -1,8 +1,8 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 17:21:20 UTC.
+Updated: 2026-09-19 17:48:16 UTC.
 
-**Current six-seed reference: 138,948 mean tasks**, graded strength4/scale4 with margin25 and turn-build128, range **138,304–139,716**. It improves all six full totals over binary margin25/build128 (**+0.611%** in the mean); four of six final windows improve. Normal pickup-flow alignment adds0.559% on its first two matched binary-margin50 seeds and is now being tested with graded costs. Its aggressive HRRN0/weight5 setting collapses on seed2 and is rejected. The absolute historical peak remains **139,796**, also from a rejected policy. The target remains unmet.
+**Current six-seed reference: 138,948 mean tasks**, graded strength4/scale4 with margin25 and turn-build128, range **138,304–139,716**. It improves all six full totals over binary margin25/build128 (**+0.611%** in the mean); four of six final windows improve. Normal pickup-flow alignment on graded costs adds0.337% on seeds0/2 and is undergoing six-seed confirmation. Complete pickup fields improve further:16fields mean140,711 (+0.998%) and64fields mean142,408.5 (+2.217%) against their graded/pickup-ON control. Both improve totals/final windows and lower agep90 on seeds0/2; confirmation is running. The32-field policy collapses seed0 and is rejected. The new absolute peak is **142,988**, a two-seed candidate result. The target remains unmet.
 
 The local KittyKnight reference is **152,981**. The confirmed mean is **9.17% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
@@ -45,6 +45,9 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 15:55:29 | 139,037 | Margin25 + turn builds128 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-turn-interaction-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
 | 2026-09-19 16:13:44 | 139,303 | Graded scale4/strength4, margin25 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · six-seed reference confirmed |
 | 2026-09-19 16:13:53 | 139,796 | Graded scale4/strength4, margin0 / 2 | [5c7f0fa](https://github.com/fywu85/lorr/commit/5c7f0faa7968c0dcd5c7f8e1ec3d2ba7b6534a27) | [data](experiments/construction-20260918/results/flow-graded-turn128-full-v39/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v39/) · rejected: seed0 collapses |
+| 2026-09-19 17:42:42 | 141,725 | Complete pickup fields16 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · two seeds; confirmation running |
+| 2026-09-19 17:43:24 | 142,735 | Complete pickup fields32 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · rejected: seed0 collapses |
+| 2026-09-19 17:43:34 | 142,988 | Complete pickup fields64 / 2 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-full-v42/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v42/) · two seeds; confirmation running |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -87,9 +90,13 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | Margin25 + turn-build128 | Six seeds: **137,149 /138,572 /139,037 /137,535 /137,875 /138,457**, mean **138,104.2** | **Confirmed intermediate reference.** All six full totals and five final windows improve, mean **+0.752%** over margin50/build128. Seed3 final window is109tasks lower. All12runs valid and all six controls exact. [Evidence](experiments/construction-20260918/results/flow-turn-interaction-six-seed-v39.json). |
 | Graded penalties, strength4/scale4, margin25 | Six seeds: **138,402 /139,716 /139,303 /138,506 /138,304 /139,457**, mean **138,948** | **Current benchmark reference.** All six totals improve; mean **+0.611%**. Final windows improve on four seeds; seeds2/4 lose153/134tasks. All12runs valid and six controls exact. [Evidence](experiments/construction-20260918/results/flow-graded-six-seed-v39.json). |
 | Graded penalties, zero confidence threshold | Seeds0/2: **56,537 /139,796** | **Rejected.** Seed0 final window collapses to5,770tasks despite all complete decisions meeting time/memory limits. Its historical peak stays visible. [Evidence](experiments/construction-20260918/results/flow-graded-turn128-full-v39/comparison.json). |
-| Heading/traffic pickup costs, ordinary HRRN | Seeds0/2: **137,508 /137,923**, mean **137,715.5** | Both totals/final windows improve over binary margin50/build128 (**+0.559%**); outstanding agep90 rises. Testing the combination with graded costs. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
+| Heading/traffic pickup costs, ordinary HRRN | Seeds0/2: **137,508 /137,923**, mean **137,715.5** | Both totals/final windows improve over binary margin50/build128 (**+0.559%**); outstanding agep90 rises. The graded combination also improves its first two seeds; six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
 | Heading/traffic pickup costs, direct cost/weight5 | Seeds0/2: **138,242 /49,732** | **Rejected.** Seed2 ends with4,522tasks in its final window; matched disabled controls137,603/136,560 stay healthy. All decisions valid, so this is a policy collapse. [Evidence](experiments/construction-20260918/results/pickup-flow-full-v41/comparison.json). |
 | Double orientation-cache allowance |8/16GiB produce the same full trajectories on both binary-margin25 seeds | Saves197/217rebuilds without changing guided/fallback counts or throughput. Retain8GiB. [Evidence](experiments/construction-20260918/results/turn-cache-capacity-full-v39/comparison.json). |
+| Graded pickup flow | Seeds0/2: **138,963 /139,677**, mean139,320 | +0.337%; both totals/final windows improve, empty robot-steps down1.63%/1.46%, agep90 rises18/20. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/graded-pickup-flow-full-v41/comparison.json). |
+| Complete pickup fields16 | Seeds0/2: **139,697 /141,725**, mean140,711 | +0.998% above graded pickup ON; both totals/final windows/agep90 improve. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
+| Complete pickup fields32 | Seeds0/2: **70,043 /142,735** | **Rejected.** Seed0 finalwindow5,433 despite valid complete decisions. Historical high retained. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
+| Complete pickup fields64 | Seeds0/2: **141,829 /142,988**, mean142,408.5 | +2.217% above graded pickup ON; both totals/final windows/agep90 improve. Six-seed confirmation running. [Evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
@@ -137,6 +144,11 @@ comparison with the stronger build128 reference loses0.085%, so this policy is n
 Four full-size search workers average271–277ms per decision and2.60–2.63CPU
 cores, but add only0.204% throughput on seeds0/2; they are not promoted.
 [Parallel-search evidence](experiments/construction-20260918/results/flow-refresh-workers-full-v33/comparison.json).
+
+The unconfirmed64-field candidate averages285.1–287.1ms, uses1.466–1.473CPU
+cores, reaches11.898GB RSS, and takes24.98–25.17minutes on its two full seeds.
+Its peak entry is874.2ms; these are candidate resources, distinct from the
+six-seed confirmed reference above. [Candidate evidence](experiments/construction-20260918/results/pickup-full-full-v42/comparison.json).
 
 ## Updating this log
 

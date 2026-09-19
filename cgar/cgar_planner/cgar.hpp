@@ -421,6 +421,7 @@ private:
     int pickup_flow_nodes_ = 8192;
     OrientedPickupSearch pickup_search_;
     int pickup_full_robots_ = 0, pickup_full_threads_ = 4;
+    bool pickup_full_cost_key_ = false;
     std::vector<CompletePickupSearch> pickup_full_workers_;
     std::vector<FullPickupField> pickup_full_fields_;
     int turn_build_limit_ = 32;

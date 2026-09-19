@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <thread>
 #include <exception>
+#include <sched.h>
 using namespace cgar;
 int nb(int u,int d,int R,int C) {
  int r=u/C,c=u%C;
@@ -399,12 +400,32 @@ void complete_pickup_scheduler_regression() {
  setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
  setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
  setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_HRRN","0",1);setenv("CGAR_PICKUP_WEIGHT","1",1);
- for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_PICKUP_FULL_ROBOTS","-1"},{"CGAR_PICKUP_FULL_ROBOTS","65"},{"CGAR_PICKUP_FULL_THREADS","0"},{"CGAR_PICKUP_FULL_THREADS","33"}}){
+ for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_PICKUP_FULL_ROBOTS","-1"},{"CGAR_PICKUP_FULL_ROBOTS","65"},{"CGAR_PICKUP_FULL_THREADS","0"},{"CGAR_PICKUP_FULL_THREADS","33"},{"CGAR_PICKUP_FULL_COST_KEY","-1"},{"CGAR_PICKUP_FULL_COST_KEY","2"},{"CGAR_PICKUP_FULL_COST_KEY","1"}}){
   setenv(invalid.first,invalid.second,1);auto e=blank();Cgar c;bool rejected=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}unsetenv(invalid.first);if(!rejected)throw std::runtime_error("invalid complete pickup configuration accepted");
  }
  setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);setenv("CGAR_PICKUP_FLOW","0",1);
  {auto e=blank();Cgar c;bool rejected=false;try{c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}if(!rejected)throw std::runtime_error("complete pickup accepted missing published metric provider");}
  setenv("CGAR_PICKUP_FLOW","1",1);
+ // Test the real operating-system affinity guard, including when temporal
+ // planning is disabled. Restore the calling thread's allocation on every path.
+ {cpu_set_t original,single;CPU_ZERO(&original);CPU_ZERO(&single);
+  if(sched_getaffinity(0,sizeof(original),&original))throw std::runtime_error("cannot inspect regression CPU affinity");
+  for(int cpu=0;cpu<CPU_SETSIZE;++cpu)if(CPU_ISSET(cpu,&original)){CPU_SET(cpu,&single);break;}
+  if(!CPU_COUNT(&single)||sched_setaffinity(0,sizeof(single),&single))throw std::runtime_error("cannot restrict regression CPU affinity");
+  try{
+   for(const char* temporal:{"0","1"}){
+    setenv("CGAR_TEMPORAL",temporal,1);setenv("CGAR_PICKUP_FULL_ROBOTS","2",1);setenv("CGAR_PICKUP_FULL_THREADS","2",1);
+    auto e=blank();e.num_of_agents=2;e.curr_states.push_back(State(1,0,0));e.curr_task_schedule.push_back(-1);e.goal_locations.resize(2);
+    bool rejected=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument& error){rejected=std::string(error.what()).find("CPU affinity")!=std::string::npos;}
+    if(!rejected)throw std::runtime_error("complete pickup silently oversubscribed a one-CPU allocation");
+    // A one-field quota can use only one worker even if the configured ceiling
+    // is larger. A disabled feature needs no workers at all.
+    for(const char* quota:{"1","0"}){setenv("CGAR_PICKUP_FULL_ROBOTS",quota,1);setenv("CGAR_PICKUP_FULL_THREADS","32",1);Cgar c;c.initialize(&e,1000);}
+   }
+  }catch(...){sched_setaffinity(0,sizeof(original),&original);throw;}
+  if(sched_setaffinity(0,sizeof(original),&original))throw std::runtime_error("cannot restore regression CPU affinity");
+  setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);unsetenv("CGAR_PICKUP_FULL_THREADS");
+ }
  // Before publication, enabling complete fields leaves the candidate policy alone.
  {auto e=blank();Task t;t.task_id=0;t.locations={e.curr_states[0].location+1};e.task_pool.emplace(0,t);Cgar c;c.initialize(&e,1000);std::vector<int>proposed;c.schedule(&e,1000,proposed);
   if(proposed!=std::vector<int>{0}||c.stats().pickup_full_fields)throw std::runtime_error("complete pickup bypassed publication warmup");}
@@ -437,8 +458,23 @@ void complete_pickup_scheduler_regression() {
   if(proposed!=std::vector<int>({0,1})||c.stats().pickup_full_fields!=1||c.stats().pickup_flow_searches<1||e.curr_task_schedule!=std::vector<int>({-1,-1})||e.task_pool.at(0).agent_assigned!=-1||e.task_pool.at(1).agent_assigned!=-1)
    throw std::runtime_error("complete pickup quota lost an assignment, uniqueness or metadata isolation");
  }
- for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_HRRN","CGAR_PICKUP_WEIGHT","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS"})unsetenv(key);
- std::cout<<"COMPLETE_PICKUP_FIELDS passed serial_parallel_exact=1 in_search_timeout=1 joined_after_failure=1 scratch_reuse=1 invalid_costs=1 cold_default=1 beyond_local_shortlist=1 fair_admission=1 started_immutable=1 fixed_robot_quota=1\n";
+ // Separate the shortlist key from final assignment ranking. Sixteen cheap
+ // recent tasks exclude a more costly old task only in cost-key discovery.
+ // Direct-cost dispatch stays identical; age-weighted dispatch differs, and
+ // oldest-task admission must still override either shortlist on its next call.
+ for(const char* hrrn:{"0","1"})for(const char* key:{"0","1"}){
+  setenv("CGAR_HRRN",hrrn,1);setenv("CGAR_PICKUP_FULL_COST_KEY",key,1);setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
+  auto e=blank();Cgar c;c.initialize(&e,1000);std::vector<Action>offered;const std::array<Action,3>observed{Action::FW,Action::CR,Action::CR};
+  for(int t=0;t<3;++t){e.curr_timestep=t;c.plan(&e,1000,offered);auto states=step(e,e.curr_states,{observed[t]});if(states.empty())throw std::runtime_error("cost-key observation fixture invalid");e.curr_states=states;}
+  e.curr_timestep=100;const int at=e.curr_states[0].location;
+  for(int id=0;id<17;++id){Task task;task.task_id=id;task.t_revealed=id<16?99:0;task.locations=id<16?std::vector<int>{at-1,at-2}:std::vector<int>{at-10,at+10};e.task_pool.emplace(id,task);}
+  std::vector<int>proposed;c.schedule(&e,1000,proposed);const int expected=hrrn[0]=='1'&&key[0]=='0'?16:0;
+  if(proposed!=std::vector<int>{expected}||c.stats().pickup_full_candidates!=16)throw std::runtime_error("complete pickup shortlist key did not separate cost from age priority");
+  c.schedule(&e,1000,proposed);
+  if(proposed!=std::vector<int>{16}||c.stats().fair_assignments!=1||e.task_pool.at(16).t_revealed!=0||e.curr_task_schedule!=std::vector<int>{-1})throw std::runtime_error("cost-key shortlist bypassed fair admission or changed simulator metadata");
+ }
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_HRRN","CGAR_PICKUP_WEIGHT","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS","CGAR_PICKUP_FULL_COST_KEY"})unsetenv(key);
+ std::cout<<"COMPLETE_PICKUP_FIELDS passed serial_parallel_exact=1 in_search_timeout=1 joined_after_failure=1 scratch_reuse=1 invalid_costs=1 cold_default=1 beyond_local_shortlist=1 fair_admission=1 started_immutable=1 fixed_robot_quota=1 actual_cpu_affinity_guard=1 cost_key_and_hrrn=1\n";
 }
 
 void weighted_pickup_assignment() {

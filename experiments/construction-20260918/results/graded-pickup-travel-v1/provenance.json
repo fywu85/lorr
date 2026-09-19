@@ -1,0 +1,65 @@
+{
+  "source_sha256": "860fb749849c32054aed947ea17d37d14c2cb71deb6206744c956a59b17fffad",
+  "binary_sha256": "5c09d5989c1ce7821a927de38ad590673a17e7f5f1f169db765040e4290018f2",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-travel-v1-20260919/results/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-graded-pickup-travel-v1-20260919/results/decompose"
+  ],
+  "fixture_passed": true,
+  "allocation": {
+    "hostname": "research14",
+    "cpu_model": "AMD EPYC 7532 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      64
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ]
+    ],
+    "address_space_limit_bytes": [
+      4294967296,
+      4294967296
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "graded_pickup0_seed0": {
+      "path": "runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s0-r0/WAREHOUSE.json",
+      "sha256": "6d115ceccc5a736802664d5b2022ecd9748fb44f5548e31174baa84c7ab5c852"
+    },
+    "graded_pickup1_seed0": {
+      "path": "runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s0-r0/WAREHOUSE.json",
+      "sha256": "a8859c9695480c4bc4845763cfc251367dfe287ca65ecd43339dd477598562b3"
+    },
+    "graded_pickup0_seed2": {
+      "path": "runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow0_work4m_prep4-s2-r0/WAREHOUSE.json",
+      "sha256": "387e4e7c6968a1f33d5efad072ca1dc156ce14d78f2d95043c2ce443de361244"
+    },
+    "graded_pickup1_seed2": {
+      "path": "runs/cgar-graded-pickup-flow-full-v41-20260919/flow4_scale4_margin25_refresh512_turnbuild128_pickupflow1_work4m_prep4-s2-r0/WAREHOUSE.json",
+      "sha256": "77aeffb62bc83955c448cb802bc139e210dbdf991806d4a0d3b23da501e1713f"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}
