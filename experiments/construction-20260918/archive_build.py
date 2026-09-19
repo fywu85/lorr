@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--refresh', action='store_true', help='Recreate an existing archive from the same frozen build')
     args = parser.parse_args()
     raw, out = args.input.resolve(), args.output.resolve()
     request = json.loads((raw / 'requested.json').read_text())
@@ -26,11 +27,12 @@ def main():
                                   cwd=ROOT, capture_output=True, check=False)
         if original.returncode:
             assert b'does not exist' in original.stderr or b'exists on disk, but not in' in original.stderr, original.stderr
-        changes.extend(difflib.unified_diff(original.stdout.decode().splitlines(True),
+        for line in difflib.unified_diff(original.stdout.decode().splitlines(True),
                        contents.decode().splitlines(True),
                        fromfile='a/' + name if not original.returncode else '/dev/null',
-                       tofile='b/' + name))
-    out.mkdir(parents=True, exist_ok=False)
+                       tofile='b/' + name):
+            changes.append(line if line.endswith('\n') else line + '\n\\ No newline at end of file\n')
+    out.mkdir(parents=True, exist_ok=args.refresh)
     for name in ['requested.json', 'build.json', 'allocation.json', 'submission.json']:
         if (raw / name).exists():
             shutil.copy2(raw / name, out / name)

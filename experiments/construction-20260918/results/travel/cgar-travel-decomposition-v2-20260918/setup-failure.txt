@@ -1,0 +1,11 @@
+DECOMPOSITION_COMPLETE /shared/share_mala/fw2449/lorr2024/runs/cgar-travel-decomposition-v2-20260918/results/fixture-result.json
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  invalid replay position
+Traceback (most recent call last):
+  File "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/decompose.py", line 65, in <module>
+    main()
+  File "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/decompose.py", line 57, in main
+    str(target), str(out / (name + '.json'))], check=True)
+  File "/usr/lib/python3.7/subprocess.py", line 487, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/shared/share_mala/fw2449/lorr2024/runs/cgar-travel-decomposition-v2-20260918/results/decompose', '/shared/share_mala/fw2449/lorr2024/mr24/warehouse.domain/maps/warehouse_large.map', '/shared/share_mala/fw2449/lorr2024/runs/cgar-temporal-full-v1-20260918/orientation_8192-s0-r0/WAREHOUSE.json', '/shared/share_mala/fw2449/lorr2024/runs/cgar-travel-decomposition-v2-20260918/results/cgar_cache.json']' died with <Signals.SIGABRT: 6>.
