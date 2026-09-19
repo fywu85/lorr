@@ -121,18 +121,47 @@ path, then an endpoint-symbol parsing mistake); corrected outputs are used here.
 
 ## Further experiments
 
-`CGAR_GLOBAL_SAMPLES=64` adds a bounded global shortlist even when local candidates
-exist. The independent oldest-task admission remains active. Combined with direct
-cost ranking and pickup weight 5, the first full seed-0 run completes **109,676**
-tasks, with maximum entry time **0.560785880 s**. The matched scheduler matrix is
-still running; this is exploratory, not a six-seed promotion.
+The complete [scheduler matrix](results/scheduler-v7/) uses seed 0, 5,000 steps,
+one reserved physical core and 24 GiB on EPYC 9354. Every row has 5,000 exact
+entry samples, zero planner/scheduler errors, zero timeouts and measured process
+RSS below 32,000,000,000 bytes.
 
-`CGAR_TEMPORAL_CANDIDATE_LIMIT` is a separate experiment in deterministic work
-allocation. Construction always completes, and the work threshold is checked
-only between complete repair attempts. The attempt cap also applies; elapsed
-time never selects a successful stopping point. Initial 50-step runs are used
-only to reject infeasible deadlines, never as throughput scores. No work-limit
-profile has yet earned a full-run performance claim.
+| Scheduler profile | Tasks | Final 1,000 steps | Maximum entry time | Outstanding task age p90 |
+|---|---:|---:|---:|---:|
+| Equal-weight 50k control | 107,457 | 22,002 | 0.512498093 s | 883 |
+| Direct cost, pickup weight 1 | 107,083 | 21,163 | 0.502938394 s | 4,048 |
+| Direct cost, pickup weight 5 | 109,836 | 21,876 | 0.545255089 s | 3,976 |
+| Direct cost, weight 5, global shortlist 64 | 109,676 | 21,808 | 0.560785880 s | 4,003 |
+| HRRN, global shortlist 64 | 106,743 | 21,844 | 0.566416250 s | 890 |
+
+Direct cost with pickup weight 5 gains 2.21% in total tasks, but its final-window
+rate is slightly lower and outstanding tasks are older. The independent oldest-task
+admission remains active. This is an exploratory scheduling tradeoff, not a
+six-seed promotion or an explanation of the remaining leader gap.
+
+`CGAR_TEMPORAL_CANDIDATE_LIMIT` is a separate deterministic work-allocation
+experiment. Construction always completes; the threshold is checked only between
+complete repair attempts, with an additional fixed attempt cap. Elapsed time
+never selects a successful stopping point. The first full 4M-candidate seed-0
+case completed **109,244** tasks, with maximum entry **0.807845086 s** and peak
+RSS **16,226,430,976 bytes**. Combining direct-cost dispatch, pickup weight 5 and the global-64 shortlist
+with that work limit reached **111,118**,
+with maximum entry **0.853630220 s** and peak RSS **16,195,612,672 bytes**.
+The same-build 50k control reproduced **107,457**, maximum entry **0.502940188 s**.
+All three complete runs passed timing, memory and zero-error checks. Their gains
+are 1.66% and 3.41% over the paired control; seed-0 exploration does not establish
+six-seed repeatability. The final 1,000-step counts are 22,002 (control), 22,456 (4M), and 22,215
+(combined scheduler/4M); outstanding task age p90 is 883, 850, and 3,972.
+The combined profile retains the direct-cost fairness tradeoff. Its 1.31% gain
+over the earlier matched 109,676 scheduler profile estimates the work-limit
+increment separately. [Full motion evidence](results/work-full-v8/). Short screens are
+used only to reject infeasible deadlines.
+
+Compact orientation tables preserve all compared short trajectories and reduce
+storage without increasing the logical cache capacity. Their pending full matrix
+runs two instances concurrently on disjoint reserved cores, within 24 GiB total
+reserved memory. Weighted turns and regional repair remain experimental until
+those full results arrive. [Implementation and evidence](ROUTING.md).
 
 The tested checkpoint is the optional equal-weight 50k profile. Source patches
 for every build are in [build-provenance](build-provenance/). Defaults remain

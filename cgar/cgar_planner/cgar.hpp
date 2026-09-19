@@ -103,26 +103,66 @@ private:
     std::vector<std::vector<int>> neighbors_;
 };
 
+// Lossless optional packing. A table with any finite value >= 65535 stays
+// 32-bit; unreachable entries retain kInf through a reserved 16-bit sentinel.
+// Logical cache capacity still uses the original 32-bit table size, preserving
+// admission and eviction decisions while reducing physical storage.
+class TurnTable {
+public:
+    TurnTable() = default;
+    explicit TurnTable(std::vector<int> values, bool compact) {
+        bool fits = compact;
+        if (fits) for (int value : values)
+            if (value != kInf && (value < 0 || value >= 65535)) { fits = false; break; }
+        if (fits) {
+            narrow_.reserve(values.size());
+            for (int value : values) narrow_.push_back(value == kInf ? 65535 : value);
+        } else wide_ = std::move(values);
+    }
+    int operator[](size_t index) const {
+        if (narrow_.empty()) return wide_[index];
+        const int value = narrow_[index]; return value == 65535 ? kInf : value;
+    }
+    size_t size() const { return narrow_.empty() ? wide_.size() : narrow_.size(); }
+    size_t storage_bytes() const { return wide_.size() * sizeof(int) + narrow_.size() * sizeof(uint16_t); }
+    bool is_compact() const { return !narrow_.empty(); }
+    bool operator!=(const TurnTable& other) const {
+        if (size() != other.size()) return true;
+        for (size_t i = 0; i < size(); ++i) if ((*this)[i] != other[i]) return true;
+        return false;
+    }
+private:
+    std::vector<int> wide_;
+    std::vector<uint16_t> narrow_;
+};
+
 // Shortest guidance costs over (cell, orientation), with unit forward cost and
 // an optional integer turn cost. The certified spatial potential remains in
 // DistanceOracle. Every cached reverse traversal is complete.
 class TurnDistanceOracle {
 public:
-    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1);
-    const std::vector<int>* find(int goal);
-    const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
-    int value(const std::vector<int>& table, int cell, int orientation) const;
+    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false);
+    void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
+    void discard_prefetch();
+    long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
+    const TurnTable* find(int goal);
+    const TurnTable* table(int goal, std::chrono::steady_clock::time_point deadline);
+    int value(const TurnTable& table, int cell, int orientation) const;
     bool has(int goal) const { return tables_.count(goal) != 0; }
     size_t capacity() const { return max_bytes_ / table_bytes_; }
     void retain(const std::unordered_set<int>& goals);
     void trim();
 private:
-    struct Entry { std::vector<int> dist; std::list<int>::iterator lru; };
+    struct Entry { TurnTable dist; std::list<int>::iterator lru; };
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
     std::vector<int> cells_, index_, queue_;
     int turn_cost_ = 1;
+    bool compact_ = false;
     std::vector<std::vector<int>> buckets_;
+    std::vector<int> compute(int goal, std::chrono::steady_clock::time_point deadline,
+                             std::vector<int>& queue, std::vector<std::vector<int>>& buckets) const;
+    std::unordered_map<int, std::vector<int>> prefetched_;
     std::list<int> lru_;
     std::unordered_map<int, Entry> tables_;
 };
@@ -273,7 +313,7 @@ private:
     std::mt19937_64 temporal_rng_{0};
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
-    int temporal_candidate_limit_ = 0, turn_cost_ = 1;
+    int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0;
     int temporal_workers_ = 1, temporal_threads_ = 1;
     bool temporal_regions_ = false;
     TemporalRegionOptions temporal_region_options_;

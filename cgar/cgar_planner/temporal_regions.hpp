@@ -14,6 +14,9 @@ struct TemporalRegionOptions {
 
 struct TemporalRegionStats {
     long long active_robots = 0, candidates = 0, repairs = 0, accepted = 0;
+    long long kept_regions = 0, reverted_regions = 0, frozen_crossers = 0;
+    double score_before = 0, score_after = 0;
+    std::vector<double> round_scores;
 };
 
 template<class Deadline>
@@ -36,7 +39,11 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         if (candidate < aspect) { aspect = candidate; row_parts = rp; col_parts = cp; }
     }
     std::vector<int> selected = initial.selections();
-    std::unique_ptr<TemporalPibt> merged;
+    // Compare fresh sums on both sides, avoiding accumulated round-0 drift
+    // when unequal robot weights produce nonintegral scores.
+    auto merged = std::make_unique<TemporalPibt>(cells, choices, protected_robots, power,
+        displacement_limit, 0, &selected);
+    stats.score_before = merged->score();
     for (int round = 0; round < options.rounds; ++round) {
         check();
         const int phase = round % 4;
@@ -59,14 +66,15 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
             // A robot whose existing path crosses a boundary stays fixed for
             // this round. Its complete reservations remain visible everywhere.
             const int region = allowed[selected[r]];
+            if (region < 0) ++stats.frozen_crossers;
             if (!protected_robots[r] && region >= 0) roots[region].push_back(r);
         }
         std::vector<uint64_t> seeds(options.parts);
         for (auto& seed : seeds) seed = rng();
+        // Declare masks first so they outlive the searches during destruction.
+        std::vector<std::vector<char>> fixed(options.parts, std::vector<char>(count, true));
         std::vector<std::unique_ptr<TemporalPibt>> results(options.parts);
         std::vector<std::exception_ptr> errors(options.parts);
-        // Masks must outlive their searches, including merging below.
-        std::vector<std::vector<char>> fixed(options.parts, std::vector<char>(count, true));
         for (int region = 0; region < options.parts; ++region)
             for (int r : roots[region]) fixed[region][r] = false;
         std::atomic<int> next{0};
@@ -93,7 +101,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         }
         work(); for (auto& thread : threads) thread.join();
         for (const auto& error : errors) if (error) std::rethrow_exception(error);
-        const double before = merged ? merged->score() : initial.score();
+        const double before = merged->score();
         const auto previous = selected;
         for (int region = 0; region < options.parts; ++region) if (results[region]) {
             for (int r = 0; r < count; ++r) {
@@ -106,11 +114,14 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
             const auto& observed = results[region]->stats;
             stats.candidates += observed.candidates; stats.repairs += observed.repairs;
             stats.accepted += observed.repairs_accepted;
+            stats.kept_regions += observed.repair_batches_kept;
+            stats.reverted_regions += observed.repair_batches_reverted;
         }
         // Reconstruct all reservations together. The constructor checks every
         // occupied cell and edge, so an invalid merge cannot escape the layer.
         merged = std::make_unique<TemporalPibt>(cells, choices, protected_robots, power,
             displacement_limit, 0, &selected);
+        stats.score_after = merged->score(); stats.round_scores.push_back(stats.score_after);
         if (merged->score() + 1e-6 < before)
             throw std::logic_error("regional repair reduced the complete-plan score");
         check();

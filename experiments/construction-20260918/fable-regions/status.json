@@ -1,6 +1,21 @@
 {
-  "status": "blocked_pending_specific_payload_approval",
+  "status": "completed",
   "attempts": 2,
-  "reason": "Automatic approval review rejected sending the new repository source/tests through Claude/Fable, despite earlier CLI authorization and a public-visibility metadata check. A specific approval question is pending; no review CLI process was started.",
-  "local_validation_continues": true
+  "reason": "Review completed after the user explicitly approved the exact source/test payload. Earlier automatic-review rejections remain recorded in the conversation.",
+  "local_validation_continues": true,
+  "user_approved_specific_payload": true,
+  "initialized_model": "claude-fable-5-1",
+  "review_build": "v11",
+  "review_tools": [
+    "Read",
+    "Grep",
+    "Glob"
+  ],
+  "review": "review.md",
+  "metadata": "metadata.json",
+  "validation_build": "v14",
+  "validated_findings": [
+    "Both legacy weighted-fallback corner stalls reproduced; 64 exact/fallback progress cases pass with the fix.",
+    "Regional fixtures improve 18/24 cases; 4,800 production region-thread comparisons are identical."
+  ]
 }

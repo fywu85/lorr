@@ -25,6 +25,25 @@ public:
         return value;
     }
 
+    // This local approximation knows only the first useful turn, not future
+    // corners. Keep it in unit-action units; a weighted surcharge would charge
+    // unseen corner turns without matching potential credit.
+    template<class Spatial, class Neighbor>
+    static int fallback_distance(int cell, int direction, int unreachable, Spatial spatial, Neighbor neighbor) {
+        const int d = spatial(cell);
+        if (d == 0 || d >= unreachable) return d;
+        int turns = 2;
+        for (int dir = 0; dir < 4; ++dir) {
+            const int to = neighbor(cell, dir);
+            if (to < 0) continue;
+            if (spatial(to) < d) {
+                const int delta = (dir - direction + 4) % 4;
+                turns = std::min(turns, delta == 3 ? 1 : delta);
+            }
+        }
+        return d + turns;
+    }
+
     // All candidates consume five unit-time slots. Charge only the extra cost
     // of real or terminal-wait rotations, so a costly turn cannot manufacture
     // heuristic progress. Goal completion retains the native terminal reward.

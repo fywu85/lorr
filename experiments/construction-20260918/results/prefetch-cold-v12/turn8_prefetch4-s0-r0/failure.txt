@@ -1,0 +1,8 @@
+WAREHOUSE.log
+[cgar-temporal-allocation] workers=1 threads=1 region_threads=0 allowed_cpus=4
+[cgar] certificate N=10000 free=38586 core=38586 promotion_arcs=102398 iterations=1 valid=1 capacity=10000 pockets=0 largest_pocket=0 secs=0.020 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=0 stall=0 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=10000 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 pickup_weight=1 calls=1 local=7283 fallback=2717 fair=0 searches=12297 nodes=12549749 task_limits=9568 node_limits=2729 deadlines=0 empty=2717 skipped_empty=2717 sampled=173888 sample_deadlines=0 improved=2716 pickup_estimate=398676 chain_estimate=1732260 route_queries=46483 route_manhattan=11079 global_samples=0 global_evaluations=0 global_assignments=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+[cgar-reassignment] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 swaps=0 estimated_saving=0 table_pairs=0 manhattan_pairs=0 primary_protected=0 recovery_protected=0 fair_protected=0
+CGAR_TIMEOUT timestep=40 elapsed_ms=1001.167 stage=temporal_repair

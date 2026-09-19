@@ -327,9 +327,9 @@ the original draft's outputs (or their committed summary when raw outputs are ab
 1000 ms per decision, and 30000 ms preprocessing. Results are single runs; task
 throughput and simulator error counts do not establish starvation freedom.
 
-CGAR currently computes on one core. On this GRID cluster, use a reserved allocation
-with one physical core per instance to avoid the interactive account's shared
-one-CPU quota:
+CGAR uses one core by default; optional temporal portfolio and regional repair
+can use explicitly reserved additional cores. On this GRID cluster, use a reserved
+allocation to avoid the interactive account's shared one-CPU quota:
 
 ```sh
 python3 tools/benchmark_gridengine.py --output runs/cgar-grid-new --jobs 10
@@ -344,3 +344,16 @@ the allocation and its differences from the competition's larger allowance.
 Recorded historical full-suite results: [sequential execution](../../benchmarks/mr24-20260917/summary.md) and [ten concurrent instances](../../benchmarks/mr24-parallel-20260918/summary.md). Both use the same production executable. The parallel run shares one CPU across the jobs; all ten horizons completed with zero errors or timeouts, with throughput differences documented in the report.
 
 The [sequential repeat](../../benchmarks/mr24-sequential-repeat-20260918/summary.md) documents remaining account contention. The [strict-deadline fallback study](../../experiments/throughput-20260918-strict/README.md) contains matched policy comparisons and shorter-horizon calibration.
+
+## Experimental orientation storage
+
+`CGAR_TURN_COMPACT=1` optionally packs complete orientation tables losslessly into
+16 bits, with a 32-bit fallback whenever a finite distance reaches 65,535. Logical
+cache capacity stays unchanged. Regression and matched short-trajectory checks
+pass; full-run memory validation is pending. This is a storage optimization,
+not a routing policy.
+
+`CGAR_TURN_PREFETCH_THREADS=1..32` speculatively builds complete tables using
+reserved threads before demand admission. It defaults to zero. Repeated cold
+checks found no timing benefit, so leave it disabled. See the
+[routing study](../../experiments/construction-20260918/ROUTING.md) for all outcomes.

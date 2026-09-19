@@ -1,47 +1,43 @@
 # Continuing warehouse work
 
-The goal remains 152,981 or more completed tasks over the full 5,000 steps,
-repeatably across six seeds, with complete one-second decisions and measured
-process memory below 32,000,000,000 bytes. Keep policies generic: no map-name
-branches, aisle templates, supplied map weights or map-specific fleet caps.
+Goal: at least 152,981 completed tasks over all 5,000 steps, repeatably over six
+seeds, complete one-second decisions, and measured process RSS below
+32,000,000,000 bytes. No map-name branches, aisle templates, supplied weights or
+map-specific fleet caps. The local leader reference exceeds the memory target;
+retain that resource difference when comparing.
 
-The validated checkpoint is the equal-weight 50k temporal profile: 107,413.3
-mean over seeds 0–2, and an identical seed-0 timing repeat at 107,457 with a
-0.5051-second maximum entry time. Six-seed confirmation remains outstanding.
+The established equal-weight 50k profile averages 107,413.3 over seeds 0–2.
+The strongest exploratory seed-0 result is 111,118: 4M fixed candidate work plus
+direct-cost dispatch, pickup weight 5, and a global shortlist of 64. Its paired
+control is 107,457. All complete 5,000 steps and pass timing/memory/error checks,
+but direct-cost dispatch leaves older outstanding tasks. This is not a six-seed
+promotion. See [RESULTS.md](RESULTS.md).
 
-Current experiment queue:
+Active queue:
 
-- `runs/cgar-temporal-scheduler-v7-20260918`, job 8898307: five full seed-0 cases
-  run sequentially. Global-64/direct-cost/weight-5 has finished at 109,676;
-  its same-build control has finished at 107,457. Direct cost with weights 1
-  and 5 has finished at 107,083 and 109,836. HRRN plus global-64 is still running.
-- `runs/cgar-temporal-work-full-v8-20260918`, job 8898333: held behind that
-  scheduler matrix, so full benchmark allocations do not overlap. It tests
-  4M candidates with and without the global-64 scheduler, plus the 50k control.
-  It requires the EPYC 9354 CPU model used by the local leader reference.
-- Both matrices reserve one physical core and 24 GiB total job memory. Short
-  diagnostics and analysis use smaller allocations. Record all failed cases.
+- Full reviewed matrix **8898387**, frozen build v14: six profiles, two concurrent
+  instances, four disjoint physical cores each, 24 GiB total reserved memory.
+  Compare compact control, turn costs 2/4, one/two regional rounds, and 25k global
+  plus two regional rounds. Cost 8 failed its screen and is excluded.
+- One-core analysis **8898389** after completion.
+- The approved Fable review is complete. Both old fallback corner defects are
+  reproduced and fixed; regional diagnostics and non-vacuous tests pass. See
+  fable-regions/assessment.md. Prefetch/compact storage were outside review scope.
 
-The 4M work setting passed a 50-step cold-start screen on EPYC 9354, but this is
-not full-run validation. The 5M and 6M settings leave little deadline margin;
-8M and several slower-CPU checks failed explicitly. Do not report their prefix
-task counts as performance scores.
+Build v14 passes the complete regressions and six 200-step deadline screens.
+All three unit-cost profiles preserve exact v13 50-step trajectories. Compact
+storage has verified lossless overflow fallback, but actual full RSS and complete
+control trajectory equality still need checking. Prefetch had no measured
+benefit and stays off. Earlier held full jobs were replaced with specs and
+cancellation records preserved; no running experiment was canceled.
 
-After each full matrix, run the compact analyzer with one reserved core, check
-exact entry timing, memory, errors and complete trajectory hashes, and compare
-final-1,000-step rates and all seed effects. Confirm the strongest candidate
-across six seeds before claiming repeatability.
+Prioritize loaded-motion efficiency: the earlier audit found 1.4888 steps per
+shortest-path cell for CGAR versus 1.0799 for KittyKnight. The 4M profile reduces
+loaded moves away from the spatial goal from 3.335M to 3.183M, a modest gain.
+Evaluate the weighted-turn and regional full results before combining features.
+Generic learned directional traffic costs, using only observed executed movement
+and a fixed warm-up before freezing costs, remain an unimplemented follow-up.
 
-The next substantive target is loaded-motion efficiency. The travel audit finds
-1.4888 steps per shortest-path cell for CGAR versus 1.0799 for KittyKnight, with
-only a 2.7% difference in completed chain length. Actual pre-pickup robot time,
-including abandoned assignments, is approximately one fifth for both. Stronger
-coordination and generic route guidance deserve priority over a larger independent
-portfolio, whose quality gain was only about 0.5%.
-
-Weighted turn guidance and deterministic parallel regional repair are now
-implemented as optional experiments, with regression and cold-deadline checks.
-Their full matrices are queued as jobs 8898338 and 8898343 respectively; see
-[ROUTING.md](ROUTING.md). Neither has a full-run performance result yet. Learned
-traffic costs remain an unimplemented possible follow-up. Preserve the protected
-CGAR progress mechanism and explicit failure contract in every variant.
+After each full matrix: check complete entry samples, all errors/timeouts, RSS,
+trajectory fingerprints, final-1,000-step rates, and seed effects. Confirm the
+strongest candidate across all six seeds before claiming repeatability.

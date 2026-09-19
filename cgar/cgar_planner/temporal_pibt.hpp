@@ -29,6 +29,7 @@ struct TemporalChoice {
 struct TemporalStats {
     long long roots = 0, accepted = 0, recursive_calls = 0, candidates = 0;
     long long budget_exhausted = 0, repairs = 0, repairs_accepted = 0;
+    long long repair_batches_kept = 0, repair_batches_reverted = 0;
     int max_depth = 0;
 };
 
@@ -83,10 +84,11 @@ public:
         // NMS compares the final search state to construction. Keep the same
         // rule; do not let wall-clock time choose a different stopping point.
         if (score_ <= best_score + 1e-6) {
+            ++stats.repair_batches_reverted;
             for (int r = 0; r < static_cast<int>(choices_.size()); ++r) remove(r);
             selected_ = std::move(best); score_ = 0;
             for (int r = 0; r < static_cast<int>(choices_.size()); ++r) add(r);
-        }
+        } else ++stats.repair_batches_kept;
     }
 
     const TemporalChoice& choice(int r) const { return choices_[r][selected_[r]]; }

@@ -1,0 +1,374 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -399,9 +399,9 @@
+     }
+ }
+ 
+-void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost) {
++void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost, bool compact) {
+     if (turn_cost < 1 || turn_cost > 16) throw std::invalid_argument("turn guidance cost must be in [1,16]");
+-    cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost;
++    cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost; compact_ = compact;
+     buckets_.assign(turn_cost_ + 1, {});
+     index_.assign(cert->free.size(), -1); cells_.clear();
+     for (size_t u = 0; u < cert->free.size(); ++u) if (cert->free[u]) {
+@@ -409,19 +409,20 @@
+     }
+     table_bytes_ = std::max<size_t>(1, cells_.size() * 4 * sizeof(int));
+     tables_.clear(); lru_.clear(); queue_.reserve(cells_.size() * 4);
+-}
+-
+-const std::vector<int>* TurnDistanceOracle::find(int goal) {
++    prefetched_.clear(); prefetched_builds = prefetched_hits = prefetched_discarded = 0;
++}
++
++const TurnTable* TurnDistanceOracle::find(int goal) {
+     const auto it = tables_.find(goal);
+     if (it == tables_.end()) return nullptr;
+     lru_.splice(lru_.begin(), lru_, it->second.lru);
+     return &it->second.dist;
+ }
+ 
+-const std::vector<int>* TurnDistanceOracle::table(int goal, std::chrono::steady_clock::time_point deadline) {
++std::vector<int> TurnDistanceOracle::compute(int goal, std::chrono::steady_clock::time_point deadline,
++                                             std::vector<int>& queue, std::vector<std::vector<int>>& buckets) const {
+     check_deadline(deadline, "turn_distance_table");
+-    if (const auto* cached = find(goal)) return cached;
+-    std::vector<int> dist(cells_.size() * 4, kInf); queue_.clear();
++    std::vector<int> dist(cells_.size() * 4, kInf); queue.clear();
+     const int gp = cert_->pocket[goal], root = index_.at(goal) * 4;
+     auto predecessors = [&](int node) {
+         const int cell = cells_[node / 4], d = node % 4;
+@@ -433,22 +434,22 @@
+     };
+     if (turn_cost_ == 1) {
+         // Preserve the original unit-cost traversal and cache contents exactly.
+-        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue_.push_back(root + d); }
+-        for (size_t head = 0; head < queue_.size(); ++head) {
++        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; queue.push_back(root + d); }
++        for (size_t head = 0; head < queue.size(); ++head) {
+             if ((head & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+-            const int node = queue_[head];
++            const int node = queue[head];
+             for (int v : predecessors(node)) if (v >= 0 && dist[v] == kInf) {
+-                dist[v] = dist[node] + 1; queue_.push_back(v);
++                dist[v] = dist[node] + 1; queue.push_back(v);
+             }
+         }
+     } else {
+         // Dial's bounded-integer Dijkstra: no heap and no partially cached table.
+-        for (auto& bucket : buckets_) bucket.clear();
+-        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; buckets_[0].push_back(root + d); }
++        for (auto& bucket : buckets) bucket.clear();
++        for (int d = 0; d < 4; ++d) { dist[root + d] = 0; buckets[0].push_back(root + d); }
+         size_t pending = 4, popped = 0; int distance = 0;
+         while (pending) {
+             if ((popped & 1023) == 0) check_deadline(deadline, "turn_distance_table");
+-            auto& bucket = buckets_[distance % buckets_.size()];
++            auto& bucket = buckets[distance % buckets.size()];
+             if (bucket.empty()) { ++distance; continue; }
+             const int node = bucket.back(); bucket.pop_back(); --pending; ++popped;
+             if (dist[node] != distance) continue;
+@@ -457,17 +458,72 @@
+                 const int next_distance = distance + (k == 2 ? 1 : turn_cost_);
+                 if (next_distance >= dist[pred[k]]) continue;
+                 dist[pred[k]] = next_distance;
+-                buckets_[next_distance % buckets_.size()].push_back(pred[k]); ++pending;
+-            }
+-        }
+-    }
++                buckets[next_distance % buckets.size()].push_back(pred[k]); ++pending;
++            }
++        }
++    }
++    check_deadline(deadline, "turn_distance_table_complete");
++    return dist;
++}
++
++const TurnTable* TurnDistanceOracle::table(int goal, std::chrono::steady_clock::time_point deadline) {
++    check_deadline(deadline, "turn_distance_table");
++    if (const auto* cached = find(goal)) return cached;
++    std::vector<int> dist;
++    const auto prefetched = prefetched_.find(goal);
++    if (prefetched != prefetched_.end()) {
++        dist = std::move(prefetched->second); prefetched_.erase(prefetched); ++prefetched_hits;
++    } else dist = compute(goal, deadline, queue_, buckets_);
++    TurnTable stored(std::move(dist), compact_);
+     check_deadline(deadline, "turn_distance_table_complete");
+     lru_.push_front(goal);
+-    auto added = tables_.emplace(goal, Entry{std::move(dist), lru_.begin()});
++    auto added = tables_.emplace(goal, Entry{std::move(stored), lru_.begin()});
+     return &added.first->second.dist;
+ }
+ 
+-int TurnDistanceOracle::value(const std::vector<int>& table, int cell, int orientation) const {
++void TurnDistanceOracle::discard_prefetch() {
++    prefetched_discarded += prefetched_.size(); prefetched_.clear();
++}
++
++void TurnDistanceOracle::prefetch(const std::vector<int>& goals, int threads,
++                                  std::chrono::steady_clock::time_point deadline) {
++    if (threads < 1 || threads > 32 || goals.size() > 32)
++        throw std::invalid_argument("invalid turn prefetch work limits");
++    discard_prefetch(); check_deadline(deadline, "turn_prefetch_start");
++    std::vector<int> worklist; std::unordered_set<int> seen;
++    for (int goal : goals) if (!has(goal) && seen.insert(goal).second) worklist.push_back(goal);
++    if (worklist.empty()) return;
++    std::vector<std::vector<int>> results(worklist.size());
++    std::vector<std::exception_ptr> errors(worklist.size());
++    std::atomic<size_t> next{0};
++    auto work = [&] {
++        std::vector<int> queue; std::vector<std::vector<int>> buckets(turn_cost_ + 1);
++        for (;;) {
++            const size_t item = next.fetch_add(1);
++            if (item >= worklist.size()) return;
++            try { results[item] = compute(worklist[item], deadline, queue, buckets); }
++            catch (...) { errors[item] = std::current_exception(); }
++        }
++    };
++    std::vector<std::thread> workers;
++    try {
++        for (int t = 1; t < std::min<int>(threads, worklist.size()); ++t) workers.emplace_back(work);
++    } catch (...) {
++        for (auto& worker : workers) worker.join();
++        throw;
++    }
++    work(); for (auto& worker : workers) worker.join();
++    for (const auto& error : errors) if (error) std::rethrow_exception(error);
++    check_deadline(deadline, "turn_prefetch_complete");
++    // These complete speculative results are invisible to find/has/retain.
++    // Only a normal table() demand admits one, in the original LRU order and
++    // against the original fixed table budget. Unused results are discarded.
++    for (size_t item = 0; item < worklist.size(); ++item)
++        prefetched_.emplace(worklist[item], std::move(results[item]));
++    prefetched_builds += worklist.size();
++}
++
++int TurnDistanceOracle::value(const TurnTable& table, int cell, int orientation) const {
+     return index_.at(cell) < 0 ? kInf : table[index_[cell] * 4 + orientation];
+ }
+ 
+@@ -571,6 +627,10 @@
+     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
+     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
+     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
++    turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);
++    if (turn_prefetch_threads_ < 0 || turn_prefetch_threads_ > 32 ||
++        (turn_prefetch_threads_ && !orientation_guidance_))
++        throw std::invalid_argument("turn prefetch requires orientation guidance and 1-32 threads");
+     turn_cost_ = env_int("CGAR_TURN_COST", 1);
+     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
+     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
+@@ -587,8 +647,8 @@
+         temporal_region_options_.steps < 1 || temporal_region_options_.steps > 1000000 ||
+         temporal_region_options_.threads < 1 || temporal_region_options_.threads > temporal_region_options_.parts))
+         throw std::invalid_argument("invalid CGAR temporal region configuration");
+-    if (temporal_) {
+-        const int required_threads = std::max(temporal_threads_, temporal_regions_ ? temporal_region_options_.threads : 1);
++    if (temporal_ || turn_prefetch_threads_) {
++        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_});
+         cpu_set_t affinity; CPU_ZERO(&affinity);
+         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
+             throw std::invalid_argument("temporal threads exceed the allowed logical CPU affinity");
+@@ -640,7 +700,7 @@
+     oracle_.init(&cert_, table_mb << 20);
+     if (orientation_guidance_) {
+         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
+-        turn_oracle_.init(&cert_, mb << 20, turn_cost_);
++        turn_oracle_.init(&cert_, mb << 20, turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0);
+     }
+ 
+     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
+@@ -1371,10 +1431,28 @@
+         next_[m.robot] = m.to;
+         reserve(m.to, m.robot);
+     }
++    if (turn_prefetch_threads_) {
++        std::vector<int> goals; std::unordered_set<int> seen;
++        for (int i : order_) {
++            const int goal = agents_[i].goal;
++            if (next_[i] != -1 || goal < 0 || turn_oracle_.has(goal) ||
++                (orientation_guidance_ == 2 && !oriented_goals_.count(goal)) || !seen.insert(goal).second) continue;
++            goals.push_back(goal); if (goals.size() == 32) break;
++        }
++        turn_oracle_.prefetch(goals, turn_prefetch_threads_, deadline_);
++    }
+     for (int i : order_) {
+         if (next_[i] != -1) continue;
+         check_deadline(deadline_, "action_planning");
+         pibt(i, -1);
++    }
++    if (turn_prefetch_threads_) {
++        turn_oracle_.discard_prefetch();
++        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
++            std::printf("[cgar-turn-prefetch] step=%d threads=%d built=%lld used=%lld discarded=%lld\n",
++                        env_->curr_timestep + 1, turn_prefetch_threads_, turn_oracle_.prefetched_builds,
++                        turn_oracle_.prefetched_hits, turn_oracle_.prefetched_discarded);
++        check_deadline(deadline_, "turn_prefetch_demand_complete");
+     }
+     for (int i = 0; i < n_; ++i) {
+         if (next_[i] == loc_[i]) continue;
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -103,26 +103,66 @@
+     std::vector<std::vector<int>> neighbors_;
+ };
+ 
++// Lossless optional packing. A table with any finite value >= 65535 stays
++// 32-bit; unreachable entries retain kInf through a reserved 16-bit sentinel.
++// Logical cache capacity still uses the original 32-bit table size, preserving
++// admission and eviction decisions while reducing physical storage.
++class TurnTable {
++public:
++    TurnTable() = default;
++    explicit TurnTable(std::vector<int> values, bool compact) {
++        bool fits = compact;
++        if (fits) for (int value : values)
++            if (value != kInf && (value < 0 || value >= 65535)) { fits = false; break; }
++        if (fits) {
++            narrow_.reserve(values.size());
++            for (int value : values) narrow_.push_back(value == kInf ? 65535 : value);
++        } else wide_ = std::move(values);
++    }
++    int operator[](size_t index) const {
++        if (narrow_.empty()) return wide_[index];
++        const int value = narrow_[index]; return value == 65535 ? kInf : value;
++    }
++    size_t size() const { return narrow_.empty() ? wide_.size() : narrow_.size(); }
++    size_t storage_bytes() const { return wide_.size() * sizeof(int) + narrow_.size() * sizeof(uint16_t); }
++    bool is_compact() const { return !narrow_.empty(); }
++    bool operator!=(const TurnTable& other) const {
++        if (size() != other.size()) return true;
++        for (size_t i = 0; i < size(); ++i) if ((*this)[i] != other[i]) return true;
++        return false;
++    }
++private:
++    std::vector<int> wide_;
++    std::vector<uint16_t> narrow_;
++};
++
+ // Shortest guidance costs over (cell, orientation), with unit forward cost and
+ // an optional integer turn cost. The certified spatial potential remains in
+ // DistanceOracle. Every cached reverse traversal is complete.
+ class TurnDistanceOracle {
+ public:
+-    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1);
+-    const std::vector<int>* find(int goal);
+-    const std::vector<int>* table(int goal, std::chrono::steady_clock::time_point deadline);
+-    int value(const std::vector<int>& table, int cell, int orientation) const;
++    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false);
++    void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
++    void discard_prefetch();
++    long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
++    const TurnTable* find(int goal);
++    const TurnTable* table(int goal, std::chrono::steady_clock::time_point deadline);
++    int value(const TurnTable& table, int cell, int orientation) const;
+     bool has(int goal) const { return tables_.count(goal) != 0; }
+     size_t capacity() const { return max_bytes_ / table_bytes_; }
+     void retain(const std::unordered_set<int>& goals);
+     void trim();
+ private:
+-    struct Entry { std::vector<int> dist; std::list<int>::iterator lru; };
++    struct Entry { TurnTable dist; std::list<int>::iterator lru; };
+     const Certificate* cert_ = nullptr;
+     size_t max_bytes_ = 0, table_bytes_ = 1;
+     std::vector<int> cells_, index_, queue_;
+     int turn_cost_ = 1;
++    bool compact_ = false;
+     std::vector<std::vector<int>> buckets_;
++    std::vector<int> compute(int goal, std::chrono::steady_clock::time_point deadline,
++                             std::vector<int>& queue, std::vector<std::vector<int>>& buckets) const;
++    std::unordered_map<int, std::vector<int>> prefetched_;
+     std::list<int> lru_;
+     std::unordered_map<int, Entry> tables_;
+ };
+@@ -273,7 +313,7 @@
+     std::mt19937_64 temporal_rng_{0};
+     bool temporal_ = false, temporal_equal_weight_ = false;
+     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1;
+-    int temporal_candidate_limit_ = 0, turn_cost_ = 1;
++    int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0;
+     int temporal_workers_ = 1, temporal_threads_ = 1;
+     bool temporal_regions_ = false;
+     TemporalRegionOptions temporal_region_options_;
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -377,7 +377,7 @@
+  TemporalGeometry geometry;geometry.initialize(cert.free,rows,cols,[]{});
+  int checked=0,score_checks=0;
+  for(int turn_cost:{1,2,4,8}){
+-  oracle.init(&cert,1,turn_cost);
++  oracle.init(&cert,1,turn_cost,true);
+   for(int goal=0;goal<rows*cols;++goal)if(!map[goal]){
+    const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(1));
+    auto distance=[&](int cell,int dir){return oracle.value(*table,cell,dir);};
+@@ -628,4 +628,68 @@
+  for(const char* name:{"CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_THREADS","CGAR_TEMPORAL_REGION_STEPS","CGAR_TEMPORAL_REGION_ROUNDS"})unsetenv(name);
+ }
+ 
+-int main(){try{temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++void turn_prefetch_regression() {
++ const int rows=4,cols=5;std::vector<int> map(rows*cols,0);const auto cert=build_certificate(map,rows,cols,2);
++ const size_t bytes=rows*cols*4*sizeof(int)*2;
++ for(int weight:{1,4}){
++  TurnDistanceOracle plain,parallel;plain.init(&cert,bytes,weight);parallel.init(&cert,bytes,weight,true);
++  auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(10);
++  parallel.prefetch({0,1,1,2},4,deadline);
++  for(int goal:{0,1,2})if(parallel.has(goal))throw std::runtime_error("speculative table changed cache admission");
++  for(int goal:{1,3,2,1,4}){
++   if(*plain.table(goal,deadline)!=*parallel.table(goal,deadline))throw std::runtime_error("prefetched distance values changed");
++   plain.trim();parallel.trim();
++   for(int check=0;check<5;++check)if(plain.has(check)!=parallel.has(check))throw std::runtime_error("prefetch changed LRU eviction");
++  }
++  parallel.discard_prefetch();
++  if(parallel.prefetched_builds!=3||parallel.prefetched_hits!=2||parallel.prefetched_discarded!=1)
++   throw std::runtime_error("prefetch accounting did not include unused complete work");
++  bool failed=false;try{parallel.prefetch({7,8},4,std::chrono::steady_clock::now());}catch(const Timeout&){failed=true;}
++  if(!failed||parallel.has(7)||parallel.has(8))throw std::runtime_error("expired speculative batch entered the cache");
++ }
++ int compared=0;
++ for(const char* weight:{"1","4"}){
++  setenv("CGAR_TURN_COST",weight,1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
++  setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","256",1);
++  SharedEnvironment e;e.rows=10;e.cols=10;e.num_of_agents=64;e.map.assign(100,0);e.curr_task_schedule.assign(64,-1);e.goal_locations.resize(64);
++  for(int r=0;r<64;++r){e.curr_states.emplace_back(r,0,r%4);e.goal_locations[r]={{99-r,0}};}
++  setenv("CGAR_TURN_COMPACT","0",1);setenv("CGAR_TURN_PREFETCH_THREADS","0",1);Cgar plain;plain.initialize(&e,1000);
++  setenv("CGAR_TURN_PREFETCH_THREADS","1",1);Cgar serial;serial.initialize(&e,1000);
++  setenv("CGAR_TURN_COMPACT","1",1);setenv("CGAR_TURN_PREFETCH_THREADS","4",1);Cgar parallel;parallel.initialize(&e,1000);
++  setenv("CGAR_TURN_PREFETCH_THREADS","0",1);Cgar packed;packed.initialize(&e,1000);
++  for(int t=0;t<100;++t){
++   e.curr_timestep=t;std::vector<Action>a,b,c,d;plain.plan(&e,1000,a);serial.plan(&e,1000,b);parallel.plan(&e,1000,c);packed.plan(&e,1000,d);
++   if(a!=b||a!=c||a!=d)throw std::runtime_error("speculative or compact orientation work changed planner decisions");
++   if(plain.stats().oriented_builds!=serial.stats().oriented_builds||plain.stats().oriented_builds!=parallel.stats().oriented_builds||plain.stats().oriented_builds!=packed.stats().oriented_builds||
++      plain.stats().oriented_fallback!=serial.stats().oriented_fallback||plain.stats().oriented_fallback!=parallel.stats().oriented_fallback||plain.stats().oriented_fallback!=packed.stats().oriented_fallback)
++    throw std::runtime_error("speculative orientation work changed cache admission counts");
++   auto next=step(e,e.curr_states,a);if(next.empty())throw std::runtime_error("prefetched planner collision");e.curr_states=next;
++   for(int r=0;r<64;++r)if(e.curr_states[r].location==e.goal_locations[r][0].first)
++    e.goal_locations[r][0].first=(e.goal_locations[r][0].first+37)%100;
++   compared+=64;
++  }
++ }
++ for(const char* name:{"CGAR_TURN_COST","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_TURN_PREFETCH_THREADS","CGAR_TURN_COMPACT"})unsetenv(name);
++ std::cout<<"TURN_PREFETCH passed identical_robot_decisions="<<compared<<" cache_values=1 demand_admission=1 lru_order=1 unused_discarded=1 compact_equivalence=1 explicit_timeout=1\n";
++}
++
++void compact_turn_tables() {
++ const std::vector<int> values{0,1,65534,kInf};TurnTable compact(values,true),wide(values,false);
++ if(compact!=wide||!compact.is_compact()||compact.storage_bytes()*2!=wide.storage_bytes())
++  throw std::runtime_error("compact turn table did not preserve the sentinel and finite boundary");
++ for(int boundary:{65535,65536}){
++  TurnTable fallback({0,boundary,kInf},true);
++  if(fallback.is_compact()||fallback[1]!=boundary||fallback[2]!=kInf)
++   throw std::runtime_error("large distance overflowed compact turn storage");
++ }
++ // A real reverse traversal whose finite distances exceed the 16-bit sentinel.
++ Certificate corridor;corridor.rows=1;corridor.cols=70000;corridor.free.assign(70000,true);
++ corridor.core=corridor.free;corridor.pocket.assign(70000,-1);
++ TurnDistanceOracle oracle;oracle.init(&corridor,4<<20,1,true);
++ const auto* table=oracle.table(69999,std::chrono::steady_clock::now()+std::chrono::seconds(10));
++ if(table->is_compact()||oracle.value(*table,0,0)!=69999||oracle.value(*table,0,2)!=70001)
++  throw std::runtime_error("large graph did not use exact wide orientation storage");
++ std::cout<<"COMPACT_TURN_TABLES passed sentinel=1 finite_boundaries=1 wide_fallback_cells=70000 storage_halved_when_safe=1\n";
++}
++
++int main(){try{compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

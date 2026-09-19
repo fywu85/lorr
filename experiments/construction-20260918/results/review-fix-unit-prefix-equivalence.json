@@ -1,0 +1,44 @@
+{
+  "purpose": "Unit-cost implementation equivalence only, not performance ranking. The 200-step result is cropped to 50 actions, schedule/event steps <=50, and task reveal times <=50.",
+  "checks": [
+    {
+      "profile": "equal_compact",
+      "v13": "runs/cgar-temporal-compact-cold-v13-20260918/equal_compact-s0-r0",
+      "v14": "runs/cgar-temporal-review-screen-v14-20260919/equal_compact-s0-r0",
+      "prefix_steps": 50,
+      "fields_identical": [
+        "actualPaths",
+        "actualSchedule",
+        "events",
+        "tasks"
+      ],
+      "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+    },
+    {
+      "profile": "regions4_rounds1_compact",
+      "v13": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds1_compact-s0-r0",
+      "v14": "runs/cgar-temporal-review-screen-v14-20260919/regions4_rounds1_compact-s0-r0",
+      "prefix_steps": 50,
+      "fields_identical": [
+        "actualPaths",
+        "actualSchedule",
+        "events",
+        "tasks"
+      ],
+      "trajectory_sha256": "4b2f6ec7f5c293bb567ab256161d7a7092acbf65f0934e9b2278766f1225b39c"
+    },
+    {
+      "profile": "regions4_rounds2_compact",
+      "v13": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds2_compact-s0-r0",
+      "v14": "runs/cgar-temporal-review-screen-v14-20260919/regions4_rounds2_compact-s0-r0",
+      "prefix_steps": 50,
+      "fields_identical": [
+        "actualPaths",
+        "actualSchedule",
+        "events",
+        "tasks"
+      ],
+      "trajectory_sha256": "b229f2ab8f99a0a7664a84ef8addcd418683bec66770334965cbc05f6a7e8f86"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "reason": "Replace held sequential turn and regional matrices with behavior-equivalent compact tables, allowing two full instances on disjoint physical cores without increasing total full-job memory allocation.",
+  "build": "build-provenance/v13",
+  "horizon_steps": 5000,
+  "seeds": [
+    0
+  ],
+  "parallel_instances": 2,
+  "physical_cores_per_instance": 4,
+  "total_physical_cores": 8,
+  "reserved_memory_gib_per_slot": 3,
+  "total_reserved_memory_gib": 24,
+  "hold_after": [
+    "8898333",
+    "8898342"
+  ],
+  "estimated_process_rss_bytes": 12000000000,
+  "estimate_basis": "Earlier full-process RSS of approximately 16.2 GB minus approximately 4 GiB for the filled 8 GiB logical orientation cache. Generic graph diameter bound proves every orientation table for turn costs 1-4 fits uint16. Actual full RSS remains to be measured.",
+  "equivalence_evidence": "results/compact-prefetch-equivalence.json",
+  "diameter_evidence": "compact-distance-bound.json",
+  "replaced_jobs": [
+    {
+      "job_id": "8898345",
+      "raw": "runs/cgar-temporal-regions-full-v11-20260918",
+      "type": "analysis",
+      "cancellation": {
+        "returncode": 0,
+        "stdout": "fw2449 has deleted job 8898345\n",
+        "stderr": "",
+        "previous_state": "hqw",
+        "utc": "2026-09-19T04:06:45.761917+00:00"
+      }
+    },
+    {
+      "job_id": "8898343",
+      "raw": "runs/cgar-temporal-regions-full-v11-20260918",
+      "type": "matrix",
+      "cancellation": {
+        "returncode": 0,
+        "stdout": "fw2449 has deleted job 8898343\n",
+        "stderr": "",
+        "previous_state": "hqw",
+        "utc": "2026-09-19T04:06:45.897409+00:00"
+      }
+    },
+    {
+      "job_id": "8898344",
+      "raw": "runs/cgar-temporal-turn-full-v9-20260918",
+      "type": "analysis",
+      "cancellation": {
+        "returncode": 0,
+        "stdout": "fw2449 has deleted job 8898344\n",
+        "stderr": "",
+        "previous_state": "hqw",
+        "utc": "2026-09-19T04:06:46.003535+00:00"
+      }
+    },
+    {
+      "job_id": "8898338",
+      "raw": "runs/cgar-temporal-turn-full-v9-20260918",
+      "type": "matrix",
+      "cancellation": {
+        "returncode": 0,
+        "stdout": "fw2449 has deleted job 8898338\n",
+        "stderr": "",
+        "previous_state": "hqw",
+        "utc": "2026-09-19T04:06:46.100852+00:00"
+      }
+    }
+  ],
+  "status": "replacement submitted; four originally held jobs canceled before starting",
+  "replacement_job_id": "8898370",
+  "replacement_raw": "runs/cgar-temporal-compact-full-v13-20260919"
+}

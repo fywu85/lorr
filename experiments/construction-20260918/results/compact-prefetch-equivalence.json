@@ -1,0 +1,143 @@
+{
+  "purpose": "Implementation equivalence over 50 steps only, not a throughput ranking or full-run result.",
+  "horizon_steps": 50,
+  "fingerprint_fields": [
+    "actualPaths",
+    "actualSchedule",
+    "events",
+    "tasks"
+  ],
+  "fingerprint_encoding": "SHA256 of field name followed by compact JSON value, in fingerprint_fields order",
+  "checks": [
+    {
+      "check": "unit-cost prefetch and compact storage preserve all paths, schedules, events and tasks",
+      "identical": true,
+      "runs": [
+        {
+          "run": "runs/cgar-temporal-regions-cold-v11-20260918/equal_50000-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_50000-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_50000-s0-r1",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_prefetch1-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_prefetch1-s0-r1",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_prefetch4-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/equal_prefetch4-s0-r1",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/equal_50000-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/equal_50000-s0-r1",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/equal_compact-s0-r0",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/equal_compact-s0-r1",
+          "trajectory_sha256": "20ad57807be64d29963d6bf1bd70e3fe7ddfffd8972dbf9bd54452eb092c175a"
+        }
+      ]
+    },
+    {
+      "check": "turn cost 2 implementation equivalence",
+      "identical": true,
+      "runs": [
+        {
+          "run": "runs/cgar-temporal-turn-cold-v9-20260918/turn_cost_2-s0-r0",
+          "trajectory_sha256": "2234ee266c295b60cb70e6b7fdefbf4940d87d54c4156fc7de6b52a9d705f6c1"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/turn2_compact-s0-r0",
+          "trajectory_sha256": "2234ee266c295b60cb70e6b7fdefbf4940d87d54c4156fc7de6b52a9d705f6c1"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/turn2_compact-s0-r1",
+          "trajectory_sha256": "2234ee266c295b60cb70e6b7fdefbf4940d87d54c4156fc7de6b52a9d705f6c1"
+        }
+      ]
+    },
+    {
+      "check": "turn cost 4 implementation equivalence",
+      "identical": true,
+      "runs": [
+        {
+          "run": "runs/cgar-temporal-turn-cold-v9-20260918/turn_cost_4-s0-r0",
+          "trajectory_sha256": "dac061ddb204f7b928fb2cae0037afc44220f47ab803ca38125d7bcbb479b03b"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/turn4_compact-s0-r0",
+          "trajectory_sha256": "dac061ddb204f7b928fb2cae0037afc44220f47ab803ca38125d7bcbb479b03b"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/turn4_compact-s0-r1",
+          "trajectory_sha256": "dac061ddb204f7b928fb2cae0037afc44220f47ab803ca38125d7bcbb479b03b"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/turn4_prefetch4-s0-r0",
+          "trajectory_sha256": "dac061ddb204f7b928fb2cae0037afc44220f47ab803ca38125d7bcbb479b03b"
+        },
+        {
+          "run": "runs/cgar-temporal-prefetch-cold-v12-20260918/turn4_prefetch4-s0-r1",
+          "trajectory_sha256": "dac061ddb204f7b928fb2cae0037afc44220f47ab803ca38125d7bcbb479b03b"
+        }
+      ]
+    },
+    {
+      "check": "1 regional rounds implementation equivalence",
+      "identical": true,
+      "runs": [
+        {
+          "run": "runs/cgar-temporal-regions-cold-v11-20260918/regions4_rounds1_steps25000-s0-r0",
+          "trajectory_sha256": "4b2f6ec7f5c293bb567ab256161d7a7092acbf65f0934e9b2278766f1225b39c"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds1_compact-s0-r0",
+          "trajectory_sha256": "4b2f6ec7f5c293bb567ab256161d7a7092acbf65f0934e9b2278766f1225b39c"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds1_compact-s0-r1",
+          "trajectory_sha256": "4b2f6ec7f5c293bb567ab256161d7a7092acbf65f0934e9b2278766f1225b39c"
+        }
+      ]
+    },
+    {
+      "check": "2 regional rounds implementation equivalence",
+      "identical": true,
+      "runs": [
+        {
+          "run": "runs/cgar-temporal-regions-cold-v11-20260918/regions4_rounds2_steps25000-s0-r0",
+          "trajectory_sha256": "b229f2ab8f99a0a7664a84ef8addcd418683bec66770334965cbc05f6a7e8f86"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds2_compact-s0-r0",
+          "trajectory_sha256": "b229f2ab8f99a0a7664a84ef8addcd418683bec66770334965cbc05f6a7e8f86"
+        },
+        {
+          "run": "runs/cgar-temporal-compact-cold-v13-20260918/regions4_rounds2_compact-s0-r1",
+          "trajectory_sha256": "b229f2ab8f99a0a7664a84ef8addcd418683bec66770334965cbc05f6a7e8f86"
+        }
+      ]
+    }
+  ]
+}
