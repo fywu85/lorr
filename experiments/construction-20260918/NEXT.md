@@ -1,6 +1,6 @@
 # Continuing warehouse work
 
-Updated 2026-09-19 20:56:23 UTC. Active unbudgeted goal: meet/exceed local KittyKnight152,981
+Updated 2026-09-19 21:06:42 UTC. Active unbudgeted goal: meet/exceed local KittyKnight152,981
 on full5,000-step/10,000-robot warehouse, repeatably across six seeds, every complete
 schedule+plan<=1s or explicit failure, processRSS<32,000,000,000 bytes, isolated GRID
 physical cores. Generic policies only; no map identities/templates/supplied weights,
@@ -73,7 +73,8 @@ Frozen runs/cgar-service-audit-build-v45-20260919, binary
 b3fbb35a2eec4968a5ea7bc5e8135c3d553597832eec14232b6a437661b3e18a.
 Public fywu85/lorr; prior47a0b12 andf6d0ae4 also pushed.
 
-V46 is built/tested but NOTYETCOMMITTED at this note's timestamp. Only production
+V46 is committed/pushed as exact0b8361c1d28429f8fd9918a3470046d4414ad83f; all22
+source/test hashes verified against that commit. Only production
 change: generic CGAR_PICKUP_FULL_ROBOTS maximum64->256; defaults unchanged.
 Quota257 remains invalid. Added real257-robot assignment fixtures at64/128/256,
 one/four builder threads, correct field counts, unselected fallback robot, unique
@@ -82,8 +83,9 @@ including1542 serial/parallel production assignments. Build8899056 complete.
 Frozen runs/cgar-pickup-quota-build-v46-20260919; archivebuild-provenance/v46;
 binary65f7aa2c5695ebc923ef2c8170b479f3cc0cc111bc9ce6fbb1a122faf701d2ec.
 The63-line patch reconstructs all22 source/test hashes fromc339e8b and matches current
-workspace. No active build/no source changes since freeze. Commit/push this checkpoint
-with verified reports/docs, then bind22 hashes to exact newcommit before new source edits.
+workspace. No active build/no production source changes since freeze. All verified
+regional/audit/quota evidence and the two new progress records were committed/pushed
+with0b8361c. exact-source-commit.json records the V46 binding.
 
 Initial quota screen8899044 usingV45 rejected128/256 at initialization because the
 actual old cap was64. This was a setup mistake, not a performance failure. Its64case
@@ -131,14 +133,24 @@ spurious credit; commonBavoids that specific bias. But arrivalbranch discontinui
 cache-dependent eligibility and next-service approximation remain. Do not claimpaths
 passingnextgoalandleavingaredominated under reservations/finitepool.
 
-No continuation production implementation or new continuation probe exists yet.
-Next useful local work: independently evaluate Fable's new handpair (3x7,start(2,0)N,
-current(1,1),next(1,6); FRFFF vsRFCFW, U=T4); commonBphysicalgap2U vs oldcandidate-
-dependent gapU, then evaluate commonBobjective on our native-holding examples.
-Use independent weighted oriented distances, all paid extras and explicit terminal
-wait alternatives, at mostoneerrandservicepertick. DefaultOFF must be exact.
-Neutral-tail score (set d=−4U atfirstgoalhit, prefixextras only) is a separate optional
-hypothesis for known/finishing owners; do not fold into commonB treatment.
+Offline continuation_probe.cpp is now complete; CONTINUATION_SCORE.md and
+results/continuation-probe-v1.json archive source hashes, commands and output.
+Independent Bellman distances + explicit weighted path replay/terminalwaitvariants
+agree with the proposed commonB score on54,378 arriving candidates (U1/4/8,
+turnextras0/1/2,directed tolls0/1);220,050 non-arriving cases use native fallback.
+Fable's FRFFF/RFCFW physical pair reproduces−24/−16 withcommonB versus−24/−20
+withcandidate-dependentbaseline. Our two native-holding examples now have exactjoint
+commonB minima−1564/−1364, bothfirstFW (Aop80/Bop111), versusnative−1040/−840
+(A58/B102). Neutral-tail separate toy minima−1552/−1356 alsofirstFW butA127/128
+movesawayfromitsknownnextgoal. These are different objectives, not comparablequalityscores.
+No production continuation/neutral policy implemented. Next useful local work:
+implement one optional commonB policy (and keep neutral-tail a separate treatment),
+defaultOFFexact, payallactualturn/toll extras, current/nexttablesimmutable, serial
+non-LRU peeks, oneeligibilitychoiceperrobot, nonarrivingnative, repeatG=Nnative,
+missing/nonfinite/guided/fallback/pinnednative, noextrabuilds. Add independentoracle
+and serial/parallel/protected production tests before cold/full runs. The six-seed
+regional confirmation is the immediate benchmark priority; choose its outcome as
+context before deciding which policy to use as the next matched control.
 Task_chain_cost is still spatial; cached oriented known-chain pricing remains untested.
 
 ## Persistent Fable

@@ -1,0 +1,27 @@
+{
+  "started_utc": "2026-09-19T21:00:45.449109+00:00",
+  "finished_utc": "2026-09-19T21:00:48.691843+00:00",
+  "source_hashes": {
+    "experiments/construction-20260918/continuation_probe.cpp": "6a5db204c4fc46c71b2902101ded7b0e912f482ad1a07f49a1a21b565a507675",
+    "cgar/cgar_planner/temporal_geometry.hpp": "09462e4949b3f9e3e11179cf654b714076afc5c1bc807539b98f5f42bb79b57b",
+    "cgar/cgar_planner/temporal_pibt.hpp": "17997c709569359f3ce74a5f8e1d99b363d671b23abcb24cd041bd3c1e0eaa9c"
+  },
+  "compile_command": [
+    "c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/cgar_planner",
+    "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/continuation_probe.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-continuation-probe-v1-20260919/probe"
+  ],
+  "run_command": [
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-continuation-probe-v1-20260919/probe"
+  ],
+  "exit_code": 0,
+  "stdout": "HEADING_PAIR common_physical=-24,-16 candidate_baseline_physical=-24,-20\nJOINT fixture=0 mode=0 score=-1040 Aop=58 Bop=102 Afirst=0 Bfirst=1\nJOINT fixture=0 mode=1 score=-1564 Aop=80 Bop=111 Afirst=0 Bfirst=0\nJOINT fixture=0 mode=2 score=-1552 Aop=127 Bop=111 Afirst=0 Bfirst=0\nJOINT fixture=1 mode=0 score=-840 Aop=58 Bop=102 Afirst=0 Bfirst=1\nJOINT fixture=1 mode=1 score=-1364 Aop=80 Bop=111 Afirst=0 Bfirst=0\nJOINT fixture=1 mode=2 score=-1356 Aop=128 Bop=111 Afirst=0 Bfirst=0\nCONTINUATION_SURROGATE_ORACLE passed arriving=54378 nonarriving=220050 units=1,4,8 turn_extras=0,1,2 directed_tolls=0,1 explicit_terminal_wait_variants=1\n",
+  "stderr": "",
+  "scope": "Offline surrogate-score accounting and finite joint-choice examples only; no production continuation policy, simulation or warehouse throughput claim.",
+  "production_header_commit": "0b8361c1d28429f8fd9918a3470046d4414ad83f",
+  "probe_source_was_uncommitted_when_run": true
+}
