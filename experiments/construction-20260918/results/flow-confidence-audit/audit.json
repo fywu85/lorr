@@ -1,0 +1,159 @@
+{
+  "purpose": "Post-hoc audit of control movements, not a planner guidance field or throughput experiment.",
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-temporal-review-full-v14-20260919/equal_compact-s0-r0/WAREHOUSE.json",
+  "input_sha256": "a16afa62e29adf2c10e5b2a3b07c7b951715c4eb630f4d2ace2a17f173324f9a",
+  "prefixes": {
+    "128": {
+      "executed_moves": 998691,
+      "cardinal_moves_ESWN": [
+        234123,
+        252221,
+        238015,
+        274332
+      ],
+      "edges_with_at_least_8_samples": 38803,
+      "imbalance_deciles": [
+        4323,
+        3774,
+        4948,
+        3826,
+        3260,
+        3964,
+        3549,
+        3120,
+        3503,
+        1518,
+        3018
+      ],
+      "penalized_directed_edges_above_margin_percent": {
+        "0": 37474,
+        "10": 34320,
+        "25": 27602,
+        "50": 17345,
+        "75": 9288
+      }
+    },
+    "256": {
+      "executed_moves": 2064912,
+      "cardinal_moves_ESWN": [
+        546185,
+        460535,
+        565232,
+        492960
+      ],
+      "edges_with_at_least_8_samples": 49462,
+      "imbalance_deciles": [
+        6794,
+        6258,
+        6867,
+        6069,
+        5491,
+        5441,
+        4724,
+        3480,
+        2606,
+        1132,
+        600
+      ],
+      "penalized_directed_edges_above_margin_percent": {
+        "0": 48391,
+        "10": 42425,
+        "25": 32427,
+        "50": 17107,
+        "75": 5790
+      }
+    },
+    "512": {
+      "executed_moves": 4177611,
+      "cardinal_moves_ESWN": [
+        1230033,
+        828188,
+        1267034,
+        852356
+      ],
+      "edges_with_at_least_8_samples": 49943,
+      "imbalance_deciles": [
+        10034,
+        9063,
+        8628,
+        6753,
+        5024,
+        4115,
+        2685,
+        1594,
+        1289,
+        585,
+        173
+      ],
+      "penalized_directed_edges_above_margin_percent": {
+        "0": 49053,
+        "10": 39758,
+        "25": 26078,
+        "50": 9953,
+        "75": 2693
+      }
+    },
+    "1024": {
+      "executed_moves": 8461717,
+      "cardinal_moves_ESWN": [
+        2733073,
+        1501783,
+        2704738,
+        1522123
+      ],
+      "edges_with_at_least_8_samples": 50482,
+      "imbalance_deciles": [
+        13337,
+        12187,
+        9160,
+        5548,
+        3406,
+        2118,
+        1656,
+        1381,
+        1004,
+        614,
+        71
+      ],
+      "penalized_directed_edges_above_margin_percent": {
+        "0": 49891,
+        "10": 37054,
+        "25": 19725,
+        "50": 6611,
+        "75": 2304
+      }
+    }
+  },
+  "early_direction_stability": {
+    "0": {
+      "initially_biased_edges": 37474,
+      "comparable_at_1024": 37474,
+      "opposite_cumulative_direction_at_1024": 11468,
+      "balanced_at_1024": 376
+    },
+    "10": {
+      "initially_biased_edges": 34320,
+      "comparable_at_1024": 34320,
+      "opposite_cumulative_direction_at_1024": 9994,
+      "balanced_at_1024": 322
+    },
+    "25": {
+      "initially_biased_edges": 27602,
+      "comparable_at_1024": 27602,
+      "opposite_cumulative_direction_at_1024": 7265,
+      "balanced_at_1024": 219
+    },
+    "50": {
+      "initially_biased_edges": 17345,
+      "comparable_at_1024": 17345,
+      "opposite_cumulative_direction_at_1024": 4136,
+      "balanced_at_1024": 117
+    },
+    "75": {
+      "initially_biased_edges": 9288,
+      "comparable_at_1024": 9288,
+      "opposite_cumulative_direction_at_1024": 1920,
+      "balanced_at_1024": 53
+    }
+  }
+}

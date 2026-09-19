@@ -1,0 +1,110 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -740,7 +740,8 @@
+         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
+         turn_oracle_.init(&cert_, mb << 20, turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0);
+         if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
+-            env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8));
++            env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
++            env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0));
+     }
+ 
+     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
+@@ -1359,9 +1360,9 @@
+     if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
+         const bool changed = turn_oracle_.set_forward_costs(flow_guidance_.costs());
+         ++stats_.flow_freezes; stats_.flow_penalized_edges = flow_guidance_.penalized_edges();
+-        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d penalized_edges=%d cache_reset=%d frozen=1\n",
++        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d margin_percent=%d penalized_edges=%d cache_reset=%d frozen=1\n",
+             env_->curr_timestep, flow_guidance_.samples(), static_cast<unsigned long long>(flow_guidance_.moves()),
+-            flow_strength_, flow_guidance_.penalized_edges(), changed);
++            flow_strength_, flow_guidance_.minimum_margin_percent(), flow_guidance_.penalized_edges(), changed);
+         check_deadline(deadline_, "flow_guidance_frozen");
+     }
+     advance_txn();
+--- a/cgar/cgar_planner/flow_guidance.hpp
++++ b/cgar/cgar_planner/flow_guidance.hpp
+@@ -10,13 +10,14 @@
+ class FlowGuidance {
+ public:
+     void initialize(const std::vector<char>& free, int rows, int cols,
+-                    int warmup, int strength, int minimum_samples) {
++                    int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0) {
+         if (rows < 1 || cols < 1 || free.size() != size_t(rows) * cols ||
+             warmup < 1 || warmup > 4096 || strength < 1 || strength > 8 ||
+-            minimum_samples < 1 || minimum_samples > 65536)
++            minimum_samples < 1 || minimum_samples > 65536 ||
++            minimum_margin_percent < 0 || minimum_margin_percent > 100)
+             throw std::invalid_argument("invalid learned flow configuration");
+         free_ = free; rows_ = rows; cols_ = cols; warmup_ = warmup;
+-        strength_ = strength; minimum_samples_ = minimum_samples;
++        strength_ = strength; minimum_samples_ = minimum_samples; minimum_margin_percent_ = minimum_margin_percent;
+         counts_.assign(free.size() * 4, 0); costs_.clear(); previous_.clear();
+         last_step_ = -1; samples_ = 0; frozen_ = false;
+         moves_ = 0; penalized_edges_ = 0;
+@@ -52,6 +53,7 @@
+                 const uint64_t reverse = counts_[size_t(v) * 4 + (dir + 2) % 4];
+                 const uint64_t total = forward + reverse;
+                 if (total < uint64_t(minimum_samples_) || reverse <= forward) continue;
++                if ((reverse - forward) * 100 <= uint64_t(minimum_margin_percent_) * total) continue;
+                 // Penalize going against observed dominant flow. Equal or
+                 // unobserved traffic stays neutral; every edge stays usable.
+                 const int extra = int((strength_ * (reverse - forward) + total - 1) / total);
+@@ -67,6 +69,7 @@
+     int samples() const { return samples_; }
+     uint64_t moves() const { return moves_; }
+     int penalized_edges() const { return penalized_edges_; }
++    int minimum_margin_percent() const { return minimum_margin_percent_; }
+ 
+ private:
+     int neighbor(int u, int dir) const {
+@@ -76,7 +79,7 @@
+         return u / cols_ > 0 ? u - cols_ : -1;
+     }
+     int rows_ = 0, cols_ = 0, warmup_ = 0, strength_ = 0, minimum_samples_ = 0;
+-    int last_step_ = -1, samples_ = 0, penalized_edges_ = 0;
++    int last_step_ = -1, samples_ = 0, penalized_edges_ = 0, minimum_margin_percent_ = 0;
+     bool frozen_ = false;
+     uint64_t moves_ = 0;
+     std::vector<char> free_;
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -887,6 +887,32 @@
+  std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
+ }
+ 
++void flow_margin_regression() {
++ std::vector<char> free(4,true);std::vector<int> observed{0};
++ const std::vector<int> clockwise{1,3,2,0},counterclockwise{2,3,1,0};
++ for(int loop=0;loop<8;++loop){const auto& cycle=loop<5?clockwise:counterclockwise;observed.insert(observed.end(),cycle.begin(),cycle.end());}
++ int checked=0;
++ for(int margin:{0,24,25,50,100}){
++  FlowGuidance original;original.initialize(free,2,2,32,4,8,margin);
++  for(int t=0;t<=32;++t)original.observe(t,{observed[t]});
++  // Every edge has five clockwise and three reverse uses: exactly 25% margin.
++  if(original.penalized_edges()!=(margin<25?4:0)||original.moves()!=32||!original.frozen())
++   throw std::runtime_error("flow margin boundary failed on independently counted cycles");
++  for(bool reflection:{false,true})for(int rotation=0;rotation<4;++rotation){
++   auto cell=[&](int u){int r=u/2,c=u%2;if(reflection)c=1-c;for(int k=0;k<rotation;++k){int previous=r;r=c;c=1-previous;}return r*2+c;};
++   auto direction=[&](int d){if(reflection)d=(2-d+4)%4;return(d+rotation)%4;};
++   FlowGuidance transformed;transformed.initialize(free,2,2,32,4,8,margin);
++   for(int t=0;t<=32;++t)transformed.observe(t,{cell(observed[t])});
++   for(int u=0;u<4;++u)for(int d=0;d<4;++d){
++    if(transformed.costs()[cell(u)*4+direction(d)]!=original.costs()[u*4+d])throw std::runtime_error("flow margin used a direction template");
++    ++checked;
++   }
++  }
++ }
++ setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);flow_guidance_regression();unsetenv("CGAR_FLOW_MIN_MARGIN_PERCENT");
++ std::cout<<"FLOW_MARGIN passed exact_25_percent_boundary=1 transformed_edge_checks="<<checked<<" protected_threaded_episode=1\n";
++}
++
+ void temporal_warm_start_regression() {
+  const int cells=8,count=3;std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,1,cells,[]{});
+  const auto& operations=TemporalGeometry::operations();int forward=-1;
+@@ -945,4 +971,4 @@
+  std::cout<<"TEMPORAL_WARM_START passed shifted_operations=129 convoy_reuse=3 protected_cascade=2 filtered_closure=1 stale_history_rejected=1 explicit_timeout=1 protected_and_threaded_episodes=1\n";
+ }
+ 
+-int main(){try{temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

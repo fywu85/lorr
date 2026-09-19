@@ -380,6 +380,12 @@ path costs include the same forward penalties, while the certified spatial
 potential remains unchanged. Strengths 1/2/4 pass regression and deadline screens;
 full performance is pending. [Traffic study](../../experiments/construction-20260918/FLOW.md).
 
+`CGAR_FLOW_MIN_MARGIN_PERCENT` optionally requires stronger directional evidence
+before assigning a learned penalty (0–100, default 0). The opposite-minus-forward
+count must exceed that percentage of their total. This is a count margin, not a
+confidence interval. Higher-margin and later-freeze profiles are experimental;
+see [the controlled follow-up](../../experiments/construction-20260918/FLOW_MARGIN.md).
+
 `CGAR_TEMPORAL_DISTANCE_SCALE` changes goal-distance emphasis relative to the
 native operation-index bonus (default 50, allowed 1–4096). Scales 256/1024 pass
 regression/deadline screens; full performance is pending. This is tested

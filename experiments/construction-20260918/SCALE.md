@@ -29,3 +29,14 @@ and cases are unchanged. [Reallocation record](results/reallocated-guidance-v16/
 [default equivalence](results/scale-default-equivalence.json),
 [full specification](guidance-full-variants.json). No full guidance/scaling score
 is available yet.
+
+
+The complete seed-0 full results are negative: scale 256 reaches **105,891**
+(−1.46%), and scale 1024 reaches **105,811** (−1.53%), against **107,457**. All
+finish 5,000 steps with zero errors/timeouts. Their maximum entry times are
+0.567 and 0.615 seconds; RSS is 11.888 and 13.260 GB respectively. Final-1,000-step
+counts are 21,727 / 21,641 versus 22,002. Moves away from the goal decrease, but
+loaded turns rise from 3.832M to 4.993M / 5.087M and waits from 2.848M to
+3.545M / 3.584M. Better short-term distance adherence does not improve this
+full-run tradeoff. Both remain disabled; scale 50 remains the default.
+[Full analysis](results/guidance-full-v16/).

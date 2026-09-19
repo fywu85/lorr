@@ -10,13 +10,14 @@ namespace cgar {
 class FlowGuidance {
 public:
     void initialize(const std::vector<char>& free, int rows, int cols,
-                    int warmup, int strength, int minimum_samples) {
+                    int warmup, int strength, int minimum_samples, int minimum_margin_percent = 0) {
         if (rows < 1 || cols < 1 || free.size() != size_t(rows) * cols ||
             warmup < 1 || warmup > 4096 || strength < 1 || strength > 8 ||
-            minimum_samples < 1 || minimum_samples > 65536)
+            minimum_samples < 1 || minimum_samples > 65536 ||
+            minimum_margin_percent < 0 || minimum_margin_percent > 100)
             throw std::invalid_argument("invalid learned flow configuration");
         free_ = free; rows_ = rows; cols_ = cols; warmup_ = warmup;
-        strength_ = strength; minimum_samples_ = minimum_samples;
+        strength_ = strength; minimum_samples_ = minimum_samples; minimum_margin_percent_ = minimum_margin_percent;
         counts_.assign(free.size() * 4, 0); costs_.clear(); previous_.clear();
         last_step_ = -1; samples_ = 0; frozen_ = false;
         moves_ = 0; penalized_edges_ = 0;
@@ -52,6 +53,7 @@ public:
                 const uint64_t reverse = counts_[size_t(v) * 4 + (dir + 2) % 4];
                 const uint64_t total = forward + reverse;
                 if (total < uint64_t(minimum_samples_) || reverse <= forward) continue;
+                if ((reverse - forward) * 100 <= uint64_t(minimum_margin_percent_) * total) continue;
                 // Penalize going against observed dominant flow. Equal or
                 // unobserved traffic stays neutral; every edge stays usable.
                 const int extra = int((strength_ * (reverse - forward) + total - 1) / total);
@@ -67,6 +69,7 @@ public:
     int samples() const { return samples_; }
     uint64_t moves() const { return moves_; }
     int penalized_edges() const { return penalized_edges_; }
+    int minimum_margin_percent() const { return minimum_margin_percent_; }
 
 private:
     int neighbor(int u, int dir) const {
@@ -76,7 +79,7 @@ private:
         return u / cols_ > 0 ? u - cols_ : -1;
     }
     int rows_ = 0, cols_ = 0, warmup_ = 0, strength_ = 0, minimum_samples_ = 0;
-    int last_step_ = -1, samples_ = 0, penalized_edges_ = 0;
+    int last_step_ = -1, samples_ = 0, penalized_edges_ = 0, minimum_margin_percent_ = 0;
     bool frozen_ = false;
     uint64_t moves_ = 0;
     std::vector<char> free_;

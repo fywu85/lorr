@@ -1,0 +1,41 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:15:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "flow_audit",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-confidence-audit-20260919/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-confidence-audit-20260919/job.sh"
+  ],
+  "analysis_command": [
+    "/usr/bin/python3",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-confidence-audit-20260919/flow_audit.py",
+    "--input",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-temporal-review-full-v14-20260919/equal_compact-s0-r0/WAREHOUSE.json",
+    "--output",
+    "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/flow-confidence-audit"
+  ],
+  "source_sha256": "e229e6404c3082ed52d1e3da31d884fdf2647353f0098dfd4c10b92b35488579",
+  "returncode": 0,
+  "stdout": "8898508\n",
+  "stderr": ""
+}

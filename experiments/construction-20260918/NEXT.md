@@ -22,26 +22,31 @@ Established results:
 
 Active full queue:
 
-1. **8898428**, frozen v16, runs control, learned-flow strengths 1/2/4, and distance
-   scales 256/1024 separately. Two concurrent instances, one distinct physical core
-   each, 24 GiB total. Actual EPYC 9354 bindings [0] and [1], no CPU quota. Analysis
-   **8898429** follows. The control has reproduced 107,457; flow strengths 1 and 2
-   fail late explicit repair deadlines and receive no accepted score. Flow 4 and
-   distance-scale cases continue.
-2. **8898475**, frozen v19, follows guidance. It tests control and warm starts
-   with 50k/25k/10k fixed attempts. Two single-core instances, 24 GiB total.
-   Analysis **8898476** follows. All 200-step screens pass, and disabled warm
-   starts preserve all prior trajectory fields. See WARM_START.md.
-3. **8898445**, frozen v17, follows the warm-start matrix and analysis. It tests one-round
-   control, regional temperatures 100/0, and two rounds at 0. Two concurrent
-   instances, four cores each, 24 GiB total. Analysis **8898447** follows. All four
-   200-step screens pass; default trajectories exactly match v14. See TEMPERATURE.md.
+1. **8898475**, frozen v19, is running control and warm starts with 50k/25k/10k
+   fixed attempts. Two single-core instances, 24 GiB total, EPYC 9354 on research38.
+   Analysis **8898476** follows. All 200-step screens pass, disabled warm starts
+   preserve prior trajectories. See WARM_START.md.
+2. **8898445**, frozen v17, follows warm-start analysis. It tests one-round control,
+   regional temperatures 100/0, and two rounds at 0. Two four-core instances,
+   24 GiB total. Analysis **8898447** follows. See TEMPERATURE.md.
+3. **8898517**, corrected frozen v20, follows temperature analysis. It tests 4M-work
+   control, original learned flow, margin 50, and margin 50 with freeze at 1,024
+   observations. Two single-core instances, 24 GiB total. Analysis **8898518** follows.
+   Three early-freeze/work screens pass, and the original 50k-flow default preserves
+   prior trajectories. The late-freeze guided phase is tested only in full runs.
+   See FLOW_MARGIN.md. The incomplete first v20 build was canceled and never benchmarked.
+
+The v16 matrix is complete: control 107,457; distance scales 256/1024 yield
+105,891/105,811 and are not promoted. Flow strengths 1/2/4 all fail late deadlines.
+The control trajectory is unchanged. Its traffic audit finds 30.6% of directions
+favored after 128 steps have the opposite cumulative majority at 1,024, motivating
+stricter margins/later observation; this does not prove the cause of failure.
 
 The v18 static predecessor cache passes regressions and cuts isolated table
 build time by 19–26% with matching checksums. All three integration screens pass with
 exact prior trajectories over 200 steps; no whole-planner speedup claim yet. See ORACLE.md. Warm starts are now implemented and validated for safety/reuse;
-full performance is pending. A separate fixed candidate-work quota may address
-the learned-flow repair explosion, but has not been tested with flow yet.
+full performance is pending. The fixed candidate-work/margin follow-up is queued above. GUIDE_PATHS.md records
+a sourced next routing direction, not an implemented feature or measured gain.
 
 After each matrix: preserve failures, check all 5,000 entry samples, errors,
 timeouts, actual RSS, fingerprints, final-window rates and movement efficiency.

@@ -887,6 +887,32 @@ void temporal_distance_scale_regression() {
  std::cout<<"TEMPORAL_DISTANCE_SCALE passed dominance_pairs="<<checked<<" native_tie_term=1 protected_progress=1 threaded_replay=1\n";
 }
 
+void flow_margin_regression() {
+ std::vector<char> free(4,true);std::vector<int> observed{0};
+ const std::vector<int> clockwise{1,3,2,0},counterclockwise{2,3,1,0};
+ for(int loop=0;loop<8;++loop){const auto& cycle=loop<5?clockwise:counterclockwise;observed.insert(observed.end(),cycle.begin(),cycle.end());}
+ int checked=0;
+ for(int margin:{0,24,25,50,100}){
+  FlowGuidance original;original.initialize(free,2,2,32,4,8,margin);
+  for(int t=0;t<=32;++t)original.observe(t,{observed[t]});
+  // Every edge has five clockwise and three reverse uses: exactly 25% margin.
+  if(original.penalized_edges()!=(margin<25?4:0)||original.moves()!=32||!original.frozen())
+   throw std::runtime_error("flow margin boundary failed on independently counted cycles");
+  for(bool reflection:{false,true})for(int rotation=0;rotation<4;++rotation){
+   auto cell=[&](int u){int r=u/2,c=u%2;if(reflection)c=1-c;for(int k=0;k<rotation;++k){int previous=r;r=c;c=1-previous;}return r*2+c;};
+   auto direction=[&](int d){if(reflection)d=(2-d+4)%4;return(d+rotation)%4;};
+   FlowGuidance transformed;transformed.initialize(free,2,2,32,4,8,margin);
+   for(int t=0;t<=32;++t)transformed.observe(t,{cell(observed[t])});
+   for(int u=0;u<4;++u)for(int d=0;d<4;++d){
+    if(transformed.costs()[cell(u)*4+direction(d)]!=original.costs()[u*4+d])throw std::runtime_error("flow margin used a direction template");
+    ++checked;
+   }
+  }
+ }
+ setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","50",1);flow_guidance_regression();unsetenv("CGAR_FLOW_MIN_MARGIN_PERCENT");
+ std::cout<<"FLOW_MARGIN passed exact_25_percent_boundary=1 transformed_edge_checks="<<checked<<" protected_threaded_episode=1\n";
+}
+
 void temporal_warm_start_regression() {
  const int cells=8,count=3;std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,1,cells,[]{});
  const auto& operations=TemporalGeometry::operations();int forward=-1;
@@ -945,4 +971,4 @@ void temporal_warm_start_regression() {
  std::cout<<"TEMPORAL_WARM_START passed shifted_operations=129 convoy_reuse=3 protected_cascade=2 filtered_closure=1 stale_history_rejected=1 explicit_timeout=1 protected_and_threaded_episodes=1\n";
 }
 
-int main(){try{temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{flow_margin_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

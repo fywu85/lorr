@@ -740,7 +740,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
         turn_oracle_.init(&cert_, mb << 20, turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0);
         if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
-            env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8));
+            env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
+            env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0));
     }
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
@@ -1359,9 +1360,9 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
         const bool changed = turn_oracle_.set_forward_costs(flow_guidance_.costs());
         ++stats_.flow_freezes; stats_.flow_penalized_edges = flow_guidance_.penalized_edges();
-        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d penalized_edges=%d cache_reset=%d frozen=1\n",
+        if (diagnostics_) std::printf("[cgar-flow] step=%d samples=%d moves=%llu strength=%d margin_percent=%d penalized_edges=%d cache_reset=%d frozen=1\n",
             env_->curr_timestep, flow_guidance_.samples(), static_cast<unsigned long long>(flow_guidance_.moves()),
-            flow_strength_, flow_guidance_.penalized_edges(), changed);
+            flow_strength_, flow_guidance_.minimum_margin_percent(), flow_guidance_.penalized_edges(), changed);
         check_deadline(deadline_, "flow_guidance_frozen");
     }
     advance_txn();

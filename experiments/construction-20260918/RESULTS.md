@@ -223,3 +223,17 @@ scheduler experiment, these gains do not worsen the observed age tail.
 decisions per profile. The first round contributes much more internal-score gain
 than the second. This motivates the separate [temperature ablation](TEMPERATURE.md);
 it does not prove the cause or replace full-run throughput measurements.
+
+
+## Completed guidance and distance-scale matrix (v16)
+
+The control again reproduces 107,457 and the same complete trajectory hash.
+All three learned-flow strengths fail explicitly in late temporal repair
+(steps 1,103 / 1,249 / 1,119); no partial score is accepted. The flow failure
+records and the later evidence audit motivate a separate [margin/work experiment](FLOW_MARGIN.md).
+
+Distance scales 256 and 1024 complete at 105,891 and 105,811, below control.
+They reduce moves away from the goal but increase loaded turns and waits.
+These settings are not promoted. Peak RSS ranges from 11.88 to 13.26 GB across
+the accepted cases, with all 5,000 exact entry samples below one second.
+[Full matrix](results/guidance-full-v16/), [scoring interpretation](SCALE.md).
