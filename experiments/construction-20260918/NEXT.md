@@ -15,7 +15,7 @@ Never present a dirty build's base HEAD as the exact tested source.
 - No-flow fixed 4M: 109,244 / 109,249 / 109,182, mean **109,225** over seeds0/1/2.
 - Frozen margin50 flow: 122,896 / 122,195 / 70,171, mean105,087.3. Do not promote.
 - **Refresh512: 134,511 / 134,519 over seeds0/2**, final windows28,215 /28,214,
-  max entries<=0.765267s, RSS<11.89GB, exact frozen controls. New best134,519.
+  max entries<=0.765267s, RSS<11.89GB, exact frozen controls. Ordinary refresh best134,519; strict variant later reaches135,177 on seed0.
   Refresh1024:133,652 /131,316. All six full cases pass. See FLOW_REFRESH.md.
 - Frozen flow with warm reuse:123,373 /123,251 over seeds0/2, both valid,
   exact controls. Recovers bad seed but below refresh512. See FLOW_WARM_REUSE.md.
@@ -37,9 +37,10 @@ memory. Independent matrices now run on separate hosts, with two, four or six co
 cases. Reservations scale with case count:24/48/72GiB for2/4/6cases. Actual
 allocations are archived; no running job was interrupted.
 
-- **8898637 /8898638**, v32 strict wait turns: refresh0/512 crossed with strict0/1,
-  seeds2 then0, exclusive research46. Four seed2 summaries pass: frozen70,171
-  ->121,534 strict; refresh134,519 ->133,672 strict. Full analysis/seed0 pending.
+- **8898637 /8898638 COMPLETE**, v32 strict wait turns: all eight valid, exact
+  default controls. Frozen strict122076/121534; refresh strict135177/133672.
+  Mean134424.5 is0.067% below ordinary refresh; no additive promotion. Only0.62%
+  of late collapsed-seed turns are tied seed rotations; most are planned operations.
 - **8898628 /8898629 COMPLETE**, v31 gentler costs1/4/8, seeds0/2.
   Scale4=121812/119927;scale8=119337/117897. All valid, exact default controls.
   They recover seed2 but lose healthy-seed throughput; remain below refresh512.
@@ -107,3 +108,57 @@ that field unnecessary. Remaining scheduler/branching ideas are untested hypothe
 Current resource costs are recorded in WAREHOUSE_PROGRESS.md and
 results/flow-refresh-resource-summary-v30.json:237–257ms mean,765ms max,
 1.20–1.22average CPU cores of4reserved,11.84–11.89GB peak RSS per instance.
+
+
+Offline refresh travel8898658 and dwell8898659 COMPLETE. Loaded elapsed/shortest
+ratio1.1745 for refresh versus localKK1.0799; completed chain lengths242.32 vs233.84.
+These are observational cohorts, not a causal decomposition. Last-window waits
+are4.99%/4.86%, turns4.43%/4.44%. Top5%free cells hold26.39%/24.46%of waits, but
+only22.32%/20.39%of stationary actions including turns. Strong localized congestion
+is not established. Fable's density thresholds are suggestions, not statistical laws.
+Audit also independently checks all5000 timing samples: p99=323.8/340.1ms.
+
+
+Four refresh seeds0/1/2/3 are independently analyzed, mean134487.5, range134061–134859.
+Completed subset8898668 checks new1/3 from the ongoing six-seed matrix without
+modifying it. All valid, steady final windows near28200. Remaining4/5 and repeated
+0/2 still running. First cache-only seed0 summaries123505legacy/123063strict are
+well below real134511; complete analysis pending. Do not attribute the full refresh
+gain merely to clearing the cache.
+
+V34 read-only forward-conflict audit build8898664 PASSES; source archive reconstructed.
+Screen8898667 tests off/audit64/prefetch4 on the same refresh512 policy. The audit
+classifies the best lower-cost first-forward alternative for stationary ordinary
+robots using the completed reservation table. It excludes own reservations and
+fixed/idle roots; counts no-better,free,one/two/many movable or protected blockers.
+It is a current-plan opportunity snapshot, NOT historical failure attribution.
+Seven independent footprint fixtures, repeated-owner/self-owner tests, exact
+subsequent RNG/search equivalence and4800production actions pass. No branching
+search has been implemented. Prefetch4 is an existing latency-only option under
+new flow conditions; full exact-action/timing validation remains necessary.
+
+
+Refresh follow-up8898655/8898657 COMPLETE. Interval256134052/134187 slightly loses;
+warm reuse134997/134794 gains0.283%mean. Exact controls. Ordinary refresh retains
+broader four-seed support pending the complete six-seed analysis. No new record.
+
+V34 screen8898667 PASS, all three exact fingerprints. Prefetch4 is unhelpful in the
+cold pair:6400speculative tables,only418used,5982discarded,wall45.777vs43.259.
+Full forward audit8898669/8898670 is running with stride64,seeds0/2,two cases,
+4cores each/24GiB. Read-only opportunity classification, not failure history.
+See FORWARD_CONFLICT_AUDIT.md and REFRESH_TRAVEL_AUDIT.md.
+
+New existing-policy screens (no C++ change):8898671 refresh512 scales1/2/4,
+8898672 refresh512 workers1x4M /4x1M /4x4M. Both use frozen v33,one4core instance,
+200steps for feasibility/control equivalence. Full follow-ups require valid timing.
+Worker budgets are fixed per worker; all must join, overrun is failure. No partial
+completion or wall-clock-selected worker result is allowed.
+
+
+New screens8898671/8898672 PASS. Scale1control and1workercontrol are exact; all
+six cold entries<0.803seconds. Full refreshed scales1/2/4=8898673/8898674;
+full workers1x4M,4x1M,4x4M=8898675/8898676. Each matrix runs all six seed0/2 cases
+concurrently on24physicalcores/72GiB; per instance4cores/1second/32GB. See
+REFRESH_COST_AND_WORK.md. No short-prefix ranking or full promotion.
+Fable persistent turn04 now running via CLI exec20076, same verified UUID;
+48383bytes, five changed excerpts plus newly relevant scheduler source.

@@ -1,0 +1,51 @@
+{
+  "submission": {
+    "prepared_utc": "2026-09-19T12:35:37.888827+00:00",
+    "command": [
+      "/opt/n1ge/bin/lx24-amd64/qsub",
+      "-terse",
+      "-w",
+      "e",
+      "-cwd",
+      "-q",
+      "debian.q",
+      "-pe",
+      "threaded",
+      "1",
+      "-binding",
+      "linear:1",
+      "-l",
+      "exclusive=true,h_rt=00:30:00,h_vmem=4G",
+      "-m",
+      "n",
+      "-N",
+      "refresh_dwell",
+      "-j",
+      "y",
+      "-o",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-refresh-dwell-v1-20260919/scheduler.log",
+      "-S",
+      "/bin/bash",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-refresh-dwell-v1-20260919/job.sh"
+    ],
+    "analysis_command": [
+      "/usr/bin/python3",
+      "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/dwell_audit.py",
+      "--cases",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/flow1_margin50_refresh512_work4m_prep4-s0-r0",
+      "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/flow1_margin50_refresh512_work4m_prep4-s2-r0",
+      "--output",
+      "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/refresh-dwell-v1.json"
+    ],
+    "response": "8898659\n",
+    "exit": 0,
+    "source_sha256": {
+      "decompose.py": "6dae279c1a9c0f9e3ecdee5682f231a29cbbb3f26688bed9d42ba0634add9d13",
+      "decompose.cpp": "860fb749849c32054aed947ea17d37d14c2cb71deb6206744c956a59b17fffad",
+      "dwell_audit.py": "568ed1cd76c53fd4d5f7907f5be027a0db20c88c0793d7e126b5520310f38049",
+      "flow_field_audit.py": "3d55b62a0fe3694e71cfafa2602244989b9ff921a1cff23200d006ea6e1b3a21"
+    }
+  },
+  "output_sha256": "2e445f73c83748bb9967ab537f6ba1fcf73ac969199f15573a73ea64931f90c5",
+  "complete_replay_and_latency_checks": true
+}

@@ -298,6 +298,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         }
         temporal_history_.remember(env_->curr_timestep, search, goals, expected_orientation);
     }
+    if (temporal_conflict_audit_stride_ && (env_->curr_timestep + 1) % temporal_conflict_audit_stride_ == 0) {
+        const auto audit = search.audit_forward_blockers();
+        ++stats_.temporal_conflict_audits;
+        if (diagnostics_) std::printf("[cgar-temporal-forward-audit] step=%d stationary=%d no_lower_forward=%d unblocked=%d one_movable=%d two_movable=%d many_movable=%d protected_blocker=%d\n",
+            env_->curr_timestep + 1, audit.stationary, audit.no_lower_forward, audit.unblocked,
+            audit.one_movable, audit.two_movable, audit.many_movable, audit.protected_blocker);
+    }
     const auto& construction_stats = results[best]->stats;
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
         std::printf("[cgar-temporal] step=%d workers=%d threads=%d selected_worker=%d candidate_limit=%d roots=%lld accepted=%lld recursion=%lld candidates=%lld max_depth=%d exhausted=%lld repairs=%lld repair_accept=%lld score=%.3f\n",

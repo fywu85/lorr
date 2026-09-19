@@ -15,6 +15,8 @@ from cpu_resources import cpu_resources
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--cases', type=Path, help='Optional JSON mapping report names to completed trajectory paths')
+    p.add_argument('--map', type=Path, default=ROOT / 'mr24/warehouse.domain/maps/warehouse_large.map')
     a = p.parse_args()
     out = a.output.resolve(); out.mkdir(parents=True, exist_ok=False)
     source = Path(__file__).with_suffix('.cpp')
@@ -48,6 +50,10 @@ def main():
         'kittyknight': 'runs/warehouse-leaders-full-20260918/kk-WAREHOUSE/result.json',
         'nms_diagnostic': 'runs/warehouse-leaders-full-20260918/nms-WAREHOUSE/result.json',
     }
+    if a.cases:
+        cases = json.loads(a.cases.read_text())
+        assert isinstance(cases, dict) and cases
+        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture-result', 'provenance') for name in cases)
     inputs = {}
     for name, path in cases.items():
         target = ROOT / path
@@ -56,12 +62,13 @@ def main():
             for chunk in iter(lambda: stream.read(1024 * 1024), b''):
                 digest.update(chunk)
         inputs[name] = {'path': path, 'sha256': digest.hexdigest()}
-        subprocess.run([str(binary), str(ROOT / 'mr24/warehouse.domain/maps/warehouse_large.map'),
+        subprocess.run([str(binary), str(a.map.resolve()),
                         str(target), str(out / (name + '.json'))], check=True)
     (out / 'provenance.json').write_text(json.dumps({
         'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
-        'command': command, 'fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs}, indent=2) + '\n')
+        'command': command, 'fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
+        'map': str(a.map.resolve()), 'map_sha256': hashlib.sha256(a.map.read_bytes()).hexdigest()}, indent=2) + '\n')
 
 
 if __name__ == '__main__':

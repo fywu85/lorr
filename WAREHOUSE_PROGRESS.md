@@ -1,10 +1,10 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 12:15:34 UTC.
+Updated: 2026-09-19 13:01:39 UTC.
 
-**Best observed full run: 134,519 completed tasks** — refresh interval 512, seed 2. The same policy reaches **134,511** on seed 0, for a two-seed mean of **134,515**. It recovers the previously failing seed; six-seed confirmation is queued. **Best mean confirmed over three seeds remains 109,225** — no-flow fixed 4M (109,244 / 109,249 / 109,182).
+**Best observed full run: 135,177 completed tasks** — refresh512 with strict wait turns, seed0. Its two-seed mean is **134,424.5** (135,177 /133,672), slightly below ordinary refresh512's **134,515** (134,511 /134,519). Ordinary refresh is now confirmed on four seeds (0–3): **134,487.5 mean**, range **134,061–134,859**. The final two seeds are running.
 
-The local KittyKnight reference is **152,981**, so the experimental peak is **12.07% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
+The local KittyKnight reference is **152,981**, so the experimental peak is **11.64% below** it. That reference used 38.858 GB RSS; our limit is 32,000,000,000 bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim.
 
 ## New best scores over time
 
@@ -34,6 +34,7 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 08:11:17 | 122,896 | Frozen learned flow, margin 50 / 0 | [fafd9f5](https://github.com/fywu85/lorr/commit/fafd9f5cb028ccd87a848a0338cc5e126e2f8d62) | [data](experiments/construction-20260918/results/flow-margin-full-v20/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v20/) · not robust |
 | 2026-09-19 10:49:30 | 134,511 | Learned flow, refresh every 512 / 0 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-first-pair-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seed 0 only |
 | 2026-09-19 11:26:47 | 134,519 | Learned flow, refresh every 512 / 2 | [e14ecfd](https://github.com/fywu85/lorr/commit/e14ecfdbb72dfa5125e217f7e8eefad3296ec0a1) | [data](experiments/construction-20260918/results/flow-refresh-full-v30/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v30/) · seeds 0/2 confirmed |
+| 2026-09-19 12:37:41 | 135,177 | Refresh512 + strict wait turns /0 | [846360e](https://github.com/fywu85/lorr/commit/846360ec9f8f0fddbd2d5d52544113e799945f43) | [data](experiments/construction-20260918/results/strict-wait-turn-full-v32/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v32/) · mixed two-seed effect |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -45,23 +46,25 @@ This log backfills every increasing single-run record from the full warehouse ca
 |---|---|---|
 | No-flow fixed 4M | Seeds 0/1/2: 109,244 / 109,249 / 109,182; mean **109,225** | Stable current three-seed control; six-seed confirmation outstanding. |
 | Frozen margin-50 flow | Seeds 0/1/2: 122,896 / 122,195 / 70,171; mean **105,087.3** | Historical peak retained, but **not promoted**: seed 2 collapses late and the mean loses to its matched control. |
-| Refresh every 512 | Seeds 0/2: **134,511 / 134,519**; mean **134,515**; final windows 28,215 / 28,214; max entry <=0.765267 s; RSS <11.89 GB | Both improve over frozen and no-flow controls. Six-seed paired confirmation **8898647/8898648** queued; no six-seed claim yet. |
+| Refresh every 512 | Seeds0/1/2/3: **134,511 /134,859 /134,519 /134,061**; mean **134,487.5** | Four fully analyzed seeds pass. Final1,000 windows28,215 /28,223 /28,214 /28,227. Six-seed confirmation8898647/8898648 running. |
 | Refresh every 1,024 | Seeds 0/2: 133,652 / 131,316; mean 132,484 | Both recover steady final-window throughput, but interval 512 wins both full totals. |
 | Frozen flow with warm reuse | Seeds 0/2: 123,373 / 123,251; mean 123,312 | Recovers seed 2 without updating the field; below refresh512 on both tested seeds. |
 | Gentler frozen-flow penalties | Scale4 seeds0/2: 121,812 /119,927; scale8: 119,337 /117,897 | Both recover seed2, but lower healthy-seed throughput and remain below refresh512. |
+| Strict wait turns + refresh512 | Seeds0/2: **135,177 /133,672**, mean134,424.5; all decisions valid | New single-run peak; mean is0.067% below ordinary refresh on these seeds. No additive gain established. |
+| Refresh512 + warm reuse | Seeds0/2: 134,997 /134,794; mean134,895.5 | Small positive paired effect (+0.283%); broader confirmation pending. Refresh256 slightly loses on both seeds. |
 
-[Matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
+[Four-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-four-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
-## Resource cost of the current leading configuration
+## Resource cost of the leading configuration (measured on seeds0/2)
 
 Refresh512, seeds0/2, all5,000steps: mean complete scheduling+planning latency
-**237.3 /256.8ms**, maximum **765.3 /762.0ms**; average CPU **1.216 /1.197cores**
+**237.3 /256.8ms**, p95 **303.1 /322.8ms**, p99 **323.8 /340.1ms**, maximum **765.3 /762.0ms**; average CPU **1.216 /1.197cores**
 with four physical cores reserved per instance (about30% average utilization).
 Peak process RSS **11.838 /11.888GB**; elapsed full run **20.99 /22.65minutes**.
 CPU is measured user+system time divided by process wall time, not an instantaneous
 sample. Hosts were exclusive and unthrottled. Preparation uses multiple workers;
 much of the remaining work is serial. Allocation does not imply four busy cores.
-[Machine-readable resource evidence](experiments/construction-20260918/results/flow-refresh-resource-summary-v30.json).
+[Machine-readable resource evidence](experiments/construction-20260918/results/flow-refresh-resource-summary-v30.json), [independent latency quantiles](experiments/construction-20260918/results/refresh-dwell-v1.json).
 
 ## Updating this log
 

@@ -1,0 +1,459 @@
+{
+  "script_sha256": "568ed1cd76c53fd4d5f7907f5be027a0db20c88c0793d7e126b5520310f38049",
+  "cases": [
+    {
+      "case": "flow1_margin50_refresh512_work4m_prep4-s0-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/flow1_margin50_refresh512_work4m_prep4-s0-r0",
+      "tasks": 134511,
+      "steps": 5000,
+      "robots": 10000,
+      "window_steps": 1000,
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "binary_sha256": "409032690841ed4a08a80e21ec15cd030b24fcfb579002782bbd264277b352d0",
+      "complete_replay_matches_production": true,
+      "late_window": {
+        "fw": 9057998,
+        "cr": 262363,
+        "ccr": 180416,
+        "wait": 499223,
+        "closer": 8826539,
+        "farther": 231459,
+        "equal": 0,
+        "unknown": 0
+      },
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 237.26435808319977,
+        "p50_ms": 237.977948,
+        "p90_ms": 291.953709,
+        "p95_ms": 303.119279,
+        "p99_ms": 323.777627,
+        "max_ms": 765.266707
+      },
+      "free_cells": 38586,
+      "visited_cells": 38545,
+      "concentration_over_free_cells": {
+        "wait": {
+          "total": 499223,
+          "cells": 38586,
+          "cells_with_positive_count": 34560,
+          "top_cell_shares": {
+            "1": 0.09076905511164349,
+            "5": 0.26385402916131667,
+            "10": 0.40570246162536583,
+            "25": 0.6821300300667237
+          }
+        },
+        "turn": {
+          "total": 442779,
+          "cells": 38586,
+          "cells_with_positive_count": 28708,
+          "top_cell_shares": {
+            "1": 0.09649057430456277,
+            "5": 0.29923731703626416,
+            "10": 0.46456810282330463,
+            "25": 0.7692302480469941
+          }
+        },
+        "stationary": {
+          "total": 942002,
+          "cells": 38586,
+          "cells_with_positive_count": 37654,
+          "top_cell_shares": {
+            "1": 0.06811025878925947,
+            "5": 0.22317256226632215,
+            "10": 0.3502243095025276,
+            "25": 0.6016027566820452
+          }
+        }
+      },
+      "concentration_over_visited_cells": {
+        "wait": {
+          "total": 499223,
+          "cells": 38545,
+          "cells_with_positive_count": 34560,
+          "top_cell_shares": {
+            "1": 0.09076905511164349,
+            "5": 0.26368176145730465,
+            "10": 0.4054460631821851,
+            "25": 0.6817694697560008
+          }
+        },
+        "turn": {
+          "total": 442779,
+          "cells": 38545,
+          "cells_with_positive_count": 28708,
+          "top_cell_shares": {
+            "1": 0.09649057430456277,
+            "5": 0.2990340553639626,
+            "10": 0.46427901955603135,
+            "25": 0.7688688939629025
+          }
+        },
+        "stationary": {
+          "total": 942002,
+          "cells": 38545,
+          "cells_with_positive_count": 37654,
+          "top_cell_shares": {
+            "1": 0.06811025878925947,
+            "5": 0.2230154500733544,
+            "10": 0.34999925690179,
+            "25": 0.6012630546431961
+          }
+        }
+      },
+      "occupied_cells_with_no_exit": 0,
+      "stationary_steps_on_no_exit_cells": 0,
+      "flow_publications": [
+        {
+          "step": 128,
+          "samples": 128,
+          "moves": 961331,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 17106,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 1,
+          "refresh_interval": 512
+        },
+        {
+          "step": 640,
+          "samples": 640,
+          "moves": 5353785,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 29501,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 2,
+          "refresh_interval": 512
+        },
+        {
+          "step": 1152,
+          "samples": 1152,
+          "moves": 9963755,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 34856,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 3,
+          "refresh_interval": 512
+        },
+        {
+          "step": 1664,
+          "samples": 1664,
+          "moves": 14582250,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 37687,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 4,
+          "refresh_interval": 512
+        },
+        {
+          "step": 2176,
+          "samples": 2176,
+          "moves": 19213292,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 39240,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 5,
+          "refresh_interval": 512
+        },
+        {
+          "step": 2688,
+          "samples": 2688,
+          "moves": 23839371,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 40049,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 6,
+          "refresh_interval": 512
+        },
+        {
+          "step": 3200,
+          "samples": 3200,
+          "moves": 28475462,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 40744,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 7,
+          "refresh_interval": 512
+        },
+        {
+          "step": 3712,
+          "samples": 3712,
+          "moves": 33116934,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 41211,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 8,
+          "refresh_interval": 512
+        },
+        {
+          "step": 4224,
+          "samples": 4224,
+          "moves": 37759372,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 41494,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 9,
+          "refresh_interval": 512
+        },
+        {
+          "step": 4736,
+          "samples": 4736,
+          "moves": 42396428,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 41682,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 10,
+          "refresh_interval": 512
+        }
+      ],
+      "limitation": "Concentration is observational and traffic-volume dependent, not a delay model or causal benefit. Turns include unavoidable orientation changes. The window censors cell visits at both ends. No weighted-distance or route-choice counterfactual is computed."
+    },
+    {
+      "case": "flow1_margin50_refresh512_work4m_prep4-s2-r0",
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-flow-refresh-full-v30-20260919/flow1_margin50_refresh512_work4m_prep4-s2-r0",
+      "tasks": 134519,
+      "steps": 5000,
+      "robots": 10000,
+      "window_steps": 1000,
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "binary_sha256": "409032690841ed4a08a80e21ec15cd030b24fcfb579002782bbd264277b352d0",
+      "complete_replay_matches_production": true,
+      "late_window": {
+        "fw": 9069116,
+        "cr": 263615,
+        "ccr": 180795,
+        "wait": 486474,
+        "closer": 8844684,
+        "farther": 224432,
+        "equal": 0,
+        "unknown": 0
+      },
+      "latency_nearest_rank": {
+        "samples": 5000,
+        "mean_ms": 256.8411053649997,
+        "p50_ms": 259.34121700000003,
+        "p90_ms": 312.580453,
+        "p95_ms": 322.788374,
+        "p99_ms": 340.14615399999997,
+        "max_ms": 762.019024
+      },
+      "free_cells": 38586,
+      "visited_cells": 38545,
+      "concentration_over_free_cells": {
+        "wait": {
+          "total": 486474,
+          "cells": 38586,
+          "cells_with_positive_count": 34715,
+          "top_cell_shares": {
+            "1": 0.07627334657145089,
+            "5": 0.24460505597421445,
+            "10": 0.38816874077545765,
+            "25": 0.6688517783067544
+          }
+        },
+        "turn": {
+          "total": 444410,
+          "cells": 38586,
+          "cells_with_positive_count": 28806,
+          "top_cell_shares": {
+            "1": 0.0951013703562026,
+            "5": 0.29922819018473934,
+            "10": 0.46496028442204274,
+            "25": 0.7690015976238158
+          }
+        },
+        "stationary": {
+          "total": 930884,
+          "cells": 38586,
+          "cells_with_positive_count": 37693,
+          "top_cell_shares": {
+            "1": 0.05834883830853253,
+            "5": 0.2038675065851384,
+            "10": 0.3296307595790668,
+            "25": 0.5861063247407841
+          }
+        }
+      },
+      "concentration_over_visited_cells": {
+        "wait": {
+          "total": 486474,
+          "cells": 38545,
+          "cells_with_positive_count": 34715,
+          "top_cell_shares": {
+            "1": 0.07627334657145089,
+            "5": 0.24443238487565624,
+            "10": 0.38790562291098807,
+            "25": 0.6684817688098439
+          }
+        },
+        "turn": {
+          "total": 444410,
+          "cells": 38545,
+          "cells_with_positive_count": 28806,
+          "top_cell_shares": {
+            "1": 0.0951013703562026,
+            "5": 0.29902567448977296,
+            "10": 0.4646632614027587,
+            "25": 0.7686415697216534
+          }
+        },
+        "stationary": {
+          "total": 930884,
+          "cells": 38545,
+          "cells_with_positive_count": 37693,
+          "top_cell_shares": {
+            "1": 0.05834883830853253,
+            "5": 0.2037149634111232,
+            "10": 0.32940301906574826,
+            "25": 0.5857518229983543
+          }
+        }
+      },
+      "occupied_cells_with_no_exit": 0,
+      "stationary_steps_on_no_exit_cells": 0,
+      "flow_publications": [
+        {
+          "step": 128,
+          "samples": 128,
+          "moves": 956753,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 17183,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 1,
+          "refresh_interval": 512
+        },
+        {
+          "step": 640,
+          "samples": 640,
+          "moves": 5322973,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 29474,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 2,
+          "refresh_interval": 512
+        },
+        {
+          "step": 1152,
+          "samples": 1152,
+          "moves": 9915649,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 34468,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 3,
+          "refresh_interval": 512
+        },
+        {
+          "step": 1664,
+          "samples": 1664,
+          "moves": 14539900,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 37136,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 4,
+          "refresh_interval": 512
+        },
+        {
+          "step": 2176,
+          "samples": 2176,
+          "moves": 19172390,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 38543,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 5,
+          "refresh_interval": 512
+        },
+        {
+          "step": 2688,
+          "samples": 2688,
+          "moves": 23809969,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 39315,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 6,
+          "refresh_interval": 512
+        },
+        {
+          "step": 3200,
+          "samples": 3200,
+          "moves": 28457850,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 39952,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 7,
+          "refresh_interval": 512
+        },
+        {
+          "step": 3712,
+          "samples": 3712,
+          "moves": 33106907,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 40419,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 8,
+          "refresh_interval": 512
+        },
+        {
+          "step": 4224,
+          "samples": 4224,
+          "moves": 37751847,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 40779,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 9,
+          "refresh_interval": 512
+        },
+        {
+          "step": 4736,
+          "samples": 4736,
+          "moves": 42389320,
+          "strength": 1,
+          "margin_percent": 50,
+          "penalized_edges": 41083,
+          "cache_reset": 1,
+          "frozen": 0,
+          "publications": 10,
+          "refresh_interval": 512
+        }
+      ],
+      "limitation": "Concentration is observational and traffic-volume dependent, not a delay model or causal benefit. Turns include unavoidable orientation changes. The window censors cell visits at both ends. No weighted-distance or route-choice counterfactual is computed."
+    }
+  ]
+}

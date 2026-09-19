@@ -37,7 +37,7 @@ def main():
         shutil.copy2(source / 'metadata.json', dest / 'metadata.json')
         row = rows[0]
         diagnostics = [line for log in sorted(source.glob('*.log')) for line in log.read_text(errors='replace').splitlines()
-                       if line.startswith(('[cgar-temporal', '[cgar-orientation]', '[cgar-flow]'))]
+                       if line.startswith(('[cgar-temporal', '[cgar-orientation]', '[cgar-flow]', '[cgar-turn-prefetch]'))]
         write(dest / 'diagnostics.json', diagnostics)
         if row['valid']:
             assert row['makespan'] == row['entry_compute_samples'] == horizon

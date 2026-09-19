@@ -27,17 +27,33 @@ max entries are below 0.790 seconds. These screens are feasibility checks.
 Full **8898637 / 8898638** compares refresh0/512 crossed with strict0/1 at
 seeds2 then0 on exclusive research46, four physical cores per instance, two
 instances, 24 GiB allocation, 5,000 steps and one-second complete decisions.
-At the resumed checkpoint, seed2 simulator summaries are complete:
+The complete independent analysis validates all eight cases and all four exact
+legacy-control hashes. All maxima are below0.785seconds and RSS below11.920GB.
 
-| Seed2 | Legacy ties | Strict improvement |
-|---|---:|---:|
-| Frozen flow | 70,171 | 121,534 |
-| Refresh512 | 134,519 | 133,672 |
+| Policy | Seed0 | Seed2 | Two-seed mean |
+|---|---:|---:|---:|
+| Frozen legacy | 122,896 | 70,171 | 96,533.5 |
+| Frozen strict | 122,076 | 121,534 | 121,805 |
+| Refresh512 legacy | 134,511 | 134,519 | **134,515** |
+| Refresh512 strict | **135,177** | 133,672 | 134,424.5 |
 
-Those four summaries pass timings and RSS. Full independent trajectory analysis
-and seed0 comparisons are still pending. The first seed suggests a large recovery
-for frozen flow, but no extra throughput gain over periodic refresh. Avoid treating
-one changed trajectory as proof of the original collapse's unique cause.
+Strict mode avoids the frozen seed2 collapse, but has mixed effects with refresh:
++0.495% on seed0 and -0.630% on seed2. The mean is0.067% below ordinary refresh.
+The new single-run peak135177 is retained in the progress log, without promoting
+strict mode as an additive improvement.
+
+Rotation attribution is now measured. In the collapsed frozen seed2 final1,000
+steps,2,025,221 rotations come from planned operations,623,966 from wait seeds,
+and2,075 from protected actions. Only16,421 are tied wait-seed rotations (0.62%
+of all turns). Strict mode records zero ties, but its recovery cannot be explained
+as merely subtracting the counted tie actions: the whole traffic trajectory changes.
+Healthy refresh legacy has only9/8 tied seed turns in the final1,000 on seeds0/2.
+This supports testing plan consistency and traffic behavior; it does not uniquely
+identify the original collapse's cause.
+
+[Complete results](results/strict-wait-turn-full-v32/),
+[exact controls](results/strict-wait-turn-full-v32/equivalence.json),
+[rotation attribution](results/strict-wait-turn-full-v32/rotation-attribution.json).
 
 [Build](build-provenance/v32/validation.json),
 [screen](results/strict-wait-turn-screen-v32/),

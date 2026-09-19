@@ -1,0 +1,190 @@
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -664,6 +664,10 @@
+     if (strict_wait_turns < 0 || strict_wait_turns > 1 || (strict_wait_turns && !temporal_))
+         throw std::invalid_argument("strict wait turns require temporal planning and a boolean setting");
+     temporal_strict_wait_turns_ = strict_wait_turns != 0;
++    temporal_conflict_audit_stride_ = env_int("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE", 0);
++    if (temporal_conflict_audit_stride_ < 0 || temporal_conflict_audit_stride_ > 4096 ||
++        (temporal_conflict_audit_stride_ && !temporal_))
++        throw std::invalid_argument("temporal conflict audit requires temporal planning and stride 1-4096");
+     temporal_history_.clear();
+     if (temporal_warm_start_ && !temporal_) throw std::invalid_argument("temporal warm start requires temporal planning");
+     turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -229,7 +229,7 @@
+     long long expired_commitments = 0;
+     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
+     long long flow_freezes = 0, flow_penalized_edges = 0, flow_publications = 0, flow_cache_resets = 0, flow_cache_only_resets = 0;
+-    long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0;
++    long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0, temporal_conflict_audits = 0;
+     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
+     long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;
+     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
+@@ -337,7 +337,7 @@
+     std::mt19937_64 temporal_rng_{0};
+     bool temporal_ = false, temporal_equal_weight_ = false;
+     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
+-    int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0;
++    int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0, temporal_conflict_audit_stride_ = 0;
+     int temporal_workers_ = 1, temporal_threads_ = 1, temporal_prepare_threads_ = 1;
+     bool temporal_regions_ = false;
+     TemporalRegionOptions temporal_region_options_;
+--- a/cgar/cgar_planner/temporal_adapter.hpp
++++ b/cgar/cgar_planner/temporal_adapter.hpp
+@@ -297,6 +297,13 @@
+             else if (actions[r] == Action::CCR) expected_orientation[r] = (ori_[r] + 3) % 4;
+         }
+         temporal_history_.remember(env_->curr_timestep, search, goals, expected_orientation);
++    }
++    if (temporal_conflict_audit_stride_ && (env_->curr_timestep + 1) % temporal_conflict_audit_stride_ == 0) {
++        const auto audit = search.audit_forward_blockers();
++        ++stats_.temporal_conflict_audits;
++        if (diagnostics_) std::printf("[cgar-temporal-forward-audit] step=%d stationary=%d no_lower_forward=%d unblocked=%d one_movable=%d two_movable=%d many_movable=%d protected_blocker=%d\n",
++            env_->curr_timestep + 1, audit.stationary, audit.no_lower_forward, audit.unblocked,
++            audit.one_movable, audit.two_movable, audit.many_movable, audit.protected_blocker);
+     }
+     const auto& construction_stats = results[best]->stats;
+     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+--- a/cgar/cgar_planner/temporal_pibt.hpp
++++ b/cgar/cgar_planner/temporal_pibt.hpp
+@@ -24,6 +24,12 @@
+     const TemporalPath* path = nullptr;
+     int64_t cost = 0;
+     int operation = 0;
++};
++
++// A read-only snapshot of the finished reservation table, not rejection history.
++struct TemporalForwardAudit {
++    int stationary = 0, no_lower_forward = 0, unblocked = 0;
++    int one_movable = 0, two_movable = 0, many_movable = 0, protected_blocker = 0;
+ };
+ 
+ struct TemporalStats {
+@@ -115,6 +121,47 @@
+     int selected(int r) const { return selected_[r]; }
+     const std::vector<int>& selections() const { return selected_; }
+     double score() const { return score_; }
++    // Classify the best strictly lower-cost first-forward alternative for each
++    // stationary, ordinary, goal-bearing robot in the completed plan. Occupancy
++    // belonging to that same robot is excluded. This never runs a search, changes
++    // reservations, promotes cache entries or consumes randomness. Necessary turns
++    // can be stationary too; these counts are opportunity bounds, not lost tasks.
++    TemporalForwardAudit audit_forward_blockers() const {
++        TemporalForwardAudit out;
++        for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
++            const int start = choices_[r][0].path->cells[0];
++            if (fixed_[r] || power_[r] <= 0 || choice(r).path->cells[0] != start) continue;
++            ++out.stationary;
++            int best = -1;
++            for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
++                const auto& candidate = choices_[r][k];
++                if (candidate.path->cells[0] == start || candidate.cost >= choice(r).cost) continue;
++                if (best < 0 || candidate.cost < choices_[r][best].cost ||
++                    (candidate.cost == choices_[r][best].cost && candidate.operation < choices_[r][best].operation)) best = k;
++            }
++            if (best < 0) { ++out.no_lower_forward; continue; }
++            std::array<int, 2 * kTemporalHorizon> owners{};
++            int count = 0;
++            auto take = [&](int owner) {
++                if (owner < 0 || owner == r) return;
++                for (int i = 0; i < count; ++i) if (owners[i] == owner) return;
++                owners[count++] = owner;
++            };
++            const auto& path = *choices_[r][best].path;
++            for (int t = 0; t < kTemporalHorizon; ++t) {
++                take(used_cells_[path.cells[t]][t]);
++                if (path.edges[t] >= 0) take(used_edges_[path.edges[t]][t]);
++            }
++            bool protected_owner = false;
++            for (int i = 0; i < count; ++i) protected_owner |= fixed_[owners[i]];
++            if (protected_owner) ++out.protected_blocker;
++            else if (!count) ++out.unblocked;
++            else if (count == 1) ++out.one_movable;
++            else if (count == 2) ++out.two_movable;
++            else ++out.many_movable;
++        }
++        return out;
++    }
+     TemporalStats stats;
+ 
+ private:
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -665,6 +665,10 @@
+   if(std::getenv("CGAR_TEMPORAL_STRICT_WAIT_TURNS")&&std::atoi(std::getenv("CGAR_TEMPORAL_STRICT_WAIT_TURNS"))&&stats.temporal_tied_seed_rotations)
+    throw std::runtime_error("strict wait mode issued an equal-distance seed rotation");
+  }
++ const int audit_stride=std::getenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE")?std::atoi(std::getenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE")):0;
++ if(serial.stats().temporal_conflict_audits!=(audit_stride?100/audit_stride:0)||
++    parallel.stats().temporal_conflict_audits!=serial.stats().temporal_conflict_audits)
++  throw std::runtime_error("production forward audit used the wrong fixed sample schedule");
+  if(serial.stats().temporal_prepared_robots!=checked||parallel.stats().temporal_prepared_robots!=checked||
+     serial.stats().temporal_parallel_preparations||parallel.stats().temporal_parallel_preparations!=100)
+   throw std::runtime_error("production preparation threads did not process the complete fleet");
+@@ -1079,6 +1083,58 @@
+           <<" scales=1,2,4,8 cache_pressure=1 repeated_neutral_fields=5 protected_parallel_warm_actions=4800\n";
+ }
+ 
++void temporal_forward_audit_regression() {
++ TemporalGeometry geometry;geometry.initialize(std::vector<char>(7,true),1,7,[]{});
++ auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
++  for(int k=0;k<int(ops.size());++k)if(ops[k]==actions)return k;
++  throw std::runtime_error("missing forward-audit fixture operation");};
++ const int forward=operation({0,0,0,3,3}),one_step=operation({0,3,3,3,3}),delayed=operation({3,0,3,3,3});
++ int fixtures=0;
++ for(int count=0;count<=3;++count)for(bool protect:{false,true}){
++  if(protect&&!count)continue;
++  const int n=count+1;std::vector<std::vector<TemporalChoice>> choices(n);std::vector<char> fixed(n,false);std::vector<double> power(n,1);
++  for(int r=0;r<n;++r)choices[r].push_back({&geometry.paths(r,0)[0],r?0:100,0});
++  choices[0].push_back({&geometry.paths(0,0)[forward],0,forward});
++  if(protect)fixed[count]=true;
++  TemporalPibt a(7,choices,fixed,power,8192,123),b(7,choices,fixed,power,8192,123);
++  const auto selected=a.selections();const auto score=a.score();const auto stats=a.stats;
++  const auto audit=a.audit_forward_blockers();
++  if(audit.stationary!=n-int(protect)||audit.no_lower_forward!=count-int(protect)||
++     audit.unblocked!=int(count==0)||audit.protected_blocker!=int(protect)||
++     audit.one_movable!=int(!protect&&count==1)||audit.two_movable!=int(!protect&&count==2)||audit.many_movable!=int(!protect&&count==3)||
++     a.selections()!=selected||a.score()!=score||a.stats.candidates!=stats.candidates)
++   throw std::runtime_error("forward audit misclassified independently constructed blocker footprints or mutated search state");
++  std::vector<int> order(n);for(int i=0;i<n;++i)order[i]=i;
++  a.construct(order,[]{});b.construct(order,[]{});a.repair(256,[]{});b.repair(256,[]{});
++  if(a.selections()!=b.selections()||a.score()!=b.score()||a.stats.candidates!=b.stats.candidates||a.stats.repairs_accepted!=b.stats.repairs_accepted)
++   throw std::runtime_error("read-only forward audit changed subsequent random search");
++  ++fixtures;
++ }
++ std::vector<std::vector<TemporalChoice>> choices(2);
++ choices[0]={{&geometry.paths(0,0)[0],100,0},{&geometry.paths(0,0)[one_step],0,one_step}};
++ choices[1]={{&geometry.paths(1,0)[0],0,0}};
++ std::vector<char> fixed(2,false);std::vector<double> power(2,1);
++ TemporalPibt repeated(7,choices,fixed,power,8192,1);
++ if(repeated.audit_forward_blockers().one_movable!=1)throw std::runtime_error("forward audit counted repeated owner reservations more than once");
++ choices.resize(1);fixed.resize(1);power.resize(1);
++ choices[0].push_back({&geometry.paths(0,0)[delayed],50,delayed});std::vector<int> initial{2};
++ TemporalPibt self(7,choices,fixed,power,8192,1,&initial);
++ if(self.audit_forward_blockers().unblocked!=1)throw std::runtime_error("forward audit counted the robot's own future reservations");
++ initial[0]=1;TemporalPibt moving(7,choices,fixed,power,8192,1,&initial);
++ if(moving.audit_forward_blockers().stationary)throw std::runtime_error("forward audit included a first-forward selection");
++ choices[0][1].cost=100;choices[0].resize(2);TemporalPibt equal(7,choices,fixed,power,8192,1);
++ if(equal.audit_forward_blockers().no_lower_forward!=1)throw std::runtime_error("forward audit treated an equal-cost alternative as a strict improvement");
++ power[0]=0;TemporalPibt idle(7,choices,fixed,power,8192,1);
++ if(idle.audit_forward_blockers().stationary)throw std::runtime_error("forward audit included an idle zero-weight robot");
++ for(const char* value:{"-1","4097","1"}){
++  setenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE",value,1);SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool rejected=false;
++  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
++  if(!rejected)throw std::runtime_error("invalid or non-temporal conflict audit was accepted");
++ }
++ setenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE","7",1);temporal_region_adapter_regression();temporal_primary_regression();unsetenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE");
++ std::cout<<"TEMPORAL_FORWARD_AUDIT passed hand_counted_blocker_fixtures="<<fixtures<<" owner_deduplication=1 own_future_reservations_excluded=1 strict_cost_boundary=1 fixed_and_idle_excluded=1 search_rng_and_selections_unchanged=1 fixed_sample_schedule=1 protected_serial_parallel_actions=4800\n";
++}
++
+ void flow_cache_only_regression() {
+  const std::vector<char> free(4,true);std::vector<int> observed{0,1,3,2,0};
+  for(int loop=0;loop<4;++loop)for(int u:{2,3,1,0})observed.push_back(u);
+@@ -1642,4 +1698,4 @@
+           <<" turn_builds="<<a.oriented_builds<<" exact_lru_effects=1 threads=1,4\n";
+ }
+ 
+-int main(){try{temporal_preparation_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
++int main(){try{temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

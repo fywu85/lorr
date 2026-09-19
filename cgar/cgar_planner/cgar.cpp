@@ -664,6 +664,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (strict_wait_turns < 0 || strict_wait_turns > 1 || (strict_wait_turns && !temporal_))
         throw std::invalid_argument("strict wait turns require temporal planning and a boolean setting");
     temporal_strict_wait_turns_ = strict_wait_turns != 0;
+    temporal_conflict_audit_stride_ = env_int("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE", 0);
+    if (temporal_conflict_audit_stride_ < 0 || temporal_conflict_audit_stride_ > 4096 ||
+        (temporal_conflict_audit_stride_ && !temporal_))
+        throw std::invalid_argument("temporal conflict audit requires temporal planning and stride 1-4096");
     temporal_history_.clear();
     if (temporal_warm_start_ && !temporal_) throw std::invalid_argument("temporal warm start requires temporal planning");
     turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);

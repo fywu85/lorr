@@ -104,3 +104,33 @@ No six-seed or default-promotion claim is made.
 
 [First-pair evidence](results/flow-refresh-first-pair-v30/),
 [continuously maintained progress log](../../WAREHOUSE_PROGRESS.md).
+
+
+## Four-seed confirmation in progress
+
+Completed-subset analysis **8898668** validates seeds1/3 from the ongoing six-seed
+matrix, using a symlinked subset that leaves the original matrix unchanged.
+Refresh512 reaches134,859 /134,061, final windows28,223 /28,227; controls reach
+109,249 /109,110. All four new cases pass. Together with the previously analyzed
+seeds0/2, the same frozen v30 refresh policy has a four-seed mean **134,487.5**,
+range134,061–134,859. Seeds4/5 and the complete repeated0/2 pairs remain running.
+This is four-seed evidence, not the six-seed goal.
+[Subset](results/flow-refresh-confirm-first-v30/),
+[combined four-seed record](results/flow-refresh-four-seed-v30.json).
+
+
+## Shorter refresh interval and warm reuse
+
+Full8898655/analysis8898657 completes all six cases, with exact refresh512 controls
+under the six-way allocation. Every case passes1-second decisions and32GB RSS.
+
+| Configuration | Seed0 | Seed2 | Two-seed mean |
+|---|---:|---:|---:|
+| Refresh512 | 134,511 | 134,519 | 134,515 |
+| Refresh256 | 134,052 | 134,187 | 134,119.5 |
+| Refresh512 + warm reuse | 134,997 | 134,794 | 134,895.5 |
+
+Refreshing twice as often loses0.294% by paired means. Warm reuse adds0.283%,
+positive on both seeds, but remains only a small two-seed effect. It has not passed
+the broader confirmation applied to ordinary refresh. No new single-run record.
+[Full evidence](results/flow-refresh-followup-v30/).
