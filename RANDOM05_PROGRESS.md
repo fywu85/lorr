@@ -1533,3 +1533,39 @@ input/binary hashes and allocation are linked in the audits.
 - The rank-score power.25 original never launched because GRID exposed64cores
   instead of binding16. Repeat the same solver settings with a valid allocation;
   keep the original preflight failure. Other power cases continue.
+
+- Priority retention is rejected:0/.25/.5/.75/1 gives3,872/3,790/3,711/3,785/
+ 3,749. All full runs valid; zero reproduces all six3,872 trajectory fields.
+  [Outcomes](random05/results/waypoint-age-split-full-v71/outcomes.json).
+- The relaxed quarter-mix cutoff run completes3,856, below3,872. It stays a
+  diagnostic even though it completed; the original strict failure is preserved.
+- More faithful K128 forecasts exceed1s on their first enabled step50:
+  R4F2=1,135ms andR8F1=1,078ms. Heavier5s diagnostics are still running.
+  Two declared strict follow-ups reduce innerK to64 at8steps or useK96 at
+ 6steps, retaining the live generation/elite/history structure. No time-based
+  partial answer or automatic budget reduction is used.
+
+- Both relaxed first-generation forecast diagnostics lose:8roots/1future/K32
+  gives3,682;4roots/2futures/K64 gives3,723. Original strict failures remain.
+  [Diagnostic outcomes](random05/results/replanning-relaxed-diagnostic-split-full-v70/outcomes.json).
+
+- NMS-inspired rank weights over the whole run are rejected on this preset:
+  powers0/.25/.5/1/2 give3,872/3,867/3,845/3,670/3,716. Power.25 uses its
+  separately declared allocation repeat; the original preflight failure stays
+  recorded. Zero reproduces all six baseline trajectory fields.
+  [Full outcomes](random05/results/rank-progress-split-full-v72/outcomes.json).
+- The weighting phase audit motivates a startup-only **trick** test: power.5
+  gives471 versus413 completions in steps1–250, but loses27 over the full run.
+  These different trajectories do not establish a gain from switching policies.
+  An optional declared startup window returns to equal progress scoring at
+  its boundary; it remains off by default and requires --trick RANDOM-05.
+- Six source69 full cases test additional continuation averaging (B18/22/26),
+  each at approximately fixed total work and at fixed3,264candidate roots.
+  They retain the3,872 settings otherwise. Earlier larger-K-only runs lost,
+  so this changes how the work is spent; no gain is assumed.
+
+- Source74 startup-window regressions pass19.23s, including equivalence to
+  unlimited weighting before the boundary and equal scoring at/after it from
+  identical saved states. Dense assignment locks, checkpoint replay and worker
+  determinism pass. Seven full strict cases are declared: two unchanged-policy
+  controls and startup powers.25/.5/1, with.5windows100/250/500steps.

@@ -17,6 +17,7 @@ struct Config {
     int replan_roots=0, replan_futures=1, replan_k=32, replan_steps=8, replan_continuations=4, replan_start=0;
     int replan_threads=1;
     bool replan_policy=false;
+    int score_rank_steps=0;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;

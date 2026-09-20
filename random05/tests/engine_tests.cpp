@@ -61,6 +61,21 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_
             require(actions==replay_actions && assignment==replay_schedule,
                     "checkpoint restore changed the selected decision");
             require(after==engine.checkpoint(e),"checkpoint restore changed persistent solver state");
+            if(cfg.score_rank_steps>0) {
+                // At the same saved state, a startup-weighted decision must
+                // equal the unlimited weighted solver before the boundary and
+                // the ordinary solver at/after it. This also checks stale weights.
+                auto reference_cfg=cfg;reference_cfg.score_rank_steps=0;
+                if(step>=cfg.score_rank_steps)reference_cfg.score_rank_power=0;
+                auto reference_env=e;Engine reference(reference_cfg);
+                reference.initialize(&reference_env);reference.restore(before,reference_env);
+                std::vector<Action> reference_actions;std::vector<int> reference_schedule;
+                reference.compute(&reference_env,reference_actions,reference_schedule);
+                require(actions==reference_actions && assignment==reference_schedule,
+                        "startup score window disagrees with the corresponding full policy");
+                require(after==reference.checkpoint(reference_env),
+                        "startup score window changed unrelated persistent state");
+            }
         }
         for(int a=0;a<n;++a) {
             signature=(signature^uint64_t(actions[a]+1))*1099511628211ULL;
@@ -635,6 +650,9 @@ void ranked_task_progress() {
     const auto serial=simulate(cfg,12);cfg.threads=2;
     require(serial==simulate(cfg,12),"rank-weighted scoring changed across worker counts");
     require(serial==simulate(cfg,12,5,5,true),"rank-weighted scoring failed checkpoint replay");
+    cfg.score_rank_steps=51;cfg.threads=1;
+    const auto startup=simulate(cfg,12,5,5,true);cfg.threads=2;
+    require(startup==simulate(cfg,12),"startup rank scoring changed across worker counts");
 }
 
 void waypoint_priority_retention() {

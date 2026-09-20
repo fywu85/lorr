@@ -867,3 +867,38 @@ This makes it possible to test more faithful future search without assigning
 most of the32workers no forecast work. PASSIVE OpenMP waiting and thread limit32
 will be declared in the experiments to park idle teams. Full timing and throughput
 comparisons are still required.
+
+
+## Further averaging at the current staged-search budget
+
+The high-budget baseline screens3,264 roots with2branches, retains one in4,
+and finishes each retained root with14branches (K16,320 total,4generations).
+Increasing K alone to24,000/28,800 previously reduced full throughput. More
+candidate roots can amplify evaluator noise, so the next bounded experiment
+increases the number of futures per retained root instead: B18/22/26, each
+at approximately fixed work (K16,320/16,240/16,256) and at fixed3,264roots
+(K19,584/22,848/26,112). Startup K is rounded down from8,000 to complete
+generation groups; all exact counts are in branch-allocation-full-v69.json.
+
+All six cases use the unchanged source233f5bf/build-v69, the3,872 seed4 preset,
+strict1s/30s/32GB, full2,000steps, and the same declared guidance/horizon tricks.
+No fresh held-out inputs are involved. This tests a search-budget allocation
+hypothesis; neither extra averaging nor the greater work is assumed to help.
+
+
+## Trick: restrict short-chain score preference to startup
+
+Full rank-weighting tests reveal a phase tradeoff: power.5 completes471 tasks
+in the first250steps versus413 for the3,872 baseline, but ends at3,845. Its
+last250steps complete562 versus621; power1 gives487 initially and3,670 total.
+These are different trajectories and task exposure histories, not an estimate
+of the benefit of switching policies. The exact phase audit is under
+results/rank-progress-phase-v72.
+
+R05_SCORE_RANK_STEPS optionally limits rank weighting to the first declared
+number of real solver steps. Default0 means unlimited, preserving source72.
+After the boundary the solver returns to equal progress scoring; priorities,
+work budget, task locks and RNG streams are unchanged. It inherits the explicit
+--trick RANDOM-05 requirement from positive rank power. This tests whether an
+initial preference for completing short chains can help without retaining that
+bias as the visible pool changes. Full2,000-step results are required.

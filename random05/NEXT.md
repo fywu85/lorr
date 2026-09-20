@@ -152,3 +152,32 @@ No global auth changes or credentials in output. Only commit our owned paths.
 - Guidance retune all8complete andalllose:3746/3827/3707/3714/3714/3780/3740/3663.
 - Age retention0control3872; .25=3790,.5=3711,.75=3785;1stillrunning.
 - Best remains3872 source69. No new frontier. Updated waiting/audits remainvalid.
+
+- Source73 commit7493ad3 pushed. Jobs8900872..76 for faithful batch; K128
+  strict R4F2/R8F1 failed atstep50 (1135/1078ms). Control and two5s diagnostics
+  running. Two smaller strict variants now queued in faithful-smaller-split-full-v73:
+  R4F2K64steps8 andR4F2K96steps6, boththreads4/policy1. Read batchjobIDs.
+- Age batch complete andallnonzero settingslose;retain1=3749. Archived with
+  zero-control six-field equivalence. Quarter-triage5sdiagnostic=3856,notfrontier.
+- Relaxed oldR8F1K32=3682; oldR4F2K64stillrunning when written.
+- Rank power.25 allocationrepeatjob8900871; originalfailedpreflightretained.
+
+
+## 23:49UTC continuation
+
+Best remains3872. All whole-run rank scores are now terminal:0/.25/.5/1/2
+=3872/3867/3845/3670/3716. .25 is allocation repeat; original refusal retained.
+Zero control exactly matches allsix trajectory fields. Archived both batches.
+Phase audit results/rank-progress-phase-v72: power.5 first250=471vs413, but
+full3845vs3872. This motivates startup-only preference, not an inferred gain.
+Source74 adds R05_SCORE_RANK_STEPS (default0 unlimited), positive power still
+requires explicit trick. Boundary/control/checkpoint/worker tests passed19.23s.
+Build-v74 SHA4c2f9b78b10e0f83d30d4b71bf4a12f3d70b2fc07f558e5d70649598acd65e13.
+Seven cases in startup-rank-full-v74.json, queued next.
+
+Source69 branch-allocation-split-full-v69 jobs8900883..88 test B18/22/26
+at near-fixed16kwork and fixed3264roots. Full strict, base3872, no new data.
+Original replan relaxed cases bothlose (3682/3723), archived.
+Faithful smaller K96/depth6 failedstrict; K64/depth8stillrunning.
+Faithful legacycontrol and twoheavy5sdiagnosticsstillrunning.
+No held-out inputs generated. Fable credits failure unchanged.

@@ -149,6 +149,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
     c.completion_bonus=real("R05_COMPLETE_BONUS",0);
     c.score_rank_power=real("R05_SCORE_RANK_POWER",0);
+    c.score_rank_steps=integer("R05_SCORE_RANK_STEPS",0);
+    if(c.score_rank_steps<0 || (c.score_rank_steps>0 && c.score_rank_power<=0))
+        throw std::invalid_argument("startup score window needs nonnegative steps and positive rank power");
     if(!std::isfinite(c.score_rank_power) || c.score_rank_power<0 || c.score_rank_power>4)
         throw std::invalid_argument("task progress rank power must be in [0,4]");
     if(c.score_rank_power>0 && env.trick_instance!="RANDOM-05")
@@ -1505,7 +1508,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
     }
     score_weights_.clear();
-    if(cfg.score_rank_power>0) {
+    // A declared startup window returns to equal progress weights at its exact
+    // boundary. Rebuild every step so previous weighted scores cannot leak.
+    if(cfg.score_rank_power>0 && (!cfg.score_rank_steps || env->curr_timestep<cfg.score_rank_steps)) {
         std::vector<float> remaining(n,-1);
         for(int a=0;a<n;++a)if(assigned_[a])
             remaining[a]=assigned_[a]->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
