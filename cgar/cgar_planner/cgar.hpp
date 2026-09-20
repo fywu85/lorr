@@ -282,11 +282,14 @@ struct Stats {
     long long pickup_full_searches = 0, pickup_full_scans = 0, pickup_full_candidates = 0;
     long long pickup_full_estimates = 0;
     long long chain_price_calls = 0, chain_price_observations = 0, chain_price_changed = 0;
-    long long chain_price_assigned_covered = 0, chain_price_assigned_imputed = 0;
+    long long chain_price_assignments = 0, chain_price_assigned_covered = 0, chain_price_assigned_imputed = 0;
+    std::array<long long, 4> chain_price_basis{};  // covered table/approx, uncovered table/approx
+    long long chain_price_ratio_calls = 0;
     std::array<long long, 5> chain_price_outcomes{};
     long long chain_price_publication = 0, chain_price_numerator = 0, chain_price_denominator = 0;
     long long chain_shadow_queries = 0, chain_shadow_changed2 = 0, chain_shadow_changed3 = 0;
-    long long chain_shadow_specific = 0;
+    long long chain_shadow_specific = 0, chain_shadow_small = 0;
+    std::array<long long, 5> chain_shadow_choices{};  // same, mode2-only, mode3-only, both-same, both-different
     long long skipped_empty_searches = 0;
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
     long long global_evaluations = 0, global_assignments = 0;

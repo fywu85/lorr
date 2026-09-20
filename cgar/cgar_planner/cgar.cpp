@@ -1880,11 +1880,11 @@ void Cgar::log_summary() {
             stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
             stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
     if (chain_flow_pricing_)
-        std::printf("[cgar-chain-price] t=%d mode=%d calls=%lld observations=%lld covered=%lld missing=%lld outside=%lld unreachable=%lld invalid=%lld changed=%lld assigned_covered=%lld assigned_imputed=%lld shadow_queries=%lld shadow_changed2=%lld shadow_changed3=%lld shadow_specific=%lld\n",
+        std::printf("[cgar-chain-price] t=%d mode=%d calls=%lld observations=%lld covered=%lld missing=%lld outside=%lld unreachable=%lld invalid=%lld changed=%lld active_assignments=%lld assigned_covered=%lld assigned_imputed=%lld shadow_queries=%lld shadow_changed2=%lld shadow_changed3=%lld shadow_specific=%lld\n",
             env_->curr_timestep, chain_flow_pricing_, stats_.chain_price_calls, stats_.chain_price_observations,
             stats_.chain_price_outcomes[0], stats_.chain_price_outcomes[1], stats_.chain_price_outcomes[2],
             stats_.chain_price_outcomes[3], stats_.chain_price_outcomes[4], stats_.chain_price_changed,
-            stats_.chain_price_assigned_covered, stats_.chain_price_assigned_imputed, stats_.chain_shadow_queries,
+            stats_.chain_price_assignments, stats_.chain_price_assigned_covered, stats_.chain_price_assigned_imputed, stats_.chain_shadow_queries,
             stats_.chain_shadow_changed2, stats_.chain_shadow_changed3, stats_.chain_shadow_specific);
     if (pickup_full_robots_)
         std::printf("[cgar-pickup-full] t=%d robot_limit=%d threads=%d cost_key=%d fields=%lld pops=%lld states=%lld searches=%lld scans=%lld candidates=%lld estimates=%lld\n",
@@ -2293,7 +2293,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             item.native = static_cast<int>(std::min<long long>(kInf - 1, static_cast<long long>(pickup_scale) * chain));
             item.resident = resident_chain_price(task, turn_oracle_, cert_);
             item.all_table = refine_chain_costs_ ? refined_chain_cost_.all_table_derived(id) : chain_table_basis_.at(id);
-            if (item.resident.status == ChainPriceStatus::Covered && item.native > 0) {
+            if (item.resident.status == ChainPriceStatus::Covered && item.native > 0 && item.chain < kFar) {
                 ratio_numerator += item.resident.cost;
                 ratio_denominator += item.native;
             }
@@ -2306,7 +2306,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         stats_.chain_price_numerator = ratio_numerator; stats_.chain_price_denominator = ratio_denominator;
         std::array<long long, 5> outcomes{};
         std::array<long long, 4> basis{};  // covered table/approx, uncovered table/approx
-        long long covered_nonzero = 0, nonzero = 0, clipped_native = 0;
+        long long covered_nonzero = 0, nonzero = 0, clipped_native = 0, covered_clipped = 0, ratio_eligible = 0;
         for (auto& task : tasks) {
             check_deadline(deadline_, "chain_price_snapshot");
             const bool covered = task.resident.status == ChainPriceStatus::Covered;
@@ -2314,16 +2314,20 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             ++basis[(covered ? 0 : 2) + !task.all_table];
             nonzero += task.native > 0; covered_nonzero += covered && task.native > 0;
             clipped_native += task.chain >= kFar;
+            covered_clipped += covered && task.chain >= kFar;
+            ratio_eligible += covered && task.native > 0 && task.chain < kFar;
             task.price = selected_chain_price(chain_flow_pricing_, task.native, task.resident, ratio_numerator, ratio_denominator);
             stats_.chain_price_changed += task.price != task.native;
         }
         stats_.chain_price_observations += tasks.size();
+        stats_.chain_price_ratio_calls += ratio_denominator > 0;
+        for (size_t k = 0; k < basis.size(); ++k) stats_.chain_price_basis[k] += basis[k];
         for (size_t k = 0; k < outcomes.size(); ++k) stats_.chain_price_outcomes[k] += outcomes[k];
         if (diagnostics_)
-            std::printf("[cgar-chain-snapshot] t=%d mode=%d publication=%lld tasks=%zu nonzero=%lld covered_nonzero=%lld covered=%lld missing=%lld outside=%lld unreachable=%lld invalid=%lld covered_table=%lld covered_approx=%lld uncovered_table=%lld uncovered_approx=%lld clipped_native=%lld ratio_numerator=%lld ratio_denominator=%lld\n",
+            std::printf("[cgar-chain-snapshot] t=%d mode=%d publication=%lld tasks=%zu nonzero=%lld covered_nonzero=%lld covered=%lld missing=%lld outside=%lld unreachable=%lld invalid=%lld covered_table=%lld covered_approx=%lld uncovered_table=%lld uncovered_approx=%lld clipped_native=%lld covered_clipped=%lld ratio_eligible=%lld ratio_numerator=%lld ratio_denominator=%lld\n",
                 env_->curr_timestep, chain_flow_pricing_, stats_.chain_price_publication, tasks.size(), nonzero, covered_nonzero,
                 outcomes[0], outcomes[1], outcomes[2], outcomes[3], outcomes[4], basis[0], basis[1], basis[2], basis[3],
-                clipped_native, ratio_numerator, ratio_denominator);
+                clipped_native, covered_clipped, ratio_eligible, ratio_numerator, ratio_denominator);
     }
     // Fixed robot quota in the existing rotating order. All selected fields
     // finish against this immutable published metric before any is consulted.
@@ -2419,6 +2423,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         stats_.estimated_chain_cost += tasks[p.task].chain;
         if (chain_metric) {
             const bool covered = tasks[p.task].resident.status == ChainPriceStatus::Covered;
+            ++stats_.chain_price_assignments;
             stats_.chain_price_assigned_covered += covered;
             stats_.chain_price_assigned_imputed += (chain_flow_pricing_ == 3 || (chain_flow_pricing_ == 2 && !covered)) &&
                 tasks[p.task].native > 0 && ratio_denominator > 0;
@@ -2568,11 +2573,14 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     if (global_per_robot) while (std::gcd(global_stride, tasks.size()) != 1) ++global_stride;
     std::vector<Pair> pairs;
     pairs.reserve(static_cast<size_t>(std::min<long long>(max_pairs_, robots.size() * (per_robot + global_per_robot))));
+    std::array<long long, 5> shadow_choices{};
+    long long shadow_small = 0;
     for (int r : robots) {
         check_deadline(candidate_deadline, "candidate_generation");
         if (static_cast<long long>(pairs.size()) >= max_pairs_) break;
         auto local = candidates(r, std::min<int>(per_robot, static_cast<int>(max_pairs_ - pairs.size())));
         first_search_empty[r] = local.empty();
+        if (chain_metric && chain_flow_pricing_ == 4 && local.size() < 2) ++shadow_small;
         if (chain_metric && chain_flow_pricing_ == 4 && local.size() > 1) {
             // Describe a fixed retained shortlist, not candidates the alternative
             // policy might have discovered. No extra lookup or cache mutation.
@@ -2591,9 +2599,14 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                 }
                 alternative[mode - 2] = best.task;
             }
+            const bool changed2 = alternative[0] != native_best->task;
+            const bool changed3 = alternative[1] != native_best->task;
+            const int category = !changed2 && !changed3 ? 0 : changed2 && !changed3 ? 1 :
+                !changed2 && changed3 ? 2 : alternative[0] == alternative[1] ? 3 : 4;
+            ++shadow_choices[category];
             ++stats_.chain_shadow_queries;
-            stats_.chain_shadow_changed2 += alternative[0] != native_best->task;
-            stats_.chain_shadow_changed3 += alternative[1] != native_best->task;
+            stats_.chain_shadow_changed2 += changed2;
+            stats_.chain_shadow_changed3 += changed3;
             stats_.chain_shadow_specific += alternative[0] != alternative[1];
         }
         pairs.insert(pairs.end(), local.begin(), local.end());
@@ -2611,6 +2624,14 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                 pairs.push_back(candidate); ++stats_.global_evaluations;
             }
         }
+    }
+    if (chain_metric && chain_flow_pricing_ == 4) {
+        stats_.chain_shadow_small += shadow_small;
+        for (size_t k = 0; k < shadow_choices.size(); ++k) stats_.chain_shadow_choices[k] += shadow_choices[k];
+        if (diagnostics_)
+            std::printf("[cgar-chain-shadow] t=%d publication=%lld small=%lld same=%lld mode2_only=%lld mode3_only=%lld both_same=%lld both_different=%lld\n",
+                env_->curr_timestep, stats_.chain_price_publication, shadow_small,
+                shadow_choices[0], shadow_choices[1], shadow_choices[2], shadow_choices[3], shadow_choices[4]);
     }
     std::sort(pairs.begin(), pairs.end(), better);
     for (const Pair& p : pairs) {

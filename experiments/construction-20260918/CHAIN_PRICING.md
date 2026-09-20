@@ -34,3 +34,17 @@ policy has been promoted. The shadow must reproduce the 200-step reference hash
 before the full 5,000-step seed0 run, under the explicitly labelled shared-host
 5-second development budget. Changes in task selection must be evaluated with
 completed totals, waiting ages and all empty travel, not short-horizon totals.
+
+V59 incorporates the turn29 diagnostic findings. Per-call shadow rankings now
+include every active scheduling tick, with separate unchanged/mode2-only/mode3-only/
+both-same/both-different categories and shortlists with fewer than two candidates.
+Active assignment counts provide a matching denominator for covered assignments;
+native table/approximate basis counts are testable without log parsing. Clipped
+native chains are excluded from the snapshot ratio and counted separately.
+
+Build8899322 passes the complete suite, including60 hand-computed production cases
+across both native chain-cache implementations. Basis, nonzero resident coverage,
+missing coverage, published tolls, nonzero ratios and unchanged scheduling/cache
+work are asserted. The warehouse shadow remains a diagnostic until exact native
+and mode4 hashes are verified. Active pricing is still not promoted.
+[Build/test receipt](build-provenance/v59/status.json).

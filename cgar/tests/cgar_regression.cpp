@@ -3012,7 +3012,9 @@ void chain_flow_pricing_regression() {
  setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
  auto blank=[](){SharedEnvironment e;e.rows=5;e.cols=7;e.num_of_agents=1;e.map.assign(35,0);e.curr_states={State(17,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);return e;};
  long long production_cases=0;
- for(int scale:{1,4})for(int coverage:{0,1,2})for(int mode:{0,1,2,3,4}){
+ setenv("CGAR_SCHED_TABLES","0",1);
+ for(int refine:{0,1})for(int scale:{1,4})for(int coverage:{0,1,2})for(int mode:{0,1,2,3,4}){
+  setenv("CGAR_REFINE_CHAIN_COSTS",std::to_string(refine).c_str(),1);
   setenv("CGAR_FLOW_COST_SCALE",std::to_string(scale).c_str(),1);setenv("CGAR_FLOW_STRENGTH",std::to_string(scale).c_str(),1);
   setenv("CGAR_CHAIN_FLOW_PRICING",std::to_string(mode).c_str(),1);auto e=blank();Cgar c;c.initialize(&e,1000);
   std::vector<Action> offered;const std::array<Action,3> observed{Action::FW,Action::CR,Action::CR};
@@ -3026,12 +3028,16 @@ void chain_flow_pricing_regression() {
   check(proposed==std::vector<int>{wanted},"chain pricing production choice disagrees with hand costs");
   check(c.stats().oriented_builds==builds&&e.curr_task_schedule==std::vector<int>{-1}&&e.task_pool.at(0).agent_assigned==-1,"chain pricing changed cache builds or simulator metadata");
   if(mode){check(c.stats().chain_price_outcomes[0]==coverage&&c.stats().chain_price_outcomes[1]==2-coverage,"chain coverage counters differ from fixture");
-   check(c.stats().chain_price_numerator==(coverage==2?3*scale:coverage==1?2*scale:0)&&c.stats().chain_price_denominator==coverage*scale,"production snapshot ratio differs from hand count");}
-  if(mode==4)check(c.stats().chain_shadow_queries==1&&c.stats().chain_shadow_changed2==(coverage==2)&&c.stats().chain_shadow_changed3==0&&c.stats().chain_shadow_specific==(coverage==2),"shadow shortlist ranking differs from policy hand count");
+   check(c.stats().chain_price_numerator==(coverage==2?3*scale:coverage==1?2*scale:0)&&c.stats().chain_price_denominator==coverage*scale,"production snapshot ratio differs from hand count");
+   check(c.stats().chain_price_basis==std::array<long long,4>{coverage,0,0,2-coverage},"native chain basis differs from resident/approximate fixture");
+   check(c.stats().chain_price_assignments==1&&c.stats().chain_price_ratio_calls==(coverage>0),"chain diagnostic denominators incorrect");}
+  if(mode==4){check(c.stats().chain_shadow_queries==1&&c.stats().chain_shadow_changed2==(coverage==2)&&c.stats().chain_shadow_changed3==0&&c.stats().chain_shadow_specific==(coverage==2),"shadow shortlist ranking differs from policy hand count");
+   check(c.stats().chain_shadow_choices==std::array<long long,5>{coverage!=2,coverage==2,0,0,0}&&c.stats().chain_shadow_small==0,"shadow choice categories differ from hand count");}
   c.schedule(&e,1000,proposed);check(proposed==std::vector<int>{0}&&c.stats().fair_assignments==1,"chain pricing bypassed oldest-task admission");
   e.curr_task_schedule={0};e.task_pool.at(0).agent_assigned=0;e.task_pool.at(0).idx_next_loc=1;e.goal_locations={{{17,0}}};
   c.schedule(&e,1000,proposed);check(proposed==std::vector<int>{0}&&e.task_pool.at(0).idx_next_loc==1,"chain pricing changed a started task");++production_cases;
  }
+ unsetenv("CGAR_SCHED_TABLES");
  setenv("CGAR_FLOW_COST_SCALE","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_CHAIN_FLOW_PRICING","4",1);setenv("CGAR_PICKUP_FULL_ROBOTS","0",1);
  for(const auto& bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_CHAIN_FLOW_PRICING","-1"},{"CGAR_CHAIN_FLOW_PRICING","5"},{"CGAR_PICKUP_FLOW","0"},{"CGAR_REASSIGN","1"},{"CGAR_REASSIGN_POOL","1"},{"CGAR_TEMPORAL_REMAINING_FLOW","1"}}){
   setenv(bad.first,bad.second,1);bool rejected=false;try{auto e=blank();Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument& error){rejected=std::string(error.what()).find("chain flow pricing")!=std::string::npos;}
@@ -3060,7 +3066,12 @@ void chain_flow_pricing_regression() {
  };
  for(int refine:{0,1}){const auto control=run(0,refine),shadow=run(4,refine);
   check(control.values==shadow.values&&control.stats.oriented_builds==shadow.stats.oriented_builds&&control.stats.flow_publications==shadow.stats.flow_publications&&control.stats.estimated_chain_cost==shadow.stats.estimated_chain_cost,"chain shadow changed closed-loop trajectory or cache work");
-  check(shadow.stats.chain_shadow_queries>0&&shadow.stats.flow_publications>1&&shadow.stats.flow_penalized_edges>0&&shadow.stats.chain_price_changed==0,"chain shadow closed-loop fixture was vacuous");}
+  check(shadow.stats.chain_shadow_queries>0&&shadow.stats.flow_publications>1&&shadow.stats.flow_penalized_edges>0&&shadow.stats.chain_price_changed==0&&
+        shadow.stats.chain_price_outcomes[0]>0&&shadow.stats.chain_price_outcomes[1]>0&&shadow.stats.chain_price_ratio_calls>0,"chain shadow closed-loop fixture was vacuous");
+  for(auto member:{&Stats::assignments,&Stats::fair_assignments,&Stats::pickup_full_fields,&Stats::pickup_full_pops,&Stats::pickup_full_scans,
+                   &Stats::pickup_flow_cached_estimates,&Stats::pickup_flow_approximate_estimates,&Stats::route_manhattan,&Stats::estimated_pickup_cost})
+   check(control.stats.*member==shadow.stats.*member,"chain shadow changed baseline work counters");
+  check(std::accumulate(shadow.stats.chain_shadow_choices.begin(),shadow.stats.chain_shadow_choices.end(),0LL)==shadow.stats.chain_shadow_queries,"shadow category counts do not conserve queries");}
  for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_PICKUP_FLOW","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_FLOW_COST_SCALE","CGAR_FLOW_STRENGTH","CGAR_CHAIN_FLOW_PRICING","CGAR_REFINE_CHAIN_COSTS"})unsetenv(key);
  std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
 }
