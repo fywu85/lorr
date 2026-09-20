@@ -725,6 +725,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const auto trick_options = tricks::options(env->trick_instance);
     static_trick_metric_ = trick_options.lanes;
     native_trick_metric_ = trick_options.native_metric;
+    native_neutral_tail_ = trick_options.native_neutral_tail;
     guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : 16;
     if ((trick_options.native_bands && !native_trick_metric_) ||
         (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow)))
@@ -990,6 +991,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (horizon_margin_)
         std::printf("[CGAR_TRICK_HORIZON_MARGIN] enabled=1 estimator=%s basis=admission_bound samples=single_holder tiers=margin_feasible_impossible fair=unchanged held=unchanged\n",
                     trick_options.horizon_margin_percentile ? "prospective_bucket_percentile" : "prospective_bucket_mean");
+    if (native_neutral_tail_)
+        std::printf("[CGAR_TRICK_NATIVE_SERVICE] policy=neutral_tail credit=after_action_hit reservations=complete protected=unchanged\n");
     if (trick_options.horizon_margin_percentile)
         std::printf("[CGAR_TRICK_HORIZON_PERCENTILE] percentile=%d rank=nearest samples=completed_single_holder fair=unchanged held=unchanged\n", trick_options.horizon_margin_percentile);
     if (known_horizon_)

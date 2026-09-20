@@ -258,6 +258,7 @@ struct Stats {
     long long temporal_prepared_robots = 0, temporal_parallel_preparations = 0, temporal_conflict_audits = 0;
     long long temporal_next_known = 0, temporal_next_eligible = 0, temporal_next_unavailable = 0;
     long long temporal_next_arriving_choices = 0, temporal_next_changed_choices = 0;
+    long long native_service_choices = 0, native_service_changed_choices = 0;
     long long temporal_transaction_calls = 0, temporal_transaction_roots = 0, temporal_transaction_candidates = 0;
     long long temporal_transaction_accepted = 0, temporal_transaction_rollbacks = 0, temporal_transaction_exhausted = 0;
     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
@@ -516,7 +517,7 @@ private:
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
     FlowGuidance flow_guidance_;
-    bool static_trick_metric_ = false, native_trick_metric_ = false;
+    bool static_trick_metric_ = false, native_trick_metric_ = false, native_neutral_tail_ = false;
     int guidance_cost_limit_ = 16;
     int flow_strength_ = 0, flow_cost_scale_ = 1;
     GuideRoutes guide_routes_;

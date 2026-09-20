@@ -111,7 +111,8 @@ public:
     // opposed200 and turn1, but service slots and operation ties remain raw.
     // No paid turn/forward extras: trailing waits expose reachable headings.
     template<class Distance>
-    static int64_t pure_potential_cost(const TemporalPath& path, int op, int goal, Distance distance) {
+    static int64_t pure_potential_cost(const TemporalPath& path, int op, int goal, Distance distance,
+            bool neutral_service_tail = false) {
         if (goal < 0) return op;
         const auto& actions = operations()[op];
         int d = distance(path.cells[4], path.orientation);
@@ -120,7 +121,12 @@ public:
                          distance(path.cells[4], (path.orientation + 3) % 4)});
             if (actions[3] == 3) d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4));
         }
-        for (int slot = 0; slot < 5; ++slot) if (path.cells[slot] == goal) d = -slot;
+        // Optional ablation: once a real action reaches the current goal,
+        // grant the same service value as holding it through slot four. The
+        // complete physical path is still reserved; no future task is assumed.
+        // Starting at the goal before action zero is not itself service.
+        for (int slot = 0; slot < 5; ++slot)
+            if (path.cells[slot] == goal) d = neutral_service_tail ? -4 : -slot;
         return int64_t(d) * 50 - op;
     }
 

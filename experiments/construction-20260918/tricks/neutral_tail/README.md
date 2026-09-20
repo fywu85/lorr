@@ -1,0 +1,13 @@
+# TRICK experiment: neutral value after current-goal service
+
+This optional motion-score ablation requires explicit `--trick WAREHOUSE`, the native metric and `CGAR_TRICK_NATIVE_NEUTRAL_TAIL=1`. Missing or zero preserves the original scorer. No generic default or current best profile changes.
+
+The native five-action scalar normally uses `50 * (-last_goal_slot) - operation_id` for a path that visits its current goal. The experiment gives every such path the value `50 * (-4) - operation_id`, as if it retained the goal through the last slot. Non-arriving paths, idle robots, the distance field, terminal wait headings and operation ties are unchanged. The goal must be reached **after an action**: merely starting at the goal and immediately departing earns no service credit.
+
+The hypothesis is that a path can serve its goal and then vacate it without losing the service component of its score. All five physical cell/edge reservations remain enforced, including the departure. No reservation is released, no future task is assumed, and CGAR's primary, recovery and supporting-action protections remain intact. The score can prefer an arbitrary departure through its operation tie; this is an intentional surrogate to test, not a proven model or a correction to an established bug.
+
+This follows the unimplemented neutral-tail suggestion in the [earlier Fable assessment](../../fable-flow-session/turn15/assessment.md). It is distinct from the prior common-baseline next-errand score, which lost on both generic seeds. No new Fable review has been received; the latest CLI attempt exhausted credits.
+
+Validation added: independent action replay of native macros, goal-at-start departures, repeated visits, idle ties, and real 24-robot service episodes under both native fields. Serial and four-thread preparation must agree exactly; the production counter must show nonzero repricing, and at least one episode trace must differ. Existing independent obstacle/collision checks, one-service-per-tick semantics, started-task protection and fixed-work checks remain active. Activation tests reject malformed values, use without the CLI flag, and use without the native metric. Build/test results are pending at this writing.
+
+After the full regression suite passes: run an ON/OFF 200-step native screen and an exact generic 800-step control; then compare complete 5,000-step / 10,000-robot seeds 0 / 2 against exact p90 / pickup-weight-5 controls. Shared 5-second development deadline, four bound physical cores and 32 decimal GB RSS per process. All prescribed search work completes or the entry fails. Record task waiting tails and all losing results. No performance claim from startup screens.

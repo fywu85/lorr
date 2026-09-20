@@ -102,6 +102,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         }
     }
     std::vector<std::array<long long, 5>> next_metrics(temporal_prepare_threads_, {0, 0, 0, 0, 0});
+    std::vector<std::array<long long, 2>> native_service_metrics(native_neutral_tail_ ? temporal_prepare_threads_ : 0, {0, 0});
     std::vector<std::array<int, 2>> prepared_metrics(temporal_prepare_threads_, {0, 0});
     run_temporal_preparation(temporal_prepare_threads_, [&](int worker) {
         std::vector<int> heuristic_value(cells * 4), heuristic_stamp(cells * 4, -1);
@@ -163,7 +164,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 ++next_metrics[worker][use_next ? 1 : 2];
             }
             auto cost = [&](const TemporalPath& path, int op) {
-                if (native_trick_metric_) return TemporalGeometry::pure_potential_cost(path, op, goal, distance);
+                if (native_trick_metric_) {
+                    if (native_neutral_tail_ && TemporalGeometry::first_goal_hit(path, goal) >= 0) {
+                        ++native_service_metrics[worker][0];
+                        native_service_metrics[worker][1] += path.cells[4] != goal;
+                    }
+                    return TemporalGeometry::pure_potential_cost(path, op, goal, distance, native_neutral_tail_);
+                }
                 const auto native = oriented && !guided && turn_oracle_.weighted_forward() ?
                     TemporalGeometry::flow_cost(path, op, loc_[i], goal, robot_turn_cost, distance,
                         [&](int from, int to) { return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols)); },
@@ -225,6 +232,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.temporal_next_known += count[0]; stats_.temporal_next_eligible += count[1];
         stats_.temporal_next_unavailable += count[2]; stats_.temporal_next_arriving_choices += count[3];
         stats_.temporal_next_changed_choices += count[4];
+    }
+    for (const auto& count : native_service_metrics) {
+        stats_.native_service_choices += count[0];
+        stats_.native_service_changed_choices += count[1];
     }
     stats_.temporal_prepared_robots += n_;
     if (temporal_prepare_threads_ > 1) ++stats_.temporal_parallel_preparations;
@@ -464,6 +475,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     construction_stats.repairs, construction_stats.repairs_accepted, results[best]->score());
     if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0) {
         auto seconds = [](auto start, auto end) { return std::chrono::duration<double>(end - start).count(); };
+        if (native_neutral_tail_)
+            std::printf("[cgar-native-service] step=%d served_choices=%lld changed_choices=%lld\n",
+                env_->curr_timestep + 1, stats_.native_service_choices, stats_.native_service_changed_choices);
         if (temporal_next_errand_)
             std::printf("[cgar-temporal-next-errand] step=%d enabled=1 known=%lld eligible=%lld unavailable=%lld arriving_choices=%lld changed_choices=%lld\n",
                 env_->curr_timestep + 1, stats_.temporal_next_known, stats_.temporal_next_eligible,

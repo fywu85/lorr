@@ -3345,6 +3345,7 @@ void native_metric_regression() {
   const int to=cell+(h==0?1:h==1?e.cols:h==2?-1:-e.cols);return e.map[to]?-1:to;};
  TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
  long long checked_states=0,checked_macros=0,service_macros=0,prefetched_states=0,seed_macros=0;
+ long long neutral_changed=0,departed_start_without_service=0;
  for(bool bands:{false,true}){
   const auto weights=native_forward_costs("WAREHOUSE",e.map,e.rows,e.cols,bands);
   uint64_t hash=14695981039346656037ULL;for(uint8_t w:weights)hash=(hash^w)*1099511628211ULL;
@@ -3407,6 +3408,11 @@ void native_metric_regression() {
     const int64_t wanted=int64_t(value)*50-op;
     require(TemporalGeometry::pure_potential_cost(path,op,goal,[&](int cell,int orientation){return oracle.value(*table,cell,orientation);})==wanted,
       "native raw-unit macro score differs from independent replay");++checked_macros;seed_macros+=fixture<=0;
+    const int64_t neutral_wanted=last_hit>=0 ? -200-op : wanted;
+    require(TemporalGeometry::pure_potential_cost(path,op,goal,[&](int cell,int orientation){return oracle.value(*table,cell,orientation);},true)==neutral_wanted,
+      "neutral service score differs from independent action replay");
+    neutral_changed+=neutral_wanted!=wanted;
+    departed_start_without_service+=start==goal&&last_hit<0;
    }
   }
  }
@@ -3422,6 +3428,10 @@ void native_metric_regression() {
  require(TemporalGeometry::pure_potential_cost(path,none,99,heading_distance)==5000-none,"native unwaited heading price");
  path.cells={9,3,9,5,9};require(TemporalGeometry::pure_potential_cost(path,128,9,heading_distance)==-328,"native service must use raw last slot");
  require(TemporalGeometry::pure_potential_cost(path,128,-1,heading_distance)==128,"native idle tie must be raw");
+ path.cells={9,3,9,5,7};
+ require(TemporalGeometry::pure_potential_cost(path,128,9,heading_distance)==-228&&
+  TemporalGeometry::pure_potential_cost(path,128,9,heading_distance,true)==-328,"neutral tail did not remove only the last-hit penalty");
+ require(TemporalGeometry::pure_potential_cost(path,128,-1,heading_distance,true)==128,"neutral tail changed idle tie");
  path.cells.fill(0);
  require(TemporalGeometry::pure_potential_cost(path,0,99,[](int,int){return 20;})<TemporalGeometry::pure_potential_cost(path,128,99,[](int,int){return 40;}),"native full forward step must dominate op tie");
  require(TemporalGeometry::pure_potential_cost(path,0,99,[](int,int){return 1;})>TemporalGeometry::pure_potential_cost(path,51,99,[](int,int){return 2;}),"native one-turn difference may lose to raw tie");
@@ -3586,11 +3596,33 @@ void native_metric_regression() {
   return trace;
  };
  int episode_services=0,episode_repeated=0,episode_rotations=0;
+ std::map<std::string,NativeTrace> native_original_episodes;
  for(const char* bands:{"0","1"}){auto serial=episode(bands,1),parallel=episode(bands,4);
   require(serial.values==parallel.values&&serial.stats.oriented_builds==parallel.stats.oriented_builds&&
    serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops&&serial.services==parallel.services,"native serial/parallel closed-loop behavior differs");
   episode_services+=serial.services;episode_repeated+=serial.repeated;episode_rotations+=serial.stats.temporal_seed_rotations;
+  require(!serial.stats.native_service_choices&&!parallel.stats.native_service_changed_choices,"disabled neutral tail performed diagnostic work");
+  native_original_episodes.emplace(bands,serial);
  }
+ // Exercise the changed scorer in real service/rotation episodes. Every
+ // physical action is checked independently, with serial/parallel equality.
+ setenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL","1",1);
+ int neutral_trace_changes=0;
+ for(const char* bands:{"0","1"}){
+  auto serial=episode(bands,1),parallel=episode(bands,4);
+  require(serial.values==parallel.values&&serial.stats.native_service_choices==parallel.stats.native_service_choices&&
+   serial.stats.native_service_changed_choices==parallel.stats.native_service_changed_choices&&
+   serial.stats.oriented_builds==parallel.stats.oriented_builds&&serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops,
+   "neutral tail depends on preparation thread order");
+  require(serial.stats.native_service_changed_choices>0&&serial.stats.native_service_choices>=serial.stats.native_service_changed_choices,
+   "neutral tail production episode never repriced a serviced departure");
+  neutral_trace_changes+=serial.values!=native_original_episodes.at(bands).values;
+ }
+ unsetenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL");
+ require(neutral_trace_changes>0&&neutral_changed>0&&departed_start_without_service>0,"neutral service fixtures were vacuous");
+ std::cout<<"NATIVE_NEUTRAL_TAIL passed replayed_macros="<<checked_macros<<" changed_macros="<<neutral_changed
+  <<" departed_start_without_service="<<departed_start_without_service<<" changed_episode_traces="<<neutral_trace_changes
+  <<" independent_actions=12288 serial_parallel_exact=1 repeated_errands=1 started_protection=1 fixed_work=1\n";
  // Dedicated closed-loop shadow neutrality with native+short+matching together.
  setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","1",1);
  for(const char* bands:{"0","1"}){auto baseline=episode(bands,4,0),shadow=episode(bands,4,10);
@@ -3621,7 +3653,9 @@ void native_metric_regression() {
  }
  for(auto setting:settings)unsetenv(setting.first);
  setenv("CGAR_TRICK_NATIVE_BANDS","1",1);rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"native bands accepted without native metric");unsetenv("CGAR_TRICK_NATIVE_BANDS");
- for(const char* key:{"CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_NATIVE_BANDS"}){
+ setenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL","1",1);
+ rejects([&]{options("WAREHOUSE");},"neutral tail accepted without native metric");unsetenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL");
+ for(const char* key:{"CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_NATIVE_BANDS","CGAR_TRICK_NATIVE_NEUTRAL_TAIL"}){
   setenv(key,"0",1);rejects([&]{options("");},"native selector accepted without CLI");
   for(const char* bad:{"", "-1", "2", "true"}){setenv(key,bad,1);rejects([&]{options("WAREHOUSE");},"native malformed selector accepted");}
   unsetenv(key);
