@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 19:25 UTC. Continue the user's Warehouse throughput campaign with CGAR, ordinary fairness, explicit `--trick WAREHOUSE`, complete fixed work and 32 decimal GB RSS. Preserve concurrent random05 files/jobs/commits; explicit path staging and `git commit --only -- <ours>`. The earlier formal goal is complete; no new goal absent an explicit request.
+Updated 2026-09-20 19:52 UTC. Continue the user's Warehouse throughput campaign with CGAR, ordinary fairness, explicit `--trick WAREHOUSE`, complete fixed work and 32 decimal GB RSS. Preserve concurrent random05 files/jobs/commits; explicit path staging and `git commit --only -- <ours>`. The earlier formal goal is complete; no new goal absent an explicit request.
 
 ## Current best
 
@@ -10,7 +10,13 @@ Fourseeds0/1/2/3=155120/154999/155056/155020, mean155048.75, allabove NMS154795.
 
 ## Active job: V108 full matching cadence
 
-Benchmark8900503, verifier8900504, independentoutcomes8900505 ACTIVE since19:18UTC. SeeV108section below. OnlythisWarehousequalitymatrix remainslive; leaveconcurrentrandom05jobs alone. Noactiveproductionbuild/noCLI.
+Benchmark8900503, verifier8900504, independentoutcomes8900505 ACTIVE since19:18UTC. SeeV108section below. OnlythisWarehousequalitymatrix remainslive; leaveconcurrentrandom05jobs alone. V110 screens active; no production build or CLI.
+
+## V109 cutoff audit complete; V110 guard build passed, screens active
+
+Read-only V109 GRID8900541 completed19:39:18UTC, all7 targeted fixtures plus existing physical accounting pass. Both full V99 pickup8 trajectories/raw hashes/counts exact. Visible retargets15803/15725; physical bound fitting->impossible47/63 versus impossible->fitting35/44,21/14of latter complete. Offline exact-BFS p90 tier worsens148/167, improves168/180; it is NOT the production cached comparator and not a throughput prediction. Results rematch-cutoff-audit-v109. Only visible held-task transfers, not within-entry fresh permutations. Current departing positions, not first-admission positions, used.
+
+Optional CGAR_TRICK_MATCH_HORIZON defaultOFF, source37f592a, build8900579 COMPLETE in runs/cgar-match-horizon-build-v110-20260920. Complete suite passes, including3 actually checked native cycles (no veto in the small episode; pure veto fixture active). Binary3f66eefd2a54589e48965b5b4031cbbe4d67bd8e6423c8cdc1cb3108f24bf641; all28source/testhashes exact, archivebuild-provenance/v110,source.patch0. No active production build. Requires explicit Warehouse trick, configured horizon, matching, ordinary HRRN and shortOFF. Only threshold-qualified cycles inspected; reject WHOLE cycle if any TASK column's tier worsens for its new holder. Same immutable p90 snapshot, read-only resident spatial/Manhattan bounds, chain quoted once per task (admission-only cache may be pruned), no additional table builds/LRU mutation. Existing protection/one-retarget/cooldown/work unchanged. Policy is a conservative heuristic with cycle tradeoffs, no gain claim. New native episodes + pure cycle/guard fixtures all pass in the complete build suite. Full planned10-step/p90/pickup8 baseline fixed; screens use unchangedH5000default prefix plus activeH200guardON/OFF through800 and generic exact800 replay. Native benchmark8900591/verifier8900594 and generic8900592/verifier8900595 ACTIVE. Raw runs/cgar-match-horizon-{native,generic}-screen-v110-20260920, reports results/match-horizon-{native,generic}-screen-v110. Native guard screen MUST show a real rejected cycle and stable guard counters after configuredH200 expiry. Helpers/profiles under match_horizon, native_work/analyze.py newmode match_horizon. Do not combine cadence and guard before separate full results.
 
 ## Newly completed V105 / V106
 
@@ -24,7 +30,7 @@ New general option CGAR_REASSIGN_MATCH_INTERVAL defaults10,valid1..100,nondefaul
 
 Native8008900489/verifier8900490 COMPLETE19:16:17UTC; generic8008900491/8900492 COMPLETE19:15:57UTC. Native10exactV105hash085e97...,5validactivewithprescribedpasscounts; genericexactc0f1c9fb... . Results match-cadence-{native,generic}-screen-v108. Allvalidsource/binary/CPU/memorychecks. Nativeprefixscores21489(default)/21491(five); prefixnotqualityranking. Existingcommonmatchingthresholds/eligibilityunchanged, earlieractualcyclesobserved.
 
-**Full10vs5 benchmark8900503, verifier8900504, independentoutcomes8900505 ACTIVE**. Raw runs/cgar-match-cadence-native-full-v108-20260920, outcomesraw runs/cgar-match-cadence-native-outcomes-v108-20260920, outputs results/match-cadence-native-full-v108 and-outcomes. Fourcases0/2xinterval10/5,16disjointcores,5s/32decimalGB. Baselinep90weight8 deliberatelyheldfixedevenifV106otherweightwins. native_work/analyze.py modecadence allowsONLYinterval, normalizesexplicit10toabsentdefault, verifiesreceipt/passcount/group/nodequotas andstoresmatchingsamples;fullcontrolsMUSTmatchV99. Allhelpersfrozen. No fullqualityclaimyet. Source1ac+buildtest/protocolcommit2e9b9ee pushed; later screenresults/docsawaitcommit. V107offlineprobecommitted/pushed7c2e040. NoactiveCLI/productionbuild.
+**Full10vs5 benchmark8900503, verifier8900504, independentoutcomes8900505 ACTIVE**. Raw runs/cgar-match-cadence-native-full-v108-20260920, outcomesraw runs/cgar-match-cadence-native-outcomes-v108-20260920, outputs results/match-cadence-native-full-v108 and-outcomes. Fourcases0/2xinterval10/5,16disjointcores,5s/32decimalGB. Baselinep90weight8 deliberatelyheldfixedevenifV106otherweightwins. native_work/analyze.py modecadence allowsONLYinterval, normalizesexplicit10toabsentdefault, verifiesreceipt/passcount/group/nodequotas andstoresmatchingsamples;fullcontrolsMUSTmatchV99. Allhelpersfrozen. No fullqualityclaimyet. Source1ac+buildtest/protocolcommit2e9b9ee pushed; later screenresults/docsawaitcommit. V107offlineprobecommitted/pushed7c2e040. V110 screens active; no production build or CLI.
 
 
 ## V105 validated code and startup

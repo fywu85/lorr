@@ -32,7 +32,7 @@ def sha(p):
 def normalize_environment(environment):
     result = dict(environment)
     # These absent selectors have exactly the same semantics as explicit 0.
-    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT']:
+    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT', 'CGAR_TRICK_MATCH_HORIZON']:
         if result.get(key) == '0':
             result.pop(key)
     if result.get('CGAR_REASSIGN_MATCH_INTERVAL') == '10':
@@ -86,7 +86,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence', 'match_horizon'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -130,7 +130,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10', 'match_horizon':'trick_matchguard0'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -162,7 +162,7 @@ def main():
         sys.path.insert(0, str(support))
         audit_tools = importlib.import_module('audit_tools')
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else {'CGAR_TRICK_MATCH_HORIZON'} if a.mode == 'match_horizon' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -238,6 +238,29 @@ def main():
             fresh = int(env.get('CGAR_FRESH_PICKUP_AUDIT', '0')); assert fresh in (0, 1)
             samples[r['case']]['fresh_audit'] = audit_tools.audit_samples(lines, fresh, 5000, int(env['CGAR_FLOW_COST_SCALE']))
             fresh_real[r['case']] = hashlib.sha256(json.dumps(audit_tools.real_diagnostics(lines), separators=(',', ':')).encode()).hexdigest()
+        if a.mode == 'match_horizon':
+            guard = int(env['CGAR_TRICK_MATCH_HORIZON']); assert guard in (0, 1)
+            receipts = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_MATCH_HORIZON] ')]
+            expected = dict(enabled='1', policy='reject_worse_task_tier', cycle='whole', fields='resident_spatial', fallback='manhattan', fair='unchanged', budget='one')
+            assert receipts == ([expected] if guard else [])
+            guarded = [fields(s) for s in lines if s.startswith('[cgar-match-horizon] ')]
+            matches = [fields(s) for s in lines if s.startswith('[cgar-unopened-match] t=')]
+            assert [int(m['t']) for m in matches] == list(range(0, 5000, 200))
+            assert [int(m['t']) for m in guarded] == (list(range(0, 5000, 200)) if guard else [])
+            for m in matches:
+                assert int(m['passes']) == int(m['t']) // 10 + 1
+                assert int(m['groups']) <= int(m['passes']) * int(env['CGAR_REASSIGN_MATCH_GROUPS'])
+                assert int(m['nodes']) <= int(m['groups']) * 2048
+            for m, original in zip(guarded, matches):
+                assert int(m['cycles']) == int(original['accepted_cycles']) + int(m['rejected'])
+                assert int(m['rows']) >= 2 * int(m['cycles'])
+                assert int(m['worse_rows']) >= int(m['rejected'])
+            for previous, current in zip(guarded, guarded[1:]):
+                assert all(int(current[k]) >= int(previous[k]) for k in ['cycles', 'rows', 'rejected', 'worse_rows'])
+            if guard:
+                assert int(guarded[-1]['rejected']) > 0, 'cutoff guard never vetoed a cycle'
+            samples[r['case']]['matching'] = matches
+            samples[r['case']]['match_horizon'] = guarded
         if r['variant'] == control and r['seed'] in reference:
             ref = reference[r['seed']]
             assert r['tasks'] == ref['tasks'] and r['trajectory_sha256'] == ref['trajectory_sha256'], ('control mismatch', r['case'])
