@@ -280,6 +280,17 @@ void operation_swap_rejection() {
     }
 }
 int main() {
+    for(int prefix:{1,2}) {
+        Config cfg;cfg.futures=16;cfg.continuations=4;cfg.continuation_start=prefix;cfg.depth=6;
+        cfg.random_by_step=true;cfg.cost_cache=true;cfg.rollout_match=true;
+        cfg.completion_bonus=8;cfg.progress_discount=0.9;cfg.reverse_penalty=0.1;
+        cfg.dispersion=0.8;cfg.local_trials=4;cfg.threads=1;
+        const auto control=simulate(cfg,12);
+        cfg.share_prefix=true;
+        require(control==simulate(cfg,12),"shared prefix changed predicted task-turnover/scoring decisions");
+        cfg.threads=2;
+        require(control==simulate(cfg,12),"shared prefix changed with worker count");
+    }
     for(int flags=1;flags<=3;++flags) {
         Config cfg;cfg.futures=4;cfg.depth=6;cfg.random_by_step=true;cfg.cost_cache=true;
         cfg.operation_depth=3;cfg.operation_protect=flags&1;cfg.operation_finish_move=flags&2;

@@ -12,6 +12,7 @@ struct Config {
     int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1;
     int continuations=1, continuation_start=1;
     float future_mutation=0.3;
+    bool share_prefix=false;
     float noise=50, mutation=0.3, dispersion=0, push_price=0, loop_threshold=1;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
     float initial_length_weight=-1;
@@ -77,6 +78,12 @@ struct Rollout {
     bool cycle_moves=true;
     uint64_t expansions=0;
 };
+struct RolloutPrefix {
+    Frame frame, first;
+    std::vector<Action> actions;
+    int time=0,completions=0;
+    double initial=0,previous=0,progress=0,discounted=0,weight=1,weight_sum=0;
+};
 struct OperationModel {
     static constexpr int horizon=3, count=64, waiting=63;
     std::vector<std::array<int,horizon>> paths;
@@ -111,7 +118,8 @@ private:
     std::vector<int> predicted_loc_, predicted_dir_;
     void match_future(Frame& frame) const;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true,
-                    const Continuation* continuation=nullptr) const;
+                    const Continuation* continuation=nullptr,RolloutPrefix* save=nullptr,
+                    const RolloutPrefix* resume=nullptr) const;
     Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
                      const std::vector<Continuation>& continuations,bool cycle_moves) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,

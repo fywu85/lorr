@@ -207,3 +207,14 @@ from the earlier moving-footprint filter. Dense regressions cover each rule,
 the combination, and worker determinism. A five-case full run compares them
 against the existing K32/revisit64 prototype (1,973 tasks), with the rest of
 its configuration fixed. These changes do not alter the default pipeline.
+
+
+`R05_SHARE_PREFIX=1` optionally reuses the exact simulated state before the first
+priority perturbation. The root's constant-priority rollout saves that state,
+first actions/promises, task-turnover state and all accumulated score terms.
+Other continuations resume there. Branch order and floating-point score operations
+are preserved; only repeated policy steps are removed. With depth8, B4/start1
+removes9.4% of policy advances; B8/start2 removes21.9%. These are operation counts,
+not measured runtime savings. Dense checks exercise task turnover, completion
+bonuses, discounting, reverse-turn costs, local refinement and two worker counts.
+Full trajectory equivalence and timing still require measurement.

@@ -24,13 +24,13 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-The overall best is now **3,422 tasks on32 workers /16 physical cores**,
-**+7.9% versus matched NMS32=3,172**. Source
-[a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) averages eight continuations
-for each of128 candidate priority vectors (K1024 total, local refinement0).
+The overall best is now **3,492 tasks on32 workers /16 physical cores**,
+**+10.1% versus matched NMS32=3,172**. Source
+[a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) averages four continuations
+for each of512 candidate priority vectors (K2048 total, local refinement0).
 It uses the same explicit guidance/horizon tricks and planner seed3 as before.
-A four-continuation variant first reached3,400. These are selected maxima;
-four-core reproduction and planner-seed checks are running. The fresh-instance
+Earlier continuation variants reached3,400,3,422 and3,450. These are selected
+maxima; four-core reproduction and planner-seed checks are running. The fresh
 validation below applies to the preceding3,395 solver, not these new candidates.
 
 Best verified four-core result: **3,395 tasks / 2,000 steps on four physical
@@ -122,6 +122,9 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 
 | 2026-09-20T13:32:10.140710+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3400 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.2% | [Full evidence](random05/results/continuations-split-full-v42/mean4-k1024/summary.json) |
 | 2026-09-20T13:33:08.542811+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of8 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3422 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.9% | [Full evidence](random05/results/continuations-split-full-v42/mean8-k1024/summary.json) |
+
+| 2026-09-20T13:34:31.273508+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K1024 total/local0; continuation starts after2 steps; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3450 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +8.8% | [Full evidence](random05/results/continuations-split-full-v42/mean4-start2/summary.json) |
+| 2026-09-20T13:36:34.649056+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K2048 total/local0; continuation starts after1 steps; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3492 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +10.1% | [Full evidence](random05/results/continuations-split-full-v42/mean4-k2048/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -670,3 +673,25 @@ original input. Keep these inputs out of further configuration selection.
   give3,254/3,271/3,400/3,422. The full frontier control repeats3,395. Larger
   budgets and delayed/milder mutations remain in progress. Four-core and seed
   checks are queued; no replicated improvement is claimed yet.
+
+- All ten initial continuation runs are complete and valid. Keeping the root
+  priorities for two simulated steps gives3,450 atK1024/B4. Milder future
+  mutation0.1 gives3,388. AtK2048/local0, single-continuation search gives3,240
+  while four-continuation averaging gives3,492. This is+7.8% at equal global
+  rollout work and+97 tasks over the previous selected maximum3,395. Four-core
+  confirmation is queued. Additional seeds and scale comparisons are underway;
+  this new regime is not yet validated on fresh task/start instances.
+
+- Five planner-seed results atK1024/local0: B4 gives
+  3,379/3,393/3,383/3,400/3,408 (mean3,392.6); B8 gives
+  3,451/3,447/3,328/3,422/3,440 (mean3,417.6). The preceding configuration gives
+  3,356/3,311/3,325/3,395/3,305 (mean3,338.4). Both new configurations improve
+  all five pairs, by1.6% and2.4% on average. These remain planner seeds on the
+  same development input, not fresh-instance validation. B4 local rollout
+  allowances4/16/64 give3,419/3,366/3,370; additional local work does not help
+  consistently. The overall best remains the single-seedK2048 result3,492.
+
+- Shared-prefix reuse passes dense regressions that preserve task turnover,
+  score accounting and worker-count determinism. Full controls will compare
+  against the3,492 and3,450 trajectories, plus four-core latency. No timing or
+  throughput improvement is claimed from the optimization before those runs.

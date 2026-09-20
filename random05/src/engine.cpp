@@ -25,6 +25,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
+    c.share_prefix=integer("R05_SHARE_PREFIX",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -847,7 +848,8 @@ void Engine::match_future(Frame& frame) const {
 }
 
 Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves,
-                        const Continuation* continuation) const {
+                        const Continuation* continuation,RolloutPrefix* save,
+                        const RolloutPrefix* resume) const {
     const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;
     auto total_cost=[&](const Frame& f) {
         double guided=0,plain=0;
@@ -866,12 +868,16 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
             count+=assigned[i] && f.stage[i]>=int(assigned[i]->goals.size());
         return count;
     };
-    int completions=0;
-    double initial=total_cost(frame),previous=initial,progress=0,discounted=0,weight=1,weight_sum=0;
+    int completions=resume?resume->completions:0;
+    double initial=resume?resume->initial:total_cost(frame);
+    double previous=resume?resume->previous:initial,progress=resume?resume->progress:0;
+    double discounted=resume?resume->discounted:0,weight=resume?resume->weight:1;
+    double weight_sum=resume?resume->weight_sum:0;
+    if(resume){r.first=resume->first;r.actions=resume->actions;}
     std::vector<Action> actions;
     std::vector<float> future_offsets;
     if(continuation)future_offsets=offsets;
-    for(int t=0;t<cfg.depth;++t) {
+    for(int t=resume?resume->time:0;t<cfg.depth;++t) {
         if(continuation)for(const auto& change:continuation->at(t))
             future_offsets[change.agent]=change.offset;
         const auto& priorities=continuation?future_offsets:offsets;
@@ -891,6 +897,12 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
             // New task cost is a new baseline, not negative progress. Credit
             // only distance actually reduced while executing each chain.
             previous=total_cost(frame);
+        }
+        if(save && t+1==cfg.continuation_start) {
+            save->frame=frame;save->first=r.first;save->actions=r.actions;
+            save->time=t+1;save->completions=completions;
+            save->initial=initial;save->previous=previous;save->progress=progress;
+            save->discounted=discounted;save->weight=weight;save->weight_sum=weight_sum;
         }
     }
     r.score=(cfg.rollout_match?progress:initial-total_cost(frame))/2.0;
@@ -916,11 +928,17 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
 }
 Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
                          const std::vector<Continuation>& continuations,bool cycle_moves) const {
-    Rollout result=rollout(frame,offsets,cycle_moves);
+    RolloutPrefix prefix;
+    const bool shared=cfg.share_prefix && !continuations.empty();
+    Rollout result=rollout(frame,offsets,cycle_moves,nullptr,shared?&prefix:nullptr);
     if(continuations.empty())return result;
+    if(shared && prefix.time!=cfg.continuation_start)
+        throw std::runtime_error("missing shared rollout prefix");
     double score=result.score;
     for(const auto& continuation:continuations) {
-        Rollout branch=rollout(frame,offsets,cycle_moves,&continuation);
+        Rollout branch=shared
+            ?rollout(prefix.frame,offsets,cycle_moves,&continuation,nullptr,&prefix)
+            :rollout(frame,offsets,cycle_moves,&continuation);
         // A branch evaluates the root's decision; it cannot silently substitute
         // a different first action or promise while contributing to its score.
         if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||

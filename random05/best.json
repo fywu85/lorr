@@ -1,6 +1,6 @@
 {
   "source_commit": "a6ad284",
-  "evidence": "random05/results/continuations-split-full-v42/mean8-k1024/summary.json",
+  "evidence": "random05/results/continuations-split-full-v42/mean4-k2048/summary.json",
   "case": {
     "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v42/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
@@ -9,9 +9,9 @@
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "mean8-k1024",
+    "name": "mean4-k2048",
     "env": {
-      "R05_K": "1024",
+      "R05_K": "2048",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
@@ -37,7 +37,7 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "8"
+      "R05_CONTINUATIONS": "4"
     },
     "smt": 2
   }
