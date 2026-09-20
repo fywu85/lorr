@@ -280,3 +280,46 @@ Next implement/test optional A task-chain pricing using const resident-table pee
 keeping original spatial cache calls/admission, complete fallback and current metric
 units; compare raw covered costs and ratio-imputed missing costs against modeOFF.
 No production A implementation yet; B heading coupling remains deferred.
+
+
+## Latest decision after broad review (2026-09-20 00:14 UTC)
+
+This section supersedes the earlier pending-run and implementation-next notes.
+Full V50 jobs8899209/8899210 COMPLETE: strict verify_v50.py confirms22source/test
+hashes, binary,10000valid complete entries,32GBRSS,physical isolation,noquota,
+exact seed0/2 reference trajectories144510/144107 and every25sampled search frame
+(50regionalround frames). Max919.194ms,RSS11.337GB; means384.13..406.12ms,
+CPU1.715..1.768cores/4. No throughput gain. Archive deadline-duplicate-full-v50.
+
+Fresh CURRENT regional reference replay jobs8899228..8899233 completed and verified:
+all6 rawSHA agree with previous independent inputs,300M phase/actions conserved,
+all4 hand fixtures pass. accounting.json: per-completion CGAR347.364vsKK326.838;
+loaded detour/turn/wait gap12.3023, shortest-chain cohort8.0252, empty−1.3966,
+unfinishedloaded+1.5952. Observational, no guaranteed causal savings. Report:
+bottleneck_review/REPORT.md, source comparison and17 literature leads included.
+
+Fable turns18/19 archived COMPLETE, same session1ebb1075-3538-49d1-93d1-a00c94fa256a,
+claude-fable-5-1/max,no tools/denials. Turn19completed00:14:17.860547UTC;
+81.30132875USD is cumulative session cost. PTY52269 closed, no live CLI.
+Next optional reviewturn20/followup-19.md, retain24USD request cap, sourcecacheV50.
+Turn18ratio-only control and coverage/basis qualifications recorded. Turn19changes
+priority to KK guidance/rematching ablations before bigger CGAR planner rewrite.
+Assessment rejects causal certainty about chain savings, cohort normalization,
+5slothorizon, and oldstaticpickup opportunity being a recoverable bound.
+
+Current production restored EXACTV50. An unbuilt/untested V51chainpricing draft is
+saved ONLYin bottleneck_review/assignment-price-draft-v51.patch with DRAFT_STATUS.
+Do not treat it as working source. New implementation should follow selected design
+and tests, not blindly reapply it. No code build/live GRID job remains at this note.
+
+Next: frozen KK factorial supplied/uniform weights x unopened rematching ON/OFF,
+with contemporary native controls; these are resource-qualified competitor diagnosis,
+not CGAR scores. CONFIG_PATH+empty map_weights_path already supports all-one weights;
+rematchingoff needs an experiment-only scheduler patch keeping unopened assignments.
+Do not mutate archive. Clock-limited KK needs replicate controls/effort records.
+Then CGAR additive ordinary assignment x broader bounded rematching with all
+fair/protected rules, separating pricing basis. Prior pool guard onlyallowedpickup
+improvement,32exchanges/10ticks, so it does not settle that interaction. Mainmotion
+changeconditional on current multiple-owner/boundary/preference opportunity audit,
+notmoregeometricregions. Full5k0/2 then6forpromotion; reserve fresh seeds for final
+claims. See report for detailed gates and caveats. Goal remains active/unmet.

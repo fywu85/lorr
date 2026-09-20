@@ -1,0 +1,134 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-confirm-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s4-r0/WAREHOUSE.json",
+  "team_size": 10000,
+  "steps": 5000,
+  "completed_tasks": 143934,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 12684,
+      "stationary": 13147
+    },
+    "loaded": {
+      "adjacent": 40989,
+      "stationary": 42813
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "empty": {
+      "fw": 8137915,
+      "cr": 378276,
+      "ccr": 251767,
+      "wait": 485207,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 37284117,
+      "cr": 825123,
+      "ccr": 631348,
+      "wait": 2006247,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "unassigned_robot_steps": 0,
+  "empty_forward_actions": 8137915,
+  "empty_turn_actions": 630043,
+  "empty_wait_actions": 485207,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 9253165,
+  "loaded_robot_steps_including_unfinished_tasks": 40746835,
+  "robot_steps_per_completed_task": 347.3814387149666,
+  "revealed_chain_shortest": {
+    "n": 158934,
+    "mean": 248.6077931720085,
+    "p90": 445,
+    "sum": 39512231
+  },
+  "completed_chain_shortest": {
+    "n": 143934,
+    "mean": 241.87128822932732,
+    "p90": 438,
+    "sum": 34813502
+  },
+  "assigned_chain_shortest": {
+    "n": 153904,
+    "mean": 246.6891438819004,
+    "p90": 443,
+    "sum": 37966446
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 153904,
+    "mean": 49.82956258446824,
+    "p90": 94,
+    "sum": 7668969
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 153904,
+    "mean": 49.82956258446824,
+    "p90": 94,
+    "sum": 7668969
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 152251,
+    "mean": 60.37816500384234,
+    "p90": 109,
+    "sum": 9192636
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 152251,
+    "mean": 60.37816500384234,
+    "p90": 109,
+    "sum": 9192636
+  },
+  "completed_loaded_steps": {
+    "n": 143934,
+    "mean": 272.88407186627205,
+    "p90": 481,
+    "sum": 39277296
+  },
+  "completed_loaded_action_totals": {
+    "fw": 35926554,
+    "cr": 800535,
+    "ccr": 610994,
+    "wait": 1939213,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 249.60436033181875,
+    "cr": 5.561820000833715,
+    "ccr": 4.244959495324246,
+    "wait": 13.47293203829533,
+    "other": 0.0
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 40275,
+    "stationary": 42059
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 0.27981574888490557,
+    "stationary": 0.2922103186182556
+  },
+  "completed_loaded_forward_excess_over_shortest": 1113052,
+  "observed_pickup_steps_per_shortest_cell": 1.2152328255143166,
+  "completed_loaded_steps_per_shortest_cell": 1.128220194567039,
+  "tasks_with_multiple_assignments": 0,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 1653,
+  "distance_queries": 466742,
+  "complete_bfs_tables": 24768,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic."
+}

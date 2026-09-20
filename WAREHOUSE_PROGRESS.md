@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-19 23:16:49 UTC.
+Updated: 2026-09-20 00:20:51 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
@@ -9,6 +9,15 @@ The six totals are **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Eve
 The local KittyKnight reference is **152,981**. The confirmed mean is **5.91% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim. The target remains unmet.
 
 The previously highest six-seed mean,143,111.2 from sixteen global workers, had three total regressions and was not promoted. Regional repair now exceeds that mean and improves all six paired full totals. The larger pickup quotas128/256 produce exactly the same full trajectories as64 on both tested seeds; they provide no observed quality gain. [Regional configuration and checks](experiments/construction-20260918/PICKUP_FULL_REGIONS.md) · [Quota comparison](experiments/construction-20260918/results/pickup-full-quota-full-v46.json).
+
+The [new diagnosis and literature review](experiments/construction-20260918/bottleneck_review/REPORT.md)
+replays all six current trajectories and accounts for every robot step. Loaded
+turns/waits/detours contribute12.302 extra steps per completed task versus the
+local KK run; the completed shortest-chain mix differs by8.025 steps. These are
+observational differences, not guaranteed savings. Fable's same-session review
+prioritizes competitor guidance/rematching ablations, then a controlled assignment
+interaction and a motion change chosen from fresh blocker evidence. **No new
+throughput record** is claimed.
 
 ## New best scores over time
 
@@ -126,6 +135,16 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
 
 ## Resource cost of the current benchmark reference
+
+V50's duplicate deadline-callback optimization now passes full seeds0/2 with
+**exactly the existing144,510 /144,107 trajectories and sampled search counters**.
+All10,000 complete entries pass; means384.1–406.1ms, max919.2ms, CPU1.72–1.77cores,
+peakRSS11.337GB and full wall33.1–34.9min. These are two-run measurements on new
+allocations, not a controlled full-run speedup or a new six-seed resource range.
+The original six-seed reference resources remain below.
+[Exact source cb6a666](https://github.com/fywu85/lorr/commit/cb6a666da8aee461d5a34cab01d7b7ccaa76a201),
+[full verification](experiments/construction-20260918/results/deadline-duplicate-full-v50/verification.json).
+
 
 The current regional-repair reference averages **401.2–419.4 ms** per complete
 schedule+plan step and reaches **962.7 ms** maximum. Whole-process CPU averages

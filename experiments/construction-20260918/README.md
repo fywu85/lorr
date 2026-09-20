@@ -9,13 +9,20 @@ its own deadline. These fixed-goal motion probes diagnose coordination; full
 The original CGAR control was `CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1
 CGAR_TURN_TABLE_MB=8192`, with a six-seed mean of43,176.17 tasks. The current
 [benchmark reference](warehouse-reference-variants.json) adds temporal planning
-and refreshed observed-flow guidance, reaching **137,073.3 mean tasks over all
-six seeds**. Its [full evidence](results/turn-build-limit-six-seed-v39.json)
+and refreshed observed-flow guidance, complete pickup fields and regional repair,
+reaching **143,941.2 mean tasks over all six seeds**. Its
+[full evidence](results/pickup-full-regions-six-seed-v44.json)
 and the root [throughput history](../../WAREHOUSE_PROGRESS.md) supersede the
 original control as the current performance summary. The valid local
 KittyKnight reference completed 152,981 with a larger CPU allocation and more
 than 32 GB memory. The CGAR target remains below 32,000,000,000 measured bytes,
 one-second complete decisions, and generic rules without map-specific policies.
+
+The [current bottleneck and literature review](bottleneck_review/REPORT.md)
+accounts for all 300 million robot steps of the six-seed reference, compares the
+active competitor implementations, and records the next experiments after the
+persistent Fable review. V50 preserves the existing full trajectories; its small
+runtime optimization is not a new throughput record.
 
 All NMS modifications are applied to a frozen experimental source copy. The
 archived implementation and the active CGAR planner are unchanged by the probe.

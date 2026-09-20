@@ -1,0 +1,182 @@
+diff --git a/cgar/cgar_planner/cgar.cpp b/cgar/cgar_planner/cgar.cpp
+index a5f8d25..77778b8 100644
+--- a/cgar/cgar_planner/cgar.cpp
++++ b/cgar/cgar_planner/cgar.cpp
+@@ -572,6 +572,32 @@ void TurnDistanceOracle::trim() {
+     }
+ }
+ 
++int resident_chain_price(const Task& task, const TurnDistanceOracle& oracle) {
++    if (task.idx_next_loc < 0 || static_cast<size_t>(task.idx_next_loc) >= task.locations.size()) return -1;
++    long long total = 0;
++    for (size_t k = static_cast<size_t>(task.idx_next_loc) + 1; k < task.locations.size(); ++k) {
++        const int from = task.locations[k - 1], goal = task.locations[k];
++        if (from == goal) continue;
++        const auto* table = oracle.peek(goal);
++        if (!table) return -1;
++        int leg = kInf;
++        for (int heading = 0; heading < 4; ++heading)
++            leg = std::min(leg, oracle.value(*table, from, heading));
++        if (leg >= kInf) return -1;
++        total = std::min<long long>(kInf - 1, total + leg);
++    }
++    return static_cast<int>(total);
++}
++
++int imputed_chain_price(int native, long long numerator, long long denominator) {
++    if (native < 0 || numerator < 0 || denominator < 0)
++        throw std::invalid_argument("negative task-chain price or ratio");
++    if (!denominator) return std::min(native, kInf - 1);
++    const __int128 product = static_cast<__int128>(native) * numerator;
++    const __int128 result = (product + denominator - 1) / denominator;
++    return static_cast<int>(std::min<__int128>(kInf - 1, result));
++}
++
+ int ChainCostCache::estimate(const Task& task, DistanceOracle& oracle, int& table_budget,
+                              std::chrono::steady_clock::time_point deadline, bool peek) {
+     auto result = entries_.try_emplace(task.task_id);
+@@ -784,6 +810,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
+         (pickup_flow && !flow_strength_))
+         throw std::invalid_argument("pickup flow requires learned flow, a boolean setting and 1-65536 queue pops");
+     pickup_flow_ = pickup_flow != 0;
++    chain_flow_pricing_ = env_int("CGAR_CHAIN_FLOW_PRICING", 0);
++    if (chain_flow_pricing_ < 0 || chain_flow_pricing_ > 3 || (chain_flow_pricing_ && !pickup_flow_))
++        throw std::invalid_argument("chain flow pricing requires pickup flow and mode 0, 1, 2 or 3");
+     pickup_full_robots_ = env_int("CGAR_PICKUP_FULL_ROBOTS", 0);
+     pickup_full_threads_ = env_int("CGAR_PICKUP_FULL_THREADS", 4);
+     if (pickup_full_robots_ < 0 || pickup_full_robots_ > 256 ||
+@@ -1777,6 +1806,13 @@ void Cgar::log_summary() {
+             stats_.pickup_flow_searches, stats_.pickup_flow_pops, stats_.pickup_flow_states,
+             stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
+             stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
++    if (chain_flow_pricing_)
++        std::printf("[cgar-chain-price] t=%d mode=%d snapshot_publication=%lld calls=%lld tasks=%lld covered=%lld missing=%lld changed=%lld imputed=%lld assigned_covered=%lld assigned_imputed=%lld ratio_numerator=%lld ratio_denominator=%lld\n",
++            env_->curr_timestep, chain_flow_pricing_, stats_.chain_price_publication,
++            stats_.chain_price_calls, stats_.chain_price_tasks, stats_.chain_price_covered,
++            stats_.chain_price_missing, stats_.chain_price_changed, stats_.chain_price_imputed,
++            stats_.chain_price_assigned_covered, stats_.chain_price_assigned_imputed,
++            stats_.chain_price_numerator, stats_.chain_price_denominator);
+     if (pickup_full_robots_)
+         std::printf("[cgar-pickup-full] t=%d robot_limit=%d threads=%d cost_key=%d fields=%lld pops=%lld states=%lld searches=%lld scans=%lld candidates=%lld estimates=%lld\n",
+             env_->curr_timestep, pickup_full_robots_, pickup_full_threads_, pickup_full_cost_key_, stats_.pickup_full_fields,
+@@ -2152,7 +2188,13 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
+         stats_.pickup_flow_snapshot_publication = flow_guidance_.publications();
+         stats_.pickup_flow_warmup_calls += !pickup_metric;
+     }
+-    struct TaskCost { int id, first, chain, revealed; };
++    const bool chain_metric = chain_flow_pricing_ && pickup_metric;
++    const bool new_chain_publication = chain_metric && stats_.chain_price_publication != flow_guidance_.publications();
++    if (chain_metric) {
++        ++stats_.chain_price_calls;
++        stats_.chain_price_publication = flow_guidance_.publications();
++    }
++    struct TaskCost { int id, first, chain, revealed, priced_chain, oriented_chain = -1; bool imputed = false; };
+     struct Pair { double score; int cost, task, robot, pickup; bool global = false; };
+     std::vector<int> ids(free_tasks_.begin(), free_tasks_.end());
+     std::sort(ids.begin(), ids.end());
+@@ -2165,7 +2207,48 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
+         check_deadline(deadline_, "task_metadata");
+         const int first = task.locations.at(task.idx_next_loc);
+         at_cell[first].push_back(static_cast<int>(tasks.size()));
+-        tasks.push_back({id, first, task_chain_cost(id), task.t_revealed});
++        // Always preserve the original spatial cache admission and recency work.
++        const int chain = task_chain_cost(id);
++        const int scaled_chain = static_cast<int>(std::min<long long>(kInf - 1,
++            static_cast<long long>(pickup_scale) * chain));
++        TaskCost priced{id, first, chain, task.t_revealed, scaled_chain};
++        if (chain_metric && static_cast<size_t>(task.idx_next_loc) + 1 < task.locations.size()) {
++            ++stats_.chain_price_tasks;
++            priced.oriented_chain = resident_chain_price(task, turn_oracle_);
++            if (priced.oriented_chain >= 0) {
++                ++stats_.chain_price_covered;
++                priced.priced_chain = priced.oriented_chain;
++            } else ++stats_.chain_price_missing;
++        }
++        tasks.push_back(priced);
++    }
++    if (chain_metric) {
++        // A mean adjustment for uncovered tasks, not a correction for nonrandom
++        // cache coverage. Recompute in sorted task order against this snapshot.
++        long long numerator = 0, denominator = 0;
++        for (const auto& task : tasks) if (task.oriented_chain >= 0 && task.chain > 0) {
++            numerator += task.oriented_chain;
++            denominator += static_cast<long long>(pickup_scale) * task.chain;
++        }
++        stats_.chain_price_numerator = numerator;
++        stats_.chain_price_denominator = denominator;
++        for (auto& task : tasks) {
++            const int native = static_cast<int>(std::min<long long>(kInf - 1,
++                static_cast<long long>(pickup_scale) * task.chain));
++            if ((chain_flow_pricing_ == 3 || (chain_flow_pricing_ == 2 && task.oriented_chain < 0)) && native > 0 && denominator > 0) {
++                task.priced_chain = imputed_chain_price(native, numerator, denominator);
++                task.imputed = true;
++                ++stats_.chain_price_imputed;
++            }
++            stats_.chain_price_changed += task.priced_chain != native;
++        }
++        if (diagnostics_ && (new_chain_publication || env_->curr_timestep % 64 == 0)) {
++            int covered = 0, rescaled = 0;
++            for (const auto& task : tasks) { covered += task.oriented_chain >= 0; rescaled += task.imputed; }
++            std::printf("[cgar-chain-snapshot] t=%d mode=%d publication=%lld free=%zu covered=%d rescaled=%d ratio_numerator=%lld ratio_denominator=%lld\n",
++                env_->curr_timestep, chain_flow_pricing_, stats_.chain_price_publication, tasks.size(),
++                covered, rescaled, numerator, denominator);
++        }
+     }
+     // Fixed robot quota in the existing rotating order. All selected fields
+     // finish against this immutable published metric before any is consulted.
+@@ -2209,7 +2292,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
+     auto pair_for = [&](int r, int t, int d) {
+         const auto& task = tasks[t];
+         const int cost = static_cast<int>(std::max<long long>(pickup_scale, std::min<long long>(kInf - 1,
+-            static_cast<long long>(pickup_weight_) * d + static_cast<long long>(pickup_scale) * task.chain)));
++            static_cast<long long>(pickup_weight_) * d + (chain_metric ? task.priced_chain : static_cast<long long>(pickup_scale) * task.chain))));
+         return Pair{hrrn_ ? 1.0 + (static_cast<double>(std::max(0, now - task.revealed)) * pickup_scale) / cost : 1.0,
+                     cost, t, r, d};
+     };
+@@ -2258,6 +2341,8 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
+         proposed[p.robot] = tasks[p.task].id;
+         stats_.estimated_pickup_cost += (static_cast<long long>(p.pickup) + pickup_scale - 1) / pickup_scale;
+         stats_.estimated_chain_cost += tasks[p.task].chain;
++        stats_.chain_price_assigned_covered += tasks[p.task].oriented_chain >= 0;
++        stats_.chain_price_assigned_imputed += tasks[p.task].imputed;
+         ++stats_.assignments;
+         stats_.global_assignments += p.global;
+     };
+diff --git a/cgar/cgar_planner/cgar.hpp b/cgar/cgar_planner/cgar.hpp
+index bdee535..8195649 100644
+--- a/cgar/cgar_planner/cgar.hpp
++++ b/cgar/cgar_planner/cgar.hpp
+@@ -185,6 +185,14 @@ private:
+     std::unordered_map<int, Entry> tables_;
+ };
+ 
++// Independent-leg lower bound in the currently published oriented metric.
++// Only peeks at complete resident tables; -1 means a whole-chain fallback is
++// required. Repeated stops cost zero; no terminal heading is imposed between legs.
++int resident_chain_price(const Task& task, const TurnDistanceOracle& oracle);
++// Ceil(native * numerator / denominator), with a native fallback for no sample.
++// Inputs are nonnegative metric costs; output saturates below the infinity sentinel.
++int imputed_chain_price(int native, long long numerator, long long denominator);
++
+ // Retain table-derived scalar legs even if their full distance table is evicted.
+ // Previously approximated legs are refined only when a complete table is cached.
+ class ChainCostCache {
+@@ -266,6 +274,10 @@ struct Stats {
+     long long pickup_full_fields = 0, pickup_full_pops = 0, pickup_full_states = 0;
+     long long pickup_full_searches = 0, pickup_full_scans = 0, pickup_full_candidates = 0;
+     long long pickup_full_estimates = 0;
++    long long chain_price_calls = 0, chain_price_tasks = 0, chain_price_covered = 0;
++    long long chain_price_missing = 0, chain_price_changed = 0, chain_price_imputed = 0;
++    long long chain_price_assigned_covered = 0, chain_price_assigned_imputed = 0;
++    long long chain_price_numerator = 0, chain_price_denominator = 0, chain_price_publication = 0;
+     long long skipped_empty_searches = 0;
+     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
+     long long global_evaluations = 0, global_assignments = 0;
+@@ -425,6 +437,7 @@ private:
+     int global_samples_ = 0;
+     int pickup_weight_ = 1;
+     bool pickup_flow_ = false;
++    int chain_flow_pricing_ = 0;  // 0 native; 1 resident; 2 impute missing; 3 ratio-only control
+     int pickup_flow_nodes_ = 8192;
+     OrientedPickupSearch pickup_search_;
+     int pickup_full_robots_ = 0, pickup_full_threads_ = 4;
