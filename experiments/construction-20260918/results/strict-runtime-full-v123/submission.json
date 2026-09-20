@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44,debian.q@research57",
+    "-pe",
+    "threaded",
+    "16",
+    "-binding",
+    "linear:16",
+    "-l",
+    "exclusive=true,h_rt=01:10:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-strict-runtime-full-v123-20260920/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-strict-runtime-full-v123-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900817\n"
+}

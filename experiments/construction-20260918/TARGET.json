@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T22:59:05.934132+00:00",
+  "updated_utc": "2026-09-20T23:27:20.754055+00:00",
   "source": "User on2026-09-20 redirects work after strict Warehouse1s validation to the entire10-instance CGAR competition suite; RANDOM-05 owned by a separate agent.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": null,
@@ -10,7 +10,7 @@
   "timeout_policy": "Explicit failure, never a partial quality result.",
   "allocation": "Development: reserved, bound GRID physical cores on shared hosts are allowed.",
   "map_specific_policies_allowed_for_this_goal": true,
-  "promotion_rule": "Per-instance valid full runs within1000ms and32decimalGB; match or exceed qualified NMS throughput. Throughput is primary, fairness secondary and explicitly reported; waiting regressions do not veto promotion. +20% per instance is a stretch target. Preserve generic/trick separation and selected-seed versus replicated evidence.",
+  "promotion_rule": "Per-instance valid full runs within1000ms and32decimalGB; match or exceed the published NMS targets, with fresh matched local references reported separately. Throughput is primary, fairness secondary and explicitly reported; waiting regressions do not veto promotion. +20% per instance is a stretch target. Preserve generic/trick separation and selected-seed versus replicated evidence.",
   "current_best_single": 155173,
   "current_six_seed_mean": 144392.16666666666,
   "required_mean_growth_percent": null,
@@ -18,12 +18,12 @@
   "competition_entry_deadline_seconds": 1.0,
   "development_entry_deadline_seconds": 5.0,
   "competition_budget_required_for_development_promotion": false,
-  "timing_expectation": "Strict full Warehouse execution validation first; shared5s diagnostic development remains labelled separately.",
+  "timing_expectation": "Warehouse best profile now has full strict1000ms validation; other-instance5s development remains separate until selected profiles qualify.",
   "resource_policy_source": "Explicit user instruction on2026-09-20: relax exclusive hosts and one-second budget for now; validate/optimize best solver later.",
   "current_best_single_source": "37f592a48bdb24b936f8d0be8be22ddd405b4ddb",
   "current_best_single_completed_utc": "2026-09-20T20:36:47.428452+00:00",
-  "current_best_single_budget": "Shared-host5s development; max0.991801379s, RSS11946876928bytes. Not strict1s certified.",
-  "pending_confirmation": "V123 strict1000ms full seeds0/2 on an exclusive host; then cap regional candidate work and evaluate the eight instances other than WAREHOUSE and separately owned RANDOM-05.",
+  "current_best_single_budget": "Exact equivalent profile fully confirmed at strict1000ms on seeds0/2, eight physical cores per process on an exclusive EPYC9354host. Max944.766/957.827ms, RSS15.396/15.393GB.",
+  "pending_confirmation": "Full eight-instance generic regional-budget matrix8900861 and verifier8900862. RANDOM-05 excluded and owned by a separate agent.",
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
   "minimum_successful_seeds": 1,
@@ -85,5 +85,13 @@
   "campaign": "experiments/allmaps-20260920/README.md",
   "deferred_warehouse_target_completed_tasks": 160000,
   "random05_ownership": "Read-only standalone progress and results; do not modify code, experiments, outputs or jobs.",
-  "fairness_priority": "Secondary metric, explicitly clarified by user on2026-09-20; throughput takes priority."
+  "fairness_priority": "Secondary metric, explicitly clarified by user on2026-09-20; throughput takes priority.",
+  "published_targets_evidence": "experiments/allmaps-20260920/published-targets.json",
+  "best_confirmed_runtime_source": "3e319f175859396b91f97364b320c6794a85cbb7",
+  "best_confirmed_runtime_evidence": "experiments/construction-20260918/results/strict-runtime-full-v123/execution-confirmation.json",
+  "warehouse_strict_one_second_confirmed": true,
+  "warehouse_strict_confirmed_seeds": [
+    0,
+    2
+  ]
 }

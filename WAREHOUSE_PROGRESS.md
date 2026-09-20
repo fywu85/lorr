@@ -1,6 +1,23 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 22:21 UTC.
+The **strict one-second confirmation is complete**: seeds0/2 reproduce all
+prior actions, assignments, tasks and events exactly at **155,173 /155,090**.
+Means are428.06/425.74ms; maxima **944.77/957.83ms**; peak RSS15.396/15.393GB;
+mean CPU1.770cores from8reserved physical cores per run. Both full runs use an
+exclusive EPYC9354host, all10000complete entries meet1000ms, and100million robot
+actions reconcile independently. The execution profile uses8-thread prefetch,
+preparation and pickup with a25GiB logical unwarmed cache; all-goal prewarm stays
+OFF. Frozen source[3e319f1](https://github.com/fywu85/lorr/commit/3e319f175859396b91f97364b320c6794a85cbb7).
+This confirms the existing record without creating a new throughput peak; it
+validates these seeds and hardware, not every possible run.
+[Full proof and resources](experiments/construction-20260918/results/strict-runtime-full-v123/summary.md),
+[exact settings](experiments/construction-20260918/results/strict-runtime-full-v123/verified-variant.json).
+
+The user has redirected further work to [all ten instances](CGAR_PROGRESS.md),
+with throughput primary and fairness secondary. The160000Warehouse aspiration
+is deferred. RANDOM-05 is owned by another agent and remains read-only here.
+
+Updated 2026-09-20T23:27:20.754055+00:00 (UTC).
 
 **Best verified Warehouse run: 155,173 tasks (TRICK, seed 0)**, 378 above the NMS target of 154,795 and 53 above the preceding best. The new whole-cycle late matching guard improves both full seeds 0/2 to **155,173 / 155,090** (+53/+34; mean 155,131.5). Full 5,000 steps / 10,000 robots, zero errors or timeouts, exact controls and independent action/task accounting. It requires `--trick WAREHOUSE` and `CGAR_TRICK_MATCH_HORIZON=1`, alongside native bands, pickup weight 8, configured horizon 5,000 and the prospective p90 margin. Ordinary fairness stays enabled and short preference stays OFF. [Full result](experiments/construction-20260918/results/match-horizon-native-full-v110/summary.md), [exact configuration, source, completion time and hash](experiments/construction-20260918/results/match-horizon-native-full-v110/best-record.json). The [four-seed confirmation](experiments/construction-20260918/results/match-horizon-four-seeds-v114.json) is complete: **155,173 / 155,056 / 155,090 / 155,008**, mean **155,081.75**, changes **+53 / +57 / +34 / −12**. Retain the guard as a modest observed improvement, winning three of four; these are solver seeds on one fixed input.
 
@@ -78,7 +95,7 @@ The earlier increasing-record table below remains the **generic** history. A fut
 
 The preceding regional-only reference totals were **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
 
-The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The separate generic six-seed mean needs **7.20% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The NMS target is now exceeded by all four tested p90 / pickup-weight-8 TRICK seeds under the authorized development conditions. A valid full generic or explicitly enabled TRICK seed may satisfy it under the user's revised criterion; six-seed generic reference promotion remains separate. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
+The original Warehouse target was **154,795 completed tasks**, as corrected by the user on2026-09-20. That milestone is achieved; the current cross-instance goal is linked above. The separate generic six-seed mean needs **7.20% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The NMS target is now exceeded by all four tested p90 / pickup-weight-8 TRICK seeds under the authorized development conditions. A valid full generic or explicitly enabled TRICK seed may satisfy it under the user's revised criterion; six-seed generic reference promotion remains separate. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The later full V123 one-second confirmation is now complete and linked above.
 
 The previously highest six-seed mean,143,111.2 from sixteen global workers, had three total regressions and was not promoted. Regional repair now exceeds that mean and improves all six paired full totals. The larger pickup quotas128/256 produce exactly the same full trajectories as64 on both tested seeds; they provide no observed quality gain. [Regional configuration and checks](experiments/construction-20260918/PICKUP_FULL_REGIONS.md) · [Quota comparison](experiments/construction-20260918/results/pickup-full-quota-full-v46.json).
 

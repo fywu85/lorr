@@ -241,6 +241,14 @@ Additional optional experiments are undergoing full-run evaluation:
   plan (1–32 regions; unset or 0 disables it). Partitions use only dimensions;
   paths crossing a boundary and all protected paths stay fixed for that round.
   Other candidates remain wholly inside their assigned region.
+  `CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT` optionally limits candidate work per
+  region and round (default0 preserves the attempt-only policy; enabled range
+  1–100,000,000). It checks between complete attempts, so the last attempt can
+  exceed the count. Every prescribed region and round still finishes; an elapsed
+  deadline raises `Timeout`. This generic work parameter can change chosen plans
+  and throughput and is under full cross-instance evaluation. The diagnostic
+  `[cgar-regional-work]` reports the limit, limited batches and largest batch.
+  A nonzero setting requires regional repair to be enabled.
   `CGAR_TEMPORAL_REGION_STEPS` sets attempts per region (default 25,000),
   `CGAR_TEMPORAL_REGION_ROUNDS` sets complete rounds with shifted boundaries
   (default 2, range 1–16), and `CGAR_TEMPORAL_REGION_THREADS` sets concurrent

@@ -46,4 +46,9 @@ search work and guided/fallback counts remain equal.
 V123 is the selected complete5000-step test: seeds0/2, strict1000ms,8physical
 cores per process,32decimalGB, exclusive research44. Benchmark8900817,
 verification8900819, independent outcome reconciliation8900820.
-No strict qualification or new throughput peak is claimed before completion.
+Both full runs are now independently verified:155173/155090, mean428.06/425.74ms,
+maximum944.77/957.83ms, peak15.396/15.393GB, mean1.770CPUcores,36.83/36.63min.
+All10000complete entries and100million robot actions pass. Full trajectories and
+sampled search work exactly reproduce V110. This is strict qualification of the
+two tested runs, with no new throughput peak or universal timing guarantee.
+[Full report](../results/strict-runtime-full-v123/summary.md).

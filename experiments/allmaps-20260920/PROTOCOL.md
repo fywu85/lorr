@@ -41,7 +41,10 @@ Frozen starting policy: 2026-09-20, before the new capped-region comparisons.
    Do not replace held-out candidates after seeing their results. Keep throughput
    and waiting-time tradeoffs visible instead of calling every faster run fairer.
 
-Milestone per instance: match or exceed the qualified NMS throughput reference.
+Milestone per instance: match or exceed the published NMS target while satisfying
+our own complete-entry and memory checks. Fresh local NMS runs give matched
+comparisons; retain any reference timeout/memory violations rather than lowering
+the target or treating the reference as zero.
 The latest user clarification makes throughput primary and fairness secondary.
 A waiting-time regression does not veto a faster candidate; quantify and disclose
 it. Claim less starvation only when the observed metrics support that statement.

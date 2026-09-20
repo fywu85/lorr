@@ -37,6 +37,8 @@ for obstacles, duplicate destinations, and edge swaps.
 
 ## Benchmark
 
+The active [CGAR campaign spans all ten instances](CGAR_PROGRESS.md), with throughput primary and fairness secondary. RANDOM-05 is maintained by a separate agent.
+
 [WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
 
 On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,173 tasks**,
@@ -50,8 +52,11 @@ It assumes a configured 5,000-step horizon and requires
 finishes, with no formal starvation-freedom claim. The preceding guard-OFF profile
 scores 155,120 / 154,999 / 155,056 / 155,020 on seeds 0–3, mean 155,048.75.
 These are solver seeds on one fixed input. The generic six-seed reference remains
-144,392.17. Shared-host 5s development results are separate from strict 1s
-certification. [Verified result and exact configuration](experiments/construction-20260918/results/match-horizon-native-full-v110/summary.md).
+144,392.17. The later [strict execution confirmation](experiments/construction-20260918/results/strict-runtime-full-v123/summary.md)
+reproduces the155173/155090full trajectories at an enforced1s deadline: maximum
+944.77/957.83ms, peak15.4GB,8physicalcores per run on an exclusive host. All10000
+complete entries pass, with independent100million-action accounting. The original
+5s development observations remain separate from this two-seed qualification. [Verified result and exact configuration](experiments/construction-20260918/results/match-horizon-native-full-v110/summary.md).
 
 The [latest 20 full refinement runs](experiments/construction-20260918/results/warehouse-refinement-round-v117-v120.md) preserve this best: turn-price changes are mixed, complete prewarming loses throughput, and larger cutoff margins lose on both seeds. The confirmed configuration remains unchanged.
 
