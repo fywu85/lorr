@@ -39,6 +39,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
+    c.future_elite_blend=real("R05_FUTURE_ELITE_BLEND",0);
+    if(!std::isfinite(c.future_elite_blend) || c.future_elite_blend<0 || c.future_elite_blend>1 ||
+       (c.future_elite_blend>0 && c.persist_elites<2))
+        throw std::invalid_argument("future elite blend must be in [0,1] and needs at least two retained vectors");
     c.continuation_risk=real("R05_CONTINUATION_RISK",0);
     if(!std::isfinite(c.continuation_risk))
         throw std::invalid_argument("continuation coefficient must be finite");
@@ -1310,9 +1314,21 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     if(!continuations.empty()) {
         uint64_t key=(uint64_t(uint32_t(cfg.seed))<<32)|uint32_t(env->curr_timestep);
         std::mt19937 future_random(uint32_t(mix(key^0x94d049bb133111ebULL)));
-        for(auto& branch:continuations)for(int t=cfg.continuation_start;t<cfg.depth;++t)
-            for(int a=0;a<n;++a)if(unit(future_random)<cfg.future_mutation)
-                branch[t].push_back({a,noise(future_random)});
+        for(size_t b=0;b<continuations.size();++b) {
+            // A retained vector can supply correlated future priorities. It is
+            // only a control proposal: simulate every action and cost afresh.
+            // Keep mutation masks and random draws identical when disabled;
+            // before history exists, fall back to the original random futures.
+            const auto* elite=cfg.future_elite_blend>0 && !past_offsets_.empty()?
+                &past_offsets_[b%past_offsets_.size()]:nullptr;
+            for(int t=cfg.continuation_start;t<cfg.depth;++t)
+                for(int a=0;a<n;++a)if(unit(future_random)<cfg.future_mutation) {
+                    float value=noise(future_random);
+                    if(elite) value=cfg.future_elite_blend==1?(*elite)[a]:
+                        (1-cfg.future_elite_blend)*value+cfg.future_elite_blend*(*elite)[a];
+                    continuations[b][t].push_back({a,value});
+                }
+        }
     }
     std::vector<Rollout> results(roots);
     std::vector<std::exception_ptr> errors(roots);

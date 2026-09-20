@@ -26,7 +26,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 16:57 UTC.
+Updated: 2026-09-20 17:27 UTC.
 
 **Best single run on the archived input: 3,705 tasks on 32 workers / 16 physical cores**,
 or **+16.8% versus matched NMS32 = 3,172**. Source
@@ -38,17 +38,22 @@ All 2,000 steps are valid. This selected maximum has not been reproduced on four
 cores or independent inputs. Persistent candidates did not help every budget.
 [Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json).
 
-**Best confirmed four-core run: 3,648 tasks**, or **+25.2% versus the strongest
+**Best confirmed four-core run: 3,655 tasks**, or **+25.4% versus the strongest
 matched NMS4 repeat = 2,914**. Source
-[6ce9312](https://github.com/fywu85/lorr/commit/6ce9312), K5120/B8/start2/local0,
-four search generations, planner seed 2. Exact prefix reuse, sparse dispersion,
-reused policy buffers, shared goal rows, radix sorting and candidate-ranking
-caching all enabled. Mean latency 791 ms, maximum 927 ms, peak RSS about 309 MB.
-All 2,000 steps are valid. Planner seeds 0–4 give 3,611 / 3,526 / 3,648 / 3,637 /
-3,608, mean **3,606.0**. This beats K2048/four generations in all five pairs
-(mean 3,531.4), a 2.1% mean improvement on the same development input.
-[Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json).
-The third fresh-input protocol keeps its previously frozen planner seed 3.
+[05559b7](https://github.com/fywu85/lorr/commit/05559b7), K5120/B8/start2/local0,
+four search generations, eight elite parents and eight retained priority vectors,
+planner seed 3. All exact CPU optimizations enabled. Mean latency 791 ms,
+maximum 931 ms, peak RSS 309 MB. All 2,000 steps are valid.
+[Full evidence](random05/results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/summary.json).
+
+This is a selected best, not a replicated mean improvement. Planner seeds 0–4
+score 3,583 / 3,495 / 3,614 / 3,655 / 3,602, mean **3,589.8**, versus **3,606.0**
+for one parent and one retained vector (3,611 / 3,526 / 3,648 / 3,637 / 3,608).
+Only one of five pairs improves. The fast 32-worker seed3 run reproduces every
+action, schedule, task and event of the four-core record. These are planner seeds
+on one development input. Fresh validation V3 retains its frozen one-parent
+candidate, planner seed3; no later record is substituted.
+[Seed evidence](random05/results/persistent-parents-seeds-split-full-v55/summary.json).
 
 The 3,501 configuration remains the frozen candidate for fresh validation V2:
 K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
@@ -99,10 +104,10 @@ are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 [Cutoff-free evidence](random05/results/continuation-no-horizon-split-full/summary.json).
 
 **Waiting-time audit of the current throughput records:** the longest completed
-order takes 1,890 steps for our four-core run versus 1,997 for NMS; the 32-worker
+order takes 1,916 steps for our four-core run versus 1,997 for NMS; the 32-worker
 pair is 1,922 versus 1,976. Both solvers still have step-zero orders unfinished at
 step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-135 versus 219 on four cores, 135 versus 206 on 32 workers, out of 1,200 initially
+141 versus 219 on four cores, 135 versus 206 on 32 workers, out of 1,200 initially
 revealed. Initial orders never opened: 98 versus 102 and 94 versus 91 respectively.
 Higher throughput does not establish a waiting-time bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
@@ -179,6 +184,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T16:15:24.583747+00:00 | [8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3) | K8192/B8/start2/local0; four generations / eight elite parents; planner seed3; exact caches/radix; `--trick RANDOM-05` | 3689 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.3% | [Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json) |
 | 2026-09-20T16:25:39.768782+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed2; `--trick RANDOM-05` | 3648 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.2% | [Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json) |
 | 2026-09-20T16:34:48.526472+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K8192/B8/start2/local0; four generations; eight parents / eight persistent vectors; planner seed3; `--trick RANDOM-05` | 3705 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.8% | [Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json) |
+| 2026-09-20T17:09:29.991140+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K5120/B8/start2/local0, generations4/elites8/persist8; exact CPU optimizations; seed3; `--trick RANDOM-05` | 3655 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.4% | [Full evidence](random05/results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/summary.json) |
 
 ## Reference evidence supplied by the user
 

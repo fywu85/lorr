@@ -365,3 +365,42 @@ push-cost bypass stay unchanged. Larger tables may reduce repeated cache misses,
 though their memory footprint could also hurt locality. Dense tests stress
 frequent eviction and compare128/256 slots against uncached exact trajectories.
 Full trajectory and timing evidence is required before any performance claim.
+
+
+At the main budgets, lowering late mutation loses: K5120 drops from3637 to
+3462–3530; K8192/E8/carry8 from3705 to3627–3702. Test the complementary
+hypothesis: broader constant ROOT mutations0.5/1 instead of0.3. Continuation
+mutation remains0.3; the rollout count, generations, noise amplitude and scoring
+remain unchanged. Use source05559b7 against its existing controls. Separately,
+K5120/E8/carry8 now scores3655 onfourcores (vs3637 E1/carry1,3610 E8/carry1);
+five planner seeds will test whether this selected gain persists. Neither
+experiment uses fresh-validation inputs.
+
+
+Completed controls reject stronger root mutation: at K5120/E1, mutation0.5/1
+scores3545/3460 versus3637; at K8192/E8/P8,3537/3472 versus3705. Retain0.3.
+K5120/E8/P8 improves the selected four-core record to3655, but five seeds average
+3589.8 versus3606.0 forE1/P1, with only one positive pair. Do not claim a mean gain.
+FirstK5120/regular5632and5888 are valid onfourcores,3650/3591;6144 cache64 fails.
+The corresponding fast32worker runs score3650/3591/3545. Increasing K is not
+monotonically beneficial. Larger cache512 preserves3637 and lowers mean four-core
+latency791.0->772.0ms (2.4%), max920.2->901.0ms, RSS308->446MB.
+
+The current action replay finds extra loaded waits on common completed orders:
+about17 more per task onfourcores and25 on32workers, despite fewer turns/forwards.
+This observational accounting motivates testing correlated future controls.
+Blend random continuation offsets with prior-step elite priority vectors, using
+the same mutation masks and RNG consumption. Only offsets persist; every future
+state/action/score is simulated anew. Default blend0 must preserve the full
+trajectory. No map-specific condition or fairness objective is introduced.
+
+`R05_FUTURE_ELITE_BLEND` implements the optional continuation experiment, default0.
+Each noisy continuation selects one retained vector in rank order (cyclic if
+needed); at the existing mutation-mask positions, its offset is blended with
+the same random draw. Blend1 uses the retained offset exactly. Before history
+exists, use the original random futures. Values outside[0,1] and positiveblend
+with fewer than two retained vectors are rejected. All roots see the same
+continuations, branchzero remains constant-offset, and total work is unchanged.
+Regressions cover zero-mutation invariance, task turnover, virtual task assignment
+and worker determinism. Full default controls must reproduce3655/3705 before
+any new score is accepted.

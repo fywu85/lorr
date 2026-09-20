@@ -412,6 +412,26 @@ void persistent_elites() {
     require(duplicates==simulate(cfg,12),"degenerate persistent elites changed with worker count");
 }
 
+void elite_continuations() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=4;cfg.elites=4;cfg.persist_elites=4;cfg.share_prefix=true;
+    cfg.random_by_step=true;cfg.cost_cache=true;cfg.candidate_cache=true;
+    cfg.radix_order=true;cfg.scratch_reuse=true;cfg.rollout_match=true;
+    // With no future perturbations, retained-control blending cannot affect
+    // actions, scores or subsequent random streams through dense task turnover.
+    cfg.future_mutation=0;const auto unchanged=simulate(cfg,12);
+    for(float blend:{0.5f,1.0f}) {
+        cfg.future_elite_blend=blend;
+        require(unchanged==simulate(cfg,12),"elite futures changed an unperturbed continuation");
+    }
+    cfg.future_mutation=0.3;
+    for(float blend:{0.5f,1.0f})for(bool future_tasks:{false,true}) {
+        cfg.future_elite_blend=blend;cfg.rollout_match=future_tasks;cfg.threads=1;
+        const auto serial=simulate(cfg,12);cfg.threads=2;
+        require(serial==simulate(cfg,12),"elite continuations changed with worker count or reused stale actions");
+    }
+}
+
 void continuation_risk() {
     Config cfg;cfg.futures=16;cfg.continuations=4;cfg.future_mutation=0;cfg.depth=6;
     cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
@@ -477,6 +497,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    elite_continuations();
     initial_search_budget();
     annealed_mutation();
     persistent_elites();
