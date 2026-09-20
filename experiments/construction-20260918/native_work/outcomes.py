@@ -87,7 +87,8 @@ def main():
     write(out / 'fixtures.json', work.fixtures())
     records = {}; prefixes = {}; mode = v['mode']
     control = v.get('control_variant') or {'work':'trick_native_work4m_regions2', 'pickup':'trick_native_pickup5',
-               'percentile':'trick_native_percentile0', 'seeds':'trick_native_horizon5000_margin1'}[mode]
+               'percentile':'trick_native_percentile0', 'seeds':'trick_native_horizon5000_margin1',
+               'portfolio':'trick_p90_workers1'}[mode]
     for row in v['rows']:
         path = Path(row['raw_case']) / 'WAREHOUSE.json'; sha = digest(path); data = read(path)
         assert data['makespan'] == 5000 and data['teamSize'] == 10000 and data['numTaskFinished'] == row['tasks']

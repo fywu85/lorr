@@ -1,0 +1,11 @@
+# Native Warehouse search split across one, two or four workers
+
+Test whether the verified p90 / pickup-weight-5 configuration benefits from dividing its prescribed global search across independent CGAR temporal workers. The same four physical cores are reserved per run. Compare one worker with 4M candidate threshold / 1M repair attempts, two workers with 2M / 500k each, and four workers with 1M / 250k each. Regional repair remains four regions, two rounds of 25k attempts.
+
+The aggregate candidate thresholds and repair-attempt ceilings remain 4M and 1M, respectively. This is **not equal executed work**: each worker performs its own construction, a complete final attempt can overshoot the candidate threshold, and either stopping condition can bind. It also changes RNG consumption and diversity. The hypothesis is that several shallower searches may find a better starting plan for the unchanged regional repair, and may reduce latency. Neither outcome is assumed.
+
+Every prescribed worker completes; the best complete score wins with deterministic worker-index ties. Threads join and any worker timeout fails the entire decision. No partial result or elapsed-time-based quality fallback is introduced. The frozen implementation is already covered by the existing regression suite; this experiment changes configuration only.
+
+Use the exact V96 binary and source 27be6e312fdd79ad310583d33eeb2a4781d75b97. Full 5,000-step / 10,000-robot paired seeds 0 / 2, six cases on 24 bound physical GRID cores, shared 5-second development deadline and 32 decimal GB RSS per process. Repeat the one-worker control and require its complete V96 trajectories (155,057 / 154,727). Verify resources, task waiting tails, source/binary identity and independent robot-work accounting. Report every arm, including regressions.
+
+The profile includes native Warehouse guidance and a known-horizon p90 margin, so all arms require explicit `--trick WAREHOUSE`; generic defaults remain unchanged. Ordinary HRRN, forced-oldest admission, held/started protection and at most one unopened retarget remain in effect. Log counters describe the selected global worker, not all workers' summed work.

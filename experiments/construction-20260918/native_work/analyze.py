@@ -76,7 +76,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -118,7 +118,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -139,7 +139,7 @@ def main():
     metrics = {m['case']:m for m in read(out / 'metrics.json')}
     samples = {}; fairness = {}
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -160,6 +160,24 @@ def main():
         assert [int(m['step']) for m in global_samples] == [int(m['step']) for m in regional] == list(range(200,5001,200))
         assert all(m['candidate_limit'] == env['CGAR_TEMPORAL_CANDIDATE_LIMIT'] for m in global_samples)
         assert all(m['rounds'] == env['CGAR_TEMPORAL_REGION_ROUNDS'] for m in regional)
+        if a.mode == 'portfolio':
+            workers = int(env['CGAR_TEMPORAL_WORKERS'])
+            threads = int(env['CGAR_TEMPORAL_THREADS'])
+            assert workers in (1, 2, 4) and threads == workers
+            assert workers * int(env['CGAR_TEMPORAL_STEPS']) == 1000000
+            assert workers * int(env['CGAR_TEMPORAL_CANDIDATE_LIMIT']) == 4000000
+            allocations = [fields(s) for s in lines if s.startswith('[cgar-temporal-allocation] ')]
+            assert len(allocations) == 1
+            assert allocations[0]['workers'] == str(workers) and allocations[0]['threads'] == str(threads)
+            assert allocations[0]['allowed_cpus'] == '4'
+            assert all(int(m['workers']) == workers and int(m['threads']) == threads and
+                       0 <= int(m['selected_worker']) < workers for m in global_samples)
+            # Diagnostics expose the selected worker only. All-worker completion
+            # is enforced by the frozen adapter's join/exception path; these
+            # samples cannot be reported as total work across the portfolio.
+            assert all(int(m['repairs']) == int(env['CGAR_TEMPORAL_STEPS']) or
+                       int(m['candidates']) >= int(env['CGAR_TEMPORAL_CANDIDATE_LIMIT'])
+                       for m in global_samples)
         samples[r['case']] = dict(global_work=global_samples, regional_work=regional, percentile=q_samples)
         if r['variant'] == control and r['seed'] in reference:
             ref = reference[r['seed']]
