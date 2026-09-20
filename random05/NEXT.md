@@ -36,15 +36,14 @@ raw traces and binaries. Frontier links should point to the child summary list.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
-| 8899702–8899705 | operation-revisits-split-full-v35 | More revisits after16 improved the weak prototype. Revisit64/K32=1973; three other cases still running/queued. Source0754ed8. |
-| 8899706–8899708 | frontier-depth-split-full-v31 | Longer look-ahead10/12/16, K1024 on32 workers. Depth10=3302; other results pending. Sourceb824f5d. |
-| 8899709–8899714 | fresh-validation-split-full-v31 | Two new task/start instances50001/50002; frozen3395 candidate once each, NMS4 twice each. Four physical cores each, full2000,1s. Read FRESH_VALIDATION.md. |
+| 8899709–8899714 | fresh-validation-split-full-v31 | Frozen candidate on new inputs 50001/50002 finishes at 3386/3178. Four NMS4 repeats remain running. Full 2000, strict 1s, four physical EPYC9354 cores. Read FRESH_VALIDATION.md. |
+| 8899736–8899751 | field-expansion-split-full-v31 | New generated fields 17–32, no local flips, full K1024/32 workers/planner seed3. Development input only. |
+| 8899752–8899757 | frontier-policy-split-full-v31 | Full K1024 recheck: rollout age; age caps100/200; push prices1/2; prospective idle-turn cost. Development input only. |
 
-All batches through future-tasks-split-full-v37 are complete and collected,
-including field-revalidation16/16, operation-moving6/6, frontier-triage9/9,
-completion-reward6/6, future-tasks6/6 and no-horizon-four1/1. Do not restart them.
-Raw input data for fresh validation is under runs/random05/fresh-inputs-v1/;
-the generator and metadata hashes are committed. Recreate only if missing.
+As of 2026-09-20 13:02 UTC, all previous batches through early-fill v40 are
+complete and archived. Do not restart them. Fresh validation input files live
+under runs/random05/fresh-inputs-v1/; their generator and hashes are committed.
+The field/policy batches use the frozen v31 binary. Every new feature remains off.
 
 ## Structural experiment
 
@@ -63,6 +62,9 @@ candidates, retaining the whole inherited plan as fallback. This addresses one
 concrete difference from the reference, which excludes all-wait from its active
 choices. Dense regression passes. Full K1/8/32/128=343/817/1118/711; cost1=743 and no
 inheritance=577. All are valid but weak; default optionoff.
+
+Larger revisit budgets also lose: revisit64/K32=1973, revisit128/K32=1929,
+moving-only/revisit64/K32=1890, revisit64/K128=2106. All valid.
 
 Other potential operation differences: the reference protects successful paths
 for the rest of the search pass, while our recursion clears the stack on success;
@@ -87,8 +89,24 @@ agent-ID tie order. Fixed work must finish; no deadline-triggered partial return
   The latest cutoff-free control now scores3197; known-horizon triage adds198
   tasks on the frontier seed. Do not present3395 as horizon-independent.
 
+## Waiting-time diagnosis
+
+Independent replay validates all moves, task locks, events and 1.6M robot steps
+in four trajectories. On common completed task IDs, ours has +25.77 loaded waits
+per task against NMS4 and +35.26 against NMS32. Turns are fewer. Work on tasks
+unfinished by2000 is13.41% for ours3395 versus31.03%/30.04% for NMS4/32.
+These are observations, not recoverable-throughput estimates; assignments and
+congestion histories differ. See results/action-audit-v39/REPORT.md and report.json.
+
+Source56b0970/v40 tests R05_EARLY_FILL=1: safe aligned chains/cycles may augment
+currently promised moves. Positive gain is required relative to idle quarter-turns;
+previous moves remain fixed and swaps are rejected. Tests pass, full comparisons
+lose: thresholds0/1/4=3369/3355/3381; K256=3332; no-cutoff3101. Control3395 is exactly
+equal to v31 in actions/schedules/events. Keep off. No new frontier.
+
 ## Latest rejected hypotheses
 
+- Depth10/12/16=3302/3284/3199 versus depth8=3395. Noise100/400/800=3349/3335/3348 versus noise200=3395. All valid.
 - Full K1024 field seeds1–16: field15 remains best3379 without its local flip;
   other fields range3012–3270. The field choice survives full-budget validation.
 - Cutoff scales0.75/1/1.25/1.5/1.75/2/2.5/3:
@@ -125,6 +143,9 @@ private instances or exact regeneration protocol is available.
 - v37 `5db6827`: optional visible free-task turnover inside rollouts; no-spare
   trajectory identity and dense spare-task worker determinism pass. Full control
   equality is verified. Every full run is valid, but none improves throughput.
+
+- v40 `56b0970`: early forward augmentation; ready-cycle/swap/dense turnover
+  and worker determinism tests pass. Full variants lose, option remains off.
 
 Frozen build source hashes and tests are under runs/random05/build-v*/.
 Before promotion/commit run `python3 random05/tools/audit_progress.py`.

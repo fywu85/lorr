@@ -559,3 +559,40 @@ The published NMS score of 3,050 used different instances and hardware.
   50001/50002 with two NMS4 repetitions each. All six jobs use full2000 steps,
   checked EPYC9354 four-core allocations,1s deadlines and32GB limits. These are
   new task/start instances, not extra planner seeds on the archived input.
+
+- Larger operation revisit budgets remain below the pipeline: revisit64/K32
+  gives1,973, revisit128/K32 gives1,929, moving-only/revisit64/K32 gives1,890,
+  and revisit64/K128 gives2,106. All4 full runs are valid; this prototype is not
+  competitive. Longer pipeline look-ahead10/12/16 gives3,302/3,284/3,199, all
+  below3,395 atdepth8. Full priority-noise100/400/800 gives3,349/3,335/3,348;
+  retain200. These comparisons are now complete and archived.
+
+- Independent replay of four full trajectories verifies every move, goal event,
+  task lock and robot step. On3,049 task IDs completed by ours and NMS32, ours
+  spends35.26 more waiting steps per task; turns are3.53 fewer and forward
+  steps4.66 more. Against NMS4 on2,860 common tasks, waits are25.77 more but
+  turns15.50 fewer. Assignments and congestion histories still differ; this is
+  diagnosis, not a recoverable-throughput estimate. See
+  `random05/results/action-audit-v39/REPORT.md` and its hashed replay evidence.
+
+- Source56b0970/v40 adds optional early forward augmentation. Already aligned
+  idle chains/cycles may move immediately while all previous forward promises
+  remain fixed. Moves must have positive aggregate potential gain and obey
+  single-step rotation rules; swaps are rejected. Ready-cycle, swap and dense
+  worker-determinism regressions pass. The option remains off pending full
+  results; it changes the motion policy rather than adding a score bonus.
+
+- Early forward augmentation full results are complete: thresholds 0/1/4 give
+  3,369/3,355/3,381 versus the unchanged 3,395 control. K256 gives 3,332;
+  without the horizon cutoff, K1024 gives 3,101 versus 3,197. All six runs are
+  valid. Keep the feature off. The default actions, schedules and events match
+  the original frontier exactly. Source [56b0970](https://github.com/fywu85/lorr/commit/56b0970);
+  [full evidence](random05/results/early-fill-split-full-v40/summary.json).
+
+- At 2026-09-20 13:02 UTC, two fresh-instance candidate runs have finished:
+  seed 50001 = 3,386 and seed 50002 = 3,178, both valid. The four matched NMS
+  repetitions are still running, so no fresh-instance gain is claimed yet.
+  Separately, expand the development guidance search to field seeds 17–32 at
+  full K1024, and recheck six priority/push policies previously screened only
+  at K64. These jobs use the archived development input; the fresh candidate
+  and its validation inputs remain frozen.

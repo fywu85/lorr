@@ -98,3 +98,26 @@ negative progress. The forecast is still approximate: it does not continuously
 rematch unopened tasks or predict newly revealed tasks. Default0 preserves the
 prior behavior. Dense regressions check no-spare-task equivalence, task locks,
 collision freedom, and worker-count determinism with spare tasks.
+
+## Waiting-time diagnosis and early forward augmentation
+
+The full replay audit in `results/action-audit-v39/REPORT.md` controls for task
+IDs completed by both solvers. It finds longer loaded waits in our trajectories,
+including35.26 extra steps per common completed task against NMS32. This is an
+observed difference, not a causal savings estimate.
+
+`R05_EARLY_FILL=1` tests whether the pipeline delays safe motion. It preserves
+all previously promised forward moves, then considers only currently idle robots
+that can move forward in their present heading. A chain must end at an available
+cell after existing promises; a cycle must be at least3 agents (on this grid,
+valid cycles are at least4). Incoming tails of cycles stay put. Aggregate cost-to-go
+gain must exceed `R05_EARLY_FILL_GAIN` and is measured against the best idle
+quarter-turn, to account for the turn opportunity lost. The resulting first move
+and the following promise are certified normally. This is a generic motion
+hypothesis, not a map-coordinate rule. Defaultoff; full validation pending.
+
+Full early-fill comparisons now reject this implementation: thresholds 0/1/4
+score 3,369/3,355/3,381 versus 3,395. Without the horizon cutoff, it scores
+3,101 versus 3,197. Every run is valid; the unchanged control reproduces its
+complete trajectory. Safe additional moves do not automatically improve the
+sequence of future decisions. Leave the feature off.
