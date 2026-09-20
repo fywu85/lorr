@@ -61,3 +61,11 @@ versus generic2,888/2,857. Max complete entries994.717/987.554ms, peakRSS5.996/5
 These are startup-only results, not a full-run record. The benchmark now requires
 a unique planner receipt with the expected field hash and matching result track;
 any receipt invalidates a generic run. Full verification is next.
+
+[Independent V54 startup verification](../../results/trick-nms-warehouse-screen-v54/trick-verification.json)
+confirms all10,000initial task assignments exactly match the generic baseline in
+each seed, both planner receipts/result labels are correct, and no learned field
+publication occurs. Source is [abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a).
+Full generic8899271 and TRICK8899272 are running; verification8899274/8899275 is
+held behind them. [Submission records](full-v54-submissions.json). No full score
+or trick frontier has been established.

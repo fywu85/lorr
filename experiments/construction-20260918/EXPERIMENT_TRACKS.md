@@ -6,7 +6,7 @@ map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
 The generic frontier remains144,510single-run tasks and143,941.2over six seeds.
-There is no CGAR trick-track result yet. A trick-assisted score must not replace
+There is no completed full-horizon CGAR trick-track result yet. A trick-assisted score must not replace
 the generic frontier or be reported as a generic algorithm improvement.
 
 For a map-specific implementation or experiment:
@@ -32,4 +32,5 @@ it generic is not a performance claim.
 Both tracks retain complete prescribed-work decisions, explicit timeout failures,
 collision/schedule validity, processRSS below32,000,000,000bytes, and isolated GRID
 allocations. No hidden future tasks are used. The existing generic work continues;
-the competitor guidance ablations will help choose the first trick experiment.
+the first NMS-derived lane experiment has passed startup checks and is undergoing
+full-run evaluation.

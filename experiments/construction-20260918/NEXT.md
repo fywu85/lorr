@@ -549,3 +549,26 @@ startup fix; adopted two-sided receipt validity guard. Raw/archive turn24.
 Generic degree2corridor topology check passes4fixtures:63.13%free cells and66.64%
 edges incident to such chains, all chains2or3nodes. Enough coverage to measure
 traffic/coherence; no claim of field incoherence yet.
+
+## Active handoff: V54 full comparison (2026-09-20 02:59 UTC)
+
+Source+all26production/test hashes exactabbe36b723bb43de2478c07bcb88621d5238a23a,
+committed/pushed. V54startup analysis8899273 completes both cases: exact generic
+initial assignments (all10,000robots), correctunique field receipts/result labels,
+no learned publications. Cold0..80/0..100max994.717/987.554ms; not a fullscore.
+
+- Generic full8899271, raw runs/generic-warehouse-full-v54-20260920, research44.
+- TRICK full8899272, raw runs/trick-nms-warehouse-full-v54-20260920, research50.
+- Both launched02:54:33UTC, seeds0/2 parallel, fourphysicalcores/case, EPYC9354,
+  noquota,1scomplete entries,32decimalGB; expect~03:25–03:30UTC dependingpolicy.
+- Held independent analyses8899274/8899275, frozen helpers in each raw directory.
+  Check results/{generic-warehouse-full-v54,trick-nms-warehouse-full-v54}/
+  trick-verification.json and verification.json. Generic full trajectories must
+  exactlymatchV44reference. The trick has no promoted full result.
+- No live Fable call. Turn24 archived, samepersistent session, nextturn25 /
+  followup-24.md. Full snapshot+newcorridorcoverage were not in turn24payload.
+- Generic next diagnosis: observed traffic/field sign coherence over topology-
+  derived degree2straightchains. Static coverage63.13%cells/66.64%incidentedges;
+  lengths2–3only. Need movement-weighted coverage and disagreement BEFORE pooling.
+- Keep all new map-specific experiments behind --trick WAREHOUSE; [trick] commits
+  and TRICK log entries. No-flag generic frontiers unchanged.
