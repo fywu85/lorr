@@ -26,7 +26,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 19:25 UTC.
+Updated: 2026-09-20 19:51 UTC.
 
 **Best single run on the archived input: 3,794 tasks on32 workers /16 physical cores**,
 or **+19.6% versus matched NMS32 =3,172**. Source
@@ -63,21 +63,24 @@ versus3,636.6 forK8192/B8 (+0.89%, three of five positive pairs). These are
 planner seeds on one input; its highest score remains below3,743.
 [Budget comparison](random05/results/persistent-budget-split-full-v55/summary.json).
 
-**Best confirmed four-core run: 3,709 tasks**, or **+27.3% versus the strongest
+**Best confirmed four-core run: 3,718 tasks**, or **+27.6% versus the strongest
 matched NMS4 repeat =2,914**. Source
-[f81b760](https://github.com/fywu85/lorr/commit/f81b760), plannerseed3,
-first-stepK5120 thenK6144/B8/start2/local0, fourgenerations/E8/P8, futureelite
-blend0.5, cache512, kinematic and cycle masks enabled. Mean820ms, maximum889ms,
-RSS463MB, all2,000steps valid under a strict1s deadline. This reaches the
-colleague's reported27–28% improvement range on this development input.
-[Full evidence](random05/results/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json).
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed3,
+K4608/B12, screen2/keep4, four generations/E8/P8, blend0, cache512,
+kinematic mask enabled. Mean628ms, maximum756ms, RSS474MB; all2,000steps
+valid under a strict1s deadline. Every action, assignment, event and task equals
+the fast32-worker run. The staged search both improves the former3,709 result
+and requires less measured time on four cores. Fresh-input validation below
+still refers to the earlier frozen candidate.
+[Full evidence](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json),
+[trajectory equivalence](random05/results/staged-b12-four-split-full-v65/equivalence.json).
 
-Every action, assignment, event and task equals the earlier3,709 relaxed-deadline
-run; the updated implementation now has a complete strict confirmation. This
-is not an isolated measurement of the cycle-mask speedup: hosts and timing
-conditions differ, and earlier deadline failures remain archived. Fresh-input
-validation still refers to its independently frozen earlier candidate.
-[Trajectory equivalence](random05/results/cycle-mask-strict-candidate-split-full-v61/3709-equivalence.json).
+The former four-core best was3,709, sourcef81b760, firstK5120 thenK6144/B8,
+seed3, future blend0.5. It completed strictly (mean820ms, maximum889ms), with
+the same whole trace as the earlier relaxed-deadline result. Earlier deadline
+failures remain archived; the successful result is not an isolated cycle-mask
+speedup measurement.
+[Previous record](random05/results/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json).
 
 The previous four-core best was3,655 atK5120/B8/blend0. The optimized source
 60c5f9b averaged702ms (maximum826ms), reproducing its original source05559b7
@@ -236,6 +239,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T18:59:34.727026+00:00 | [f81b760](https://github.com/fywu85/lorr/commit/f81b760) | FirstK5120 thenK6144/B8, generations4/E8/P8, seed3, futureblend0.5, cache512, kinematic+cycle masks; **trick** guidance+known horizon | 3709 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +27.3% | [full run](random05/results/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json) |
 | 2026-09-20T19:21:39.535205+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16384/B10, firstK0, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3776 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.0% | [full run](random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k16384-b10-seed3-blend0/summary.json) |
 | 2026-09-20T19:23:22.219359+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3794 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.6% | [full run](random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json) |
+| 2026-09-20T19:47:51.315402+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K4608/B12, screen2/keep4, generations4/E8/P8, seed3, cache512; **trick** guidance+known horizon | 3718 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +27.6% | [full run](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json) |
 
 ## Reference evidence supplied by the user
 

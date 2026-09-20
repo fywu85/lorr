@@ -804,26 +804,11 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     auto& chosen=scratch.chosen;chosen.resize(n);
     auto& reserve=scratch.reserve;reserve.resize(g.cells);
     if(cfg.early_fill)fill_ready_moves(f,offsets,p);
-    for(int i=0;i<n;++i) {
-        moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
-        if(moving[i] && g.next[f.loc[i]][f.dir[i]]!=p[i])
-            throw std::runtime_error("pending move not aligned with heading");
-        bool arrived=assigned[i] && f.stage[i]<int(assigned[i]->goals.size()) &&
-                     p[i]==assigned[i]->goals[f.stage[i]];
-        if(arrived)++f.stage[i];
-        if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
-    }
-    // Stage is fixed throughout this policy step. Resolve the active chain
-    // and its cached row once, rather than for every candidate lookup.
-    auto& active_chain=scratch.active_chain;active_chain.assign(n,nullptr);
-    auto& cost_table=scratch.cost_table;cost_table.assign(n,nullptr);
-    for(int a=0;a<n;++a) {
-        const Chain* chain=assigned[a];
-        if(chain && f.stage[a]<int(chain->goals.size())) {
-            active_chain[a]=chain;
-            cost_table[a]=chain->cached_row(g,f.stage[a]);
-        }
-    }
+    // Every setup value here depends only on this robot. Populate the
+    // active row and ranking in the same pass as its promised move/stage;
+    // neighbor-dependent push costs are evaluated only after the full pass.
+    auto& active_chain=scratch.active_chain;active_chain.resize(n);
+    auto& cost_table=scratch.cost_table;cost_table.resize(n);
     auto cost=[&](int a,int v,int d) {
         if(cost_table[a])return cost_table[a][v*4+d];
         if(active_chain[a])return active_chain[a]->cost(g,f.stage[a],v,d);
@@ -836,8 +821,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     auto& priorities=scratch.priorities;priorities.resize(n);
     auto& candidates=scratch.candidates;candidates.resize(n);
     auto& candidate_count=scratch.candidate_count;candidate_count.resize(n);
-    auto& ranking_slots=scratch.ranking_slots;ranking_slots.assign(n,nullptr);
-    auto& ranking_hits=scratch.ranking_hits;ranking_hits.assign(n,0);
+    auto& ranking_slots=scratch.ranking_slots;ranking_slots.resize(n);
+    auto& ranking_hits=scratch.ranking_hits;ranking_hits.resize(n);
     auto& kinematic_masks=scratch.kinematic_masks;
     if(cfg.kinematic_mask)kinematic_masks.resize(n);
     // Push loss depends on another robot's state, so that optional policy uses
@@ -847,6 +832,18 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
     const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
     for(int i=0;i<n;++i) {
+        moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
+        if(moving[i] && g.next[f.loc[i]][f.dir[i]]!=p[i])
+            throw std::runtime_error("pending move not aligned with heading");
+        const Chain* chain=assigned[i];
+        const bool arrived=chain && f.stage[i]<int(chain->goals.size()) &&
+                           p[i]==chain->goals[f.stage[i]];
+        if(arrived)++f.stage[i];
+        if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
+        const bool active=chain && f.stage[i]<int(chain->goals.size());
+        active_chain[i]=active?chain:nullptr;
+        cost_table[i]=active?chain->cached_row(g,f.stage[i]):nullptr;
+        ranking_slots[i]=nullptr;ranking_hits[i]=0;
         if(cache) {
             uint64_t key=(uint64_t(uint32_t(f.stage[i]))<<32)|uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
             size_t slot=(key*0x9e3779b97f4a7c15ULL)>>cache_shift;
@@ -872,7 +869,6 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         int age=cfg.rollout_age?f.age[i]:age_[i];
         if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
         float priority=age+offsets[i];
-        const bool active=assigned[i] && f.stage[i]<int(assigned[i]->goals.size());
         if(!active)priority-=100000;
         if(cfg.deadends && g.pocket[p[i]] &&
            (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
