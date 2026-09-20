@@ -1,0 +1,91 @@
+{
+  "checked_utc": "2026-09-20T19:33:00.090389+00:00",
+  "probe_sha256": "f56dfd4116cf5b8803859beaaa3b2166621a6efc4b48e75bb3ab0d64de13d1c2",
+  "results": [
+    {
+      "mode": "false",
+      "cpus": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exit": 0,
+      "threads": [
+        {
+          "thread": 0,
+          "cpu": 0,
+          "mask_count": 4,
+          "place": -1,
+          "places": 0
+        },
+        {
+          "thread": 2,
+          "cpu": 3,
+          "mask_count": 4,
+          "place": -1,
+          "places": 0
+        },
+        {
+          "thread": 3,
+          "cpu": 1,
+          "mask_count": 4,
+          "place": -1,
+          "places": 0
+        },
+        {
+          "thread": 1,
+          "cpu": 2,
+          "mask_count": 4,
+          "place": -1,
+          "places": 0
+        }
+      ]
+    },
+    {
+      "mode": "close",
+      "cpus": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exit": 0,
+      "threads": [
+        {
+          "thread": 2,
+          "cpu": 2,
+          "mask_count": 1,
+          "place": 2,
+          "places": 4
+        },
+        {
+          "thread": 0,
+          "cpu": 0,
+          "mask_count": 1,
+          "place": 0,
+          "places": 4
+        },
+        {
+          "thread": 3,
+          "cpu": 3,
+          "mask_count": 1,
+          "place": 3,
+          "places": 4
+        },
+        {
+          "thread": 1,
+          "cpu": 1,
+          "mask_count": 1,
+          "place": 1,
+          "places": 4
+        }
+      ]
+    }
+  ],
+  "runtime_libraries": {
+    "probe": "libgomp.so.1 => /shared/share_mala/fw2449/lorr2024/env/lib/libgomp.so.1",
+    "solver": "libgomp.so.1 => /shared/share_mala/fw2449/lorr2024/env/lib/libgomp.so.1"
+  },
+  "libgomp_sha256": "56940be2a8abcfe70cf62a48aeda600657521e095ca7111ea5fef513ac67d82a"
+}

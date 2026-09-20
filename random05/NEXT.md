@@ -1,10 +1,10 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 19:14 UTC.
+Updated: 2026-09-20 19:41 UTC.
 
 The goal remains ACTIVE. The user wants continued throughput improvement until
 our evening check-in; waiting time is secondary. This turn made clear progress:
-strict four-core3709 (+27.3% vs NMS) and overall3755 (+18.4%), plus a new general
+strict four-core3709 (+27.3% vs NMS) and overall3794 (+19.6%), plus a new general
 search method, full controls, diagnostics and audits. This is not blocked.
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`. Warehouse work
 shares main; leave other files, staged changes and GRID jobs alone. No subagent
@@ -23,16 +23,17 @@ delegation. Public fywu85/lorr; pushing is authorized. Do not change visibility.
   That older run is separate; its mean923/max1495ms was never a strict frontier.
   This reaches the colleague's reported gain range on the development input;
   it is not yet fresh-input validation of this selected configuration.
-- Overall /32 workers (16 physical cores, SMT2): **3755**, source **5f81613**,
-  build-v65. K8192/B10, screen2/keep4, generations4/E8/P8, seed3, blend0,
-  cache64, kinematic mask1, cycle mask0. Mean257.275ms, max353.212ms,
-  RSS517704KiB (530MB). **+18.4% vs matched NMS32=3172**.
-  Finished18:59:20.474586 UTC. Evidence:
-  results/staged-continuations-32-split-full-v65/
-  32-screen2-keep4-k8192-b10-seed3-blend0/summary.json.
-- Previous records remain logged: four3655, overall3743. Current best*.json
-  selects3709/3755. Progress audit PASSED67 rows against source/full traces.
-  WAITING_PROGRESS.md and the matched waiting report include both new records.
+- Overall /32 workers (16 physical cores, SMT2): **3794**, source **5f81613**,
+  build-v65. First8000 thenK16320/B14, screen2/keep4, generations4/E8/P8,
+  seed3, blend0, cache64, kinematic mask1, cycle mask0. Mean473.240ms,
+  max525.342ms, RSS564328KiB (578MB). **+19.6% vs matched NMS32=3172**.
+  Finished19:23:22.219359 UTC. Evidence:
+  results/staged-initial-budget-32-split-full-v65/
+  32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json.
+- Intermediate records this turn are retained:3755 atK8192/B10/seed3,
+  mean257/max353ms;3776 atK16384/B10/seed3, mean567/max768ms, finished
+  19:21:39.535205 UTC. All source5f81613. Best manifests select3709/3794.
+  Progress audit PASSED69 frontier rows. Waiting history/manifest/report updated.
 
 All canonical frontiers: 2000 steps, strict1s,30s preprocessing,32 decimal GB
 address-space cap, zero errors/timeouts, EPYC9354, verified GRID affinity.
@@ -83,50 +84,78 @@ This supports testing, not a throughput guarantee or independent-input claim.
 
 Unchanged source65 control reproduces every field of3743, mean220/max326ms.
 Initial staged32 results (all full strict): K5120/B14/blend0/.5=3670/3574;
-K5120/B10/blend0=3635; K8192/B10/seed0/blend0/.5=3730/3572;
-K8192/B10/seed3/blend0=3755. Compared with ordinaryK8192/B8, seed0 loses13,
-seed3 gains50. Seed2 now3611 vs previous3730 (-119). Finish seeds1/4 before
-reporting a five-seed mean. Original baseline seeds0–4:
-3743/3492/3730/3705/3513, mean3636.6.
+K5120/B10/blend0=3635. K8192/B10/blend0 planner seeds0–4:
+3730/3642/3611/3755/3715, mean3690.6, versus ordinaryK8192/B8
+3743/3492/3730/3705/3513, mean3636.6 (+1.485%,3/5 positive pairs).
+This is one development input, not independent task/start validation.
+Paired evidence: results/staged-seeds-and-budget-32-split-full-v65/paired-seeds.json.
+
+Direct four-coreK5120/B14 controls score3670/3574, means693/690ms,
+maxima825/825ms, exactly matching fast32 traces. Unchanged control3655 also
+matches its old trace, mean672/max810ms. No throughput promotion over3709.
+Four-corefirst5120 thenK6000/B14 andK6144/B10 score3664/3654, mean818/848ms,
+max891/912ms. Both EXACT fast32 counterparts; neither improves3709.
+Evidence in staged-continuations-four and staged-larger-four-split-full-v65.
+
+Larger32 work: fullK16384/B10/seed0 andK16320/B14/seed3 fail atstep0=1093.3/
+1133.0ms, preserved. New startup budgets8192/8000 complete3667/3794.
+FullK16384/B10/seed3 completes3776. Explicit startup counts can change the
+trajectory; they are new configurations, not silent retries or clock fallbacks.
+
+Fixed1024-root/256-finalist comparisons: s2/B12/K4608=3718;
+s2/B14/K5120=3670; s2/B16/K5632=3695; s4/B16/K7168=3664. Allseed3.
+First4608 thenB12/K5760 scores3770, versus3660 atK6120. Direct four-core
+confirmations are pending; fast32 results do not establish four-core scores.
 
 ## GRID work to collect next
 
-Source65 throughout. Inspect completion/summary, not only qstat. Full raw traces
-are runs/random05/BATCH/CASE/CASE/result.json; compact archives mirror BATCH/CASE.
+All source5f81613/build-v65. Full2000/strict1s. Inspect completion/summary,
+not only qstat. Never assign throughput to a failed or partial run.
 
-- staged-continuations-four-split-full-v65, jobs8900464–66, almost complete:
-  control3655; screen2/keep4/K5120/B14/seed3 blend0/.5 should reproduce3670/3574.
-  Verify all six trace fields against fast32 counterparts. Both initial steps
-  were about827ms; later samples about700ms. Strict1s.
-- staged-seeds-and-budget-32-split-full-v65, jobs8900475–82:
-  seeds1/2/4 atK8192/B10 (seed2 COMPLETE3611); K16384/B10 seeds0/3;
-  K16320/B14 seed3; first5120 thenK6000/B14 orK6144/B10.
-  K6000/B14 COMPLETE3664 (mean192/max255ms), below3670 atK5120/B14.
-  Seed0 K16384 and seed3 K16320 FAILED atstep0=1093.3/1133.0ms; preserve.
-  K16384/B10/seed3 continues, later lookahead sample about508ms.
-- staged-larger-four-split-full-v65, jobs8900483–84:
-  first5120 thenK6000/B14 orK6144/B10. Direct four-core strict confirmations.
-- staged-initial-budget-32-split-full-v65, jobs8900486–87:
-  NEW explicit startup budgets for failed larger searches: K16384/B10/seed0
-  first8192, andK16320/B14/seed3 first8000. Different declared algorithms; not
-  silent retries. Regular budgets unchanged; preserve earlier failures.
-- staged-fixed-roots-32-split-full-v65, jobs8900493–95, just launched:
-  keep1024 roots/256 finalists: s2/B12/K4608, s2/B16/K5632, s4/B16/K7168.
-  All seed3, g4/E8/P8/blend0. Existing s2/B14/K5120 is3670. Ordinary fullB16
-  with same1024 roots previously3741 atK16384; pruning can alter later parents,
-  so exact trajectory equivalence is not assumed.
-- staged-b16-four-split-full-v65, job8900496: direct strict four-core
-  s2/B16/K5632/roots1024/seed3. First-step budget unchanged; nominal first-step
-  room suggested by the827ms K5120/B14 profile. Let actual result decide.
+- staged-b16-four-split-full-v65, job8900496, nearing completion:
+  s2/B16/K5632/roots1024/seed3. Expected3695 from fast32; verify whole trace.
+- staged-b12-four-split-full-v65, job8900514, started about19:26 UTC:
+  s2/B12/K4608/roots1024/seed3. Expected3718; promote only after full4-core
+  deadline and trace checks. Cache512 versus64 on fast32 should be exact.
+- staged-next-budget-32-split-full-v65, jobs8900515–17:
+  first4608/K5760/B12 COMPLETE3770; K6120 COMPLETE3660.
+  first8000/K24000/B14/seed3 STILL RUNNING, attempts more work than3794.
+- worker-affinity-four-full-v65, job8900535, started about19:35 UTC:
+  TWO cases in ONE allocation, each4 physical cores, disjoint CPU masks.
+  first4608/K5760/B12 (fast32=3770), envOMP_PROC_BIND false vs close,
+  OMP_PLACES threads, OMP_DISPLAY_ENV/AFFINITY true in both. This is a direct
+  four-core confirmation plus a worker-placement comparison. Whole traces
+  must match fast32 and each other. Job reserves8 cores total, each solver4.
+- worker-affinity-32-full-v65, job8900536, about19:35 UTC:
+  TWO cases, each16 physical cores/32 workers, disjoint masks, same host.
+  Repeats3794 with the two binding policies above. Job reserves32 cores total.
+  Do not use split_grid collect on these TWO unsplit affinity batches; native
+  summaries are directly BATCH/summary.json and raw traces BATCH/CASE/result.json.
 
-Completed cycle controls: sourcef81b76032mask0/1 both EXACT3743,
-means305/279ms on different hosts. Cycle phase samples do not establish a gain.
-Four mask0 control EXACT3655, mean669.6/max792.9ms; mask1 control failedstep0
-1277.9ms. No default-on cycle-mask claim. Standalone3709 configuration did pass.
+Binding probe: results/worker-affinity-probe-20260920/{probe.cpp,audit.json}.
+Uses same libgomp as solver; confirms close binds four workers to four distinct
+single-CPU masks within taskset allocation. Running paired-job affinity logs
+also checked: every observed mask inside its case's allocated CPUs; close has
+one unique singleton per worker. Snapshots in each result batch's early-affinity-
+audit.json. Recheck full logs after completion. Early timing is mixed; no
+speedup claimed. OMP_DISPLAY_AFFINITY emits again for fresh teams each step,
+so both controls retain the same diagnostic overhead. GNU docs linked in RESEARCH.
 
-Runner now produces terminal invalid summaries for CPU model/binding/quota
-preflight rejection, without launching a solver. Focused tests all3 cases pass.
-This avoids confusing missing summaries with jobs still running.
+All earlier staged/diagnostic/cycle batches complete and archived. Cycle32mask
+controls exactly3743, different-host means305/279ms, no isolated speedup claim.
+Four mask0 control3655, mean670/max793ms; mask1 control failedstep0=1278ms.
+The standalone3709 configuration did complete strictly. Preserve all failures.
+Runner preflight failures now produce terminal invalid summaries without a
+solver launch; three-condition regression test passes. Source64 failed tests
+were corrected in65 before any throughput run.
+
+Possible next steps after the pending results: freeze a new independent-input
+validation for the best confirmed four-core candidate; consider planner seeds
+for3794 (not yet checked). Earlier start3/4 continuations lost52/112 tasks at
+K2048/generation1; do not blindly repeat that setting. A changed method might
+justify a specific compute/quality comparison, but none is queued. CPU setup
+still consumes significant sampled time; exact loop fusion or carefully keyed
+cross-step ranking caches are unimplemented ideas, not measured improvements.
 
 ## Fresh validation and secondary metrics
 
@@ -135,11 +164,11 @@ K5120/B8/g4/E1/P1/seed3 (development3637). Input50005:3698 vsNMS2926/2900;
 50006:3619 vs2906/2831. Aggregate+25.46% vs stronger repeats, all6 valid.
 No later best replaces that candidate. Inputs50001–50006 stay out of tuning.
 A future V4 needs a new frozen candidate/protocol and new inputs (e.g.50007/8),
-after these pending improvements settle. Do not claim the selected3709 or3755
+after these pending improvements settle. Do not claim the selected3709 or3794
 has fresh validation yet. Colleague absolute counts use private inputs.
 
-Current max completed latency: four3709=1947 steps vsNMS1997;32-worker3755=1919
-vsNMS1976. Initial unfinished135/130 vsNMS219/206; unopened98/93 vs102/91.
+Current max completed latency: four3709=1947 steps vsNMS1997;32-worker3794=1950
+vsNMS1976. Initial unfinished135/133 vsNMS219/206; unopened98/98 vs102/91.
 All have initial orders unfinished at2000, so eventual max unknown, at least2000.
 Completed-only means are censored. Throughput stays the selection criterion.
 Matched report: results/task-waiting-frontiers-20260920T1612/REPORT.md.

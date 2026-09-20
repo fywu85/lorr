@@ -1,0 +1,53 @@
+{
+  "checked_utc": "2026-09-20T19:44:08.339677+00:00",
+  "snapshot_only": true,
+  "full_run_must_be_rechecked": true,
+  "runs": [
+    {
+      "name": "four-k5760-b12-first4608-omp-bind-close",
+      "allocated_cpus": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "bind": "close",
+      "observed_records": 2332,
+      "distinct_masks": [
+        [
+          48
+        ],
+        [
+          49
+        ],
+        [
+          50
+        ],
+        [
+          51
+        ]
+      ],
+      "all_observed_masks_within_allocation": true
+    },
+    {
+      "name": "four-k5760-b12-first4608-omp-bind-false",
+      "allocated_cpus": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "bind": "false",
+      "observed_records": 2332,
+      "distinct_masks": [
+        [
+          40,
+          41,
+          42,
+          43
+        ]
+      ],
+      "all_observed_masks_within_allocation": true
+    }
+  ]
+}

@@ -631,3 +631,40 @@ AlluseE8/P8/gen4/seed3/blend0. The ordinary fullB16/1024-root reference scored
 identical trajectories are not assumed. The s2/B16/K5632 option also receives
 a direct four-core strict1s run: the currentK5120/B14 first-step profile is
 approximately827ms, leaving plausible room for this measured work increase.
+
+The fixed1024-root comparisons score3718 at s2/B12/K4608,3695 at s2/B16/K5632,
+and3664 at s4/B16/K7168. More continuation precision is not monotonic in actual
+throughput. The B12/K4608 option has a direct four-core strict run underway.
+First4608 thenB12/K5760 scores3770 on32workers, whileK6120 scores3660. Confirm
+3770 on four cores with a paired worker-affinity experiment. These are new
+configurations, not measurements of four-core throughput until confirmed.
+
+Resource allocation already pins each process to its assigned CPUs. Separately
+test OpenMP worker binding (false versus close, places=threads), keeping the
+process allocation and algorithm identical. GNU documentation defines these
+[worker-binding policies](https://gcc.gnu.org/onlinedocs/libgomp/OMP_005fPROC_005fBIND.html)
+and [hardware-thread places](https://gcc.gnu.org/onlinedocs/libgomp/OMP_005fPLACES.html).
+A local probe using the solver's same libgomp verifies all workers remain inside
+a four-CPU process mask; close gives four distinct singleton masks. This checks
+mechanism, not a speedup. Full paired runs on one GRID host will compare exact
+traces, latency and usage: four cores with the3770 candidate, and32workers with
+the3794 record. Both retain explicit runtime-affinity diagnostics. Do not infer
+a benefit until complete; inspect actual logged places against each case mask.
+
+Staged K8192/B10 five-seed results are3730/3642/3611/3755/3715, mean3690.6,
+versus ordinaryK8192/B8 mean3636.6 (+1.485%,3/5positive). This is one input,
+not independent-input validation. The direct four-coreK5120/B14 controls
+reproduce3670/3574 exactly; the unmodified control reproduces3655. All strict.
+
+New32-worker records:3776 atK16384/B10/seed3 (567ms mean,768ms max), then3794
+atfirst8000/K16320/B14/seed3 (473ms mean,525ms max,578MB RSS), allscreen2/keep4,
+g4/E8/P8/blend0. Both are source5f81613 and fully audited. The larger seed0
+configuration withfirst8192 scores3667, so more budget is not uniformly better.
+The new3794 record is+19.6% versus matchedNMS32; there is no five-seed or fresh
+validation for it yet. Testfirst8000/K24000/B14 within remaining32-worker time.
+
+Direct four-corefirst5120 thenK6000/B14 andK6144/B10 finish3664/3654, means818/
+848ms, maxima891/912ms, exactly matching fast32 counterparts. Both lose to3709.
+Worker-affinity diagnostics on the running paired jobs verify every observed
+worker mask stays within its individual case's allocated CPUs; close uses
+distinct singleton masks. Early timing is mixed; wait for full results.

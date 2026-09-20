@@ -26,22 +26,28 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 19:04 UTC.
+Updated: 2026-09-20 19:25 UTC.
 
-**Best single run on the archived input: 3,755 tasks on32 workers /16 physical cores**,
-or **+18.4% versus matched NMS32 =3,172**. Source
+**Best single run on the archived input: 3,794 tasks on32 workers /16 physical cores**,
+or **+19.6% versus matched NMS32 =3,172**. Source
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613), plannerseed3,
-K8192/B10, two-stage screening with2initial futures and one-quarter retained,
-fourgenerations/E8/P8. No future elite blending. The entire fixed work budget
-finishes before selecting among fully evaluated finalists. Mean257ms,
-maximum353ms, RSS530MB; all2,000steps valid. This is a selected best;
-remaining planner-seed checks are underway.
-[Full evidence](random05/results/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/summary.json).
+firstK8000 thenK16320/B14, screen2/keep4, fourgenerations/E8/P8, blend0.
+Mean473ms, maximum525ms, RSS578MB; all2,000steps valid under strict1s.
+This is a selected best on the development input, not a fresh-input comparison.
+[Full evidence](random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json).
+
+The same source first reached3,755 atK8192/B10, then3,776 atK16384/B10.
+Both intermediate records remain in the timestamped history. The five-seed
+K8192/B10 check scores3,730/3,642/3,611/3,755/3,715, mean3,690.6 versus3,636.6
+for ordinaryK8192/B8 (+1.5%, three of five positive pairs). These are planner
+seeds on one input. The larger3,794 configuration has no five-seed check yet.
+[Paired evidence](random05/results/staged-seeds-and-budget-32-split-full-v65/paired-seeds.json).
 
 The previous best was3,743 with ordinaryK8192/B8 on plannerseed0,
 source[d6a3e0f](https://github.com/fywu85/lorr/commit/d6a3e0f). The staged method
 scores3,730 onseed0 (-13), and3,755 onseed3 (+50 versus the oldseed3=3,705).
-Two pairs do not establish a replicated improvement.
+The completed five-pair check above supports a modest mean improvement on this
+input; it does not establish improvement across independent inputs.
 
 For the previous ordinaryK8192/B8 configuration, the five-seed mean is
 3,636.6; blending future offsets with retained vectors at weight0.5 averages
@@ -142,10 +148,10 @@ are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 
 **Waiting-time audit of the current throughput records:** the longest completed
 order takes1,947 steps for our four-core run versus1,997 forNMS; the32-worker
-pair is1,919 versus1,976. Both solvers still have step-zero orders unfinished at
+pair is1,950 versus1,976. Both solvers still have step-zero orders unfinished at
 step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-135 versus219 on fourcores,130 versus206 on32workers, out of1,200 initially
-revealed. Initial orders never opened:98 versus102 and93 versus91 respectively.
+135 versus219 on fourcores,133 versus206 on32workers, out of1,200 initially
+revealed. Initial orders never opened:98 versus102 and98 versus91 respectively.
 Higher throughput does not establish a waiting-time bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [latency history for every frontier](random05/WAITING_PROGRESS.md).
@@ -228,6 +234,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T18:07:16.977439+00:00 | [60c5f9b](https://github.com/fywu85/lorr/commit/60c5f9b) | Same3655 trajectory; cache512/kinematic mask; K5120/B8/start2/local0, generations4/elites8/persist8; seed3; `--trick RANDOM-05` | 3655 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.4% | [Full evidence](random05/results/kinematic-mask-split-full-v60/k5120-persist8-kinematic-mask1/summary.json) |
 | 2026-09-20T18:59:20.474586+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Staged continuations: K8192/B10/s2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3755 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +18.4% | [full run](random05/results/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/summary.json) |
 | 2026-09-20T18:59:34.727026+00:00 | [f81b760](https://github.com/fywu85/lorr/commit/f81b760) | FirstK5120 thenK6144/B8, generations4/E8/P8, seed3, futureblend0.5, cache512, kinematic+cycle masks; **trick** guidance+known horizon | 3709 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +27.3% | [full run](random05/results/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json) |
+| 2026-09-20T19:21:39.535205+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16384/B10, firstK0, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3776 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.0% | [full run](random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k16384-b10-seed3-blend0/summary.json) |
+| 2026-09-20T19:23:22.219359+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3794 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.6% | [full run](random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json) |
 
 ## Reference evidence supplied by the user
 

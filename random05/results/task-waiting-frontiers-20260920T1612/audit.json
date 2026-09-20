@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-20T19:05:16.590571+00:00",
+  "created_utc": "2026-09-20T19:26:45.443966+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "2be79f9fe58b4dbe838b3890af18b6bc22578cd620d1380ff32d5f9a7190e171",
+  "manifest_sha256": "5fafe15707e0a1594a6e469aedee148fab016438cf0dabbf9ebe7698ea6a774d",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -652,6 +652,98 @@
       "initial_still_unfinished": 130,
       "initial_still_unopened": 93,
       "initial_started_unfinished": 37,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3776": {
+      "result": "runs/random05/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k16384-b10-seed3-blend0/32-screen2-keep4-k16384-b10-seed3-blend0/result.json",
+      "result_sha256": "fd7fb97d1e333a493b7dd766542774da3d4ef98d1e084b40d3c0cff1e8387b80",
+      "horizon_steps": 2000,
+      "tasks_finished": 3776,
+      "tasks_revealed": 4976,
+      "completed_latency": {
+        "count": 3776,
+        "mean_steps": 418.22669491525426,
+        "p50_steps": 347,
+        "p95_steps": 1036,
+        "p99_steps": 1645
+      },
+      "maximum_release_to_completion": {
+        "steps": 1943,
+        "task_id": 401,
+        "released_at": 0,
+        "observed_at": 1943
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1947,
+        "task_id": 603,
+        "released_at": 0,
+        "observed_at": 1947
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 486,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 642.8166666666667,
+      "initial_still_unfinished": 130,
+      "initial_still_unopened": 94,
+      "initial_started_unfinished": 36,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3794": {
+      "result": "runs/random05/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/result.json",
+      "result_sha256": "a07bde1993f04202a6540db0d6b3f2397cbdb0b2ff22f8c72fff19e97cfd8540",
+      "horizon_steps": 2000,
+      "tasks_finished": 3794,
+      "tasks_revealed": 4994,
+      "completed_latency": {
+        "count": 3794,
+        "mean_steps": 415.99261992619927,
+        "p50_steps": 339,
+        "p95_steps": 1057,
+        "p99_steps": 1594
+      },
+      "maximum_release_to_completion": {
+        "steps": 1950,
+        "task_id": 1223,
+        "released_at": 34,
+        "observed_at": 1984
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1952,
+        "task_id": 92,
+        "released_at": 0,
+        "observed_at": 1952
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 512,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 644.9583333333334,
+      "initial_still_unfinished": 133,
+      "initial_still_unopened": 98,
+      "initial_started_unfinished": 35,
       "event_accounting_valid": true
     }
   }
