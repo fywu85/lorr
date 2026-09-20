@@ -906,7 +906,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("unopened pickup matching requires generic temporal learned pickup flow, boolean setting and no other rematching, chain pricing, remaining-flow score or guides");
     reassign_match_ = reassign_match != 0;
     if (reassign_match_)
-        std::printf("[cgar-unopened-match] enabled=1 groups=4 group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0\n");
+        std::printf("[cgar-unopened-match] enabled=1 groups=4 group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident\n");
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
@@ -1919,10 +1919,10 @@ void Cgar::log_summary() {
         stats_.pool_nodes, stats_.pool_pairs, stats_.pool_exchanges, stats_.pool_pickup_saving,
         stats_.pool_chain_delta, stats_.pool_total_saving, stats_.pool_missing_pickup, stats_.pool_missing_chain,
         stats_.pool_short_pickup, stats_.pool_primary_protected, stats_.pool_recovery_protected, stats_.pool_fair_protected);
-    std::printf("[cgar-unopened-match] t=%d enabled=%d passes=%lld eligible=%lld resident=%lld missing=%lld unreachable=%lld groups=%lld selected=%lld nodes=%lld matrix_entries=%lld cycles=%lld accepted_cycles=%lld moved=%lld saving=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld\n",
+    std::printf("[cgar-unopened-match] t=%d enabled=%d passes=%lld eligible=%lld resident=%lld missing=%lld unreachable=%lld groups=%lld selected=%lld anchors=%lld full_groups=%lld nodes=%lld matrix_entries=%lld cycles=%lld accepted_cycles=%lld moved=%lld saving=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld\n",
         env_->curr_timestep, reassign_match_, stats_.match_passes, stats_.match_eligible, stats_.match_resident,
         stats_.match_missing, stats_.match_unreachable, stats_.match_groups, stats_.match_selected,
-        stats_.match_nodes, stats_.match_matrix_entries, stats_.match_cycles, stats_.match_accepted_cycles,
+        stats_.match_anchors, stats_.match_full_groups, stats_.match_nodes, stats_.match_matrix_entries, stats_.match_cycles, stats_.match_accepted_cycles,
         stats_.match_moved, stats_.match_saving, stats_.match_primary_protected,
         stats_.match_recovery_protected, stats_.match_fair_protected, stats_.match_budget_protected);
     std::fflush(stdout);
@@ -2244,7 +2244,7 @@ void Cgar::exchange_unopened_with_pool(std::vector<int>& proposed) {
 // touched. Every group is analysed completely before any accepted cycle is
 // committed, so a deadline can only fail the whole entry.
 void Cgar::match_unopened(std::vector<int>& proposed) {
-    constexpr int interval = 10, holder_limit = 128, group_limit = 4;
+    constexpr int interval = 10, anchor_limit = 128, group_limit = 4;
     constexpr int group_size = 32, node_limit = 2048;
     const int now = env_->curr_timestep;
     if (!reassign_match_ || now % interval != 0) return;
@@ -2298,20 +2298,21 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         return;
     }
 
-    // Rotate a fixed quota, then group holders by current physical location.
-    // The index is rebuilt from env_->curr_states every pass; no planner
-    // occupancy or map-specific coordinate partition is used.
+    // Rotate a bounded list of anchors, then collect nearby holders from ALL
+    // resident candidates. Prefiltering that spatial pool to the anchor anchors
+    // scatters it across a large map and leaves local groups mostly empty.
+    // Four groups of at most32 still cap matrix participants at128 per pass.
+    // Rebuild the index from current states, without touching planner occupancy.
     const size_t start = match_cursor_ % resident.size();
-    const size_t quota_count = std::min<size_t>(holder_limit, resident.size());
-    match_cursor_ += quota_count;
-    std::vector<int> quota;
-    quota.reserve(quota_count);
-    for (size_t k = 0; k < quota_count; ++k)
-        quota.push_back(resident[(start + k) % resident.size()]);
-    stats_.match_selected += quota.size();
+    const size_t anchor_count = std::min<size_t>(anchor_limit, resident.size());
+    match_cursor_ += anchor_count;
+    std::vector<int> anchors;
+    anchors.reserve(anchor_count);
+    for (size_t k = 0; k < anchor_count; ++k)
+        anchors.push_back(resident[(start + k) % resident.size()]);
 
     std::vector<int> head(cert_.free.size(), -1), link(n_, -1);
-    for (auto it = quota.rbegin(); it != quota.rend(); ++it) {
+    for (auto it = resident.rbegin(); it != resident.rend(); ++it) {
         const int robot = *it;
         const int cell = env_->curr_states[robot].location;
         if (cell >= 0 && cell < static_cast<int>(head.size())) {
@@ -2333,7 +2334,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     for (int group_number = 0; group_number < group_limit; ++group_number) {
         check_deadline(deadline_, "unopened_match_group_start");
         int anchor = -1;
-        for (int robot : quota) {
+        for (int robot : anchors) {
             if (!anchor_seen[robot] && !used[robot]) {
                 anchor = robot;
                 anchor_seen[robot] = 1;
@@ -2341,6 +2342,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
             }
         }
         if (anchor < 0) break;
+        ++stats_.match_anchors;
 
         queue.clear();
         const int start_cell = env_->curr_states[anchor].location;
@@ -2372,6 +2374,8 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         }
 
         ++stats_.match_groups;
+        stats_.match_selected += group.size();
+        stats_.match_full_groups += group.size() == group_size;
         const int n = static_cast<int>(group.size());
         std::vector<int> costs(static_cast<size_t>(n) * n, kInf);
         for (int row = 0; row < n; ++row) {

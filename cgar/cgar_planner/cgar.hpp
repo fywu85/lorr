@@ -308,6 +308,7 @@ struct Stats {
     long long match_passes = 0, match_eligible = 0, match_resident = 0, match_missing = 0, match_unreachable = 0;
     long long match_groups = 0, match_selected = 0, match_nodes = 0, match_matrix_entries = 0;
     long long match_cycles = 0, match_accepted_cycles = 0, match_moved = 0, match_saving = 0;
+    long long match_anchors = 0, match_full_groups = 0;
     long long match_primary_protected = 0, match_recovery_protected = 0, match_fair_protected = 0, match_budget_protected = 0;
 };
 

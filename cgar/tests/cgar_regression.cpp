@@ -603,11 +603,44 @@ void unopened_matching_production() {
  if(proposed!=std::vector<int>({0,2,1})||c.stats().match_passes!=1||c.stats().match_groups!=1||
     c.stats().match_accepted_cycles!=1||c.stats().match_moved!=2||c.stats().match_saving<8)
   throw std::runtime_error("resident unopened matching did not commit the bounded beneficial cycle");
+ if(e.curr_task_schedule!=std::vector<int>({0,1,2}))
+  throw std::runtime_error("unopened matching changed the simulator schedule");
+ for(int i=0;i<3;++i)if(e.task_pool.at(i).agent_assigned!=i||e.task_pool.at(i).t_revealed!=-5||e.task_pool.at(i).idx_next_loc!=0)
+  throw std::runtime_error("unopened matching changed task metadata");
+ // Holder129 is outside the first128 eligible anchor IDs but close to holder1.
+ // Sampling the spatial pool before grouping loses this useful two-cycle.
+ SharedEnvironment wide;wide.rows=128;wide.cols=128;wide.map.assign(wide.rows*wide.cols,0);
+ wide.num_of_agents=130;wide.goal_locations.resize(130);wide.curr_task_schedule.resize(130);
+ for(int i=0;i<130;++i){
+  int cell=(100+(i/16))*wide.cols+90+2*(i%16), goal=cell-30*wide.cols;
+  if(i==0){cell=90*wide.cols+50;goal=50*wide.cols+50;}
+  if(i==1){cell=3*wide.cols+3;goal=3*wide.cols+16;}
+  if(i==129){cell=3*wide.cols+15;goal=3*wide.cols+2;}
+  wide.curr_states.emplace_back(cell,0,i==129?2:0);wide.curr_task_schedule[i]=i;
+  wide.goal_locations[i]={{goal,0}};Task task;task.task_id=i;task.t_revealed=-5;
+  task.agent_assigned=i;task.locations={goal};wide.task_pool.emplace(i,task);
+ }
+ setenv("CGAR_TURN_BUILD_LIMIT","256",1);
+ Cgar local;local.initialize(&wide,10000);
+ for(int t=0;t<2;++t){wide.curr_timestep=t;local.plan(&wide,10000,actions);
+  auto next=step(wide,wide.curr_states,actions);
+  if(next.empty())throw std::runtime_error("all-resident matching fixture planner collided");wide.curr_states=next;}
+ wide.curr_timestep=10;local.schedule(&wide,10000,proposed);
+ if(proposed[1]!=129||proposed[129]!=1||local.stats().match_resident<=128||
+    local.stats().match_selected>128||local.stats().match_groups>4||local.stats().match_nodes>8192||
+    local.stats().match_full_groups<1||local.stats().match_anchors>4)
+  throw std::runtime_error("local matching missed the non-anchor holder or exceeded fixed work");
+ if(std::set<int>(proposed.begin(),proposed.end()).size()!=130)
+  throw std::runtime_error("all-resident matching lost the task bijection");
+ for(int i=0;i<130;++i)if(wide.curr_task_schedule[i]!=i||wide.task_pool.at(i).agent_assigned!=i||
+    wide.task_pool.at(i).t_revealed!=-5||wide.task_pool.at(i).idx_next_loc!=0)
+  throw std::runtime_error("all-resident matching changed simulator metadata");
+ unsetenv("CGAR_TURN_BUILD_LIMIT");
  for(const char* key:{"CGAR_REASSIGN_MATCH","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE",
                       "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
                       "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
                       "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
- std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1\n";
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1\n";
 }
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);
