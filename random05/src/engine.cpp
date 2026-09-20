@@ -35,6 +35,7 @@ Config Config::environment(const SharedEnvironment& env) {
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
     c.generations=integer("R05_GENERATIONS",1);c.elites=integer("R05_ELITES",1);
+    c.persist_elites=integer("R05_PERSIST_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
@@ -50,7 +51,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.elites<1 ||
-       c.elites>c.futures/c.continuations || c.continuation_start<1 ||
+       c.elites>c.futures/c.continuations || c.persist_elites<1 ||
+       c.persist_elites>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
        !std::isfinite(c.future_mutation) || c.future_mutation<0 || c.future_mutation>1)
         throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
@@ -534,6 +536,7 @@ void Engine::initialize(SharedEnvironment* env) {
     if(cfg.operation_depth) {operation_model_=std::make_unique<OperationModel>(*graph);operations_.assign(n,OperationModel::waiting);}
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
     last_actions_.assign(n,W);
+    past_offsets_.clear();
     best_offsets_.resize(n);
     for(float& x:best_offsets_)x=std::uniform_real_distribution<float>(0,1)(rng_);
     std::fprintf(stderr,"R05_INIT agents=%d cells=%d K=%d depth=%d threads=%d guidance=%s seed=%d table_mb=%.1f\n",
@@ -1163,6 +1166,27 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
     return result;
 }
 
+
+// Select distinct evaluated vectors with the chosen incumbent first. Reused
+// across generations and between real steps; scores never cross a real step.
+static std::vector<int> elite_indices(const std::vector<Rollout>& results,int used,
+                                      int best,int limit,bool accept_equal) {
+    std::vector<int> parents{best};
+    if(limit==1)return parents;
+    std::vector<int> ranked(used);std::iota(ranked.begin(),ranked.end(),0);
+    std::sort(ranked.begin(),ranked.end(),[&](int a,int b) {
+        if(results[a].score!=results[b].score)return results[a].score>results[b].score;
+        return accept_equal?a>b:a<b;
+    });
+    for(int candidate:ranked) {
+        bool duplicate=false;
+        for(int old:parents)if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
+        if(!duplicate)parents.push_back(candidate);
+        if(int(parents.size())>=limit)break;
+    }
+    return parents;
+}
+
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
     // Invalidate between real steps, including task swaps/configuration changes.
     ++ranking_epoch_;
@@ -1289,20 +1313,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             // Retain several distinct evaluated priority vectors instead of
             // making every later mutation descend from one incumbent. Keeping
             // the incumbent first preserves the same unmodified anchor.
-            parents.push_back(best);
-            std::vector<int> ranked(begin);std::iota(ranked.begin(),ranked.end(),0);
-            std::sort(ranked.begin(),ranked.end(),[&](int a,int b) {
-                if(results[a].score!=results[b].score)return results[a].score>results[b].score;
-                return cfg.accept_equal?a>b:a<b;
-            });
-            for(int candidate:ranked) {
-                bool duplicate=false;
-                for(int old:parents)if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
-                if(!duplicate)parents.push_back(candidate);
-                if(int(parents.size())>=cfg.elites)break;
-            }
+            parents=elite_indices(results,begin,best,cfg.elites,cfg.accept_equal);
         }
-        int exploitation=0;
+        int exploitation=0,history_children=0;
         for(int k=begin;k<end;++k) {
             int parent=best;
             if(!parents.empty()) {
@@ -1312,7 +1325,16 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 parent=parents[global?0:exploitation++%parents.size()];
             }
             offsets[k]=generation?results[parent].offsets:best_offsets_;
-            if(k>begin) {
+            bool history_anchor=false;
+            if(!generation && cfg.persist_elites>1 && !past_offsets_.empty() &&
+               !(k>begin && k%4==0)) {
+                // Try each retained vector unchanged once, then mutate parents
+                // in rotation. Every fourth fully random candidate is retained.
+                // All candidates are evaluated again from the current frame.
+                history_anchor=history_children<int(past_offsets_.size());
+                offsets[k]=past_offsets_[history_children++%past_offsets_.size()];
+            }
+            if(k>begin && !history_anchor) {
                 // Keep one quarter of the portfolio global. Other futures can
                 // change one spatial neighborhood while preserving its context.
                 int center=-1;
@@ -1354,6 +1376,11 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
+    }
+    if(cfg.persist_elites>1) {
+        past_offsets_.clear();
+        for(int parent:elite_indices(results,roots,best,cfg.persist_elites,cfg.accept_equal))
+            past_offsets_.push_back(results[parent].offsets);
     }
     auto& selected=results[best];
     certify(g,frame.loc,selected.first.loc);

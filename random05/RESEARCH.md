@@ -319,3 +319,14 @@ must be recomputed from current poses, assignments, ages and committed moves.
 Keep the same fixed rollout budget, the selected incumbent as the first anchor,
 and globally randomized candidates. A carry count of one must preserve the
 existing full trajectory. No map-specific rule or fairness objective is added.
+
+
+`R05_PERSIST_ELITES` implements this hypothesis (default1). It retains distinct
+priority vectors ranked on the completed current search, with the chosen winner
+first. At the next real step, non-global first-generation slots try each saved
+vector unchanged once and then mutate parents in rotation. Fully global slots
+remain unchanged. Scores, plans and reservations are recomputed from current
+state; only vectors persist. Fixed global rollout work is unchanged. Dense
+regressions cover task replacement, future-task reassignment, duplicate vectors
+and worker determinism. Full default-control trajectory checks and throughput
+measurements are required before promotion.

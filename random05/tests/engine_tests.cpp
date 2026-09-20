@@ -363,6 +363,25 @@ void elite_parents() {
     require(duplicates==simulate(cfg,12),"duplicate elite handling changed with worker count");
 }
 
+
+void persistent_elites() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=4;cfg.elites=4;cfg.share_prefix=true;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;
+    cfg.radix_order=true;cfg.scratch_reuse=true;cfg.dispersion=0.8;cfg.fast_dispersion=true;
+    // Task replacements and reassignment change the state underlying saved
+    // vectors. Certifying each real action in simulate catches stale decisions;
+    // both worker counts must select the same newly evaluated trajectory.
+    for(int count:{2,8})for(bool future_tasks:{false,true}) {
+        cfg.persist_elites=count;cfg.rollout_match=future_tasks;cfg.threads=1;
+        const auto serial=simulate(cfg,12);cfg.threads=2;
+        require(serial==simulate(cfg,12),"persistent elites changed with worker count or reused stale decisions");
+    }
+    cfg.persist_elites=16;cfg.noise=0;cfg.mutation=0;cfg.threads=1;
+    const auto duplicates=simulate(cfg,12);cfg.threads=2;
+    require(duplicates==simulate(cfg,12),"degenerate persistent elites changed with worker count");
+}
+
 void continuation_risk() {
     Config cfg;cfg.futures=16;cfg.continuations=4;cfg.future_mutation=0;cfg.depth=6;
     cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
@@ -422,6 +441,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    persistent_elites();
     elite_parents();
     cached_candidate_rankings();
     shared_goal_costs();
