@@ -17,8 +17,6 @@ Directories below are under `runs/random05/`.
 |---|---|---|
 | 8899454 | nms4-repeats-full-v3 | How much does the timed NMS reference vary? |
 | 8899456 | large-search-full-v15 | Do K4096, smaller mutations, or noise400 help? |
-| 8899457 | compound-search-full-v16 | Do scheduler changes or a policy mixture help at 32 workers? |
-| 8899458 | blocked-cycle-thresholds-full-v16 | Which cycle threshold helps on four cores? |
 
 Collect each final `summary.json`, validate all 2,000 steps, and retain exact
 source, binary and input hashes. Promote valid maxima while keeping them separate
@@ -33,7 +31,7 @@ The broad remaining gap calls for better decisions as well as parameter search.
 ## Reproducible source versions
 
 - Build v15: commit `134faa8`, best overall 3,231 tasks.
-- Build v16: commit `6aed8ba`, best on four cores 3,127 tasks; adds cycle portfolios.
+- Build v16: commit `6aed8ba`, best overall 3,299 tasks and four-core best 3,127; adds cycle portfolios.
 - Build v17: commit `e55f951`, tests discounted progress and load-weighted turn
   costs. Tested settings did not improve throughput; both default to off.
 
@@ -55,3 +53,6 @@ Memory reservation is at least 32 GiB total. The per-process address-space cap i
 32 GB or the inherited hard limit, whichever is lower. Earlier NMS repeat attempts
 failed before solver startup because the wrapper attempted to raise that limit;
 `nms4-repeats-full-v3` is the corrected submission.
+
+Build v18 shares sorting work between the two PIBT passes. Validate exact full
+trajectories and test K1024 with four workers under a strict one-second deadline.

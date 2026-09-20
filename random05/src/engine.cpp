@@ -498,13 +498,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             }
         }
     };
-    auto choose=[&](bool kinematic) {
-    std::fill(chosen.begin(),chosen.end(),-1);
-    std::fill(reserve.begin(),reserve.end(),-1);
+    // Spatial intent and executable PIBT use identical costs and priorities.
+    // Build their shared ordering once, then filter infeasible headings while
+    // visiting candidates. Stable sorting preserves the previous tie order.
     for(int i=0;i<n;++i) {
         auto& cand=candidates[i];int count=0;
         for(int d=0;d<4;++d) {
-            int v=g.next[p[i]][d];if(v<0 || (kinematic && !allowed(i,d)))continue;
+            int v=g.next[p[i]][d];if(v<0 || (!cfg.intent_rotation && !allowed(i,d)))continue;
             float score=cost(i,v,d)+g.weight[p[i]][d];
             int b=owner[v];
             if(cfg.push_price>0 && b>=0 && b!=i) {
@@ -527,14 +527,18 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         std::stable_sort(cand.begin(),cand.begin()+count,[](const Candidate& a,const Candidate& b){return a.score<b.score;});
         candidate_count[i]=count;
     }
-    if(kinematic && cycle_mode>0 && cycle_mode<3)propose_cycles(false);
     std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
     std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
+    auto choose=[&](bool kinematic) {
+    std::fill(chosen.begin(),chosen.end(),-1);
+    std::fill(reserve.begin(),reserve.end(),-1);
+    if(kinematic && cycle_mode>0 && cycle_mode<3)propose_cycles(false);
     int expansions=0;
     std::function<bool(int)> pibt=[&](int a)->bool {
         ++expansions;
         for(int k=0;k<candidate_count[a];++k) {
             int v=candidates[a][k].v;
+            if(kinematic && v!=p[a] && !allowed(a,candidates[a][k].d))continue;
             if(expansions>cfg.expansion_limit && v!=p[a])continue;
             if(reserve[v]>=0)continue;
             int b=owner[v];

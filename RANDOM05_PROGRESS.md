@@ -24,11 +24,12 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,231 tasks / 2,000 steps** on 32 workers
+Best verified combined result: **3,299 tasks / 2,000 steps** on 32 workers
 (16 physical cores with SMT), versus **3,172** for NMS with the same allocation:
-**+1.9%**. Planner seed0, generated field seed15, K1024, noise200, dispersion0.8,
-local5/equal, wait0.5, greedy matching and known-horizon triage scale1.5
-(`--trick RANDOM-05`). Mean latency134 ms, maximum239 ms, peak RAM421 MiB.
+**+4.0%**. Planner seed0, generated field seed15, K1024, noise200, dispersion0.8,
+local5/equal, wait0.5, exact matching with oriented guidance and keep bonus0.5,
+and known-horizon triage scale1.5 (`--trick RANDOM-05`). Mean latency131 ms,
+maximum224 ms, peak RAM419 MiB. This is a single-seed best.
 
 The four-core best is **3,127** versus NMS **2,903** (**+7.7%**). It additionally
 prepares cycles among robots PIBT already leaves waiting. Its six-seed mean is
@@ -56,27 +57,19 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T08:10:24.936747+00:00 | [8993a43](https://github.com/fywu85/lorr/commit/8993a43) | K=64; local5; equal; dispersion 0.8; horizon 2000; seed 0; `--trick RANDOM-05` | 2658 | 2903 (4 workers) | -8.4% | [Full evidence](random05/results/refinements-full-v6/summary.json) |
 | 2026-09-20T08:18:53.857208+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | predict-match; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2669 | 2903 (4 workers) | -8.1% | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
 | 2026-09-20T08:19:08.147723+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | loop4; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2677 | 2903 (4 workers) | -7.8% | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
-
 | 2026-09-20T08:32:56.449253+00:00 | [6fb222e](https://github.com/fywu85/lorr/commit/6fb222e) | Wait0.5; cached K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2729 | 2903 (4 workers) | -6.0% | [Full evidence](random05/results/wait-cost-full-v9/summary.json) |
-
 | 2026-09-20T08:41:54.502028+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | exact160-guided; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2766 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
 | 2026-09-20T08:41:56.906339+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | triage09; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2767 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
-
 | 2026-09-20T08:48:21.604864+00:00 | [8619b95](https://github.com/fywu85/lorr/commit/8619b95) | exact800-guide; K64/wait0.5/local5/equal/horizon2000 scale0.9; seed0; `--trick RANDOM-05` | 2841 | 2903 (4 workers) | -2.1% | [Full evidence](random05/results/task-cost-full-v11/summary.json) |
-
 | 2026-09-20T08:55:52.615079+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | avg-p3-cb0.75-s5-exact-guide; K64/triage0.9; planner seed0; `--trick RANDOM-05` | 2842 | 2903 (4 workers) | -2.1% | [Full evidence](random05/results/traffic-field-validation-full-v12/summary.json) |
 | 2026-09-20T08:55:55.708615+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | avg-p3-cb0.75-s5-greedy; K64/triage0.9; planner seed0; `--trick RANDOM-05` | 2868 | 2903 (4 workers) | -1.2% | [Full evidence](random05/results/traffic-field-validation-full-v12/summary.json) |
-
 | 2026-09-20T08:59:55.016021+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | Public field; exact/oriented matching; triage1.5; K64; seed0; `--trick RANDOM-05` | 2872 | 2903 (4 workers) | -1.1% | [Full evidence](random05/results/triage-scale-full-v12-bound/summary.json) |
-
 | 2026-09-20T09:01:43.509210+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | flow-seed15; generated field; K64; planner seed0; `--trick RANDOM-05` | 2910 | 2903 (4 workers) | +0.2% | [Full evidence](random05/results/traffic-seeds-full-v12/summary.json) |
 | 2026-09-20T09:05:15.036957+00:00 | [b79a218](https://github.com/fywu85/lorr/commit/b79a218) | noise200; generated field; K64; planner seed0; `--trick RANDOM-05` | 2916 | 2903 (4 workers) | +0.4% | [Full evidence](random05/results/priority-search-full-v13/summary.json) |
-
 | 2026-09-20T09:14:27.889620+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | field15-triage15; K64/noise200; planner seed0; `--trick RANDOM-05` | 2997 | 2903 (4 workers) | +3.2% | [Full evidence](random05/results/pockets-combinations-full-v15/summary.json) |
-
 | 2026-09-20T09:19:02.607264+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | blocked-extent2; K64; planner seed0; `--trick RANDOM-05` | 3127 | 2903 (4 workers) | +7.7% | [Full evidence](random05/results/cycle-portfolio-full-v16/summary.json) |
-
 | 2026-09-20T09:21:46.636885+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | K1024, 32 workers, field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3231 | 3172 (32 workers) | +1.9% | [Full evidence](random05/results/frontier-compute-full-v15/summary.json) |
+| 2026-09-20T09:40:30.891971+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | Exact/oriented matching, keep0.5; K1024/32 workers; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 3172 (32 workers) | +4.0% | [Full evidence](random05/results/compound-search-full-v16/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -238,3 +231,15 @@ The published NMS score of 3,050 used different instances and hardware.
 - Blocked-cycle preparation with larger portfolios gives 3,151 at K1024 and
   3,217 at K2048, versus 3,231/3,205 without it. It is an optional candidate
   policy, not a reliable improvement across budgets and seeds.
+
+- Combined scheduler/search validation: K1024 with exact/oriented matching and
+  keep bonus0.5 reaches **3,299**; greedy keep0.5 gives3,212 and adding noise400
+  gives3,225. A baseline/blocked-cycle portfolio at K2048 gives3,289. All use
+  32 workers and complete with zero errors/timeouts. Record the3,299 maximum
+  without treating it as a replicated average gain.
+- Four-core cycle thresholds0/0.5/2/4/8 give3,071/3,052/3,043/2,968/2,931;
+  gain penalties0.25/0.5 give3,010/3,057. The K128 policy mixture gives3,122.
+  None improves the four-core maximum3,127.
+- Implementation efficiency: share candidate-cost sorting and priority order
+  between spatial-intention PIBT and executable PIBT. Full trajectory identity
+  and before/after latency will be checked on GRID before claiming a speedup.
