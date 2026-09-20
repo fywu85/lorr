@@ -388,3 +388,7 @@ The published NMS score of 3,050 used different instances and hardware.
   hypothesis that changing240 unrelated priorities at once loses useful local
   repairs. Radius0 preserves the existing algorithm. Full comparisons pending.
   `random05/RESEARCH.md` records this and the inspected EPIBT follow-up.
+- Efficiency candidate: resolve each robot's active task-cost row once per
+  simulated step, removing repeated stage/cache checks from neighbor ranking.
+  The arithmetic and candidate ordering are unchanged. Full trajectory identity
+  and measured latency are required before claiming a speed improvement.

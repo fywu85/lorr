@@ -471,9 +471,20 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(arrived)++f.stage[i];
         if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
     }
+    // Stage is fixed throughout this policy step. Resolve the active chain
+    // and its cached row once, rather than for every candidate lookup.
+    std::vector<const Chain*> active_chain(n,nullptr);
+    std::vector<const float*> cost_table(n,nullptr);
+    for(int a=0;a<n;++a) {
+        const Chain* chain=assigned_[a];
+        if(chain && f.stage[a]<int(chain->goals.size())) {
+            active_chain[a]=chain;
+            if(!chain->values.empty())cost_table[a]=chain->values[f.stage[a]].data();
+        }
+    }
     auto cost=[&](int a,int v,int d) {
-        if(assigned_[a] && f.stage[a]<int(assigned_[a]->goals.size()))
-            return assigned_[a]->cost(g,f.stage[a],v,d);
+        if(cost_table[a])return cost_table[a][v*4+d];
+        if(active_chain[a])return active_chain[a]->cost(g,f.stage[a],v,d);
         return cfg.idle_eviction*g.pocket_depth[v];
     };
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
