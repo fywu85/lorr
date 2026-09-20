@@ -20,15 +20,15 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,841 tasks / 2,000 steps**, planner seed 0,
-public guidance, dispersion 0.8, K=64, five local refinements, equal-score
-acceptance, wait cost 0.5, exact joint matching using oriented approach costs,
-and known-horizon triage scale 0.9 (`--trick RANDOM-05`). Mean entry latency
-46.8 ms, max 132.3 ms on four physical cores. Four-worker NMS completed
-**2,903 tasks**; our best is **2.1% below** that reference. The 32-logical-CPU
-NMS reference is **3,172 tasks** (10.4% gap). Our best without horizon triage
-remains **2,594 tasks**. All frontier/reference runs have zero planner errors,
-scheduler errors and timeouts.
+Best verified combined result: **2,868 tasks / 2,000 steps**, planner seed 0,
+generated traffic field seed5 (averaged flow, cubic congestion, static load
+multiplier0.75, normalized forward costs, turn cost0.6), K64, dispersion0.8,
+five local refinements, equal-score acceptance, wait0.5, greedy matching and
+known-horizon triage scale0.9 (`--trick RANDOM-05`). Four-worker NMS completed
+**2,903 tasks**; our best is **1.2% below** that reference. The 32-logical-CPU
+NMS reference is **3,172 tasks** (9.6% gap). Best without horizon triage remains
+**2,594 tasks**. These are single-seed frontiers. All frontier/reference runs
+have zero planner errors, scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
@@ -56,6 +56,9 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T08:41:56.906339+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | triage09; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2767 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
 
 | 2026-09-20T08:48:21.604864+00:00 | [8619b95](https://github.com/fywu85/lorr/commit/8619b95) | exact800-guide; K64/wait0.5/local5/equal/horizon2000 scale0.9; seed0; `--trick RANDOM-05` | 2841 | 2903 (4 workers) | -2.1% | [Full evidence](random05/results/task-cost-full-v11/summary.json) |
+
+| 2026-09-20T08:55:52.615079+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | avg-p3-cb0.75-s5-exact-guide; K64/triage0.9; planner seed0; `--trick RANDOM-05` | 2842 | 2903 (4 workers) | -2.1% | [Full evidence](random05/results/traffic-field-validation-full-v12/summary.json) |
+| 2026-09-20T08:55:55.708615+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | avg-p3-cb0.75-s5-greedy; K64/triage0.9; planner seed0; `--trick RANDOM-05` | 2868 | 2903 (4 workers) | -1.2% | [Full evidence](random05/results/traffic-field-validation-full-v12/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -141,3 +144,16 @@ The published NMS score of 3,050 used different instances and hardware.
   task-chain matching cost gives 2,803 with greedy matching, but 2,631 with
   exact matching. Length weights0/0.5/1 give 2,557/2,733/2,733. Do not combine
   favorable individual changes without testing their interaction.
+
+- Public-field frontier repeats at 2,841. Planner seeds1/2/3/4 give
+  2,736/2,736/2,685/2,562; the five-seed average including seed0 is 2,712.
+  K128=2,818, K256=2,741, depth6=2,631, depth4=2,562. The maximum is not a
+  demonstrated average gain. Keep seed and single-run labels explicit.
+- Traffic-field screen (K8, full horizon): public control2,617; best generated
+  field2,666. Full K64 validation: public2,841; generated seed5 with greedy
+  matching2,868 and exact/guided matching2,842; seed2 gives2,771/2,720.
+  Low-K rankings do not reliably predict full-search rankings.
+- GRID now reserves both SMT slots for each requested physical core, requests
+  enough free cores through the scheduler's m_topology_inuse attribute, and
+  checks the resulting affinity before any benchmark starts. Jobs rejected by
+  the binding check are allocation failures, not solver failures.

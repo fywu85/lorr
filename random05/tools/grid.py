@@ -24,16 +24,18 @@ def submit(a):
         cache=(ROOT/'nms/build/CMakeCache.txt').read_text().splitlines()
         spec['reference_flags']={k:next(l.split('=',1)[1] for l in cache if l.startswith(k+':STRING=')) for k in ['CMAKE_CXX_FLAGS','CMAKE_EXE_LINKER_FLAGS']}
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
-        physical=4;slots=4
+        physical=4;slots=8
     elif a.kind=='build':
         shutil.copytree(ROOT/'random05',out/'source',ignore=shutil.ignore_patterns('build','__pycache__'))
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
-        physical=4;slots=4
+        physical=4;slots=8
     else:
         spec['cases']=json.loads(a.cases.read_text())
         spec['cases_input']=str(a.cases.resolve())
         physical=sum(c.get('cores',1) for c in spec['cases'])
-        slots=sum(c.get('cores',1)*c.get('smt',1) for c in spec['cases'])
+        # GRID counts logical slots. Reserve both SMT siblings even when a
+        # case runs one worker per physical core, so bindings can coexist.
+        slots=2*physical
         for c in spec['cases']:
             name=c['name'];work=out/name;work.mkdir()
             binary=Path(c['binary']).resolve();shutil.copy2(binary,work/'lifelong')
@@ -54,8 +56,8 @@ def submit(a):
     shutil.copy2(Path(__file__),out/'runner.py')
     command=['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)]
     script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in command)+'\n')
-    args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','e','-cwd','-q','debian.q','-pe','threaded',str(slots),
-          '-binding','linear:'+str(physical),'-l','h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G','-m','n','-N','r05_'+a.kind,
+    args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded',str(slots),
+          '-binding','linear:'+str(physical),'-l','h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G,m_topology_inuse=*'+('CTT*'*physical),'-m','n','-N','r05_'+a.kind,
           '-j','y','-o',str(out/'scheduler.log'),'-S','/bin/bash',str(script)]
     r=subprocess.run(args,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     write(out/'submission.json',{'command':args,'returncode':r.returncode,'response':r.stdout})
