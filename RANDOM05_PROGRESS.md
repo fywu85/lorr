@@ -1285,3 +1285,12 @@ input/binary hashes and allocation are linked in the audits.
 - Setup fusion, sourcefde9172/build-v66, passes all regressions in13.61s.
   Paired full controls remain underway. Early matched-step profiling is slower
   in the setup phase; do not claim an optimization or use it in frozenV4.
+
+
+- Reject setup fusion after its full32-worker paired control. Both source65 and
+  sourcefde9172 reproduce every field of the3,794 trajectory, but fusion increases
+  mean latency505.76->518.56ms (+2.53%); maxima576.62/576.89ms. The working
+  engine is restored byte-for-byte to the already validated source5f81613.
+  The full four-core comparison continues as separate evidence; no four-core
+  timing conclusion is inferred from partial output.
+  [Exact trajectory and timing audit](random05/results/setup-fusion-32-full-v66/equivalence-and-timing.json).

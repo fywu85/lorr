@@ -1,0 +1,52 @@
+{
+  "checked_utc": "2026-09-20T20:17:34.460951+00:00",
+  "all_equal": true,
+  "fields": {
+    "actualPaths": true,
+    "plannerPaths": true,
+    "actualSchedule": true,
+    "plannerSchedule": true,
+    "events": true,
+    "tasks": true
+  },
+  "raw_results": [
+    {
+      "path": "runs/random05/setup-fusion-32-full-v66/32-k16320-b14-first8000-build65/result.json",
+      "sha256": "72a9e0f0e4e005d41ca565e0e44601ec7c3f2c388660482a9d78bd28f3cc1176"
+    },
+    {
+      "path": "runs/random05/setup-fusion-32-full-v66/32-k16320-b14-first8000-build66/result.json",
+      "sha256": "dc7e035b3930703cfb1897e9edee011e782efd103e4289e3bccddc89767e36ff"
+    }
+  ],
+  "baseline": {
+    "mean": 0.5057593384454999,
+    "max": 0.57662023
+  },
+  "fused": {
+    "mean": 0.5185595382134999,
+    "max": 0.576887897
+  },
+  "mean_change_percent": 2.53088747848782,
+  "sampled_ns_per_call": {
+    "baseline": {
+      "setup_ns": 33682.99363511515,
+      "candidates_ns": 12527.481248679485,
+      "order_ns": 11005.057416015212,
+      "intent_ns": 20886.193323473482,
+      "kinematic_ns": 23276.21484787661,
+      "cycles_ns": 13801.755466934292,
+      "actions_ns": 14233.068719628143
+    },
+    "fused": {
+      "setup_ns": 38242.56209064019,
+      "candidates_ns": 12817.50446334249,
+      "order_ns": 10916.17510035918,
+      "intent_ns": 20789.82994401014,
+      "kinematic_ns": 22894.56330551447,
+      "cycles_ns": 13740.504410521868,
+      "actions_ns": 14137.352313543208
+    }
+  },
+  "decision": "Reject fused setup: exact3794 trajectory, but full same-host/disjoint-core control is slower. Restore source65 engine.cpp. Four-core confirmation continues separately."
+}

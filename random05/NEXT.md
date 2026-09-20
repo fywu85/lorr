@@ -1,6 +1,6 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 20:15 UTC. Goal ACTIVE. The user wants continued throughput
+Updated: 2026-09-20 20:17 UTC. Goal ACTIVE. The user wants continued throughput
 improvement and an evening check-in; waiting time is secondary. There is clear
 progress, not a blocker. Finish the pending frozen validation and full controls.
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; Warehouse work
@@ -68,12 +68,11 @@ not paired causal effects. Colleague's private inputs/code remain unavailable.
 1. **setup-fusion-four-full-v66**, job8900602, UNSPLIT paired job, each four
    cores. Full K5760/B12/first4608 control build65 versus new build66.
    Started19:56:55UTC, expected~20:24. Both have policy profiling enabled.
-2. **setup-fusion-32-full-v66**, job8900603, UNSPLIT pair, each16 cores/32workers.
-   Repeats3794 first8000/K16320/B14/seed3. Build65 completed3794, mean505.759ms,
-   max576.620ms at~20:14. Build66 nearing completion at last check.
-   Verify all six raw trajectory fields, then compare full timing/profile phases.
-   Early matched-step setup timing is WORSE (~+10--15% setup, +2--3% total).
-   Revert source fusion if full results confirm no benefit; do not invent speedup.
+2. **setup-fusion-32-full-v66** COMPLETE, both EXACT3794 across all six
+   trajectory fields. Old mean505.759/max576.620ms; fused518.560/576.888ms
+   (+2.53% mean). Audit: equivalence-and-timing.json. Reject fusion; engine.cpp
+   has been restored byte-for-byte to source5f81613, and all compiled source
+   hashes match build65. Four-core comparison still runs; archive it when done.
 3. **staged-seed2-timeout-check-full-v65**, job8900641, UNSPLIT paired job.
    The original high-budget seed2 failed at step1850/1422.350ms (exit124), while
    other seeds completed. Explicit follow-ups use identical fixed work under
@@ -86,13 +85,12 @@ not paired causal effects. Colleague's private inputs/code remain unavailable.
    Fast32 full strict runs. First three probe potentially feasible four-core
    work, but cannot be promoted as four-core without direct strict confirmation.
 
-Current working C++ source is **fde9172/build-v66**: fuses three per-robot setup
-passes and eliminates redundant pointer/flag clears. No semantic change intended.
-Full regression suite PASSED13.61s. SHA
-fc6111644108e180b78f27c2db2fe24177cc1cbd238bf031028f001ff3e6d445.
-Source65 remains the measured best and frozenV4. `results/setup-fusion-v66/`
-contains build provenance. If reverting, restore ONLY engine.cpp from5f81613;
-keep all experiment evidence and scoped log work. Do not revert Warehouse files.
+Current working C++ source is restored to **5f81613/build-v65** after rejecting
+setup fusion. All compiled source hashes checked against build65. Failed
+optimization sourcefde9172/build-v66 stays in history and immutable run copies;
+its regression suite passed13.61s and full32 trace is exact, but mean time is
+worse. `results/setup-fusion-v66/` retains build provenance. Do not discard the
+pending four-core comparison or accidentally reintroduce the fusion.
 
 ## Completed comparisons this turn
 
