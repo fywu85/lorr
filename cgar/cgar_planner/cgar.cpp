@@ -735,6 +735,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         temporal_transaction_options_.max_owners < 1 || temporal_transaction_options_.max_owners > 2 ||
         (temporal_transaction_options_.work && !temporal_))
         throw std::invalid_argument("temporal branching requires temporal planning, work in [0,2000000] and one or two owners");
+    const int remaining_flow = env_int("CGAR_TEMPORAL_REMAINING_FLOW", 0);
+    if (remaining_flow < 0 || remaining_flow > 1 ||
+        (remaining_flow && (!temporal_ || !orientation_guidance_ || !flow_strength_ ||
+         static_trick_metric_ || guide_enabled_ || temporal_next_errand_ ||
+         temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)))
+        throw std::invalid_argument("remaining-flow scoring requires generic temporal learned flow; incompatible with trick, guide, next-errand, paid-progress audits or branching");
+    temporal_remaining_flow_ = remaining_flow != 0;
+    if (temporal_remaining_flow_)
+        std::printf("[cgar-temporal-score] remaining_flow=1 paid_forward_extra=0\n");
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
         throw std::invalid_argument("temporal distance scale must be in [1,4096]");

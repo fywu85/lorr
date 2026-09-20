@@ -370,6 +370,7 @@ private:
     TemporalWarmStart temporal_history_;
     bool temporal_warm_start_ = false, temporal_strict_wait_turns_ = false;
     bool temporal_mixed_start_ = false, temporal_next_errand_ = false;
+    bool temporal_remaining_flow_ = false;
     std::mt19937_64 temporal_rng_{0};
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;

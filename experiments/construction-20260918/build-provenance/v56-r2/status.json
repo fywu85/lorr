@@ -1,9 +1,16 @@
 {
-  "state": "queued",
+  "state": "complete",
   "job_id": "8899285",
-  "recorded_utc": "2026-09-20T04:01:59.947628+00:00",
+  "recorded_utc": "2026-09-20T04:21:17.766071+00:00",
+  "completed_utc": "2026-09-20T04:18:55+00:00",
   "source_files": 26,
-  "tests_passed": false,
+  "tests_passed": true,
+  "test_markers": [
+    "TEMPORAL_REMAINING_FLOW passed independent_macro_scores=25884 neutral_scores=12942 arriving_scores=5040 changed_best_macros=4 first_service_hand_count=1 neutral_production_actions=3840 active_different_steps=116 active_collision_checks=11520 both_primaries_served=1 invalid_combinations=10 protected_primary_recovery_capacity=1 regional_actions=4800 worker_actions=1920",
+    "All CGAR regression checks passed"
+  ],
+  "binary_sha256": "478dda96b6c2e9ec8d4f5260cb9f4ff74b50271ab821f174afb7bc9aebc607f6",
   "raw": "runs/cgar-remaining-flow-build-v56-r2-20260920",
-  "supersedes_cancelled_job": "8899283"
+  "supersedes_cancelled_job": "8899283",
+  "allocation_note": "Four bound physical cores on research23. A request to relax whole-host exclusivity raced job start: qalter returned1 and changed the hard-request text despite a consumable-resource warning. Preserve before/after evidence; make no isolation or performance claim from this functional build. Benchmarks remain exclusive."
 }

@@ -2460,6 +2460,126 @@ struct NextErrandOracle {
  }
 };
 
+void temporal_remaining_flow_regression() {
+ long long checked=0,neutral=0,arrivals=0,changed_rankings=0;
+ for(int unit:{1,4,8})for(int turn_extra:{0,2})for(int toll:{0,1}) {
+  NextErrandOracle independent(4,5,unit,turn_extra,toll);
+  for(int start:{0,7,19})for(int heading=0;heading<4;++heading)for(int goal:{2,7,16}) {
+   const auto& paths=independent.geometry.paths(start,heading);
+   int old_best=-1,new_best=-1;int64_t old_min=INT64_MAX,new_min=INT64_MAX;
+   for(int op=0;op<129;++op)if(paths[op].valid) {
+    const auto& path=paths[op];auto actions=TemporalGeometry::operations()[op];
+    int cell=start,h=heading,first=-1,last=-1,turns=0,turns_first=0,paid=0;
+    // Replay legal actions independently of cost()/forward_surcharge().
+    for(int tick=0;tick<5;++tick) {
+     int action=actions[tick];
+     if(action==0){if(first<0)paid+=independent.forward(cell,h)-unit;cell=independent.neighbor(cell,h);}
+     else if(action==1){++turns;h=(h+1)%4;}else if(action==2){++turns;h=(h+3)%4;}
+     if(cell==goal){if(first<0){first=tick;turns_first=turns;}last=tick;}
+    }
+    int tail=1000000;
+    // Enumerate the same allowed virtual rotations in trailing wait slots.
+    int suffix=actions[4]==3?(actions[3]==3?2:1):0;
+    for(int code=0;code<(suffix==2?9:suffix==1?3:1);++code){
+     int hh=h,extra=0,v=code;
+     for(int k=0;k<suffix;++k){int a=v%3;v/=3;if(a){hh=(hh+(a==1?1:3))%4;extra+=turn_extra;}}
+     tail=std::min(tail,independent.value(goal,cell,hh)+extra);
+    }
+    const int64_t expected=(int64_t(last<0?tail:-last*unit)+turn_extra*(first<0?turns:turns_first))*50-int64_t(op)*unit;
+    auto distance=[&](int c,int d){return independent.value(goal,c,d);};
+    auto edge=[&](int from,int to){return independent.forward(from,independent.direction(from,to));};
+    const auto on=TemporalGeometry::flow_cost(path,op,start,goal,unit+turn_extra,distance,edge,50,unit,true);
+    const auto off=TemporalGeometry::flow_cost(path,op,start,goal,unit+turn_extra,distance,edge,50,unit,false);
+    if(on!=expected||off!=expected+int64_t(paid)*50||off!=independent.native(path,op,start,goal))
+     throw std::runtime_error("remaining-flow score disagreed with independent legal-action replay");
+    if(!toll){if(on!=off)throw std::runtime_error("neutral flow changed scores");++neutral;}
+    if(first>=0)++arrivals;
+    if(off<old_min){old_min=off;old_best=op;}if(on<new_min){new_min=on;new_best=op;}++checked;
+   }
+   changed_rankings+=old_best!=new_best;
+  }
+ }
+ if(!changed_rankings||!arrivals||!neutral)throw std::runtime_error("remaining-flow score fixtures were vacuous");
+ // FFFFF crosses first-service goal at t=2. Pay only extras4+0+2=6,
+ // even though later edges carry extra9. Native terminal score is-912.
+ TemporalGeometry line;line.initialize(std::vector<char>(7,true),1,7,[]{});
+ const auto& path=line.paths(0,0)[128];
+ auto distance=[](int cell,int){return std::abs(cell-3)*4;};
+ auto edge=[](int from,int){return from==0?8:from==2?6:from>=3?13:4;};
+ if(TemporalGeometry::flow_cost(path,128,0,3,4,distance,edge,50,4,false)!=-612||
+    TemporalGeometry::flow_cost(path,128,0,3,4,distance,edge,50,4,true)!=-912)
+  throw std::runtime_error("remaining-flow first-service hand-counted fixture failed");
+
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ setenv("CGAR_FLOW_STRENGTH","4",1);setenv("CGAR_FLOW_COST_SCALE","4",1);
+ setenv("CGAR_TEMPORAL_STEPS","256",1);setenv("CGAR_TEMPORAL_EQUAL_WEIGHT","1",1);
+ setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);
+ SharedEnvironment e;e.rows=9;e.cols=11;e.num_of_agents=24;e.map.assign(99,0);
+ e.curr_task_schedule.assign(24,-1);e.goal_locations.resize(24);
+ for(int r=0;r<24;++r){e.curr_states.emplace_back(r*3,0,r%4);e.goal_locations[r]={{98-r*3,0}};}
+ int identical=0;
+ for(bool prepublication:{true,false}) {
+  auto state=e;setenv("CGAR_FLOW_WARMUP",prepublication?"128":"8",1);
+  setenv("CGAR_FLOW_MIN_MARGIN_PERCENT",prepublication?"25":"100",1);
+  setenv("CGAR_TEMPORAL_REMAINING_FLOW","0",1);setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);Cgar off;off.initialize(&state,1000);
+  setenv("CGAR_TEMPORAL_REMAINING_FLOW","1",1);setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);Cgar on;on.initialize(&state,1000);
+  for(int t=0;t<80;++t){state.curr_timestep=t;std::vector<Action>a,b;off.plan(&state,1000,a);on.plan(&state,1000,b);
+   if(a!=b)throw std::runtime_error("remaining-flow changed neutral or prepublication production actions");
+   auto next=step(state,state.curr_states,a);if(next.empty())throw std::runtime_error("remaining-flow neutral collision");state.curr_states=next;
+   for(int r=0;r<24;++r)if(state.curr_states[r].location==state.goal_locations[r][0].first)
+    state.goal_locations[r][0].first=(state.goal_locations[r][0].first+37)%99;
+   identical+=24;
+  }
+  if(on.stats().flow_publications!=(prepublication?0:5)||on.stats().flow_penalized_edges||
+     on.stats().oriented_builds!=off.stats().oriented_builds||on.stats().flow_cache_resets!=off.stats().flow_cache_resets)
+   throw std::runtime_error("remaining-flow neutral lifecycle was not exercised exactly");
+ }
+ auto reject=[&](bool specific){bool rejected=false;try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument& error){
+   rejected=true;if(specific&&std::string(error.what()).find("remaining-flow scoring")==std::string::npos)
+    throw std::runtime_error("remaining-flow fixture hit an unrelated configuration guard");}
+  if(!rejected)throw std::runtime_error("invalid remaining-flow combination accepted");};
+ for(const char* value:{"-1","2"}){setenv("CGAR_TEMPORAL_REMAINING_FLOW",value,1);reject(true);}
+ setenv("CGAR_TEMPORAL_REMAINING_FLOW","1",1);setenv("CGAR_FLOW_COST_SCALE","1",1);
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_FLOW_STRENGTH","CGAR_ORIENTATION_GUIDANCE"}){
+  const char* saved_value=getenv(key);if(!saved_value)throw std::runtime_error("missing remaining-flow fixture setting");
+  const std::string saved=saved_value;setenv(key,"0",1);reject(std::string(key)!="CGAR_ORIENTATION_GUIDANCE");setenv(key,saved.c_str(),1);}
+ setenv("CGAR_FLOW_COST_SCALE","4",1);
+ for(const char* key:{"CGAR_TEMPORAL_NEXT_ERRAND","CGAR_GUIDE_ROUTES","CGAR_TEMPORAL_BRANCH_WORK",
+                     "CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE","CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE"}){
+  setenv(key,"1",1);reject(std::string(key)!="CGAR_GUIDE_ROUTES");unsetenv(key);}
+ // Each arm executes its own complete decisions. The first divergence must
+ // therefore occur with equal prior observations, rather than replaying an
+ // action that only one arm actually offered. Both primaries must serve.
+ setenv("CGAR_FLOW_WARMUP","4",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","25",1);
+ SharedEnvironment dense;dense.rows=9;dense.cols=11;dense.num_of_agents=48;dense.map.assign(99,0);
+ dense.curr_task_schedule.assign(48,-1);dense.goal_locations.resize(48);
+ for(int r=0;r<48;++r){dense.curr_states.emplace_back(r,0,r%4);dense.goal_locations[r]={{98-r,0}};}
+ SharedEnvironment active[2]={dense,dense};Cgar planners[2];bool primary_served[2]={false,false};int active_differences=0;
+ for(int mode=0;mode<2;++mode){setenv("CGAR_TEMPORAL_REMAINING_FLOW",mode?"1":"0",1);planners[mode].initialize(&active[mode],1000);}
+ for(int t=0;t<120;++t){std::vector<Action> actions[2];
+  for(int mode=0;mode<2;++mode){auto& state=active[mode];state.curr_timestep=t;planners[mode].plan(&state,1000,actions[mode]);
+   auto next=step(state,state.curr_states,actions[mode]);if(next.empty())throw std::runtime_error("active remaining-flow fixture collided");state.curr_states=next;
+   if(state.curr_states[0].location==98)primary_served[mode]=true;
+   for(int r=0;r<48;++r)if(state.curr_states[r].location==state.goal_locations[r][0].first)
+    state.goal_locations[r][0].first=(state.goal_locations[r][0].first+37)%99;
+  }
+  if(t<4&&actions[0]!=actions[1])throw std::runtime_error("active remaining-flow arms diverged before publication");
+  active_differences+=actions[0]!=actions[1];
+ }
+ if(!active_differences||!primary_served[0]||!primary_served[1]||
+    !planners[0].stats().flow_penalized_edges||!planners[1].stats().flow_penalized_edges)
+  throw std::runtime_error("active remaining-flow adapter effect or primary service was not exercised");
+
+
+ temporal_region_adapter_regression();temporal_primary_regression();temporal_parallel_regression();
+ for(const char* key:{"CGAR_TEMPORAL_REMAINING_FLOW","CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH",
+     "CGAR_FLOW_COST_SCALE","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT",
+     "CGAR_FLOW_REFRESH_INTERVAL","CGAR_TEMPORAL_STEPS","CGAR_TEMPORAL_EQUAL_WEIGHT","CGAR_TEMPORAL_PREP_THREADS"})unsetenv(key);
+ std::cout<<"TEMPORAL_REMAINING_FLOW passed independent_macro_scores="<<checked<<" neutral_scores="<<neutral
+          <<" arriving_scores="<<arrivals<<" changed_best_macros="<<changed_rankings<<" first_service_hand_count=1 neutral_production_actions="<<identical
+          <<" active_different_steps="<<active_differences<<" active_collision_checks=11520 both_primaries_served=1 invalid_combinations=10 protected_primary_recovery_capacity=1 regional_actions=4800 worker_actions=1920\n";
+}
+
 void temporal_next_errand_regression() {
  long long arriving=0;
  for(int U:{1,4,8})for(int extra:{0,1,2})for(int toll:{0,1}){
@@ -2790,7 +2910,13 @@ void warehouse_trick_regression() {
  setenv("CGAR_FLOW_COST_SCALE","4",1);setenv("CGAR_PICKUP_FLOW","1",1);
  setenv("CGAR_FLOW_WARMUP","2",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","2",1);
  Cgar generic;generic.initialize(&e,30000);
- auto flagged=e;flagged.trick_instance="WAREHOUSE";Cgar trick;trick.initialize(&flagged,30000);
+ auto flagged=e;flagged.trick_instance="WAREHOUSE";
+ setenv("CGAR_TEMPORAL_REMAINING_FLOW","1",1);rejected=false;
+ try{Cgar invalid;invalid.initialize(&flagged,30000);}catch(const std::invalid_argument& error){
+  rejected=std::string(error.what()).find("remaining-flow scoring")!=std::string::npos;}
+ unsetenv("CGAR_TEMPORAL_REMAINING_FLOW");
+ if(!rejected)throw std::runtime_error("generic remaining-flow experiment accepted a static trick");
+ Cgar trick;trick.initialize(&flagged,30000);
  std::vector<int> schedule;std::vector<Action> actions;
  std::vector<int> initial_generic;
  generic.schedule(&e,30000,initial_generic);trick.schedule(&flagged,30000,schedule);
@@ -2809,4 +2935,4 @@ void warehouse_trick_regression() {
  std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1\n";
 }
 
-int main(){try{warehouse_trick_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

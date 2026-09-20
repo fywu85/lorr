@@ -27,10 +27,15 @@ distances, test first-service toll cutoff and neutral/prepublication equivalence
 and exercise serial/parallel preparation, protected primary, recovery and capacity.
 An active-toll fixture also requires a changed production decision, valid actions
 in both arms and service of both initial primary goals.
-Replacement build8899285 is queued with frozen sources on four exclusive physical cores.
-Original build8899283 was cancelled before execution to strengthen regression coverage.
-An initial immediate-availability rejection is preserved; the accepted retry
-retains the same CPU, memory and isolation requirements. Tests have not passed yet.
+Replacement build8899285 passed the complete regression suite at04:18:55UTC.
+It verified25,884 independent macro scores,3,840 neutral production actions,
+11,520 active-field collision checks, service of both fixture primary goals,
+4,800 regional actions and1,920 serial/parallel worker decisions. The active
+fixture changed decisions on116 steps. All26 frozen source/test hashes match.
+Original build8899283 was cancelled before execution to strengthen coverage.
+The build used four bound physical cores; the archived allocation-change receipt
+records a request that raced job start. This build makes no performance claim.
+The warehouse benchmarks continue to require exclusive hosts.
 
 After a valid200-step feasibility screen, compare full seeds0/2 against unchanged
 controls on isolated EPYC9354 allocations, four physical cores per process,

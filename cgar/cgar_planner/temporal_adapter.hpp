@@ -163,12 +163,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 ++next_metrics[worker][use_next ? 1 : 2];
             }
             auto cost = [&](const TemporalPath& path, int op) {
-                const int extra = oriented && !guided && turn_oracle_.weighted_forward() ?
-                    TemporalGeometry::forward_surcharge(path, loc_[i], goal, [&](int from, int to) {
-                        return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols));
-                    }, flow_cost_scale_) : 0;
-                const auto native = TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_, flow_cost_scale_) +
-                                    int64_t(extra) * temporal_distance_scale_;
+                const auto native = oriented && !guided && turn_oracle_.weighted_forward() ?
+                    TemporalGeometry::flow_cost(path, op, loc_[i], goal, robot_turn_cost, distance,
+                        [&](int from, int to) { return turn_oracle_.forward_cost(from, direction(from, to, cert_.cols)); },
+                        temporal_distance_scale_, flow_cost_scale_, temporal_remaining_flow_) :
+                    TemporalGeometry::cost(path, op, goal, robot_turn_cost, distance, temporal_distance_scale_, flow_cost_scale_);
                 if (use_next && arrives[op]) {
                     ++next_metrics[worker][3];
                     const auto continued = TemporalGeometry::next_errand_cost(path, op, loc_[i], robot_turn_cost, next_baseline,

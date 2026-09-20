@@ -95,6 +95,18 @@ public:
         return int64_t(d + extra * (turns_to_goal < 0 ? turns : turns_to_goal)) * distance_scale - int64_t(op) * unit_cost;
     }
 
+    // Optional remaining-potential surrogate. Omitting the paid forward extra
+    // changes the local objective, not the oracle, physical turns or validity.
+    // Default scoring pays exactly the same first-service toll as before.
+    template<class Distance, class EdgeCost>
+    static int64_t flow_cost(const TemporalPath& path, int op, int start, int goal,
+            int turn_cost, Distance distance, EdgeCost edge_cost,
+            int distance_scale, int unit_cost, bool remaining_flow) {
+        const int extra = remaining_flow ? 0 : forward_surcharge(path, start, goal, edge_cost, unit_cost);
+        return cost(path, op, goal, turn_cost, distance, distance_scale, unit_cost) +
+               int64_t(extra) * distance_scale;
+    }
+
     static int first_goal_hit(const TemporalPath& path, int goal) {
         if (goal < 0) return -1;
         for (int t = 0; t < 5; ++t) if (path.cells[t] == goal) return t;
