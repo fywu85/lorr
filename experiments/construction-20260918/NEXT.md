@@ -711,3 +711,20 @@ It is reviewing the VERIFIED unfair-selection results and whether bounded unopen
 retargeting deserves one isolated TRICK comparison. Do not treat this pending
 review as a recommendation already received. Generic full pricing8899340 runs
 independently. No pool/TRICK guard change or new retarget component implemented.
+
+2026-09-20T06:29UTC: Fable31 complete, no live CLI. Public visible findings/metadata/
+qualified assessment in fable-flow-session/turn31. The CLI result review.md is only
+a final segment; emitted-findings.md contains the complete visible answer. Reviewer
+withdraws turn30 recommendation to simply enable old pool exchange. Its cap16000/
+run, residual-pool timing and unit metric make it weak here; not a mathematical
+impossibility proof. Broader holder bidding is deferred pending generic tests;
+no TRICK reassignment guard has changed. Next review would be32/followup-31.md.
+
+Generic global-worker + region combination: no production change; V60 source4964309.
+Screen8899342/8899343 passes, exactnative/completeworkerparticipation/regions.
+Full8899344 compares1vs4globalworkers, each4Mquota, followedbyunchanged4regions2rounds,
+seeds0/2; sharedresearch52,16physicalcores,4percase. Raw
+runs/cgar-global-region-workers-full-v60-20260920; analysis writes
+results/global-region-workers-full-v60. IncreasingworkersalsoadvancesRNGmore;
+whole-policytest, not equal-work speedup or isolatedbest-initial-plan mechanism.
+Existing genericpricing8899340/8899341 remains live on sharedresearch50/24cores.
