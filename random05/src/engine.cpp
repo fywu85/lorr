@@ -49,6 +49,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.operation_depth=integer("R05_OPERATIONS",0);
     c.operation_revisits=integer("R05_OPERATION_REVISITS",4);
     c.operation_inherit=integer("R05_OPERATION_INHERIT",1);
+    c.operation_moving=integer("R05_OPERATION_MOVING",0);
     c.operation_cost_weight=real("R05_OPERATION_COST",0);
     if((c.operation_depth!=0 && c.operation_depth!=3) || c.operation_revisits<1 || c.operation_cost_weight<0)
         throw std::invalid_argument("operations must be off or length3, with positive revisit limit and nonnegative cost weight");

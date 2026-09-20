@@ -1,15 +1,15 @@
 {
-  "source_commit": "32b333a",
-  "evidence": "random05/results/active-cost-split-full-v28/seed3-workers32/summary.json",
+  "source_commit": "b824f5d",
+  "evidence": "random05/results/guidance-local-split-full-v31/flips1-seed5/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v28/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v31/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
     "cores": 16,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "seed3-workers32",
+    "name": "flips1-seed5",
     "env": {
       "R05_K": "1024",
       "R05_THREADS": "32",
@@ -34,7 +34,9 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "3"
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5"
     },
     "smt": 2
   }

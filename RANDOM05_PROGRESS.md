@@ -41,12 +41,17 @@ Those five seeds score **3,374 / 3,231 / 3,365 / 3,379 / 3,350**: mean
 only adds **0.45%** to the mean. These vary planner randomness on one fixed
 instance; they are not five independently generated instances.
 
-The seed-3 trajectory also repeats exactly on **32 workers / 16 physical
-cores**, scoring **3,379** against NMS **3,172**: **+6.5%**. That run uses the
-active-cost-row implementation and averages 105 ms (maximum 235 ms). The separate four-core control
-repeats all actions, assignments and events exactly, with observed mean latency
-326→310ms (one pair on shared hosts). The four-core and
-32-worker throughput comparisons remain separate.
+The best **32-worker / 16-physical-core** run is now **3,395**, versus NMS
+**3,172**: **+7.0%**. It changes one directional cost pair in generated field15
+(flip seed5, planner seed3); mean latency79ms, maximum181ms, zero errors or
+timeouts. This is the best of24 local guidance mutations on one fixed instance;
+four-core confirmation and other planner seeds are pending. It is a
+seed-specific record, not yet a demonstrated average improvement.
+
+The previous seed-3 trajectory repeats exactly on both allocations at3,379.
+The active-cost-row four-core control also preserves every action, assignment
+and event, with observed mean latency326→310ms (one pair on shared hosts).
+The four-core and32-worker throughput comparisons remain separate.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -96,6 +101,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T11:09:45.903706+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Same3,374 trajectory; independent per-step RNG; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.4% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-workers32/summary.json) |
 | 2026-09-20T11:17:50.924764+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step RNG; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3379 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.0% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-seed3/summary.json) |
 | 2026-09-20T11:25:19.439602+00:00 | [32b333a](https://github.com/fywu85/lorr/commit/32b333a) | Same seed3 trajectory on32 workers; active cost rows; K1024, contrast2.4, field15; `--trick RANDOM-05` | 3379 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.5% | [Full evidence](random05/results/active-cost-split-full-v28/seed3-workers32/summary.json) |
+
+| 2026-09-20T11:51:07.120923+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | One directional pair reversed, flip seed5; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3395 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.0% | [Full evidence](random05/results/guidance-local-split-full-v31/flips1-seed5/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -459,3 +466,15 @@ The published NMS score of 3,050 used different instances and hardware.
   a performance candidate. The selected four-visit policy passes the same
   mobility test, including deterministic trajectories across worker counts.
   Its full-map performance is still unmeasured.
+
+- Local guidance search, fullK1024/32 workers, planner seed3: control3,379.
+  Reversing1/4/16 directional pairs gives maxima3,395/3,365/3,306 across
+  eight flip seeds each. Only one candidate beats control, by16 tasks (+0.47%).
+  It uses one flip with seed5. Record the maximum, while keeping replication
+  separate from selection. Four-core confirmation and seeds0/1/2/4 are queued.
+  All25 full runs finish without errors or timeouts. Evidence:
+  `random05/results/guidance-local-split-full-v31/`.
+
+- Initial operation-policy full runs: K1=152, K8=1,018. Both are valid but far
+  below the current pipeline. Larger portfolios and policy ablations are still
+  running. The three-step policy remains experimental and disabled by default.

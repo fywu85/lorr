@@ -77,6 +77,13 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
         if(cfg.deadends && g.pocket[f.loc[a]] &&
            (!active || g.pocket[chain->goals[f.stage[a]]]!=g.pocket[f.loc[a]]))priority[a]+=1000000;
         for(const auto& group:model.groups[state[a]]) {
+            // Optional EPIBT-style active search: an unchanged footprint is a
+            // valid inherited fallback, but cannot end a repair before trying
+            // a detour. This keeps waiting safe without ranking it above every
+            // temporary increase in distance when the goalward path is blocked.
+            const auto& footprint=model.path(state[a],group[0]);
+            if(cfg.operation_moving && std::all_of(footprint.begin(),footprint.end(),
+                    [&](int v){return v/4==f.loc[a];}))continue;
             Candidate best{1e30f,0,-1};
             for(int code:group) {
                 const auto& path=model.path(state[a],code);

@@ -27,7 +27,7 @@ struct Config {
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
     int operation_depth=0, operation_revisits=4;
-    bool operation_inherit=true;
+    bool operation_inherit=true, operation_moving=false;
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, reverse_penalty=0;
     float triage_scale=0.45;

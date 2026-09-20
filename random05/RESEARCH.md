@@ -67,3 +67,11 @@ A one-visit ablation stalled in the dense toy simulation after redundant turns
 were removed. It is rejected as a performance candidate. The selected four-visit
 policy and its no-inheritance ablation retain the full mobility/collision
 regressions; no liveness guarantee is claimed for arbitrary revisit settings.
+
+The first full-map operation prototype is weak (K1=152, K8=1,018, K32=1,019,
+K128=1,246). Inspection found a concrete difference from the reference: it
+excludes the all-wait operation from active candidates, whereas our grouped
+stationary footprint could stop search before considering temporary detours.
+`R05_OPERATION_MOVING=1` tests moving footprints only, while retaining the
+entire inherited plan as the safe fallback when all repairs fail. The default
+remains0; full-run results, not this rationale, will decide whether it helps.
