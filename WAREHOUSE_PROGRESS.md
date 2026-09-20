@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 18:46 UTC.
+Updated: 2026-09-20 19:25 UTC.
 
 **Best verified Warehouse run: 155,120 tasks (TRICK, seed 0)**, 325 above the NMS target of 154,795. The same profile scores **155,120 / 154,999 / 155,056 / 155,020** on seeds 0–3, mean **155,048.75**, with all four above target. Full 5,000 steps / 10,000 robots, zero errors or timeouts. Native Warehouse bands, raw remaining potential, matching64, **pickup weight 8**, configured horizon 5,000 and the prospective **p90** completion margin require `--trick WAREHOUSE`. Ordinary fairness stays enabled and short preference stays OFF. [Full result and configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
 
@@ -10,7 +10,9 @@ The [weight-8 four-seed confirmation](experiments/construction-20260918/results/
 
 The next motion/compute comparisons are complete: [neutral-tail scoring](experiments/construction-20260918/results/native-neutral-tail-full-v101/summary.md) loses 190 / 174 tasks; [two full-depth workers](experiments/construction-20260918/results/native-workers-full-v103/summary.md) give -141 / +28 and four lose 311 / 261. All runs validate, but none raises the best or paired mean. Retain the original score and one global worker.
 
-The new read-only fresh-pickup audit passes [exact native](experiments/construction-20260918/results/fresh-pickup-native-screen-v105/summary.md) and [generic](experiments/construction-20260918/results/fresh-pickup-generic-screen-v105/summary.md) 800-step replays with every real counter unchanged. Warehouse has only seven threshold-qualified permutations in that prefix; full cutoff-period measurements are running. A separate [weight-6/8/10 refinement](experiments/construction-20260918/native_pickup/P90_REFINEMENT.md) is running on full paired seeds. Neither changes the current best or recommended profile yet.
+The [weight-6/8/10 refinement](experiments/construction-20260918/results/p90-pickup-refine-v106/summary.md) is complete: weights6 and10 lose both full seeds (-66/-272 and -127/-287), so retain8. The [full fresh-pickup audit](experiments/construction-20260918/results/fresh-pickup-native-full-v105/summary.md) reproduces both full trajectories and real work counters exactly; its qualifying conditional cost residual is modest and concentrated near the cutoff. The [initial-dispatch probe](experiments/construction-20260918/results/bootstrap-pickup-audit-v107/summary.md) also exposes limited physical-distance reduction within its tested groups. No new record from these experiments.
+
+A general [five-step unopened-matching option](experiments/construction-20260918/match_cadence/README.md) now passes complete regressions and exact native/generic compatibility checks. Its full paired comparison against the unchanged ten-step reference is running, with the same protections, one-retarget cap and20-step cooldown. More rematching is not yet evidence of higher throughput.
 
 The [p90 four-seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md) for the preceding pickup-weight-5 profile gives **155,057 / 154,846 / 154,727 / 154,912**, mean **154,885.5** (90.5 above NMS), with three of four seeds above target. Every first-half task finishes in all four runs. This confirms the preceding profile on the same fixed input; it is not a new single-run best. The [p95 / p99 refinement](experiments/construction-20260918/results/horizon-percentile-refine-v98/summary.md) loses on both seeds at both values, so p90 is retained.
 

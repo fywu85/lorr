@@ -10,3 +10,6 @@ The complete regression suite now passes (source `1ac2a4dd31bfe2b2262c4ab496604f
 
 
 V108 native 800-step default/five-step screen and exact generic 800-step replay are running on disjoint reserved cores. The native default must reproduce the current p90 / pickup-weight-8 prefix exactly; the generic run must reproduce its established matching reference. Full 5,000-step paired seeds 0/2 will follow only if these capability checks pass. No throughput change is claimed from compilation, regression fixtures or a short prefix.
+
+
+Both screens passed: [native](../results/match-cadence-native-screen-v108/summary.md) and [generic](../results/match-cadence-generic-screen-v108/summary.md), verified 2026-09-20 19:16:17 / 19:15:57 UTC. The full 10-versus-5 comparison is now GRID8900503, verifier8900504, independent accounting8900505. It holds p90 / pickup weight8 fixed, uses seeds0/2, and reserves16 disjoint physical cores. Raw `runs/cgar-match-cadence-native-full-v108-20260920`, outputs `results/match-cadence-native-full-v108` and `-outcomes`. A larger number of rematches is activity evidence, not a throughput claim.

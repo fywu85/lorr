@@ -232,6 +232,8 @@ def main():
                 assert int(m['nodes']) <= int(m['groups']) * 2048
             print('CADENCE_VERIFIED', r['case'], interval, matches[-1]['passes'], flush=True)
         samples[r['case']] = dict(global_work=global_samples, regional_work=regional, percentile=q_samples, native_service=service_samples)
+        if a.mode == 'cadence':
+            samples[r['case']]['matching'] = matches
         if a.mode == 'fresh':
             fresh = int(env.get('CGAR_FRESH_PICKUP_AUDIT', '0')); assert fresh in (0, 1)
             samples[r['case']]['fresh_audit'] = audit_tools.audit_samples(lines, fresh, 5000, int(env['CGAR_FLOW_COST_SCALE']))
