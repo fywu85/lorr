@@ -3558,7 +3558,7 @@ void native_metric_regression() {
  // and parallel preparation must yield identical schedules/actions/cache work.
  setenv("CGAR_TURN_PREFETCH_THREADS","4",1);setenv("CGAR_TURN_TABLE_MB","64",1);setenv("CGAR_TURN_COMPACT","1",1);
  setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
- struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;int services=0,repeated=0,completed=0;};
+ struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;int services=0,repeated=0,completed=0,rotations=0;};
  auto episode=[&](const char* bands,int preparation,int audit=0){
   setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",std::to_string(audit).c_str(),1);
   setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);setenv("CGAR_TEMPORAL_PREP_THREADS",std::to_string(preparation).c_str(),1);
@@ -3581,6 +3581,7 @@ void native_metric_regression() {
    std::vector<Action> actions;policy.plan(&test,30000,actions);auto next=step(test,test.curr_states,actions);
    require(!next.empty(),"native episode collided or left the map");test.curr_states=next;
    for(int r=0;r<24;++r){trace.values.push_back(int(actions[r]));auto& task=test.task_pool.at(test.curr_task_schedule[r]);
+    trace.rotations+=actions[r]==Action::CR||actions[r]==Action::CCR;
     // Exactly one errand may complete for this robot on each physical tick.
     if(test.curr_states[r].location==task.locations[task.idx_next_loc]){
      ++trace.services;trace.repeated+=task.idx_next_loc>0&&task.locations[task.idx_next_loc]==task.locations[task.idx_next_loc-1];++task.idx_next_loc;
@@ -3591,8 +3592,13 @@ void native_metric_regression() {
   }
   trace.stats=policy.stats();trace.shadow=policy.match_budget_shadow();
   require(trace.services>0&&trace.repeated>0&&trace.completed>0,"native service episode was vacuous");
-  require(!trace.stats.flow_publications&&!trace.stats.flow_cache_resets&&trace.stats.temporal_prepared_robots==24*128&&
-   trace.stats.temporal_cold_worker_runs==128&&trace.stats.temporal_seed_rotations>0,"native episode changed work, published flow or missed wait-seed rotation");
+  if(trace.stats.flow_publications||trace.stats.flow_cache_resets||trace.stats.temporal_prepared_robots!=24*128||
+     trace.stats.temporal_cold_worker_runs!=128||
+     (!options(test.trick_instance).native_neutral_tail&&trace.stats.temporal_seed_rotations==0))
+   throw std::runtime_error("native episode counters: publications="+std::to_string(trace.stats.flow_publications)+
+    " resets="+std::to_string(trace.stats.flow_cache_resets)+" prepared="+std::to_string(trace.stats.temporal_prepared_robots)+
+    " workers="+std::to_string(trace.stats.temporal_cold_worker_runs)+" seed_rotations="+std::to_string(trace.stats.temporal_seed_rotations)+
+    " service_choices="+std::to_string(trace.stats.native_service_choices)+" changed_choices="+std::to_string(trace.stats.native_service_changed_choices));
   return trace;
  };
  int episode_services=0,episode_repeated=0,episode_rotations=0;
@@ -3614,6 +3620,7 @@ void native_metric_regression() {
    serial.stats.native_service_changed_choices==parallel.stats.native_service_changed_choices&&
    serial.stats.oriented_builds==parallel.stats.oriented_builds&&serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops,
    "neutral tail depends on preparation thread order");
+  require(serial.rotations>0&&serial.rotations==parallel.rotations,"neutral episode missed physical rotations or changed them across threads");
   require(serial.stats.native_service_changed_choices>0&&serial.stats.native_service_choices>=serial.stats.native_service_changed_choices,
    "neutral tail production episode never repriced a serviced departure");
   neutral_trace_changes+=serial.values!=native_original_episodes.at(bands).values;
