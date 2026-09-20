@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "3",
+    "-binding",
+    "linear:3",
+    "-l",
+    "exclusive=true,h_rt=00:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "flow_coherence",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899278\n",
+  "retry_reason": "All eligible hosts currently occupy the exclusive resource; enqueue the same frozen request without immediate-availability verification. Core binding and exclusive/memory limits are unchanged."
+}

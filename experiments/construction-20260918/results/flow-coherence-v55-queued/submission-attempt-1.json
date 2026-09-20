@@ -1,0 +1,31 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "3",
+    "-binding",
+    "linear:3",
+    "-l",
+    "exclusive=true,h_rt=00:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "flow_coherence",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/job.sh"
+  ],
+  "returncode": 1,
+  "response": "Unable to run job: error: no suitable queues.\nExiting.\n"
+}

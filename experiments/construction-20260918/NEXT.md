@@ -572,3 +572,23 @@ no learned publications. Cold0..80/0..100max994.717/987.554ms; not a fullscore.
   lengths2–3only. Need movement-weighted coverage and disagreement BEFORE pooling.
 - Keep all new map-specific experiments behind --trick WAREHOUSE; [trick] commits
   and TRICK log entries. No-flag generic frontiers unchanged.
+
+## Generic flow coherence replay queued (2026-09-20 03:10 UTC)
+
+Previous goal turn made progress: explicit trick gating, verifiedV54startup,
+full no-flag/TRICK matrices queued, and completed generic exhaustive-group
+diagnostics. The generic target is still unmet and separate from TRICK.
+
+New offline FlowGuidance/traffic replay has frozen sources and8historicalcases
+(sixgeneric+KK+NMS),3physicalcores/max3concurrentprocesses. GRID8899278 is queued;
+raw runs/flow-coherence-v55-20260920. Initial submissionfailed because all exclusive
+hosts were occupied; retry only changed immediate-availability verification,
+not resource isolation. Do not resubmit a live queued job. Expect sourcefixtures,
+400Maction conservation, all60genericpublicationcountermatches and validgeometry.
+Results target results/flow-coherence-v55/verification.json. No result yet.
+
+Fable turn25 is running via persistentCLI, raw runs/fable-cgar-session/turn25,
+PTY58092; next promptisfollowup-25.md after this completes. Asked it to audit the
+diagnostic and the conditional generic degree2chain pooling operator, with
+minimum mean evidenceperedge preserved. Suppliedfullsnapshots+startupfacts.
+No generic production policy has changed in this turn.
