@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-20T18:14:24.045284+00:00",
+  "created_utc": "2026-09-20T19:05:16.590571+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "c654e11483f2d3f7f7a929faacdfa7e0c8dea14a6e3c94fb043c3e15d5e70804",
+  "manifest_sha256": "2be79f9fe58b4dbe838b3890af18b6bc22578cd620d1380ff32d5f9a7190e171",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -560,6 +560,98 @@
       "initial_still_unfinished": 141,
       "initial_still_unopened": 98,
       "initial_started_unfinished": 43,
+      "event_accounting_valid": true
+    },
+    "ours-four-cores-3709-strict": {
+      "result": "runs/random05/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/four-first5120-k6144-blend0.5-cycle-mask1-strict/result.json",
+      "result_sha256": "9378eafd393042ebfa8019a382ff3517f5ab3eaca476b265d77082177fa6e189",
+      "horizon_steps": 2000,
+      "tasks_finished": 3709,
+      "tasks_revealed": 4909,
+      "completed_latency": {
+        "count": 3709,
+        "mean_steps": 424.221623078997,
+        "p50_steps": 354,
+        "p95_steps": 1032,
+        "p99_steps": 1621
+      },
+      "maximum_release_to_completion": {
+        "steps": 1947,
+        "task_id": 674,
+        "released_at": 0,
+        "observed_at": 1947
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1935,
+        "task_id": 1020,
+        "released_at": 0,
+        "observed_at": 1935
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1187,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 492,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 659.4633333333334,
+      "initial_still_unfinished": 135,
+      "initial_still_unopened": 98,
+      "initial_started_unfinished": 37,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3755": {
+      "result": "runs/random05/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/32-screen2-keep4-k8192-b10-seed3-blend0/result.json",
+      "result_sha256": "25fff5ccda7bfaf75ab2f21e8832f2807e053e13b4d76c9abe54aa219b7e3a46",
+      "horizon_steps": 2000,
+      "tasks_finished": 3755,
+      "tasks_revealed": 4955,
+      "completed_latency": {
+        "count": 3755,
+        "mean_steps": 424.33981358189084,
+        "p50_steps": 347,
+        "p95_steps": 1076,
+        "p99_steps": 1639
+      },
+      "maximum_release_to_completion": {
+        "steps": 1919,
+        "task_id": 995,
+        "released_at": 0,
+        "observed_at": 1919
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1955,
+        "task_id": 252,
+        "released_at": 0,
+        "observed_at": 1955
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 491,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 643.6591666666667,
+      "initial_still_unfinished": 130,
+      "initial_still_unopened": 93,
+      "initial_started_unfinished": 37,
       "event_accounting_valid": true
     }
   }

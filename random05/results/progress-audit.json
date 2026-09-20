@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-20T18:11:36.391173+00:00",
+  "checked_utc": "2026-09-20T19:05:14.858023+00:00",
   "checks": [
     {
       "utc": "2026-09-20T07:55:37.615086+00:00",
@@ -4030,6 +4030,130 @@
       "entry_limit_ms": 1000,
       "maximum_entry_seconds": 0.825728693,
       "peak_rss_bytes": 460275712
+    },
+    {
+      "utc": "2026-09-20T18:59:20.474586+00:00",
+      "source_commit": "5f81613",
+      "tasks": 3755,
+      "evidence": "random05/results/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/summary.json",
+      "binary_sha256": "5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3",
+      "workers": 32,
+      "physical_cores": 16,
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "nms_tasks": 3172,
+      "waiting_metrics": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/32-screen2-keep4-k8192-b10-seed3-blend0/result.json",
+        "result_sha256": "25fff5ccda7bfaf75ab2f21e8832f2807e053e13b4d76c9abe54aa219b7e3a46",
+        "horizon_steps": 2000,
+        "tasks_finished": 3755,
+        "tasks_revealed": 4955,
+        "completed_latency": {
+          "count": 3755,
+          "mean_steps": 424.33981358189084,
+          "p50_steps": 347,
+          "p95_steps": 1076,
+          "p99_steps": 1639
+        },
+        "maximum_release_to_completion": {
+          "steps": 1919,
+          "task_id": 995,
+          "released_at": 0,
+          "observed_at": 1919
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1955,
+          "task_id": 252,
+          "released_at": 0,
+          "observed_at": 1955
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 491,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 643.6591666666667,
+        "initial_still_unfinished": 130,
+        "initial_still_unopened": 93,
+        "initial_started_unfinished": 37,
+        "event_accounting_valid": true
+      },
+      "nms_evidence": "random05/results/nms-original-full-v1/summary.json",
+      "matched_cpu_model_and_allocation": true,
+      "entry_limit_ms": 1000,
+      "maximum_entry_seconds": 0.353212214,
+      "peak_rss_bytes": 530128896
+    },
+    {
+      "utc": "2026-09-20T18:59:34.727026+00:00",
+      "source_commit": "f81b760",
+      "tasks": 3709,
+      "evidence": "random05/results/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json",
+      "binary_sha256": "bf7c38194ac3b2de0814c0be3ef9ff32195034d837e0fcf4ce31b210949d244c",
+      "workers": 4,
+      "physical_cores": 4,
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "nms_tasks": 2914,
+      "waiting_metrics": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/cycle-mask-strict-candidate-split-full-v61/four-first5120-k6144-blend0.5-cycle-mask1-strict/four-first5120-k6144-blend0.5-cycle-mask1-strict/result.json",
+        "result_sha256": "9378eafd393042ebfa8019a382ff3517f5ab3eaca476b265d77082177fa6e189",
+        "horizon_steps": 2000,
+        "tasks_finished": 3709,
+        "tasks_revealed": 4909,
+        "completed_latency": {
+          "count": 3709,
+          "mean_steps": 424.221623078997,
+          "p50_steps": 354,
+          "p95_steps": 1032,
+          "p99_steps": 1621
+        },
+        "maximum_release_to_completion": {
+          "steps": 1947,
+          "task_id": 674,
+          "released_at": 0,
+          "observed_at": 1947
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1935,
+          "task_id": 1020,
+          "released_at": 0,
+          "observed_at": 1935
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1187,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 492,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 659.4633333333334,
+        "initial_still_unfinished": 135,
+        "initial_still_unopened": 98,
+        "initial_started_unfinished": 37,
+        "event_accounting_valid": true
+      },
+      "nms_evidence": "random05/results/nms4-repeats-full-v3/summary.json",
+      "matched_cpu_model_and_allocation": true,
+      "entry_limit_ms": 1000,
+      "maximum_entry_seconds": 0.888503838,
+      "peak_rss_bytes": 462557184
     }
   ],
   "all_valid": true

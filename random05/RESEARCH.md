@@ -583,3 +583,51 @@ generation, so both anchor and best survive. Add explicit rejection coverage
 and enlarge the matched-root fixture while preserving its smaller first step.
 This is a failed test caught before any throughput experiment, retained in
 build-v64; use a new frozen build for the correction.
+
+The corrected staged implementation passes the complete regression suite13.73s.
+Two completed diagnostic runs (3743 and3709) reproduce every trajectory field
+of their prior versions. Across80 sampled generations per run, screening on
+2branches and retaining25% preserves100% of the eventual winners, and99.1%/97.0%
+of top-eight candidates. This is an observational result on sampled states, not
+a guarantee for the new search. It supports full2000-step experiments at
+K5120/B14/s2/q4 andK5120/B10/s2/q4, plusK8192/B10/s2/q4. All use fourgenerations,
+E8/P8, existing policy/scheduler/tricks. Compare blends0/.5 where declared.
+Keep unchanged-search controls at3655four and3743on32. TwoK5120/B14 candidates
+also run directly on four cores under1s; larger32 runs first measure behavior.
+
+The initial staged32-worker full runs score3670/3574 atK5120/B14/blend0/.5,
+3635 atK5120/B10/blend0,3730/3572 atK8192/B10/seed0/blend0/.5, and3755 at
+K8192/B10/seed3/blend0. The unchanged control exactly reproduces3743.
+3755 is the new selected32-worker record (+18.4% vs matchedNMS3172), with
+257ms mean/353ms max and530MB RSS. Relative to ordinaryK8192/B8: seed0 loses13
+andseed3 gains50. Finish seeds1/2/4 before any replicated-improvement claim.
+
+Use the remaining32-worker deadline headroom forK16384/B10/seeds0and3 and
+K16320/B14/seed3, allscreen2/keep4/blend0. Also test declaredfirstK5120 then
+K6000/B14 orK6144/B10 on both32workers andfourcores. ExistingK5120/B14 direct
+four-core confirmations remain running. Every experiment is a full2000-step
+strict1s run and completes its declared fixed budget; no partial-score promotion.
+
+The four-core3709 configuration now completes under strict1s in sourcef81b760:
+mean819.6ms, max888.5ms, RSS463MB. Its complete trajectory equals the earlier
+relaxed source60c5f9b result. This reaches+27.3% versus matchedNMS4=2914 on the
+development input. Do not attribute the full timing difference to cycle masks;
+host conditions also differ, and the standalone cycle-mask four-core control
+had a first-step1277.9ms failure. All prior failures remain archived.
+
+Two larger staged32-worker cases fail at step0: K16384/B10/seed0=1093.3ms and
+K16320/B14/seed3=1133.0ms. No throughput is assigned. Test new explicit startup
+budgets8192 and8000 respectively, retaining the larger regular budgets. The
+full-K16384/B10/seed3 run continues separately; its later sample lookahead is
+about508ms. First-step reduction is fixed at configuration time, not chosen
+from observed runtime. It can change the trajectory and requires full evaluation.
+
+The first larger stagedK6000/B14/first5120 case scores3664 on32workers, below
+3670 atK5120/B14. Increasing work is again non-monotonic. Test a narrower
+comparison that preserves1024 roots and256 fully evaluated finalists: s2/B12
+withK4608, s2/B16 withK5632, ands4/B16 withK7168; the existing s2/B14 usesK5120.
+AlluseE8/P8/gen4/seed3/blend0. The ordinary fullB16/1024-root reference scored
+3741 usingK16384. Staged searches can diverge through eliminated parents, so
+identical trajectories are not assumed. The s2/B16/K5632 option also receives
+a direct four-core strict1s run: the currentK5120/B14 first-step profile is
+approximately827ms, leaving plausible room for this measured work increase.

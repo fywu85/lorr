@@ -33,6 +33,22 @@ transitions are collision-certified, and the simulator independently validates
 complete 2,000-step runs. Regression tests cover chained costs, task locks,
 collision rejection, dense turnover, deterministic worker counts, and eviction.
 
+Optional staged search uses `R05_SCREEN_BRANCHES=s` and
+`R05_SCREEN_KEEP=q`. Every candidate receives `s` complete futures; the best
+`1/q` then receive all `R05_CONTINUATIONS=B` futures before final selection.
+The incumbent anchor occupies one of those survivor slots. Each generation
+must allow at least two survivors so the screened leader also survives.
+`R05_K` remains the exact total of branch evaluations, with work `q*s+B-s`
+per group of `q` roots. Only fully evaluated candidates become parents or
+persist between real steps. For example, K5120/B14/s2/q4 over four generations
+tests1,024 roots and fully evaluates256. Screening is disabled by default.
+
+`R05_BRANCH_DIAGNOSTICS=N` separately logs already-computed branch scores every
+N steps without altering search decisions. Use `tools/audit_branch_ranking.py`
+on completed diagnostic runs to measure screening recall. The diagnostic and
+staged modes are mutually exclusive. [Measured screening evidence](results/branch-ranking-20260920/REPORT.md)
+precedes the staged throughput experiments; recall alone is not a throughput gain.
+
 Build and test on GRID:
 
 ```sh
@@ -49,7 +65,8 @@ python3 random05/tools/grid.py submit --kind benchmark \
 
 The runner freezes source/binaries, hashes inputs and guidance files, reserves
 physical cores through GRID, verifies binding, and places concurrent cases on
-disjoint cores. Each solver process has a 32 GB address-space cap. `results/`
+disjoint cores. Resource rejections produce terminal invalid summaries before
+any solver starts; they are distinguished from running jobs. Each solver process has a 32 GB address-space cap. `results/`
 contains compact evidence; `runs/` contains ignored binaries and full traces.
 Experimental settings stay off unless explicitly enabled; use the configuration
 in the frontier's evidence to reproduce it rather than assuming defaults are best.

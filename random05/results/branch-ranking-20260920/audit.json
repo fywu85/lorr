@@ -1,0 +1,805 @@
+{
+  "checked_utc": "2026-09-20T18:59:04.888425+00:00",
+  "interpretation": "Observational screening only; no staged-search throughput or statistical guarantee is inferred.",
+  "runs": [
+    {
+      "name": "k8192-b8-seed0-branch-diagnostics100",
+      "log": "/shared/share_mala/fw2449/lorr2024/runs/random05/branch-diagnostics-split-full-v62/k8192-b8-seed0-branch-diagnostics100/k8192-b8-seed0-branch-diagnostics100/native.log",
+      "log_sha256": "f7098490bd5f5bc2aa350bf2800192cd1206c640ff4dd34942cd2c7dba663367",
+      "raw_result_sha256": "c2454d7cfb2cb868fa0e08ebaaed9d06f99115ad062df7209ee022d3acd3f949",
+      "binary_sha256": "255cb5e1f28bccfc962231c1bc6c479ea95ded6db5a2998ad186edc922c62ead",
+      "tasks": 3743,
+      "full_branches": 8,
+      "sampled_steps": 20,
+      "anchor_rule": "Always retain the first candidate in each generation; replace the weakest prefix survivor if necessary.",
+      "measurements": [
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 0.9625,
+            "top8_recall": 0.9296875,
+            "mean_full_value_loss": 0.12192004974931478,
+            "maximum_full_value_loss": 4.648795835673809,
+            "mean_winner_prefix_rank": 14.2125
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 0.95,
+              "top8_recall": 0.91875,
+              "mean_full_value_loss": 0.1695175003260374,
+              "maximum_full_value_loss": 3.390350006520748,
+              "mean_winner_prefix_rank": 13.05
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 0.975,
+              "top8_recall": 0.925,
+              "mean_full_value_loss": 0.04286145344376564,
+              "maximum_full_value_loss": 1.7144581377506256,
+              "mean_winner_prefix_rank": 14.9
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 0.95,
+              "top8_recall": 0.95,
+              "mean_full_value_loss": 0.23243979178369045,
+              "maximum_full_value_loss": 4.648795835673809,
+              "mean_winner_prefix_rank": 14.0
+            }
+          }
+        },
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 0.9875,
+            "top8_recall": 0.99375,
+            "mean_full_value_loss": 0.04237937508150935,
+            "maximum_full_value_loss": 3.390350006520748,
+            "mean_winner_prefix_rank": 14.2125
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 0.95,
+              "top8_recall": 0.98125,
+              "mean_full_value_loss": 0.1695175003260374,
+              "maximum_full_value_loss": 3.390350006520748,
+              "mean_winner_prefix_rank": 13.05
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.996875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 14.9
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 14.0
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.990625,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 5.5875
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 5.65
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.984375,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.575
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.99375,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.55
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 5.5875
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 5.65
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.575
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.55
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 1.9
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.85
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.0
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.75
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 1.9
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.85
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.0
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.75
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "k16384-b16-seed3-branch-diagnostics100",
+      "log": "/shared/share_mala/fw2449/lorr2024/runs/random05/branch-diagnostics-split-full-v62/k16384-b16-seed3-branch-diagnostics100/k16384-b16-seed3-branch-diagnostics100/native.log",
+      "log_sha256": "841971b012342efde78e7271dd0493b2493b7448d8036d81614f6e3e05de4ce3",
+      "raw_result_sha256": "f95af30e195cb762ab74e9ac2ac43e9c85fea6b78f2dd72f6ee46f71d32de055",
+      "binary_sha256": "255cb5e1f28bccfc962231c1bc6c479ea95ded6db5a2998ad186edc922c62ead",
+      "tasks": 3741,
+      "full_branches": 16,
+      "sampled_steps": 20,
+      "anchor_rule": "Always retain the first candidate in each generation; replace the weakest prefix survivor if necessary.",
+      "measurements": [
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.91875,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 9.9875
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.91875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.45
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.91875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 10.375
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.91875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.75
+            }
+          }
+        },
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.990625,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 9.9875
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.45
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 10.375
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.75
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.971875,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 7.5625
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.96875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 7.8
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.96875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.4
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.98125,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.65
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.99375,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 7.5625
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.98125,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 7.8
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.996875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.4
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 9.65
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.996875,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 4.2375
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.4
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.375
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.8
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 4.2375
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.4
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.375
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 6.8
+            }
+          }
+        },
+        {
+          "prefix_branches": 8,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 2.1125
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.5
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.35
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.25
+            }
+          }
+        },
+        {
+          "prefix_branches": 8,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 1.0,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 2.1125
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.5
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.35
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "first5120-k6144-b8-blend0.5-seed3-buffered-diagnostics100",
+      "log": "/shared/share_mala/fw2449/lorr2024/runs/random05/branch-diagnostics-buffered-split-full-v63/first5120-k6144-b8-blend0.5-seed3-buffered-diagnostics100/first5120-k6144-b8-blend0.5-seed3-buffered-diagnostics100/native.log",
+      "log_sha256": "8f5839a66bb34b3ac9ef144062f3723a402ea9267d32683976d434784ba11e91",
+      "raw_result_sha256": "31d0c6df5669800e6e7bf36bc36136a1c198209533f4ab15489225c2e38085cc",
+      "binary_sha256": "0fc4d5614e68d1645edd6cfe9a6c013e3c1a3cd1a6a3b0bcc9533c2ee18630c7",
+      "tasks": 3709,
+      "full_branches": 8,
+      "sampled_steps": 20,
+      "anchor_rule": "Always retain the first candidate in each generation; replace the weakest prefix survivor if necessary.",
+      "measurements": [
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 0.975,
+            "top8_recall": 0.9109375,
+            "mean_full_value_loss": 0.04788503185845912,
+            "maximum_full_value_loss": 2.80379181727767,
+            "mean_winner_prefix_rank": 8.9375
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9125,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.6
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 0.975,
+              "top8_recall": 0.9,
+              "mean_full_value_loss": 0.02567526828497648,
+              "maximum_full_value_loss": 1.0270107313990593,
+              "mean_winner_prefix_rank": 12.3
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 0.95,
+              "top8_recall": 0.93125,
+              "mean_full_value_loss": 0.1401895908638835,
+              "maximum_full_value_loss": 2.80379181727767,
+              "mean_winner_prefix_rank": 7.55
+            }
+          }
+        },
+        {
+          "prefix_branches": 1,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 0.9875,
+            "top8_recall": 0.9796875,
+            "mean_full_value_loss": 0.035047397715970874,
+            "maximum_full_value_loss": 2.80379181727767,
+            "mean_winner_prefix_rank": 8.9375
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9625,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.6
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 12.3
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 0.95,
+              "top8_recall": 0.98125,
+              "mean_full_value_loss": 0.1401895908638835,
+              "maximum_full_value_loss": 2.80379181727767,
+              "mean_winner_prefix_rank": 7.55
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.9703125,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 4.225
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.975,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.85
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 0.975,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 5.775
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.95625,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.5
+            }
+          }
+        },
+        {
+          "prefix_branches": 2,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.9984375,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 4.225
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.99375,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.85
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 5.775
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 3.5
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.25,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.9953125,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 2.225
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.9875,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.6
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.5
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.99375,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.3
+            }
+          }
+        },
+        {
+          "prefix_branches": 4,
+          "retained_fraction": 0.5,
+          "overall": {
+            "generations": 80,
+            "winner_survival": 1.0,
+            "top8_recall": 0.9984375,
+            "mean_full_value_loss": 0.0,
+            "maximum_full_value_loss": 0.0,
+            "mean_winner_prefix_rank": 2.225
+          },
+          "phases": {
+            "early_0_499": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 0.99375,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 1.6
+            },
+            "middle_500_1499": {
+              "generations": 40,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.5
+            },
+            "late_1500_1999": {
+              "generations": 20,
+              "winner_survival": 1.0,
+              "top8_recall": 1.0,
+              "mean_full_value_loss": 0.0,
+              "maximum_full_value_loss": 0.0,
+              "mean_winner_prefix_rank": 2.3
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
