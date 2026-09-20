@@ -34,7 +34,7 @@ struct PolicyScratch {
 Config Config::environment(const SharedEnvironment& env) {
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
-    c.generations=integer("R05_GENERATIONS",1);
+    c.generations=integer("R05_GENERATIONS",1);c.elites=integer("R05_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
@@ -49,7 +49,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
-       c.generations>c.futures/c.continuations || c.continuation_start<1 ||
+       c.generations>c.futures/c.continuations || c.elites<1 ||
+       c.elites>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
        !std::isfinite(c.future_mutation) || c.future_mutation<0 || c.future_mutation>1)
         throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
@@ -1283,9 +1284,34 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         // Keep the total number of complete rollouts fixed. Later batches
         // refine this step's incumbent; one generation preserves the original
         // random draws, candidate order, and equal-score acceptance behavior.
-        const auto& parent=generation?results[best].offsets:best_offsets_;
+        std::vector<int> parents;
+        if(generation && cfg.elites>1) {
+            // Retain several distinct evaluated priority vectors instead of
+            // making every later mutation descend from one incumbent. Keeping
+            // the incumbent first preserves the same unmodified anchor.
+            parents.push_back(best);
+            std::vector<int> ranked(begin);std::iota(ranked.begin(),ranked.end(),0);
+            std::sort(ranked.begin(),ranked.end(),[&](int a,int b) {
+                if(results[a].score!=results[b].score)return results[a].score>results[b].score;
+                return cfg.accept_equal?a>b:a<b;
+            });
+            for(int candidate:ranked) {
+                bool duplicate=false;
+                for(int old:parents)if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
+                if(!duplicate)parents.push_back(candidate);
+                if(int(parents.size())>=cfg.elites)break;
+            }
+        }
+        int exploitation=0;
         for(int k=begin;k<end;++k) {
-            offsets[k]=parent;
+            int parent=best;
+            if(!parents.empty()) {
+                // Fully random candidates have no inherited values. Do not
+                // let their every-fourth positions starve one elite of trials.
+                const bool global=k>begin && k%4==0;
+                parent=parents[global?0:exploitation++%parents.size()];
+            }
+            offsets[k]=generation?results[parent].offsets:best_offsets_;
             if(k>begin) {
                 // Keep one quarter of the portfolio global. Other futures can
                 // change one spatial neighborhood while preserving its context.

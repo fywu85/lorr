@@ -1,0 +1,55 @@
+{
+  "checked_utc": "2026-09-20T15:49:40.960287+00:00",
+  "reference": "runs/random05/radix-split-full-v51/radix-k4096-b4-workers32/radix-k4096-b4-workers32/result.json",
+  "reference_sha256": "ef86e277344e3746ffb24dbc56d3218fa009a20a65cf36ef66e535fca5a5b618",
+  "cases": {
+    "radix-k4096-b4-workers4": {
+      "raw_result": "runs/random05/radix-split-full-v51/radix-k4096-b4-workers4/radix-k4096-b4-workers4/result.json",
+      "sha256": "31ecc475a3636c6e9ea2b2e17d2139b1274af5fa22b9f5209b8a5f1f78b4937e",
+      "source_commit": "9ad642e",
+      "exact_fields": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "latency_seconds": {
+        "mean": 0.8239923360154989,
+        "max": 0.936662512
+      },
+      "usage": {
+        "user_seconds": 6510.162205,
+        "system_seconds": 4.622624,
+        "peak_rss_kib": 289028,
+        "wall_seconds": 1650.1384319998324,
+        "exit": 0
+      }
+    },
+    "ranking-k4096-b4-workers4": {
+      "raw_result": "runs/random05/ranking-cache-split-full-v52/ranking-k4096-b4-workers4/ranking-k4096-b4-workers4/result.json",
+      "sha256": "e07e52a8077142f555005f9cdc7d73976c84e8c4635aba021a5b5d3f61763ead",
+      "source_commit": "6ce9312",
+      "exact_fields": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "latency_seconds": {
+        "mean": 0.6687305324975001,
+        "max": 0.806278127
+      },
+      "usage": {
+        "user_seconds": 5252.909997,
+        "system_seconds": 4.291272,
+        "peak_rss_kib": 301584,
+        "wall_seconds": 1339.7482937108725,
+        "exit": 0
+      }
+    }
+  }
+}

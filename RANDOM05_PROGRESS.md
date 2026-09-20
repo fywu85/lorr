@@ -987,3 +987,29 @@ input/binary hashes and allocation are linked in the audits.
   are now valid and complete; the smaller K2048/four-generation seed0/4
   configuration remains the four-core record at 3,562. Larger optimized search
   and signed-continuation full comparisons remain pending at this checkpoint.
+
+- K4096/B4 now completes all2,000 steps under the strict four-core deadline,
+  both with radix sorting alone and with the candidate-ranking cache. Both
+  finish3,555 tasks, exactly matching every32-worker action, assignment and
+  event. The previous kernel exceeded1s at the first step for this search size.
+  This establishes full feasibility of the exact speedups; it does not yet beat
+  the3,562 four-core task record. Full K5120 throughput remains pending.
+  [Four-core equivalence and timings](random05/results/ranking-cache-split-full-v52/four-core-equivalence.json).
+
+- The signed-score comparison completes all8 strict four-core runs. At one
+  generation, coefficients0/-0.25/-0.5/-1 give3,501/3,403/3,384/3,471;
+  at four generations they give3,520/3,543/3,521/3,505. Both zero controls
+  preserve every previous action, assignment and task event. The small gain
+  for -0.25 with four generations needs planner-seed checks before adoption;
+  the four-core record remains3,562.
+  [Full results](random05/results/optimistic-continuations-four-split-full-v53/summary.json),
+  [zero-control equivalence](random05/results/optimistic-continuations-four-split-full-v53/control-equivalence.json).
+
+- Build-v54 adds optional multiple elite parents between search generations,
+  retaining distinct evaluated priority vectors and the existing incumbent.
+  Fully randomized candidates do not consume an elite's mutation slot. Total
+  rollout work remains fixed; one elite preserves the previous algorithm.
+  Single-generation equivalence, dense task turnover, duplicate-parent handling
+  and worker-count regressions pass. A bounded full four-core comparison tests
+  2/4/8/16 parents and one interaction with the small optimism bonus. No gain
+  is assumed before full results. This is a general search change.

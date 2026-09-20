@@ -343,6 +343,26 @@ void exact_hot_paths() {
     }
 }
 
+void elite_parents() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
+    cfg.goal_cache=true;cfg.candidate_cache=true;cfg.radix_order=true;cfg.scratch_reuse=true;
+    cfg.dispersion=0.8;cfg.fast_dispersion=true;cfg.rollout_match=true;
+    const auto single_generation=simulate(cfg,12);cfg.elites=4;
+    require(single_generation==simulate(cfg,12),"elite setting changed a single-generation search");
+    cfg.generations=4;
+    for(int count:{1,2,4,8}) {
+        cfg.elites=count;cfg.threads=1;
+        const auto serial=simulate(cfg,12);cfg.threads=2;
+        require(serial==simulate(cfg,12),"elite-parent search changed with worker count");
+    }
+    // Duplicated anchors and a degenerate mutation distribution must still
+    // produce a nonempty parent set and a valid collision-free decision.
+    cfg.noise=0;cfg.mutation=0;cfg.elites=8;cfg.threads=1;
+    const auto duplicates=simulate(cfg,12);cfg.threads=2;
+    require(duplicates==simulate(cfg,12),"duplicate elite handling changed with worker count");
+}
+
 void continuation_risk() {
     Config cfg;cfg.futures=16;cfg.continuations=4;cfg.future_mutation=0;cfg.depth=6;
     cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
@@ -402,6 +422,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    elite_parents();
     cached_candidate_rankings();
     shared_goal_costs();
     Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
