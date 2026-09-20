@@ -1,6 +1,6 @@
 # Continue Warehouse throughput work
 
-Updated2026-09-20 20:47UTC. User says continue maximizing CGAR Warehouse throughput. No internalagents. Fable46 failed exhaustedcredits; no new quota authorization/change, next47 onlyafterquotachanges. No active formalgoal (previous goalcomplete). Sourcechanges/testworkarecomplete; two fullcomparisons below RUNNING. No productionbuildactive. Concurrent random05forksharesmain/worktree/index/jobs: neverstageortouchtheirpaths; explicit `git commit --only -- <our paths>`; wait/retryliveindexlock,neverdelete. Shelltoolsrequireescalation becausebwrapbroken.
+Updated2026-09-20 20:57UTC. User says continue maximizing CGAR Warehouse throughput. No internalagents. Fable46 failed exhaustedcredits; no new quota authorization/change, next47 onlyafterquotachanges. No active formalgoal (previous goalcomplete). Sourcechanges/testworkarecomplete; two fullcomparisons below RUNNING. No productionbuildactive. Concurrent random05forksharesmain/worktree/index/jobs: neverstageortouchtheirpaths; explicit `git commit --only -- <our paths>`; wait/retryliveindexlock,neverdelete. Shelltoolsrequireescalation becausebwrapbroken.
 
 ## New verified best:155173
 
@@ -34,9 +34,13 @@ Firstlauncher8900651absentSGE_BINDING,second8900653actualbindingnotappliedresear
 
 Cachefollowup:latestnativefullsampledmetriccoverage10000/10000at4800/5000;widefallbacktables0;baselinecumulativeorientedfallback12889unchangedat4800/5000. Old8/16GiBcomparisonidentical. DoNOTblindlylaunchcachecapacitysweep.
 
+## DurationauditV115 (read-only,completedhistoricalpart)
+
+`duration_audit/analyze.py`,results`duration-audit-v115`.40paired historicaleffects:24whole-run,16cutoff. 800stepsonly12/24whole-rundirectionscorrect(5false-negativewinners,7false-positivelosers);4000misses3winners. Earliestallstablesample4975whole-run,5000cutoff/all. All16cutoffpairsunchangedtaskcountsthrough4000;4975still4losersfavored. No reliablyshortprefixfoundforthesenearbychanges;800capabilityonly,full5000promotion. Selectedsharedinput/seeds/controls,notindependentconfidenceevidence. Scriptdeclarespendingnative-turnV113+guardV114asheld-outcasesBEFOREfullcompletion. Afterbothverificationfilesready,run`python3 experiments/construction-20260918/duration_audit/analyze.py --held-out --output experiments/construction-20260918/results/duration-audit-held-out-v115`;doNOTtunecheckpointswiththefuturedata. Fullrunscontinueirrespectiveprefixes. Preservehashboundinputs.
+
 ## Reproducibilityandcloseout
 
-Source/auditcommitdac3fc7andvalidatedprotocolb6e7cfbpushedsuccessfullytoPUBLICfywu85/lorr. CurrentHEADmayadvancewithrandom05. Newbest/fullcadencereports,WPROGRESS/TARGET/README,NEXT,summarize.py,andnative_turn/match_horizonfinalnotespendingourscopedcommit/push. NoC++editsuncommitted. Useghcredentialhelperpush;authorized. Do notretryFable46quotafailure. Bestgeneric145083experimental,confirmedgeneric0196851sixmean144392.1667unchanged. PreviousguardOFFfourmean155048.75recordunchangedarchive.
+Source/auditcommitdac3fc7andvalidatedprotocolb6e7cfbpushedsuccessfullytoPUBLICfywu85/lorr. CurrentHEADmayadvancewithrandom05. Newbest/fullcadencereports,WPROGRESS/TARGET/README,NEXT,summarize.py,andnative_turn/match_horizonnotesscopedcommitted843af1candpushed. Durationauditpendingnewcommit. NoC++editsuncommitted. Useghcredentialhelperpush;authorized. Do notretryFable46quotafailure. Bestgeneric145083experimental,confirmedgeneric0196851sixmean144392.1667unchanged. PreviousguardOFFfourmean155048.75recordunchangedarchive.
 
 ## Other completed work; do not repeat
 
