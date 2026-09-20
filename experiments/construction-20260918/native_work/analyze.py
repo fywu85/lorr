@@ -31,8 +31,8 @@ def sha(p):
 
 def normalize_environment(environment):
     result = dict(environment)
-    # These two absent selectors have exactly the same semantics as explicit 0.
-    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL']:
+    # These absent selectors have exactly the same semantics as explicit 0.
+    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT']:
         if result.get(key) == '0':
             result.pop(key)
     return result
@@ -84,7 +84,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -99,6 +99,8 @@ def main():
                      'throughput-20260918-next/analyze_matrix.py', 'throughput-20260918-strict/analyze.py',
                      'construction-20260918/verify_full.py']:
             copies['experiments/' + name] = ROOT / 'experiments' / name
+        if a.mode == 'fresh':
+            copies['audit_tools.py'] = BASE / 'fresh_pickup/audit_tools.py'
         files = {}
         for name, source in copies.items():
             target = support / name; target.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(source, target)
@@ -126,7 +128,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -153,9 +155,12 @@ def main():
         reference[row['seed']] = row
     assert reference, 'verified reference does not contain the complete requested control environment'
     metrics = {m['case']:m for m in read(out / 'metrics.json')}
-    samples = {}; fairness = {}
+    samples = {}; fairness = {}; fresh_real = {}
+    if a.mode == 'fresh':
+        sys.path.insert(0, str(support))
+        audit_tools = importlib.import_module('audit_tools')
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -213,6 +218,10 @@ def main():
             assert all(int(m['workers']) == int(m['threads']) == workers and 0 <= int(m['selected_worker']) < workers for m in global_samples)
             assert all(int(m['repairs']) == 1000000 or int(m['candidates']) >= 4000000 for m in global_samples)
         samples[r['case']] = dict(global_work=global_samples, regional_work=regional, percentile=q_samples, native_service=service_samples)
+        if a.mode == 'fresh':
+            fresh = int(env.get('CGAR_FRESH_PICKUP_AUDIT', '0')); assert fresh in (0, 1)
+            samples[r['case']]['fresh_audit'] = audit_tools.audit_samples(lines, fresh, 5000, int(env['CGAR_FLOW_COST_SCALE']))
+            fresh_real[r['case']] = hashlib.sha256(json.dumps(audit_tools.real_diagnostics(lines), separators=(',', ':')).encode()).hexdigest()
         if r['variant'] == control and r['seed'] in reference:
             ref = reference[r['seed']]
             assert r['tasks'] == ref['tasks'] and r['trajectory_sha256'] == ref['trajectory_sha256'], ('control mismatch', r['case'])
@@ -224,11 +233,17 @@ def main():
         if r['variant'] == control or r['seed'] not in controls:
             continue
         c = controls[r['seed']]
+        if a.mode == 'fresh':
+            assert r['environment']['CGAR_FRESH_PICKUP_AUDIT'] == '1' and c['environment']['CGAR_FRESH_PICKUP_AUDIT'] == '0'
+            assert r['tasks'] == c['tasks'] and r['trajectory_sha256'] == c['trajectory_sha256']
+            assert fresh_real[r['case']] == fresh_real[c['case']], 'audit changed real work counters'
         pairs.append(dict(seed=r['seed'], variant=r['variant'], tasks=r['tasks'], control_tasks=c['tasks'],
                           difference=r['tasks']-c['tasks'], final1000_difference=r['final1000']-c['final1000'],
                           age_p90_difference=r['outstanding_age_p90']-c['outstanding_age_p90']))
     result.update(mode=a.mode, control_variant=control, exact_reference_control_seeds=sorted(set(controls) & set(reference)), pairs=pairs,
                   promoted=False, scope='Full fixed-work Warehouse TRICK with ordinary fairness. Shared5s development,32decimalGB. Finite fairness observations do not prove starvation freedom.')
+    if a.mode == 'fresh':
+        result.update(exact_audit_trajectories=True, exact_audit_real_diagnostics=True, real_diagnostic_sha256=fresh_real)
     write(out / 'verification.json', result); write(out / 'work-samples.json', samples); write(out / 'fairness.json', fairness)
     for name in ('frontier-analysis-request.json','frontier-analysis-submission.json'):
         shutil.copy2(raw / name, out / name)
