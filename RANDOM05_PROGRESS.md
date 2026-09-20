@@ -1147,3 +1147,21 @@ input/binary hashes and allocation are linked in the audits.
   with every action, assignment, event and task identical to the prior64-slot
   run. Four-core full timing checks and K6144 attempts remain in progress.
   [Exact controls](random05/results/ranking-capacity-control-split-full-v58/control-equivalence.json).
+
+
+- The retained-parent configuration establishes a new four-core selected best
+  of3,655, but its five planner seeds average3,589.8 versus3,606.0 for the
+  one-parent policy. Preserve both the maximum and the negative mean result.
+  Stronger root mutations0.5/1 also lose at both tested budgets.
+  [Seed comparison](random05/results/persistent-parents-seeds-split-full-v55/summary.json),
+  [mutation comparison](random05/results/stronger-root-mutation-split-full-v55/summary.json).
+- Increasing ranking-cache capacity64->512 preserves the entire3,637 trajectory
+  while reducing four-core mean latency791->772ms. The larger caches also make
+  firstK5120/regularK6144 finish below1s, but its3,545 tasks do not beat the
+  frontier. Keep the earlier cache64 timeout in the evidence.
+  [Timing](random05/results/ranking-capacity-four-split-full-v58/summary.json),
+  [full trajectory equivalence](random05/results/ranking-capacity-four-split-full-v58/6144-equivalence.json).
+- Replaying the latest records separates loaded waits with active goals from
+  waits after declared horizon triage: about13% of our loaded waits have a
+  suppressed goal. This is descriptive accounting, not recoverable throughput.
+  [Current action and suppression report](random05/results/action-audit-current-v55/REPORT.md).

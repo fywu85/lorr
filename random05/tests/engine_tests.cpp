@@ -449,6 +449,24 @@ void continuation_risk() {
     }
 }
 
+void cached_kinematic_masks() {
+    for(int variant=0;variant<6;++variant) {
+        Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+        cfg.radix_order=true;cfg.rollout_match=true;cfg.random_by_step=true;
+        cfg.candidate_cache=variant!=0;cfg.cache_slots=8; // frequent evictions
+        if(variant==1)cfg.prospective_wait=true;
+        if(variant==2)cfg.intent_rotation=false;
+        if(variant==3)cfg.push_price=2; // dynamic costs bypass ranking cache
+        if(variant==4)cfg.expansion_limit=20; // preserve failure/fallback order
+        if(variant==5){cfg.intent_mode=2;cfg.pre_cycles=3;}
+        const auto original=simulate(cfg,12);cfg.kinematic_mask=true;
+        require(original==simulate(cfg,12),"kinematic mask changed candidate order or collision resolution");
+        cfg.threads=2;
+        require(original==simulate(cfg,12),"kinematic mask changed across workers or task turnover");
+    }
+}
+
 void cached_candidate_rankings() {
     for(int variant=0;variant<4;++variant) {
         Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
@@ -497,6 +515,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    cached_kinematic_masks();
     elite_continuations();
     initial_search_budget();
     annealed_mutation();

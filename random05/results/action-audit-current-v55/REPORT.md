@@ -28,3 +28,25 @@ untested hypothesis; no past score, action or reservation will be reused.
 [complete trajectory equivalence checks](trajectory-controls.json).
 Order release-to-completion latency is tracked separately in
 [the waiting report](../task-waiting-frontiers-20260920T1612/REPORT.md).
+
+## Goal suppression near the horizon
+
+The replay reconstructs our triage condition from current positions, task stages,
+remaining grid distances and cumulative steps per forward move. It reproduces
+all20 sampled native triage/movement counts in each of our runs, and its totals
+match the independently certified action audit.
+
+| Run | Loaded waits with an active goal | Loaded waits with a suppressed goal | Suppressed share of loaded waits |
+|---|---:|---:|---:|
+| ours-four-3655 | 520097 | 79060 | 13.2% |
+| ours-32-3705 | 520986 | 81395 | 13.5% |
+| nms-four-2914 | 483779 | 0 | 0.0% |
+| nms-32-3172 | 475108 | 0 | 0.0% |
+
+For NMS the table reports raw loaded waits; no equivalent internal suppression
+rule is inferred. Our suppression starts after step1400 in these runs. It
+accounts for about13% of our loaded waits, so it must be separated from ordinary
+traffic delays. Neither category is a causal estimate of lost throughput.
+
+[Suppression audit](suppression-audit.json) includes200-step bins and checks
+against the native logs. [Reproduction manifest](suppression-manifest.json).

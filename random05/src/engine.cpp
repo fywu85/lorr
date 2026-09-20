@@ -10,6 +10,7 @@
 #include <numeric>
 #include <queue>
 #include <stdexcept>
+#include <type_traits>
 #include <unordered_set>
 #include <omp.h>
 
@@ -28,6 +29,7 @@ struct PolicyScratch {
     std::vector<uint64_t> priority_keys, radix_buffer;
     std::vector<CachedRanking*> ranking_slots;
     std::vector<unsigned char> ranking_hits;
+    std::vector<unsigned int> kinematic_masks;
 };
 }
 Config Config::environment(const SharedEnvironment& env) {
@@ -53,6 +55,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.policy_profile=integer("R05_POLICY_PROFILE",0);
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
+    c.kinematic_mask=integer("R05_KINEMATIC_MASK",0);
     c.cache_slots=integer("R05_CACHE_SLOTS",64);
     if(c.cache_slots<8 || c.cache_slots>1024 || (c.cache_slots&(c.cache_slots-1)))
         throw std::invalid_argument("candidate cache slots must be a power of two in [8,1024]");
@@ -789,6 +792,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     auto& candidate_count=scratch.candidate_count;candidate_count.resize(n);
     auto& ranking_slots=scratch.ranking_slots;ranking_slots.assign(n,nullptr);
     auto& ranking_hits=scratch.ranking_hits;ranking_hits.assign(n,0);
+    auto& kinematic_masks=scratch.kinematic_masks;
+    if(cfg.kinematic_mask)kinematic_masks.resize(n);
     // Push loss depends on another robot's state, so that optional policy uses
     // the original path. All other ranking inputs are captured below; priorities
     // and collision resolution are always recomputed for the current future.
@@ -869,6 +874,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         auto& cand=candidates[i];int count=0;
         if(ranking_hits[i]) {
             const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
+            if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
             std::copy_n(entry.candidates.begin(),entry.count,cand.begin());continue;
         }
         for(int d=0;d<4;++d) {
@@ -900,8 +906,17 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             cand[j]=value;
         }
         candidate_count[i]=count;
+        if(cfg.kinematic_mask) {
+            // Eligibility depends only on the same pose/moving-state key as
+            // the cached ranking. Preserve sorted indices, including waiting.
+            unsigned int mask=0;
+            for(int k=0;k<count;++k)
+                if(cand[k].v==p[i] || allowed(i,cand[k].d))mask|=1u<<k;
+            kinematic_masks[i]=mask;
+        }
         if(ranking_slots[i]) {
             auto& entry=*ranking_slots[i];entry.count=count;
+            if(cfg.kinematic_mask)entry.kinematic_mask=kinematic_masks[i];
             std::copy_n(cand.begin(),count,entry.candidates.begin());
         }
     }
@@ -910,7 +925,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     order_priorities(priorities,cfg.packed_order,cfg.radix_order,order,scratch.priority_keys,scratch.radix_buffer);
     mark_policy(2);
     auto& prepared=scratch.prepared;prepared.clear();
-    auto choose=[&](bool kinematic) {
+    auto choose=[&](auto mode_tag) {
+    constexpr int mode=decltype(mode_tag)::value;
+    constexpr bool kinematic=mode!=0;
     std::fill(chosen.begin(),chosen.end(),-1);
     std::fill(reserve.begin(),reserve.end(),-1);
     if(kinematic && cfg.intent_mode==2)for(int i=0;i<n;++i)if(prepared[i]!=p[i]) {
@@ -920,9 +937,16 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     int expansions=0;
     auto pibt=[&](auto&& self,int a)->bool {
         ++expansions;
-        for(int k=0;k<candidate_count[a];++k) {
+        unsigned int remaining=0;
+        if constexpr(mode==2)remaining=kinematic_masks[a];
+        for(int ordinal=0;mode==2?remaining!=0:ordinal<candidate_count[a];++ordinal) {
+            int k=ordinal;
+            if constexpr(mode==2) {
+                k=__builtin_ctz(remaining);remaining&=remaining-1;
+            }
             int v=candidates[a][k].v;
-            if(kinematic && v!=p[a] && !allowed(a,candidates[a][k].d))continue;
+            if constexpr(mode==1)
+                if(v!=p[a] && !allowed(a,candidates[a][k].d))continue;
             if(expansions>cfg.expansion_limit && v!=p[a])continue;
             if(reserve[v]>=0)continue;
             int b=owner[v];
@@ -946,7 +970,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     expansion_count+=expansions;
     };
     auto& intent=scratch.intent;intent.clear();
-    if(cfg.intent_rotation){choose(false);intent=chosen;}
+    if(cfg.intent_rotation){choose(std::integral_constant<int,0>{});intent=chosen;}
     if(cfg.intent_mode) {
         // The collision-free spatial assignment decomposes into disjoint chains
         // ending at holes and cycles. Commit a component only when every member
@@ -969,7 +993,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     mark_policy(3);
     // Mode 1 executes only complete ready components. Mode 2 pins those moves
     // and fills the remaining space with the usual kinematic PIBT policy.
-    if(cfg.intent_mode==1)chosen=prepared;else choose(true);
+    if(cfg.intent_mode==1)chosen=prepared;
+    else if(cfg.kinematic_mask)choose(std::integral_constant<int,2>{});
+    else choose(std::integral_constant<int,1>{});
     mark_policy(4);
     if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {

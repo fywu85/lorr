@@ -404,3 +404,22 @@ continuations, branchzero remains constant-offset, and total work is unchanged.
 Regressions cover zero-mutation invariance, task turnover, virtual task assignment
 and worker determinism. Full default controls must reproduce3655/3705 before
 any new score is accepted.
+
+Separately test larger fixed budgets for the persistent-parent policy: K16384
+with8or16 continuations, and K8192 with16 continuations. This distinguishes
+spending extra work on more root candidates from reducing noise in each root's
+estimated future value. Keep fourgenerations/E8/P8 and all other settings fixed,
+source05559b7, against existingK8192/B8=3705. Larger budgets have not uniformly
+helped; these are bounded full-run tests, not an assumption of monotonic scaling.
+
+
+Current four-core sampled profiling moves the CPU bottleneck: candidate ranking
+is about5% of policy time; optimistic and kinematic PIBT passes about16% and26%.
+Test exact cached kinematic eligibility. The ranking key already includes task,
+stage, position, heading and moving state. R05_KINEMATIC_MASK (default0) stores
+which sorted candidates obey the turn/move restriction. Executable PIBT visits
+only these indices in original order, retaining every occupancy/reservation
+check, failure fallback and expansion-limit rule. Separate compile-time pass
+modes also remove the optimistic pass's dynamic kinematic branch. The behavior
+must remain exact, including configurations with dynamic push costs or pinned
+components. Full trajectory and timing controls are required before adopting it.

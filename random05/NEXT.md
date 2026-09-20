@@ -1,240 +1,141 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 17:03 UTC.
+Updated: 2026-09-20 17:33 UTC.
 
-Goal ACTIVE and not yet complete: approach the colleague's roughly 27–28%
-matched gain over NMS on four cores in the combined track. Their code/inputs
-are unavailable; the pasted dev log guides this independent implementation.
-Latest user steering: throughput remains PRIMARY; waiting time is a useful
-secondary metric. Keep working; touch base this evening. No new fairness bound
-or throughput-sacrificing requirement was imposed.
+Goal ACTIVE. User: keep pushing throughput until evening; order latency is
+secondary, with no fairness constraint that sacrifices throughput. Independent
+Random05 combined solver guided by the colleague's pasted log, not their code.
+Target approximately27–28% matched NMS gain onfourcores, then improve further.
 
-## Current verified records
+## Verified records
 
-- Archived-input overall /32 workers: **3,705**, source **05559b7**, build-v55,
-  K8192/B8/start2/local0, generations4, elites8, persist8, planner seed3. Mean240ms,
-  max361ms, RSS591MB. **+16.8% vs NMS32=3172**. Evidence:
-  results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json.
-- Four physical cores: **3,648**, source **6ce9312**, build-v52,
-  K5120/B8/start2/local0, generations4, elites1, planner seed2. Mean791ms,
-  max927ms, RSS about309MB. **+25.2% vs strongest NMS4=2914** (other repeats
-  2902/2903). Evidence: results/k5120-seeds-four-split-full-v52/
-  k5120-generations4-seed2/summary.json. best-four-cores.json selects it.
-- Previous four-core best3,637 uses the same config/source, planner seed3.
-  Its exact configuration remains the frozen candidate for fresh validation V3.
-- K5120/four-generation planner seeds0–4:3611/3526/3648/3637/3608, mean3606.0.
-  K2048/four-generation:3562/3499/3514/3520/3562, mean3531.4. All five pairs
-  improve, +2.1% mean. These are planner seeds on ONE development input.
-- Previous overall3,657: sourced933023/build-v46,K16384/B8/gen1/seed3.
-  Its raw result remains in continuation-larger-split-full-v46/k16384-b8/.
-- Cutoff-free records: four3285 (+12.7%), sourcee896201/K2048/B8/gen1/seed3;
-  32workers3408 (+7.4%), sourced933023/K8192/B8/gen1/seed3. They still use
-  the guidance trick. Known-horizon controls3501/3596; effects+6.6%/+5.5%.
+- Overall /32workers:3705, source05559b7/build-v55, K8192/B8/start2/local0,
+  gen4/E8/persist8, plannerseed3. Mean240ms,max361ms,RSS591MB. +16.8% vsNMS3172.
+- Fourphysicalcores:3655, source05559b7/build-v55, same exceptK5120.
+  Mean790.7ms,max931.1ms,RSS309MB. +25.4% vsstrongestNMS4=2914.
+  Evidence:results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/.
+- The latter is a selected record, NOT a replicated mean improvement:
+  E8/P8 seeds0–4=3583/3495/3614/3655/3602,mean3589.8,1/5positive vsE1/P1.
+  E1/P1 seeds=3611/3526/3648/3637/3608,mean3606.0. Fast32 seed3 reproduces
+  everyaction/schedule/event/task of3655four.
+- Fresh validationV3 COMPLETE: frozen81bdfbd,source6ce9312/build-v52,
+  K5120/B8/gen4/E1/P1,plannerseed3 (3637 development run).
+  Input50005:3698 vsNMS2926/2900;50006:3619 vs2906/2831.
+  +26.38%/+24.54%, aggregate+25.46% against strongerrepeat, all6valid.
+  results/fresh-validation-v3/audit.json. Never substitute laterrecords.
+  Inputs50001–50006 are heldout and MUST NOT be used for tuning.
+- Cutoff-free oldbests3285four(K2048/gen1) and3408on32(K8192/gen1),stillguidance
+  trick. Known-horizon controls3501/3596. No newfairnessbound.
 
-All frontier rows: full2000 steps, strict1s, no errors/timeouts, <=32decimalGB.
-32 workers means16 physical EPYC9354 cores using SMT; four workers meansfour
-physical cores. CPU bindings verified by GRID. Shared hosts allowed. Fixed work;
-timeout exits124 rather than returning a partial search. Budget and allocation
-must match NMS when quoting local gains. Published server numbers are indirect.
+All records full2000steps,strict1s,30spreprocess,32decimalGBguard,noerrors/timeouts.
+4workers=4physicalcores;32workers=16physicalcores/SMT2. EPYC9354 verifiedGRIDbinding,
+sharedhostsallowed. Fixedwork;timeout exit124,no partialsearch. NMS4=2914 strongest
+repeat(others2902/2903),NMS32=3172. Sameinput/machineallocation; publishedscoresindirect.
+NMSsource retains documented constructorfix,4workerbuildonlychangesTHREADS32->4.
 
-Common config: field15, one direction pair flipped (flipseed5), contrast2.4,
-turn.6/wait.5, depth8/noise200/dispersion.8, guided Hungarian matching,
-keep.5/length.25, horizon2000/triage1.5, per-step independent RNG, risk0.
-Explicit --trick RANDOM-05 gates field/horizon/age-cap tricks. Search/caching
-are general mechanisms; recorded bests still use these declared tricks.
-All current optimized builds enable shareprefix, packedorder, fastdispersion,
-scratchreuse, goalcache, radixorder, candidatecache. Code defaults stayoff.
+Common bestenv: field15 generatedflow,average/normalize,power3,between.75,
+penalty2.4,oneflippedpair/flipseed5;turn.6/wait.5;depth8/noise200/dispersion.8;
+Hungarian1000,guidedmatching,keep.5/length.25;horizon2000/triage1.5;stepRNG.
+Exactflags shareprefix,packedorder,fastdispersion,scratchreuse,goalcache,radixorder,
+candidatecache. Defaultcache64. Mutation/futuremutation.3;decay1;risk0.
+--trick RANDOM-05 gates field/horizon/agecap. Algorithm/cachechangesgeneral.
+See best*.json for frozen source/config/evidence, not current defaultflags.
 
-## Waiting-time tracking (new user request)
+## Completed latest tests
 
-Completed-order latency = final waypoint minus release time, in simulation
-steps. Include oldest unfinished age and initial-cohort unfinished/unopened
-counts; completed-only maxima hide the censored tail. Initial pool1200.
-Old3637four vsNMS2914: completed maxima1947/1997; initial unfinished133/219;
-initial unopened101/102. Old3657 vsNMS3172: maxima1954/1976, unfinished134/206,
-unopened96/91. New3689: max1929, unfinished141, unopened96. Both solvers leave
-some step-zero orders unfinished after2000, so eventual maximum wait is UNKNOWN.
-New3648: maxcompleted1890, initialunfinished135, unopened98, startedunfinished37.
-New3705: maxcompleted1922, initialunfinished135, unopened94, startedunfinished41.
+v55 persistentelites: K8192/E8/P8=3705 vsP1=3689,P4=3671.
+FourK5120/E8/P8=3655,P4=3599,vsP1=3610. E1/P1reference3637.
+Higherrootmutation.5/1 fails: K5120/E1=3545/3460vs3637;
+K8192/E8/P8=3537/3472vs3705. Preserve.3.
 
-random05/tools/audit_task_waits.py checks events/releases/completion counts and
-hashes raw results. audit_progress.py now checks waiting metrics on every
-historical frontier and generates random05/WAITING_PROGRESS.md automatically.
-It resolves early shortened archive names by frozen spec timestamps and exact
-spec/summary equality, then checks raw trajectory hashes. Main audit remains
-results/progress-audit.json. Matched latency report+manifest:
-results/task-waiting-frontiers-20260920T1612/. Keep updating it for new bests.
-Throughput remains primary; do not pick a lower-throughput solver for latency.
+v56 0bd0a41 mutationdecay.25/.5/.75failsmainbudgets;defaultcontrols3637/3705exact.
+v57 0295ae9 FIRST_K5120 reservesstartuproom;regular5632/5888fourvalid3650/3591,
+max930/968ms. Regular6144/cache64failedstep2at1000.533ms,exit124,nopartialscore.
+Fast32counterparts3650/3591/3545;fulltrajectoriesequalwherefourvalid.
+IncreasingKisnotmonotonicallybetter.
+v58 bdc051f cachecapacity64/128/256/512 preserves3637 fulltrajectory.
+Fourmeans790.96/778.00/775.68/772.03ms,max920.19/914.66/906.41/901.01ms.
+RSS300860/317468/358912/435544KiB. Slots512saves2.4% meantime.
+FIRST_K5120/regular6144with128/256/512allVALID3545(max989/997/982ms).
+Allthreeexactlyequalfast32trajectory. Earlierfailed64attemptretained.
+results/ranking-capacity-four-split-full-v58/6144-equivalence.json.
 
-## Fresh validation
+v59 **d6a3e0f**, new R05_FUTURE_ELITE_BLEND default0,range[0,1],positive
+requirespersist>=2. Percontinuation,chooseonepastpriorityvectorcyclically.
+Atoriginalfuturemutationmaskpositions,blendnewrandomoffsetwithretainedoffset.
+SameRNGdraws/masks,branch0constant,emptyhistoryfallsbackrandom. No stalescores,
+actions orreservations. Samefixedwork. Tests8.63sPASS includingzero-mutation
+invariance,dense taskturnover/virtualassignment,worker1/2determinism.
+Build-v59 SHA7ab2ed25fa8795ae367c58a9104e95b59a3648b03f21cdbbb023a8721b5d40c4.
+FulldefaultcontrolsMUSTreproduce3655/3705. No resultor gainclaimyet.
 
-V1 complete: sourceb824f5d/protocol22e7cd1, inputs50001/50002:
-3386 vsNMSmax2957 and3178 vs2915, aggregate+11.8%, all6valid.
-V2 complete: sourcee896201/protocole6b2dbe, inputs50003/50004:
-3494 vsNMSmax2984 and3387 vs2892, aggregate+17.1%, all6valid.
-Different V1/V2 inputs: gain difference is not a paired causal estimate.
+Earlier rejected: optimism risk-.25(mean3492.8vs3531.4),4parentsK2048neutralmean,
+blindfields33–48alllosetofield15,predictivematching3450/3541vs3520/3637,
+oldoperationkernelsfarbehind. ReviewRESEARCH/mainlogbefore repeating oldhypotheses.
 
-V3 COMPLETE, ALL6 AUDITED: frozen **81bdfbd**, source **6ce9312**, exact3637four config,
-K5120/B8/gen4/elites1/risk0/plannerseed3; DO NOT substitute3648/3689/newer code.
-New inputs50005/50006 generated after freeze; never use50001–50006 for tuning.
-Candidate results3698/3619 are valid, max927/924ms. NMS repeats2926/2900
-and2906/2831; stronger-repeat gains26.38%/24.54%, aggregate25.46%.
-Audit passed; all inputs stay excluded from tuning. All six runs use four physical
-EPYC9354 cores, full2000, strict1s/30spreprocess/32decimalGB AS guard.
-Generator800unique starts,100000tasks, lengths2–5 INCLUSIVE, uniform free-cell
-stops, reveal pool1.5*800. Generation metadata includes helper/NumPy/input hashes.
-Protocol: FRESH_VALIDATION_V3.md, experiments/fresh-validation-v3-protocol.json.
-After all6 outcomes exist, archive compact evidence and run:
+## Live jobs at this checkpoint
 
-    python3 random05/tools/audit_fresh.py --batch random05/results/fresh-validation-v3-split-full-v52 --output random05/results/fresh-validation-v3/audit.json --protocol-commit 81bdfbd --protocol-json random05/experiments/fresh-validation-v3-protocol.json
+- persistent-budget-split-full-v55:8900370 K16384/B8,8900371 K16384/B16,
+  8900372 K8192/B16. Allgen4/E8/P8/seed3/32workers. Source05559b7.
+  Tests roots-vs-continuationbudget against3705K8192/B8.
+- elite-futures-split-full-v59:8900373/374/375 K5120blend0/.5/1;
+  8900376/377/378 K8192blend0/.5/1. Allgen4/E8/P8/seed3/32workers.
+  Controls3655/3705; allfixedstrict1s/full2000. Fourcoreconfirmonlyifpromising.
 
-No silent restart, hidden failure, new candidate, changed input or relabeling.
+Readqstatandsummariesbeforeacting;do not rerunmissing/NFSdelayed cases.
+Use split_grid.py collect, archiveonlycompactbatch/spec/allocation/summary/completion.
+Use one-/two-levelglob,NEVERrecursiveNMSworkingdirectorycopy.
 
-## Recent implementation and experiments
+## Accounting / secondary metrics
 
-v49 bd01f97 immutable minimum-heading goal cache; v51 9ad642e exact radix sort;
-v52 6ce9312 bounded per-agent/worker candidate-ranking cache. Dense and full-run
-controls preserve trajectories. Four K4096/B4 repeats3555 exactly; ranking cache
-reduces mean824->669ms. Four K5120/B8 gen1/2/4 scores3537/3591/3637. These CPU
-changes enabled the larger four-core search. All keep collision search current.
+Mainprogress now61rows audited. audit_progress.py validates fullsource/input/
+trajectory/hash/allocation/latency and generates WAITING_PROGRESS.md.
+Taskwaitauditmanifest/report:results/task-waiting-frontiers-20260920T1612/.
+3655maxcompleted1916,initialunfinished141/unopened98/started43.
+3705max1922,initialunfinished135/unopened94. NMSfourmax1997,initialunfinished219;
+NMS32max1976,unfinished206. Everyrunhasstep0ordersunfinishedat2000;eventualmaximum
+unknown,atleast2000. Completed-onlymaximaexclude censoredtail.
 
-v53 94a8519 signed continuation coefficient. Optimism(-.25) gen4 seeds0–4 mean
-3492.8 vszero3531.4, only2/5positive. Reject optimism; keep coefficient0.
-Guidance fields33–48 alllose tofield15=3520; bestnewfield47=3444. Do not repeat
-blind field sweeps or previously failed search tricks without a new hypothesis.
+Currentactionaudit results/action-audit-current-v55/:allfourtrajectoriesreplayvalid.
+On2880commoncompletedtasks,fouroursuses24.16fewerturns,6.20fewerforwards,
+16.99morewaits/task (net13.36fewerloadedsteps). On3114common32tasks,oursuses
+13.63fewerturns,2.48fewerforwards,24.65morewaits(net8.54moreloadedsteps).
+Assignments/congestionhistoriesdiffer;notcausaleffectsorrecoverablethroughput.
+Triagealsosuppressesgoalslate,soactive-vs-suppressedwaitingdiagnosis mayhelp.
 
-v54 **8eb59d3** multiple distinct evaluated parents between search generations.
-Defaultelites1 preserves old algorithm. Full default controls are exact; tests
-pass. K2048/gen4 parents1/2/4/8/16=3520/3537/3618/3465/3497 onseed3.
-Four-parent seeds0–4=3553/3610/3484/3618/3394, mean3531.8 vs3531.4, only2/5pairs
-positive. Preserve selected maxima, but no replicated average improvement.
-K8192/elites8/gen4=3689; K16384/elites8/gen4=3673. Four-core K4096/5120
-parent tests are complete; none improves3648. K8192 oneparent/gen4=3582, gen1=3596.
+## Fable and workspace
 
-Predictive matching (existingflagR05_SCHED_PREDICT): currentK2048four3450 vs3520;
-K5120=3541 vs3637 on bothfour/32 withexact fulltrajectory. No promotion.
-Four-core extra parents:K4096/E4=3604,K5120/E4=3565,K5120/E8=3610; allvalid.
-
-v55 **05559b7**, build-v55, new R05_PERSIST_ELITES (default1). Keep several
-priority vectors across real steps, incumbentfirst. Next first-generation
-non-global slots try each unchanged once, then mutate in rotation; global slots
-remain global. Re-evaluate all scores/actions/reservations from current poses,
-tasks and ages. Fixed work unchanged. One carry uses original algorithm.
-Refactored elite selection is shared with intrastep parents; full default controls
-must reproduce3637(K5120/E1) and3689(K8192/E8). Regression tests pass5.99s,
-including task replacement, virtual task matches, duplicates and worker counts.
-BinarySHA695c6c37a57c90d63fb935a9dc276b84556f106b60d300a92598c9b25c36b6d3.
-Full comparisons COMPLETE. K2048/E1 carry2/4/8=3508/3540/3540 vs3520;
-K2048/E4/carry4=3562 vs3618. K5120/E1 carry2/4/8=3560/3596/3613 vs3637.
-K8192/E8 carry4/8=3671/3705 vs3689. Default controls3637/3689 have EXACT full
-trajectories. Selected3705 is a new record; no uniform or replicated mean gain.
-Four-core K5120/E8 withcarry4/8 is a separate pending follow-up.
-
-v56 **0bd0a41**, mutation decay across generations (R05_MUTATION_DECAY,
-default1). Dense tests pass6.80s. All11fullrunsvalid. Decay.25/.5/.75:
-K2048/E1=3503/3557/3513 vs3520; K5120/E1=3462/3526/3530 vs3637;
-K8192/E8/carry8=3628/3627/3702 vs3705. No main-frontier gain; leave1.
-Full default controls3637/3705exact. Binary
-81d3b88b335c15ccfb143c93c9b6fa3957ba9210d7e3f1cd704a6a8dfcd8ef19.
-
-v57 **0295ae9**, R05_FIRST_K default0 declares only timestep0's fixed work.
-RegularR05_K thereafter; neither count depends on elapsedtime. Motivation:
-allfiveK5120four planner seedspeak924–928ms atstep0, while maxafterstep4 is
-839–855ms. Startupmatching/costsetup needs extra room. Testspass7.39s;
-equalfirst5120/regular5120 fullcontrol EXACT3637. First5120/regular6144 fails
-at timestep2 (1000.533ms), exit124, no partial score; retainfailedattempt.
-Regular5632/5888stillrunning. Binary
- de663ce1e7fc3b50ea003dff6d349f0ec232528be2a8ed6707b624590d6c3517.
-
-v58 **bdc051f**, R05_CACHE_SLOTS poweroftwo8–1024/default64, boundedper-agent/
-worker ranking cache. Sameepoch/chain/stage/pose/movingkey; pushcostbypass stays.
-Tinycacheeviction and128/256 capacity equivalence tests pass7.35s. Fullcontrols
-must preserve3637; comparisons64/128/256/512 onfourcores and128/512 on32workers.
-FirstK5120/regular6144 is also attempted withlargercaches; this is a new declared
-implementation experiment, not a hidden retry of the failed64-slot configuration.
-All cases enableR05_PROFILE=1 for phase timing. No speedup/throughputclaim yet.
-Binaryb3692d914d9ef0c95074008c9cd37a75e08230289fb521afd4d75310ae7423ff.
-
-## Work still running
-
-- `persistent-parents-four-split-full-v55` / `k5120-elites8-persist4`: job8900309.
-- `persistent-parents-four-split-full-v55` / `k5120-elites8-persist8`: job8900310.
-- `startup-budget-four-split-full-v57` / `first5120-regular5632`: job8900312.
-- `startup-budget-four-split-full-v57` / `first5120-regular5888`: job8900313.
-- `startup-budget-fast-split-full-v57` / `first5120-regular5632-workers32`: job8900329.
-- `startup-budget-fast-split-full-v57` / `first5120-regular5888-workers32`: job8900330.
-- `startup-budget-fast-split-full-v57` / `first5120-regular6144-workers32`: job8900331.
-- `ranking-capacity-four-split-full-v58` / `k5120-slots64`: job8900320.
-- `ranking-capacity-four-split-full-v58` / `k5120-slots128`: job8900321.
-- `ranking-capacity-four-split-full-v58` / `k5120-slots256`: job8900322.
-- `ranking-capacity-four-split-full-v58` / `k5120-slots512`: job8900323.
-- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots128`: job8900324.
-- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots256`: job8900325.
-- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots512`: job8900326.
-
-Collect using split_grid.py; only compact JSON should be archived. Use direct
-one-/two-level globbing for batch/spec/allocation/summary/completion JSON rather
-than recursively traversing copied NMS working directories. Rawresult/native
-logs/binaries stay ignored. Do not restart a job merely because qstat disappears;
-NFS summaries can lag. Inspect original completion/qacct before any conclusion.
-
-## Fable
-
-User approved the exact79KB payload. Attempt at15:01UTC through claude-fable-5-1,
-max, toolsdisabled, persistent session27a4316e-b79d-46cf-86b4-41b0f558938a failed
-with providerHTTP429/model_requires_usage_credits. NO REVIEW, zerousage. User
-already informed. This is not a remaining approval rejection. Optional review
-does not block local work; do not re-ask permission for the same payload.
-Payloadruns/random05/fable-review-01/payload.txt, SHA
+Approved exact79KBpayload was attempted15:01UTC viaClaudeCode,max,samesession
+27a4316e-b79d-46cf-86b4-41b0f558938a. Provider429/model_requires_usage_credits;
+NO REVIEW,zerousage. Useralreadyinformed;optionalreviewnotblocking.
+Payloadruns/random05/fable-review-01/payload.txt SHA
  ded0889fcaa2cb82a3f4fd9d5dc46f737bdf50cf7a9e466bb66f9114f9661d0f.
-It is an older7506a snapshot from08:16. Retry exactbytes in same initialized
-session via--resume after creditsreturn; newoutputdirectory withcopiedmetadata
-because runner refusesexistingstatus.json. Preservefailedattempt. Do not silently
-replace the authorized payload with newsource. No subagent delegation authorized.
+Old7506a snapshot;do not silentlyreplaceauthorizedpayload. Ifcreditsreturn,
+retryexactbyteswith--resume innewoutputdirectory;preservefailedattempt.
 
-## Workspace / tools
+SharedmainwithWarehouseagent. Onlyedit/stage/commit random05/ andRANDOM05_PROGRESS.md.
+Leaveallotherchanges/jobsalone. No newsubagentdelegation. Publicfywu85/lorr,
+pushauthorized. Lastoursd6a3e0f(17:29);notyetpushedthiscontinuation.
+Commitusing git commit --only ... -- random05 RANDOM05_PROGRESS.md.
+Shellrequiresrequire_escalated duebwrapnamespacefailure. Python3.7;env/bin/python
+forNumPygenerator. apply_patchbroken,usePython. No relevantAGENTS/RTFfoundlocally.
+Push GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main.
 
-Shared main with Warehouse agent. Only edit/stage/commit random05/ and
-RANDOM05_PROGRESS.md. Leave cgar/,WAREHOUSE_PROGRESS.md,experiments/construction-
-20260918/ and their jobs/stagedchanges alone. Commit using --only forourscope.
-Publicfywu85/lorr; push authorized, no visibilitychange. Lastourscommits:
-611e824 verified fresh25.5%/four3648,05559b7 v55,0bd0a41 v56,0295ae9 v57,bdc051f v58. More recent sharedcommits mayexist.
-Use require_escalated for shell (bwrap namespace failure); routine work allowed.
-Python3.7; env/bin/python for NumPy generator. apply_patch broken; use Python.
-GRID scripts:grid.py submit build; split_grid.py submit/collect. Four-core hosts
-research33*|research39*, CPUexactAMD EPYC 9354 32-Core Processor. Wide32worker
-host list is inexisting submissions. Never changefrozen case/specs after submission.
-
-Push:
-GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
+Next:collectnewfulltests,validatecontrolsfirst,confirmnewselectedrecordsonfourcores
+wherefeasible,updatebest/log/waitauditforeachrecord. Preservefreshprotocolsandheldout
+inputs. Commitcompactevidence/checkpointandpush. Goalremainsactive.
 
 
-## Next useful actions
-
-1. Collect pending fullruns without restarting failures. Read sampledR05_PROFILE
-   lines from native.log only for latency diagnosis, not prefixthroughputranking.
-2. Verify capacity controls against every full action/schedule/event/task field
-   of reference3637; larger cache must be an exact implementation optimization.
-3. For any valid full newbest, updatebest*.json, mainprogress source/time/seed/
-   flags/allocation/evidence, audit_task_waits manifest/report and audit_progress
-   (currently60rows). ArchiveonlycompactJSON. UpdateWAITING_PROGRESS viaaudit.
-4. Keepallfreshvalidationinputs50001–50006 OUT of tuning. V3 is complete;
-   a different candidate needs a NEW protocol and NEW inputs if revalidating.
-5. Currentprimarygoalstillactive; fresh25.46% is close tocolleague27–28%, but
-   user explicitlyasked tokeep pushingthroughput until evening. Do not stop
-   merely because a smaller optimization failed. Seek measured bottlenecks or
-   distinct hypotheses; several prior tuning ideas are already rejected inlog.
-
-
-Startup5632/5888/6144 also run on32workers as fast full-horizon score checks
-(startup-budget-fast-split-full-v57). Fixed-work trajectories must agree with
-fourcores, but a32worker success alone does NOT prove fourcore1sfeasibility.
-At t100/200 the larger ranking caches showed only modest lookahead savings;
-all6144 variants had passed the oldtimestep2failurepoint. This is NOT a full
-validity or speedup claim. Await fullsummaries and compare exact trajectories.
-
-
-Both v58 32-worker capacity controls (slots128/512) are now full-run EXACT
-trajectory matches to3637 across actions/schedules/events/tasks. Evidence:
-results/ranking-capacity-control-split-full-v58/control-equivalence.json.
-Four-core timing and larger-K runs remain pending; no capacity speedup claim.
+Latest update: full four-core profile job8900381 is running (build-v58,
+K5120/E8/P8/cache512, expected3655; bothphaseandinternalpolicyprofiling).
+The firstfive sampledsteps put about42%ofpolicytime in the twoPIBTpasses,
+20%setup,13%cycles,11%actions,8%sortingand5%ranking. Prefixdiagnosisonly.
+Newoptional R05_KINEMATIC_MASK caches sorted candidate eligibility and specializes
+optimistic/kinematic passes. Sourceandtestsjustedited; build-v60 next. No speed
+orvalidityclaimyet. Test dense equality includingpushcost,turnrestriction,
+expansionlimits,pinnedcomponents,eviction,taskturnoverandworker1/2.
+Goal-suppression auditcompleted: loadedW active/suppressed520097/79060four,
+520986/8139532. All20native samplesmatch;about13%ofloadedwaitssuppressed.
+Elite-futureK5120blend0/.5/1 completed3655/3528/3506; defaultfullcontrol must
+be compared before archiving. K8192pending. LargerB16/K8192completed3568,
+below3705;K16384casespending.
