@@ -562,7 +562,26 @@ void branch_diagnostics() {
     }
 }
 
+void staged_continuations() {
+    for(bool shared:{false,true}) {
+        Config cfg;cfg.futures=160;cfg.continuations=10;cfg.continuation_start=2;cfg.depth=6;
+        cfg.generations=2;cfg.random_by_step=true;cfg.future_mutation=0;
+        cfg.share_prefix=shared;cfg.rollout_match=true;cfg.cost_cache=true;
+        cfg.scratch_reuse=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+        cfg.accept_equal=true;cfg.first_futures=80;
+        // Identical continuations make screening exact. Both searches generate
+        // 16 roots (8 at the first step); only work on rejected roots differs.
+        const auto exhaustive=simulate(cfg,12);
+        cfg.screen_branches=2;cfg.screen_keep=4;cfg.futures=64;cfg.first_futures=32;
+        require(exhaustive==simulate(cfg,12),"staged search lost an exact winner with identical futures");
+        cfg.future_mutation=.3;cfg.elites=2;cfg.persist_elites=2;cfg.continuation_risk=.5;
+        const auto serial=simulate(cfg,12);cfg.threads=2;
+        require(serial==simulate(cfg,12),"staged search changed across workers or reused stale task state");
+    }
+}
+
 int main() {
+    staged_continuations();
     branch_diagnostics();
     cycle_word_masks();
     cached_kinematic_masks();

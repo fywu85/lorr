@@ -555,3 +555,23 @@ stderr, causing thousands of writes per observed step. Buffer each generation
 into one write before using the diagnostic for new measurements. Preserve the
 failed original; this logging-only correction changes neither computed work nor
 selection. Full trajectories still need verification.
+
+
+Draft a two-stage fixed-work continuation search, default disabled. With
+R05_SCREEN_BRANCHES=s and R05_SCREEN_KEEP=q, each generation evaluates all
+roots on s common futures, retains exactly one in q (plus its anchor within
+that quota), and evaluates those survivors on every remaining future up to B.
+The work per q-root group is q*s+B-s; K must divide into complete groups in
+every generation. No clocks alter work or return an unfinished search.
+For example K5120/B14/s2/q4/generations4 tests1024 roots and fully evaluates256,
+versus640 roots all evaluated atB8 in the currentK5120 control. Partial means
+never compete with full means; only fully evaluated candidates become parents
+or persist to the next real step. Cached shared prefixes and score accumulators
+resume in branch order, with first-action/promise consistency checks. A runtime
+branch-count assertion verifies the actual global work equals K.
+
+Meaningful tests compare staged and exhaustive search with identical futures
+and equal root streams, including explicit first-step budgets and shared-prefix
+on/off. Nonzero-noise/risk cases check worker determinism, task turnover and
+collision certificates. Full diagnostic results must justify screening before
+choosing new throughput experiments; this draft has no throughput claim yet.

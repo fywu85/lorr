@@ -21,6 +21,22 @@ constexpr float INF=1e20f;
 int integer(const char* key,int value) { const char* v=std::getenv(key);return v?std::stoi(v):value; }
 float real(const char* key,float value) { const char* v=std::getenv(key);return v?std::stof(v):value; }
 int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
+// K always counts completed branch evaluations. Screening spends s branches
+// on q roots, then B-s additional branches on one survivor: q*s+B-s work.
+int search_roots(const Config& cfg,int futures) {
+    if(futures<1 || cfg.continuations<1)throw std::invalid_argument("search work and continuations must be positive");
+    if(!cfg.screen_branches) {
+        if(futures%cfg.continuations)throw std::invalid_argument("continuations must divide K");
+        return futures/cfg.continuations;
+    }
+    if(cfg.screen_branches<1 || cfg.screen_branches>=cfg.continuations ||
+       cfg.screen_keep<2 || cfg.screen_keep>64 || cfg.generations<1 || cfg.branch_diagnostics)
+        throw std::invalid_argument("screening needs 0<s<B, retention denominator2..64, and no branch diagnostic");
+    const int64_t group=int64_t(cfg.screen_keep)*cfg.screen_branches+cfg.continuations-cfg.screen_branches;
+    if(futures%cfg.generations || (futures/cfg.generations)%group)
+        throw std::invalid_argument("each generation's K must divide into complete screening groups");
+    return int((futures/group)*cfg.screen_keep);
+}
 struct PolicyScratch {
     std::vector<int> p,moving,owner,chosen,reserve,idle_heading,forced_heading,candidate_count,order,prepared,intent;
     std::vector<float> base_cost,priorities;
@@ -42,6 +58,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.persist_elites=integer("R05_PERSIST_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
+    c.screen_branches=integer("R05_SCREEN_BRANCHES",0);
+    c.screen_keep=integer("R05_SCREEN_KEEP",4);
     c.branch_diagnostics=integer("R05_BRANCH_DIAGNOSTICS",0);
     if(c.branch_diagnostics<0)throw std::invalid_argument("branch diagnostic interval must be nonnegative");
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
@@ -64,17 +82,21 @@ Config Config::environment(const SharedEnvironment& env) {
     c.cache_slots=integer("R05_CACHE_SLOTS",64);
     if(c.cache_slots<8 || c.cache_slots>1024 || (c.cache_slots&(c.cache_slots-1)))
         throw std::invalid_argument("candidate cache slots must be a power of two in [8,1024]");
-    if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
-       c.generations>c.futures/c.continuations || c.elites<1 ||
-       c.elites>c.futures/c.continuations || c.persist_elites<1 ||
-       c.persist_elites>c.futures/c.continuations || c.continuation_start<1 ||
+    const int roots=search_roots(c,c.futures);
+    const int finalists=c.screen_branches?roots/c.screen_keep:roots;
+    if(c.generations<1 || c.generations>roots || c.elites<1 ||
+       c.elites>finalists || c.persist_elites<1 || c.persist_elites>finalists || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
        !std::isfinite(c.future_mutation) || c.future_mutation<0 || c.future_mutation>1)
-        throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
-    if(c.first_futures<0 || (c.first_futures>0 &&
-       (c.first_futures>c.futures || c.first_futures%c.continuations ||
-        c.first_futures/c.continuations<std::max(c.generations,std::max(c.elites,c.persist_elites)))))
-        throw std::invalid_argument("first-step K must divide into enough roots and not exceed regular K");
+        throw std::invalid_argument("continuations must preserve the first decision and enough complete finalists");
+    if(c.first_futures<0 || c.first_futures>c.futures)
+        throw std::invalid_argument("first-step K must not exceed regular K");
+    if(c.first_futures>0) {
+        const int first_roots=search_roots(c,c.first_futures);
+        const int first_finalists=c.screen_branches?first_roots/c.screen_keep:first_roots;
+        if(first_roots<c.generations || first_finalists<std::max(c.elites,c.persist_elites))
+            throw std::invalid_argument("first-step K needs enough complete finalists");
+    }
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.mutation_decay=real("R05_MUTATION_DECAY",1);
@@ -1237,6 +1259,7 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
            branch.first.stage!=result.first.stage || branch.first.operations!=result.first.operations)
             throw std::runtime_error("continuation changed the first decision");
         score+=branch.score;result.expansions+=branch.expansions;
+        result.evaluated_branches+=branch.evaluated_branches;
         if(branch_scores)branch_scores->push_back(branch.score);
         if(cfg.continuation_risk!=0) {
             ++count;double delta=branch.score-mean;mean+=delta/count;
@@ -1253,6 +1276,41 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
 }
 
 
+// Resume the same root under later common continuation draws. Accumulated
+// sums preserve branch order; partial means never compete with full means.
+void Engine::evaluate_until(const Frame& frame,const std::vector<float>& offsets,
+                            const std::vector<Continuation>& continuations,bool cycle_moves,
+                            int branches,ScreenedRollout& state) const {
+    const bool shared=cfg.share_prefix && !continuations.empty();
+    if(!state.count) {
+        state.result=rollout(frame,offsets,cycle_moves,nullptr,shared?&state.prefix:nullptr);
+        state.sum=state.mean=state.result.score;state.count=1;
+        if(shared && state.prefix.time!=cfg.continuation_start)
+            throw std::runtime_error("missing screened rollout prefix");
+    }
+    while(state.count<branches) {
+        const auto& continuation=continuations.at(state.count-1);
+        Rollout branch=shared
+            ?rollout(state.prefix.frame,offsets,cycle_moves,&continuation,nullptr,&state.prefix)
+            :rollout(frame,offsets,cycle_moves,&continuation);
+        auto& result=state.result;
+        if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||
+           branch.first.dir!=result.first.dir || branch.first.pending!=result.first.pending ||
+           branch.first.stage!=result.first.stage || branch.first.operations!=result.first.operations)
+            throw std::runtime_error("screened continuation changed the first decision");
+        state.sum+=branch.score;result.expansions+=branch.expansions;
+        result.evaluated_branches+=branch.evaluated_branches;++state.count;
+        if(cfg.continuation_risk!=0) {
+            double delta=branch.score-state.mean;state.mean+=delta/state.count;
+            state.variance_sum+=delta*(branch.score-state.mean);
+        }
+    }
+    state.result.score=state.sum/state.count;
+    if(cfg.continuation_risk!=0)
+        state.result.score-=cfg.continuation_risk*std::sqrt(std::max(0.0,state.variance_sum/state.count));
+    state.result.fully_evaluated=state.count==cfg.continuations;
+}
+
 // Select distinct evaluated vectors with the chosen incumbent first. Reused
 // across generations and between real steps; scores never cross a real step.
 static std::vector<int> elite_indices(const std::vector<Rollout>& results,int used,
@@ -1265,6 +1323,7 @@ static std::vector<int> elite_indices(const std::vector<Rollout>& results,int us
         return accept_equal?a>b:a<b;
     });
     for(int candidate:ranked) {
+        if(!results[candidate].fully_evaluated)continue;
         bool duplicate=false;
         for(int old:parents)if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
         if(!duplicate)parents.push_back(candidate);
@@ -1362,7 +1421,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     // A declared first-step budget can reserve room for that work. Every
     // configured rollout is still completed; elapsed time never changes K.
     const int futures=env->curr_timestep==0 && cfg.first_futures>0?cfg.first_futures:cfg.futures;
-    const int roots=futures/cfg.continuations;
+    const int roots=search_roots(cfg,futures);
     std::vector<std::vector<float>> offsets(roots);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
@@ -1458,15 +1517,45 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             }
         }
         mark(2);
-        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
-        for(int k=begin;k<end;++k) {
-            try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
-                                     diagnose_branches?&branch_scores[k]:nullptr); }
-            catch(...) { errors[k]=std::current_exception(); }
+        if(!cfg.screen_branches) {
+            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            for(int k=begin;k<end;++k) {
+                try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
+                                         diagnose_branches?&branch_scores[k]:nullptr); }
+                catch(...) { errors[k]=std::current_exception(); }
+            }
+        } else {
+            std::vector<ScreenedRollout> screened(end-begin);
+            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            for(int k=begin;k<end;++k) {
+                try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
+                                     cfg.screen_branches,screened[k-begin]); }
+                catch(...) { errors[k]=std::current_exception(); }
+            }
+            for(int k=begin;k<end;++k)if(errors[k])std::rethrow_exception(errors[k]);
+            std::vector<int> survivors(end-begin);std::iota(survivors.begin(),survivors.end(),begin);
+            std::sort(survivors.begin(),survivors.end(),[&](int a,int b) {
+                const double x=screened[a-begin].result.score,y=screened[b-begin].result.score;
+                if(x!=y)return x>y;
+                return cfg.accept_equal?a>b:a<b;
+            });
+            survivors.resize((end-begin)/cfg.screen_keep);
+            // Keep the unmodified incumbent anchor in every generation.
+            if(std::find(survivors.begin(),survivors.end(),begin)==survivors.end())survivors.back()=begin;
+            std::sort(survivors.begin(),survivors.end());
+            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            for(size_t j=0;j<survivors.size();++j) {
+                int k=survivors[j];
+                try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
+                                     cfg.continuations,screened[k-begin]); }
+                catch(...) { errors[k]=std::current_exception(); }
+            }
+            for(int k=begin;k<end;++k)results[k]=std::move(screened[k-begin].result);
         }
         mark(3);
         for(int k=begin;k<end;++k) {
             if(errors[k])std::rethrow_exception(errors[k]);
+            if(!results[k].fully_evaluated)continue;
             if(results[k].score>results[best].score+1e-7 ||
                (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
         }
@@ -1489,6 +1578,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             std::fwrite(text.data(),1,text.size(),stderr);
         }
     }
+    int evaluated=0;
+    for(const auto& result:results)evaluated+=result.evaluated_branches;
+    if(evaluated!=futures)throw std::runtime_error("fixed search work count changed");
     // Local refinement also spends complete continuation groups, without
     // exceeding its existing rollout allowance. Unused remainders stay unused.
     for(int trial=0;trial<cfg.local_trials/cfg.continuations;++trial) {
@@ -1546,6 +1638,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             (unsigned long long)total.nanoseconds[6]);
     }
     if(env->curr_timestep%100==0) {
+        if(cfg.screen_branches)
+            std::fprintf(stderr,"R05_SCREEN t=%d roots=%d finalists=%d branch_evaluations=%d screen_branches=%d full_branches=%d\n",
+                         env->curr_timestep,roots,roots/cfg.screen_keep,evaluated,cfg.screen_branches,cfg.continuations);
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;
         std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d\n",

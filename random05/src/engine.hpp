@@ -12,6 +12,7 @@ struct MoveCandidate { int v,d;float score; };
 struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
+    int screen_branches=0, screen_keep=4;
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
@@ -83,7 +84,8 @@ struct Rollout {
     std::vector<Action> actions;
     std::vector<float> offsets;
     int moves=0;
-    bool cycle_moves=true;
+    bool cycle_moves=true, fully_evaluated=true;
+    int evaluated_branches=1;
     uint64_t expansions=0;
 };
 struct RolloutPrefix {
@@ -91,6 +93,12 @@ struct RolloutPrefix {
     std::vector<Action> actions;
     int time=0,completions=0;
     double initial=0,previous=0,progress=0,discounted=0,weight=1,weight_sum=0;
+};
+struct ScreenedRollout {
+    Rollout result;
+    RolloutPrefix prefix;
+    double sum=0,mean=0,variance_sum=0;
+    int count=0;
 };
 struct OperationModel {
     static constexpr int horizon=3, count=64, waiting=63;
@@ -148,6 +156,9 @@ private:
     Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
                      const std::vector<Continuation>& continuations,bool cycle_moves,
                      std::vector<double>* branch_scores=nullptr) const;
+    void evaluate_until(const Frame& frame,const std::vector<float>& offsets,
+                        const std::vector<Continuation>& continuations,bool cycle_moves,
+                        int branches,ScreenedRollout& state) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;
     void fill_ready_moves(const Frame& frame, const std::vector<float>& offsets, std::vector<int>& to) const;
