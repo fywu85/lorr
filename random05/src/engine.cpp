@@ -28,6 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
     c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
     if(c.age_cap>0 && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("capped priority aging requires --trick RANDOM-05");
@@ -420,7 +421,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     }
     auto cost=[&](int a,int v,int d) {return assigned_[a]?assigned_[a]->cost(g,f.stage[a],v,d):0.0f;};
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
-    std::vector<int> idle_heading(n);
+    std::vector<int> idle_heading(n),forced_heading(n,-1);
     std::vector<float> base_cost(n),priorities(n);
     struct Candidate { int v,d;float score; };
     std::vector<std::array<Candidate,5>> candidates(n);
@@ -471,6 +472,40 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         std::stable_sort(cand.begin(),cand.begin()+count,[](const Candidate& a,const Candidate& b){return a.score<b.score;});
         candidate_count[i]=count;
     }
+    if(kinematic && cfg.pre_cycles) {
+        struct Proposal { float gain;const std::vector<int>* ring;int sign;bool ready; };
+        std::vector<Proposal> proposals;
+        for(const auto& ring:g.cycles) {
+            const int count=int(ring.size());bool idle=true;
+            for(int v:ring)if(owner[v]<0 || moving[owner[v]]){idle=false;break;}
+            if(!idle)continue;
+            for(int sign:{1,count-1}) {
+                float gain=0;bool ready=true;
+                for(int k=0;k<count;++k) {
+                    int a=owner[ring[k]],v=ring[(k+sign)%count],d=g.direction(ring[k],v);
+                    ready=ready && allowed(a,d);
+                    // Compare against the best heading available during an idle
+                    // step, so rotations alone do not make a cycle profitable.
+                    float before=base_cost[a];
+                    if(cfg.pre_cycles>=2)for(int q=0;q<4;++q)before=std::min(before,cost(a,ring[k],q));
+                    gain+=before-cost(a,v,d);
+                }
+                if((ready || cfg.pre_cycles>=2) && gain>cfg.loop_threshold+cfg.pre_cycle_gain*count)
+                    proposals.push_back({gain,&ring,sign,ready});
+            }
+        }
+        std::stable_sort(proposals.begin(),proposals.end(),[](const Proposal& a,const Proposal& b){return a.gain>b.gain;});
+        for(const auto& proposal:proposals) {
+            const auto& ring=*proposal.ring;const int count=int(ring.size());bool free=true;
+            for(int v:ring)if(chosen[owner[v]]>=0){free=false;break;}
+            if(!free)continue;
+            for(int k=0;k<count;++k) {
+                int a=owner[ring[k]],target=ring[(k+proposal.sign)%count];
+                forced_heading[a]=g.direction(ring[k],target);
+                chosen[a]=proposal.ready?target:ring[k];reserve[chosen[a]]=a;
+            }
+        }
+    }
     std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
     std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
     int expansions=0;
@@ -511,7 +546,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             for(int k=0;k<count;++k) {
                 if(owner[v[k]]<0){good=false;break;}
                 a[k]=owner[v[k]];
-                if(chosen[a[k]]!=v[k]){good=false;break;}
+                if(chosen[a[k]]!=v[k] || forced_heading[a[k]]>=0){good=false;break;}
             }
             if(!good)continue;
             float best_gain=cfg.loop_threshold;int sign=0;
@@ -532,8 +567,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(moving[i])actions[i]=FW;
         else {
             int d=chosen[i]==p[i]?idle_heading[i]:g.direction(p[i],chosen[i]);
-            if(cfg.intent_rotation && chosen[i]==p[i] && intent[i]!=p[i]) {
-                int wanted=g.direction(p[i],intent[i]);
+            int wanted=-1;
+            if(chosen[i]==p[i]) {
+                if(forced_heading[i]>=0)wanted=forced_heading[i];
+                else if(cfg.intent_rotation && intent[i]!=p[i])wanted=g.direction(p[i],intent[i]);
+            }
+            if(wanted>=0) {
                 if(turn(wanted,f.dir[i])==2) {
                     int right=(f.dir[i]+1)%4,left=(f.dir[i]+3)%4;
                     d=cost(i,p[i],right)<=cost(i,p[i],left)?right:left;

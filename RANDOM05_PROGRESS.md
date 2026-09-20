@@ -20,14 +20,15 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,872 tasks / 2,000 steps**, planner seed0,
-public guidance, K64, dispersion0.8, local5/equal, wait0.5, exact/oriented
-matching and known-horizon triage scale1.5 (`--trick RANDOM-05`). Four-worker
-NMS completed **2,903 tasks**; our best is **1.1% below** that reference.
-The generated-field frontier is 2,868. The 32-logical-CPU NMS reference is
-**3,172 tasks** (9.5% gap). Best without horizon triage remains **2,594 tasks**.
-These are single-seed frontiers. All frontier/reference runs have zero planner
-errors, scheduler errors and timeouts.
+Best verified combined result: **2,916 tasks / 2,000 steps**, planner seed0,
+generated field seed5, K64, dispersion0.8, local5/equal, priority noise200,
+wait0.5, greedy matching and known-horizon triage scale0.9
+(`--trick RANDOM-05`). Four-worker NMS completed **2,903 tasks**. This is our
+first single-run result above that measured reference: **+0.4%**, only13 tasks,
+which is not evidence of a robust lead. The 32-logical-CPU NMS reference is
+**3,172 tasks** (8.1% gap). The colleague's roughly27–28% matched advantage
+remains the campaign objective. Best without horizon triage remains **2,594**.
+All frontier/reference runs have zero planner/scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
@@ -60,6 +61,9 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T08:55:55.708615+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | avg-p3-cb0.75-s5-greedy; K64/triage0.9; planner seed0; `--trick RANDOM-05` | 2868 | 2903 (4 workers) | -1.2% | [Full evidence](random05/results/traffic-field-validation-full-v12/summary.json) |
 
 | 2026-09-20T08:59:55.016021+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | Public field; exact/oriented matching; triage1.5; K64; seed0; `--trick RANDOM-05` | 2872 | 2903 (4 workers) | -1.1% | [Full evidence](random05/results/triage-scale-full-v12-bound/summary.json) |
+
+| 2026-09-20T09:01:43.509210+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | flow-seed15; generated field; K64; planner seed0; `--trick RANDOM-05` | 2910 | 2903 (4 workers) | +0.2% | [Full evidence](random05/results/traffic-seeds-full-v12/summary.json) |
+| 2026-09-20T09:05:15.036957+00:00 | [b79a218](https://github.com/fywu85/lorr/commit/b79a218) | noise200; generated field; K64; planner seed0; `--trick RANDOM-05` | 2916 | 2903 (4 workers) | +0.4% | [Full evidence](random05/results/priority-search-full-v13/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -163,3 +167,14 @@ The published NMS score of 3,050 used different instances and hardware.
   2,841/2,840/2,872/2,811/2,571. Earlier abandonment quickly becomes harmful;
   retain its explicit known-horizon trick label. NMS4 and both recent frontier
   batches ran on AMD EPYC9354 hosts, with four physical cores per process.
+
+- Sixteen full K64 traffic-field seeds give 2,698–2,910; field seed15 is best.
+  Field seed5 repeats exactly at 2,868 on two physical cores instead of four.
+  Its earlier K8 score was lower than seed2, reinforcing the need for full
+  production-search validation.
+- Priority search on field5: noise100=2,860; noise200=2,916; age caps50/100/200
+  give2,818/2,859/2,841. Independent per-step random streams give2,839;
+  combining those streams with cap100/noise100 gives2,909. Keep these as
+  separate measured configurations; no claim that capped aging is generally
+  better. Regression tests verify identical fixed-work trajectories with one
+  and two worker threads under the new random-stream mode.

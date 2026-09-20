@@ -21,7 +21,8 @@ struct Config {
     bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
-    int age_cap=0;
+    int age_cap=0, pre_cycles=0;
+    float pre_cycle_gain=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;
