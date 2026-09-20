@@ -918,3 +918,19 @@ input/binary hashes and allocation are linked in the audits.
   regressions pass; controlled timing profiles are next.
   [Full cache equivalence](random05/results/goal-cache-split-full-v49/equivalence.json),
   [policy profile](random05/results/policy-profile-split-prefix-v50/timings.json).
+
+- Exact radix ordering preserves all actions, assignments and events in the
+  controlled prefix. Sampled ordering time drops about 70%, and look-ahead
+  wall time about 12% (971 to 850 ms initially, 952 to 830 ms at step100).
+  These shared-host prefix timings motivate full strict-deadline checks, now
+  running; no full four-core feasibility claim is made yet.
+  [Evidence](random05/results/radix-profile-split-prefix-v51/timings-equivalence.json).
+
+- Build-v52 adds an optional bounded per-worker candidate-ranking cache.
+  Its key includes the current real-step epoch, robot, task-chain identity,
+  task stage, position, heading and moving/idle state. Occupancy-dependent
+  push costs bypass it. Priorities and collision resolution remain dynamic.
+  Dense task turnover, virtual-task assignment, alternative wait/rotation
+  policies, push-cost fallback and worker-count equivalence regressions pass.
+  The cache adds approximately 157 MB at 800 robots / 32 workers. Defaults
+  remain off pending full timing and trajectory checks; profiles are next.

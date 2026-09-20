@@ -353,6 +353,22 @@ void continuation_risk() {
     const auto serial=simulate(cfg,12);cfg.threads=2;
     require(serial==simulate(cfg,12),"continuation risk changed with worker count");
 }
+void cached_candidate_rankings() {
+    for(int variant=0;variant<4;++variant) {
+        Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+        cfg.radix_order=true;cfg.fast_dispersion=true;cfg.dispersion=0.8;
+        cfg.guided_matching=true;cfg.hungarian_limit=1000;cfg.rollout_match=true;cfg.random_by_step=true;
+        if(variant==1)cfg.prospective_wait=true;
+        if(variant==2)cfg.intent_rotation=false;
+        if(variant==3)cfg.push_price=2; // neighbor-dependent costs must bypass the cache
+        const auto reference=simulate(cfg,12);cfg.candidate_cache=true;
+        require(reference==simulate(cfg,12),"ranking cache changed dense task turnover/policy choices");
+        cfg.threads=2;
+        require(reference==simulate(cfg,12),"ranking cache changed with worker count");
+    }
+}
+
 void shared_goal_costs() {
     auto e=environment(4,5,1);e.map[6]=1;
     Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;cfg.turn_cost=0.6;
@@ -379,6 +395,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    cached_candidate_rankings();
     shared_goal_costs();
     Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
     const auto unmeasured=simulate(measured,12);measured.profile=true;measured.policy_profile=true;

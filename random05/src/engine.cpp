@@ -19,7 +19,7 @@ constexpr float INF=1e20f;
 int integer(const char* key,int value) { const char* v=std::getenv(key);return v?std::stoi(v):value; }
 float real(const char* key,float value) { const char* v=std::getenv(key);return v?std::stof(v):value; }
 int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
-struct MoveCandidate { int v,d;float score; };
+constexpr int ranking_cache_slots=64;
 struct PolicyScratch {
     std::vector<int> p,moving,owner,chosen,reserve,idle_heading,forced_heading,candidate_count,order,prepared,intent;
     std::vector<float> base_cost,priorities;
@@ -27,6 +27,8 @@ struct PolicyScratch {
     std::vector<const float*> cost_table;
     std::vector<std::array<MoveCandidate,5>> candidates;
     std::vector<uint64_t> priority_keys, radix_buffer;
+    std::vector<CachedRanking*> ranking_slots;
+    std::vector<unsigned char> ranking_hits;
 };
 }
 Config Config::environment(const SharedEnvironment& env) {
@@ -45,6 +47,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.goal_cache=integer("R05_GOAL_CACHE",0);
     c.policy_profile=integer("R05_POLICY_PROFILE",0);
     c.radix_order=integer("R05_RADIX_ORDER",0);
+    c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -519,6 +522,14 @@ void Engine::initialize(SharedEnvironment* env) {
         score_graph_=std::make_unique<Graph>(*env,metric);
     }
     const int n=env->num_of_agents;
+    if(cfg.candidate_cache && cfg.push_price==0) {
+        // Bounded per-worker storage is independent of map area/task history.
+        // Allocation uses no task/start information and belongs to preprocessing.
+        candidate_rankings_.resize(cfg.threads);
+        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+        for(int worker=0;worker<cfg.threads;++worker)
+            candidate_rankings_[worker].resize(size_t(n)*ranking_cache_slots);
+    }
     if(cfg.operation_depth) {operation_model_=std::make_unique<OperationModel>(*graph);operations_.assign(n,OperationModel::waiting);}
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
     last_actions_.assign(n,W);
@@ -758,14 +769,36 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     auto& priorities=scratch.priorities;priorities.resize(n);
     auto& candidates=scratch.candidates;candidates.resize(n);
     auto& candidate_count=scratch.candidate_count;candidate_count.resize(n);
+    auto& ranking_slots=scratch.ranking_slots;ranking_slots.assign(n,nullptr);
+    auto& ranking_hits=scratch.ranking_hits;ranking_hits.assign(n,0);
+    // Push loss depends on another robot's state, so that optional policy uses
+    // the original path. All other ranking inputs are captured below; priorities
+    // and collision resolution are always recomputed for the current future.
+    CachedRanking* cache=cfg.candidate_cache && cfg.push_price==0 && !candidate_rankings_.empty()
+        ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
     for(int i=0;i<n;++i) {
-        int best_dir=f.dir[i];float best=cost(i,p[i],best_dir);
-        if(!moving[i])for(int q:{(f.dir[i]+1)%4,(f.dir[i]+3)%4}) {
-            float x=cost(i,p[i],q)+0.05f*g.weight[p[i]][4];
-            if(x<best-1e-5f) {best=x;best_dir=q;}
+        if(cache) {
+            uint64_t key=(uint64_t(uint32_t(f.stage[i]))<<32)|uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
+            size_t slot=(key*0x9e3779b97f4a7c15ULL)>>58;
+            auto* entry=&cache[size_t(i)*ranking_cache_slots+slot];ranking_slots[i]=entry;
+            if(entry->epoch==ranking_epoch_ && entry->key==key && entry->chain==active_chain[i]) {
+                ranking_hits[i]=1;idle_heading[i]=entry->idle_heading;base_cost[i]=entry->base_cost;
+            } else {
+                entry->epoch=ranking_epoch_;entry->key=key;entry->chain=active_chain[i];
+            }
         }
-        idle_heading[i]=best_dir;
-        base_cost[i]=cost(i,p[i],best_dir);
+        if(!ranking_hits[i]) {
+            int best_dir=f.dir[i];float best=cost(i,p[i],best_dir);
+            if(!moving[i])for(int q:{(f.dir[i]+1)%4,(f.dir[i]+3)%4}) {
+                float x=cost(i,p[i],q)+0.05f*g.weight[p[i]][4];
+                if(x<best-1e-5f) {best=x;best_dir=q;}
+            }
+            idle_heading[i]=best_dir;
+            base_cost[i]=cost(i,p[i],best_dir);
+            if(ranking_slots[i]) {
+                ranking_slots[i]->idle_heading=idle_heading[i];ranking_slots[i]->base_cost=base_cost[i];
+            }
+        }
         int age=cfg.rollout_age?f.age[i]:age_[i];
         if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
         float priority=age+offsets[i];
@@ -815,6 +848,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // visiting candidates. Stable sorting preserves the previous tie order.
     for(int i=0;i<n;++i) {
         auto& cand=candidates[i];int count=0;
+        if(ranking_hits[i]) {
+            const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
+            std::copy_n(entry.candidates.begin(),entry.count,cand.begin());continue;
+        }
         for(int d=0;d<4;++d) {
             int v=g.next[p[i]][d];if(v<0 || (!cfg.intent_rotation && !allowed(i,d)))continue;
             float score=cost(i,v,d)+g.weight[p[i]][d];
@@ -844,6 +881,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             cand[j]=value;
         }
         candidate_count[i]=count;
+        if(ranking_slots[i]) {
+            auto& entry=*ranking_slots[i];entry.count=count;
+            std::copy_n(cand.begin(),count,entry.candidates.begin());
+        }
     }
     mark_policy(1);
     auto& order=scratch.order;
@@ -1121,6 +1162,8 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
+    // Invalidate between real steps, including task swaps/configuration changes.
+    ++ranking_epoch_;
     policy_profile_active_=cfg.policy_profile && (env->curr_timestep<5 || env->curr_timestep%100==0);
     if(policy_profile_active_)policy_timings_.assign(cfg.threads,PolicyTiming{});
     std::chrono::steady_clock::time_point measured;
