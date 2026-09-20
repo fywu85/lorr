@@ -75,14 +75,14 @@ def fixtures():
  return dict(handoff_boundary_and_unfinished_fixture=r)
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--verification',type=Path,required=True);p.add_argument('--motion-accounting',type=Path,required=True)
- p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.output.resolve();out=a.archive.resolve()
+ p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--configured-horizon',type=int,choices=[5000]);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.output.resolve();out=a.archive.resolve()
  if not a.execute:
   v=read(a.verification);assert v['all_valid_within_deadline_and_memory'] and not v['failures'];raw.mkdir(parents=True,exist_ok=False)
-  rows=[r for r in v['rows'] if r['environment']['CGAR_TRICK_NATIVE_BANDS']=='1' and r['environment']['CGAR_TRICK_UNOPENED_MATCH']=='1' and r['environment']['CGAR_PICKUP_WEIGHT']=='5'];assert len(rows)==2
+  rows=[r for r in v['rows'] if r['environment']['CGAR_TRICK_NATIVE_BANDS']=='1' and r['environment']['CGAR_TRICK_UNOPENED_MATCH']=='1' and r['environment']['CGAR_PICKUP_WEIGHT']=='5' and (a.configured_horizon is None or r['environment'].get('CGAR_TRICK_KNOWN_HORIZON')==str(a.configured_horizon))];assert len(rows)==2
   files=[]
   for src,name in [(Path(__file__),'analyze.py'),(a.verification,'verification.json'),(a.motion_accounting,'motion-accounting.json')]:
    dest=raw/name;shutil.copy2(src,dest);files.append(dest)
-  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),archive=str(out),cases=[r['case'] for r in rows],files={str(f):digest(f) for f in files}))
+  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),archive=str(out),configured_horizon=a.configured_horizon,cases=[r['case'] for r in rows],files={str(f):digest(f) for f in files}))
   command=['/usr/bin/python3',str(raw/'analyze.py'),'--verification',str(raw/'verification.json'),'--motion-accounting',str(raw/'motion-accounting.json'),'--output',str(raw),'--archive',str(out),'--execute']
   job=raw/'job.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
   submit=['qsub','-h','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded','1','-binding','linear:1','-l','exclusive=false,h_rt=00:30:00,h_vmem=8G','-m','n','-N','horizon_work_audit','-j','y','-o',str(raw/'job.log'),'-S','/bin/bash',str(job)]

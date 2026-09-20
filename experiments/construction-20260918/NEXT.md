@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated2026-09-20 12:20UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
+Updated2026-09-20 12:32UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
 5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
 complete fixed work, timeout failure. Shared GRID/5s development authorized;
 strict1s certification separate. Preserve other fork's random05 files/jobs/commits.
@@ -29,12 +29,14 @@ Genericreference0196851 mean144392.1667 (all six totalwins,+451):
   originalspatialchain+repeatedstops; constBFSpeek/Manhattan,noLRU/builds,no nativecost.
   Fullcore==freeguard,refinedchainrejected. A laterretarget canrescueaninitially
   impossiblepair; boundisconditionalonkeepingholder,NOTglobaltaskimpossibility.
-- V84 matching-budget FULLdiagnostic8899625/analysis8899626 from11:47UTC,16cores,
+- V84 matching-budget FULLdiagnostic8899625/analysis8899626 COMPLETE/VERIFIED20kentries,
   weight5shortOFF/ON xseeds0/2, stride10sameasrealpass. Sourcea9c2ec2,
   binarybd6c543934c2aaf8375de172778649b20f82d0b4768f2e837903d80ecad59ebd.
   Rawruns/cgar-match-budget-subsets-full-v84-20260920;results/match-budget-subsets-full-v84.
-  NowFROZENverifierbindscompletedV80fullcontrols; everytrajectory ANDsampledrealwork
-  mustexactlymatch. Owncursor/Stats/taskledger,constpeeks,afterrealmatching,same
+  Allfourfulltrajectories ANDsampledrealworkexactV80. Tick4990fairS2forwardunits/
+  assignment0.014563/0.014911; fullyprotected0.000341/0.000102; witnessrows808/853;
+  descriptiveS2/S1=4.47%/4.69%. ShortS2=1.3445/1.3088, fullyprotected0.1412/0.1279,
+  rows26163/25820,ratio20.46%/20.15%. Deprioritizebudget2forfairbest; notanupperbound. Owncursor/Stats/taskledger,constpeeks,afterrealmatching,same
   exclusions exceptbudget. WholecyclededupALLtaskIDs, no commits. Whollyprotected
   subsetseparatefrommixedcycles. Boundedchronologicalguidancewitnesssample, not
   fullopportunitycount/causalphysicalgain/upperbound. Budget2NOTimplemented.
@@ -85,11 +87,29 @@ Genericreference0196851 mean144392.1667 (all six totalwins,+451):
   V81backwardkernelCPU-9.6..15.8%,V77pickupkernelimproved; exactdistances/work,
   onlykernelperformanceclaims,notwholeentrystepups.
 
+- V88 savedbaseline residual audit8899693COMPLETE/PASS; allpreviousV86-r2cohorts/
+  witnesscountsexact. Twoadditionalhandchecks(singleholderduration5-LB3=2;
+  retargetedcompletionexcluded). Latecompletedunchangedholdermeanresiduals at
+  LBbands0-49/50-99/100-199/200-399/400+: seed0=13.33/15.14/18.43/22.82/28.90,
+  seed2=13.85/15.39/18.82/23.51/30.25. Censoredcompletedcohorts,NOTpredictionorcalibration.
+  horizon_audit/analyze.py nowtakes--configured-horizon5000 toselectONrows;
+  lower_bounds.py takes--referencePATH forcandidateworkaudit. Bothhelperssnapshot
+  beforeexecution; currentfullverifierunchanged. Candidatepostanalysisflow:
+  lane_motion_audit.py --verificationV86 --outputRAW --archiveRESULTS;
+  horizon_audit/analyze.py --verificationV86 --motion-accountingNEWmotion/accounting.json
+  --configured-horizon5000 --outputRAW --archiveRESULTS; then
+  horizon_audit/lower_bounds.py --referenceNEWwork/accounting.json --outputRAW --archiveRESULTS.
+- Read-onlycachecheck: nativeV80guidedfallbackstotal12618 stopgrowingbyt200;
+  turntablebuilds9929byt200,74013by5000. Largerstaticcachealoneisunlikelyqualitylever
+  beyondcoldprefix. All38586compactall-goaltableswouldbe11.911GBphysical, butlogical
+  accountinguses32bits(23.822GB). ExistinggenericV39cache8/16GiBscreenwasneutral;
+  staticall-goalprecompute/completechainpricingisUNIMPLEMENTEDandnotthenexttest.
+
 ## Next actions
 
 1. Fable41reviewassessed;guard/testgapsfixedinV87. Do notaddfeatureswithout reason whilefull
    minimalhorizontrialruns. No source/testeditsduringnewbuilds (nonecurrentlyactive).
-2. VerifyV84shadowfullafterfinish; reportcycle/subsets/cadencewithallqualifications.
+2. V84shadowfullverified/summarywritten. Preserveallcounterqualifications.
 3. VerifyV86full, thenupdateANYnewvalidbestwithsource/hash/seed/flags/time. If>=154795
    goalachievedunderusercriterion; strict1scheckdeferred, genericreferenceunchanged.
    Replayunfinishedwork/formallatewindowcounts; ifbelowtargetchooseconditionalnext.

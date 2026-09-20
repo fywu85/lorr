@@ -70,7 +70,26 @@
         if(examples.size()<20)examples.push_back({{"assignment_step",step},{"decision_tick",step-1},{"robot",assignment.robot},
             {"actual_task",t.id},{"actual_bound",bound},{"remaining",remaining},{"alternative_task",tasks[best].id},{"alternative_bound",best_bound}});
     }
+    json completed_residuals;
+    for (int cutoff : {1,std::max(1,horizon-1000)}) {
+        std::array<std::vector<long long>,5> excess_by_bound;
+        std::array<long long,5> duration_sum{},bound_sum{};
+        for (int i:order) {
+            const auto& task=tasks[i];
+            if(task.finished<0||task.assignments.size()!=1)continue;
+            const int start=std::max(1,task.assignments.front().step);if(start<cutoff)continue;
+            const long long bound=std::max(1,task.first_pickup_distance)+chain_service[i];
+            const long long duration=task.finished-start+1;
+            if(duration<bound)throw std::runtime_error("unchanged completed holder beats its spatial service lower bound");
+            const int bin=bound<50?0:bound<100?1:bound<200?2:bound<400?3:4;
+            excess_by_bound[bin].push_back(duration-bound);duration_sum[bin]+=duration;bound_sum[bin]+=bound;
+        }
+        const std::array<std::string,5> labels{"0-49","50-99","100-199","200-399","400+"};
+        for(int bin=0;bin<5;++bin)completed_residuals[std::to_string(cutoff)][labels[bin]]={
+            {"excess",distribution(excess_by_bound[bin])},{"duration_sum",duration_sum[bin]},{"bound_sum",bound_sum[bin]}};
+    }
     report["known_horizon_bounds"]={{"configured_horizon",horizon},{"cohorts",cohorts},
+        {"completed_single_holder_residuals_by_bound",completed_residuals},
         {"chronological_witnesses",witnesses},{"exposed_impossible_unfinished_admissions",exposed},{"overlapping_actual_tasks_skipped",overlap_skipped},
         {"bfs_searches",searches},{"manhattan_candidate_exposures",candidates},{"examples",examples},
         {"limits","Exact spatial bounds conditional on keeping the holder, stronger than production cache misses. Later matching may rescue an initially impossible pair. Sequential task-disjoint witnesses against the unchanged pool; same-batch assignments conservatively excluded. Not a counterfactual rollout, complete opportunity count, throughput estimate or upper bound. Reveals and later assignments would change under a new policy."}};
