@@ -1,12 +1,14 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 18:04 UTC.
+Updated: 2026-09-20 18:15 UTC.
 
 **Best verified Warehouse run: 155,120 tasks (TRICK, seed 0)**, 325 above the NMS target of 154,795. The same profile scores **155,120 / 154,999 / 155,056 / 155,020** on seeds 0–3, mean **155,048.75**, with all four above target. Full 5,000 steps / 10,000 robots, zero errors or timeouts. Native Warehouse bands, raw remaining potential, matching64, **pickup weight 8**, configured horizon 5,000 and the prospective **p90** completion margin require `--trick WAREHOUSE`. Ordinary fairness stays enabled and short preference stays OFF. [Full result and configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
 
 The best run averages 447.628 ms per entry and 1.507 CPU cores out of four reserved, peaks at 11.945 GB RSS, and finishes in 38.27 minutes. Maximum entry is 0.996733 seconds; the second seed peaks at 1.013663 seconds. These are shared-host runs with a 5-second development deadline; strict one-second certification remains separate. All first-half tasks complete and oldest never-assigned ages are 188 / 193. No formal starvation-freedom claim.
 
 The [weight-8 four-seed confirmation](experiments/construction-20260918/results/p90-pickup8-seeds13-v102/summary.md) improves every paired full total over weight 5: +63 / +153 / +329 / +108, mean +163.25. Every first-half task finishes in all four runs; oldest never-assigned ages are 188 / 186 / 193 / 184. This is one fixed input and finite evidence, not a starvation guarantee. Seed 3's maximum outstanding age rises to 1,331, so tails are not uniformly improved. All runs use the same frozen source and binary.
+
+The next motion/compute comparisons are complete: [neutral-tail scoring](experiments/construction-20260918/results/native-neutral-tail-full-v101/summary.md) loses 190 / 174 tasks; [two full-depth workers](experiments/construction-20260918/results/native-workers-full-v103/summary.md) give -141 / +28 and four lose 311 / 261. All runs validate, but none raises the best or paired mean. Retain the original score and one global worker.
 
 The [p90 four-seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md) for the preceding pickup-weight-5 profile gives **155,057 / 154,846 / 154,727 / 154,912**, mean **154,885.5** (90.5 above NMS), with three of four seeds above target. Every first-half task finishes in all four runs. This confirms the preceding profile on the same fixed input; it is not a new single-run best. The [p95 / p99 refinement](experiments/construction-20260918/results/horizon-percentile-refine-v98/summary.md) loses on both seeds at both values, so p90 is retained.
 

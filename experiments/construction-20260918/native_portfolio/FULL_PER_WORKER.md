@@ -9,3 +9,5 @@ All six full paired seed-0 / seed-2 cases reserve four physical cores apiece, wi
 The earlier four-full-worker experiment used the generic learned field and lost 1,198 / gained 229 tasks. It supplies a negative prior, not a native-field measurement. More compute need not improve lifelong throughput, even if it improves a local score. This test will measure the effect rather than infer it from the shorter searches. Ordinary fairness, held/started protection, bounded retargeting and explicit `--trick WAREHOUSE` remain unchanged.
 
 V103 benchmark 8900366, validator 8900367, outcomes 8900368 run on research38, 24 disjoint physical cores, starting 2026-09-20 17:28:50 UTC. Raw `runs/cgar-native-workers-full-v103-20260920`; results `results/native-workers-full-v103`.
+
+V103 is complete: two workers give 154,979 / 155,084 (-141 / +28), four give 154,809 / 154,795 (-311 / -261). All six full cases, exact controls and 300 million independently accounted actions pass. Keep one worker; neither mean nor peak improves. [Full result](../results/native-workers-full-v103/summary.md).
