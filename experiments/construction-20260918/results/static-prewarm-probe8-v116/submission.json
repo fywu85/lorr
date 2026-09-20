@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-h",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "8",
+    "-binding",
+    "linear:8",
+    "-l",
+    "exclusive=false,h_rt=00:15:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "native_prewarm_probe",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe8-v116-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe8-v116-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900712\n"
+}

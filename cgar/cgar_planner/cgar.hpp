@@ -155,6 +155,10 @@ public:
     void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false, int forward_base = 1, int cost_limit = 16);
     void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
     void discard_prefetch();
+    // Complete every free-cell goal in fixed batches, before tasks are revealed.
+    // Requires sufficient logical capacity; timeout throws, never succeeds with
+    // a partially warmed cache. Returns the actual bytes in resident tables.
+    size_t prewarm_all(int threads, std::chrono::steady_clock::time_point deadline);
     void clear_tables();  // discard cached results while preserving the metric
     bool set_forward_costs(std::vector<uint8_t> costs);
     int forward_cost(int cell, int orientation) const {

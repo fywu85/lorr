@@ -569,6 +569,24 @@ void TurnDistanceOracle::prefetch(const std::vector<int>& goals, int threads,
     prefetched_builds += worklist.size();
 }
 
+size_t TurnDistanceOracle::prewarm_all(int threads, std::chrono::steady_clock::time_point deadline) {
+    if (!cert_ || threads < 1 || threads > 32 || capacity() < cells_.size())
+        throw std::invalid_argument("all-goal prewarm requires initialization, 1-32 threads and capacity for every free cell");
+    check_deadline(deadline, "turn_prewarm_start");
+    size_t stored_bytes = 0;
+    for (size_t first = 0; first < cells_.size(); first += 32) {
+        const std::vector<int> goals(cells_.begin() + first,
+                                    cells_.begin() + std::min(cells_.size(), first + 32));
+        prefetch(goals, threads, deadline);
+        for (int goal : goals) stored_bytes += table(goal, deadline)->storage_bytes();
+        trim();
+    }
+    for (int goal : cells_) if (!peek(goal))
+        throw std::logic_error("all-goal prewarm evicted a required goal");
+    check_deadline(deadline, "turn_prewarm_complete");
+    return stored_bytes;
+}
+
 int TurnDistanceOracle::value(const TurnTable& table, int cell, int orientation) const {
     return index_.at(cell) < 0 ? kInf : table[index_[cell] * 4 + orientation];
 }
@@ -745,6 +763,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     diagnostics_ = env_int("CGAR_DIAGNOSTICS", 0) != 0;
     turn_first_ = env_int("CGAR_TURN_FIRST", 0) != 0;
     orientation_guidance_ = std::max(0, std::min(2, env_int("CGAR_ORIENTATION_GUIDANCE", 0)));
+    if (trick_options.native_prewarm_threads &&
+        (!native_trick_metric_ || orientation_guidance_ != 1 || env_int("CGAR_TURN_COMPACT", 0) != 1))
+        throw std::invalid_argument("native prewarm requires native static guidance, orientation mode1 and compact tables");
     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
     temporal_warm_start_ = env_int("CGAR_TEMPORAL_WARM_START", 0) != 0;
     const int strict_wait_turns = env_int("CGAR_TEMPORAL_STRICT_WAIT_TURNS", 0);
@@ -901,11 +922,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (pickup_full_cost_key && !pickup_full_robots_))
         throw std::invalid_argument("complete pickup cost shortlist requires enabled full fields and a boolean setting");
     pickup_full_cost_key_ = pickup_full_cost_key != 0;
-    if (temporal_ || turn_prefetch_threads_ || pickup_full_robots_) {
+    if (temporal_ || turn_prefetch_threads_ || pickup_full_robots_ || trick_options.native_prewarm_threads) {
         // The phases run sequentially. Complete pickup workers are additionally
         // bounded by the fixed field quota and the total robot count.
         const int pickup_threads = std::min({pickup_full_threads_, pickup_full_robots_, n_});
-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1, pickup_threads});
+        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1, pickup_threads, trick_options.native_prewarm_threads});
         cpu_set_t affinity; CPU_ZERO(&affinity);
         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
             throw std::invalid_argument("planner or pickup threads exceed the allowed logical CPU affinity");
@@ -1053,6 +1074,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         [&] { check_deadline(preprocess_deadline, "temporal_preprocess"); });
 
     if (guide_enabled_) guide_routes_.initialize(cert_.core, cert_.rows, cert_.cols, n_, guide_options_);
+
+    if (trick_options.native_prewarm_threads) {
+        const auto began = Clock::now();
+        const size_t stored = turn_oracle_.prewarm_all(trick_options.native_prewarm_threads, preprocess_deadline);
+        const size_t goals = std::count(cert_.free.begin(), cert_.free.end(), 1);
+        std::printf("[CGAR_TRICK_NATIVE_PREWARM] complete=1 goals=%zu threads=%d stored_bytes=%zu wall_us=%lld input=map_only initial_dispatch=unchanged\n",
+                    goals, trick_options.native_prewarm_threads, stored,
+                    static_cast<long long>(std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() - began).count()));
+    }
 
     const size_t cells = cert_.free.size();
     occ_now_.assign(cells, -1);

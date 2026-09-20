@@ -1,0 +1,26 @@
+{
+  "checked_utc": "2026-09-20T21:06:35.955582+00:00",
+  "all_valid": true,
+  "offline_only": true,
+  "source_commit": "dac3fc75cb6a149b3e9a6b4770b64170ead87ed9",
+  "source_files_verified": 28,
+  "binary_sha256": "6aa0847147660b55b3c37f5a6400a3d6867956961d588b72c9394c3d7d18f8a1",
+  "compile_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++17",
+    "-pthread",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe-v116-20260920/cgar/cgar_planner",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe-v116-20260920/cgar/inc",
+    "-isystem",
+    "/shared/share_mala/fw2449/lorr2024/env/include",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe-v116-20260920/probe.cpp",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe-v116-20260920/cgar/cgar_planner/cgar.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-static-prewarm-probe-v116-20260920/probe"
+  ],
+  "job_id": "8900706",
+  "limits": "Isolated complete-table preparation, excluding CGAR geometry, scheduling, task revelation and full initialization. Shared-host timing is not a preprocessing guarantee. No throughput improvement or whole-solver memory claim."
+}
