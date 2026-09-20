@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 15:34 UTC.
+Updated: 2026-09-20 15:44 UTC.
 
 **Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
 **+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
@@ -981,3 +981,9 @@ input/binary hashes and allocation are linked in the audits.
   equivalence regressions pass. Eight full four-core A/B cases are prepared:
   coefficients0/-0.25/-0.5/-1 with one/four generations, seed3, same K2048/B8.
   No throughput benefit is assumed before these results.
+
+- K3584/B8/two generations also completes on four cores with 3,552 tasks,
+  exactly matching its 32-worker trajectory. All three generation confirmations
+  are now valid and complete; the smaller K2048/four-generation seed0/4
+  configuration remains the four-core record at 3,562. Larger optimized search
+  and signed-continuation full comparisons remain pending at this checkpoint.
