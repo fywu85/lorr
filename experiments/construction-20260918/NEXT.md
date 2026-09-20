@@ -1,6 +1,6 @@
 # Continuing warehouse work
 
-Updated 2026-09-19 23:21:30 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
+Updated 2026-09-20 01:04:06 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
 reference of152,981 tasks repeatably across six full5,000-step/10,000-robot warehouse
 seeds. Every complete scheduler+planner entry must finish within1s or fail explicitly;
 process RSS must stay below32,000,000,000bytes. Use isolated GRID physical cores and
@@ -323,3 +323,44 @@ improvement,32exchanges/10ticks, so it does not settle that interaction. Mainmot
 changeconditional on current multiple-owner/boundary/preference opportunity audit,
 notmoregeometricregions. Full5k0/2 then6forpromotion; reserve fresh seeds for final
 claims. See report for detailed gates and caveats. Goal remains active/unmet.
+
+
+## Latest live diagnosis (2026-09-20 01:05 UTC)
+
+Supersedes previous no-live-jobs / next-Fable-turn notes. ProductionCGAR remains
+exactV50, frontier144510 / sixseed143941.1667 unchanged. V51draft stillunapplied.
+KKarchive unchanged. New experiment-only code and compact evidence:kk_ablation/.
+
+KKbuildV2 job8899242 COMPLETE00:49:23.626873UTC, binary
+4e4d11880896ad741a0735683e5572dc2e2bb0dbbefd6dcec82505c47dadb70a. Threefrozen
+fileschanged:schedulereligibility, LNSdiagnostics, Entrytiming. Fiftyfixturecases
+pass acrossnative/patched/modes/uniform+nonuniform, realTaskManagerlifecycle,
+ownerchecks, invalidtoggle, actualconfigloader. All4corrected200screenspass.
+InitialuniformV1screens exit139 fromOURmalformedscalarconfig; evidencepreserved.
+Correctuniformconfigretainsconditionalarrayandemptieseachbranchvalue.
+
+KKfullarray8899243.1–5 RUNNINGsince00:50:42UTC, raw
+runs/kk-guidance-rematch-full-v2-20260920. Cases supplied_rematch-r0/research44,
+supplied_keep-r0/research57, uniform_rematch-r0/research50,uniform_keep-r0/research38,
+supplied_rematch-r1/research52. Each16physical/32SMT,noquota,exclusiveEPYC9354,
+128GiBreservation,5000steps,1s nativeclocklimit. Thesearecompetitordiagnostics,
+not32GB/completeentry-certifiedCGARscores. Fullanalysis8899246 heldon8899243,
+frozenraw/support/analyze.py+raw/decompose.py/.cpp; outputresults/kk-guidance-rematch-full-v2.
+It verifieshashes/allocations/50Maccounting, retainsactualRSS/errors/timeouts,
+checkskeepmodezeroreassignment/startedprotection andlogsactualscheduler/LNSbudget.
+Rawtrajectories/binaries/protocolnotcommitted. Expected~83minperfullKKrun.
+
+CGARfullread-onlyblockeraudit8899240 RUNNINGresearch31 since00:42:32UTC,
+rawruns/cgar-current-conflict-audit-full-v50-20260920. Twoisolated4coreseeds0/2,
+CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE=67,exactV50binary. Heldanalysis8899241
+usesbottleneck_review/collect_current_conflicts.py afternormalmotionanalysis.
+Expected74frames/seed, exact144510/144107 trajectories, allsampledsearchcounters
+unchanged. Auditclassifiespostrepaircandidateblockers,notfeasibledisplacements;
+stationaryincludesusefulturns; no regionboundaryclassificationyet.
+
+Fableturn20 COMPLETE00:38:21.718270UTC, samepersistent5.1/maxsession, no tools
+orpermissiondenials, cumulativeUSD82.33881575. Archivedvisibleanswer+assessment.
+Currentturn21/followup-20.md NEXT ifneeded; no liveCLI. Avoidreloadingcodebase.
+Keepadditive×rematchinghypothesisconditionalonfullresults; no blindparameter
+sweep or repeatofoldpersistentrouteguidance. Continuecurrentaudit andfullKK
+analysis, thenimplementselectedgenericchange withstrictdeadline/fixedwork.

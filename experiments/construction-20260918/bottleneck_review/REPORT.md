@@ -255,12 +255,14 @@ that dividing overhead by chain length removes all task-cohort confounding.
 | **3: evidence-selected motion change** | Refresh current multiple-owner/region-boundary and candidate-preference audit; choose either a genuinely joint small-group solver, complete longer horizon, or delay-informed soft edge costs | Demonstrate eligible choices or complete counterfactual repairs under identical states/goals before the full policy benchmark. A null five-slot test does not reject ten-slot WPPL; predictable future conflicts alone do not prove a horizon limit. |
 
 The first ablation is feasible without importing a new algorithm: KK's existing
-`CONFIG_PATH` override and empty `map_weights_path` select its all-one weights.
+`CONFIG_PATH` override selects all-one weights when each branch of the native
+`map_weights_path` conditional array has an empty `value`. Retain the array schema;
+a scalar empty string is invalid for the native configuration loader.
 Disabling unopened rematching requires a small experiment-only scheduler patch;
 keep existing unopened assignments intact and remove their robots/tasks from the
 matching pool. Keep archived competitor sources unchanged and preserve frozen
-patched-source/binary/config hashes. Verify the disabled option reproduces native
-code behavior in deterministic fixtures; clock-limited full runs need repeated
+patched-source/binary/config hashes. Verify unset/enabled reproduces native
+code behavior and disabled preserves existing holders in deterministic fixtures; clock-limited full runs need repeated
 controls, not an exact historical trajectory expectation.
 
 Use the same input, task stream, planner configuration, CPU allocation and
@@ -284,3 +286,21 @@ The intended endpoint is a generic policy that improves all six full reference
 comparisons without losing deadline, memory, collision validity or fairness.
 The review leaves the best single and six-seed mean unchanged. No structural
 planner or assignment change has been benchmarked or promoted in this pass.
+
+
+### Diagnostic implementation update (2026-09-20 01:05 UTC)
+
+The [frozen KK factorial](../kk_ablation/README.md) is built and running as
+GRID array8899243.1–5, with held full analysis8899246. The four corrected200-step
+screens pass; they are not performance rankings. Initial uniform startup failures
+were a runner configuration-schema mistake and remain archived. The actual native
+loader now verifies the corrected configuration. V2 fixtures additionally check
+owner metadata, actual TaskManager lifecycle and synthetic nonuniform costs.
+
+[Fable turn20](../fable-flow-session/turn20/assessment.md) prompted explicit
+scheduler-time and LNS-remaining-budget observations because the native wrapper
+subtracts scheduling time from the planner allowance. These diagnose, but do not
+remove, changed clock-selected work. Current CGAR full seeds0/2 are also running
+with the existing read-only blocker audit, jobs8899240/8899241; source remainsV50
+and the audit must reproduce the confirmed reference trajectories exactly.
+No new throughput record has been established.

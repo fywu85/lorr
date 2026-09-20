@@ -1,0 +1,102 @@
+--- a/wppl_planner/src/scheduler.cpp
++++ b/wppl_planner/src/scheduler.cpp
+@@ -1,3 +1,5 @@
++#include <cstdlib>
++#include <stdexcept>
+ #include "scheduler.h"
+ #include "util/Timer.h"
+ #include <omp.h>
+@@ -817,6 +819,13 @@
+ 
+     // make a copy of the current schedule
+     proposed_schedule = env->curr_task_schedule;
++    // Diagnostic intervention only: preserve every existing assignment when OFF.
++    static const bool rematch_unopened = [] {
++        const char* value = std::getenv("LORR_KK_REMATCH_UNOPENED");
++        if (!value || std::string(value) == "1") return true;
++        if (std::string(value) == "0") return false;
++        throw std::invalid_argument("LORR_KK_REMATCH_UNOPENED must be 0 or 1");
++    }();
+     if (skip_matching_if_no_free_agents && env->new_freeagents.size() == 0){
+         std::cout<<"no new free agents: skip matching..."<<std::endl;
+         return;
+@@ -830,7 +839,7 @@
+     {
+         auto & task = pair.second;
+         if (task.agent_assigned == -1 
+-            || task.idx_next_loc==0) {
++            || (rematch_unopened && task.idx_next_loc==0)) {
+             assignable_tasks_indices.push_back(task.task_id);
+         }
+     }
+@@ -855,7 +864,7 @@
+             else {
+                 auto task_id = env->curr_task_schedule[i_agent];
+                 auto & task = env->task_pool[task_id];
+-                if (task.idx_next_loc == 0)
++                if (rematch_unopened && task.idx_next_loc == 0)
+                     assignable_agents_indices.push_back(i_agent);
+             }
+         }
+@@ -865,6 +874,13 @@
+         std::cout<<"assignable_agents_indices.size() "<<assignable_agents_indices.size()<<std::endl;
+         std::cout<<"assignable_tasks_indices.size() "<<assignable_tasks_indices.size()<<std::endl;
+     // )
++
++    if (env->curr_timestep % 200 == 0) {
++        std::cout << "[kk-rematch-diag] step=" << env->curr_timestep
++                  << " rematch=" << rematch_unopened
++                  << " agents=" << assignable_agents_indices.size()
++                  << " tasks=" << assignable_tasks_indices.size() << std::endl;
++    }
+ 
+     if (assignable_agents_indices.size()>assignable_tasks_indices.size())
+     {
+--- a/wppl_planner/src/LNS/LNSSolver.cpp
++++ b/wppl_planner/src/LNS/LNSSolver.cpp
+@@ -288,7 +288,19 @@
+ 
+     ONLYDEV(g_timer.record_p("run_LNS_s");)
+     // continue optimizing paths
++    const double diagnostic_lns_remaining = time_limiter.get_remaining_time();
+     bool succ=lns->run(time_limiter);
++    // Post-search observations shared by every ablation arm. These are merged
++    // iteration records, not a count of every speculative worker search.
++    std::cout << "[kk-lns-diag] step=" << env.curr_timestep
++              << " limit_s=" << time_limiter.time_limit
++              << " remaining_before_s=" << diagnostic_lns_remaining
++              << " success=" << succ
++              << " iteration_records=" << lns->iteration_stats.size()
++              << " failures=" << lns->num_of_failures
++              << " initial_cost=" << lns->initial_sum_of_costs
++              << " final_cost=" << lns->sum_of_costs << std::endl;
++
+     // if (succ)
+     // {
+     //     cout<<"lns succeed"<<endl;
+--- a/src/Entry.cpp
++++ b/src/Entry.cpp
+@@ -24,7 +24,9 @@
+     // g_timer.record_p("_step_s");
+ 
+     //call the task scheduler to assign tasks to agents
++    const auto diagnostic_scheduler_begin = std::chrono::steady_clock::now();
+     scheduler->plan(time_limit,proposed_schedule);
++    const auto diagnostic_scheduler_end = std::chrono::steady_clock::now();
+ 
+     // g_timer.record_d("_step_s","_step_scheduler_e","_step_scheduler");
+ 
+@@ -33,6 +35,13 @@
+     
+     //call the planner to compute the actions
+     planner->plan(time_limit,plan);
++    const auto diagnostic_entry_end = std::chrono::steady_clock::now();
++    std::cout << "[kk-entry-diag] step=" << env->curr_timestep
++              << " scheduler_ms=" << std::chrono::duration<double, std::milli>(
++                     diagnostic_scheduler_end - diagnostic_scheduler_begin).count()
++              << " elapsed_before_diag_ms=" << std::chrono::duration<double, std::milli>(
++                     diagnostic_entry_end - env->plan_start_time).count() << std::endl;
++
+ 
+     // g_timer.record_d("_step_scheduler_e","_step_planner_e","_step_planner");
+ 
