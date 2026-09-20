@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T18:15:26.483605+00:00",
+  "updated_utc": "2026-09-20T20:44:02.845218+00:00",
   "source": "User correction: target is NMS154795; success may be any valid full seed, with or without explicitly enabled tricks. Preserve a separate multiseed generic reference.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": 154795,
@@ -11,7 +11,7 @@
   "allocation": "Development: reserved, bound GRID physical cores on shared hosts are allowed.",
   "map_specific_policies_allowed_for_this_goal": true,
   "promotion_rule": "Goal achieved by at least one valid full5000-step seed with completed_tasks>=154795, complete fixed-work decisions and32GB RSS. Generic or explicitly --trick WAREHOUSE-gated policy may qualify. Record all tested results, seed, commit and timestamp. Shared-host5000ms development runs are allowed and labelled.",
-  "current_best_single": 155120,
+  "current_best_single": 155173,
   "current_six_seed_mean": 144392.16666666666,
   "required_mean_growth_percent": 7.20456903825577,
   "earlier_local_kittyknight_reference": 152981,
@@ -20,10 +20,10 @@
   "competition_budget_required_for_development_promotion": false,
   "timing_expectation": "Aim for roughly sub-second latency on exclusive cores, using prior exclusive controls and CPU-work evidence. Exact one-second validation and optimization of the best solver are deferred.",
   "resource_policy_source": "Explicit user instruction on2026-09-20: relax exclusive hosts and one-second budget for now; validate/optimize best solver later.",
-  "current_best_single_source": "27be6e312fdd79ad310583d33eeb2a4781d75b97",
-  "current_best_single_completed_utc": "2026-09-20T17:16:12.716303+00:00",
-  "current_best_single_budget": "Shared-host 5s development; max 0.996732765s, RSS11944546304bytes. Not strict1s certified.",
-  "pending_confirmation": "No quality benchmark pending: V101 neutral-tail loses 190/174 and stays OFF; V103 two full workers mixed -141/+28, four lose311/261; retain one worker. V102 confirms all four weight8 seeds above target, mean155048.75. Next diagnosis: read-only fresh pickup pairing residual using complete forward fields, preserving the existing task set and protections.",
+  "current_best_single_source": "37f592a48bdb24b936f8d0be8be22ddd405b4ddb",
+  "current_best_single_completed_utc": "2026-09-20T20:36:47.428452+00:00",
+  "current_best_single_budget": "Shared-host5s development; max0.991801379s, RSS11946876928bytes. Not strict1s certified.",
+  "pending_confirmation": "Guard full seeds0/2 improve53/34; paired seeds1/3 V114 running. Five-step matching rejected after four seeds(-11/-208/+30/-192). Native guidance turn-price1/2/4 V113 passes full regressions and exact native/generic screens; full seeds0/2 running independently with guardOFF.",
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
   "minimum_successful_seeds": 1,
@@ -42,27 +42,31 @@
   "current_best_generic_single": 145083,
   "current_best_generic_single_source": "45248431dc38702ebdef9dd1ab2893697c00e00f",
   "current_best_generic_single_completed_utc": "2026-09-20T05:28:00.961539+00:00",
-  "target_gap_from_best_single": -325,
+  "target_gap_from_best_single": -378,
   "required_best_single_growth_percent": 0.0,
-  "current_best_single_evidence": "experiments/construction-20260918/results/p90-pickup-combined-v99/best-record.json",
-  "current_best_single_known_horizon": "Explicit configured H=5000 plus prospective single-holder p90 margin; pickup weight8; ordinary fairness/held-task protection.",
+  "current_best_single_evidence": "experiments/construction-20260918/results/match-horizon-native-full-v110/best-record.json",
+  "current_best_single_known_horizon": "Configured H5000 plus prospective p90 admission margin and whole-cycle late matching-tier guard; pickup8; ordinary fairness/held-task protection.",
   "goal_criterion_satisfied": true,
   "goal_criterion_verified_utc": "2026-09-20T14:00:08.321810+00:00",
-  "target_surplus_from_best_single": 325,
+  "target_surplus_from_best_single": 378,
   "current_trick_tested_seeds": [
     0,
-    1,
-    2,
-    3
+    2
   ],
   "current_trick_tested_totals": [
+    155173,
+    155090
+  ],
+  "current_trick_two_seed_mean": 155131.5,
+  "previous_p90_pickup5_four_seed_mean": 154885.5,
+  "current_trick_four_seed_mean": null,
+  "current_trick_confirmation_evidence": "experiments/construction-20260918/results/match-horizon-native-full-v110/verification.json",
+  "previous_guard_off_four_seed_mean": 155048.75,
+  "previous_guard_off_four_seed_totals": [
     155120,
     154999,
     155056,
     155020
   ],
-  "current_trick_two_seed_mean": 155088.0,
-  "previous_p90_pickup5_four_seed_mean": 154885.5,
-  "current_trick_four_seed_mean": 155048.75,
-  "current_trick_confirmation_evidence": "experiments/construction-20260918/results/p90-pickup8-four-seeds-v102.json"
+  "previous_guard_off_four_seed_evidence": "experiments/construction-20260918/results/p90-pickup8-four-seeds-v102.json"
 }

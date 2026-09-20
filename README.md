@@ -39,18 +39,18 @@ for obstacles, duplicate destinations, and edge swaps.
 
 [WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
 
-On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,120 tasks**
-against the user-specified NMS target of 154,795: a valid full 5,000-step / 10,000-robot
-run, seed 0, source [27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
-It assumes the known 5,000-step horizon and requires `--trick WAREHOUSE`.
-The same profile scores 155,120 / 154,999 / 155,056 / 155,020 on solver seeds 0–3,
-mean **155,048.75**; all four exceed target and finish every first-half task. These
-are solver seeds on one fixed input. The preceding pickup-weight-5 profile averaged
-154,885.5. [Four-seed verification](experiments/construction-20260918/results/p90-pickup8-seeds13-v102/summary.md). The generic six-seed reference remains
-144,392.17. These are shared-host 5s development results; strict 1s certification
-remains separate. [Verified result and exact configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
-
-
+On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,173 tasks**,
+378 above the user-specified NMS target of 154,795. It completes 5,000 steps with
+10,000 robots, zero errors/timeouts, seed 0, source
+[37f592a](https://github.com/fywu85/lorr/commit/37f592a48bdb24b936f8d0be8be22ddd405b4ddb).
+The new late matching-cycle guard improves full seeds 0/2 by 53/34; paired seeds
+1/3 are running. It assumes a configured 5,000-step horizon and requires
+`--trick WAREHOUSE`. Ordinary fairness remains enabled; every first-half task
+finishes, with no formal starvation-freedom claim. The preceding guard-OFF profile
+scores 155,120 / 154,999 / 155,056 / 155,020 on seeds 0–3, mean 155,048.75.
+These are solver seeds on one fixed input. The generic six-seed reference remains
+144,392.17. Shared-host 5s development results are separate from strict 1s
+certification. [Verified result and exact configuration](experiments/construction-20260918/results/match-horizon-native-full-v110/summary.md).
 
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 

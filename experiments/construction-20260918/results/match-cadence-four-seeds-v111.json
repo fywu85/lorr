@@ -1,0 +1,48 @@
+{
+  "checked_utc": "2026-09-20T20:41:15.239061+00:00",
+  "all_valid": true,
+  "source_commit": "1ac2a4dd31bfe2b2262c4ab496604f71b37742c3",
+  "binary_sha256": "741d8e378df5465bf035af92a3b18e0b8f066043c83f0e25560966abbbfd5cf3",
+  "inputs": [
+    {
+      "path": "experiments/construction-20260918/results/match-cadence-native-full-v108/verification.json",
+      "sha256": "bd880213f698aaa74c400409d481f8c17a0b3ea748d23e9da1e468fad29923fc"
+    },
+    {
+      "path": "experiments/construction-20260918/results/match-cadence-seeds13-v111/verification.json",
+      "sha256": "b2a9e36c0776b4e38aeedce4d19805e39aa4cbdc11282ea988a50c7d64b3a13d"
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "control_totals": [
+    155120,
+    154999,
+    155056,
+    155020
+  ],
+  "candidate_totals": [
+    155109,
+    154791,
+    155086,
+    154828
+  ],
+  "differences": [
+    -11,
+    -208,
+    30,
+    -192
+  ],
+  "control_mean": 155048.75,
+  "candidate_mean": 154953.5,
+  "mean_difference": -95.25,
+  "wins": 1,
+  "losses": 3,
+  "candidate_promoted": false,
+  "decision": "Retain ten-step matching; five-step matching loses on three of four paired seeds.",
+  "limits": "Fixed-input solver seeds, shared5s development, no strict1s certification. Full result and independent accounting in linked directories."
+}
