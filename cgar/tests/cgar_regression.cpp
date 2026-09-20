@@ -670,6 +670,42 @@ void unopened_matching_production() {
  try{Cgar invalid;invalid.initialize(&broad,10000);}catch(const std::invalid_argument&){rejected=true;}
  if(!rejected)throw std::runtime_error("active group quota accepted without matching");
  unsetenv("CGAR_REASSIGN_MATCH_GROUPS");setenv("CGAR_REASSIGN_MATCH","1",1);
+ // A far holder with a nearby pickup is invisible to robot-location groups.
+ // Mixed groups must find that large crossed assignment under the SAME limits.
+ SharedEnvironment crossed;crossed.rows=64;crossed.cols=160;crossed.map.assign(64*160,0);
+ crossed.num_of_agents=3;crossed.curr_task_schedule={0,1,2};crossed.goal_locations.resize(3);
+ const int cells[]={60*160+60,30*160+10,30*160+144};
+ const int goals[]={40*160+60,30*160+145,30*160+11};
+ for(int i=0;i<3;++i){crossed.curr_states.emplace_back(cells[i],0,i==2?2:0);
+  crossed.goal_locations[i]={{{goals[i],0}}};Task task;task.task_id=i;task.t_revealed=-5;
+  task.agent_assigned=i;task.locations={goals[i]};crossed.task_pool.emplace(i,task);}
+ for(int mode=0;mode<=1;++mode){
+  setenv("CGAR_REASSIGN_MATCH_PICKUP_GROUPS",mode?"1":"0",1);
+  auto trial=crossed;Cgar match;match.initialize(&trial,10000);
+  for(int t=0;t<2;++t){trial.curr_timestep=t;match.plan(&trial,10000,actions);
+   auto next=step(trial,trial.curr_states,actions);
+   if(next.empty())throw std::runtime_error("pickup grouping setup collided");trial.curr_states=next;}
+  trial.curr_timestep=10;match.schedule(&trial,10000,proposed);
+  const auto expected=mode?std::vector<int>({0,2,1}):std::vector<int>({0,1,2});
+  if(proposed!=expected||match.stats().match_moved!=(mode?2:0)||
+     match.stats().match_pickup_selected!=(mode?1:0)||match.stats().match_groups>4||
+     match.stats().match_selected>128||match.stats().match_nodes>8192||
+     (mode&&match.stats().match_saving<200))
+   throw std::runtime_error("pickup grouping missed far holder or violated bounds/protection: mode="+std::to_string(mode)+
+    " moved="+std::to_string(match.stats().match_moved)+" pickup="+std::to_string(match.stats().match_pickup_selected));
+  for(int i=0;i<3;++i)if(trial.curr_task_schedule[i]!=i||trial.task_pool.at(i).agent_assigned!=i||
+      trial.task_pool.at(i).t_revealed!=-5||trial.task_pool.at(i).idx_next_loc!=0)
+   throw std::runtime_error("pickup grouping changed simulator metadata");
+ }
+ for(const char* value:{"-1","2"}){
+  setenv("CGAR_REASSIGN_MATCH_PICKUP_GROUPS",value,1);bool invalid=false;
+  try{Cgar test;test.initialize(&crossed,5000);}catch(const std::invalid_argument&){invalid=true;}
+  if(!invalid)throw std::runtime_error("invalid pickup grouping mode accepted");
+ }
+ setenv("CGAR_REASSIGN_MATCH_PICKUP_GROUPS","1",1);setenv("CGAR_REASSIGN_MATCH","0",1);rejected=false;
+ try{Cgar invalid;invalid.initialize(&crossed,5000);}catch(const std::invalid_argument&){rejected=true;}
+ if(!rejected)throw std::runtime_error("pickup grouping accepted without matching");
+ unsetenv("CGAR_REASSIGN_MATCH_PICKUP_GROUPS");setenv("CGAR_REASSIGN_MATCH","1",1);
  // Same-call new assignments must not borrow stale tickets in next-primary
  // selection, and mandatory fair admissions must retain their protection.
  auto warm=[](Cgar& planner,SharedEnvironment& env){
@@ -728,7 +764,7 @@ void unopened_matching_production() {
                       "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
                       "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
                       "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
- std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1 bounded_broad_quota=1\n";
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1 bounded_broad_quota=1 pickup_near_far_holder=1\n";
 }
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);

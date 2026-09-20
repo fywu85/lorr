@@ -909,8 +909,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
         throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
+    const int match_pickup_groups = env_int("CGAR_REASSIGN_MATCH_PICKUP_GROUPS", 0);
+    if (match_pickup_groups < 0 || match_pickup_groups > 1 || (match_pickup_groups && !reassign_match_))
+        throw std::invalid_argument("pickup-neighborhood grouping requires enabled matching and a boolean selector");
+    match_pickup_groups_ = match_pickup_groups != 0;
     if (reassign_match_)
-        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128\n", match_group_limit_);
+        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_pickup_groups_);
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
@@ -1923,12 +1927,12 @@ void Cgar::log_summary() {
         stats_.pool_nodes, stats_.pool_pairs, stats_.pool_exchanges, stats_.pool_pickup_saving,
         stats_.pool_chain_delta, stats_.pool_total_saving, stats_.pool_missing_pickup, stats_.pool_missing_chain,
         stats_.pool_short_pickup, stats_.pool_primary_protected, stats_.pool_recovery_protected, stats_.pool_fair_protected);
-    std::printf("[cgar-unopened-match] t=%d enabled=%d passes=%lld eligible=%lld resident=%lld missing=%lld unreachable=%lld groups=%lld selected=%lld anchors=%lld full_groups=%lld nodes=%lld matrix_entries=%lld cycles=%lld accepted_cycles=%lld moved=%lld saving=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld\n",
+    std::printf("[cgar-unopened-match] t=%d enabled=%d passes=%lld eligible=%lld resident=%lld missing=%lld unreachable=%lld groups=%lld selected=%lld anchors=%lld full_groups=%lld nodes=%lld matrix_entries=%lld cycles=%lld accepted_cycles=%lld moved=%lld saving=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld pickup_selected=%lld\n",
         env_->curr_timestep, reassign_match_, stats_.match_passes, stats_.match_eligible, stats_.match_resident,
         stats_.match_missing, stats_.match_unreachable, stats_.match_groups, stats_.match_selected,
         stats_.match_anchors, stats_.match_full_groups, stats_.match_nodes, stats_.match_matrix_entries, stats_.match_cycles, stats_.match_accepted_cycles,
         stats_.match_moved, stats_.match_saving, stats_.match_primary_protected,
-        stats_.match_recovery_protected, stats_.match_fair_protected, stats_.match_budget_protected);
+        stats_.match_recovery_protected, stats_.match_fair_protected, stats_.match_budget_protected, stats_.match_pickup_selected);
     std::fflush(stdout);
 }
 
@@ -2328,6 +2332,23 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         }
     }
 
+    // The optional second index contains the same eligible resident holders,
+    // keyed by their pickup location instead of their current robot location.
+    // This can admit a distant holder whose pickup is near the current anchor.
+    std::vector<int> pickup_head, pickup_link;
+    if (match_pickup_groups_) {
+        pickup_head.assign(cert_.free.size(), -1);
+        pickup_link.assign(n_, -1);
+        for (auto it = resident.rbegin(); it != resident.rend(); ++it) {
+            const int robot = *it;
+            const int cell = env_->task_pool.at(proposed[robot]).locations.front();
+            if (cell >= 0 && cell < static_cast<int>(pickup_head.size())) {
+                pickup_link[robot] = pickup_head[cell];
+                pickup_head[cell] = robot;
+            }
+        }
+    }
+
     std::vector<char> used(n_, 0), anchor_seen(n_, 0);
     std::vector<int> seen(cert_.free.size(), 0), queue;
     int generation = 0;
@@ -2358,14 +2379,26 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         queue.push_back(start_cell);
         seen[start_cell] = ++generation;
         std::vector<int> group;
+        const int location_limit = match_pickup_groups_ ? group_size / 2 : group_size;
+        int location_count = 0, pickup_count = 0;
         for (size_t pos = 0; pos < queue.size() && pos < node_limit && group.size() < group_size; ++pos) {
             if ((pos & 63) == 0) check_deadline(deadline_, "unopened_match_group_search");
             const int cell = queue[pos];
             ++stats_.match_nodes;
-            for (int robot = head[cell]; robot >= 0 && group.size() < group_size; robot = link[robot]) {
+            for (int robot = head[cell]; robot >= 0 && location_count < location_limit; robot = link[robot]) {
                 if (!used[robot]) {
                     used[robot] = 1;
                     group.push_back(robot);
+                    ++location_count;
+                }
+            }
+            if (match_pickup_groups_) {
+                for (int robot = pickup_head[cell]; robot >= 0 && pickup_count < group_size / 2; robot = pickup_link[robot]) {
+                    if (!used[robot]) {
+                        used[robot] = 1;
+                        group.push_back(robot);
+                        ++pickup_count;
+                    }
                 }
             }
             for (int direction = 0; direction < 4; ++direction) {
@@ -2381,6 +2414,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         }
 
         ++stats_.match_groups;
+        stats_.match_pickup_selected += pickup_count;
         stats_.match_selected += group.size();
         stats_.match_full_groups += group.size() == group_size;
         const int n = static_cast<int>(group.size());
