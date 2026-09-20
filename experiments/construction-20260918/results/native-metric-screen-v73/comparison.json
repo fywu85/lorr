@@ -1,0 +1,73 @@
+{
+  "all_valid": true,
+  "eligible_for_full_comparison": true,
+  "full_run": false,
+  "exact_control": true,
+  "all_sampled_work_bounds_checked": true,
+  "decision_limit_ms": 5000,
+  "benchmark_mode": "relaxed_development",
+  "competition_budget_confirmed": false,
+  "checked_utc": "2026-09-20T09:38:07.686590+00:00",
+  "source_commit": "06a825855718513c3e965a22aac227ad13fd5595",
+  "source_files_verified": 28,
+  "binary_sha256": "37277f20b5ef75af33ebdb14a6e124483890db9138a0e01fbbc7efc1547ddafc",
+  "receipts": {
+    "trick_native_control_paid-s0-r0": {
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 0,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_control_potential-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 1,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_no_bands-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 0,
+      "mode": 2,
+      "field_sha256": "adcf168b0c0863ae378adf275ccc7a20e10f0fcd9bb1a75f4d3df3d4942b9946",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_bands-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 1,
+      "mode": 3,
+      "field_sha256": "d56b2bf3cf0094391443127feb343f42d49f5624678e8d8f922d94e2aa52a5a3",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    }
+  },
+  "scope": "TRICK: explicit --trick WAREHOUSE native metric20/200(+1bands),turn1,raw scalar units against exact4/16/4 paid/remaining controls. Scheduler pickup/chain prices are coherently repriced with base20. Matching/short preference OFF. This is a compound fidelity experiment, not a causal cheap-turn effect or an NMS reproduction. Prefixes only establish feasibility; failures have no partial score."
+}

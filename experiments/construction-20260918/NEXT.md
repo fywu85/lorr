@@ -1,107 +1,79 @@
-# Continuing warehouse work
+# Continuing Warehouse work
 
-Updated 2026-09-20 09:09 UTC. CGAR remains the framework. Target is NMS154,795;
-any valid full5,000-step seed, generic or explicit --trick WAREHOUSE, can satisfy
-the goal. 32GB RSS, fixed work and explicit timeout failure. Shared hosts and5s
-development deadlines are authorized; later strict1s check remains separate.
+Updated 2026-09-20 09:53 UTC. Preserve CGAR. Target NMS154,795: any valid full
+5,000-step / 10,000-robot seed may qualify, including explicit `--trick WAREHOUSE`.
+Keep 32GB process RSS, complete fixed work, and timeout failure without partial
+quality scores. Shared GRID hosts and5s development deadlines are authorized;
+strict1s checks remain separate. Preserve the other fork's random05 changes/jobs.
 
-## Active overnight continuation (supersedes historical statuses below)
+## Current best and validated reference
 
-**New overall best147,502 (TRICK,seed2), source0f4183f**, completed
-2026-09-20T09:07:01.739904UTC. Static lanes + remaining-potential score,
-matchingOFF/shortOFF. Seed0=147,422. Verified full report
-results/trick-potential-full-v68/summary.md and best-record.json. Gap7,293
-(4.94434% growth). Prior best147,328 lanes+matching64 remains a control.
-Generic peak145,083; confirmed generic six-seed mean144,392.17 (matching64 promoted).
+- Overall best **148,132 TRICK seed0**, static lanes + remaining potential +
+  matching64, short preference OFF. Seed2=148,101. Exact source c696d5f, completed
+  09:45:49.302966UTC, hash28d8a706680eedc892b0b12e7211a825756e3ae74856676f75baa72af4ffdd56.
+  V72 all six full cases valid, four exact controls. Gains over score-only+710/+599,
+  tails+140/+157; over matching-only+804/+897. Mean314.964ms/max976.717ms,
+  RSS11.939GB,1.833CPU cores averaged of4reserved. Shared5s, not strict1s certified.
+  `results/trick-score-match-full-v72/best-record.json`. Gap6,663, growth4.4980%.
+- Prior overall147,502 potential-only seed2, source0f4183f, V68. Seed0=147,422.
+  Keep both increasing records in the root log, plus V72's earlier148,101.
+- Generic reference matching64 mean144,392.17, source0196851. Seeds0..5:
+  144967/144869/144511/143340/144446/144220. All totals improve, mean+451,
+  five tails improve; seed5tail−49 and seed3agep90+2 remain documented.
+  `warehouse-reference-variants.json` selects this. Prior regional profile is
+  `warehouse-regional-reference-variants.json`; old trick controls bind that file.
+- Generic best single145,083 remaining-flow remains experimental OFF after six
+  seed gains+573/+606/+108/−793/+223/−3. No reference promotion for that candidate.
+- V66 mixed pickup grouping loses both full seeds144632/144398 versus144967/144511.
+  Keep groups0. V65 short preference loses; keep OFF. V70 pickupweight5 with paid
+  lanes+matching improves+129/+291 (147457/147495), both tails positive, no record.
+  Short+weight5 recovers146873/146820 but is still worse than ordinary fairness.
+- V69/V71 saved trajectory audits complete. Potential scoring reduces detours/waits
+  and empty work, increases turns; completed shortest-chain means almost unchanged.
+  Endogenous cohorts: do not claim causal savings or planner equivalence to NMS.
 
-V68 full8899413/8899414 now complete and valid: +763/+936 tasks, tails+201/+195,
-mean+0.579419%, emptywork−154900/−176219, both exact lane controls. V71 saved-run
-cohort/static-lane audit8899433 now running, raw runs/cgar-potential-motion-audit-v71-20260920,
-output results/potential-motion-audit-v71. Next: isolate score×matching interaction.
+## Running comparisons and review
 
-Completed:
-- V64 full OFF/4/64 x seeds0/2 all valid and exact controls. Matching64
-  144,967/144,511 vs144,510/144,107 (+457/+404,mean+0.298319%); tails+51/+123,
-  agep90-5/-3, empty work-125,579/-137,209. Four-group gains smaller/mixed tails.
-  Source0196851; results/match-quota-full-v64/summary.md.
-- V65 full explicit lanes x shortOFF/ON x matchingOFF/64: all8 valid,40k complete
-  entries, every control exact. Matching improves lane mean+0.445733%, both tails;
-  short+matching recovers3.6112% but remains below lane-only. Keep short OFF.
-- V66 mixed pickup grouping passes regressions and paired800screen with exact
-  local64 controls; mixed18,845/18,841 vs18,958/18,967. Higher estimated savings
-  are not actual throughput. Source5dc6ae4. Default OFF.
-- V67 tests only, source8152063:192 exhaustive small assignment matrices,
-  forbidden edges, INT_MAX32-group arithmetic, independently accepted cycles.
-  All pass; production and binary exactly V66. build-provenance/v67.
-- Fable turn34 complete in persistent session1ebb1075-3538-49d1-93d1-a00c94fa256a.
-  Archived review/qualified assessment in fable-flow-session/turn34. No live CLI.
-- V68 explicit CGAR_TRICK_REMAINING_FLOW under --trick WAREHOUSE, lanesON,
-  matchingOFF/shortOFF. Generic selector stays rejected under TRICK. Same4/16/4
-  field, cache/scheduler algorithms and prescribed work, only paid-forward-extra
-  score removed. Source0f4183f; full suite passes with101,079 actual-field macro
-  replays,386changed rankings,43,725neutral macros. Screen8899406/8899407 valid,
-  disabled control exact;3709/3805 at200steps is startup evidence only.
+- Native V73 full8899463/analysis8899464 on research52: four arms x seeds0/2,
+  32 bound physical cores. Paid/potential legacy controls, native with/without bands.
+  Raw `runs/cgar-native-metric-full-v73-20260920`; results/native-metric-full-v73.
+  Source06a8258, frozen build runs/cgar-native-metric-build-v73-20260920.
+  Expected legacy controls146659/146566 and147422/147502. Matching/short OFF.
+- V73 source implements explicit native20/200(+1bands), turn1 and raw potential
+  scalar, schedule base20. All28 source/test hashes bound. Full regression passes
+  617376 states,39302 macro scores,1416 service cases, independent pickup oracles,
+  wide-distance fallback/eviction, integer/default bounds and CLI isolation.
+  Four200-step screens valid with both exact legacy prefixes. Separate800-step
+  generic matching control exactly reproduces c0f1c9fb... with no trick activation.
+  See build-provenance/v73 and results/native-{metric-screen,generic-control}-v73.
+- Combined pickupweight V74 full8899466/analysis8899467: unchanged V72 binary/source
+  c696d5f, four cases weight1/5 x seeds0/2. Lanes/potential/matching64 ON, short OFF.
+  Raw `runs/cgar-combined-pickup-full-v74-20260920`; results/combined-pickup-full-v74.
+  Analyzer `tricks/pickup_weight/analyze.py --combined-score` checks exact V72
+  control hashes. Older inactive native receipt fields normalize to OFF only.
+- Persistent Fable review turn36 RUNNING, PID1049, session
+  1ebb1075-3538-49d1-93d1-a00c94fa256a. Started09:46:06UTC. Source payload is authorized;
+  review focus native metric units, bounds and isolation. Prompt followup-35.md.
+  Read finished response.json/response.txt and qualify claims before adopting.
+  Previous turn35 archived, recommends this bounded native fidelity comparison.
 
-Currently running:
-- **Generic matching64 confirmation8899409 / analysis8899410**, seeds1/3/4/5
-  OFF/ON on32reservedphysicalcores. Frozen V64 binary, source0196851.
-  Raw runs/cgar-match-quota-confirm-v64-20260920;
-  output results/match-quota-confirm-v64. Combine with verified0/2 only after
-  full checks; decide generic reference promotion with all seed effects visible.
-- **Mixed pickup grouping full8899402 / analysis8899408**, four paired0/2 cases
-  on16cores. Frozen V66,source5dc6ae4. Raw runs/cgar-pickup-group-full-v66-20260920;
-  output results/pickup-group-full-v66. Held analysis now submitted after freezing
-  verified V64 matching64 reference rows. All protected contracts unchanged.
-- **TRICK remaining-potential full8899413 / analysis8899414**, four paired0/2
-  cases on16cores. Frozen V68,source0f4183f.
-  Raw runs/cgar-trick-potential-full-v68-20260920;
-  output results/trick-potential-full-v68. Exact lane-only full controls required.
+## Next actions
 
-All running cases use shared-host5s/32GB with four reserved/bound physical cores
-per simulator. Preserve other fork's random05 files/commits and r05_* jobs.
-Never treat a short prefix or failed entry as a full score. Record any verified
-single-seed best immediately; keep generic and TRICK histories distinct.
+1. Review completed Fable36; fix actual defects with reproducing tests if any.
+2. Verify both full comparisons, record ALL failures/results. Any increasing full
+   best updates root WAREHOUSE_PROGRESS.md with exact source/time/hash/flags.
+3. If native wins, consider its interaction with validated matching and pickup
+   weighting after isolation checks. Current native selector deliberately rejects
+   matching for this first experiment; adding compatibility requires tests/build.
+4. Keep paired controls and separate generic confirmation. Do not mark goal
+   complete below154795. Commit/push our work only; never stage random05 changes.
 
-## Added read-only diagnosis and bounded scheduling comparison (09:00 UTC)
+All evidence lives under experiments/construction-20260918/results. Build and
+benchmark snapshots are immutable in ignored runs/. No partial prefixes are full
+quality scores. Legacy analyzers may need explicit native-OFF receipt normalization
+when used with newer benchmark tools; active jobs use frozen analyzer snapshots.
 
-- V69 saved V65 lane-motion/cohort audit8899419 is complete. Eight50M-action
-  replays valid, five basefixtures plus independent lanephase/window fixture and
-  wrongfieldrejection pass. Matching reduces empty/task1.527/1.558 while completed
-  chainlength stays nearlyconstant. Short+match saves~7chaincells but incurs~16.5
-  extraempty/task. results/lane-motion-audit-v69/summary.md. No newbenchmark.
-- V70 pickupweight factorial8899427 / analysis8899428: frozenV65 source5a8a51a,
-  lanesON/matching64fixed, pickupweight1/5 x shortOFF/ON x seeds0/2, eightfullcases,
-  32reservedphysicalcores, shared5s/32GB. Weight1controls must exactlymatchV65.
-  No production change. Prior older pickup5 collapse explicitly acknowledged; this is
-  one controlled retest undercurrentstaticlanes/matching, no gainclaim.
-  Raw runs/cgar-trick-pickup-weight-full-v70-20260920;
-  output results/trick-pickup-weight-full-v70; tricks/pickup_weight/README.md.
-
-- Persistent Fable turn35 is running in session1ebb1075-3538-49d1-93d1-a00c94fa256a,
-  claude-fable-5-1/max, via Claude Code. Prompt followup-34.md includes the new
-  cohort evidence, V68 source/tests and a conditional native-metric design request.
-
-- V66 full mixed grouping8899402/8899408 completed valid:144632/144398 versus
-  exact local64 controls144967/144511. Differences−335/−113, tails−3/−61,
-  mean−0.154761%, despite slightly lower emptywork. Keep pickup_groups0.
-  results/pickup-group-full-v66/summary.md; full20k entries/max0.892794s/RSS11.940GB.
-
-- V64 confirmation8899409/8899410 complete: all six totals improve; mean144392.17
-  (+451,+0.3133%), five tails positive, seed5tail−49, seed3agep90+2. All12valid,
-  six exact controls. Reference profile now matching64; prior regional-only
-  profile preserved separately and trick analyzers explicitly bind that base.
-- V72 build8899437 passes all regressions; sourcec696d5f, all27hashes verified.
-  Score+matching explicit static interaction only. Screen8899439/8899440 runs
-  score-only/matching-only/combined, seed0,200steps; exact V68/V65 prefixes required.
-  Full six cases only after screen verification. V70 pickupweight full stillruns.
-- V71 potential motion audit8899433 complete valid. Chainsnearlyunchanged;
-  empty/task falls1.4–1.6, loadedoverhead falls0.30/0.51, detours/waitsfall,
-  turnsrise. Contraflow fraction~0.18%→~1.54%. No causal decomposition claim.
-- Fable turn35 complete; archived review and qualified assessment available.
-
-- V72 screen8899439/8899440 complete, all3valid and both exact prefixes. Full
-  score-only/matching-only/combined x0/2 now8899444/analysis8899445,24physicalcores,
-  frozen c696d5f, shared5s/32GB. Raw runs/cgar-trick-score-match-full-v72-20260920.
+## Historical notes below (current status above supersedes old running labels)
 
 ## Current jobs and latest steering
 
