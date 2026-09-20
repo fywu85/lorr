@@ -23,6 +23,20 @@ OperationModel::OperationModel(const Graph& g) {
             path[t]=v*4+d;
         }
         if(!valid){path[0]=-1;continue;}
+        // A rotation followed by its inverse before any forward motion never
+        // changes the footprint or task visits. Do not let the tie preference
+        // for rotation over waiting introduce these wasteful prefixes.
+        int rotation=0,turns=0;bool redundant=false;
+        for(int t=0;t<horizon;++t) {
+            Action action=Action((code>>(2*t))&3);
+            if(action==FW){rotation=0;turns=0;}
+            else if(action==CR || action==CCR) {
+                int sign=action==CR?1:-1;
+                if((rotation && rotation!=sign) || ++turns>=3)redundant=true;
+                rotation=sign;
+            }
+        }
+        if(redundant)continue;
         // Different final headings can share the same reservation footprint.
         // Choose the best heading for the current task before sorting footprints.
         bool found=false;

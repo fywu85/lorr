@@ -447,3 +447,10 @@ The published NMS score of 3,050 used different instances and hardware.
   suffix inheritance, half-turns followed by a fully occupied cycle, prohibited
   edge swaps, dense task replacement and worker-count determinism. Full-map
   performance is pending; the existing pipeline remains selected by default.
+
+- Operation-policy review found that a generic rotation-before-wait tie rule
+  could prefer a turn immediately undone before any movement. Candidate
+  generation now excludes opposite turns without intervening forward motion
+  and redundant three-quarter-turn sequences. An immovable two-cell regression
+  requires waiting without swaps or futile rotations. Geometry retains all
+  action encodings so shifted inherited plans remain representable.

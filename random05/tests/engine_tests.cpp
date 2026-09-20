@@ -209,7 +209,7 @@ void operation_swap_rejection() {
         e.curr_timestep=t;std::vector<Action> plan;std::vector<int> schedule;
         engine.compute(&e,plan,schedule);
         for(int a=0;a<2;++a) {
-            require(plan[a]!=FW,"operation planner allowed an edge swap in a full two-cell corridor");
+            require(plan[a]==W,"immovable aligned agents attempted a swap or redundant rotations");
             auto& state=e.curr_states[a];
             if(plan[a]==CR)state.orientation=(state.orientation+1)%4;
             else if(plan[a]==CCR)state.orientation=(state.orientation+3)%4;
