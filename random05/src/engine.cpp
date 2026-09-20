@@ -28,7 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
-    c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
+    c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     if(c.horizon>0 && env.trick_instance!="RANDOM-05")
@@ -290,6 +290,14 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         const auto& stops=env->task_pool.at(tasks[j]).locations;
         for(size_t k=1;k<stops.size();++k)length[j]+=g.hop(g.from_grid[stops[k]],g.from_grid[stops[k-1]]);
     }
+    std::vector<std::array<float,4>> continuation;
+    if(cfg.chain_matching) {
+        continuation.resize(tasks.size());
+        for(int j=0;j<int(tasks.size());++j) {
+            Chain chain(g,env->task_pool.at(tasks[j]));
+            continuation[j]=chain.tail[0];
+        }
+    }
     struct Pair { float cost;int agent,task; };
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && tasks.size()>=agents.size();
     std::vector<float> matrix(exact?agents.size()*tasks.size():0);
@@ -306,6 +314,13 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 float approach=INF;
                 for(int d=0;d<4;++d)approach=std::min(approach,g.dist(goal*4+d,p*4+env->curr_states[a].orientation));
                 cost=approach/2+cfg.length_weight*length[j];
+            }
+            if(cfg.chain_matching) {
+                const int goal=g.from_grid[task.locations[0]];
+                cost=INF;
+                for(int d=0;d<4;++d)cost=std::min(cost,
+                    (g.dist(goal*4+d,p*4+env->curr_states[a].orientation)
+                     +cfg.length_weight*continuation[j][d])/2);
             }
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
             if(exact)matrix[size_t(row)*tasks.size()+j]=cost;

@@ -20,16 +20,19 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,729 tasks / 2,000 steps**, planner seed 0,
+Best verified combined result: **2,767 tasks / 2,000 steps**, planner seed 0,
 public guidance, dispersion 0.8, K=64, five local refinements, equal-score
-acceptance, wait cost 0.5, and explicitly enabled known-horizon triage. Mean
-entry latency 64 ms, max 213 ms on four physical cores. Best without horizon
-triage: **2,594 tasks**. All frontier runs have zero planner errors, scheduler
-errors and timeouts. NMS with 32 logical CPUs completed **3,172 tasks**, zero
-errors/timeouts, 0.951 s maximum entry time, and 1.61 GiB peak RAM. Our best is
-currently 14.0% below that reference while using four physical cores. Using
-32 logical CPUs for K=1,024 gives 2,712 tasks (14.5% below NMS). The four-worker
-NMS comparison is still running. [NMS evidence](random05/results/nms-original-full-v1/summary.json).
+acceptance, wait cost 0.5, and explicitly enabled known-horizon triage with
+scale 0.9. Four-worker NMS completed **2,903 tasks**; our best is **4.7% below**
+that reference. The 32-logical-CPU NMS reference is **3,172 tasks** (12.8% gap).
+Our best without horizon triage remains **2,594 tasks**. All frontier/reference
+runs have zero planner errors, scheduler errors and timeouts.
+
+[NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
+[NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
+The four-worker build changes only the existing local reference's worker constant;
+both references retain the earlier constructor-initialization safety fix documented
+in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
@@ -46,6 +49,9 @@ NMS comparison is still running. [NMS evidence](random05/results/nms-original-fu
 | 2026-09-20T08:19:08.147723+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | loop4; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2677 | Four-worker pending | Pending | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
 
 | 2026-09-20T08:32:56.449253+00:00 | [6fb222e](https://github.com/fywu85/lorr/commit/6fb222e) | Wait0.5; cached K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2729 | Four-worker pending | Pending | [Full evidence](random05/results/wait-cost-full-v9/summary.json) |
+
+| 2026-09-20T08:41:54.502028+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | exact160-guided; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2766 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
+| 2026-09-20T08:41:56.906339+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | triage09; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2767 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -105,3 +111,18 @@ The published NMS score of 3,050 used different instances and hardware.
   gap. Wait-cost ablation: 0.05=2,691, 0.25=2,648, 0.5=2,729, 1=2,513,
   2=2,658, 4=2,559. The 0.5 setting is a new single-seed frontier and requires
   replication; it is not yet a demonstrated average gain.
+
+- v10: wait0.5 control repeats at 2,729. Exact matching for <=160 eligible
+  robots gives 2,684; with oriented guidance gives 2,766. Anticipating turns
+  in the wait score gives 2,653 (wait2: 2,693), so leave it off. Larger cycles
+  now give 2,684. Triage scale0.6=2,753, scale0.9=2,767.
+- Trace diagnosis: the 2,729 run makes 459,441 forward moves versus NMS32's
+  520,780. Tasks in successive 500-step blocks: ours 639/719/620/751,
+  NMS32 975/750/754/693. Much of the gap opens early; test initial/global
+  assignment and oriented task-chain cost as well as planner flow.
+- Allocation audit: the borrowed-guidance v10 batch was granted CPU slots but
+  GRID did not apply its requested physical-core binding (64 cores visible
+  versus 24 requested). Cases still have disjoint taskset masks and fixed work,
+  but latency is contended and cannot be treated as isolated. Future submissions
+  fail immediately if GRID does not honor binding. Earlier frontier and NMS
+  reference allocations have the expected physical-core count.

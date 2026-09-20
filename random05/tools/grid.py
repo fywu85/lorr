@@ -64,7 +64,7 @@ def execute(a):
     global ROOT
     out=a.output.resolve();spec=json.loads((out/'spec.json').read_text());ROOT=Path(spec['repo'])
     resources=cpu_resources();write(out/'allocation.json',dict(started_utc=now(),resources=resources,job_id=os.environ.get('JOB_ID')))
-    assert resources['physical_cores_visible']>=spec['physical'],resources
+    assert resources['physical_cores_visible']==spec['physical'],('GRID did not honor requested core binding; refusing an unbound benchmark',resources)
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota']>=spec['slots'],resources
     if spec['kind'] in ('build','nms4-build'):
         for rel,digest in spec['source_hashes'].items():assert sha(out/'source'/rel)==digest,rel
