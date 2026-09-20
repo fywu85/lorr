@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 17:22 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
+Updated 2026-09-20 17:32 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
 
 ## New verified best: 155,120
 
@@ -11,9 +11,10 @@ Winning source remains `27be6e312fdd79ad310583d33eeb2a4781d75b97`, binary `37694
 ## Active jobs; do not resubmit
 
 - **V102 best p90 / weight-8 seeds 1 / 3:** benchmark 8900345, verifier 8900346, outcomes 8900347. Raw `runs/cgar-p90-pickup8-seeds13-v102-20260920`; results `results/p90-pickup8-seeds13-v102`. Same frozen V96 binary. Two cases, eight physical cores. Started about 17:21 UTC; expect roughly 18:00.
-- **V100 global search split across 1 / 2 / 4 workers, p90 / weight 5, seeds 0 / 2:** benchmark 8900316, verifier 8900317, outcomes 8900318. Raw `runs/cgar-native-portfolio-full-v100-20260920`; results `results/native-portfolio-full-v100`. Research52, 24 physical cores, four per run. Started 16:49:36 UTC. Four-worker raw results 154,583 / 154,687 (lower throughput but faster) await the whole matrix's independent validation. One-worker controls were at step 3,200 around 17:15; two workers at 4,400. Do not promote partial matrix data. Aggregate limits stay 4M candidates and 1M repair attempts; executed work differs.
-- **V101 native neutral-tail 200-step compatibility screen:** 8900348, verifier 8900349. Raw `runs/cgar-native-neutral-tail-screen-v101-20260920`; results `results/native-neutral-tail-screen-v101`. Requires exact OFF hash `b9fef3086ca4d7146f1e79f8bd7c43585ebef7a05598e2f65216404c650fa2b1`, active changed trajectory and nonzero repricing counters.
-- **V101 generic 800-step compatibility:** 8900350, verifier 8900351. Raw `runs/cgar-native-neutral-tail-generic-v101-20260920`; results `results/native-neutral-tail-generic-v101`. Requires exact promoted generic trace 18,958 tasks / `c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7`.
+- **V101 neutral-tail full, p90 / weight 8, OFF/ON seeds 0 / 2:** benchmark 8900363, verifier 8900364, outcomes 8900365. Raw `runs/cgar-native-neutral-tail-full-v101-20260920`; results `results/native-neutral-tail-full-v101`. Frozen e757965 / c7f7b320 binary, **full-variants.json**. Research38, 16 physical cores, started 17:28:50 UTC; expect roughly 18:08. Exact OFF controls must reproduce 155,120 / 155,056 and complete V99 trajectories.
+- **V103 full-depth 1 / 2 / 4 workers, p90 / weight 8, seeds 0 / 2:** benchmark 8900366, verifier 8900367, outcomes 8900368. Raw `runs/cgar-native-workers-full-v103-20260920`; results `results/native-workers-full-v103`. Frozen V96 binary, no neutral-tail mode. Each worker retains 4M candidates / 1M attempts, so aggregate work increases. Research38, 24 other physical cores, started 17:28:50 UTC. Allocations are disjoint from V101; V102 is on research46.
+
+Both V101 compatibility checks are COMPLETE: native 200-step 8900348 / 8900349, exact OFF and active ON; generic 800-step 8900350 / 8900351, exact 18,958 and c0f1c9fb... trajectory. Native startup uses weight 5; full comparison moved to the now-verified weight-8 best before submission. V100 shorter portfolio is also fully validated; see completed evidence below.
 
 ## New optional motion experiment
 
@@ -21,10 +22,11 @@ Source **e757965ad5869b9004e63da4c0bab52ecdb64549**, binary **c7f7b32063284b42c4
 
 The oracle replays 41,674 macros, 1,244 changed scores, 344 start-at-goal departures without service. Both real service episode traces change; 12,288 independently collision-checked actions; exact serial/parallel behavior and nonzero physical turns. Initial builds 8900332 / 8900333 failed an old fixture demanding wait-seed projections under the changed policy. Diagnostic proved prescribed work/cache counts correct and seed projections zero; corrected fixture retains old-mode projection coverage and tests new-mode physical rotations. Both failures archived under `build-provenance/v101{,-r2}-failed`; passing 8900343 under `v101-r3`.
 
-After both compatibility screens pass, submit full neutral OFF/ON seeds 0 / 2 with this frozen binary and `tricks/neutral_tail/variants.json` (p90 / weight **5** baseline). Use the new analyzer `--mode neutral --control trick_p90_neutral0 --reference results/horizon-percentile-full-v96/verification.json --profile results/horizon-percentile-full-v96/best-variant.json --commit e757965...`, hold on actual benchmark ID, then `native_work/outcomes.py` held on actual verifier ID. Keep the current best weight-8 profile separate; this is one isolated motion ablation, not an unmeasured combination. No neutral full run submitted yet.
+The full neutral comparison was submitted only after both compatibility checks passed. It now uses the verified p90 / weight-8 baseline (a documented update from the initial plan), with exact V99 controls. The full verifier selects its reference by the complete normalized environment, not percentile alone; eight historical reference matrices pass this selection check. Only absent versus explicit-zero percentile / neutral-tail selectors normalize together. Each active comparison has frozen verifier/outcome snapshots and dependencies taken from actual submission receipts.
 
 ## Completed recent evidence
 
+- **V100 prescribed-total-work portfolios:** all six full cases, exact V96 controls and 300 million robot steps pass. Two workers 154,710 / 154,669 (-347 / -58), four 154,583 / 154,687 (-474 / -40). Mean entry 333.897 / 272.173 ms versus 453.313 ms. All first-half tasks finish. Lower latency but lower throughput; retain one worker. `results/native-portfolio-full-v100/summary.md`.
 - V98 p90 / p95 / p99: all six full cases pass, p90 controls exact. P95 loses 21 / 12 and p99 loses 201 / 235; retain p90. All losses in final 1,000. No further upward percentile sweep justified.
 - V98 p90 / weight-5 four-seed confirmation: 155,057 / 154,846 / 154,727 / 154,912; mean 154,885.5, three above NMS; all first-half tasks finish. `results/horizon-percentile-four-seeds-v98.json`. This mean belongs to the previous weight-5 profile, not the new weight-8 winner.
 - V97 mean-margin pickup 8 gives 154,929 / 154,965 (+40 / +409); pickup 12 mixed. V99 measures the actual combination rather than adding component gains. Interaction +23 / -80 tasks relative to additive component effects.
@@ -33,9 +35,9 @@ After both compatibility screens pass, submit full neutral OFF/ON seeds 0 / 2 wi
 
 ## Immediate work
 
-1. Commit and push the new 155,120 record, all V99 evidence and V101 build/compatibility evidence using explicit paths. Best log/root README/TARGET have been updated but this record commit is pending at this writing. Prior verified V98 commit `11474ee`; code e757965.
-2. Confirm physical allocation of the three newly submitted jobs, avoiding overlap with existing Warehouse cases. Collect V100 whole-matrix results and the V101 compatibility results. Start the isolated neutral full comparison only after the compatibility checks pass.
-3. Finish and independently validate best-profile seeds 1 / 3. Update best history immediately for any increasing full-run score, with exact source/time/seed/flags/hash. Continue choosing next work from completed results; do not assume a ceiling or additive gains.
+1. The 155,120 record and passing V101 build are committed and pushed as `bb92cfd`. Commit the now-complete V100 and compatibility results, updated full profiles, and stronger reference selection; preserve random05 edits.
+2. Finish V102 seed confirmation and V101 / V103 full comparisons through their independent validators/accounting. Do not promote startup scores or partial matrices. No additional experiment is currently required while these are active.
+3. Update best history immediately for any increasing valid full score, with exact source/time/seed/flags/hash. Preserve the preceding weight-5 four-seed mean separately from the new weight-8 profile.
 
 Fable turn 45 exhausted credits in the persistent Claude CLI session; no new review. Next turn would be 46 only after quota is available. Shell tools require escalation because default bwrap fails. Never edit production/tests while a build is running; freeze/check sources before every benchmark. All old quality matrices use their own frozen binaries, independent of the new experimental source.
 

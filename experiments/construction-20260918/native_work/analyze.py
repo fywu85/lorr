@@ -29,6 +29,14 @@ def sha(p):
             h.update(data)
     return h.hexdigest()
 
+def normalize_environment(environment):
+    result = dict(environment)
+    # These two absent selectors have exactly the same semantics as explicit 0.
+    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL']:
+        if result.get(key) == '0':
+            result.pop(key)
+    return result
+
 def fields(line):
     return dict(word.split('=', 1) for word in line.split()[1:])
 
@@ -76,7 +84,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -118,7 +126,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -133,13 +141,21 @@ def main():
     control_percentile = next(iter(control_percentiles))
     ref = read(support / 'reference.json')
     assert ref['all_valid_within_deadline_and_memory'] and not ref['failures']
-    reference = {r['seed']:r for r in ref['rows'] if r['environment']['CGAR_TRICK_HORIZON_MARGIN'] == '1'
-                 and int(r['environment'].get('CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', '0')) == control_percentile}
-    assert reference, 'verified reference does not contain the requested control percentile'
+    control_environment = normalize_environment(control_cases[0]['environment'])
+    assert all(normalize_environment(c['environment']) == control_environment for c in control_cases)
+    reference = {}
+    for row in ref['rows']:
+        if normalize_environment(row['environment']) != control_environment:
+            continue
+        if row['seed'] in reference:
+            previous = reference[row['seed']]
+            assert (row['tasks'], row['trajectory_sha256']) == (previous['tasks'], previous['trajectory_sha256'])
+        reference[row['seed']] = row
+    assert reference, 'verified reference does not contain the complete requested control environment'
     metrics = {m['case']:m for m in read(out / 'metrics.json')}
     samples = {}; fairness = {}
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -187,6 +203,15 @@ def main():
             assert all(int(m['repairs']) == int(env['CGAR_TEMPORAL_STEPS']) or
                        int(m['candidates']) >= int(env['CGAR_TEMPORAL_CANDIDATE_LIMIT'])
                        for m in global_samples)
+        if a.mode == 'workers':
+            workers = int(env['CGAR_TEMPORAL_WORKERS'])
+            assert workers in (1, 2, 4) and int(env['CGAR_TEMPORAL_THREADS']) == workers
+            assert env['CGAR_TEMPORAL_STEPS'] == '1000000' and env['CGAR_TEMPORAL_CANDIDATE_LIMIT'] == '4000000'
+            allocations = [fields(s) for s in lines if s.startswith('[cgar-temporal-allocation] ')]
+            assert len(allocations) == 1 and allocations[0]['allowed_cpus'] == '4'
+            assert allocations[0]['workers'] == allocations[0]['threads'] == str(workers)
+            assert all(int(m['workers']) == int(m['threads']) == workers and 0 <= int(m['selected_worker']) < workers for m in global_samples)
+            assert all(int(m['repairs']) == 1000000 or int(m['candidates']) >= 4000000 for m in global_samples)
         samples[r['case']] = dict(global_work=global_samples, regional_work=regional, percentile=q_samples, native_service=service_samples)
         if r['variant'] == control and r['seed'] in reference:
             ref = reference[r['seed']]
