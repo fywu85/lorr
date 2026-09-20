@@ -1,0 +1,48 @@
+{
+  "root": "/shared/share_mala/fw2449/lorr2024",
+  "archive": "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/results/deferred-selection-ancestor-v93",
+  "source_probe": "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-probe-v93-20260920",
+  "source_spec": {
+    "root": "/shared/share_mala/fw2449/lorr2024",
+    "source_commit": "7b29df5609a6b5245ab167242517fc98916c9719",
+    "source_hashes": {
+      "baseline": {
+        "temporal_geometry.hpp": "12a942adc85ff720b790cde373e6a59182668961bc26d3bab591a08d65a695f5",
+        "temporal_pibt.hpp": "cda67d521a8439ffb416f454b0ef2a902d80522b4a23c0a7643d0a38ab125011"
+      },
+      "candidate": {
+        "temporal_geometry.hpp": "12a942adc85ff720b790cde373e6a59182668961bc26d3bab591a08d65a695f5",
+        "temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d"
+      }
+    },
+    "support_hashes": {
+      "driver.cpp": "5c650a41ffa57707c46da0166804f46493d147b50a05d9bd1138c8e4391eceff",
+      "candidate.patch": "efac39591210703191bd1f3156ea63a611fc4d9b31d51c73e996a5daeeff2e58",
+      "benchmark.py": "bc6b86168d900c03ef9e6ec68847a4be9e51a6454f14f8855cc1781baf30fbcf",
+      "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727"
+    },
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "repetitions": 8,
+    "fixture_seeds": [
+      81473,
+      2749
+    ],
+    "modes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "scope": "Shared-host paired single-core component timing with exact selected-plan/score/work checks. Not warehouse quality or whole-entry speedup evidence."
+  },
+  "files": {
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/baseline/temporal_pibt.hpp": "3d5c9666677b443b22aabbc8dfd00bc238e35d06c6e633c2923e721abcbffa90",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/baseline/temporal_geometry.hpp": "12a942adc85ff720b790cde373e6a59182668961bc26d3bab591a08d65a695f5",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/candidate/temporal_pibt.hpp": "e9d7c9cc35152711b60ccc4578a62778d2f6e0c3d0d8778b2096574841b44d0c",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/candidate/temporal_geometry.hpp": "12a942adc85ff720b790cde373e6a59182668961bc26d3bab591a08d65a695f5",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/driver.cpp": "6229579716b859d58d8456b5973a72d4bec324962c40722ed4fff9d7c68746a7",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/ancestor_probe.py": "329fe14a90638acf4c497e52c1098ab052ef9284cafa038351d967bb2446edc7",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-ancestor-v93-20260920/cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727"
+  },
+  "scope": "Instrumented ancestor-revisit coverage and equivalence only; timings are not performance measurements."
+}

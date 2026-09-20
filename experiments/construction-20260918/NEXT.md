@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated2026-09-20 13:32UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
+Updated2026-09-20 13:47UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
 5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
 complete fixed work; timeout failure. Shared GRID/5s development authorized;
 strict1s certification separate. Preserve the concurrent random05 fork's files/jobs/commits.
@@ -39,10 +39,24 @@ Generic single145083 remains experimental.
 - V92build8899759/fullsuitePASS;build-provenance/v92. V91source8546afa/build8899758
   alsoPASS. V92 adds physical-bound failure and real fresh matching ledger fixture,
   no ranking change. No production build or Fable review running.
-- Bounded independent investigation: prototype deferred candidate-index stores in
-  TemporalPibt outside production and measure exact kernel equivalence/timing.
-  Static native table rebuild kernel extrapolation is only~115CPU seconds across
-  ~3300processCPU seconds/full run, so avoid a large cache redesign without evidence.
+- General deferred-selection optimization sourcebdf5e7a145626f87d0321eb8df8ab08b9ec3cb4f
+  is committed. V93build8899814/fullsuitePASS,28exactsource/test hashes; binary
+  c49f8ccef14674ff718b0e94fa0f4c94ddf16c404fe37112eb20a449a6a21c6b.
+  build-provenance/v93;rawruns/cgar-deferred-selection-build-v93-20260920.
+  Component128observations EXACTplans/score/work; medianpairedCPU0.71–1.55%lower
+  in8settings. results/deferred-selection-probe-v93. This is NOTwholeentryspeedup.
+  Generic800control8899816/analyzer8899817, research50, PASS13:44:29UTC exact18958/hash.
+  Same-core nativeA/B/A200timing8899832, research57, PASS13:44:29UTC exactall600entries/work. Wall+0.190%/CPU+0.117% vsmeanbrackets; NOsolver-speedupclaim.
+  Explicit test-only constructionancestorcoverage8899833, research52, PASS13:42:05UTC;9–9933actualancestorcalls inall8settings, exactoutputs/work.
+  Raw/archives names cgar-deferred-selection-{generic,timing,ancestor}-v93-20260920
+  and results/deferred-selection-{generic,timing,ancestor}-v93 respectively.
+  NO productionbuildnow. Fable44COMPLETE13:37:14UTC, no concreteequivalencebug;
+  assessmentqualifies invariant atqueries, not between remove(other)/add(r).
+  NextFableturn45/followup-44.md whenuseful. No liveFablecall.
+- Saved-work audit now supports --horizon-margin0/1 and rejects ambiguous4rows;
+  legacy and newselectors plusaccountingfixturePASS. No new solver policy there.
+- Larger cache redesign deprioritized: static native table rebuild kernel
+  extrapolation only~115CPU seconds across~3300processCPU seconds/full run.
 
 ## Margin policy now implemented (not yet a throughput claim)
 
@@ -112,12 +126,12 @@ finalholder,gap,boundfailure,actualCgarnewadmission/fair/held,realfreshmatchingl
 
 1. Check full8899779/8899780 and frozen verifier. Do not duplicate the submission.
    Update any valid new peak immediately; goal complete only>=154795 with proof/log.
-2. If below target, diagnose actual ON residuals. horizon_audit/analyze.py currently
-   filters configuredH=5000; add an explicit margin selector before using it on
+2. If below target, diagnose actual ON residuals. horizon_audit/analyze.py now
+   supports explicit --configured-horizon5000 --horizon-margin1; use these on
    the new matrix, whose four cases all haveH5000. Avoid selecting allfour as two.
 3. Archive startup/generic evidence and commit/push only our explicit paths.
    Preserve random05 fork files/jobs/commits. No production/test edits duringbuilds.
-4. Last successful push286546a at13:19UTC. Rootprogress/TARGET153614. Keep user
+4. Last successful push7b29df5 at13:32UTC; commit/push current V93source/evidence next. Rootprogress/TARGET153614. Keep user
    updated~60s; no blockingwait>60s. Use require_escalated due broken bwrap.
 
 ## Historical notes below (current status above supersedes old running labels)

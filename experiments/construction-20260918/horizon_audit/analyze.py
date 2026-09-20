@@ -73,16 +73,27 @@ def fixtures():
  assert r['late_first_admission_cohorts']['6']['first_admitted']==1 and r['late_first_admission_cohorts']['6']['picked_unfinished']==1
  assert r['late_first_admission_cohorts']['2']['first_admitted']==2 and r['completed_task_duration']['sum']==5
  return dict(handoff_boundary_and_unfinished_fixture=r)
+def select_rows(rows, configured_horizon=None, horizon_margin=None):
+ selected=[]
+ for row in rows:
+  env=row['environment']
+  if not (env['CGAR_TRICK_NATIVE_BANDS']=='1' and env['CGAR_TRICK_UNOPENED_MATCH']=='1' and env['CGAR_PICKUP_WEIGHT']=='5'):continue
+  if configured_horizon is not None and env.get('CGAR_TRICK_KNOWN_HORIZON')!=str(configured_horizon):continue
+  if horizon_margin is not None and env.get('CGAR_TRICK_HORIZON_MARGIN','0')!=str(horizon_margin):continue
+  selected.append(row)
+ assert len(selected)==2,'Expected two selected seed cases, found %d; select the horizon/margin explicitly'%len(selected)
+ return selected
+
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--verification',type=Path,required=True);p.add_argument('--motion-accounting',type=Path,required=True)
- p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--configured-horizon',type=int,choices=[5000]);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.output.resolve();out=a.archive.resolve()
+ p.add_argument('--output',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--configured-horizon',type=int,choices=[5000]);p.add_argument('--horizon-margin',type=int,choices=[0,1]);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.output.resolve();out=a.archive.resolve()
  if not a.execute:
   v=read(a.verification);assert v['all_valid_within_deadline_and_memory'] and not v['failures'];raw.mkdir(parents=True,exist_ok=False)
-  rows=[r for r in v['rows'] if r['environment']['CGAR_TRICK_NATIVE_BANDS']=='1' and r['environment']['CGAR_TRICK_UNOPENED_MATCH']=='1' and r['environment']['CGAR_PICKUP_WEIGHT']=='5' and (a.configured_horizon is None or r['environment'].get('CGAR_TRICK_KNOWN_HORIZON')==str(a.configured_horizon))];assert len(rows)==2
+  rows=select_rows(v['rows'],a.configured_horizon,a.horizon_margin)
   files=[]
   for src,name in [(Path(__file__),'analyze.py'),(a.verification,'verification.json'),(a.motion_accounting,'motion-accounting.json')]:
    dest=raw/name;shutil.copy2(src,dest);files.append(dest)
-  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),archive=str(out),configured_horizon=a.configured_horizon,cases=[r['case'] for r in rows],files={str(f):digest(f) for f in files}))
+  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),archive=str(out),configured_horizon=a.configured_horizon,horizon_margin=a.horizon_margin,cases=[r['case'] for r in rows],files={str(f):digest(f) for f in files}))
   command=['/usr/bin/python3',str(raw/'analyze.py'),'--verification',str(raw/'verification.json'),'--motion-accounting',str(raw/'motion-accounting.json'),'--output',str(raw),'--archive',str(out),'--execute']
   job=raw/'job.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
   submit=['qsub','-h','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded','1','-binding','linear:1','-l','exclusive=false,h_rt=00:30:00,h_vmem=8G','-m','n','-N','horizon_work_audit','-j','y','-o',str(raw/'job.log'),'-S','/bin/bash',str(job)]
@@ -101,5 +112,5 @@ def main():
   r.update(input_path=str(path),input_sha256=sha,trajectory_sha256=row['trajectory_sha256']);reports[name]=r;print('HORIZON_AUDIT',name,r['post_last_completion_total'],r['unfinished_task_total'],flush=True)
  for name in ['request.json','submission.json','verification.json','motion-accounting.json']:shutil.copy2(raw/name,out/name)
  write(out/'accounting.json',dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),all_valid=True,reports=reports,
-  limits='Saved-trajectory accounting only. End-censored work includes time that cannot all be recovered. Retargeted tasks can complete on another robot, so post-last-completion work and unfinished-task work are different. Late cohorts use first admission, not every retarget. No horizon policy implemented or benchmark score.'))
+  limits='Saved-trajectory accounting only. End-censored work includes time that cannot all be recovered. Retargeted tasks can complete on another robot, so post-last-completion work and unfinished-task work are different. Late cohorts use first admission, not every retarget. This audit does not simulate a counterfactual policy or establish a throughput gain.'))
 if __name__=='__main__':main()
