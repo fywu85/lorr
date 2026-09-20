@@ -631,6 +631,47 @@ void unopened_matching_production() {
   throw std::runtime_error("unopened matching changed the simulator schedule");
  for(int i=0;i<3;++i)if(e.task_pool.at(i).agent_assigned!=i||e.task_pool.at(i).t_revealed!=-5||e.task_pool.at(i).idx_next_loc!=0)
   throw std::runtime_error("unopened matching changed task metadata");
+ // A prescribed shorter cadence reaches the same useful resident-only cycle
+ // earlier. Neither task identity, simulator metadata nor the retarget cap is relaxed.
+ auto cadence_trial=[&](int interval){
+  if(interval)setenv("CGAR_REASSIGN_MATCH_INTERVAL",std::to_string(interval).c_str(),1);
+  else unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");
+  auto trial=matching_initial;Cgar policy;policy.initialize(&trial,5000);std::vector<Action> act;
+  for(int t=0;t<2;++t){trial.curr_timestep=t;policy.plan(&trial,5000,act);auto next=step(trial,trial.curr_states,act);
+   if(next.empty())throw std::runtime_error("matching cadence setup collided");trial.curr_states=next;}
+  std::vector<long long> trace;
+  for(int tick:{4,5,6,10,30}){
+   trial.curr_timestep=tick;std::vector<int> next;policy.schedule(&trial,5000,next);
+   const bool shorter=interval==5;
+   if(tick==5&&(next!=(shorter?std::vector<int>{0,2,1}:std::vector<int>{0,1,2})||
+      policy.stats().match_passes!=(shorter?1:0)))throw std::runtime_error("matching cadence did not control the real first cycle");
+   if(next[0]!=0)throw std::runtime_error("matching cadence redirected protected primary");
+   for(int r=0;r<3;++r){trace.push_back(next[r]);trial.curr_task_schedule[r]=next[r];
+    auto& task=trial.task_pool.at(next[r]);task.agent_assigned=r;trial.goal_locations[r]={{{task.locations[0],0}}};}
+   trace.push_back(policy.stats().match_passes);trace.push_back(policy.stats().match_moved);trace.push_back(policy.stats().match_saving);
+  }
+  if(policy.stats().match_moved!=2||policy.stats().match_accepted_cycles!=1||policy.stats().match_budget_protected<2||
+     policy.stats().match_passes!=(interval==5?3:2))throw std::runtime_error("matching cadence changed the one-retarget limit or pass count");
+  return trace;
+ };
+ const auto cadence_default=cadence_trial(0),cadence_explicit=cadence_trial(10),cadence_five=cadence_trial(5);
+ if(cadence_default!=cadence_explicit||cadence_five==cadence_default)throw std::runtime_error("matching cadence default equivalence/active fixture failed");
+ for(const char* bad:{"-1","0","101"}){setenv("CGAR_REASSIGN_MATCH_INTERVAL",bad,1);bool invalid=false;
+  try{auto trial=matching_initial;Cgar policy;policy.initialize(&trial,5000);}catch(const std::invalid_argument&){invalid=true;}
+  if(!invalid)throw std::runtime_error("invalid matching interval accepted");}
+ setenv("CGAR_REASSIGN_MATCH_INTERVAL","5",1);setenv("CGAR_REASSIGN_MATCH","0",1);
+ bool cadence_rejected=false;try{auto trial=matching_initial;Cgar policy;policy.initialize(&trial,5000);}catch(const std::invalid_argument&){cadence_rejected=true;}
+ if(!cadence_rejected)throw std::runtime_error("nondefault cadence accepted without matching");
+ const bool had_cadence_diagnostics=std::getenv("CGAR_DIAGNOSTICS");
+ const std::string old_cadence_diagnostics=had_cadence_diagnostics?std::getenv("CGAR_DIAGNOSTICS"):"";
+ setenv("CGAR_DIAGNOSTICS","1",1);setenv("CGAR_REASSIGN_MATCH","1",1);setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE","10",1);
+ {auto trial=matching_initial;Cgar policy;policy.initialize(&trial,5000);} // interval5, compatible shadow10
+ setenv("CGAR_REASSIGN_MATCH_INTERVAL","3",1);
+ cadence_rejected=false;try{auto trial=matching_initial;Cgar policy;policy.initialize(&trial,5000);}catch(const std::invalid_argument&){cadence_rejected=true;}
+ if(!cadence_rejected)throw std::runtime_error("shadow stride incompatible with matching cadence accepted");
+ unsetenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE");unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");
+ if(had_cadence_diagnostics)setenv("CGAR_DIAGNOSTICS",old_cadence_diagnostics.c_str(),1);else unsetenv("CGAR_DIAGNOSTICS");
+ std::cout<<"MATCH_CADENCE passed default_exact=1 earlier_cycle=1 protected_primary=1 retarget_limit=1 prescribed_passes=1 config_guards=5\n";
  // Holder129 is outside the first128 eligible anchor IDs but close to holder1.
  // Sampling the spatial pool before grouping loses this useful two-cycle.
  SharedEnvironment wide;wide.rows=128;wide.cols=128;wide.map.assign(wide.rows*wide.cols,0);
@@ -3559,7 +3600,8 @@ void native_metric_regression() {
  setenv("CGAR_TURN_PREFETCH_THREADS","4",1);setenv("CGAR_TURN_TABLE_MB","64",1);setenv("CGAR_TURN_COMPACT","1",1);
  setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
  struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;FreshPickupShadowStats fresh;int services=0,repeated=0,completed=0,rotations=0;};
- auto episode=[&](const char* bands,int preparation,int audit=0,int fresh=0){
+ auto episode=[&](const char* bands,int preparation,int audit=0,int fresh=0,int interval=10){
+  setenv("CGAR_REASSIGN_MATCH_INTERVAL",std::to_string(interval).c_str(),1);
   setenv("CGAR_FRESH_PICKUP_AUDIT",std::to_string(fresh).c_str(),1);
   setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",std::to_string(audit).c_str(),1);
   setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);setenv("CGAR_TEMPORAL_PREP_THREADS",std::to_string(preparation).c_str(),1);
@@ -3570,12 +3612,15 @@ void native_metric_regression() {
   int next_id=0;auto add=[&](){Task task;task.task_id=next_id++;task.t_revealed=test.curr_timestep;
    const int pickup=cells[(task.task_id*17+3)%128];task.locations={pickup,pickup,cells[(task.task_id*29+31)%128]};test.task_pool.emplace(task.task_id,task);};
   for(int k=0;k<72;++k)add();Cgar policy;policy.initialize(&test,30000);NativeTrace trace;
+  std::map<int,int> first_holder,retarget_count;
   for(int tick=0;tick<128;++tick){
    test.curr_timestep=tick;std::vector<int> schedule;policy.schedule(&test,30000,schedule);std::set<int> assigned;
    require(schedule.size()==24,"native episode omitted schedule rows");
    for(int r=0;r<24;++r){const int old=test.curr_task_schedule[r];
     require(schedule[r]>=0&&assigned.insert(schedule[r]).second,"native episode omitted or duplicated tasks");
-    if(old>=0&&test.task_pool.at(old).idx_next_loc>0)require(schedule[r]==old,"native episode redirected started task");}
+    if(old>=0&&test.task_pool.at(old).idx_next_loc>0)require(schedule[r]==old,"native episode redirected started task");
+    auto holder=first_holder.emplace(schedule[r],r);
+    if(!holder.second&&holder.first->second!=r){require(++retarget_count[schedule[r]]<=1,"native episode exceeded one retarget");holder.first->second=r;}}
    for(auto& item:test.task_pool)item.second.agent_assigned=-1;
    for(int r=0;r<24;++r){test.curr_task_schedule[r]=schedule[r];auto& task=test.task_pool.at(schedule[r]);task.agent_assigned=r;
     test.goal_locations[r]={{{task.locations[task.idx_next_loc],0}}};trace.values.push_back(schedule[r]);}
@@ -3649,6 +3694,20 @@ void native_metric_regression() {
  unsetenv("CGAR_FRESH_PICKUP_AUDIT");unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_HORIZON_MARGIN");
  unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);
  std::cout<<"FRESH_PICKUP_NATIVE_EPISODES passed pairs=4 independent_actions=24576 horizon_p90=1 source_fields=complete trace_and_work_exact=1\n";
+ // Five-step matching keeps fixed work and real service semantics on both
+ // native fields, including the p90 cutoff model. Thread order cannot change it.
+ setenv("CGAR_TRICK_KNOWN_HORIZON","128",1);setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);
+ setenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE","90",1);
+ for(const char* bands:{"0","1"}){
+  const auto serial=episode(bands,1,0,0,5),parallel=episode(bands,4,0,0,5);
+  require(serial.values==parallel.values&&serial.services==parallel.services&&serial.stats.match_passes==26&&
+   parallel.stats.match_passes==26&&serial.stats.match_moved==parallel.stats.match_moved&&
+   serial.stats.match_saving==parallel.stats.match_saving&&serial.stats.oriented_builds==parallel.stats.oriented_builds&&
+   serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops,"five-step native matching depends on preparation order or missed prescribed passes");
+ }
+ unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_HORIZON_MARGIN");
+ unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");
+ std::cout<<"MATCH_CADENCE_NATIVE_EPISODES passed pairs=2 interval=5 prescribed_passes=26 horizon_p90=1 independent_actions=12288 serial_parallel_exact=1 started_protection=1 one_retarget=1\n";
  // Dedicated closed-loop shadow neutrality with native+short+matching together.
  setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","1",1);
  for(const char* bands:{"0","1"}){auto baseline=episode(bands,4,0),shadow=episode(bands,4,10);
@@ -3665,7 +3724,7 @@ void native_metric_regression() {
  rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"matching budget audit accepted disabled matching");
  unsetenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_DIAGNOSTICS");
  std::cout<<"MATCH_BUDGET_SHADOW passed protected_beneficial_cycles=4 task_disjoint_dedup=1 no_commit=1 started_primary_cooldown_protected=1 real_work_exact=1 closed_loop_pairs=2 independent_action_checks=12288 guards=6\n";
- unsetenv("CGAR_FRESH_PICKUP_AUDIT");
+ unsetenv("CGAR_FRESH_PICKUP_AUDIT");unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");
  unsetenv("CGAR_TURN_PREFETCH_THREADS");unsetenv("CGAR_TURN_TABLE_MB");unsetenv("CGAR_TURN_COMPACT");
  unsetenv("CGAR_TEMPORAL_PREP_THREADS");unsetenv("CGAR_PICKUP_FULL_THREADS");setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
  std::cout<<"NATIVE_EPISODES passed robots=24 ticks_per_episode=128 profiles=4 services="<<episode_services<<" repeated="<<episode_repeated

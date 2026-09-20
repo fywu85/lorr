@@ -935,6 +935,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
           (temporal_remaining_flow_ && !trick_options.remaining_flow))))
         throw std::invalid_argument("unopened pickup matching requires temporal/oriented pickup flow, a boolean selector and no other rematching, chain pricing, generic remaining-flow score or guides; under --trick use CGAR_TRICK_UNOPENED_MATCH");
     reassign_match_ = reassign_match != 0 || trick_options.matching;
+    match_interval_ = env_int("CGAR_REASSIGN_MATCH_INTERVAL", 10);
+    if (match_interval_ < 1 || match_interval_ > 100 || (!reassign_match_ && match_interval_ != 10))
+        throw std::invalid_argument("matching interval requires enabled matching and 1-100 steps (disabled default10)");
+    if (match_interval_ != 10)
+        std::printf("[cgar-match-cadence] interval=%d default_interval=10 cooldown=20 task_budget=1 same_group_quota=1 fixed_work=1\n", match_interval_);
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
         throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
@@ -944,8 +949,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     match_pickup_groups_ = match_pickup_groups != 0;
     match_budget_audit_stride_ = env_int("CGAR_MATCH_BUDGET_AUDIT_STRIDE", 0);
     if (match_budget_audit_stride_ < 0 || match_budget_audit_stride_ > 5000 ||
-        (match_budget_audit_stride_ && (!reassign_match_ || !diagnostics_ || match_budget_audit_stride_ % 10)))
-        throw std::invalid_argument("matching budget audit requires diagnostics, enabled matching and a stride divisible by10 in10..5000");
+        (match_budget_audit_stride_ && (!reassign_match_ || !diagnostics_ || match_budget_audit_stride_ % match_interval_)))
+        throw std::invalid_argument("matching budget audit requires diagnostics, enabled matching and a stride in1..5000 divisible by the matching interval");
     if (match_budget_audit_stride_)
         std::printf("[cgar-match-budget-shadow-config] stride=%d read_only=1 after_real_match=1 resident_only=1 include_budget=1 cooldown=20 task_disjoint_witnesses=1\n", match_budget_audit_stride_);
     if (reassign_match_)
@@ -2373,10 +2378,10 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
 }
 
 void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& observed) {
-    constexpr int interval = 10, anchor_limit = 128;
+    constexpr int anchor_limit = 128;
     constexpr int group_size = 32, node_limit = 2048;
     const int now = env_->curr_timestep;
-    if (!reassign_match_ || now % interval != 0) return;
+    if (!reassign_match_ || now % match_interval_ != 0) return;
     ++observed.match_passes;
     if (!shadow) prune_reassignment_records();
     // Match the scheduler's metric lifecycle: static trick quotes are ready
@@ -2697,7 +2702,7 @@ void Cgar::audit_fresh_pickup(const std::vector<int>& proposed, const std::vecto
             for (int row : cycle.rows) repeated |= fresh_pickup_seen_tasks_.count(proposed[group[row]]) != 0;
             if (repeated) { ++audit.duplicate_cycles; continue; }
             ++audit.witness_cycles; audit.witness_rows += cycle.rows.size(); audit.witness_saving += gain;
-            (now % 10 ? audit.ordinary_witness_saving : audit.match_tick_witness_saving) += gain;
+            (now % match_interval_ ? audit.ordinary_witness_saving : audit.match_tick_witness_saving) += gain;
             if (horizon && now >= known_horizon_ - 1000) audit.late_witness_saving += gain;
             for (int row : cycle.rows) fresh_pickup_seen_tasks_.insert(proposed[group[row]]);
         }

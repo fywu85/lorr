@@ -614,6 +614,7 @@ private:
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
     int match_group_limit_ = 4;
+    int match_interval_ = 10;
     bool match_pickup_groups_ = false;
     int match_budget_audit_stride_ = 0;
     size_t match_budget_audit_cursor_ = 0;
