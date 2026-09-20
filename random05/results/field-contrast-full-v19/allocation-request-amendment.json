@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-20T10:04:59.945973+00:00",
+  "reason": "Select hardware through queue instances instead of the HOST resource expression. Retain the CPU-model guard.",
+  "command": [
+    "qalter",
+    "-l",
+    "h_rt=03:00:00,h_vmem=1G,m_topology_inuse=*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*",
+    "-q",
+    "debian.q@research33.grid.gsb,debian.q@research39.grid.gsb",
+    "8899474"
+  ],
+  "returncode": 0,
+  "response": "modified hard resource list of job 8899474\nmodified hard queue list of job 8899474\n"
+}

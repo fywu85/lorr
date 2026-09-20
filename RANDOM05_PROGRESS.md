@@ -279,3 +279,15 @@ The published NMS score of 3,050 used different instances and hardware.
   767/831/734/967 versus975/750/754/693. Early throughput remains behind; the
   known-horizon result benefits heavily near the end. Do not infer that moving
   more robots alone is the right optimization target.
+
+- Completed K1024 timing pair: both original and shared-sort builds score3,299
+  with identical trajectories. Mean latency falls500.4→377.8ms (24.5%); maximum
+  falls605.7→486.3ms on matching four-core EPYC9354 allocations.
+- Fixed-layout contrast at K128: control3,073; penalties0.4/0.8/1.2/2.4/3.2/4.8
+  give2,636/2,796/2,859/3,199/3,155/3,063. Turn cost0.3 gives3,148 and1.2 gives
+  2,968. The2.4 contrast is a4.1% gain in this controlled pair; validate it at
+  the production search budget before promoting it.
+- Next general search experiment: split the same fixed rollout budget into
+  generations that mutate the current best priorities. One generation preserves
+  the original algorithm. It remains disabled until measured; dense regression
+  checks worker-count determinism for multiple generations.

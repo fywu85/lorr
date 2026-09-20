@@ -21,6 +21,7 @@ int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
 Config Config::environment(const SharedEnvironment& env) {
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
+    c.generations=integer("R05_GENERATIONS",1);
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
@@ -59,7 +60,7 @@ Config Config::environment(const SharedEnvironment& env) {
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
     if(c.guidance!="none" && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
-    if(c.futures<1 || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
+    if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
     return c;
@@ -699,7 +700,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
     }
     frame.age=age_;
-    std::vector<std::vector<float>> offsets(cfg.futures,best_offsets_);
+    std::vector<std::vector<float>> offsets(cfg.futures);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
     auto mix=[](uint64_t x) {
@@ -714,20 +715,31 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     auto& global_rng=cfg.random_by_step?step_random:rng_;
     auto& local_rng=cfg.random_by_step?local_random:rng_;
     std::uniform_real_distribution<float> unit(0,1),noise(-cfg.noise,cfg.noise);
-    for(int k=1;k<cfg.futures;++k)for(int a=0;a<n;++a)
-        if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
     std::vector<Rollout> results(cfg.futures);
     std::vector<std::exception_ptr> errors(cfg.futures);
-    #pragma omp parallel for num_threads(cfg.threads) schedule(static)
-    for(int k=0;k<cfg.futures;++k) {
-        try { results[k]=rollout(frame,offsets[k],!cfg.cycle_portfolio || k%2==1); }
-        catch(...) { errors[k]=std::current_exception(); }
-    }
     int best=0;
-    for(int k=0;k<cfg.futures;++k) {
-        if(errors[k])std::rethrow_exception(errors[k]);
-        if(results[k].score>results[best].score+1e-7 ||
-           (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
+    for(int generation=0;generation<cfg.generations;++generation) {
+        const int begin=generation*cfg.futures/cfg.generations;
+        const int end=(generation+1)*cfg.futures/cfg.generations;
+        // Keep the total number of complete rollouts fixed. Later batches
+        // refine this step's incumbent; one generation preserves the original
+        // random draws, candidate order, and equal-score acceptance behavior.
+        const auto& parent=generation?results[best].offsets:best_offsets_;
+        for(int k=begin;k<end;++k) {
+            offsets[k]=parent;
+            if(k>begin)for(int a=0;a<n;++a)
+                if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
+        }
+        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+        for(int k=begin;k<end;++k) {
+            try { results[k]=rollout(frame,offsets[k],!cfg.cycle_portfolio || k%2==1); }
+            catch(...) { errors[k]=std::current_exception(); }
+        }
+        for(int k=begin;k<end;++k) {
+            if(errors[k])std::rethrow_exception(errors[k]);
+            if(results[k].score>results[best].score+1e-7 ||
+               (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
+        }
     }
     for(int trial=0;trial<cfg.local_trials;++trial) {
         auto local=results[best].offsets;

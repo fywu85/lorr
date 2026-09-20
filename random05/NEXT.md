@@ -15,10 +15,8 @@ Directories below are under `runs/random05/`.
 
 | GRID job | Directory | Question |
 |---|---|---|
-| 8899468 | shared-sort-full-v18 | Collect the final old/new K1024 comparison; new build already validated3,299 on four cores. |
-| 8899474 | field-contrast-full-v19 | Does changing directional contrast or turn cost improve the fixed field? |
 | 8899475 | field-search-validation-full-v18 | Validate four alternative fields at K1024. |
-| pending | candidate-sort-full-v20 | Check stable insertion sorting, K2048/3072, and four new planner seeds. |
+| 8899485 | candidate-sort-full-v20 | Check stable insertion sorting, K2048/3072, and four new planner seeds. |
 
 Collect each final `summary.json`, validate all2,000 steps, and retain exact
 source, binary and input hashes. Promote valid maxima while keeping them separate
@@ -43,7 +41,8 @@ budget. Avoid interpreting a selected best seed as a demonstrated mean gain.
 
 - Build v18: commit `79d0e79`, shared sorting;3,299 on four cores and exact trajectory reproduction.
 - Build v19: commit `b3bf5d3`, independent final guidance contrast.
-- Build v20: pending commit, stable insertion sort for five-element candidates.
+- Build v20: commit `2ead4f4`, stable insertion sort for five-element candidates.
+- Build v21: pending commit, optional multi-generation priority search.
 
 Completed builds passed regression tests. Compact evidence is in `results/`;
 frozen sources, binaries and full traces are under ignored `runs/random05/`.
@@ -66,3 +65,12 @@ failed before solver startup because the wrapper attempted to raise that limit;
 
 The shared-sort full comparison is still awaiting the slower original K1024
 case. Its completed K64 pair is exactly equal in trajectory and25.8% faster.
+
+New follow-ups: job8899489 (`contrast-validation-full-v20`) validates contrast
+2.4/3.2 and turn0.3 at K1024, their combination, and contrast2.4 at K2048. The
+K128 control3073 improves to3199 with contrast2.4. `generations-full-v21` tests
+G2/4/8/16 at fixed total K128 and G2/4 at K1024. Each generation refines the
+current step's best priority offsets; this feature stays off by default.
+
+Completed original/shared-sort K1024 pair: exactly3299, mean500.4/377.8ms,
+maximum605.7/486.3ms on matching four-core EPYC9354 allocations.
