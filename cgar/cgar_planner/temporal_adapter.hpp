@@ -1,5 +1,6 @@
 #pragma once
 #include "cgar.hpp"
+#include "nlohmann/json.hpp"
 #include <atomic>
 #include <exception>
 #include <memory>
@@ -403,6 +404,34 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 temporal_distance_scale_, flow_cost_scale_);
         };
         log_partition("scalar", audit.easiest); log_partition("physical", audit.physical);
+        if (temporal_group_snapshot_count_) {
+            const auto groups = search.snapshot_forward_groups(temporal_group_snapshot_count_,
+                (env_->curr_timestep + 1) / temporal_conflict_audit_stride_ - 1,
+                temporal_distance_scale_, flow_cost_scale_, [&] { check_deadline(deadline_, "temporal_group_snapshot"); });
+            for (const auto& group : groups) {
+                nlohmann::json record = {{"schema", 1}, {"step", env_->curr_timestep + 1},
+                    {"distance_scale", temporal_distance_scale_}, {"unit_cost", flow_cost_scale_},
+                    {"root", group.root}, {"trigger", group.trigger}, {"robots", nlohmann::json::array()}};
+                for (const auto& robot : group.robots) {
+                    nlohmann::json row = {{"robot", robot.robot}, {"selected", robot.selected},
+                        {"power", robot.power}, {"fixed", robot.fixed}, {"start", loc_[robot.robot]},
+                        {"orientation", ori_[robot.robot]}, {"goal", goals[robot.robot]},
+                        {"emitted_action", static_cast<int>(actions[robot.robot])}, {"choices", nlohmann::json::array()}};
+                    for (const auto& candidate : robot.choices) {
+                        const auto& path = candidate.path;
+                        row["choices"].push_back({{"cost", candidate.cost}, {"operation", candidate.operation},
+                            {"cells", path.cells}, {"edges", path.edges}, {"orientation", path.orientation},
+                            {"first_action", path.first_action}, {"depth", path.depth}, {"valid", path.valid},
+                            {"cell_owners", candidate.cell_owners}, {"edge_owners", candidate.edge_owners}});
+                    }
+                    record["robots"].push_back(std::move(row));
+                }
+                std::printf("[cgar-temporal-group] %s\n", record.dump().c_str());
+            }
+            std::printf("[cgar-temporal-group-frame] step=%d groups=%zu count_per_class=%d\n",
+                env_->curr_timestep + 1, groups.size(), temporal_group_snapshot_count_);
+            check_deadline(deadline_, "temporal_group_snapshot_complete");
+        }
     }
     if (temporal_service_audit_stride_ && (env_->curr_timestep + 1) % temporal_service_audit_stride_ == 0) {
         std::vector<char> known_next(n_, false);

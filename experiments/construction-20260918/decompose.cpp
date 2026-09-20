@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         auto action_kind = [](char action) { return action == 'F' ? 0 : action == 'R' ? 1 : action == 'C' ? 2 : action == 'W' ? 3 : 4; };
         std::array<std::array<long long, 5>, 3> phase_actions{};  // idle, empty, loaded
         std::array<std::array<long long, 2>, 3> phase_opposite_turns{};
-        long long non_motion_actions = 0;
+        long long non_motion_actions = 0, implicit_initial_idle_steps = 0;
         long long idle_steps = 0, empty_forward = 0, empty_turns = 0, empty_waits = 0, empty_other = 0;
         for (size_t robot = 0; robot < data.at("actualSchedule").size(); ++robot) {
             const auto& start = data.at("start")[robot];
@@ -100,6 +100,16 @@ int main(int argc, char** argv) {
             while (std::getline(schedule, entry, ',')) if (!entry.empty()) {
                 size_t colon = entry.find(':');
                 entries.emplace_back(std::stoi(entry.substr(0, colon)), std::stoi(entry.substr(colon + 1)));
+            }
+            // TaskManager starts every robot unassigned. A timeout before the
+            // first accepted schedule leaves an implicit initial idle interval;
+            // no assignment event is emitted for it. Keep its action markers.
+            if (entries.empty() || entries.front().first > 1) {
+                const int first = entries.empty() ? data.at("makespan").get<int>() + 1 : entries.front().first;
+                if (first > data.at("makespan").get<int>() + 1)
+                    throw std::runtime_error("first schedule entry exceeds the recorded horizon");
+                implicit_initial_idle_steps += first - 1;
+                entries.insert(entries.begin(), {0, -1});
             }
             int previous_step = -2, previous_task = -2, previous_phase = -1, previous_kind = -1;
             int stationary_turn = -1;
@@ -171,6 +181,7 @@ int main(int argc, char** argv) {
             phase_actions[1][3] != empty_waits || phase_actions[1][4] != empty_other)
             throw std::runtime_error("independent empty/idle action accounting differs");
         report["non_motion_action_markers_before_last_assignment"] = non_motion_actions;
+        report["implicit_initial_idle_steps"] = implicit_initial_idle_steps;
         report["unassigned_robot_steps"] = idle_steps;
         report["empty_forward_actions"] = empty_forward;
         report["empty_turn_actions"] = empty_turns;

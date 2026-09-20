@@ -1,0 +1,65 @@
+{
+  "completed_utc": "2026-09-20T02:04:48.781909+00:00",
+  "allocation": {
+    "hostname": "research15",
+    "cpu_model": "AMD EPYC 7532 32-Core Processor",
+    "logical_cpu_affinity": [
+      0,
+      64
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0,
+        64
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "binary_sha256": "b9997f50cf89b3ab1ca02ec1fd4db0c156b05cb863c4d8d764e460b2739cbd6c",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/joint-probe-screen-v52-20260920/joint_probe.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/joint-probe-screen-v52-20260920/joint_probe"
+  ],
+  "fixtures_passed": 6,
+  "rows": {
+    "seed0": {
+      "groups": 32,
+      "by_size": {
+        "2": {
+          "groups": 16,
+          "any_feasible_forward": 0,
+          "any_scalar_improving": 0,
+          "any_both_improving": 0
+        },
+        "3": {
+          "groups": 16,
+          "any_feasible_forward": 2,
+          "any_scalar_improving": 1,
+          "any_both_improving": 0
+        }
+      }
+    }
+  },
+  "scope": "Complete same-state small-group enumeration; no policy gain or production reachability conclusion."
+}

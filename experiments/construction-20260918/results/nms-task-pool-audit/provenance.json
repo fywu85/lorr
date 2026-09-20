@@ -1,0 +1,56 @@
+{
+  "source_sha256": "7a5358dab9eb9d2f0c751db5983d6d05136dda17dc24997b56c9c99825c8f59d",
+  "script_sha256": "6d0bdc96e98c7bb5905a396449ef789cc5d0b45291ea4d2c805f16caa831b154",
+  "binary_sha256": "a42174c7c115052d243792b883a3dceb70a78e27f77b090e251efb175d00ae7a",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/nms-task-pool-audit-v2-20260920/replay/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/nms-task-pool-audit-v2-20260920/replay/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "opposite_turn_fixture_passed": true,
+  "phase_boundary_fixture_passed": true,
+  "initial_gap_fixture_passed": true,
+  "allocation": {
+    "hostname": "research33",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      0
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "nms_diagnostic": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/warehouse-leaders-full-20260918/nms-WAREHOUSE/result.json",
+      "sha256": "2074b608fac0bb85e89bad99c6939bdd5bd91454ff0cc7ec7ad9beb12d1bb987"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}

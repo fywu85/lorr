@@ -88,6 +88,26 @@ def main():
         assert observed['full_opposite_turn_transitions']['idle'] == {'adjacent': 0, 'stationary': 0}
     for observed in (result, checked):
         assert observed['completed_opposite_turn_transitions'] == {'adjacent': 0, 'stationary': 0}
+    # Initial timeout before the first accepted schedule, plus a robot whose
+    # schedule stays implicitly unassigned throughout. Hand count all ten steps.
+    initial_gap = {'teamSize': 2, 'makespan': 5, 'numTaskFinished': 1,
+                   'numPlannerErrors': 0, 'numScheduleErrors': 0, 'numEntryTimeouts': 1,
+                   'start': [[0, 0, 'E'], [0, 4, 'W']],
+                   'actualPaths': ['T,F,F,F,W', 'T,W,W,W,W'],
+                   'actualSchedule': ['2:0,5:-1', ''],
+                   'tasks': [[0, 0, [0, 2, 0, 3]]], 'events': [[3, 0, 0, 1], [4, 0, 0, 2]]}
+    (out / 'initial-gap-fixture.json').write_text(json.dumps(initial_gap))
+    subprocess.run([str(binary), str(out / 'fixture.map'), str(out / 'initial-gap-fixture.json'),
+                    str(out / 'initial-gap-fixture-result.json')], check=True)
+    gap = json.loads((out / 'initial-gap-fixture-result.json').read_text())
+    assert gap['implicit_initial_idle_steps'] == 6
+    assert gap['unassigned_robot_steps'] == 7 and gap['loaded_robot_steps_including_unfinished_tasks'] == 1
+    assert gap['empty_robot_steps_including_reassignments'] == 2
+    assert gap['full_phase_actions'] == {
+        'idle': {'fw': 0, 'cr': 0, 'ccr': 0, 'wait': 5, 'other': 2},
+        'empty': {'fw': 2, 'cr': 0, 'ccr': 0, 'wait': 0, 'other': 0},
+        'loaded': {'fw': 1, 'cr': 0, 'ccr': 0, 'wait': 0, 'other': 0}}
+    assert gap['completed_loaded_steps']['sum'] == 1
     cases = {
         'cgar_cache': 'runs/cgar-temporal-full-v1-20260918/orientation_8192-s0-r0/WAREHOUSE.json',
         'cgar_equal_50000': 'runs/cgar-temporal-validation-v5-20260918/equal_50000-s0-r0/WAREHOUSE.json',
@@ -97,7 +117,7 @@ def main():
     if a.cases:
         cases = json.loads(a.cases.read_text())
         assert isinstance(cases, dict) and cases
-        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture', 'fixture-result', 'loaded-fixture', 'loaded-fixture-result', 'reversal-fixture', 'reversal-fixture-result', 'boundary-fixture', 'boundary-fixture-result', 'provenance') for name in cases)
+        assert all(Path(name).name == name and name not in ('', '.', '..', 'fixture', 'fixture-result', 'loaded-fixture', 'loaded-fixture-result', 'reversal-fixture', 'reversal-fixture-result', 'boundary-fixture', 'boundary-fixture-result', 'initial-gap-fixture', 'initial-gap-fixture-result', 'provenance') for name in cases)
     inputs = {}
     for name, path in cases.items():
         target = ROOT / path
@@ -113,7 +133,7 @@ def main():
         'script_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
         'command': command, 'fixture_passed': True, 'loaded_action_fixture_passed': True,
-        'opposite_turn_fixture_passed': True, 'phase_boundary_fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
+        'opposite_turn_fixture_passed': True, 'phase_boundary_fixture_passed': True, 'initial_gap_fixture_passed': True, 'allocation': cpu_resources(), 'inputs': inputs,
         'map': str(a.map.resolve()), 'map_sha256': hashlib.sha256(a.map.read_bytes()).hexdigest()}, indent=2) + '\n')
 
 

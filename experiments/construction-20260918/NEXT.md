@@ -421,3 +421,43 @@ BothCGARfullauditsandhistoricalpoolreplayCOMPLETEandvalidated. Best144510 and
 sixmean143941.1667unchanged. NextcompletefullKKanalysis (~02:15UTCifhistoricalruntime),
 interpretallcomponent/pool/budget/resourceoutcomes,thenchoosegenericCGARfactorial
 ornewmotionmechanism. Usergoalactiveandunmet; no productioncodechangeinthisdiagnosticpass.
+
+
+2026-09-20 02:10UTC: NMS follow-up COMPLETE. bottleneck_review/NMS_REVIEW.md and
+results/nms-task-pool-audit/accounting.json replay154981 diagnostic tasks,
+1timeout/39.744GB, all50Msteps. Original rawhash matches; initial timeout preceding
+first schedule added10000implicit idle steps (old idle48814->58814, loaded residual
+40339131->40329131); all other historical fields exact.5actionfixtures+poolfixture.
+Initial attempt8899254 failed correct identity check; fixed replay8899256 passed,
+failed attempt archived. NMS loaded detour/turn/wait16.754576 vsCGAR30.985046;
+unpicked>=4000:1562,unassigned meanchain506.889,age2703.024. No causal savings.
+Active NMS one-owner/129five-slot/equalpower already ported; try_echo_slam unused;
+warehouse guidance is coordinate/lane-mask-specific, not generic online guidance.
+
+Fableturn22 COMPLETE02:03:49.929979UTC, same5.1/maxsession,4sourceupdates,no tools/
+denials,cumulativeUSD84.85065025; rawturn22,PTY57520 needs finalpoll ifstillopen.
+Archivedvisibleanswer+assessment. Nextturn23/followup-22.md. It suggests fresh-task
+coverage and degree2-chain guidance-coherence measurements; corrections inassessment:
+no causal 'mostly outside kernel' claim, pre-scheduling retarget confounds arms,
+rank holder bypickup-oldcost, eventual-assignee costs notsame-state counterfactual,
+smallgroupwitness may use seed0 unavailable in ordinaryrepair. No blindpolicyport.
+
+User subsequently AUTHORIZED map-specific tricks if genericgap proves difficult;
+keepseparate tracks. Every trick MUST be enabled only by --trick <map-instance-name>
+(e.g. --trick WAREHOUSE), with [trick] commit title and TRICK log entry. No flag
+means generic. Not an environment-only override or automatic map detection.
+EXPERIMENT_TRACKS.md is authoritative session policy; no trick implemented yet.
+Fable22's old absolute guidance-import ban predates this steering. Preserve1s,
+32decimalGB,validity,isolatedCPU,nohiddenfuturetasks in BOTH tracks. Neverreplace
+generic frontier with trick-assisted score.
+
+V52 readonly group snapshot source/regtests/build complete8899253, alltests pass.
+Capture flags CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT=8, CONFLICT_AUDIT_STRIDE=67; defaultoff.
+Snapshot-off/on200screen8899255 exact2888task trajectory a4bfe67f610e2451bb40e68da0e9fad0b75985d3f7701528334fee73f93cea8b,
+max936.241/931.907ms,RSS5.269GB,4physicalcore each,all400entries valid.
+Offline complete joint_probe.cpp+run_joint_probe.py screen8899257 passed6fixtures,
+32groups67/134:16size2nonefeasible;16size3twofeasible,onescalarbetter,noneboth
+scalar+fullunitaggregatepotentialbetter. Earlysample only; noqualityconclusion.
+Needfull0/2capture+exactreferencehash/counter/deadline/sourceverification, then
+samecompleteprobe. Buildfrozen runs/cgar-group-snapshot-build-v52-20260920,
+build-provenance/v52 archived. No productionpolicychange.

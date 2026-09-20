@@ -2669,4 +2669,74 @@ void temporal_peak_audit_regression() {
  std::cout<<"TEMPORAL_PEAK_AUDIT passed known_transient_peaks="<<lost<<" independent_three_score_fixture=1 unchanged_continuations=64 no_partial_audit=1 protected_actions=4800\n";
 }
 
-int main(){try{temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void temporal_group_snapshot_regression() {
+ TemporalGeometry geometry;geometry.initialize(std::vector<char>(10,true),2,5,[]{});
+ auto operation=[&](std::array<uint8_t,5> actions){const auto& ops=TemporalGeometry::operations();
+  for(int k=0;k<int(ops.size());++k)if(ops[k]==actions)return k;
+  throw std::runtime_error("missing snapshot fixture operation");};
+ const int one=operation({0,3,3,3,3}),two=operation({0,0,3,3,3}),east=operation({2,0,3,3,3});
+ for(int blockers:{1,2}){
+  std::vector<std::vector<TemporalChoice>> choices(4);std::vector<char> fixed(4,false);std::vector<double> power(4,1);
+  for(int r=0;r<4;++r)choices[r].push_back({&geometry.paths(r,r?1:0)[0],r?0:1000,0});
+  const int forward=blockers==1?one:two;
+  choices[0].push_back({&geometry.paths(0,0)[forward],0,forward});
+  for(int r=1;r<=blockers;++r){
+   choices[r].push_back({&geometry.paths(r,1)[one],100,one});
+   choices[r].push_back({&geometry.paths(r,1)[east],100,east});
+  }
+  TemporalPibt observed(10,choices,fixed,power,8192,123),control(10,choices,fixed,power,8192,123);
+  auto groups=observed.snapshot_forward_groups(1,0,50,1,[]{});
+  if(groups.size()!=1||groups[0].root!=0||groups[0].trigger!=1||groups[0].robots.size()!=size_t(blockers+1))
+   throw std::runtime_error("snapshot omitted a hand-counted blocker group");
+  for(int r=0;r<=blockers;++r){const auto& robot=groups[0].robots[r];
+   if(robot.robot!=r||robot.selected!=0||robot.power!=1||robot.fixed||robot.choices.size()!=choices[r].size())
+    throw std::runtime_error("snapshot altered robot metadata or omitted choices");
+   for(int t=0;t<5;++t)if(robot.choices[0].cell_owners[t]!=r)
+    throw std::runtime_error("snapshot lost current self reservation");
+  }
+  const auto& trigger=groups[0].robots[0].choices[1];
+  if(trigger.cell_owners[0]!=1||(blockers==2&&trigger.cell_owners[1]!=2)||
+     groups[0].robots.back().choices[2].cell_owners[1]!=blockers+1)
+   throw std::runtime_error("snapshot confused repeated, multiple, or outside owners");
+  const auto selections=observed.selections();const auto score=observed.score();
+  groups[0].robots[0].choices[0].path.cells[0]=999;
+  if(observed.choice(0).path->cells[0]!=0||observed.selections()!=selections||observed.score()!=score)
+   throw std::runtime_error("snapshot copy aliases a live plan");
+  bool timed_out=false;try{observed.snapshot_forward_groups(1,0,50,1,[]{throw Timeout("snapshot_fixture");});}
+  catch(const Timeout&){timed_out=true;}
+  if(!timed_out||observed.selections()!=selections||observed.score()!=score)
+   throw std::runtime_error("snapshot timeout altered a complete plan");
+  std::vector<int> order{0,1,2,3};observed.construct(order,[]{});control.construct(order,[]{});
+  observed.repair(512,[]{});control.repair(512,[]{});
+  if(observed.selections()!=control.selections()||observed.score()!=control.score()||
+     observed.stats.candidates!=control.stats.candidates||observed.stats.repairs_accepted!=control.stats.repairs_accepted)
+   throw std::runtime_error("snapshot changed subsequent random search");
+  fixed[blockers]=true;TemporalPibt protected_group(10,choices,fixed,power,8192,123);
+  if(!protected_group.snapshot_forward_groups(1,0,50,1,[]{}).empty())
+   throw std::runtime_error("snapshot released a fixed blocker");
+ }
+ // Forward paths swap an edge at slot1 without occupying the same cell.
+ const int delayed=operation({3,0,3,3,3});
+ std::vector<std::vector<TemporalChoice>> choices(2);
+ choices[0]={{&geometry.paths(0,0)[0],1000,0},{&geometry.paths(0,0)[two],0,two}};
+ choices[1]={{&geometry.paths(2,2)[0],0,0},{&geometry.paths(2,2)[delayed],0,delayed}};
+ std::vector<char> fixed(2,false);std::vector<double> power(2,1);std::vector<int> initial{0,1};
+ TemporalPibt edge(10,choices,fixed,power,8192,123,&initial);auto groups=edge.snapshot_forward_groups(1,0,50,1,[]{});
+ if(groups.size()!=1||groups[0].robots.size()!=2||groups[0].robots[0].choices[1].edge_owners[1]!=1)
+  throw std::runtime_error("snapshot missed an edge-only conflict");
+ for(int owner:groups[0].robots[0].choices[1].cell_owners)if(owner>=0)
+  throw std::runtime_error("edge-only fixture unexpectedly has a cell owner");
+ for(auto limits:std::vector<std::array<int,3>>{{0,50,1},{33,50,1},{1,0,1},{1,50,0}}){bool rejected=false;
+  try{edge.snapshot_forward_groups(limits[0],0,limits[1],limits[2],[]{});}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("snapshot accepted invalid limits");}
+ for(const char* value:{"-1","33","1"}){setenv("CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT",value,1);
+  SharedEnvironment e;e.rows=e.cols=1;e.num_of_agents=0;e.map={0};bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("snapshot accepted invalid/non-temporal configuration");}
+ setenv("CGAR_DIAGNOSTICS","1",1);setenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE","31",1);setenv("CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT","1",1);
+ temporal_region_adapter_regression();
+ unsetenv("CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT");unsetenv("CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE");unsetenv("CGAR_DIAGNOSTICS");
+ std::cout<<"TEMPORAL_GROUP_SNAPSHOT passed single_two_and_edge_owners=1 outside_owners=1 all_choices=1 deep_copy=1 fixed_protection=1 immutable_rng=1 explicit_timeout=1 serial_parallel_actions=4800\n";
+}
+
+int main(){try{temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

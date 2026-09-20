@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 01:23:15 UTC.
+Updated: 2026-09-20 02:09:20 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
@@ -28,6 +28,18 @@ now reproduces both full CGAR reference trajectories exactly, with every decisio
 under one second. The [task-pool replay](experiments/construction-20260918/bottleneck_review/TASK_POOL.md)
 also identifies a substantial waiting-time tradeoff in KK's shorter completed-task
 mix. These diagnostics establish no new throughput gain.
+
+The [NMS follow-up](experiments/construction-20260918/bottleneck_review/NMS_REVIEW.md)
+adds active-source checks and complete action/task-pool accounting. Its lower
+loaded overhead accompanies map-specific guidance and long-task deferral;
+this is diagnostic evidence, not a new CGAR score. The
+[read-only group snapshots](experiments/construction-20260918/bottleneck_review/GROUP_SNAPSHOTS.md)
+pass regressions and paired200-step trajectory/deadline checks.
+
+**Track policy:** the scores above remain the **generic frontier**. User-authorized
+map-specific tricks will require `--trick <map-instance-name>`, `[trick]` commit
+titles and **TRICK** log entries, with a separately reported frontier. **No CGAR
+trick-track result yet.** [Policy](experiments/construction-20260918/EXPERIMENT_TRACKS.md).
 
 ## New best scores over time
 

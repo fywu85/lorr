@@ -359,3 +359,26 @@ opportunity; a null within three robots does not rule out larger-group repair
 or another horizon. Demonstrating production reachability requires faithful
 replay of its ordering, power and rollback rules. These are concrete next
 experiments, not a predicted6.28% gain. The five full KK cases are still running.
+
+
+### NMS follow-up and track policy (2026-09-20 02:10 UTC)
+
+The [new NMS source/replay pass](NMS_REVIEW.md) confirms that its active temporal
+kernel is largely already transferred. The multi-owner routine is unused;
+warehouse power is already equal. Its active guidance uses hard-coded lanes and
+coordinate bands. Complete accounting measures16.755 loaded detour/turn/wait
+steps per completion versus30.985 in current CGAR, while its task pool contains
+1,562 unpicked tasks aged at least4,000. This is descriptive evidence from a
+one-timeout/39.744GB run, not an admissible score or a causal attribution.
+The earlier initial-idle residual error is explicitly corrected and preserved.
+
+[Fable turn22](../fable-flow-session/turn22/assessment.md) prioritizes fresh-task
+coverage and guidance-coherence measurements, with inference/design corrections.
+The [complete small-group probe](GROUP_SNAPSHOTS.md) now passes regression,
+unchanged-trajectory screens and independent exhaustive-enumeration fixtures.
+Its early32groups establish no population or policy gain.
+
+The user now permits map-specific tricks as a separate track when generic
+improvement proves difficult, gated solely by `--trick <map-instance-name>`,
+marked `[trick]` in commits and `TRICK` in logs. [Required track policy](../EXPERIMENT_TRACKS.md).
+No trick implementation or new CGAR throughput record exists yet.

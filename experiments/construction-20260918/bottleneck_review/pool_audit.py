@@ -93,7 +93,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--references', type=Path, help='Optional JSON mapping case names to earlier accounting reports')
+    parser.add_argument('--result-name', default='task-pool-audit-v50')
     args = parser.parse_args(); raw = args.output.resolve()
+    if Path(args.result_name).name != args.result_name or args.result_name in ('', '.', '..'):
+        parser.error('result-name must be one directory name')
     if not args.execute:
         assert raw.parent == ROOT / 'runs'
         raw.mkdir(exist_ok=False); (raw / 'support').mkdir()
@@ -102,6 +106,9 @@ def main():
         (raw / 'decompose.cpp').write_text(augmented_source((BASE / 'decompose.cpp').read_text()))
         reports = {'kittyknight': BASE / 'results/loaded-motion-audit-v1/kittyknight.json'}
         reports.update({'cgar_seed%d' % seed: BASE / ('results/current-bottleneck-audit-v50/seed%d/seed%d.json' % (seed, seed)) for seed in range(6)})
+        if args.references:
+            reports = {name: Path(path).resolve() for name, path in json.loads(args.references.read_text()).items()}
+            assert reports and all(Path(name).name == name and name not in ('', '.', '..') for name in reports)
         cases = {name: json.loads(path.read_text())['input'] for name, path in reports.items()}
         # Independent replays already archived the hashes of these large inputs.
         expected = {}
@@ -114,6 +121,7 @@ def main():
         files = [raw / 'support/pool_audit.py', raw / 'decompose.py', raw / 'decompose.cpp', raw / 'cases.json']
         write(raw / 'spec.json', {'files': {str(p): digest(p) for p in files},
             'base_source_sha256': digest(BASE / 'decompose.cpp'), 'expected_input_hashes': expected,
+            'result_name': args.result_name,
             'reference_reports': {k: str(v) for k, v in reports.items()},
             'reference_report_hashes': {k: digest(v) for k, v in reports.items()}})
         command = ['/usr/bin/python3', str(raw / 'support/pool_audit.py'), '--output', str(raw), '--execute']
@@ -157,21 +165,34 @@ def main():
     provenance = json.loads((replay / 'provenance.json').read_text())
     for name, sha in spec['expected_input_hashes'].items():
         assert provenance['inputs'][name]['sha256'] == sha, name
-    out = BASE / 'results/task-pool-audit-v50'; out.mkdir(exist_ok=False)
-    rows = {}
+    out = BASE / 'results' / spec.get('result_name', 'task-pool-audit-v50'); out.mkdir(exist_ok=False)
+    rows = {}; accounting_corrections = {}
     for name, path in spec['reference_reports'].items():
         assert digest(path) == spec['reference_report_hashes'][name]
         old = json.loads(Path(path).read_text()); new = json.loads((replay / (name + '.json')).read_text())
-        assert {k: new[k] for k in old} == old, name
+        changes = {k: {'old': v, 'new': new[k]} for k, v in old.items() if new[k] != v}
+        if changes:
+            # Earlier replay inferred loaded time as the residual and omitted the
+            # initial unassigned interval before the first accepted schedule.
+            implicit = new['implicit_initial_idle_steps']
+            assert implicit > 0 and new['entry_timeouts'] > 0, (name, changes)
+            assert set(changes) == {'unassigned_robot_steps', 'loaded_robot_steps_including_unfinished_tasks'}, (name, changes)
+            assert new['unassigned_robot_steps'] == old['unassigned_robot_steps'] + implicit
+            assert new['loaded_robot_steps_including_unfinished_tasks'] == old['loaded_robot_steps_including_unfinished_tasks'] - implicit
+            accounting_corrections[name] = {'implicit_initial_idle_steps': implicit, 'changed_fields': changes}
         assert all(s['outstanding']['chain']['n'] == 15000 for s in new['pool_snapshots'])
+        shutil.copy2(replay / (name + '.json'), out / (name + '.json'))
         rows[name] = {'pool_snapshots': new['pool_snapshots'], 'limits': new['pool_limits'],
                       'completed_chain_shortest': new['completed_chain_shortest'], 'completed_tasks': new['completed_tasks']}
     write(out / 'cohorts.json', {'completed_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        'all_original_accounting_identical': True, 'pool_fixture_passed': True, 'cases': rows,
+        'all_original_accounting_identical': not accounting_corrections, 'accounting_corrections': accounting_corrections,
+        'pool_fixture_passed': True, 'cases': rows,
         'scope': 'Descriptive revealed-task replay; no causal savings or throughput gain established.'})
     for path, sha in spec['files'].items():
         assert digest(path) == sha
     for source in [raw / 'spec.json', raw / 'submission.json', raw / 'pool-fixture.json', raw / 'pool-fixture-result.json', replay / 'provenance.json']:
+        shutil.copy2(source, out / source.name)
+    for source in replay.glob('*fixture*.json'):
         shutil.copy2(source, out / source.name)
     print(json.dumps({name: row['pool_snapshots'][-1] for name, row in rows.items()}, indent=2))
 

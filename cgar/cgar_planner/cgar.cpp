@@ -668,6 +668,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (temporal_conflict_audit_stride_ < 0 || temporal_conflict_audit_stride_ > 4096 ||
         (temporal_conflict_audit_stride_ && !temporal_))
         throw std::invalid_argument("temporal conflict audit requires temporal planning and stride 1-4096");
+    temporal_group_snapshot_count_ = env_int("CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT", 0);
+    if (temporal_group_snapshot_count_ < 0 || temporal_group_snapshot_count_ > 32 ||
+        (temporal_group_snapshot_count_ && (!temporal_ || !diagnostics_ || !temporal_conflict_audit_stride_)))
+        throw std::invalid_argument("temporal group snapshots require diagnostics, conflict audit and count 1-32");
     temporal_service_audit_stride_ = env_int("CGAR_TEMPORAL_SERVICE_AUDIT_STRIDE", 0);
     if (temporal_service_audit_stride_ < 0 || temporal_service_audit_stride_ > 4096 ||
         (temporal_service_audit_stride_ && !temporal_))

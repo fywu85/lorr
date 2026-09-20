@@ -38,6 +38,25 @@ struct TemporalForwardAudit {
     TemporalForwardPartition easiest, physical;
 };
 
+// Read-only candidate footprints for offline joint-repair probes.
+// Owner arrays preserve self and every relevant outside reservation.
+struct TemporalSnapshotChoice {
+    TemporalPath path;
+    int64_t cost = 0;
+    int operation = 0;
+    std::array<int, kTemporalHorizon> cell_owners{}, edge_owners{};
+};
+struct TemporalSnapshotRobot {
+    int robot = -1, selected = -1;
+    double power = 0;
+    bool fixed = false;
+    std::vector<TemporalSnapshotChoice> choices;
+};
+struct TemporalGroupSnapshot {
+    int root = -1, trigger = -1;
+    std::vector<TemporalSnapshotRobot> robots;
+};
+
 // Post-service reservations are observed slots, not assumed removable blockers.
 struct TemporalServiceBucket {
     int robots = 0, selected_wait = 0, selected_turn = 0, selected_forward = 0;
@@ -213,6 +232,69 @@ public:
             tally(out, best_class); tally(out.easiest, easiest); tally(out.physical, physical);
         }
         return out;
+    }
+    template<class Deadline>
+    std::vector<TemporalGroupSnapshot> snapshot_forward_groups(int limit_per_class,
+            uint64_t sample_index, int distance_scale, int unit_cost, Deadline check) const {
+        if (limit_per_class < 1 || limit_per_class > 32 || distance_scale <= 0 || unit_cost <= 0)
+            throw std::invalid_argument("invalid temporal group snapshot limits");
+        std::vector<TemporalGroupSnapshot> out;
+        const int count = static_cast<int>(choices_.size());
+        if (!count) return out;
+        std::array<int, 3> collected{};
+        const int start_robot = ((sample_index % count) * 997) % count;
+        for (int offset = 0; offset < count; ++offset) {
+            if ((offset & 31) == 0) check();
+            if (collected[1] == limit_per_class && collected[2] == limit_per_class) break;
+            const int r = (start_robot + offset) % count;
+            const int start = choices_[r][0].path->cells[0];
+            if (fixed_[r] || power_[r] <= 0 || choice(r).path->cells[0] != start) continue;
+            const int64_t old_physical = choice(r).cost + int64_t(choice(r).operation) * unit_cost;
+            int best = -1, best_count = 2 * kTemporalHorizon + 1;
+            std::vector<int> best_owners;
+            for (int k = 1; k < static_cast<int>(choices_[r].size()); ++k) {
+                const auto& candidate = choices_[r][k];
+                if (candidate.path->cells[0] == start || candidate.cost >= choice(r).cost ||
+                    old_physical - candidate.cost - int64_t(candidate.operation) * unit_cost < int64_t(distance_scale) * unit_cost)
+                    continue;
+                std::vector<int> owners;
+                auto take = [&](int owner) {
+                    if (owner >= 0 && owner != r && std::find(owners.begin(), owners.end(), owner) == owners.end())
+                        owners.push_back(owner);
+                };
+                for (int t = 0; t < kTemporalHorizon; ++t) {
+                    take(used_cells_[candidate.path->cells[t]][t]);
+                    if (candidate.path->edges[t] >= 0) take(used_edges_[candidate.path->edges[t]][t]);
+                }
+                if (std::any_of(owners.begin(), owners.end(), [&](int owner) { return fixed_[owner]; })) continue;
+                const int n = static_cast<int>(owners.size());
+                if (n < best_count || (n == best_count && (best < 0 || candidate.cost < choices_[r][best].cost ||
+                    (candidate.cost == choices_[r][best].cost && candidate.operation < choices_[r][best].operation)))) {
+                    best = k; best_count = n; best_owners = std::move(owners);
+                }
+            }
+            if (best_count < 1 || best_count > 2 || collected[best_count] == limit_per_class) continue;
+            std::sort(best_owners.begin(), best_owners.end());
+            best_owners.insert(best_owners.begin(), r);
+            TemporalGroupSnapshot group; group.root = r; group.trigger = best;
+            for (int owner : best_owners) {
+                check();
+                TemporalSnapshotRobot robot;
+                robot.robot = owner; robot.selected = selected_[owner]; robot.power = power_[owner]; robot.fixed = fixed_[owner];
+                for (const auto& candidate : choices_[owner]) {
+                    TemporalSnapshotChoice record; record.path = *candidate.path;
+                    record.cost = candidate.cost; record.operation = candidate.operation;
+                    for (int t = 0; t < kTemporalHorizon; ++t) {
+                        record.cell_owners[t] = used_cells_[record.path.cells[t]][t];
+                        record.edge_owners[t] = record.path.edges[t] < 0 ? -1 : used_edges_[record.path.edges[t]][t];
+                    }
+                    robot.choices.push_back(std::move(record));
+                }
+                group.robots.push_back(std::move(robot));
+            }
+            out.push_back(std::move(group)); ++collected[best_count];
+        }
+        check(); return out;
     }
     // Const snapshot, with no search/RNG/cache changes. Every examined candidate
     // improves the distance/turn objective by a full unit after removing op ties.
