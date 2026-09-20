@@ -10,6 +10,8 @@
 namespace r05 {
 struct Config {
     int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1;
+    int continuations=1, continuation_start=1;
+    float future_mutation=0.3;
     float noise=50, mutation=0.3, dispersion=0, push_price=0, loop_threshold=1;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
     float initial_length_weight=-1;
@@ -64,6 +66,8 @@ struct Frame {
     std::vector<const Chain*> active_chains, plain_chains;
     std::vector<unsigned char> free_tasks;
 };
+struct PriorityChange { int agent;float offset; };
+using Continuation = std::vector<std::vector<PriorityChange>>;
 struct Rollout {
     double score=-1e100;
     Frame first;
@@ -106,7 +110,10 @@ private:
     std::vector<Action> last_actions_;
     std::vector<int> predicted_loc_, predicted_dir_;
     void match_future(Frame& frame) const;
-    Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
+    Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true,
+                    const Continuation* continuation=nullptr) const;
+    Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
+                     const std::vector<Continuation>& continuations,bool cycle_moves) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;
     void fill_ready_moves(const Frame& frame, const std::vector<float>& offsets, std::vector<int>& to) const;

@@ -179,3 +179,21 @@ continuation. All branches must share the root's first actions and pending moves
 only later decisions may change. Use common deterministic continuation draws for
 comparing roots and preserve worker-count determinism. Benchmark the full horizon;
 short screens and promising model scores have repeatedly misranked candidates.
+
+
+`R05_CONTINUATIONS=B` now implements the continuation test (default1).
+`R05_K` remains the total number of global rollouts, divided among `K/B` root
+priority vectors. Branch0 keeps the root's offsets throughout; the other B-1
+branches mutate offsets after `R05_CONTINUATION_START` steps (default1), with
+per-agent probability `R05_FUTURE_MUTATION` (default0.3) at each later step.
+All roots use common deterministic mutation draws from an independent stream.
+The first actions, positions, headings, stages and pending moves must match
+across branches; the evaluator checks this invariant before averaging scores.
+
+Local refinement spends complete B-rollout groups out of `R05_LOCAL`, leaving
+any remainder unused. The primary full comparisons set local refinement to0,
+so every variant executes exactly its specified K global rollouts per step.
+Separate controls retain the full frontier and match the smaller root portfolio.
+Dense task-turnover regressions check worker-count determinism and that duplicate
+unchanged continuations preserve root selection. Full validation is pending;
+no time-based early return or partial search result is introduced.

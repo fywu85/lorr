@@ -22,6 +22,14 @@ Config Config::environment(const SharedEnvironment& env) {
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
     c.generations=integer("R05_GENERATIONS",1);
+    c.continuations=integer("R05_CONTINUATIONS",1);
+    c.continuation_start=integer("R05_CONTINUATION_START",1);
+    c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
+    if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
+       c.generations>c.futures/c.continuations || c.continuation_start<1 ||
+       (c.continuations>1 && c.continuation_start>=c.depth) ||
+       !std::isfinite(c.future_mutation) || c.future_mutation<0 || c.future_mutation>1)
+        throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.mutation_radius=integer("R05_MUTATION_RADIUS",0);
@@ -836,7 +844,8 @@ void Engine::match_future(Frame& frame) const {
     }
 }
 
-Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves) const {
+Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves,
+                        const Continuation* continuation) const {
     const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;
     auto total_cost=[&](const Frame& f) {
         double guided=0,plain=0;
@@ -858,10 +867,15 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     int completions=0;
     double initial=total_cost(frame),previous=initial,progress=0,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
+    std::vector<float> future_offsets;
+    if(continuation)future_offsets=offsets;
     for(int t=0;t<cfg.depth;++t) {
+        if(continuation)for(const auto& change:continuation->at(t))
+            future_offsets[change.agent]=change.offset;
+        const auto& priorities=continuation?future_offsets:offsets;
         const int before_completed=cfg.completion_bonus>0?completed(frame):0;
-        if(cfg.operation_depth)advance_operations(frame,offsets,actions,r.expansions);
-        else advance(frame,offsets,actions,r.expansions,cycle_moves);
+        if(cfg.operation_depth)advance_operations(frame,priorities,actions,r.expansions);
+        else advance(frame,priorities,actions,r.expansions,cycle_moves);
         if(t==0){r.first=frame;r.actions=actions;}
         if(cfg.completion_bonus>0)completions+=completed(frame)-before_completed;
         if(cfg.progress_discount<1 || cfg.rollout_match) {
@@ -898,6 +912,25 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     }
     return r;
 }
+Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
+                         const std::vector<Continuation>& continuations,bool cycle_moves) const {
+    Rollout result=rollout(frame,offsets,cycle_moves);
+    if(continuations.empty())return result;
+    double score=result.score;
+    for(const auto& continuation:continuations) {
+        Rollout branch=rollout(frame,offsets,cycle_moves,&continuation);
+        // A branch evaluates the root's decision; it cannot silently substitute
+        // a different first action or promise while contributing to its score.
+        if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||
+           branch.first.dir!=result.first.dir || branch.first.pending!=result.first.pending ||
+           branch.first.stage!=result.first.stage || branch.first.operations!=result.first.operations)
+            throw std::runtime_error("continuation changed the first decision");
+        score+=branch.score;result.expansions+=branch.expansions;
+    }
+    result.score=score/(continuations.size()+1);
+    return result;
+}
+
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
     const auto& g=*graph;const int n=env->num_of_agents;
     Frame frame;frame.loc.resize(n);frame.dir.resize(n);frame.stage.resize(n);
@@ -969,7 +1002,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
-    std::vector<std::vector<float>> offsets(cfg.futures);
+    const int roots=cfg.futures/cfg.continuations;
+    std::vector<std::vector<float>> offsets(roots);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
     auto mix=[](uint64_t x) {
@@ -984,12 +1018,23 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     auto& global_rng=cfg.random_by_step?step_random:rng_;
     auto& local_rng=cfg.random_by_step?local_random:rng_;
     std::uniform_real_distribution<float> unit(0,1),noise(-cfg.noise,cfg.noise);
-    std::vector<Rollout> results(cfg.futures);
-    std::vector<std::exception_ptr> errors(cfg.futures);
+    // Common continuation draws compare roots under the same future priority
+    // perturbations. A separate stream leaves root and local draws unchanged.
+    // Branch zero keeps the original constant-offset rollout.
+    std::vector<Continuation> continuations(cfg.continuations-1,Continuation(cfg.depth));
+    if(!continuations.empty()) {
+        uint64_t key=(uint64_t(uint32_t(cfg.seed))<<32)|uint32_t(env->curr_timestep);
+        std::mt19937 future_random(uint32_t(mix(key^0x94d049bb133111ebULL)));
+        for(auto& branch:continuations)for(int t=cfg.continuation_start;t<cfg.depth;++t)
+            for(int a=0;a<n;++a)if(unit(future_random)<cfg.future_mutation)
+                branch[t].push_back({a,noise(future_random)});
+    }
+    std::vector<Rollout> results(roots);
+    std::vector<std::exception_ptr> errors(roots);
     int best=0;
     for(int generation=0;generation<cfg.generations;++generation) {
-        const int begin=generation*cfg.futures/cfg.generations;
-        const int end=(generation+1)*cfg.futures/cfg.generations;
+        const int begin=generation*roots/cfg.generations;
+        const int end=(generation+1)*roots/cfg.generations;
         // Keep the total number of complete rollouts fixed. Later batches
         // refine this step's incumbent; one generation preserves the original
         // random draws, candidate order, and equal-score acceptance behavior.
@@ -1014,7 +1059,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
         #pragma omp parallel for num_threads(cfg.threads) schedule(static)
         for(int k=begin;k<end;++k) {
-            try { results[k]=rollout(frame,offsets[k],!cfg.cycle_portfolio || k%2==1); }
+            try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1); }
             catch(...) { errors[k]=std::current_exception(); }
         }
         for(int k=begin;k<end;++k) {
@@ -1023,7 +1068,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
         }
     }
-    for(int trial=0;trial<cfg.local_trials;++trial) {
+    // Local refinement also spends complete continuation groups, without
+    // exceeding its existing rollout allowance. Unused remainders stay unused.
+    for(int trial=0;trial<cfg.local_trials/cfg.continuations;++trial) {
         auto local=results[best].offsets;
         int center=std::uniform_int_distribution<int>(0,n-1)(local_rng);
         int p=g.to_grid[frame.loc[center]];
@@ -1031,7 +1078,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             int q=g.to_grid[frame.loc[a]];
             if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(local_rng);
         }
-        Rollout candidate=rollout(frame,local,results[best].cycle_moves);
+        Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
