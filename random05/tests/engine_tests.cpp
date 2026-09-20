@@ -121,4 +121,4 @@ void idle_pocket_eviction() {
     }
     require(e.curr_states[0].location!=7,"goal-less robot kept reserving the dead-end doorway");
 }
-int main(){idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
+int main(){idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);simulation(2,true,100,3);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}

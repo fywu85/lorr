@@ -23,6 +23,7 @@ struct Config {
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0;
     float pre_cycle_gain=0, idle_eviction=0;
+    bool cycle_portfolio=false;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;
@@ -55,6 +56,7 @@ struct Rollout {
     std::vector<Action> actions;
     std::vector<float> offsets;
     int moves=0;
+    bool cycle_moves=true;
     uint64_t expansions=0;
 };
 class Engine {
@@ -77,8 +79,8 @@ private:
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
     std::vector<int> predicted_loc_, predicted_dir_;
-    Rollout rollout(Frame frame,const std::vector<float>& offsets) const;
+    Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
-                 uint64_t& expansions) const;
+                 uint64_t& expansions,bool cycle_moves) const;
 };
 }

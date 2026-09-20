@@ -20,15 +20,15 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,916 tasks / 2,000 steps**, planner seed0,
-generated field seed5, K64, dispersion0.8, local5/equal, priority noise200,
-wait0.5, greedy matching and known-horizon triage scale0.9
-(`--trick RANDOM-05`). Four-worker NMS completed **2,903 tasks**. This is our
-first single-run result above that measured reference: **+0.4%**, only13 tasks,
-which is not evidence of a robust lead. The 32-logical-CPU NMS reference is
-**3,172 tasks** (8.1% gap). The colleague's roughly27–28% matched advantage
-remains the campaign objective. Best without horizon triage remains **2,594**.
-All frontier/reference runs have zero planner/scheduler errors and timeouts.
+Best verified combined result: **2,997 tasks / 2,000 steps**, planner seed0,
+generated field seed15, K64, dispersion0.8, local5/equal, priority noise200,
+wait0.5, greedy matching and known-horizon triage scale1.5
+(`--trick RANDOM-05`). This is **+3.2%** against our four-worker NMS reference
+of **2,903 tasks**. It remains **5.5% below** the 32-worker NMS reference of
+**3,172**. The colleague's roughly27–28% matched advantage remains the objective.
+Best without horizon triage is currently **2,594**, pending a new ablation.
+These are single-seed results. All frontier/reference runs have zero planner
+errors, scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
@@ -64,6 +64,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 
 | 2026-09-20T09:01:43.509210+00:00 | [804fee5](https://github.com/fywu85/lorr/commit/804fee5) | flow-seed15; generated field; K64; planner seed0; `--trick RANDOM-05` | 2910 | 2903 (4 workers) | +0.2% | [Full evidence](random05/results/traffic-seeds-full-v12/summary.json) |
 | 2026-09-20T09:05:15.036957+00:00 | [b79a218](https://github.com/fywu85/lorr/commit/b79a218) | noise200; generated field; K64; planner seed0; `--trick RANDOM-05` | 2916 | 2903 (4 workers) | +0.4% | [Full evidence](random05/results/priority-search-full-v13/summary.json) |
+
+| 2026-09-20T09:14:27.889620+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | field15-triage15; K64/noise200; planner seed0; `--trick RANDOM-05` | 2997 | 2903 (4 workers) | +3.2% | [Full evidence](random05/results/pockets-combinations-full-v15/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -178,3 +180,12 @@ The published NMS score of 3,050 used different instances and hardware.
   separate measured configurations; no claim that capped aging is generally
   better. Regression tests verify identical fixed-work trajectories with one
   and two worker threads under the new random-stream mode.
+
+- Forcing cycle proposals before PIBT lowers throughput substantially:
+  1,920–2,674 versus2,916 control. Keep it off. Follow-up tests restrict
+  preparation to robots PIBT already leaves waiting, or include baseline
+  policies in the rollout portfolio so search can reject cycle proposals.
+- Goal-less pocket eviction passes the targeted regression but lowers full-run
+  throughput (eviction2=2,757; eviction4/8=2,846; with distinct pocket components
+  2,855). Keep it off in the frontier. Combining field15 with noise200 gives
+  2,960; triage1.5 gives2,997. Field5 with triage1.5 gives2,926.

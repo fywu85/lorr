@@ -28,6 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.cycle_portfolio=integer("R05_CYCLE_PORTFOLIO",0);
     c.idle_eviction=real("R05_IDLE_EVICTION",0);
     c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
     c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
@@ -415,7 +416,8 @@ void Engine::certify(const Graph& g,const std::vector<int>& from,const std::vect
 }
 
 void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Action>& actions,
-                     uint64_t& expansion_count) const {
+                     uint64_t& expansion_count,bool cycle_moves) const {
+    const int cycle_mode=cycle_moves?cfg.pre_cycles:0;
     const auto& g=*graph;const int n=int(f.loc.size());
     // pending is the already promised forward/wait move. Plan the following
     // movement on its exact resulting occupancy, while current idle robots turn.
@@ -457,6 +459,40 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
            (!active || g.pocket[assigned_[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
     }
+    auto propose_cycles=[&](bool blocked_only) {
+        struct Proposal { float gain;const std::vector<int>* ring;int sign;bool ready; };
+        std::vector<Proposal> proposals;
+        for(const auto& ring:g.cycles) {
+            const int count=int(ring.size());bool idle=true;
+            for(int v:ring)if(owner[v]<0 || moving[owner[v]] || (blocked_only && chosen[owner[v]]!=p[owner[v]])){idle=false;break;}
+            if(!idle)continue;
+            for(int sign:{1,count-1}) {
+                float gain=0;bool ready=true;
+                for(int k=0;k<count;++k) {
+                    int a=owner[ring[k]],v=ring[(k+sign)%count],d=g.direction(ring[k],v);
+                    ready=ready && allowed(a,d);
+                    // Compare against the best heading available during an idle
+                    // step, so rotations alone do not make a cycle profitable.
+                    float before=base_cost[a];
+                    if(cycle_mode>=2)for(int q=0;q<4;++q)before=std::min(before,cost(a,ring[k],q));
+                    gain+=before-cost(a,v,d);
+                }
+                if((ready || cycle_mode>=2) && gain>cfg.loop_threshold+cfg.pre_cycle_gain*count)
+                    proposals.push_back({gain,&ring,sign,ready});
+            }
+        }
+        std::stable_sort(proposals.begin(),proposals.end(),[](const Proposal& a,const Proposal& b){return a.gain>b.gain;});
+        for(const auto& proposal:proposals) {
+            const auto& ring=*proposal.ring;const int count=int(ring.size());bool free=true;
+            for(int v:ring)if(blocked_only ? (chosen[owner[v]]!=p[owner[v]] || forced_heading[owner[v]]>=0) : chosen[owner[v]]>=0){free=false;break;}
+            if(!free)continue;
+            for(int k=0;k<count;++k) {
+                int a=owner[ring[k]],target=ring[(k+proposal.sign)%count];
+                forced_heading[a]=g.direction(ring[k],target);
+                chosen[a]=proposal.ready?target:ring[k];reserve[chosen[a]]=a;
+            }
+        }
+    };
     auto choose=[&](bool kinematic) {
     std::fill(chosen.begin(),chosen.end(),-1);
     std::fill(reserve.begin(),reserve.end(),-1);
@@ -486,40 +522,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         std::stable_sort(cand.begin(),cand.begin()+count,[](const Candidate& a,const Candidate& b){return a.score<b.score;});
         candidate_count[i]=count;
     }
-    if(kinematic && cfg.pre_cycles) {
-        struct Proposal { float gain;const std::vector<int>* ring;int sign;bool ready; };
-        std::vector<Proposal> proposals;
-        for(const auto& ring:g.cycles) {
-            const int count=int(ring.size());bool idle=true;
-            for(int v:ring)if(owner[v]<0 || moving[owner[v]]){idle=false;break;}
-            if(!idle)continue;
-            for(int sign:{1,count-1}) {
-                float gain=0;bool ready=true;
-                for(int k=0;k<count;++k) {
-                    int a=owner[ring[k]],v=ring[(k+sign)%count],d=g.direction(ring[k],v);
-                    ready=ready && allowed(a,d);
-                    // Compare against the best heading available during an idle
-                    // step, so rotations alone do not make a cycle profitable.
-                    float before=base_cost[a];
-                    if(cfg.pre_cycles>=2)for(int q=0;q<4;++q)before=std::min(before,cost(a,ring[k],q));
-                    gain+=before-cost(a,v,d);
-                }
-                if((ready || cfg.pre_cycles>=2) && gain>cfg.loop_threshold+cfg.pre_cycle_gain*count)
-                    proposals.push_back({gain,&ring,sign,ready});
-            }
-        }
-        std::stable_sort(proposals.begin(),proposals.end(),[](const Proposal& a,const Proposal& b){return a.gain>b.gain;});
-        for(const auto& proposal:proposals) {
-            const auto& ring=*proposal.ring;const int count=int(ring.size());bool free=true;
-            for(int v:ring)if(chosen[owner[v]]>=0){free=false;break;}
-            if(!free)continue;
-            for(int k=0;k<count;++k) {
-                int a=owner[ring[k]],target=ring[(k+proposal.sign)%count];
-                forced_heading[a]=g.direction(ring[k],target);
-                chosen[a]=proposal.ready?target:ring[k];reserve[chosen[a]]=a;
-            }
-        }
-    }
+    if(kinematic && cycle_mode>0 && cycle_mode<3)propose_cycles(false);
     std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
     std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
     int expansions=0;
@@ -553,6 +556,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     std::vector<int> intent;
     if(cfg.intent_rotation)intent=choose(false);
     chosen=choose(true);
+    if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {
         // Geometry is precomputed; evaluate only obstacle-free perimeters.
         for(const auto& v:g.cycles) {
@@ -602,8 +606,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     f.loc=std::move(p);f.pending=std::move(chosen);
 }
 
-Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets) const {
-    const auto& g=*graph;Rollout r;r.offsets=offsets;
+Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves) const {
+    const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;
     auto total_cost=[&](const Frame& f) {
         double s=0;
         for(int i=0;i<int(f.loc.size());++i)if(assigned_[i])s+=assigned_[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
@@ -612,7 +616,7 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets) const {
     double initial=total_cost(frame);
     std::vector<Action> actions;
     for(int t=0;t<cfg.depth;++t) {
-        advance(frame,offsets,actions,r.expansions);
+        advance(frame,offsets,actions,r.expansions,cycle_moves);
         if(t==0){r.first=frame;r.actions=actions;}
     }
     r.score=(initial-total_cost(frame))/2.0;
@@ -689,7 +693,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     std::vector<std::exception_ptr> errors(cfg.futures);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int k=0;k<cfg.futures;++k) {
-        try { results[k]=rollout(frame,offsets[k]); }
+        try { results[k]=rollout(frame,offsets[k],!cfg.cycle_portfolio || k%2==1); }
         catch(...) { errors[k]=std::current_exception(); }
     }
     int best=0;
@@ -706,7 +710,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             int q=g.to_grid[frame.loc[a]];
             if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(local_rng);
         }
-        Rollout candidate=rollout(frame,local);
+        Rollout candidate=rollout(frame,local,results[best].cycle_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
