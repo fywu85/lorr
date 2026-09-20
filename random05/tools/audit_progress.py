@@ -29,7 +29,7 @@ def audit():
         if not row.startswith('| 20'):
             continue
         fields = [x.strip() for x in row.split('|')[1:-1]]
-        utc, commit_link, _, tasks, _, _, evidence_link = fields
+        utc, commit_link, _, tasks, compute, _, _, evidence_link = fields
         commit = re.search(r'/commit/([0-9a-f]+)', commit_link).group(1)
         evidence = re.search(r'\]\(([^)]+)\)', evidence_link).group(1)
         summaries = read(ROOT / evidence)
@@ -43,6 +43,11 @@ def audit():
             assert result['result'][key] == 0, (utc, key)
         spec = read((ROOT / evidence).parent / 'spec.json')
         case = next(c for c in spec['cases'] if c['name'] == result['name'])
+        allocation = read((ROOT / evidence).parent / 'allocation.json')
+        cpu = allocation['resources']['cpu_model']
+        workers = int(case['env']['R05_THREADS'])
+        expected = '{} / {} / {}'.format(workers, case['cores'], cpu.split(' 32-Core')[0].replace('AMD ', ''))
+        assert compute == expected, (utc, 'compute metadata mismatch')
         digest = result['binary_sha256']
         assert digest == case['binary_sha256'], (utc, 'binary mismatch')
         build = builds[digest]
@@ -50,7 +55,8 @@ def audit():
             content = subprocess.check_output(['git', 'show', commit + ':random05/' + source], cwd=ROOT)
             assert hashlib.sha256(content).hexdigest() == build['source_hashes'][source], (utc, commit, source)
         report.append(dict(utc=utc, source_commit=commit, tasks=int(tasks),
-                           evidence=evidence, binary_sha256=digest))
+                           evidence=evidence, binary_sha256=digest, workers=workers,
+                           physical_cores=case['cores'], cpu_model=cpu))
     assert report, 'no frontier rows found'
     return dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 checks=report, all_valid=True)

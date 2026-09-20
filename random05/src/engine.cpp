@@ -52,6 +52,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.flow_average=integer("R05_FLOW_AVERAGE",0);c.flow_normalize=integer("R05_FLOW_NORMALIZE",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
     c.predict_matching=integer("R05_SCHED_PREDICT",0);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
+    c.flow_output_penalty=real("R05_FLOW_OUTPUT_PENALTY",-1);
+    if(c.flow_output_penalty<0 && c.flow_output_penalty!=-1)
+        throw std::invalid_argument("flow output penalty must be nonnegative or -1 for the assignment penalty");
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
     if(c.guidance!="none" && env.trick_instance!="RANDOM-05")
@@ -195,10 +198,13 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         const double mean_load=std::max(1.0,total_load/cells);
         if(cfg.flow_turn_load>0)for(int v=0;v<cells;++v)
             weight[v][4]*=float((1+cfg.flow_turn_load*load[v]/mean_load)/(1+cfg.flow_turn_load));
+        // Separate layout construction from its final directional contrast.
+        // This allows controlled cost-field comparisons on the same streets.
+        const float output_penalty=cfg.flow_output_penalty<0?cfg.flow_penalty:cfg.flow_output_penalty;
         double weight_sum=0;int weight_count=0;
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
             int u=next[v][d];if(u<0)continue;
-            weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+cfg.flow_penalty);
+            weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+output_penalty);
             weight[v][d]*=1+cfg.flow_betweenness*float((load[v]+load[u])/(2*mean_load));
             weight_sum+=weight[v][d];++weight_count;
         }

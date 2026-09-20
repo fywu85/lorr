@@ -15,7 +15,8 @@ def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
 def submit(a):
     out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec={'kind':a.kind,'created_utc':now(),'repo':str(ROOT),
-          'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()}
+          'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+          'hosts':a.hosts,'required_cpu_model':a.cpu_model}
     if a.kind=='nms4-build':
         shutil.copytree(ROOT/'nms',out/'source',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
         p=out/'source/Solution/settings.hpp';body=p.read_text();assert body.count('THREADS = 32;')==1
@@ -56,8 +57,10 @@ def submit(a):
     shutil.copy2(Path(__file__),out/'runner.py')
     command=['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)]
     script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in command)+'\n')
+    request='h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G,m_topology_inuse=*'+('CTT*'*physical)
+    if a.hosts:request+=',h='+a.hosts
     args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded',str(slots),
-          '-binding','linear:'+str(physical),'-l','h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G,m_topology_inuse=*'+('CTT*'*physical),'-m','n','-N','r05_'+a.kind,
+          '-binding','linear:'+str(physical),'-l',request,'-m','n','-N','r05_'+a.kind,
           '-j','y','-o',str(out/'scheduler.log'),'-S','/bin/bash',str(script)]
     r=subprocess.run(args,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     write(out/'submission.json',{'command':args,'returncode':r.returncode,'response':r.stdout})
@@ -66,6 +69,8 @@ def execute(a):
     global ROOT
     out=a.output.resolve();spec=json.loads((out/'spec.json').read_text());ROOT=Path(spec['repo'])
     resources=cpu_resources();write(out/'allocation.json',dict(started_utc=now(),resources=resources,job_id=os.environ.get('JOB_ID')))
+    if spec.get('required_cpu_model'):
+        assert resources['cpu_model']==spec['required_cpu_model'],('Unexpected CPU model',resources['cpu_model'])
     assert resources['physical_cores_visible']==spec['physical'],('GRID did not honor requested core binding; refusing an unbound benchmark',resources)
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota']>=spec['slots'],resources
     if spec['kind'] in ('build','nms4-build'):
@@ -130,5 +135,7 @@ def execute(a):
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['submit','execute'])
     p.add_argument('--kind',choices=['build','nms4-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
+    p.add_argument('--hosts',help='GRID hostname expression for matched-hardware validation')
+    p.add_argument('--cpu-model',help='Exact CPU model required at job startup')
     a=p.parse_args();return execute(a) if a.action=='execute' else submit(a)
 if __name__=='__main__':raise SystemExit(main())
