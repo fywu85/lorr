@@ -1,10 +1,12 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 14:08 UTC.
+Updated: 2026-09-20 16:08 UTC.
 
 **Target achieved under the agreed development conditions: 154,889 tasks (TRICK, seed0)**,94above the NMS target154,795. Full5,000steps/10,000robots; zero failures. Native Warehouse bands, raw remaining potential, matching64, pickupweight5, configuredH=5000 and a prospective learned completion margin require `--trick WAREHOUSE`. Ordinary fairness remains enabled and global short preference staysOFF. Seed2 reaches154,556; the two-seed mean154,722.5 is still72.5below target. This establishes the user's single-seed success criterion, not a generic or multi-seed-average win. [Full verified result](experiments/construction-20260918/results/horizon-margin-full-v92/summary.md).
 
 The best run averages446.648ms per entry and1.507CPU cores out of4reserved, peaks at13.330GB RSS, and finishes in38.18minutes. Maximum entry1.011548497s on a shared host with a5s development deadline; strict1s competition certification remains separate.
+
+The unchanged mean-margin configuration now also completes **154,713 /154,776** on solver seeds1/3. Both full runs pass, with no initially revealed task left never assigned and every task revealed by2500 completed by5000. Oldest never-assigned ages are190/185. These are additional solver seeds on the same fixed input, not new generated instances. The later V93 implementation is used here; its full same-seed controls are still being verified separately. [Seed confirmation and fairness](experiments/construction-20260918/results/native-frontier-seeds13-v95/summary.md).
 
 The [final saved-work audit](experiments/construction-20260918/results/horizon-margin-work-audit-v94/summary.md) finds29%less robot work left on unfinished tasks, with slightly longer completed chains. Both seeds gain entirely in the last1,000steps; this is a cutoff-aware improvement. All20,000entries and200million replayed robot steps pass their checks.
 

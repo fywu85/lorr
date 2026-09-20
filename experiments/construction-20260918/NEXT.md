@@ -18,8 +18,10 @@ pushed, and its goal marked complete; the old closeout checklist below is histor
 
 - V95 native work matrix8900145 on research38,24distinct bound physical cores;
   six full cases, sourcebdf5e7a. Automatic frozen verifier8900181.
-- V95 unchanged winner seeds1/3 job8900146 on research46,8bound physical cores;
-  verifier8900182. These are seed robustness checks, not an algorithm improvement.
+- V95 unchanged winner seeds1/3 job8900146 and verifier8900182 COMPLETE:154713/
+  154776, allvalid, oldestneverassigned190/185, earlyhalfallcomplete. Outcomeaudit
+  8900260 COMPLETE:100Msteps/hash/fixturesPASS, unfinishedwork1162752/1159825.
+  These are solver-seed checks on the same input, not new instances or a new best.
 - V96 percentile source27be6e312fdd79ad310583d33eeb2a4781d75b97, binary
   37694eacdc5c829c2f77673c4e4cf6070d1fca2cd8512b91cab6672249385752.
   Build8900173 complete: full suite passes, all28source/test hashes bound to commit.
@@ -43,6 +45,9 @@ pushed, and its goal marked complete; the old closeout checklist below is histor
 - V97 pickup comparison8900240 RUNNING, validator8900241: native_pickup/variants.json
   weights5/8/12, seeds0/2, exact V93 binary. Complete work and ordinary fairness
   unchanged.24disjoint bound physical cores; full results pending.
+- Independent outcome audits held after the validators: work8900261, percentile
+  8900262 (also exact pre-intervention prefixes), pickup8900263. Helper native_work/
+  outcomes.py freezes the existing verified work/prefix methods and source hashes.
 
 ## Prior target achievement
 
