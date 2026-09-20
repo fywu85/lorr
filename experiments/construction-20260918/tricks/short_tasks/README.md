@@ -48,3 +48,8 @@ Full replacement8899316/analysis8899317 uses32 verified physical cores on resear
 The original8899310 launch received slots but no binding, so it was cancelled;
 [receipts](allocation-rejected-v58/) preserve this infrastructure failure.
 [Current allocation and request](full-v58-r2/). No full quality result exists yet.
+
+The frozen full-run accounting source also passed an independent GRID fixture
+job8899330 before the live runs finished: five original action-accounting fixtures,
+ownership/pickup/completion/reveal boundary counts, and per-window conservation of
+revealed = completed + outstanding whole-chain distance. [Receipt](accounting-fixture-v58/verified.json).
