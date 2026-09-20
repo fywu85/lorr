@@ -17,7 +17,8 @@ assignment choices or traffic. Only full matched runs decide throughput.
 `CGAR_TRICK_NATIVE_TURN_COST` defaults to1 and accepts integers1..16 only with
 explicit `--trick WAREHOUSE` and the native metric. Every oriented reverse table,
 complete/ bounded pickup search and CGAR candidate quote uses the single chosen
-guidance price. The installed forward field retains the verified NMS fingerprint.
+guidance price when using oriented costs; the existing spatial fallback is unchanged.
+The installed forward field retains the verified NMS fingerprint.
 No selector means the original behavior; explicit1 must reproduce it exactly.
 A nondefault startup receipt and every native periodic receipt disclose the price.
 
@@ -33,3 +34,5 @@ Then run paired full5000-step seeds0/2, three arms on24bound physical cores (4ea
 shared GRID hosts,5s complete-entry deadline and32decimalGB RSS. Verify exact
 turn1control totals/trajectories155120/155056 before interpreting other arms.
 Retain all work, task-age, never-assigned, latency and memory evidence.
+
+Build8900665 passes the complete suite on source dac3fc75cb6a149b3e9a6b4770b64170ead87ed9. All28source/test hashes match. The new turn-price episodes check24576physical actions, preserve serial/parallel equality and change two of four episode traces. Independent reverse/prefetch comparisons cover1852128/3704256oriented states;125022macros are independently replayed. Frozen binary4f194edc5a806ae31198ef5ff29b995372b2e92bf266f490c010dbf0574481a5. Native800screen8900675/verifier8900678 and generic800screen8900676/verifier8900679 are running; no quality conclusion yet.

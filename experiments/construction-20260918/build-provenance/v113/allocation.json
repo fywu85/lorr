@@ -1,0 +1,51 @@
+{
+  "hostname": "research04",
+  "cpu_model": "AMD EPYC 7532 32-Core Processor",
+  "logical_cpu_affinity": [
+    5,
+    6,
+    7,
+    8,
+    69,
+    70,
+    71,
+    72
+  ],
+  "logical_cpus_by_physical_core": [
+    [
+      5,
+      69
+    ],
+    [
+      6,
+      70
+    ],
+    [
+      7,
+      71
+    ],
+    [
+      8,
+      72
+    ]
+  ],
+  "address_space_limit_bytes": [
+    17179869184,
+    17179869184
+  ],
+  "physical_cores_visible": 4,
+  "representative_cpus": [
+    5,
+    6,
+    7,
+    8
+  ],
+  "cgroup_cpu_limits": [
+    {
+      "path": "/sys/fs/cgroup/cpu,cpuacct",
+      "quota_us": -1,
+      "period_us": 100000
+    }
+  ],
+  "effective_cpu_quota": null
+}
