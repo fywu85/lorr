@@ -16,7 +16,16 @@ def submit(a):
     out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec={'kind':a.kind,'created_utc':now(),'repo':str(ROOT),
           'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()}
-    if a.kind=='build':
+    if a.kind=='nms4-build':
+        shutil.copytree(ROOT/'nms',out/'source',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
+        p=out/'source/Solution/settings.hpp';body=p.read_text();assert body.count('THREADS = 32;')==1
+        p.write_text(body.replace('THREADS = 32;','THREADS = 4;'))
+        spec['change']='Only Solution/settings.hpp THREADS=32 changed to THREADS=4'
+        cache=(ROOT/'nms/build/CMakeCache.txt').read_text().splitlines()
+        spec['reference_flags']={k:next(l.split('=',1)[1] for l in cache if l.startswith(k+':STRING=')) for k in ['CMAKE_CXX_FLAGS','CMAKE_EXE_LINKER_FLAGS']}
+        spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
+        physical=4;slots=4
+    elif a.kind=='build':
         shutil.copytree(ROOT/'random05',out/'source',ignore=shutil.ignore_patterns('build','__pycache__'))
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
         physical=4;slots=4
@@ -54,20 +63,23 @@ def execute(a):
     resources=cpu_resources();write(out/'allocation.json',dict(started_utc=now(),resources=resources,job_id=os.environ.get('JOB_ID')))
     assert resources['physical_cores_visible']>=spec['physical'],resources
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota']>=spec['slots'],resources
-    if spec['kind']=='build':
+    if spec['kind'] in ('build','nms4-build'):
         for rel,digest in spec['source_hashes'].items():assert sha(out/'source'/rel)==digest,rel
         env=dict(os.environ);env['PATH']=str(ROOT/'env/bin')+':'+env['PATH']
         commands=[[str(ROOT/'env/bin/cmake'),'-S',str(out/'source'),'-B',str(out/'build'),
                    '-DCMAKE_BUILD_TYPE=Release','-DCMAKE_CXX_COMPILER='+str(ROOT/'env/bin/x86_64-conda-linux-gnu-c++'),'-DCMAKE_PREFIX_PATH='+str(ROOT/'env'),'-DBUILD_TESTING=ON'],
                   [str(ROOT/'env/bin/cmake'),'--build',str(out/'build'),'--parallel','4'],
                   [str(ROOT/'env/bin/ctest'),'--test-dir',str(out/'build'),'--output-on-failure']]
+        if spec['kind']=='nms4-build':
+            commands[0]+=['-D'+k+'='+v for k,v in spec['reference_flags'].items()]
+            commands[1]+=['--target','lifelong'];commands=commands[:2]
         result=0
         with (out/'build.log').open('w') as f:
             for cmd in commands:
                 result=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT).returncode
                 if result:break
         record={'exit':result,'finished_utc':now()}
-        binary=out/'build/lifelong_random05'
+        binary=out/('build/lifelong' if spec['kind']=='nms4-build' else 'build/lifelong_random05')
         if binary.exists():record['binary_sha256']=sha(binary)
         write(out/'completion.json',record);return result
     groups=resources['logical_cpus_by_physical_core'];start=0;cases=[]
@@ -110,6 +122,6 @@ def execute(a):
     return 0 if all(r['valid'] for r in results) else 1
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['submit','execute'])
-    p.add_argument('--kind',choices=['build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
+    p.add_argument('--kind',choices=['build','nms4-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
     a=p.parse_args();return execute(a) if a.action=='execute' else submit(a)
 if __name__=='__main__':raise SystemExit(main())

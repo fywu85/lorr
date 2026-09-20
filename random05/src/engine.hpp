@@ -15,6 +15,9 @@ struct Config {
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20;
     float flow_penalty=1.6;
+    int local_trials=0, horizon=0;
+    float triage_scale=0.45;
+    bool accept_equal=false;
     std::string guidance="none", weights;
     static Config environment(const SharedEnvironment& env);
 };
@@ -55,8 +58,11 @@ public:
     static void certify(const Graph& g,const std::vector<int>& from,const std::vector<int>& to);
     void match(SharedEnvironment* env,std::vector<int>& schedule);
     const std::vector<int>& ages() const { return age_; }
+    int triaged() const { return triaged_; }
 private:
     std::mt19937 rng_;
+    uint64_t total_forward_=0,total_agent_steps_=0;
+    int triaged_=0;
     std::unordered_map<int,std::shared_ptr<Chain>> chains_;
     std::vector<const Chain*> assigned_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;

@@ -28,6 +28,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
+    if(c.horizon>0 && env.trick_instance!="RANDOM-05")
+        throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
@@ -445,7 +449,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     for(auto it=chains_.begin();it!=chains_.end();) {
         if(!env->task_pool.count(it->first))it=chains_.erase(it);else ++it;
     }
-    assigned_.assign(n,nullptr);
+    assigned_.assign(n,nullptr);triaged_=0;
     for(int a=0;a<n;++a) {
         int id=schedule[a];++age_[a];
         if(previous_task_[a]>=0 && !env->task_pool.count(previous_task_[a]))age_[a]=0;
@@ -455,6 +459,16 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             if(id==previous_task_[a] && task.idx_next_loc>previous_stage_[a])age_[a]=0;
             auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task);
             assigned_[a]=chain.get();
+            if(cfg.horizon>0) {
+                double remaining=0;int p=frame.loc[a];
+                for(int k=task.idx_next_loc;k<int(chain->goals.size());++k) {
+                    remaining+=g.hop(chain->goals[k],p);p=chain->goals[k];
+                }
+                double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+                if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
+                    assigned_[a]=nullptr;++triaged_;
+                }
+            }
         }
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
     }
@@ -472,18 +486,32 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     int best=0;
     for(int k=0;k<cfg.futures;++k) {
         if(errors[k])std::rethrow_exception(errors[k]);
-        if(results[k].score>results[best].score+1e-7)best=k;
+        if(results[k].score>results[best].score+1e-7 ||
+           (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
+    }
+    for(int trial=0;trial<cfg.local_trials;++trial) {
+        auto local=results[best].offsets;
+        int center=std::uniform_int_distribution<int>(0,n-1)(rng_);
+        int p=g.to_grid[frame.loc[center]];
+        for(int a=0;a<n;++a) {
+            int q=g.to_grid[frame.loc[a]];
+            if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(rng_);
+        }
+        Rollout candidate=rollout(frame,local);
+        if(candidate.score>results[best].score+1e-7 ||
+           (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
     auto& selected=results[best];
     certify(g,frame.loc,selected.first.loc);
     certify(g,selected.first.loc,selected.first.pending);
     plan=selected.actions;pending_=selected.first.pending;best_offsets_=selected.offsets;
     predicted_loc_=selected.first.loc;predicted_dir_=selected.first.dir;
+    total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
     if(env->curr_timestep%100==0) {
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;
-        std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d\n",
-                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,cfg.futures);
+        std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d\n",
+                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,cfg.futures,triaged_);
     }
 }
 }

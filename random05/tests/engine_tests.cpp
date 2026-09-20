@@ -64,4 +64,14 @@ void simulation() {
     require(total_moved>150,"dense rollout is immobile");
     std::cout<<"dense simulation moves="<<total_moved<<"\n";
 }
-int main(){validation();scheduling();simulation();std::cout<<"All Random05 checks passed\n";}
+void triage_task_change() {
+    auto e=environment(3,3,1);e.curr_states[0].location=4;
+    Config cfg;cfg.futures=1;cfg.horizon=3;Engine engine(cfg);engine.initialize(&e);
+    Task t;t.task_id=1;t.locations={8,0};t.idx_next_loc=1;e.task_pool[1]=t;e.curr_task_schedule={1};e.curr_timestep=2;
+    std::vector<Action> plan;std::vector<int> schedule;engine.compute(&e,plan,schedule);
+    require(engine.triaged()==1,"long task was not triaged");
+    e.task_pool.clear();t.task_id=2;t.locations={4,5};t.idx_next_loc=0;e.task_pool[2]=t;e.curr_task_schedule={-1};
+    engine.compute(&e,plan,schedule);
+    require(engine.triaged()==0,"triage state leaked across task replacement");
+}
+int main(){validation();scheduling();simulation();triage_task_change();std::cout<<"All Random05 checks passed\n";}

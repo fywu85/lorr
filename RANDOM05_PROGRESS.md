@@ -20,11 +20,11 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,431 tasks / 2,000 steps**, planner seed 0,
-public guidance field enabled. Generic configuration: **1,774 tasks**.
-All six v5 runs have zero planner errors, scheduler errors, and entry timeouts.
-The best run used 35.8 s wall time, 16.95 ms mean / 144.14 ms max entry latency,
-and 204.7 MiB peak process RAM on four physical cores. NMS reference pending.
+Best verified combined result: **2,594 tasks / 2,000 steps**, planner seed 0,
+public guidance and dispersion 0.8, K=256, no horizon triage. The matching
+scheduler uses ordinary grid-distance approach costs. Every tested full v5 run
+is valid. Mean entry latency is 151 ms and max is 247 ms for this best run,
+using four physical cores. The full NMS reference is still running.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
@@ -33,6 +33,9 @@ and 204.7 MiB peak process RAM on four physical cores. NMS reference pending.
 | 2026-09-20T07:58:41.152623+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow-intent; K=16; seed 0; `--trick RANDOM-05` | 2230 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
 | 2026-09-20T07:58:41.330442+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow06-disp08; K=16; seed 0; `--trick RANDOM-05` | 2346 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
 | 2026-09-20T07:58:42.118225+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | upstream-intent; K=16; seed 0; `--trick RANDOM-05` | 2431 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T08:02:13.099706+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k64-disp0-sched0; seed 0; `--trick RANDOM-05` | 2488 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:05:44.745252+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched1; seed 0; `--trick RANDOM-05` | 2562 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:05:50.770563+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched0; seed 0; `--trick RANDOM-05` | 2594 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -66,3 +69,8 @@ The published NMS score of 3,050 used different instances and hardware.
   The selected current move and following promised move are independently
   certified. Full runs now take about 35 seconds with K=16. Next: more futures,
   guidance-aware matching and dispersion ablations, followed by seed repeats.
+
+- Scaling: K=64 gives 2,488; K=256 gives 2,522; adding dispersion 0.8
+  gives 2,594. Guidance-aware matching helps the generated field (2,419 to
+  2,548), but lowers the public-field result (2,594 to 2,562). Keep these as
+  separate configurations instead of assuming every borrowed feature helps.
