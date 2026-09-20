@@ -1,0 +1,15 @@
+{
+  "changed_utc": "2026-09-20T10:59:24.421166+00:00",
+  "reason": "Use queue host selectors as in the benchmark launcher instead of unqualified hostname expressions. Job was still queued; source/kernel/CPU/memory/time request unchanged.",
+  "command": [
+    "qalter",
+    "-q",
+    "debian.q@research31,debian.q@research38,debian.q@research44,debian.q@research46,debian.q@research50,debian.q@research52,debian.q@research57",
+    "-l",
+    "exclusive=false,h_rt=00:10:00,h_vmem=2G",
+    "8899542"
+  ],
+  "returncode": 0,
+  "stdout": "modified hard resource list of job 8899542\nmodified hard queue list of job 8899542\n",
+  "stderr": ""
+}

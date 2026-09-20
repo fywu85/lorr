@@ -38,3 +38,10 @@ Both tracks retain complete prescribed-work decisions, explicit timeout failures
 collision/schedule validity, processRSS below32,000,000,000bytes, and reserved/bound GRID physical cores. Shared hosts and5-second development
 deadlines are now user-authorized; later strict1s checks remain separate. No hidden future tasks are used. The existing generic work continues;
 the short-task × lane factorial is complete: short preference loses 5.961%/5.902% without/with lanes, while empty work and waiting ages rise. It remains OFF. [Full paired result](results/trick-short-tasks-full-v58-r2/summary.md).
+
+General implementation follow-up V81 (source85faca5): backward Dial relative ring
+indexing preserves distances and prescribed work. Weighted kernel CPU medians
+improve9.6–15.8% in paired tests; no whole-entry or throughput claim. Four native
+shortOFF/ON trajectories reproduce V80 exactly; generic isolation is pending.
+[Kernel evidence](results/turn-ring-kernel-v81/summary.md),
+[native equivalence](results/turn-ring-native-screen-v81/summary.md).

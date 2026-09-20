@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated 2026-09-20 10:45 UTC. Preserve CGAR. Target NMS154,795: any valid full
+Updated 2026-09-20 11:08 UTC. Preserve CGAR. Target NMS154,795: any valid full
 5,000-step / 10,000-robot seed may qualify, including explicit `--trick WAREHOUSE`.
 Keep32GB process RSS, complete fixed work, and timeout failure without partial
 quality scores. Shared GRID hosts and5s development deadlines are authorized;
@@ -50,8 +50,8 @@ strict1s checks remain separate. Preserve the other fork's random05 changes/jobs
   binary74fb3313aa6b1c90aefcc735ce08fd7fa501039070432ecde013f4080bd056ea.
   Preparingnativebands+matching64 shortOFF/ON atweights1/5 with exactV78controls.
   No short full experiment queued yet; originalpreference losesunderlegacymetric.
-  Startup8899525/analysis8899526 runningresearch46; generic8008899527/analysis8899528
-  runningresearch38. ExactV78shortOFFprefixes andgenericreference required.
+  Startup8899525/analysis8899526 andgeneric8008899527/analysis8899528 COMPLETE.
+  Allfourstartupcasesvalid/twofairprefixesexact; generic18958/c0f1...exact.
 
 ## Diagnosis and review
 
@@ -66,11 +66,20 @@ strict1s checks remain separate. Preserve the other fork's random05 changes/jobs
   no live CLI. Review/assessment archived. AgreesV78; recommends conditional short
   atopbestnative+matching+weight5. Secondfinite retarget onlywithpositivechain/empty
   evidenceandshadowdiagnosis. Do notrevivemultiworkerswithoutnewreason.
-  Nextcallturn38/followup-37.md. Source-spec testsliceneedsendexpandedforV80ifshared.
+  Turn38alsoCOMPLETE10:59:45UTC, no live CLI, nextturn39/followup-38.md.
+  Newassessmentqualifiesinference: retargetcapacitynotprovedbinding; excludedcycle
+  savingswouldbediagnosticnotphysicalcausalwork. Prioritizeconditionalmatching-budget
+  shadowoverstaticchain-priceaudit. Moresearchnotyetwarranted;4Mmeanscandidate
+  evaluations,NOTattempts. Privatecomputealreadyhasproperlysizedscratchthroughallcallers.
+  Realfour200-stepintegrationcasescovernative+short+matching; no redundantfixtureadded.
 
 ## Next actions
 
-1. Verify V80short200screen andgeneric800isolationcheck. Both bindsourcefd2d23b.
+1. V80screensallpass. V81kernel85faca5/fullregressionspass, binary29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
+   Native2008899550/51completeallfourhashesexactV80includingnewshortONprofiles.
+   Generic8008899552/53pending; ifexact, fullshortmayuseV81withpredeclaredsourceupdate.
+   BackwardkernelCPUimproves9.6-15.8%weighted; unchangedBFS+0.8%; notwholeentryspeedup.
+   Bench8899542completeafterqueuedhost-selectorcorrection. Results/turn-ring-kernel-v81.
 2. VerifyV78full afterfinish(~11:10UTCestimate, notpromised). Updateanyfullnewbestonly
    aftercompletevalidity/source/resource/work/trajectorychecks. Recordfailures too.
 3. Ifgapremains, fullshortOFF/ON xweights1/5 atopnativebands+matching64, seeds0/2,
