@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated 2026-09-20 11:08 UTC. Preserve CGAR. Target NMS154,795: any valid full
+Updated 2026-09-20 11:15 UTC. Preserve CGAR. Target NMS154,795: any valid full
 5,000-step / 10,000-robot seed may qualify, including explicit `--trick WAREHOUSE`.
 Keep32GB process RSS, complete fixed work, and timeout failure without partial
 quality scores. Shared GRID hosts and5s development deadlines are authorized;
@@ -8,11 +8,17 @@ strict1s checks remain separate. Preserve the other fork's random05 changes/jobs
 
 ## Current best and generic reference
 
-- Overall best **151,630 TRICK seed2**, native20/200(+1bands), turn1, raw remaining
-  potential. Matching OFF, short preference OFF, pickupweight1. Source06a8258,
-  completed10:25:07.422058UTC, fullhash40b2d2817695858a057da54b7b5cb6e13c407f60e368f16d45bad89cab036382.
-  Mean449.312ms, max1.016591s, RSS11.937GB,1.563CPU cores averaged of4reserved.
-  Shared5s, not strict1s certified. Gap3,165 tasks;2.0873% growth needed.
+- Overall best **152,383 TRICK seed0**, native20/200(+1bands), turn1, raw remaining
+  potential, matching64, pickupweight5, shortOFF. Sourcec6d9755, completed
+  11:10:21.393890UTC, hashfa9db0011bb18de9da0c7ad9eb1c59c568df1975f789bef6eb790bd417c3701d.
+  Mean450.823ms,max1.054859191s,RSS11879858176bytes,1.4979CPUcores of4reserved.
+  Shared5s, notstrict1s certified. Gap2412tasks;1.58285%growth needed.
+- V78 all12full cases pass60kentries/four exact nativeOFFcontrols. No bands:
+  OFF149915/149871,matching1=150510/150406,matching5=150565/150526. Bands:
+  OFF151443/151630,matching1=151901/152066,matching5=152383/152048. Weight5band
+  increment+482/-18 overmatching1; keepseed2lossvisible. Both matchedweights
+  beatunmatchedonbothseeds. Results/native-assignment-full-v78 (best-record,
+  summary,comparison,normalizedassignmentcounteraudit). Priorbest151630V73.
 - V73 all eight full cases pass40kentries/four exact controls. Native without bands
   149915/149871; with bands151443/151630. Band gains over remaining controls+4021/
   +4128, tails+937/+1035, mean+2.7631%. Results/native-metric-full-v73, exactsource06a8258.
@@ -27,13 +33,20 @@ strict1s checks remain separate. Preserve the other fork's random05 changes/jobs
 
 ## Active experiment and completed implementation
 
-- V78 native assignment full8899514/analysis8899515 onresearch57 from10:31:46UTC:
-  two native fields x {matchingOFF/weight1, matching64/weight1, matching64/weight5}
-  xseeds0/2,12parallelcases/48boundphysicalcores. Short preference OFF.
-  Raw runs/cgar-native-assignment-full-v78-20260920, results/native-assignment-full-v78.
-  Sourcec6d9755, binaryacfb4f113824faca286e864b524ac26b682c79009dd16554fcfa51b06d3d449a.
-  Four exactnativeOFF controls must reproduceV73. Frozenanalyzer flags--matching-study
-  --pickup-study. Startup6cases allvalid/fourpriorprefixesexact; no fullqualityclaimyet.
+- V80 full short comparison8899568/analysis8899569 RUNNING from11:12UTC: nativebands
+  +matching64, pickupweights1/5 xshortOFF/ON xseeds0/2,8parallelcases/32boundcores.
+  Rawruns/cgar-native-short-full-v80-20260920; results/native-short-full-v80.
+  UsesOPTIMIZEDV81source85faca5 (despiteexperimentlabelV80), binary
+  29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
+  Allfourfaircontrols must reproduceV78exactly. Fullanalyzer--short-study frozen
+  and bindsV78reference; expectationsweight1=151901/152066,weight5=152383/152048.
+  Initialreferencefilelookup transientlyfailed onsubmitnode but immutablefull
+  verifierhadalreadycompleted; followupreadchecksall12/fourcontrols before
+  freezinganalysis. No benchmark/source/resultwaschanged. Alwaysuse set-e for
+  dependent shellchecks and explicitworkdir; NFSvisibilitymaylag.
+- V82 savedV78motionaudit8899570:12fullinputs/600Mrobotsteps, no policychange.
+  Rawruns/cgar-native-assignment-motion-audit-v82-20260920; expected archive
+  results/native-assignment-motion-audit-v82. Waitforverificationbeforeclaims.
 - V75 source1c936a0 native matching capability20(default16), installed-fieldFNV,
   fullserial/paralleloracles, macroop0, scaleinvariance, closed-loop repeated service
   tests allpass. Native/genericstartupcontrols exact. Build-provenance/v75.
@@ -77,13 +90,19 @@ strict1s checks remain separate. Preserve the other fork's random05 changes/jobs
 
 1. V80screensallpass. V81kernel85faca5/fullregressionspass, binary29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
    Native2008899550/51completeallfourhashesexactV80includingnewshortONprofiles.
-   Generic8008899552/53pending; ifexact, fullshortmayuseV81withpredeclaredsourceupdate.
+   Generic8008899552/53COMPLETEexact18958/c0f1...; fullshortwilluseV81.
+   SHORT.mdsourceupdatepredeclaredbeforefullsubmission; exactV78fullcontrolsrequired.
    BackwardkernelCPUimproves9.6-15.8%weighted; unchangedBFS+0.8%; notwholeentryspeedup.
    Bench8899542completeafterqueuedhost-selectorcorrection. Results/turn-ring-kernel-v81.
-2. VerifyV78full afterfinish(~11:10UTCestimate, notpromised). Updateanyfullnewbestonly
+2. V78verified,152383bestrecordupdated. VerifyV80fullshortafterfinish(~11:50UTCestimate). Updateanyfullnewbestonly
    aftercompletevalidity/source/resource/work/trajectorychecks. Recordfailures too.
-3. Ifgapremains, fullshortOFF/ON xweights1/5 atopnativebands+matching64, seeds0/2,
-   afterprefixvalidity andV78controlavailable. All32boundcores/nooverlapwithours.
+3. V80fullshortalreadyrunning. ConditionalnextFable38: budget-inclusive matching
+   shadowifshortshrinkscompletedchainsbutleavesemptydeficit. No shadowimplemented.
+   Staticnativechainpriceaudit rankssecond;8Mworknotyetjustified. Anotherpossible
+   explicittrickisconfiguredknown-horizonadmission,NOTimplemented/tested. SharedEnv
+   hasno endtime; archive simulation_time.json says5000; initialtasksrevealedAFTER
+   preprocessing, so cannotprecomputeinitialtask-specificassignments there. No
+   futurehidden-task access. Noneofthesehypotheses ispromoted.
 4. Commit/push source/evidence/history usingexplicitpaths; neverstageotherforkwork.
 5. Goalstillactive; donotmarkcompletebelow154795. Sixseedgenericpromotionisseparate.
 

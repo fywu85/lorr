@@ -45,3 +45,13 @@ improve9.6–15.8% in paired tests; no whole-entry or throughput claim. Four nat
 shortOFF/ON trajectories reproduce V80 exactly; generic isolation is pending.
 [Kernel evidence](results/turn-ring-kernel-v81/summary.md),
 [native equivalence](results/turn-ring-native-screen-v81/summary.md).
+
+V78 full native assignment is verified:12validfull cases/60kcomplete entries/four
+exact unmatched controls. New overall TRICK best152383, seed0 nativebands +remaining
+potential +matching64 +pickupweight5, shortOFF. Sourcec6d9755; completed11:10:21.393890UTC.
+Gap2412 (1.58285%growth needed). Band matchedweight1:151901/152066; weight5:152383/152048.
+Weight5's seed2increment-18 is retained; both profiles beat unmatched controls.
+Shared5s development, bestmean450.823ms/max1.054859s/RSS11.880GB; no strict1s claim.
+[Evidence](results/native-assignment-full-v78/summary.md). Eight fullshort cases
+8899568/analysis8899569 now use exact-equivalentV81source85faca5 on32boundcores;
+results/native-short-full-v80. SavedV78motionreplay8899570 runs independently.

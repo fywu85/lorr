@@ -31,3 +31,13 @@ counts, final1000steps, outstanding-task ages, empty travel and loaded motion.
 Record every result including losses/failures. No partial quality scores.
 Run analyzer with `--short-study`; its reference and helper sources are frozen
 before submission. Strict one-second certification remains deferred.
+
+Before full submission, V81 source85faca5570ddb0f78944e741f11eb30e2362b5d2 is
+selected for the identical policy after its general backward-Dial indexing
+optimization. All four native action/schedule prefixes exactly reproduce V80,
+including short-ON cases; the generic800-step control is also exact. Full
+regressions and paired exact distance/deadline-work checks pass. Full controls
+must still reproduce V78 exactly. Frozen full binary:
+29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
+This source substitution changes implementation only; the four-arm policy design
+and all prescribed work remain fixed. No full-step speedup is assumed.
