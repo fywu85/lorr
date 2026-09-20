@@ -502,3 +502,30 @@ trick design, notesforwarduint8cost<=16,turn/base<=16,Dialbuckets,auto16/32bitca
 NMS20/200forward1turn vs CGARpaidforwardextra/scale4/op*4,staticfieldpublication
 andpickupcouplingconfounds. No trickimplemented. Awaitreview,archiveassessment.
 Nextturn24/followup-23.md onlyafterturn23complete. No otherliveCLI.
+
+
+## 2026-09-20: explicit trick activation and first isolated candidate
+
+User requires `--trick <map-instance-name>` as the only trick activation path.
+Implemented experimental `--trick WAREHOUSE`: native NMS lane directions at
+CGAR forward4/16 and turn4; exact occupancy/dimensions/name checks, no env-only
+activation, no learned publications over the static field. Generic policy remains
+selected when no flag is passed. Separate TRICK metadata/results/profile labels.
+This is not a new score. Full generic snapshot jobs8899258/8899259 still pending.
+
+Fable turn23 completed02:24:34UTC, persistent session unchanged; archived its
+visible answer and local assessment. Native field extraction8899262 rejected
+traversable S/E cells in our harness; corrected8899263 passes all280,000cells/directions
+and orientation checks. Both provenance/failure records are retained under
+tricks/nms_warehouse. Build/regressions8899264 running from frozenV53 sources.
+After build: CLI rejection fixtures, generic/trick paired200-step startup screens,
+then full runs only for valid candidates. Generic full trajectories must remain
+identical; no promotion from a short screen. First trick changes the metric,
+cold-start/cache lifecycle and pickup quotes together; separation arms later.
+
+V53 build8899264 passes all regressions; five CLI failure checks pass. Generic
+200-step8899265 completes seeds0/2 at2888/2857 with all400entries<1s; analysis8899267
+is queued (confirm actual submission id). TRICK8899266 fails both at entry0
+in pickup_flow_candidates at1000.201/1000.189ms; no score. Fable turn24 reviewing
+minimal fixed startup change via persistent CLI, raw runs/fable-cgar-session/turn24,
+PTY33150. Next V54 keeps generic initial dispatch, then static pickup from tick1.

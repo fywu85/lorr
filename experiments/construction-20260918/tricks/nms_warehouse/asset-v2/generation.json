@@ -1,0 +1,40 @@
+{
+  "completed_utc": "2026-09-20T02:38:07.163197+00:00",
+  "track": "TRICK",
+  "activation": "--trick WAREHOUSE",
+  "native_source_unchanged": true,
+  "compiler_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/Solution",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/inc",
+    "-isystem",
+    "/shared/share_mala/fw2449/lorr2024/env/include",
+    "/shared/share_mala/fw2449/lorr2024/experiments/construction-20260918/tricks/nms_warehouse/dump_native.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/graph_guidance.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/map.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/info.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Basic/position.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/nms-warehouse-lane-asset-v53-r2-20260920/dump_native"
+  ],
+  "native_binary_sha256": "2cd46c8e1c335b371a0b28f6165fb969423f8ac1693c189d78840a9ffcf3556b",
+  "native_dump_sha256": "b7e616b57154587607814e39dfa1ae374537ad1505417b0ab2396f4ec8f0272b",
+  "generated_header_sha256": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+  "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+  "rows": 140,
+  "cols": 500,
+  "free_cells": 38586,
+  "direction_offsets": [
+    1,
+    500,
+    -1,
+    -500
+  ],
+  "adaptation": "20/21 -> 4; 200/201 -> 16; walls -> unused4; turns remain CGAR4; coordinate bands omitted"
+}

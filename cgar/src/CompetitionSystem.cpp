@@ -241,6 +241,8 @@ void BaseSystem::saveResults(const string &fileName, int screen) const
     // js["AllValid"] = feasible;
 
     js["teamSize"] = num_of_agents;
+    js["experimentTrack"] = env->trick_instance.empty() ? "GENERIC" : "TRICK";
+    js["trick"] = env->trick_instance;
 
     js["numTaskFinished"] = task_manager.num_of_task_finish;
     int makespan = 0;

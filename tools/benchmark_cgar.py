@@ -41,6 +41,7 @@ def main():
     parser.add_argument("--steps", type=int, help="Override the horizon for each selected instance")
     parser.add_argument("--horizon-profile", type=Path, help="JSON mapping of instance names to shorter screening horizons")
     parser.add_argument("--plan-time-limit-ms", type=int, default=1000, help="Decision deadline; 1000 is the competition setting")
+    parser.add_argument("--trick", choices=["WAREHOUSE"], help="Explicit map-specific policy; absent means generic")
     parser.add_argument("--seed", type=int, help="Set CGAR_SEED explicitly")
     parser.add_argument("--log-detail-level", type=int, choices=[1, 2, 3], default=1, help="Simulator verbosity; 2 retains warnings and failures")
     parser.add_argument("--cpu-list", help="Distinct allowed logical CPUs, grouped per concurrent run")
@@ -70,6 +71,8 @@ def main():
     names = args.instances or list(times)
     if len(set(names)) != len(names) or not set(names).issubset(times):
         parser.error("instances must be distinct MR24 names")
+    if args.trick and names != [args.trick]:
+        parser.error("--trick requires exactly the named instance")
     if args.horizon_profile:
         profile = json.loads(args.horizon_profile.read_text())
         if not isinstance(profile, dict) or not set(names).issubset(profile) or any(type(v) is not int or v < 1 for v in profile.values()):
@@ -82,15 +85,18 @@ def main():
     binary = out / "lifelong"
     shutil.copy2(args.binary.resolve(), binary)
     instances = {p.stem: p.resolve() for p in (ROOT / "mr24").glob("*/*.json")}
-    sources = ([ROOT / "cgar/CMakeLists.txt", ROOT / "cgar/inc/Entry.h", ROOT / "cgar/inc/CompetitionSystem.h",
+    sources = ([ROOT / "cgar/src/driver.cpp", ROOT / "cgar/inc/SharedEnv.h", ROOT / "cgar/CMakeLists.txt", ROOT / "cgar/inc/Entry.h", ROOT / "cgar/inc/CompetitionSystem.h",
                 ROOT / "cgar/src/CompetitionSystem.cpp", ROOT / "cgar/cgar_planner/cgar.cpp"] +
                sorted((ROOT / "cgar/cgar_planner").glob("*.hpp")) +
+               sorted((ROOT / "cgar/tricks").glob("*.hpp")) +
                [ROOT / "cgar/src/MAPFPlanner.cpp", ROOT / "cgar/src/TaskScheduler.cpp", ROOT / "cgar/src/Entry.cpp"])
     provenance = json.loads(args.source_manifest.read_text()) if args.source_manifest else None
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
     metadata = {"started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "experiment_track": "TRICK" if args.trick else "GENERIC",
+                "trick": args.trick, "trick_argv": ["--trick", args.trick] if args.trick else [],
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
                 "log_detail_level": args.log_detail_level,
                 "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES,
@@ -127,6 +133,8 @@ def main():
         steps = times[name]
         output = out / (name + ".json")
         command = [str(binary), "-i", str(instances[name]), "-o", str(output), "-s", str(steps), "-t", str(args.plan_time_limit_ms), "-p", "30000", "-d", str(args.log_detail_level)]
+        if args.trick:
+            command += ["--trick", args.trick]
         cpu = available_cpus.get() if cpus else None
         if cpu is not None:
             command = ["taskset", "-c", ",".join(map(str, cpu)) if isinstance(cpu, list) else str(cpu)] + command

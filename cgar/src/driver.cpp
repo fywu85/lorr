@@ -1,5 +1,6 @@
 #include "CompetitionSystem.h"
 #include "Evaluation.h"
+#include "tricks.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
@@ -47,6 +48,7 @@ int main(int argc, char **argv)
         ("output,o", po::value<std::string>()->default_value("./output.json"), "output results from the evaluation into a JSON formated file. If no file specified, the default name is 'output.json'")
         ("outputScreen,c", po::value<int>()->default_value(1), "the level of details in the output file, 1--showing all the output, 2--ignore the events and tasks, 3--ignore the events, tasks, errors, planner times, starts and paths")
         ("evaluationMode,m", po::value<bool>()->default_value(false), "evaluate an existing output file")
+        ("trick", po::value<std::string>(), "explicit map-specific policy; supported instance: WAREHOUSE")
         ("simulationTime,s", po::value<int>()->default_value(5000), "run simulation")
         ("fileStoragePath,f", po::value<std::string>()->default_value(""), "the large file storage path")
         ("planTimeLimit,t", po::value<int>()->default_value(1000), "the time limit for planner in milliseconds")
@@ -63,6 +65,20 @@ int main(int argc, char **argv)
     }
 
     po::notify(vm);
+    if (vm.count("trick")) {
+        try {
+            cgar::tricks::validate_name(vm["trick"].as<std::string>());
+#if PYTHON
+            throw std::invalid_argument("--trick requires the native CGAR backend");
+#endif
+            const char* backend = std::getenv("CGAR_PLANNER");
+            if (backend && std::string(backend) == "default")
+                throw std::invalid_argument("--trick requires the native CGAR backend");
+        } catch (const std::exception& error) {
+            std::cerr << "CGAR_TRICK_ERROR: " << error.what() << std::endl;
+            return 2;
+        }
+    }
 
     boost::filesystem::path p(vm["inputFile"].as<std::string>());
     boost::filesystem::path dir = p.parent_path();
@@ -116,6 +132,16 @@ int main(int argc, char **argv)
 
     auto map_path = read_param_json<std::string>(data, "mapFile");
     Grid grid(base_folder + map_path);
+    if (vm.count("trick")) {
+        const auto name = vm["trick"].as<std::string>();
+        try {
+            cgar::tricks::validate_map(name, grid.map, grid.rows, grid.cols);
+        } catch (const std::exception& error) {
+            std::cerr << "CGAR_TRICK_ERROR: " << error.what() << std::endl;
+            return 2;
+        }
+        planner->env->trick_instance = name;
+    }
 
     planner->env->map_name = map_path.substr(map_path.find_last_of("/") + 1);
 

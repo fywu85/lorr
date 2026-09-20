@@ -1,0 +1,41 @@
+{
+  "binary_sha256": "705dd879de067c7e043c71050082c94d9fa0a6c8f4297a19094bdd11db3e4baf",
+  "cases": [
+    {
+      "case": "unknown_name",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: unknown --trick instance: RANDOM-01; supported: WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "empty_name",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: unknown --trick instance: ; supported: WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "wrong_dimensions",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick WAREHOUSE requires the exact MR24 warehouse layout (140x500)",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "changed_obstacle",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick WAREHOUSE layout mismatch at cell 0",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "wrong_backend",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick requires the native CGAR backend",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    }
+  ],
+  "scope": "Negative CLI checks only; positive and no-flag behavior require the GRID simulations."
+}

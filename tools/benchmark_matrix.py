@@ -45,6 +45,8 @@ def execute(out):
                        '--seed', str(case['seed']), '--plan-time-limit-ms', str(spec['time_limit_ms']),
                        '--log-detail-level', str(spec.get('log_detail_level', 1)),
                        '--instances'] + spec['instances']
+            if spec.get('trick'):
+                command += ['--trick', spec['trick']]
             if spec['horizons']:
                 command += ['--horizon-profile', str(out / 'horizons.json')]
             with (out / (case['name'] + '.log')).open('w') as log:
@@ -67,6 +69,7 @@ def execute(out):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--trick', choices=['WAREHOUSE'], help='Explicit map-specific policy for trick_ profiles only')
     parser.add_argument('--variants', type=Path, help='JSON object mapping variant names to CGAR environment overrides')
     parser.add_argument('--binary', type=Path, default=ROOT / 'cgar/build/lifelong')
     parser.add_argument('--source-manifest', type=Path)
@@ -105,6 +108,10 @@ def main():
     instances = args.instances or list(known)
     if len(set(instances)) != len(instances) or not set(instances).issubset(known):
         parser.error('instances must be distinct MR24 names')
+    if args.trick and (instances != [args.trick] or any(not name.startswith('trick_') for name in variants)):
+        parser.error('--trick requires the named instance and trick_ variant labels')
+    if not args.trick and any(name.startswith('trick_') for name in variants):
+        parser.error('trick_ variants require --trick <instance>')
     cases = [{'name': '{}-s{}-r{}'.format(name, seed, repeat), 'variant': name, 'seed': seed,
               'repeat': repeat, 'environment': env} for repeat in range(args.repeat) for seed in args.seeds for name, env in variants.items()]
     if not cases:
@@ -125,7 +132,7 @@ def main():
     write(out / 'build.json', build)
     if horizons:
         write(out / 'horizons.json', horizons)
-    spec = {'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
+    spec = {'trick': args.trick, 'experiment_track': 'TRICK' if args.trick else 'GENERIC', 'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
             'parallel_suites': min(args.parallel_suites, len(cases)), 'jobs_per_suite': min(args.jobs_per_suite, len(instances)),
             'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'runtime': args.runtime,
             'hosts': args.hosts, 'expected_cpu_model': args.expected_cpu_model, 'hold_job': args.hold_job}

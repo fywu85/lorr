@@ -31,6 +31,7 @@
 #include "temporal_transactions.hpp"
 #include "temporal_warm_start.hpp"
 #include "flow_guidance.hpp"
+#include "tricks.hpp"
 #include "guide_routes.hpp"
 
 #include <chrono>
@@ -360,6 +361,7 @@ private:
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
     FlowGuidance flow_guidance_;
+    bool static_trick_metric_ = false;
     int flow_strength_ = 0, flow_cost_scale_ = 1;
     GuideRoutes guide_routes_;
     GuideRouteOptions guide_options_;

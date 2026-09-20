@@ -650,6 +650,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     env_ = env;
     if (initialized_) return;  // the scheduler and the planner both call this
     n_ = env->num_of_agents;
+    static_trick_metric_ = !env->trick_instance.empty();
+    if (static_trick_metric_)
+        tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
     stall_limit_ = env_int("CGAR_STALL", 4);
     commit_limit_ = env_int("CGAR_COMMIT_AGE", 3);
     plan_tables_ = env_int("CGAR_PLAN_TABLES", 256);
@@ -702,7 +705,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     flow_cost_scale_ = env_int("CGAR_FLOW_COST_SCALE", 1);
     if (flow_cost_scale_ != 1 && flow_cost_scale_ != 2 && flow_cost_scale_ != 4 && flow_cost_scale_ != 8)
         throw std::invalid_argument("flow cost scale must be one of 1,2,4,8");
-    if (flow_cost_scale_ != 1 && (!flow_strength_ || !temporal_ || turn_cost_ != 1))
+    if (flow_cost_scale_ != 1 && ((!flow_strength_ && !static_trick_metric_) || !temporal_ || turn_cost_ != 1))
         throw std::invalid_argument("scaled flow costs require temporal planning, enabled flow and unit physical turns");
     // A fractional surcharge is expressed in the existing scaled cost units.
     // Keep the physical slot and forward/base costs unchanged, and use this
@@ -785,7 +788,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const int pickup_flow = env_int("CGAR_PICKUP_FLOW", 0);
     pickup_flow_nodes_ = env_int("CGAR_PICKUP_FLOW_NODES", 8192);
     if (pickup_flow < 0 || pickup_flow > 1 || pickup_flow_nodes_ < 1 || pickup_flow_nodes_ > 65536 ||
-        (pickup_flow && !flow_strength_))
+        (pickup_flow && !flow_strength_ && !static_trick_metric_))
         throw std::invalid_argument("pickup flow requires learned flow, a boolean setting and 1-65536 queue pops");
     pickup_flow_ = pickup_flow != 0;
     pickup_full_robots_ = env_int("CGAR_PICKUP_FULL_ROBOTS", 0);
@@ -825,6 +828,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const size_t table_mb = static_cast<size_t>(env_int("CGAR_TABLE_MB", 2048));
     rng_.seed(static_cast<unsigned>(env_int("CGAR_SEED", 0)));
 
+    if (static_trick_metric_ && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ ||
+        flow_cost_scale_ != 4 || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
+        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, cost scale4, unit physical turns, no turn surcharge or cache-only refresh");
+
     const auto t0 = Clock::now();
     if (pibt_reference_ && !enable_locks_) {
         // The reference domain includes every traversable component. No capacity
@@ -848,7 +855,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
         turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
-        if (flow_strength_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
+        if (static_trick_metric_) {
+            turn_oracle_.set_forward_costs(tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
+            std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
+                env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
+        }
+        if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
             env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0), env_int("CGAR_FLOW_REFRESH_INTERVAL", 0), flow_cost_scale_, cache_only_refresh != 0);
     }
@@ -1514,7 +1526,7 @@ void Cgar::plan(SharedEnvironment* env, Clock::time_point deadline, std::vector<
     turn_table_budget_ = turn_build_limit_;
     if (orientation_guidance_) turn_oracle_.trim();
     sync_agents();
-    if (flow_strength_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
+    if (flow_strength_ && !static_trick_metric_ && flow_guidance_.observe(env_->curr_timestep, loc_)) {
         const bool changed = turn_oracle_.set_forward_costs(flow_guidance_.costs());
         const bool cache_only = flow_guidance_.cache_only_refresh() && flow_guidance_.publications() > 1;
         if (cache_only && !changed) turn_oracle_.clear_tables();
@@ -2150,7 +2162,9 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     // Scheduling precedes the current plan's observation/publication. Use the
     // last complete published metric without changing that lifecycle. Before
     // its first publication the original scheduler is preserved exactly.
-    const bool pickup_metric = pickup_flow_ && flow_guidance_.publications() > 0;
+    // An explicitly requested static trick is complete at initialization.
+    // No map identity or environment variable can activate this branch.
+    const bool pickup_metric = pickup_flow_ && (static_trick_metric_ || flow_guidance_.publications() > 0);
     const int pickup_scale = pickup_metric ? flow_cost_scale_ : 1;
     if (pickup_flow_) {
         stats_.pickup_flow_snapshot_publication = flow_guidance_.publications();

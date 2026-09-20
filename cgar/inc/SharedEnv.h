@@ -17,6 +17,8 @@ public:
     int rows;
     int cols;
     std::string map_name;
+    // Empty unless the simulator explicitly receives --trick <instance>.
+    std::string trick_instance;
     std::vector<int> map;
     std::string file_storage_path;
 

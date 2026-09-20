@@ -17,7 +17,8 @@ For a map-specific implementation or experiment:
   behavior. No implicit detection, default activation, or environment-only
   activation. Use a separate `trick_...` benchmark profile, record that exact
   flag in commands/logs, and identify the generic baseline and source commit.
-  This is the required interface for future tricks; none is implemented yet.
+  The first experimental implementation is [NMS-derived warehouse lane directions](tricks/nms_warehouse/README.md).
+  It is undergoing validation and has no promoted throughput result.
 - State its map/layout/data assumptions and origin: for example NMS's warehouse
   lane mask and coordinate bands, or KK's supplied warehouse edge-weight file.
 - Compare full runs against that baseline; report all tested seeds, failures,
