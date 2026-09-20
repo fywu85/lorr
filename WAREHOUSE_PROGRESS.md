@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 19:25 UTC.
+Updated: 2026-09-20 20:01 UTC.
 
 **Best verified Warehouse run: 155,120 tasks (TRICK, seed 0)**, 325 above the NMS target of 154,795. The same profile scores **155,120 / 154,999 / 155,056 / 155,020** on seeds 0–3, mean **155,048.75**, with all four above target. Full 5,000 steps / 10,000 robots, zero errors or timeouts. Native Warehouse bands, raw remaining potential, matching64, **pickup weight 8**, configured horizon 5,000 and the prospective **p90** completion margin require `--trick WAREHOUSE`. Ordinary fairness stays enabled and short preference stays OFF. [Full result and configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
 
@@ -12,7 +12,9 @@ The next motion/compute comparisons are complete: [neutral-tail scoring](experim
 
 The [weight-6/8/10 refinement](experiments/construction-20260918/results/p90-pickup-refine-v106/summary.md) is complete: weights6 and10 lose both full seeds (-66/-272 and -127/-287), so retain8. The [full fresh-pickup audit](experiments/construction-20260918/results/fresh-pickup-native-full-v105/summary.md) reproduces both full trajectories and real work counters exactly; its qualifying conditional cost residual is modest and concentrated near the cutoff. The [initial-dispatch probe](experiments/construction-20260918/results/bootstrap-pickup-audit-v107/summary.md) also exposes limited physical-distance reduction within its tested groups. No new record from these experiments.
 
-A general [five-step unopened-matching option](experiments/construction-20260918/match_cadence/README.md) now passes complete regressions and exact native/generic compatibility checks. Its full paired comparison against the unchanged ten-step reference is running, with the same protections, one-retarget cap and20-step cooldown. More rematching is not yet evidence of higher throughput.
+The [first full cadence comparison](experiments/construction-20260918/results/match-cadence-native-full-v108/summary.md) is verified: five-step matching gives **155,109 /155,086**, changes **-11 /+30**, with no new record. Empty work decreases but unfinished-task work rises; more matching gives only a small mixed net effect. Matched seeds1/3 are running before changing the recommended ten-step profile. All existing protections remain.
+
+A [new read-only cutoff audit](experiments/construction-20260918/results/rematch-cutoff-audit-v109/summary.md) finds47 /63 visible retargets that change a fitting physical distance bound into an impossible one, alongside35 /44 rescues. Those are conditional bounds, not recoverable completion counts. An optional whole-cycle tier guard passes complete regressions and active/default/generic screens; its separate full paired comparison is running. It requires explicit `--trick WAREHOUSE` and preserves ordinary fairness.
 
 The [p90 four-seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md) for the preceding pickup-weight-5 profile gives **155,057 / 154,846 / 154,727 / 154,912**, mean **154,885.5** (90.5 above NMS), with three of four seeds above target. Every first-half task finishes in all four runs. This confirms the preceding profile on the same fixed input; it is not a new single-run best. The [p95 / p99 refinement](experiments/construction-20260918/results/horizon-percentile-refine-v98/summary.md) loses on both seeds at both values, so p90 is retained.
 
