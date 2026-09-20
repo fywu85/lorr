@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 16:50 UTC. The user requested continued throughput improvement. Preserve the CGAR framework, ordinary fairness and the separate generic reference. No numerical ceiling has been established. The earlier goal's completion is historical, not an instruction to stop.
+Updated 2026-09-20 17:04 UTC. The user requested continued throughput improvement. Preserve the CGAR framework, ordinary fairness and the separate generic reference. No numerical ceiling has been established. The earlier goal's completion is historical, not an instruction to stop.
 
 ## Verified best
 
@@ -10,8 +10,6 @@ Exact record: `results/horizon-percentile-full-v96/best-record.json`. All first-
 
 ## Running full comparisons; do not resubmit
 
-- **V98 p90 / p95 / p99, seeds 0 / 2:** benchmark 8900274, verifier 8900275, outcomes 8900276. Raw `runs/cgar-horizon-percentile-refine-v98-20260920`; results `results/horizon-percentile-refine-v98`. Research44, 24 physical cores. Require exact V96 p90 control trajectories. Started 16:22 UTC; last observed around step 2,400 at 16:42.
-- **V98 p90 seeds 1 / 3:** benchmark 8900277, verifier 8900278, outcomes 8900279. Raw `runs/cgar-horizon-percentile-seeds13-v98-20260920`; corresponding results. Research44, eight other physical cores; allocation is disjoint from refinement. These are solver RNG seeds on the same fixed input. Started 16:22 UTC.
 - **V99 p90 + pickup weight 5 versus 8, seeds 0 / 2:** benchmark 8900293, verifier 8900295, outcomes 8900296. Raw `runs/cgar-p90-pickup-combined-v99-20260920`; results `results/p90-pickup-combined-v99`. Research50, 16 physical cores, four per run. Started 16:37:56 UTC. Require exact V96 p90 controls. Profiles in `native_pickup/p90-combined-variants.json`.
 
 - **V100 prescribed global work split across 1 / 2 / 4 workers, seeds 0 / 2:** benchmark 8900316, verifier 8900317, outcomes 8900318. Raw `runs/cgar-native-portfolio-full-v100-20260920`; results `results/native-portfolio-full-v100`. Research52, 24 physical cores, four per run; started 16:49:36 UTC. All active Warehouse allocations are disjoint. Aggregate limits stay 4M candidates and 1M repair attempts, but executed work can differ. Profiles and rationale: `native_portfolio/README.md`. Exact V96 p90 / weight-5 control required.
@@ -20,6 +18,7 @@ All use the same frozen V96 binary and complete prescribed work. No production s
 
 ## Newly completed evidence
 
+- **V98 percentile refinement and confirmation:** all eight full cases and 400 million robot steps pass. P95 loses 21 / 12, p99 loses 201 / 235; exact p90 controls. Keep p90. Seeds 1 / 3 give 154,846 / 154,912; four p90 seeds mean **154,885.5**, three above NMS. Every first-half task finishes. Sources, binary and fairness in `results/horizon-percentile-four-seeds-v98.json`; summaries in `horizon-percentile-refine-v98` and `horizon-percentile-seeds13-v98`. No new single-run best.
 - **V97 pickup weights 5 / 8 / 12:** all six full cases, exact controls and 300-million-step accounting pass (8900240 / 8900241 / 8900263). Weight 8 gives **154,929 / 154,965**, gains **40 / 409**; mean 154,947 and both seeds exceed NMS. This uses the old mean-margin profile, so it does not replace the 155,057 single-run best. Weight 12 gives 154,820 / 154,844 (-69 / +288). Weight 8 reduces empty work 27,184 / 21,623, age p90 11 / 14, and all first-half tasks finish. See `results/native-pickup-full-v97/summary.md`.
 - **V99 p90 opportunity audit:** 8900292 complete. Only 9 / 4 conservative physical alternative witnesses; feasible unfinished admissions from 4,000 fall to 791 / 788 from 1,053 / 1,065 under the mean. Not an exhaustive count or upper bound. Its mean-margin subdiagnostic is an offline comparison, not the active p90 rule. See `results/p90-opportunity-audit-v99/summary.md`.
 - **V95 native work:** complete exact controls 154,889 / 154,556; 8M gives 154,870 / 154,762 (-19 / +206), four rounds 154,686 / 154,576 (-203 / +20). Keep 4M / two rounds. The 8M arm often hits the unchanged one-million repair-attempt ceiling; do not claim twice the executed work.
@@ -27,8 +26,8 @@ All use the same frozen V96 binary and complete prescribed work. No production s
 
 ## Next actions
 
-1. V97 results, V99 audit and combination profiles are committed and pushed as `8de24f5`. Commit the added V100 configuration and validator support; preserve concurrent random05 changes and jobs.
-2. Collect both V98 comparisons, the V99 combination and V100 work split through their held validators and independent audits. Record every arm and regression. Update the best table immediately for a verified increasing full-run record, with exact source, timestamp, environment and hashes.
+1. V97 results, V99 audit and combination profiles are committed and pushed as `8de24f5`. V100 configuration and validator support are committed and pushed as `1f71c66`; commit the completed V98 evidence; preserve concurrent random05 changes and jobs.
+2. Collect the V99 combination and V100 work split through their held validators and independent audits. Record every arm and regression. Update the best table immediately for a verified increasing full-run record, with exact source, timestamp, environment and hashes.
 3. If refinement or the combination improves, choose the next controlled comparison from that evidence. Do not assume percentile and pickup effects add. No new production feature is currently required.
 
 Fable turn 45 failed due exhausted credits in the same persistent Claude CLI session; no new review was received. Next turn would be 46 only after quota is available. Workspace shell calls currently require escalation because default bwrap fails. Stage and commit explicit Warehouse paths only; preserve the independent random05 fork. Historical notes below retain their original context.

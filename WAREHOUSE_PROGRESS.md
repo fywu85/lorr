@@ -1,10 +1,12 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 16:48 UTC.
+Updated: 2026-09-20 17:04 UTC.
 
 **Best verified Warehouse run:155,057tasks (TRICK, seed0)**,262above the NMS target154,795. Its matched seed2 reaches154,727; mean154,892 is97above target. Full5,000steps/10,000robots, zero errors or timeouts. Native Warehouse bands, raw remaining potential, matching64, pickupweight5, configuredH=5000 and the prospective **p90** completion margin require `--trick WAREHOUSE`. Ordinary fairness stays enabled and short preference stays OFF. [Full result and configuration](experiments/construction-20260918/results/horizon-percentile-full-v96/summary.md).
 
 The best run averages450.624ms per entry and1.502CPU cores out of4reserved, peaks at11.925GB RSS, and finishes in38.56minutes. Maximum entry1.024536s on a shared host with a5s development deadline; strict1s certification remains separate. All first-half tasks complete and oldest never-assigned ages are190/185steps. Both gains occur in the final1000steps; this is a cutoff-aware improvement, with no formal starvation-freedom claim.
+
+The [p90 four-seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md) now gives **155,057 / 154,846 / 154,727 / 154,912**, mean **154,885.5** (90.5 above NMS), with three of four seeds above target. Every first-half task finishes in all four runs. This confirms the existing profile on the same fixed input; it is not a new single-run best. The [p95 / p99 refinement](experiments/construction-20260918/results/horizon-percentile-refine-v98/summary.md) loses on both seeds at both values, so p90 is retained.
 
 The unchanged mean-margin configuration now also completes **154,713 /154,776** on solver seeds1/3. Both full runs pass, with no initially revealed task left never assigned and every task revealed by2500 completed by5000. Oldest never-assigned ages are190/185. These are additional solver seeds on the same fixed input, not new generated instances. The later V93 implementation is used here; full same-seed controls now exactly reproduce the original V92 trajectories. [Four-seed same-binary evidence](experiments/construction-20260918/results/native-frontier-four-seeds-v95.json). [Seed confirmation and fairness](experiments/construction-20260918/results/native-frontier-seeds13-v95/summary.md).
 

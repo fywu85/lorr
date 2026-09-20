@@ -12,7 +12,8 @@ adds temporal planning, observed-flow guidance, complete pickup fields, regional
 repair and bounded matching, reaching144,392.17over six solver seeds. The separate
 explicit Warehouse TRICK now reaches155,057tasks, above the NMS target154,795.
 It uses native Warehouse guidance and a configured horizon with a prospective
-p90 completion margin; ordinary fairness stays enabled.
+p90 completion margin; ordinary fairness stays enabled. Four solver seeds on the same input average 154,885.5, with all first-half tasks completed.
+[Four-seed confirmation](results/horizon-percentile-seeds13-v98/summary.md).
 [Current full result](results/horizon-percentile-full-v96/summary.md) and the
 [root history](../../WAREHOUSE_PROGRESS.md) supersede historical probe summaries.
 Current development allows shared hosts and5s complete-entry deadlines while

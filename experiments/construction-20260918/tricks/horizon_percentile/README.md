@@ -49,3 +49,5 @@ on seeds0/2, with two additional p90 seeds1/3. Same frozen V96 binary and source
 the verified p90 reference and checks its complete trajectories, avoiding
 an unnecessary repeat of the already reproduced mean baseline. No value above
 p90 is promoted before its full results and waiting tails are checked.
+
+V98 refinement is complete: p95 loses 21 / 12 and p99 loses 201 / 235 versus exact p90 controls. Keep p90. Additional seeds 1 / 3 finish 154,846 / 154,912; the four-seed mean is 154,885.5, with three seeds above NMS. These are solver seeds on one fixed input. [Refinement](../../results/horizon-percentile-refine-v98/summary.md) and [confirmation](../../results/horizon-percentile-seeds13-v98/summary.md).

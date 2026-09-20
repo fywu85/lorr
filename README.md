@@ -43,8 +43,9 @@ On20September2026, an explicitly enabled Warehouse TRICK reached **155,057tasks*
 against the user-specified NMS target154,795: a valid full5,000-step/10,000-robot
 run, seed0, source[27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
 It assumes the known5,000-step horizon and requires `--trick WAREHOUSE`.
-Seed2 scores154,727; their mean154,892 is97above target. Every task revealed in
-the first half finishes in both runs. The generic six-seed reference remains
+Four solver seeds score 155,057 / 154,846 / 154,727 / 154,912, with mean
+154,885.5 (90.5 above target). Every task revealed in the first half finishes
+in all four runs. These seeds use one fixed input. [Seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md). The generic six-seed reference remains
 144,392.17. These are shared-host5s development results, with a1.025s maximum
 entry for the best run; strict1s certification remains separate.
 [Verified result and exact configuration](experiments/construction-20260918/results/horizon-percentile-full-v96/summary.md).
