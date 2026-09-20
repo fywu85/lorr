@@ -3152,6 +3152,39 @@ void warehouse_trick_regression() {
   if(oracle.value(*table,cell,d)!=expected[cell*4+d])throw std::runtime_error("warehouse trick weighted distance mismatch");
   ++compared;
  }
+ // Independently replay macros under the actual static field. This checks
+ // the remaining-potential score against the priority-queue oracle above and
+ // witnesses changed rankings; an aggregate contraflow rate alone cannot prove
+ // whether the scoring switch is active.
+ long long static_scores=0,static_changed=0,static_neutral=0;
+ {
+  TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
+  for(int cell=goal;cell<int(e.map.size());cell+=97)if(!e.map[cell])for(int heading=0;heading<4;++heading){
+   int best[2]={-1,-1};int64_t minimum[2]={INT64_MAX,INT64_MAX};
+   for(int op=0;op<129;++op){const auto& path=geometry.paths(cell,heading)[op];if(!path.valid)continue;
+    const auto& actions=TemporalGeometry::operations()[op];int at=cell,h=heading,paid=0,last=-1;bool served=false;
+    for(int t=0;t<5;++t){int action=actions[t];
+     if(action==0){if(!served)paid+=costs[at*4+h]-4;at=nb(at,h,e.rows,e.cols);}
+     else if(action==1)h=(h+1)%4;else if(action==2)h=(h+3)%4;
+     if(at==goal){served=true;last=t;}
+    }
+    int tail=expected[at*4+h];
+    if(actions[4]==3){tail=std::min({tail,expected[at*4+(h+1)%4],expected[at*4+(h+3)%4]});
+     if(actions[3]==3)tail=std::min(tail,expected[at*4+(h+2)%4]);}
+    const int64_t pure=int64_t(last<0?tail:-last*4)*50-int64_t(op)*4;
+    for(int mode=0;mode<2;++mode){
+     const auto value=TemporalGeometry::flow_cost(path,op,cell,goal,4,
+      [&](int c,int d){return oracle.value(*table,c,d);},
+      [&](int from,int to){return costs[from*4+(to==from+1?0:to==from+e.cols?1:to==from-1?2:3)];},50,4,mode!=0);
+     if(value!=pure+(mode?0:int64_t(paid)*50))throw std::runtime_error("static lane score differs from independent replay");
+     if(value<minimum[mode]){minimum[mode]=value;best[mode]=op;}
+    }
+    static_neutral+=paid==0;++static_scores;
+   }
+   static_changed+=best[0]!=best[1];
+  }
+ }
+ if(!static_scores||!static_neutral||!static_changed)throw std::runtime_error("static lane scoring fixture was vacuous");
  // Short integrated lifecycle: the static field is available for scheduling
  // after the generic mass dispatch and cannot be overwritten by publications.
  int start=goal;
@@ -3199,6 +3232,22 @@ void warehouse_trick_regression() {
  try{Cgar invalid;invalid.initialize(&matching,30000);}catch(const std::invalid_argument&){rejected=true;}
  if(!rejected)throw std::runtime_error("generic matching selector bypassed explicit trick component");
  unsetenv("CGAR_REASSIGN_MATCH");unsetenv("CGAR_TRICK_UNOPENED_MATCH");
+ setenv("CGAR_TRICK_REMAINING_FLOW","1",1);
+ {
+  auto potential=matching;potential.curr_timestep=0;Cgar policy;policy.initialize(&potential,30000);
+  if(!options("WAREHOUSE").remaining_flow)throw std::runtime_error("explicit static remaining-flow selector lost");
+  policy.plan(&potential,30000,actions);
+  if(step(potential,potential.curr_states,actions).empty()||policy.stats().flow_publications)
+   throw std::runtime_error("static remaining-flow integration invalid or published learned costs");
+ }
+ for(const auto& bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_TRICK_LANES","0"},
+     {"CGAR_TRICK_SHORT_TASKS","1"},{"CGAR_TRICK_UNOPENED_MATCH","1"},{"CGAR_TEMPORAL_NEXT_ERRAND","1"},
+     {"CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE","1"},{"CGAR_TEMPORAL_BRANCH_WORK","1"}}){
+  setenv(bad.first,bad.second,1);rejected=false;
+  try{Cgar invalid;invalid.initialize(&flagged,30000);}catch(const std::invalid_argument&){rejected=true;}
+  unsetenv(bad.first);if(!rejected)throw std::runtime_error("static remaining-flow accepted incompatible component");
+ }
+ unsetenv("CGAR_TRICK_REMAINING_FLOW");
  // Distinguish age preference from the independent forced-oldest admission.
  // Both tasks have the same pickup, so only their chain and age differ.
  int far=goal;for(int cell=0;cell<int(e.map.size());++cell)
@@ -3224,17 +3273,18 @@ void warehouse_trick_regression() {
   if(schedule!=std::vector<int>{0}||test.task_pool.at(0).idx_next_loc!=1)
    throw std::runtime_error("short-task trick redirected a started long task");
  }
- for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_SHORT_TASKS","CGAR_TRICK_UNOPENED_MATCH"}){
-  unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");setenv(key,"0",1);rejected=false;
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_SHORT_TASKS","CGAR_TRICK_UNOPENED_MATCH","CGAR_TRICK_REMAINING_FLOW"}){
+  unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_REMAINING_FLOW");setenv(key,"0",1);rejected=false;
   try{options("");}catch(const std::invalid_argument&){rejected=true;}
   if(!rejected)throw std::runtime_error("trick component activated without CLI");
   for(const char* bad:{"", "-1", "2", "true"}){setenv(key,bad,1);rejected=false;
    try{options("WAREHOUSE");}catch(const std::invalid_argument&){rejected=true;}
    if(!rejected)throw std::runtime_error("malformed trick component accepted");}
  }
- unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_HRRN");
+ unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_REMAINING_FLOW");unsetenv("CGAR_HRRN");
  for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_PICKUP_FLOW","CGAR_FLOW_WARMUP","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
  std::cout<<"TRICK_SHORT_TASKS passed age_and_oldest_admission_independent=1 lanes_factorial_cases=8 started_long_task_protected=1 explicit_cli_required=1 invalid_components_rejected=1\n";
+ std::cout<<"TRICK_REMAINING_FLOW passed static_macro_scores="<<static_scores<<" changed_rankings="<<static_changed<<" neutral_macros="<<static_neutral<<" explicit_selector=1 incompatible_components_rejected=1\n";
  std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1 explicit_matching_component=1 static_matching_active=1\n";
 }
 

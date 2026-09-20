@@ -797,11 +797,13 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("temporal branching requires temporal planning, work in [0,2000000] and one or two owners");
     const int remaining_flow = env_int("CGAR_TEMPORAL_REMAINING_FLOW", 0);
     if (remaining_flow < 0 || remaining_flow > 1 ||
-        (remaining_flow && (!temporal_ || !orientation_guidance_ || !flow_strength_ ||
-         !env->trick_instance.empty() || guide_enabled_ || temporal_next_errand_ ||
-         temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)))
-        throw std::invalid_argument("remaining-flow scoring requires generic temporal learned flow; incompatible with trick, guide, next-errand, paid-progress audits or branching");
-    temporal_remaining_flow_ = remaining_flow != 0;
+        (remaining_flow && (!flow_strength_ || !env->trick_instance.empty())) ||
+        ((remaining_flow || trick_options.remaining_flow) &&
+         (!temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
+          temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)) ||
+        (trick_options.remaining_flow && (!static_trick_metric_ || short_task_trick_ || trick_options.matching)))
+        throw std::invalid_argument("remaining-flow scoring requires generic learned flow or explicit CGAR_TRICK_REMAINING_FLOW with static lanes only; incompatible with guide, next-errand, paid-progress audits or branching");
+    temporal_remaining_flow_ = remaining_flow != 0 || trick_options.remaining_flow;
     if (temporal_remaining_flow_)
         std::printf("[cgar-temporal-score] remaining_flow=1 paid_forward_extra=0\n");
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
@@ -952,6 +954,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
         if (static_trick_metric_) {
             turn_oracle_.set_forward_costs(tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
+            if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
+                throw std::logic_error("static remaining-flow score requires active weighted forward costs");
             std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
                 env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
         }
@@ -959,8 +963,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
-                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, hrrn_, !short_task_trick_);
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
+                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, hrrn_, !short_task_trick_);
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),

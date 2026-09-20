@@ -15,7 +15,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -23,8 +23,9 @@ inline Options options(const std::string& instance) {
     const char* lanes = std::getenv("CGAR_TRICK_LANES");
     const char* short_tasks = std::getenv("CGAR_TRICK_SHORT_TASKS");
     const char* matching = std::getenv("CGAR_TRICK_UNOPENED_MATCH");
+    const char* remaining_flow = std::getenv("CGAR_TRICK_REMAINING_FLOW");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching)
+        if (lanes || short_tasks || matching || remaining_flow)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick WAREHOUSE");
         return {};
     }
@@ -35,7 +36,7 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
-    return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false)};
+    return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false)};
 }
 
 inline void validate_map(const std::string& name, const std::vector<int>& map, int rows, int cols) {

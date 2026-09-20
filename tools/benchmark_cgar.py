@@ -49,9 +49,10 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
         if len(components) != 1:
             return False
         actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
-        # Legacy binaries predate the explicit matching component; absent means OFF.
-        if 'matching' in expected_components:
-            actual.setdefault('matching', '0')
+        # Legacy binaries predate these explicit components; absent means OFF.
+        for key in ('matching', 'remaining_flow'):
+            if key in expected_components:
+                actual.setdefault(key, '0')
         valid = valid and actual == dict(instance=instance, started_tasks='protected',
                                        **{k: str(v) for k, v in expected_components.items()})
     return valid
@@ -120,7 +121,7 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
-    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH']
+    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW']
     explicit_components = any(k in environment for k in component_keys)
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick WAREHOUSE')
@@ -134,6 +135,7 @@ def main():
                                    oldest_admission=1-short)
         expected_components['hrrn'] = int(expected_components['hrrn'])
         expected_components['matching'] = int(environment.get('CGAR_TRICK_UNOPENED_MATCH', '0'))
+        expected_components['remaining_flow'] = int(environment.get('CGAR_TRICK_REMAINING_FLOW', '0'))
     expected_trick_field = 'none' if args.trick else None
     if args.trick and environment.get('CGAR_TRICK_LANES', '1') == '1':
         asset_name = 'cgar/tricks/warehouse_lanes.hpp'
