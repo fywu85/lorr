@@ -732,3 +732,22 @@ else stays at the3,852 configuration, including horizon scale1.5, seed4 and fixe
 K16320. Compare complete strict1s runs to the existing exact control; do not
 assume a win or expand the sweep without evidence. This remains the same general
 completion-value feature, not a new algorithm or an isolated test of averaging.
+
+## [trick] Direction-aware deadline estimate with controlled units
+
+The old cutoff treats two tasks with equal remaining hop distance alike even
+when one requires travel against the preferred lanes or more turns. Raw weighted
+costs were unsuccessful in the colleague's log, partly motivating step-unit
+calibration. This experiment preserves the pool's total estimated work: normalize
+each currently assigned oriented chain cost by sum(hop distances)/sum(chain
+costs), then blend with its hop distance. Apply the same observed steps-per-cell
+and cutoff scale. No hindsight, hidden future tasks or offline fitted labels.
+`R05_TRIAGE_GUIDED_MIX` defaults0, stays in[0,1], and needs the declared horizon
+and --trick RANDOM-05. Started assignments remain locked.
+
+The normalization holds the aggregate distance estimate fixed and changes which
+chains appear feasible. It is not a calibrated completion probability or a
+guaranteed remaining-time bound. A controlled two-robot fixture distinguishes
+a one-cell forward trip from an equal-distance trip requiring a half-turn; dense
+checks cover task replacement, collision safety and worker determinism. Test
+mix.5/1 at the existing scales1.25/1.5 only after regression validation.

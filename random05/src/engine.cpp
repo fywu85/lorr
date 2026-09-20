@@ -163,6 +163,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
+    c.triage_guided_mix=real("R05_TRIAGE_GUIDED_MIX",0);
+    if(!std::isfinite(c.triage_guided_mix) || c.triage_guided_mix<0 || c.triage_guided_mix>1 ||
+       (c.triage_guided_mix>0 && c.horizon<=0))
+        throw std::invalid_argument("guided triage mix must be in [0,1] and requires a declared horizon");
     if(c.horizon>0 && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
@@ -1392,6 +1396,11 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         if(!env->task_pool.count(it->first))it=score_chains_.erase(it);else ++it;
     }
     assigned_.assign(n,nullptr);score_assigned_.assign(n,nullptr);triaged_=0;
+    std::vector<double> triage_hops,triage_guided;
+    double total_triage_hops=0,total_triage_guided=0;
+    if(cfg.horizon>0 && cfg.triage_guided_mix>0) {
+        triage_hops.resize(n);triage_guided.resize(n);
+    }
     for(int a=0;a<n;++a) {
         int id=schedule[a];++age_[a];
         if(previous_task_[a]>=0 && !env->task_pool.count(previous_task_[a]))age_[a]=0;
@@ -1411,13 +1420,33 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 for(int k=task.idx_next_loc;k<int(chain->goals.size());++k) {
                     remaining+=g.hop(chain->goals[k],p);p=chain->goals[k];
                 }
-                double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
-                if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
-                    assigned_[a]=nullptr;++triaged_;
+                if(cfg.triage_guided_mix>0) {
+                    triage_hops[a]=remaining;total_triage_hops+=remaining;
+                    triage_guided[a]=chain->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
+                    total_triage_guided+=triage_guided[a];
+                } else {
+                    double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+                    if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
+                        assigned_[a]=nullptr;++triaged_;
+                    }
                 }
             }
         }
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
+    }
+    if(!triage_hops.empty()) {
+        // Keep the total estimated work equal to the hop-based baseline, while
+        // allowing direction and remaining turns to redistribute it across tasks.
+        // These are currently assigned, visible chains only; no future stream.
+        const double normalization=total_triage_guided>0?total_triage_hops/total_triage_guided:0;
+        const double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+        for(int a=0;a<n;++a)if(assigned_[a]) {
+            const double remaining=(1-cfg.triage_guided_mix)*triage_hops[a]+
+                cfg.triage_guided_mix*normalization*triage_guided[a];
+            if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
+                assigned_[a]=nullptr;++triaged_;
+            }
+        }
     }
     if(cfg.rollout_match) {
         frame.active_chains=assigned_;if(score_graph_)frame.plain_chains=score_assigned_;

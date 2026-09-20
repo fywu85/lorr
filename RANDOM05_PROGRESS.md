@@ -1413,13 +1413,21 @@ input/binary hashes and allocation are linked in the audits.
 - The seven-state decision audit confirms exact snapshot state and whole-run
   trajectory equality.128-step score/completion correlations are weak and mostly
   negative later, but three-seed leave-one-out gains are mixed. This supports
-  further diagnosis, not a proven scoring defect. All168counterfactuals finish
+  further diagnosis, not a proven scoring defect. All 168 counterfactuals finish
   and reproduce their saved first decision.
   [Audit and limitations](random05/results/decision-probes-v67/REPORT.md).
--3,857 passes independent full action/task replay. All75timestamped frontiers
+- 3,857 passes independent full action/task replay. All75timestamped frontiers
   audit against hashes and strict full runs. Its completed max1937steps,
   initial unfinished135/unopened102; final maximum remains censored at>=2000.
 - Additional declared controls: triage1.25 on planner seeds0/3, and completion
   bonuses2/4/8 with the current14-future average. The latter failed before
   averaging; this recheck tests the specific change in reward noise, with
   complete settings frozen and no gain assumed.
+
+- The component-disabled source68 full control reproduces3,852 exactly in all
+  six trajectory fields. The three component variants remain in progress.
+- New **trick** experiment: directional deadline estimates blend hop distance
+  with oriented chain cost, normalized to preserve the pool's total estimated
+  distance. This changes which tasks appear feasible without simply moving the
+  global cutoff. Source69 regression checks pass16.81s; five full cases include
+  an unchanged control and mixes.5/1 atscales1.25/1.5. No gain assumed.

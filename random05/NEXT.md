@@ -108,3 +108,15 @@ For new frontiers update best manifests, timestamp/source/evidence table, waitin
 manifest, audit_progress.py, audit_task_waits.py and render_waiting_report.py;
 independently replay actions/tasks. Capture exact6trajectory fields for controls.
 Commit/push only the Random05 scope, preserving others' staged files.
+
+- New build-v69 directional deadline experiment (see RESEARCH):
+  R05_TRIAGE_GUIDED_MIX=0/.5/1 normalizes oriented chain costs to the same total
+  hop estimate. Requires declared horizon/trick, keeps started assignments.
+  Regressions16.81s passed, SHA
+  b2d044351e254b40e6dddab7828f2de32defd60470edaa3fcaa6f8b7f9335746.
+  Five strict full cases in directed-triage-full-v69.json: mix0scale1.25control,
+  .5/1 atscales1.25/1.5, seed4. Pending results; current source69 defaults mix0.
+- Plain git push failed through a stale VSCode socket. The successful per-command
+  override uses `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git
+  -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
+  No credential was printed and repository authentication settings unchanged.

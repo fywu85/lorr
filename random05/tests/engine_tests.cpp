@@ -598,6 +598,27 @@ void staged_continuations() {
     }
 }
 
+void normalized_directional_triage() {
+    // Same one-cell distance, but the second robot must turn around first.
+    // Pool normalization keeps total estimated distance2, assigning .5/1.5.
+    auto env=environment(1,5,2);env.curr_states[0]=State(0,0,0);env.curr_states[1]=State(4,0,0);
+    for(int a=0;a<2;++a) {Task task;task.task_id=a;task.locations={a?3:1};env.task_pool[a]=task;}
+    env.curr_task_schedule={0,1};Config cfg;cfg.futures=1;cfg.matching=false;
+    cfg.horizon=2;cfg.triage_scale=1;
+    std::vector<Action> plan;std::vector<int> schedule;
+    Engine baseline(cfg);baseline.initialize(&env);baseline.compute(&env,plan,schedule);
+    require(baseline.triaged()==0,"hop triage fixture unexpectedly discarded a task");
+    cfg.triage_guided_mix=1;Engine directed(cfg);directed.initialize(&env);directed.compute(&env,plan,schedule);
+    require(directed.triaged()==1,"directional triage failed to distinguish the required half-turn");
+    require(schedule==std::vector<int>({0,1}),"triage illegally changed assignments");
+    // Dense task turnover still obeys locks, movement rules and deterministic workers.
+    cfg=Config{};cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.share_prefix=true;cfg.cost_cache=true;cfg.horizon=150;cfg.triage_scale=.8;cfg.triage_guided_mix=.5;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"directional triage changed with worker count");
+}
+
 void motion_component_search() {
     // Two legal parents compete for the same hole. A partial substitution
     // would collide; the dependency decomposition must join both robots.
@@ -637,6 +658,7 @@ void checkpoint_replay() {
 }
 
 int main() {
+    normalized_directional_triage();
     motion_component_search();
     checkpoint_replay();
     staged_continuations();
