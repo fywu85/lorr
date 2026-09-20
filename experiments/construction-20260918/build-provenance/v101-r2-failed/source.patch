@@ -1,0 +1,17 @@
+--- a/cgar/tests/cgar_regression.cpp
++++ b/cgar/tests/cgar_regression.cpp
+@@ -3591,8 +3591,12 @@
+   }
+   trace.stats=policy.stats();trace.shadow=policy.match_budget_shadow();
+   require(trace.services>0&&trace.repeated>0&&trace.completed>0,"native service episode was vacuous");
+-  require(!trace.stats.flow_publications&&!trace.stats.flow_cache_resets&&trace.stats.temporal_prepared_robots==24*128&&
+-   trace.stats.temporal_cold_worker_runs==128&&trace.stats.temporal_seed_rotations>0,"native episode changed work, published flow or missed wait-seed rotation");
++  if(trace.stats.flow_publications||trace.stats.flow_cache_resets||trace.stats.temporal_prepared_robots!=24*128||
++     trace.stats.temporal_cold_worker_runs!=128||trace.stats.temporal_seed_rotations==0)
++   throw std::runtime_error("native episode counters: publications="+std::to_string(trace.stats.flow_publications)+
++    " resets="+std::to_string(trace.stats.flow_cache_resets)+" prepared="+std::to_string(trace.stats.temporal_prepared_robots)+
++    " workers="+std::to_string(trace.stats.temporal_cold_worker_runs)+" seed_rotations="+std::to_string(trace.stats.temporal_seed_rotations)+
++    " service_choices="+std::to_string(trace.stats.native_service_choices)+" changed_choices="+std::to_string(trace.stats.native_service_changed_choices));
+   return trace;
+  };
+  int episode_services=0,episode_repeated=0,episode_rotations=0;

@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T17:04:39.248364+00:00",
+  "updated_utc": "2026-09-20T17:20:21.235896+00:00",
   "source": "User correction: target is NMS154795; success may be any valid full seed, with or without explicitly enabled tricks. Preserve a separate multiseed generic reference.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": 154795,
@@ -11,7 +11,7 @@
   "allocation": "Development: reserved, bound GRID physical cores on shared hosts are allowed.",
   "map_specific_policies_allowed_for_this_goal": true,
   "promotion_rule": "Goal achieved by at least one valid full5000-step seed with completed_tasks>=154795, complete fixed-work decisions and32GB RSS. Generic or explicitly --trick WAREHOUSE-gated policy may qualify. Record all tested results, seed, commit and timestamp. Shared-host5000ms development runs are allowed and labelled.",
-  "current_best_single": 155057,
+  "current_best_single": 155120,
   "current_six_seed_mean": 144392.16666666666,
   "required_mean_growth_percent": 7.20456903825577,
   "earlier_local_kittyknight_reference": 152981,
@@ -21,9 +21,9 @@
   "timing_expectation": "Aim for roughly sub-second latency on exclusive cores, using prior exclusive controls and CPU-work evidence. Exact one-second validation and optimization of the best solver are deferred.",
   "resource_policy_source": "Explicit user instruction on2026-09-20: relax exclusive hosts and one-second budget for now; validate/optimize best solver later.",
   "current_best_single_source": "27be6e312fdd79ad310583d33eeb2a4781d75b97",
-  "current_best_single_completed_utc": "2026-09-20T16:18:39.911128+00:00",
-  "current_best_single_budget": "Shared-host5s development; max1.024536167s, RSS11925504000bytes. Not strict1s certified.",
-  "pending_confirmation": "p90 + pickup weight 8 combination 8900293 and prescribed native search portfolios 8900316 are running. V98 p90 four-seed mean 154885.5 is verified; p95/p99 lose both seeds and are rejected.",
+  "current_best_single_completed_utc": "2026-09-20T17:16:12.716303+00:00",
+  "current_best_single_budget": "Shared-host 5s development; max 0.996732765s, RSS11944546304bytes. Not strict1s certified.",
+  "pending_confirmation": "New p90/weight8 solver seeds1/3 being queued. V100 portfolio8900316 remains running. Native neutral-tail source e757965 passes full regression; compatibility screens precede any full performance test.",
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
   "minimum_successful_seeds": 1,
@@ -42,25 +42,21 @@
   "current_best_generic_single": 145083,
   "current_best_generic_single_source": "45248431dc38702ebdef9dd1ab2893697c00e00f",
   "current_best_generic_single_completed_utc": "2026-09-20T05:28:00.961539+00:00",
-  "target_gap_from_best_single": -262,
+  "target_gap_from_best_single": -325,
   "required_best_single_growth_percent": 0.0,
-  "current_best_single_evidence": "experiments/construction-20260918/results/horizon-percentile-full-v96/best-record.json",
-  "current_best_single_known_horizon": "Explicit configured H=5000 plus prospective single-holder p90 margin; ordinary fairness/held-task protection.",
+  "current_best_single_evidence": "experiments/construction-20260918/results/p90-pickup-combined-v99/best-record.json",
+  "current_best_single_known_horizon": "Explicit configured H=5000 plus prospective single-holder p90 margin; pickup weight8; ordinary fairness/held-task protection.",
   "goal_criterion_satisfied": true,
   "goal_criterion_verified_utc": "2026-09-20T14:00:08.321810+00:00",
-  "target_surplus_from_best_single": 262,
+  "target_surplus_from_best_single": 325,
   "current_trick_tested_seeds": [
     0,
-    1,
-    2,
-    3
+    2
   ],
   "current_trick_tested_totals": [
-    155057,
-    154846,
-    154727,
-    154912
+    155120,
+    155056
   ],
-  "current_trick_two_seed_mean": 154892.0,
-  "current_trick_four_seed_mean": 154885.5
+  "current_trick_two_seed_mean": 155088.0,
+  "previous_p90_pickup5_four_seed_mean": 154885.5
 }

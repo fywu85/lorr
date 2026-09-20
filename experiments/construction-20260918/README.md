@@ -10,11 +10,12 @@ The original CGAR control used orientation guidance with an8GiB turn table and
 a six-seed mean43,176.17. The current [generic reference](warehouse-reference-variants.json)
 adds temporal planning, observed-flow guidance, complete pickup fields, regional
 repair and bounded matching, reaching144,392.17over six solver seeds. The separate
-explicit Warehouse TRICK now reaches155,057tasks, above the NMS target154,795.
-It uses native Warehouse guidance and a configured horizon with a prospective
-p90 completion margin; ordinary fairness stays enabled. Four solver seeds on the same input average 154,885.5, with all first-half tasks completed.
-[Four-seed confirmation](results/horizon-percentile-seeds13-v98/summary.md).
-[Current full result](results/horizon-percentile-full-v96/summary.md) and the
+explicit Warehouse TRICK now reaches 155,120 tasks, above the NMS target of 154,795.
+It uses native Warehouse guidance, pickup weight 8 and a configured horizon with a
+prospective p90 completion margin; ordinary fairness stays enabled. The paired seed
+scores 155,056. Both finish every first-half task. The previous weight-5 profile
+averaged 154,885.5 over four solver seeds on this fixed input.
+[Current full result](results/p90-pickup-combined-v99/summary.md) and the
 [root history](../../WAREHOUSE_PROGRESS.md) supersede historical probe summaries.
 Current development allows shared hosts and5s complete-entry deadlines while
 retaining the32,000,000,000-byte RSS cap; strict1s certification remains separate.

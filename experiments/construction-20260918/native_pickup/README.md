@@ -33,3 +33,5 @@ binary. Require exact complete p90 controls against their verified trajectories.
 All other settings, fairness, resource limits and fixed search work remain
 unchanged. The two component gains need not add: assignment changes calibration
 data, traffic and the task pool. Record the measured interaction instead.
+
+The combination is now fully verified: **155,120 / 155,056**, gains **63 / 329** over exact p90 / weight-5 controls. Both beat NMS; mean 155,088. All first-half tasks finish, empty work falls and outstanding-age p90 improves. [New best record](../results/p90-pickup-combined-v99/summary.md). Additional weight-8 seeds 1 / 3 are running with the same frozen V96 binary.

@@ -1,0 +1,9 @@
+{
+  "phase": "functional regression test",
+  "messages": [
+    "native episode changed work, published flow or missed wait-seed rotation"
+  ],
+  "reason": "The shared episode helper demanded at least one wait-seed rotation even for the changed neutral-tail policy. Diagnostic r2 confirms all prescribed work and cache counters pass, but this policy chooses zero seed rotations. The corrected fixture retains old-policy coverage and requires nonzero physical turns and exact serial/parallel action traces for the new policy.",
+  "benchmark_score": null,
+  "production_source_unchanged_across_r1_r2_r3": true
+}

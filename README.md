@@ -39,16 +39,16 @@ for obstacles, duplicate destinations, and edge swaps.
 
 [WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
 
-On20September2026, an explicitly enabled Warehouse TRICK reached **155,057tasks**
-against the user-specified NMS target154,795: a valid full5,000-step/10,000-robot
-run, seed0, source[27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
-It assumes the known5,000-step horizon and requires `--trick WAREHOUSE`.
-Four solver seeds score 155,057 / 154,846 / 154,727 / 154,912, with mean
-154,885.5 (90.5 above target). Every task revealed in the first half finishes
-in all four runs. These seeds use one fixed input. [Seed confirmation](experiments/construction-20260918/results/horizon-percentile-seeds13-v98/summary.md). The generic six-seed reference remains
-144,392.17. These are shared-host5s development results, with a1.025s maximum
-entry for the best run; strict1s certification remains separate.
-[Verified result and exact configuration](experiments/construction-20260918/results/horizon-percentile-full-v96/summary.md).
+On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,120 tasks**
+against the user-specified NMS target of 154,795: a valid full 5,000-step / 10,000-robot
+run, seed 0, source [27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
+It assumes the known 5,000-step horizon and requires `--trick WAREHOUSE`.
+Seed 2 scores 155,056; their mean is 155,088. Every first-half task finishes in both
+runs. These are solver seeds on one fixed input. The preceding pickup-weight-5
+profile averaged 154,885.5 over four seeds. The generic six-seed reference remains
+144,392.17. These are shared-host 5s development results; strict 1s certification
+remains separate. [Verified result and exact configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
+
 
 
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
