@@ -69,6 +69,18 @@ inline std::vector<uint8_t> forward_costs(const std::string& name, const std::ve
     return result;
 }
 
+// Verify the actual installed vector, including normalized wall entries.
+// This binds both generated headers, not merely the printed SHA256 constant.
+inline uint64_t validate_native_field(const std::vector<uint8_t>& costs, bool bands) {
+    if (costs.size() != size_t(warehouse_rows) * warehouse_cols * 4)
+        throw std::invalid_argument("native Warehouse field dimension mismatch");
+    uint64_t value = 14695981039346656037ULL;
+    for (uint8_t cost : costs) value = (value ^ cost) * 1099511628211ULL;
+    if (value != (bands ? warehouse_native_bands_fnv1a64 : warehouse_native_nobands_fnv1a64))
+        throw std::invalid_argument("native Warehouse installed field fingerprint mismatch");
+    return value;
+}
+
 inline std::vector<uint8_t> native_forward_costs(const std::string& name, const std::vector<int>& map,
                                                  int rows, int cols, bool bands) {
     validate_map(name, map, rows, cols);

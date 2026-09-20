@@ -717,8 +717,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : 16;
     if ((trick_options.native_bands && !native_trick_metric_) ||
         (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow ||
-         trick_options.short_tasks || trick_options.matching)))
-        throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow, without short preference or matching; native bands require native metric");
+         trick_options.short_tasks)))
+        throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow, without short preference; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
@@ -940,7 +940,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR without guide routes or rematching");
     if (static_trick_metric_ && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ ||
         flow_cost_scale_ != (native_trick_metric_ ? 20 : 4) || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
-        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, cost scale4, unit physical turns, no turn surcharge or cache-only refresh");
+        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, the selected metric scale (legacy4/native20), unit physical turns, no turn surcharge or cache-only refresh");
 
     const auto t0 = Clock::now();
     if (pibt_reference_ && !enable_locks_) {
@@ -966,14 +966,17 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
         turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_, guidance_cost_limit_);
         if (static_trick_metric_) {
-            turn_oracle_.set_forward_costs(native_trick_metric_ ?
+            auto field = native_trick_metric_ ?
                 tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands) :
-                tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
+                tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols);
+            const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands) : 0;
+            turn_oracle_.set_forward_costs(std::move(field));
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
             if (native_trick_metric_) {
-                std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=1 score=pure_potential tie=raw field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), trick_options.native_bands, tricks::native_field_hash(trick_options.native_bands), tricks::warehouse_occupancy_sha256);
+                std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=1 score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), trick_options.native_bands, tricks::native_field_hash(trick_options.native_bands),
+                    static_cast<unsigned long long>(installed_fingerprint), tricks::warehouse_occupancy_sha256);
             } else {
                 std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
                     env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
@@ -2459,7 +2462,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         const auto permutation = minimum_pickup_permutation(costs, n, kInf,
             [&] { check_deadline(deadline_, "unopened_match_hungarian"); });
         auto cycles = pickup_permutation_cycles(costs, permutation, flow_cost_scale_,
-            [&] { check_deadline(deadline_, "unopened_match_cycles"); });
+            [&] { check_deadline(deadline_, "unopened_match_cycles"); }, native_trick_metric_ ? 20 : 16);
         stats_.match_cycles += cycles.size();
         for (const auto& cycle : cycles) stats_.match_accepted_cycles += cycle.accepted;
         planned.push_back({std::move(group), permutation, std::move(cycles)});

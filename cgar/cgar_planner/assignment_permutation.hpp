@@ -81,9 +81,9 @@ struct PickupPermutationCycle {
 
 template<class Check>
 std::vector<PickupPermutationCycle> pickup_permutation_cycles(const std::vector<int>& costs,
-        const AssignmentPermutation& permutation, int unit_cost, Check check) {
+        const AssignmentPermutation& permutation, int unit_cost, Check check, int unit_limit = 16) {
     const int n = permutation.column.size();
-    if (n > 32 || costs.size() != size_t(n)*n || unit_cost < 1 || unit_cost > 16)
+    if (n > 32 || costs.size() != size_t(n)*n || unit_limit < 1 || unit_limit > 255 || unit_cost < 1 || unit_cost > unit_limit)
         throw std::invalid_argument("invalid pickup cycle input");
     std::vector<char> used(n), targets(n);
     for (int column : permutation.column) {

@@ -3343,11 +3343,15 @@ void native_metric_regression() {
   if((h==0&&x+1==e.cols)||(h==2&&x==0)||(h==1&&y+1==e.rows)||(h==3&&y==0))return -1;
   const int to=cell+(h==0?1:h==1?e.cols:h==2?-1:-e.cols);return e.map[to]?-1:to;};
  TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
- long long checked_states=0,checked_macros=0,service_macros=0;
+ long long checked_states=0,checked_macros=0,service_macros=0,prefetched_states=0,seed_macros=0;
  for(bool bands:{false,true}){
   const auto weights=native_forward_costs("WAREHOUSE",e.map,e.rows,e.cols,bands);
   uint64_t hash=14695981039346656037ULL;for(uint8_t w:weights)hash=(hash^w)*1099511628211ULL;
   require(hash==(bands?warehouse_native_bands_fnv1a64:warehouse_native_nobands_fnv1a64),"native asset differs from independently verified NMS dump");
+  require(validate_native_field(weights,bands)==hash,"native installed vector validation differs");
+  auto corrupt=weights;corrupt[0]^=1;
+  rejects([&]{validate_native_field(corrupt,bands);},"native corrupted vector accepted");
+  rejects([&]{validate_native_field(std::vector<uint8_t>{20},bands);},"native short vector accepted");
   TurnDistanceOracle oracle;oracle.init(&cert,32<<20,1,true,20,bands?201:200);oracle.set_forward_costs(weights);
   for(int goal:{4,1504}){
    require(!e.map[goal],"native goal fixture blocked");
@@ -3366,13 +3370,28 @@ void native_metric_regression() {
    for(int cell=0;cell<int(e.map.size());++cell)if(!e.map[cell])for(int h=0;h<4;++h){
     require(oracle.value(*table,cell,h)==expected[cell*4+h],"native reverse Dial differs from independent heap");++checked_states;
    }
+   // Scratch must use the installed 200/201 maximum, including four workers.
+   std::vector<int> batch{goal};for(int cell=0;batch.size()<4;++cell)if(!e.map[cell]&&cell!=goal)batch.push_back(cell);
+   for(int threads:{1,4}){
+    TurnDistanceOracle parallel;parallel.init(&cert,32<<20,1,true,20,bands?201:200);
+    parallel.set_forward_costs(weights);parallel.prefetch(batch,threads,deadline());
+    require(parallel.prefetched_builds==4&&!parallel.peek(goal),"native prefetch published before demand");
+    const auto* admitted=parallel.table(goal,deadline());
+    require(parallel.prefetched_hits==1,"native parallel table was not admitted from prefetch");
+    for(int cell=0;cell<int(e.map.size());++cell)if(!e.map[cell])for(int h=0;h<4;++h){
+     require(parallel.value(*admitted,cell,h)==expected[cell*4+h],"native parallel Dial differs from independent heap");++prefetched_states;
+    }
+    parallel.discard_prefetch();require(parallel.prefetched_discarded==3,"native speculative tables did not discard completely");
+   }
    std::set<int> samples{goal};for(int d=0;d<4;++d){const int from=neighbor(goal,d);if(from>=0)samples.insert(from);}
    for(int cell=0;cell<int(e.map.size());cell+=997)if(!e.map[cell])samples.insert(cell);
-   for(int start:samples)for(int heading=0;heading<4;++heading)for(int op=1;op<129;++op){
-    const auto& path=geometry.paths(start,heading)[op];if(!path.valid)continue;
+   // Negative fixture indices enumerate op0 with every real first action.
+   for(int start:samples)for(int heading=0;heading<4;++heading)for(int fixture=-3;fixture<129;++fixture){
+    const int op=std::max(0,fixture);
+    const auto path=fixture<=0?geometry.seed(start,heading,-fixture):geometry.paths(start,heading)[op];if(!path.valid)continue;
     // Independent action replay; do not use the stored path's endpoint or hits.
     int at=start,h=heading,last_hit=-1;
-    const auto& actions=TemporalGeometry::operations()[op];
+    auto actions=TemporalGeometry::operations()[op];if(fixture<=0)actions[0]=-fixture;
     for(int slot=0;slot<5;++slot){
      if(actions[slot]==0)at=neighbor(at,h);
      else if(actions[slot]==1)h=(h+1)%4;
@@ -3386,7 +3405,7 @@ void native_metric_regression() {
     if(last_hit>=0){value=-last_hit;++service_macros;}
     const int64_t wanted=int64_t(value)*50-op;
     require(TemporalGeometry::pure_potential_cost(path,op,goal,[&](int cell,int orientation){return oracle.value(*table,cell,orientation);})==wanted,
-      "native raw-unit macro score differs from independent replay");++checked_macros;
+      "native raw-unit macro score differs from independent replay");++checked_macros;seed_macros+=fixture<=0;
    }
   }
  }
@@ -3453,9 +3472,97 @@ void native_metric_regression() {
   std::vector<int> schedule;planner.schedule(&e,30000,schedule);require(schedule==std::vector<int>{0}&&planner.stats().pickup_full_fields==1,"native scheduling did not use complete field");
   auto active=e;active.curr_task_schedule=schedule;active.goal_locations={{{1515,10}}};active.task_pool.at(0).agent_assigned=0;
   std::vector<Action> actions;planner.plan(&active,30000,actions);require(!step(active,active.curr_states,actions).empty()&&!planner.stats().flow_publications,"native integrated plan invalid or learned metric published");}
+ // Matching's acceptance scale remains explicit; old callers retain limit16.
+ const std::vector<int> cheap={4,2,2,4},small={3,2,2,3};
+ for(const auto& base:{cheap,small})for(int unit:{1,4,20,255}){
+  auto matrix=base;for(int& value:matrix)value*=unit;
+  const auto permutation=minimum_pickup_permutation(matrix,2,kInf,[]{});
+  const auto cycles=pickup_permutation_cycles(matrix,permutation,unit,[]{},255);
+  require(cycles.size()==1&&cycles[0].accepted==(base==cheap),"native matching gain threshold lost scale invariance");
+ }
+ auto permutation=minimum_pickup_permutation(cheap,2,kInf,[]{});
+ rejects([&]{pickup_permutation_cycles(cheap,permutation,20,[]{});},"default matching lost16unit bound");
+ for(int bad:{0,256})rejects([&]{pickup_permutation_cycles(cheap,permutation,20,[]{},bad);},"native matching accepted invalid capability");
+ rejects([&]{pickup_permutation_cycles(cheap,permutation,21,[]{},20);},"native matching exceeded explicit unit limit");
+ // Real native matching: beneficial cycle, primary and finite retarget guards.
+ int base=-1;for(int cell=0;cell+12<int(e.map.size());++cell)if(cell/e.cols==(cell+11)/e.cols){
+  bool free=true;for(int k=0;k<12;++k)free=free&&!e.map[cell+k];if(free){base=cell;break;}}
+ require(base>=0,"native matching fixture lacks free segment");
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
+ for(const char* bands:{"0","1"}){
+  setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);auto test=e;test.curr_timestep=0;test.num_of_agents=3;
+  test.curr_states={State(base,0,0),State(base+11,0,2),State(base+1,0,0)};
+  test.curr_task_schedule={0,1,2};test.goal_locations={{{base+10,0}},{{base+1,0}},{{base+11,0}}};test.task_pool.clear();
+  for(int i=0;i<3;++i){Task task;task.task_id=i;task.t_revealed=-5;task.agent_assigned=i;
+   task.locations={i==0?base+10:(i==1?base+1:base+11)};test.task_pool.emplace(i,task);}
+  Cgar policy;policy.initialize(&test,30000);std::vector<Action> actions;std::vector<int> schedule;
+  for(int tick=0;tick<2;++tick){test.curr_timestep=tick;policy.plan(&test,30000,actions);auto next=step(test,test.curr_states,actions);
+   require(!next.empty(),"native matching setup collided");test.curr_states=next;}
+  test.curr_timestep=10;policy.schedule(&test,30000,schedule);
+  require(schedule==std::vector<int>({0,2,1})&&policy.stats().match_moved==2&&policy.stats().match_accepted_cycles==1&&
+    policy.stats().match_saving>=80&&policy.stats().match_primary_protected==1&&!policy.stats().flow_publications&&
+    policy.stats().match_groups<=4&&policy.stats().match_nodes<=8192,"native matching failed protected beneficial cycle");
+  for(int i=0;i<3;++i)require(test.curr_task_schedule[i]==i&&test.task_pool.at(i).agent_assigned==i&&test.task_pool.at(i).idx_next_loc==0&&
+   test.task_pool.at(i).t_revealed==-5,"native matching changed simulator metadata");
+  test.curr_task_schedule=schedule;for(int i=0;i<3;++i){auto& task=test.task_pool.at(schedule[i]);task.agent_assigned=i;test.goal_locations[i]={{{task.locations[0],10}}};}
+  policy.plan(&test,30000,actions);require(!step(test,test.curr_states,actions).empty(),"native matching post-swap collided");
+  test.curr_timestep=20;policy.schedule(&test,30000,schedule);
+  require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"native matching bypassed retarget protection");
+ }
+ unsetenv("CGAR_TRICK_UNOPENED_MATCH");
+ // Native closed-loop service semantics, including repeated locations. Serial
+ // and parallel preparation must yield identical schedules/actions/cache work.
+ setenv("CGAR_TURN_PREFETCH_THREADS","4",1);setenv("CGAR_TURN_TABLE_MB","64",1);setenv("CGAR_TURN_COMPACT","1",1);
+ setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
+ struct NativeTrace{std::vector<int> values;Stats stats;int services=0,repeated=0,completed=0;};
+ auto episode=[&](const char* bands,int preparation){
+  setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);setenv("CGAR_TEMPORAL_PREP_THREADS",std::to_string(preparation).c_str(),1);
+  auto test=e;test.curr_timestep=0;test.num_of_agents=24;test.curr_states.clear();test.task_pool.clear();
+  test.curr_task_schedule.assign(24,-1);test.goal_locations.assign(24,{});
+  std::vector<int> cells;for(int cell=0;cells.size()<128;++cell)if(!test.map[cell])cells.push_back(cell);
+  for(int r=0;r<24;++r)test.curr_states.emplace_back(cells[r*5],0,r%4);
+  int next_id=0;auto add=[&](){Task task;task.task_id=next_id++;task.t_revealed=test.curr_timestep;
+   const int pickup=cells[(task.task_id*17+3)%128];task.locations={pickup,pickup,cells[(task.task_id*29+31)%128]};test.task_pool.emplace(task.task_id,task);};
+  for(int k=0;k<72;++k)add();Cgar policy;policy.initialize(&test,30000);NativeTrace trace;
+  for(int tick=0;tick<128;++tick){
+   test.curr_timestep=tick;std::vector<int> schedule;policy.schedule(&test,30000,schedule);std::set<int> assigned;
+   require(schedule.size()==24,"native episode omitted schedule rows");
+   for(int r=0;r<24;++r){const int old=test.curr_task_schedule[r];
+    require(schedule[r]>=0&&assigned.insert(schedule[r]).second,"native episode omitted or duplicated tasks");
+    if(old>=0&&test.task_pool.at(old).idx_next_loc>0)require(schedule[r]==old,"native episode redirected started task");}
+   for(auto& item:test.task_pool)item.second.agent_assigned=-1;
+   for(int r=0;r<24;++r){test.curr_task_schedule[r]=schedule[r];auto& task=test.task_pool.at(schedule[r]);task.agent_assigned=r;
+    test.goal_locations[r]={{{task.locations[task.idx_next_loc],0}}};trace.values.push_back(schedule[r]);}
+   std::vector<Action> actions;policy.plan(&test,30000,actions);auto next=step(test,test.curr_states,actions);
+   require(!next.empty(),"native episode collided or left the map");test.curr_states=next;
+   for(int r=0;r<24;++r){trace.values.push_back(int(actions[r]));auto& task=test.task_pool.at(test.curr_task_schedule[r]);
+    // Exactly one errand may complete for this robot on each physical tick.
+    if(test.curr_states[r].location==task.locations[task.idx_next_loc]){
+     ++trace.services;trace.repeated+=task.idx_next_loc>0&&task.locations[task.idx_next_loc]==task.locations[task.idx_next_loc-1];++task.idx_next_loc;
+     if(task.idx_next_loc==int(task.locations.size())){const int id=task.task_id;++trace.completed;test.curr_task_schedule[r]=-1;test.goal_locations[r].clear();test.task_pool.erase(id);add();}
+     else test.goal_locations[r]={{{task.locations[task.idx_next_loc],0}}};
+    }
+   }
+  }
+  trace.stats=policy.stats();
+  require(trace.services>0&&trace.repeated>0&&trace.completed>0,"native service episode was vacuous");
+  require(!trace.stats.flow_publications&&!trace.stats.flow_cache_resets&&trace.stats.temporal_prepared_robots==24*128&&
+   trace.stats.temporal_cold_worker_runs==128&&trace.stats.temporal_seed_rotations>0,"native episode changed work, published flow or missed wait-seed rotation");
+  return trace;
+ };
+ int episode_services=0,episode_repeated=0,episode_rotations=0;
+ for(const char* bands:{"0","1"}){auto serial=episode(bands,1),parallel=episode(bands,4);
+  require(serial.values==parallel.values&&serial.stats.oriented_builds==parallel.stats.oriented_builds&&
+   serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops&&serial.services==parallel.services,"native serial/parallel closed-loop behavior differs");
+  episode_services+=serial.services;episode_repeated+=serial.repeated;episode_rotations+=serial.stats.temporal_seed_rotations;
+ }
+ unsetenv("CGAR_TURN_PREFETCH_THREADS");unsetenv("CGAR_TURN_TABLE_MB");unsetenv("CGAR_TURN_COMPACT");
+ unsetenv("CGAR_TEMPORAL_PREP_THREADS");unsetenv("CGAR_PICKUP_FULL_THREADS");setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
+ std::cout<<"NATIVE_EPISODES passed robots=24 ticks_per_episode=128 profiles=4 services="<<episode_services<<" repeated="<<episode_repeated
+  <<" seed_rotations="<<episode_rotations<<" independent_action_checks=12288 started_protection=1 fixed_work=1 serial_parallel_exact=1 no_learned_publications=1\n";
  unsetenv("CGAR_TRICK_NATIVE_BANDS");
  for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_TRICK_LANES","0"},{"CGAR_TRICK_REMAINING_FLOW","0"},
-  {"CGAR_TRICK_SHORT_TASKS","1"},{"CGAR_TRICK_UNOPENED_MATCH","1"},{"CGAR_TEMPORAL_REMAINING_FLOW","1"},
+  {"CGAR_TRICK_SHORT_TASKS","1"},{"CGAR_TEMPORAL_REMAINING_FLOW","1"},
   {"CGAR_FLOW_COST_SCALE","4"},{"CGAR_TURN_COST","2"},{"CGAR_TURN_SURCHARGE","1"},{"CGAR_TEMPORAL_DISTANCE_SCALE","51"}}){
   std::string old=std::getenv(bad.first)?std::getenv(bad.first):"";bool existed=std::getenv(bad.first);
   setenv(bad.first,bad.second,1);rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"native incompatible profile accepted");
@@ -3470,7 +3577,7 @@ void native_metric_regression() {
  }
  require(service_macros>0&&checked_macros>1000,"native score fixtures did not cover service");
  std::cout<<"NATIVE_METRIC passed independent_states="<<checked_states<<" macro_scores="<<checked_macros<<" service_macros="<<service_macros
-  <<" native_asset_hashes=2 pickup_oracles=3 positive_bounds=1 default_bounds=1 wide_fallback=1 eviction=1 raw_score_units=1 integrated_profiles=2 explicit_cli=1 incompatible_gates=1\n";
+  <<" prefetched_states="<<prefetched_states<<" seed_macros="<<seed_macros<<" native_asset_hashes=2 corrupted_field_rejected=1 pickup_oracles=3 positive_bounds=1 default_bounds=1 wide_fallback=1 eviction=1 raw_score_units=1 integrated_profiles=2 native_matching_cycles=2 matching_scale_invariance=8 explicit_cli=1 incompatible_gates=1\n";
 }
 
 void chain_flow_pricing_regression() {
