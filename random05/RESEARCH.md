@@ -273,3 +273,34 @@ for timing; full 2,000-step runs remain the throughput selection criterion.
 The simulator reveals the initial task pool after initialization, so moving its
 assignment into preprocessing would require information the interface has not
 yet exposed. Investigate actual measured costs before further optimization.
+
+## Recheck assignment from the committed next position
+
+The pipeline's first forward/wait move is already promised before the scheduler
+runs. Task completion is checked after executing the action. The existing
+`R05_SCHED_PREDICT=1` option therefore prices the approach from that committed
+next position; it retains the current orientation, which is exact for committed
+forward moves. It avoids assigning a zero-approach task at a cell the robot must
+leave immediately. Started tasks remain locked.
+
+This option was last tested in the v8 greedy-matching configuration (2,669 tasks),
+well before full guided Hungarian matching and averaged continuation search.
+That changed scheduler/search coupling is a concrete reason to recheck it,
+without assuming the old small gain will persist. Test full K2048 andK5120 with
+four generations against their completed current-position controls3520/3637.
+No hidden tasks, uncommitted future moves, or map-coordinate rules are used.
+The separately frozen fresh-validation V3 candidate remains unchanged.
+
+## Current search conclusions
+
+Averaging several continuations now has positive full-run and planner-seed
+evidence; it is no longer merely an untested hypothesis. The exact CPU changes
+make K5120/B8/four generations feasible on four cores, reaching3,637 tasks.
+Positive variance penalties failed; a negative coefficient's small single-seed
+gain also failed across five planner seeds. Keep the mean score.
+
+Retaining four distinct elite parents between four search generations is the
+latest promising general change:3,618 versus3,520 at K2048/B8. Larger elite
+counts are not uniformly better. Full seed and compute-scaling comparisons are
+running. The third fresh-input validation tests the separately frozen3,637
+configuration and must not be relabeled as validation of these newer variants.

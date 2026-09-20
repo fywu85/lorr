@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 15:44 UTC.
+Updated: 2026-09-20 16:07 UTC.
 
 **Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
 **+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
@@ -1021,3 +1021,26 @@ input/binary hashes and allocation are linked in the audits.
   **+24.8% versus NMS4**. RSS309MB. The existing V2 validation remains tied to
   its older3,501 candidate; a third protocol is declared before generating new
   inputs to test this larger search honestly.
+
+- Four elite parents at K2048/B8/four generations finish **3,618 tasks** on
+  four cores, versus3,520 for one parent (+2.8% at the same rollout count).
+  Two/eight/sixteen parents give3,537/3,465/3,497. At eight generations,
+  one/four/eight parents give3,482/3,428/3,535. Adding optimism0.25 to the
+  four-parent/four-generation case gives3,581. All9 full runs are valid;
+  the one-parent controls exactly preserve their complete earlier trajectories.
+  This selected3,618 result needs seed checks and is below the3,637 record.
+  [Evidence](random05/results/elite-parents-four-split-full-v54/summary.json).
+
+- The optimism0.25 gain does not replicate: planner seeds0–4 give
+  3,476/3,432/3,528/3,543/3,485, mean3,492.8 versus3,531.4 for zero coefficient
+  (-1.1%, only2/5 pairs positive). All five optimism runs use four cores and
+  finish validly. Leave the coefficient at zero.
+  [Seed evidence](random05/results/optimism-seeds-four-split-full-v53/summary.json).
+
+- Fresh validation V3 was frozen at
+  [81bdfbd](https://github.com/fywu85/lorr/commit/81bdfbd) before generating
+  seeds50005/50006. The candidate remains source6ce9312 / K5120/B8/four
+  generations / seed3 / one parent / mean score, the3,637 four-core configuration.
+  All six predeclared candidate/NMS4 runs are submitted. Additional development
+  seeds and later elite-parent changes do not replace this frozen candidate.
+  [Protocol](random05/FRESH_VALIDATION_V3.md).
