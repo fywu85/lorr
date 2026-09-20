@@ -1,0 +1,180 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-20T08:08:18.749277+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "8993a431d0d14d19ea664130cd6c59d52365812c",
+  "cases": [
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "control",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "0",
+        "R05_EQUAL": "0",
+        "R05_HORIZON": "0"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    },
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "local5",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "5",
+        "R05_EQUAL": "0",
+        "R05_HORIZON": "0"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    },
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "equal",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "0",
+        "R05_EQUAL": "1",
+        "R05_HORIZON": "0"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    },
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "local5-equal",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "5",
+        "R05_EQUAL": "1",
+        "R05_HORIZON": "0"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    },
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "horizon",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "0",
+        "R05_EQUAL": "0",
+        "R05_HORIZON": "2000"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    },
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "cores": 4,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "trick": true,
+      "name": "local5-equal-horizon",
+      "env": {
+        "R05_K": "64",
+        "R05_THREADS": "4",
+        "R05_GUIDANCE": "file",
+        "R05_DISPERSION": "0.8",
+        "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+        "R05_LOCAL": "5",
+        "R05_EQUAL": "1",
+        "R05_HORIZON": "2000"
+      },
+      "binary_sha256": "f426fddebefaaae18c5fbe14d830d5f9b1f12ce0bed917a689b59b1665b052c4",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v6/build/lifelong_random05",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/random05/experiments/refinements-full.json",
+  "physical": 24,
+  "slots": 24,
+  "exclusive": false
+}

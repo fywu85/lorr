@@ -20,11 +20,12 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,594 tasks / 2,000 steps**, planner seed 0,
-public guidance and dispersion 0.8, K=256, no horizon triage. The matching
-scheduler uses ordinary grid-distance approach costs. Every tested full v5 run
-is valid. Mean entry latency is 151 ms and max is 247 ms for this best run,
-using four physical cores. The full NMS reference is still running.
+Best verified combined result: **2,658 tasks / 2,000 steps**, planner seed 0,
+public guidance, dispersion 0.8, K=64, five local refinements, equal-score
+acceptance, and explicitly enabled known-horizon triage. Mean entry latency
+58.4 ms, max 157.4 ms on four physical cores. Best without horizon triage:
+**2,594 tasks**. All recorded frontier runs have zero planner errors, scheduler
+errors and timeouts. Both NMS resource configurations are being evaluated.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
@@ -36,6 +37,7 @@ using four physical cores. The full NMS reference is still running.
 | 2026-09-20T08:02:13.099706+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k64-disp0-sched0; seed 0; `--trick RANDOM-05` | 2488 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
 | 2026-09-20T08:05:44.745252+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched1; seed 0; `--trick RANDOM-05` | 2562 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
 | 2026-09-20T08:05:50.770563+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched0; seed 0; `--trick RANDOM-05` | 2594 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:10:24.936747+00:00 | [8993a43](https://github.com/fywu85/lorr/commit/8993a43) | K=64; local5; equal; dispersion 0.8; horizon 2000; seed 0; `--trick RANDOM-05` | 2658 | Pending | Pending | [Full evidence](random05/results/refinements-full-v6/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -74,3 +76,8 @@ The published NMS score of 3,050 used different instances and hardware.
   gives 2,594. Guidance-aware matching helps the generated field (2,419 to
   2,548), but lowers the public-field result (2,594 to 2,562). Keep these as
   separate configurations instead of assuming every borrowed feature helps.
+
+- Refinements at K=64: control 2,485; local search 2,531; local + equal-score
+  acceptance 2,574; horizon triage alone 2,581; combined 2,658. Equal-score
+  acceptance alone gives 2,485. Triage is recomputed after every task change
+  and never illegally reassigns an opened task.

@@ -15,6 +15,9 @@ struct Config {
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20;
     float flow_penalty=1.6;
+    float flow_turn=0;
+    int loop_extent=2;
+    bool predict_matching=false;
     int local_trials=0, horizon=0;
     float triage_scale=0.45;
     bool accept_equal=false;
@@ -26,6 +29,7 @@ struct Graph {
     std::vector<int> from_grid, to_grid, degree, pocket;
     std::vector<std::array<int,4>> next;
     std::vector<std::array<float,5>> weight;
+    std::vector<std::vector<int>> cycles;
     std::vector<float> distance;
     std::vector<uint16_t> hops;
     Graph(const SharedEnvironment& env, const Config& cfg);

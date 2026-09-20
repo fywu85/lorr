@@ -34,6 +34,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
+    c.flow_turn=real("R05_FLOW_TURN",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
+    c.predict_matching=integer("R05_SCHED_PREDICT",0);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
@@ -101,6 +103,35 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             #pragma omp parallel for num_threads(cfg.threads) schedule(static)
             for(int source=0;source<cells;++source) {
                 auto& accumulator=partial[omp_get_thread_num()];
+                if(cfg.flow_turn>0) {
+                    // Route demand in orientation space so field construction
+                    // prices the turns required by the actual robot kinematics.
+                    std::vector<float> d(states,INF);
+                    std::vector<int> parent(states,-1),parent_dir(states,-1),order;
+                    std::vector<double> demand(states,0);
+                    using Item=std::pair<float,int>;
+                    std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;
+                    for(int o=0;o<4;++o){d[source*4+o]=0;q.emplace(0,source*4+o);}
+                    while(!q.empty()) {
+                        auto [cost,state]=q.top();q.pop();if(cost!=d[state])continue;
+                        order.push_back(state);int v=state/4,o=state%4;
+                        auto relax=[&](int dest,float w,int dir) {
+                            float value=cost+w;
+                            if(value<d[dest]){d[dest]=value;parent[dest]=state;parent_dir[dest]=dir;q.emplace(value,dest);}
+                        };
+                        int u=next[v][o];if(u>=0)relax(u*4+o,price[v][o],o);
+                        relax(v*4+(o+1)%4,cfg.flow_turn,4);relax(v*4+(o+3)%4,cfg.flow_turn,4);
+                    }
+                    for(int v=0;v<cells;++v) {
+                        int end=v*4;for(int o=1;o<4;++o)if(d[v*4+o]<d[end])end=v*4+o;
+                        demand[end]=1;
+                    }
+                    for(auto it=order.rbegin();it!=order.rend();++it) {
+                        int v=*it,u=parent[v];if(u<0)continue;
+                        if(parent_dir[v]<4)accumulator[u/4][parent_dir[v]]+=demand[v];
+                        demand[u]+=demand[v];
+                    }
+                } else {
                 std::vector<float> d(cells,INF);
                 std::vector<int> parent(cells,-1),parent_dir(cells,-1),order;
                 std::vector<double> demand(cells,1);
@@ -120,6 +151,7 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
                     int v=*it,u=parent[v];if(u<0)continue;
                     accumulator[u][parent_dir[v]]+=demand[v];demand[u]+=demand[v];
                 }
+                }
             }
             double sum=0;int edges=0;
             for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
@@ -138,6 +170,17 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             int u=next[v][d];if(u<0)continue;
             weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+cfg.flow_penalty);
         }
+    }
+    if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");
+    if(cfg.loops)for(int height=2;height<=cfg.loop_extent;++height)
+    for(int width=2;width<=cfg.loop_extent;++width)
+    for(int y=0;y+height<=rows;++y)for(int x=0;x+width<=cols;++x) {
+        std::vector<int> ring;
+        for(int xx=x;xx<x+width;++xx)ring.push_back(from_grid[y*cols+xx]);
+        for(int yy=y+1;yy<y+height;++yy)ring.push_back(from_grid[yy*cols+x+width-1]);
+        for(int xx=x+width-2;xx>=x;--xx)ring.push_back(from_grid[(y+height-1)*cols+xx]);
+        for(int yy=y+height-2;yy>y;--yy)ring.push_back(from_grid[yy*cols+x]);
+        if(std::all_of(ring.begin(),ring.end(),[](int v){return v>=0;}))cycles.push_back(std::move(ring));
     }
     // Peel tree pockets. Agents exiting these get precedence over agents entering.
     pocket.assign(cells,0);
@@ -231,6 +274,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     std::vector<Pair> pairs;pairs.reserve(agents.size()*tasks.size());
     for(int a:agents) {
         int p=g.from_grid[env->curr_states[a].location];
+        if(cfg.predict_matching && !pending_.empty())p=pending_[a];
         for(int j=0;j<int(tasks.size());++j) {
             int t=tasks[j];const auto& task=env->task_pool.at(t);
             float cost=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+cfg.length_weight*length[j];
@@ -361,28 +405,26 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     if(cfg.intent_rotation)intent=choose(false);
     chosen=choose(true);
     if(cfg.loops) {
-        // 2x2 rectangular cycles. All four destinations must currently be waits.
-        for(int y=0;y+1<g.rows;++y)for(int x=0;x+1<g.cols;++x) {
-            int grid[]={y*g.cols+x,y*g.cols+x+1,(y+1)*g.cols+x+1,(y+1)*g.cols+x};
-            int v[4],a[4];bool good=true;
-            for(int k=0;k<4;++k) {
-                v[k]=g.from_grid[grid[k]];
-                if(v[k]<0 || owner[v[k]]<0){good=false;break;}
+        // Geometry is precomputed; evaluate only obstacle-free perimeters.
+        for(const auto& v:g.cycles) {
+            const int count=int(v.size());std::array<int,32> a{};bool good=true;
+            for(int k=0;k<count;++k) {
+                if(owner[v[k]]<0){good=false;break;}
                 a[k]=owner[v[k]];
                 if(chosen[a[k]]!=v[k]){good=false;break;}
             }
             if(!good)continue;
             float best_gain=cfg.loop_threshold;int sign=0;
-            for(int s:{1,3}) {
+            for(int s:{1,count-1}) {
                 float gain=0;bool ok=true;
-                for(int k=0;k<4;++k) {
-                    int u=v[(k+s)%4],d=g.direction(v[k],u);
+                for(int k=0;k<count;++k) {
+                    int u=v[(k+s)%count],d=g.direction(v[k],u);
                     if(!allowed(a[k],d)){ok=false;break;}
                     gain+=base_cost[a[k]]-cost(a[k],u,d);
                 }
                 if(ok && gain>best_gain){best_gain=gain;sign=s;}
             }
-            if(sign)for(int k=0;k<4;++k)chosen[a[k]]=v[(k+sign)%4];
+            if(sign)for(int k=0;k<count;++k)chosen[a[k]]=v[(k+sign)%count];
         }
     }
     actions.assign(n,W);

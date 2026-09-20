@@ -74,4 +74,18 @@ void triage_task_change() {
     engine.compute(&e,plan,schedule);
     require(engine.triaged()==0,"triage state leaked across task replacement");
 }
-int main(){validation();scheduling();simulation();triage_task_change();std::cout<<"All Random05 checks passed\n";}
+void occupied_ring() {
+    auto e=environment(3,3,8);e.map[4]=1;
+    int ring[]={0,1,2,5,8,7,6,3};int dirs[]={0,0,1,1,2,2,3,3};
+    for(int a=0;a<8;++a) {
+        e.curr_states[a].location=ring[a];e.curr_states[a].orientation=dirs[a];
+        Task t;t.task_id=a;t.locations={ring[(a+1)%8]};e.task_pool[a]=t;e.curr_task_schedule[a]=a;
+    }
+    Config cfg;cfg.futures=1;cfg.depth=3;cfg.matching=false;cfg.loop_extent=3;
+    Engine engine(cfg);engine.initialize(&e);
+    std::vector<Action> plan;std::vector<int> schedule;
+    engine.compute(&e,plan,schedule);e.curr_task_schedule=schedule;e.curr_timestep=1;
+    engine.compute(&e,plan,schedule);
+    require(std::count(plan.begin(),plan.end(),FW)==8,"occupied 8-cycle failed to move simultaneously");
+}
+int main(){validation();scheduling();simulation();triage_task_change();occupied_ring();std::cout<<"All Random05 checks passed\n";}
