@@ -899,12 +899,13 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (chain_flow_pricing_)
         std::printf("[cgar-chain-pricing] mode=%d shadow=%d resident_only=1 extra_tables=0\n", chain_flow_pricing_, chain_flow_pricing_ == 4);
     const int reassign_match = env_int("CGAR_REASSIGN_MATCH", 0);
-    if (reassign_match < 0 || reassign_match > 1 || (reassign_match &&
-        (!temporal_ || !orientation_guidance_ || !pickup_flow_ || !flow_strength_ ||
-         !env->trick_instance.empty() || guide_enabled_ || reassign_ || reassign_pool_ ||
-         chain_flow_pricing_ || temporal_remaining_flow_)))
-        throw std::invalid_argument("unopened pickup matching requires generic temporal learned pickup flow, boolean setting and no other rematching, chain pricing, remaining-flow score or guides");
-    reassign_match_ = reassign_match != 0;
+    if (reassign_match < 0 || reassign_match > 1 ||
+        (reassign_match && !env->trick_instance.empty()) ||
+        ((reassign_match || trick_options.matching) &&
+         (!temporal_ || !orientation_guidance_ || !pickup_flow_ || (!flow_strength_ && !static_trick_metric_) ||
+          guide_enabled_ || reassign_ || reassign_pool_ || chain_flow_pricing_ || temporal_remaining_flow_)))
+        throw std::invalid_argument("unopened pickup matching requires temporal/oriented pickup flow, a boolean selector and no other rematching, chain pricing, remaining-flow score or guides; under --trick use CGAR_TRICK_UNOPENED_MATCH");
+    reassign_match_ = reassign_match != 0 || trick_options.matching;
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
         throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
@@ -954,8 +955,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
-                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, hrrn_, !short_task_trick_);
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
+                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, hrrn_, !short_task_trick_);
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
@@ -2254,7 +2255,9 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     if (!reassign_match_ || now % interval != 0) return;
     ++stats_.match_passes;
     prune_reassignment_records();
-    if (flow_guidance_.publications() <= 0) {
+    // Match the scheduler's metric lifecycle: static trick quotes are ready
+    // after tick0 even though learned-flow publication is disabled for them.
+    if (!((static_trick_metric_ && now > 0) || flow_guidance_.publications() > 0)) {
         check_deadline(deadline_, "unopened_match_waiting_for_publication");
         return;
     }

@@ -3127,6 +3127,20 @@ void warehouse_trick_regression() {
  }
  if(trick.stats().flow_publications||trick.stats().flow_cache_resets||generic.stats().flow_publications==0)
   throw std::runtime_error("static trick activation or publication isolation failed");
+ // Explicit matching uses the static metric without waiting forever for a
+ // learned-flow publication. The primary remains protected in this real pass.
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
+ auto matching=flagged;matching.curr_timestep=0;matching.curr_task_schedule={0};
+ matching.goal_locations={{{goal,0}}};matching.task_pool.at(0).agent_assigned=0;
+ Cgar matching_policy;matching_policy.initialize(&matching,30000);matching_policy.plan(&matching,30000,actions);
+ matching.curr_timestep=10;matching_policy.schedule(&matching,30000,schedule);
+ if(schedule!=std::vector<int>{0}||matching_policy.stats().flow_publications||
+    matching_policy.stats().match_passes!=1||matching_policy.stats().match_primary_protected!=1)
+  throw std::runtime_error("static trick matching did not activate with primary protection");
+ setenv("CGAR_REASSIGN_MATCH","1",1);rejected=false;
+ try{Cgar invalid;invalid.initialize(&matching,30000);}catch(const std::invalid_argument&){rejected=true;}
+ if(!rejected)throw std::runtime_error("generic matching selector bypassed explicit trick component");
+ unsetenv("CGAR_REASSIGN_MATCH");unsetenv("CGAR_TRICK_UNOPENED_MATCH");
  // Distinguish age preference from the independent forced-oldest admission.
  // Both tasks have the same pickup, so only their chain and age differ.
  int far=goal;for(int cell=0;cell<int(e.map.size());++cell)
@@ -3152,18 +3166,18 @@ void warehouse_trick_regression() {
   if(schedule!=std::vector<int>{0}||test.task_pool.at(0).idx_next_loc!=1)
    throw std::runtime_error("short-task trick redirected a started long task");
  }
- for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_SHORT_TASKS"}){
-  unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");setenv(key,"0",1);rejected=false;
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_SHORT_TASKS","CGAR_TRICK_UNOPENED_MATCH"}){
+  unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");setenv(key,"0",1);rejected=false;
   try{options("");}catch(const std::invalid_argument&){rejected=true;}
   if(!rejected)throw std::runtime_error("trick component activated without CLI");
   for(const char* bad:{"", "-1", "2", "true"}){setenv(key,bad,1);rejected=false;
    try{options("WAREHOUSE");}catch(const std::invalid_argument&){rejected=true;}
    if(!rejected)throw std::runtime_error("malformed trick component accepted");}
  }
- unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_HRRN");
+ unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_HRRN");
  for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_PICKUP_FLOW","CGAR_FLOW_WARMUP","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
  std::cout<<"TRICK_SHORT_TASKS passed age_and_oldest_admission_independent=1 lanes_factorial_cases=8 started_long_task_protected=1 explicit_cli_required=1 invalid_components_rejected=1\n";
- std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1\n";
+ std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1 explicit_matching_component=1 static_matching_active=1\n";
 }
 
 
