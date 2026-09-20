@@ -19,7 +19,6 @@ constexpr float INF=1e20f;
 int integer(const char* key,int value) { const char* v=std::getenv(key);return v?std::stoi(v):value; }
 float real(const char* key,float value) { const char* v=std::getenv(key);return v?std::stof(v):value; }
 int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
-constexpr int ranking_cache_slots=64;
 struct PolicyScratch {
     std::vector<int> p,moving,owner,chosen,reserve,idle_heading,forced_heading,candidate_count,order,prepared,intent;
     std::vector<float> base_cost,priorities;
@@ -50,6 +49,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.policy_profile=integer("R05_POLICY_PROFILE",0);
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
+    c.cache_slots=integer("R05_CACHE_SLOTS",64);
+    if(c.cache_slots<8 || c.cache_slots>1024 || (c.cache_slots&(c.cache_slots-1)))
+        throw std::invalid_argument("candidate cache slots must be a power of two in [8,1024]");
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.elites<1 ||
        c.elites>c.futures/c.continuations || c.persist_elites<1 ||
@@ -539,7 +541,7 @@ void Engine::initialize(SharedEnvironment* env) {
         candidate_rankings_.resize(cfg.threads);
         #pragma omp parallel for num_threads(cfg.threads) schedule(static)
         for(int worker=0;worker<cfg.threads;++worker)
-            candidate_rankings_[worker].resize(size_t(n)*ranking_cache_slots);
+            candidate_rankings_[worker].resize(size_t(n)*cfg.cache_slots);
     }
     if(cfg.operation_depth) {operation_model_=std::make_unique<OperationModel>(*graph);operations_.assign(n,OperationModel::waiting);}
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
@@ -788,11 +790,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // and collision resolution are always recomputed for the current future.
     CachedRanking* cache=cfg.candidate_cache && cfg.push_price==0 && !candidate_rankings_.empty()
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
+    const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
     for(int i=0;i<n;++i) {
         if(cache) {
             uint64_t key=(uint64_t(uint32_t(f.stage[i]))<<32)|uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
-            size_t slot=(key*0x9e3779b97f4a7c15ULL)>>58;
-            auto* entry=&cache[size_t(i)*ranking_cache_slots+slot];ranking_slots[i]=entry;
+            size_t slot=(key*0x9e3779b97f4a7c15ULL)>>cache_shift;
+            auto* entry=&cache[size_t(i)*cfg.cache_slots+slot];ranking_slots[i]=entry;
             if(entry->epoch==ranking_epoch_ && entry->key==key && entry->chain==active_chain[i]) {
                 ranking_hits[i]=1;idle_heading[i]=entry->idle_heading;base_cost[i]=entry->base_cost;
             } else {

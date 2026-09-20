@@ -442,6 +442,12 @@ void cached_candidate_rankings() {
         require(reference==simulate(cfg,12),"ranking cache changed dense task turnover/policy choices");
         cfg.threads=2;
         require(reference==simulate(cfg,12),"ranking cache changed with worker count");
+        if(variant==0)for(int slots:{8,128,256}) {
+            // A tiny direct-mapped cache forces eviction; larger tables must
+            // retain exactly the same rankings through chained task turnover.
+            cfg.cache_slots=slots;
+            require(reference==simulate(cfg,12),"ranking cache capacity changed the trajectory");
+        }
     }
 }
 

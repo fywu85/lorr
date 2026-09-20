@@ -351,3 +351,17 @@ Both counts are fixed before execution, divisible by the continuation count,
 and must supply enough roots for generations/elites. No elapsed-time cutoff or
 partial search is introduced. This general startup-work allowance may let more
 search fit in later steps; strict full-run timing checks are still required.
+
+
+The first-K5120/regular-K6144 four-core attempt exits124 at timestep2 with
+1000.533ms compute. Preserve this failed strict1s attempt; do not count a partial
+score or silently retry. Smaller5632/5888 full runs remain underway.
+
+A bounded implementation experiment increases candidate-ranking cache capacity.
+The original64 slots per agent/worker were a fixed memory choice, while current
+RSS is far below32GB. `R05_CACHE_SLOTS` accepts powers of two8–1024 (default64).
+Epoch, chain identity, stage, pose and moving-state keys and the neighbor-dependent
+push-cost bypass stay unchanged. Larger tables may reduce repeated cache misses,
+though their memory footprint could also hurt locality. Dense tests stress
+frequent eviction and compare128/256 slots against uncached exact trajectories.
+Full trajectory and timing evidence is required before any performance claim.
