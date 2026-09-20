@@ -1,0 +1,193 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-trick-match-full-v65-20260920/trick_lanes_short_match64-s0-r0/WAREHOUSE.json",
+  "team_size": 10000,
+  "steps": 5000,
+  "completed_tasks": 142922,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 10429,
+      "stationary": 11473
+    },
+    "loaded": {
+      "adjacent": 24474,
+      "stationary": 26554
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "empty": {
+      "fw": 10386154,
+      "cr": 402204,
+      "ccr": 317613,
+      "wait": 647237,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 35588811,
+      "cr": 455360,
+      "ccr": 486896,
+      "wait": 1715725,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "implicit_initial_idle_steps": 0,
+  "unassigned_robot_steps": 0,
+  "empty_forward_actions": 10386154,
+  "empty_turn_actions": 719817,
+  "empty_wait_actions": 647237,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 11753208,
+  "loaded_robot_steps_including_unfinished_tasks": 38246792,
+  "robot_steps_per_completed_task": 349.84117210786303,
+  "revealed_chain_shortest": {
+    "n": 157922,
+    "mean": 248.5749800534441,
+    "p90": 445,
+    "sum": 39255458
+  },
+  "completed_chain_shortest": {
+    "n": 142922,
+    "mean": 235.14961307566364,
+    "p90": 421,
+    "sum": 33608053
+  },
+  "assigned_chain_shortest": {
+    "n": 152889,
+    "mean": 239.4440083982497,
+    "p90": 426,
+    "sum": 36608355
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 152889,
+    "mean": 72.29417420481526,
+    "p90": 133,
+    "sum": 11052984
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 152889,
+    "mean": 52.50246257088476,
+    "p90": 103,
+    "sum": 8027049
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 150612,
+    "mean": 77.21400021246647,
+    "p90": 136,
+    "sum": 11629355
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 150612,
+    "mean": 64.85222293044379,
+    "p90": 121,
+    "sum": 9767523
+  },
+  "completed_loaded_steps": {
+    "n": 142922,
+    "mean": 258.5123004156113,
+    "p90": 448,
+    "sum": 36947095
+  },
+  "completed_loaded_action_totals": {
+    "fw": 34381843,
+    "cr": 439899,
+    "ccr": 469032,
+    "wait": 1656321,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 240.5636850869705,
+    "cr": 3.077895635381537,
+    "ccr": 3.281734092721904,
+    "wait": 11.588985600537356,
+    "other": 0.0
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 23517,
+    "stationary": 25515
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 0.1645442968892123,
+    "stationary": 0.17852395012664252
+  },
+  "completed_loaded_forward_excess_over_shortest": 773790,
+  "observed_pickup_steps_per_shortest_cell": 1.2480663163442955,
+  "completed_loaded_steps_per_shortest_cell": 1.09935243794099,
+  "tasks_with_multiple_assignments": 110452,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 2277,
+  "distance_queries": 463700,
+  "complete_bfs_tables": 24768,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+  "static_lane_accounting_enabled": true,
+  "static_lane_motion": {
+    "idle": {
+      "forward": 0,
+      "against_lane": 0,
+      "forward_windows": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "against_lane_windows": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "empty": {
+      "forward": 10386154,
+      "against_lane": 49835,
+      "forward_windows": [
+        2190872,
+        2035823,
+        2052343,
+        2050577,
+        2056539
+      ],
+      "against_lane_windows": [
+        15974,
+        8744,
+        8440,
+        8324,
+        8353
+      ]
+    },
+    "loaded": {
+      "forward": 35588811,
+      "against_lane": 39963,
+      "forward_windows": [
+        6825656,
+        7188716,
+        7193697,
+        7193338,
+        7187404
+      ],
+      "against_lane_windows": [
+        10719,
+        7454,
+        7316,
+        7254,
+        7220
+      ]
+    }
+  },
+  "completed_loaded_against_lane": 39579
+}

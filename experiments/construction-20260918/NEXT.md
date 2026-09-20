@@ -56,6 +56,25 @@ per simulator. Preserve other fork's random05 files/commits and r05_* jobs.
 Never treat a short prefix or failed entry as a full score. Record any verified
 single-seed best immediately; keep generic and TRICK histories distinct.
 
+## Added read-only diagnosis and bounded scheduling comparison (09:00 UTC)
+
+- V69 saved V65 lane-motion/cohort audit8899419 is complete. Eight50M-action
+  replays valid, five basefixtures plus independent lanephase/window fixture and
+  wrongfieldrejection pass. Matching reduces empty/task1.527/1.558 while completed
+  chainlength stays nearlyconstant. Short+match saves~7chaincells but incurs~16.5
+  extraempty/task. results/lane-motion-audit-v69/summary.md. No newbenchmark.
+- V70 pickupweight factorial8899427 / analysis8899428: frozenV65 source5a8a51a,
+  lanesON/matching64fixed, pickupweight1/5 x shortOFF/ON x seeds0/2, eightfullcases,
+  32reservedphysicalcores, shared5s/32GB. Weight1controls must exactlymatchV65.
+  No production change. Prior older pickup5 collapse explicitly acknowledged; this is
+  one controlled retest undercurrentstaticlanes/matching, no gainclaim.
+  Raw runs/cgar-trick-pickup-weight-full-v70-20260920;
+  output results/trick-pickup-weight-full-v70; tricks/pickup_weight/README.md.
+
+- Persistent Fable turn35 is running in session1ebb1075-3538-49d1-93d1-a00c94fa256a,
+  claude-fable-5-1/max, via Claude Code. Prompt followup-34.md includes the new
+  cohort evidence, V68 source/tests and a conditional native-metric design request.
+
 ## Current jobs and latest steering
 
 User requested cost preference/long-task deferral as an explicit TRICK. Source
