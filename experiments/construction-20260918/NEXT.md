@@ -39,8 +39,8 @@ flush/rebuild cases in all pricing modes/scales/native caches. Production source
 and binary exactly V59; source4964309. The first two fixture failures are archived,
 not solver failures. Active three-arm screen8899334/8899339 passed, exactnative and128-step prefix.
 Full8899340 now runs native0/resident-imputed2/ratio-only3 × seeds0/2 on shared
-research50,24physicalcores requested,4percase,5s/32GB. Frozen source4964309.
-Raw runs/cgar-chain-pricing-full-v60-20260920; held analysis writes results/chain-pricing-full-v60.
+research50,24physicalcores verified,4percase,5s/32GB. Frozen source4964309.
+Raw runs/cgar-chain-pricing-full-v60-20260920; held analysis8899341 writes results/chain-pricing-full-v60.
 
 ## Confirmed reference and frontier
 
@@ -703,3 +703,11 @@ Generalization analysis8899288heldbehind8899287; frozenhelpers/sourcebinding
 checks, fullper-instancevalidity, resource/actionaccounting and results/summary.md
 underexperiments/generalization-20260920. No rerun or retuning planned before
 readinginitialtransferresults. Current questionaboutRNG answeredincommentary.
+
+Latest persistent review: turn31 / followup-30.md, started2026-09-20T06:10:31UTC,
+same session1ebb1075-3538-49d1-93d1-a00c94fa256a, modelclaude-fable-5-1/max,
+explicitly read-only/no tools. Raw runs/fable-cgar-session/turn31; PTY45080.
+It is reviewing the VERIFIED unfair-selection results and whether bounded unopened
+retargeting deserves one isolated TRICK comparison. Do not treat this pending
+review as a recommendation already received. Generic full pricing8899340 runs
+independently. No pool/TRICK guard change or new retarget component implemented.
