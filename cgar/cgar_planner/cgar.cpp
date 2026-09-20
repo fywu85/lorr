@@ -731,6 +731,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
     known_horizon_ = trick_options.known_horizon;
+    horizon_margin_ = trick_options.horizon_margin;
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
     stall_limit_ = env_int("CGAR_STALL", 4);
@@ -983,6 +984,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     // is a lower bound on physical travel. No native lane cost enters this bound.
     if (known_horizon_ && (cert_.core != cert_.free || refine_chain_costs_ || chain_flow_pricing_ || pickup_full_cost_key_))
         throw std::invalid_argument("known horizon requires a full core, original spatial chain estimates and ordinary shortlist ordering");
+    if (horizon_margin_ && reassign_pool_)
+        throw std::invalid_argument("horizon margin does not support pool exchanges");
+    if (horizon_margin_)
+        std::printf("[CGAR_TRICK_HORIZON_MARGIN] enabled=1 estimator=prospective_bucket_mean basis=admission_bound samples=single_holder tiers=margin_feasible_impossible fair=unchanged held=unchanged\n");
     if (known_horizon_)
         std::printf("[CGAR_TRICK_HORIZON] known_horizon=%d assumption=configured lower_bound=spatial_plus_service core=full assignments=new_only fair=unchanged held=unchanged all_impossible=assign after_horizon=ordinary\n", known_horizon_);
     oracle_.init(&cert_, table_mb << 20);
@@ -1991,6 +1996,15 @@ void Cgar::log_summary() {
             env_->curr_timestep, known_horizon_, stats_.horizon_pairs, stats_.horizon_impossible_pairs,
             stats_.horizon_rank_changes, stats_.horizon_first_rank_change, stats_.horizon_assignments,
             stats_.horizon_impossible_assignments);
+    if (horizon_margin_) {
+        const auto model = horizon_margins_.snapshot();
+        std::printf("[cgar-horizon-margin] t=%d risky_pairs=%lld risky_assignments=%lld rank_changes=%lld first_rank_change=%lld tracked=%zu invalidated=%lld excluded_completions=%lld n0=%lld n1=%lld n2=%lld n3=%lld n4=%lld sum0=%lld sum1=%lld sum2=%lld sum3=%lld sum4=%lld\n",
+            env_->curr_timestep, stats_.horizon_margin_pairs, stats_.horizon_margin_assignments,
+            stats_.horizon_margin_rank_changes, stats_.horizon_margin_first_rank_change, horizon_margins_.tracked(),
+            horizon_margins_.invalidated, horizon_margins_.excluded_completions,
+            model.count[0], model.count[1], model.count[2], model.count[3], model.count[4],
+            model.excess[0], model.excess[1], model.excess[2], model.excess[3], model.excess[4]);
+    }
     std::fflush(stdout);
 }
 
@@ -2575,6 +2589,23 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
     check_deadline(deadline_, "unopened_match_complete");
 }
 
+void Cgar::record_horizon_proposal(const std::vector<int>& proposed) {
+    if (!horizon_margin_) return;
+    horizon_margins_.proposed(*env_, proposed, [&](int robot, int id) -> long long {
+        const auto chain = chain_cost_.find(id);
+        if (chain == chain_cost_.end()) return -1;  // unknown first admission cannot train
+        const auto& task = env_->task_pool.at(id);
+        const int from = env_->curr_states[robot].location, goal = task.locations.front();
+        const auto* table = oracle_.peek(goal);
+        int pickup = table ? oracle_.value(*table, from) : oracle_.manhattan(from, goal);
+        if (pickup >= kInf) pickup = oracle_.manhattan(from, goal);
+        long long bound = std::max(1, pickup) + static_cast<long long>(chain->second);
+        for (size_t k = 1; k < task.locations.size(); ++k) bound += task.locations[k] == task.locations[k - 1];
+        return bound;
+    });
+    check_deadline(deadline_, "horizon_margin_proposal");
+}
+
 // Sparse whole-chain HRRN: nearby task candidates for every idle robot, plus an
 // unpruned oldest-task admission. A bounded pair store never truncates the task
 // pool by ID; unmatched robots get a fresh search over the remaining tasks.
@@ -2592,6 +2623,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     env_ = env;
     deadline_ = deadline;
     distance_deadline_ = deadline_;
+    if (horizon_margin_) { horizon_margins_.observe(*env); check_deadline(deadline_, "horizon_margin_observe"); }
     proposed = env->curr_task_schedule;
     proposed.resize(n_, -1);
     prepare_capacity_mode();
@@ -2611,6 +2643,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         reassign_unopened(proposed);
         exchange_unopened_with_pool(proposed);
         match_unopened(proposed);
+        record_horizon_proposal(proposed);
         check_deadline(deadline_, "empty_schedule"); return;
     }
     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
@@ -2634,7 +2667,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     const bool chain_metric = chain_flow_pricing_ && pickup_metric;
     struct TaskCost { int id, first, chain, revealed; int native = 0, price = 0; ResidentChainPrice resident; bool all_table = false; int repeated_stops = 0; };
     long long ratio_numerator = 0, ratio_denominator = 0;
-    struct Pair { double score; int cost, task, robot, pickup; bool global = false; bool horizon_impossible = false; };
+    struct Pair { double score; int cost, task, robot, pickup; bool global = false; bool horizon_impossible = false; int horizon_tier = 0; };
     std::vector<int> ids(free_tasks_.begin(), free_tasks_.end());
     std::sort(ids.begin(), ids.end());
     std::vector<TaskCost> tasks;
@@ -2731,6 +2764,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     };
     const int now = env->curr_timestep;
     const bool horizon_active = known_horizon_ && now < known_horizon_;
+    const auto horizon_model = horizon_margins_.snapshot();  // immutable for this whole scheduling entry
     auto pair_for = [&](int r, int t, int d, bool assess_horizon = true) {
         const auto& task = tasks[t];
         const int cost = static_cast<int>(std::max<long long>(pickup_scale, std::min<long long>(kInf - 1,
@@ -2744,7 +2778,10 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             int spatial = table ? oracle_.value(*table, from) : oracle_.manhattan(from, task.first);
             if (spatial >= kInf) spatial = oracle_.manhattan(from, task.first);
             const long long bound = std::max(1, spatial) + static_cast<long long>(task.chain) + task.repeated_stops;
-            result.horizon_impossible = bound > static_cast<long long>(known_horizon_) - now;
+            const long long remaining = static_cast<long long>(known_horizon_) - now;
+            result.horizon_impossible = bound > remaining;
+            result.horizon_tier = horizon_margin_ ? horizon_model.tier(bound, remaining) : (result.horizon_impossible ? 2 : 0);
+            stats_.horizon_margin_pairs += result.horizon_tier == 1;
             ++stats_.horizon_pairs; stats_.horizon_impossible_pairs += result.horizon_impossible;
         }
         return result;
@@ -2756,18 +2793,24 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         return a.robot < b.robot;
     };
     auto better = [&](const Pair& a, const Pair& b) {
-        if (a.horizon_impossible != b.horizon_impossible) {
-            const bool selected = !a.horizon_impossible;
-            if (selected != ordinary_better(a, b)) {
-                ++stats_.horizon_rank_changes;
-                if (stats_.horizon_first_rank_change < 0) {
-                    stats_.horizon_first_rank_change = now;
-                    std::printf("[cgar-horizon-first-rank-change] t=%d known_horizon=%d assumption=configured\n", now, known_horizon_);
-                }
+        const bool ordinary = ordinary_better(a, b);
+        const bool minimal = a.horizon_impossible != b.horizon_impossible ? !a.horizon_impossible : ordinary;
+        const bool selected = a.horizon_tier != b.horizon_tier ? a.horizon_tier < b.horizon_tier : ordinary;
+        if (selected != ordinary) {
+            ++stats_.horizon_rank_changes;
+            if (stats_.horizon_first_rank_change < 0) {
+                stats_.horizon_first_rank_change = now;
+                std::printf("[cgar-horizon-first-rank-change] t=%d known_horizon=%d assumption=configured\n", now, known_horizon_);
             }
-            return selected;
         }
-        return ordinary_better(a, b);
+        if (selected != minimal) {
+            ++stats_.horizon_margin_rank_changes;
+            if (stats_.horizon_margin_first_rank_change < 0) {
+                stats_.horizon_margin_first_rank_change = now;
+                std::printf("[cgar-horizon-margin-first-rank-change] t=%d known_horizon=%d assumption=configured\n", now, known_horizon_);
+            }
+        }
+        return selected;
     };
     // Optional cost-only discovery retains a broader low-cost shortlist while
     // leaving age-weighted assignment ranking and fair admission unchanged.
@@ -2821,6 +2864,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         if (horizon_active) {
             ++stats_.horizon_assignments;
             stats_.horizon_impossible_assignments += p.horizon_impossible;
+            stats_.horizon_margin_assignments += p.horizon_tier == 1;
         }
         stats_.global_assignments += p.global;
     };
@@ -3078,6 +3122,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     reassign_unopened(proposed);
     exchange_unopened_with_pool(proposed);
     match_unopened(proposed);
+    record_horizon_proposal(proposed);
     check_deadline(deadline_, "scheduling_complete");
 }
 

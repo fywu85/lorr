@@ -3767,6 +3767,88 @@ void known_horizon_regression() {
  std::cout<<"KNOWN_HORIZON passed metric_table_boundary_cases="<<cases<<" repeated_service_cases=5 active_shelf_detour_cases=2 empty_shortlist_sampled_fallback=1 first_rank_change=1 at_and_past_horizon_ordinary=1 oldest_admission_unchanged=1 held_started_protected=1 task_metadata_unchanged=1 explicit_cli=1 malformed_and_basis_guards=11\n";
 }
 
+void horizon_margin_regression() {
+ auto require=[](bool x,const char* message){if(!x)throw std::runtime_error(message);};
+ auto rejects=[&](auto run){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,"horizon margin activation guard failed");};
+ setenv("CGAR_TRICK_HORIZON_MARGIN","0",1);rejects([&]{cgar::tricks::options("");});
+ setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);rejects([&]{cgar::tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_KNOWN_HORIZON","26",1);
+ for(const char* bad:{"","-1","2","true"}){setenv("CGAR_TRICK_HORIZON_MARGIN",bad,1);rejects([&]{cgar::tricks::options("WAREHOUSE");});}
+ unsetenv("CGAR_TRICK_HORIZON_MARGIN");unsetenv("CGAR_TRICK_KNOWN_HORIZON");
+ auto empty=[](int robots){SharedEnvironment e;e.num_of_agents=robots;e.curr_timestep=0;e.curr_task_schedule.assign(robots,-1);e.curr_states.assign(robots,State(0,0,0));return e;};
+ int buckets=0;
+ for(int bound:{1,50,100,200,400}){
+  HorizonMargins model;auto e=empty(1);model.observe(e);
+  Task t;t.task_id=0;t.locations={0};e.task_pool.emplace(0,t);
+  model.proposed(e,{0},[&](int robot,int id){return bound;});
+  e.task_pool.at(0).agent_assigned=0;e.curr_task_schedule={0};
+  const auto cold=model.snapshot();require(cold.tier(bound,bound)==0,"cold margin did not retain physical equality");
+  for(int tick=1;tick<bound+3;++tick){e.curr_timestep=tick;model.observe(e);require(model.snapshot().count[HorizonMargins::Snapshot::bucket(bound)]==0,"margin used unfinished duration");}
+  e.curr_timestep=bound+3;e.task_pool.clear();e.curr_task_schedule={-1};model.observe(e);model.observe(e);
+  const auto warm=model.snapshot();const int bin=HorizonMargins::Snapshot::bucket(bound);
+  require(warm.count[bin]==1&&warm.excess[bin]==3,"prospective completion duration or duplicate-observation accounting failed");
+  require(warm.tier(bound,bound+3)==0&&warm.tier(bound,bound+2)==1&&warm.tier(bound,bound-1)==2,"margin inclusive tier boundary failed");
+  require(cold.count[bin]==0&&cold.tier(bound,bound)==0,"margin snapshot changed during a comparison batch");++buckets;
+ }
+ // Rational means are compared without rounding down: (3+4)/2 needs four ticks.
+ {HorizonMargins::Snapshot s;s.count[0]=2;s.excess[0]=7;require(s.tier(10,13)==1&&s.tier(10,14)==0,"fractional mean lost a tick");}
+ // Retarget and drop/readmit histories must never re-enter calibration.
+ for(bool drop:{false,true}){
+  HorizonMargins model;auto e=empty(2);model.observe(e);Task task;task.task_id=0;task.locations={0};e.task_pool.emplace(0,task);
+  model.proposed(e,{0,-1},[](int,int){return 1;});e.curr_task_schedule={0,-1};e.task_pool.at(0).agent_assigned=0;
+  e.curr_timestep=1;model.observe(e);model.proposed(e,drop?std::vector<int>{-1,-1}:std::vector<int>{-1,0},[](int,int){return 1;});
+  e.curr_task_schedule=drop?std::vector<int>{-1,-1}:std::vector<int>{-1,0};e.task_pool.at(0).agent_assigned=drop?-1:1;
+  e.curr_timestep=2;model.observe(e);if(drop){model.proposed(e,{0,-1},[](int,int){return 1;});e.curr_task_schedule={0,-1};e.task_pool.at(0).agent_assigned=0;}
+  e.curr_timestep=3;e.task_pool.clear();e.curr_task_schedule={-1,-1};model.observe(e);
+  require(model.snapshot().count[0]==0&&model.invalidated==1&&model.excluded_completions==1,"retarget/drop trained the single-holder margin");
+ }
+ // A first proposal finalized on robot1 is a genuine single-holder admission.
+ {HorizonMargins model;auto e=empty(2);model.observe(e);Task task;task.task_id=0;task.locations={0};e.task_pool.emplace(0,task);
+  model.proposed(e,{-1,0},[](int r,int){return r==1?1:9;});e.curr_task_schedule={-1,0};e.task_pool.at(0).agent_assigned=1;
+  e.curr_timestep=1;model.observe(e);e.curr_timestep=2;e.task_pool.clear();e.curr_task_schedule={-1,-1};model.observe(e);
+  require(model.snapshot().count[0]==1&&model.snapshot().excess[0]==1,"margin recorded an intermediate proposal holder");}
+ // Missing an observation cannot manufacture an exact completion timestamp.
+ {HorizonMargins model;auto e=empty(1);model.observe(e);Task task;task.task_id=0;task.locations={0};e.task_pool.emplace(0,task);
+  model.proposed(e,{0},[](int,int){return 1;});e.curr_timestep=2;e.task_pool.clear();model.observe(e);
+  require(model.snapshot().count[0]==0&&model.excluded_completions==1,"gapped observations trained a guessed finish time");}
+ // Real scheduler integration: bound11 task completes after14 ticks. The
+ // learned +3 margin demotes an old bound12 task at R12, but admits bound1.
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","128"},
+  {"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_FLOW_STRENGTH","4"},{"CGAR_PICKUP_FLOW","1"},
+  {"CGAR_PICKUP_FULL_ROBOTS","1"},{"CGAR_PICKUP_FULL_THREADS","1"},{"CGAR_TRICK_LANES","1"},
+  {"CGAR_TRICK_REMAINING_FLOW","1"},{"CGAR_PICKUP_WEIGHT","5"},{"CGAR_HRRN","1"},
+  {"CGAR_TRICK_NATIVE_METRIC","1"},{"CGAR_TRICK_NATIVE_BANDS","1"},{"CGAR_FLOW_COST_SCALE","20"},
+  {"CGAR_TRICK_KNOWN_HORIZON","26"},{"CGAR_SCHED_TABLES","128"}};
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ for(int margin:{0,1}){
+  setenv("CGAR_TRICK_HORIZON_MARGIN",margin?"1":"0",1);SharedEnvironment e;e.trick_instance="WAREHOUSE";
+  e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=2;
+  for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');
+  for(int cell=1504;cell<=1526;++cell)require(!e.map[cell],"margin corridor fixture changed");
+  e.curr_states={State(1504,0,0),State(1500,0,0)};e.curr_task_schedule={-1,99};e.goal_locations={{},{{1950,0}}};
+  Task held;held.task_id=99;held.locations={1950};held.agent_assigned=1;e.task_pool.emplace(99,held);
+  Task train;train.task_id=0;train.locations={1515};e.task_pool.emplace(0,train);
+  Cgar policy;policy.initialize(&e,30000);std::vector<int> schedule;policy.schedule(&e,30000,schedule);
+  require(schedule==std::vector<int>({0,99}),"margin training admission failed");e.task_pool.at(0).agent_assigned=0;e.curr_task_schedule=schedule;
+  for(int tick=1;tick<14;++tick){e.curr_timestep=tick;e.curr_states[0].location=1504+std::max(0,tick-3);policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({0,99}),"margin changed held work while training");}
+  e.curr_timestep=14;e.curr_states[0].location=1515;e.curr_task_schedule={-1,99};e.task_pool.erase(0);
+  Task old;old.task_id=1;old.t_revealed=0;old.locations={1526,1526};e.task_pool.emplace(1,old);
+  Task fresh;fresh.task_id=2;fresh.t_revealed=14;fresh.locations={1515};e.task_pool.emplace(2,fresh);
+  policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({margin?2:1,99}),"observed margin did not change the feasible near-boundary admission");
+  require(!policy.stats().fair_assignments,"margin activated oldest admission early");
+  if(margin){const auto m=policy.horizon_margins().snapshot();require(m.count[0]==1&&m.excess[0]==3&&policy.stats().horizon_margin_first_rank_change==14,"real margin observation or reversal timestamp failed");}
+  // Fair admission still overrides the tiers on the next admission wave.
+  policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({1,99})&&policy.stats().fair_assignments==1,"margin changed oldest fair admission");
+  require(e.curr_task_schedule==std::vector<int>({-1,99})&&e.task_pool.at(1).agent_assigned==-1,"margin mutated simulator metadata");
+ }
+ setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);setenv("CGAR_REASSIGN_POOL","1",1);
+ {SharedEnvironment e;e.trick_instance="WAREHOUSE";e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=1;
+  for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');e.curr_states={State(1504,0,0)};e.curr_task_schedule={-1};e.goal_locations={{}};
+  rejects([&]{Cgar p;p.initialize(&e,30000);});}
+ unsetenv("CGAR_REASSIGN_POOL");unsetenv("CGAR_TRICK_HORIZON_MARGIN");for(auto setting:settings)unsetenv(setting.first);
+ std::cout<<"HORIZON_MARGIN passed bucket_boundaries="<<buckets<<" fractional_mean=1 prospective_only=1 no_double_count=1 immutable_snapshot=1 retarget_and_drop_excluded=1 final_proposal_holder=1 gap_excluded=1 real_scheduler_margin=1 fair_and_held_unchanged=1 activation_guards=7\n";
+}
+
 void chain_flow_pricing_regression() {
  auto check=[](bool condition,const char* message){if(!condition)throw std::runtime_error(message);};
  auto deadline=[](){return std::chrono::steady_clock::now()+std::chrono::seconds(5);};
@@ -3912,4 +3994,4 @@ void chain_flow_pricing_regression() {
  std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" production_refresh_cases="<<refresh_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
 }
 
-int main(){try{native_metric_regression();native_short_preference_regression();known_horizon_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

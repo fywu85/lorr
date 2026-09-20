@@ -35,6 +35,7 @@
 #include "tricks.hpp"
 #include "guide_routes.hpp"
 
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <list>
@@ -274,6 +275,8 @@ struct Stats {
     long long horizon_pairs = 0, horizon_impossible_pairs = 0, horizon_rank_changes = 0;
     long long horizon_assignments = 0, horizon_impossible_assignments = 0;
     long long horizon_first_rank_change = -1;
+    long long horizon_margin_pairs = 0, horizon_margin_assignments = 0, horizon_margin_rank_changes = 0;
+    long long horizon_margin_first_rank_change = -1;
     long long evacuations = 0;
     long long schedule_calls = 0, local_assignments = 0, fallback_assignments = 0;
     long long candidate_searches = 0, candidate_nodes = 0, candidate_task_limits = 0;
@@ -325,6 +328,77 @@ struct MatchBudgetShadowStats {
     long long fully_protected_cycles = 0, fully_protected_rows = 0, fully_protected_saving = 0;
 };
 
+// Prospective duration-minus-bound means. Only a task whose first accepted
+// holder never changes can train a bucket; dropped/retargeted tasks stay excluded.
+class HorizonMargins {
+public:
+    struct Snapshot {
+        std::array<long long, 5> count{}, excess{};
+        static int bucket(long long bound) { return bound < 50 ? 0 : bound < 100 ? 1 : bound < 200 ? 2 : bound < 400 ? 3 : 4; }
+        int tier(long long bound, long long remaining) const {
+            if (bound > remaining) return 2;
+            const int k = bucket(bound);
+            return !count[k] || static_cast<__int128>(remaining - bound) * count[k] >= excess[k] ? 0 : 1;
+        }
+    };
+    Snapshot snapshot() const { return learned_; }
+    long long invalidated = 0, excluded_completions = 0;
+    size_t tracked() const { return records_.size(); }
+
+    void observe(const SharedEnvironment& env) {
+        const int now = env.curr_timestep;
+        if (now == observed_tick_) return;  // repeated observation cannot train twice
+        if (now < observed_tick_) throw std::logic_error("horizon margin time moved backwards");
+        const bool consecutive = observed_tick_ >= 0 && now == observed_tick_ + 1;
+        for (auto it = records_.begin(); it != records_.end();) {
+            auto& record = it->second;
+            if (!consecutive && observed_tick_ >= 0) invalidate(record);
+            const auto task = env.task_pool.find(it->first);
+            if (task == env.task_pool.end()) {
+                // TaskManager removes tasks only after completion, before the
+                // next scheduling call. Require its free-holder/final-cell state
+                // and a consecutive observation to bind the completion timestamp.
+                const long long duration = static_cast<long long>(now) - record.admitted;
+                if (record.single_holder && consecutive && duration >= record.bound &&
+                    env.curr_task_schedule.at(record.robot) == -1 &&
+                    env.curr_states.at(record.robot).location == record.final_cell) {
+                    const int k = Snapshot::bucket(record.bound);
+                    ++learned_.count[k]; learned_.excess[k] += duration - record.bound;
+                } else ++excluded_completions;
+                it = records_.erase(it);
+            } else {
+                if (task->second.agent_assigned != record.robot || env.curr_task_schedule.at(record.robot) != it->first)
+                    invalidate(record);
+                ++it;
+            }
+        }
+        observed_tick_ = now;
+    }
+
+    template<class Bound>
+    void proposed(const SharedEnvironment& env, const std::vector<int>& schedule, Bound bound) {
+        for (auto& entry : records_)
+            if (schedule.at(entry.second.robot) != entry.first) invalidate(entry.second);
+        for (size_t robot = 0; robot < schedule.size(); ++robot) {
+            const int id = schedule[robot];
+            if (id < 0 || records_.count(id)) continue;
+            const auto& task = env.task_pool.at(id);
+            // Record the final proposal after all matching. An intermediate
+            // proposal that never reaches TaskManager is not a holder change.
+            const bool fresh = task.agent_assigned < 0 && task.idx_next_loc == 0 && !task.locations.empty();
+            const long long value = fresh ? bound(static_cast<int>(robot), id) : -1;
+            records_.emplace(id, Record{static_cast<int>(robot), env.curr_timestep,
+                task.locations.empty() ? -1 : task.locations.back(), value, fresh && value >= 1});
+        }
+    }
+private:
+    struct Record { int robot, admitted, final_cell; long long bound; bool single_holder; };
+    void invalidate(Record& record) { if (record.single_holder) { record.single_holder = false; ++invalidated; } }
+    Snapshot learned_;
+    std::unordered_map<int, Record> records_;
+    int observed_tick_ = -1;
+};
+
 class Cgar {
 public:
     static Cgar& instance();
@@ -339,6 +413,7 @@ public:
     int parked_count() const;
     bool active_certified() const { return active_certified_; }
     const Stats& stats() const { return stats_; }
+    const HorizonMargins& horizon_margins() const { return horizon_margins_; }
     const MatchBudgetShadowStats& match_budget_shadow() const { return match_budget_shadow_; }
     // Destination proposals before the LoRR turn adapter; native-grid conformance only.
     const std::vector<int>& proposed_cells() const { return next_; }
@@ -470,6 +545,9 @@ private:
     bool short_task_trick_ = false;
     int known_horizon_ = 0;
     bool known_horizon_passed_ = false;
+    bool horizon_margin_ = false;
+    HorizonMargins horizon_margins_;
+    void record_horizon_proposal(const std::vector<int>& proposed);
     bool repair_fallback_ = true;
     bool refine_chain_costs_ = false;
     bool scheduler_cache_peek_ = false;
