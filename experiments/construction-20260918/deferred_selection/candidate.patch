@@ -1,0 +1,49 @@
+--- a/temporal_pibt.hpp
++++ b/temporal_pibt.hpp
+@@ -102,7 +102,7 @@
+         for (int r = 0; r < static_cast<int>(choices_.size()); ++r) {
+             if (selected_[r] < 0 || selected_[r] >= static_cast<int>(choices_[r].size()) ||
+                 !choice(r).path->valid) throw std::logic_error("invalid temporal seed");
+-            if (blocker(r) != -1) throw std::logic_error("conflicting temporal seed");
++            if (blocker(*choice(r).path) != -1) throw std::logic_error("conflicting temporal seed");
+             add(r);
+         }
+         if (choice_regions_) {
+@@ -370,7 +370,7 @@
+ private:
+     double random_real() { return static_cast<double>(std::uniform_int_distribution<uint64_t>{}(rng_)) / UINT64_MAX; }
+     int random_int(int a, int b) { return static_cast<int>(std::uniform_int_distribution<int64_t>(a, b)(rng_)); }
+-    int blocker(int r) const {
++    int blocker(const TemporalPath& path) const {
+         int answer = -1;
+         auto take = [&](int other) {
+             if (other >= 0) {
+@@ -379,7 +379,6 @@
+             }
+             return true;
+         };
+-        const auto& path = *choice(r).path;
+         for (int t = 0; t < kTemporalHorizon; ++t)
+             if (!take(used_cells_[path.cells[t]][t])) return -2;
+         for (int t = 0; t < kTemporalHorizon; ++t)
+@@ -422,9 +421,9 @@
+                 if (choices_[r][k].path->depth > horizon_) continue;
+             }
+             ++stats.candidates;
+-            selected_[r] = k;
+-            const int other = blocker(r);
++            const int other = blocker(*choices_[r][k].path);
+             if (other == -1) {
++                selected_[r] = k;
+                 add(r);
+                 if (consider()) return 1;
+                 remove(r); selected_[r] = old; return 2;
+@@ -436,7 +435,7 @@
+                 if (counter > 3000 && depth >= 6) continue;
+                 if (selected_[other] != 0 && random_real() < 0.8) continue;
+             }
+-            remove(other); add(r);
++            remove(other); selected_[r] = k; add(r);
+             const int result = build<Indexed>(other, depth + 1, ++counter, repairing, check);
+             if (result == 1) return 1;
+             remove(r); add(other);

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=false,h_rt=00:15:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "cgar_store_probe",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-probe-v93-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-deferred-selection-probe-v93-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "stdout": "8899794\n",
+  "stderr": ""
+}
