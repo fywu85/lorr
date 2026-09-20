@@ -1,16 +1,11 @@
-{
-  "source_commit": "d933023",
-  "evidence": "random05/results/scratch-reuse-split-full-v46/k8192-b8/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05",
-    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 16,
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:31:06.451623+00:00",
+    "name": "k8192-b4",
     "steps": 2000,
-    "limit_ms": 1000,
-    "preprocess_ms": 30000,
-    "trick": true,
-    "name": "k8192-b8",
-    "env": {
+    "binary_sha256": "e29c44b90bbcd4f0a11b2738112ca78eef89db63bd0f0e3463c221a7fd309b41",
+    "environment": {
       "R05_K": "8192",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -37,14 +32,41 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATIONS": "4",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
       "R05_FAST_DISPERSION": "1",
       "R05_SCRATCH_REUSE": "1"
     },
-    "smt": 2,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05"
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3439,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.463493882
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.3448333480950001,
+      "max": 0.463493882
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "96f51d43b36763197561ba3d10959dc422e5546e16fe68a3c6bbd3edb75e8e3a",
+    "valid": true,
+    "usage": {
+      "user_seconds": 20561.184596,
+      "system_seconds": 23.408489,
+      "peak_rss_kib": 341088,
+      "wall_seconds": 692.0468438956887,
+      "exit": 0
+    }
   }
-}
+]

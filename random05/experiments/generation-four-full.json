@@ -1,18 +1,16 @@
-{
-  "source_commit": "d933023",
-  "evidence": "random05/results/scratch-reuse-split-full-v46/k8192-b8/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05",
+[
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v47/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 16,
+    "cores": 4,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "k8192-b8",
+    "name": "generations4-four",
     "env": {
-      "R05_K": "8192",
-      "R05_THREADS": "32",
+      "R05_K": "2048",
+      "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
@@ -42,9 +40,10 @@
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
       "R05_FAST_DISPERSION": "1",
-      "R05_SCRATCH_REUSE": "1"
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GENERATIONS": "4"
     },
-    "smt": 2,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05"
+    "smt": 1,
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v42/build/lifelong_random05"
   }
-}
+]

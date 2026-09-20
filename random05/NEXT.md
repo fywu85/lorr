@@ -1,157 +1,192 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 14:01 UTC.
+Updated: 2026-09-20 14:42 UTC.
 
-Active goal: approach the colleague's roughly 27–28% advantage over matched NMS
-in the combined track. Archived RANDOM-05, 800 robots, 2,000 steps. Their code
-and synthetic instances are unavailable. The goal is not complete. Absolute
-scores from different inputs are not matched gains.
+Active goal: approach the colleague's reported roughly 27–28% matched gain over
+NMS in the combined track. Their code and private instances are unavailable.
+The goal is not complete. Raw task counts on different inputs are not matched gains.
 
-## Current verified records
+## Verified development-input records
 
-- Overall: 3,555 tasks on 32 workers / 16 physical EPYC 9354 cores, source
-  `a6ad284`, build-v42, K4096/B4/start2/local0, planner seed 3. +12.1% versus
-  matched NMS32 = 3,172. Four-core feasibility is unverified.
-- Four cores: 3,492, K2048/B4/start1/local0. +19.8% versus strongest NMS4 = 2,914.
-  Source a6ad284 mean 627 ms/max 755 ms; exact prefix reuse source da00823 gives
-  mean 578 ms/max 694 ms, RSS 296 MB. Every action/schedule/event matches.
-- K2048/B4/start1 = 3,492; both four-core repetitions are complete and valid.
-- K2048/B8/start2 = 3,501; five-seed mean 3483.2 (+4.3% versus old configuration),
-  all five positive. Four-core research58 run fails at step 3 (1068 ms); retain it.
-- All successful frontier runs use full 2,000 steps and strict 1s deadlines.
-  A timeout exits 124, never silently returns a partial search. Memory <=32 GB.
-- Log: RANDOM05_PROGRESS.md, with timestamps, producing commits, CPU allocation,
-  explicit tricks, and evidence. Machine-readable best*.json freezes each best.
+- Best: **3,596** on 32 workers / 16 physical EPYC 9354 cores. Source `d933023`,
+  build-v46, K8192/B8/start2/local0, planner seed 3. +13.4% versus matched
+  NMS32 = 3,172. Mean 308 ms, max 421 ms, RSS 447 MB. Not verified on four cores.
+- Four cores: **3,501**, source `e896201`, build-v45, K2048/B8/start2/local0.
+  +20.1% versus strongest matched NMS4 = 2,914 (other repeats 2,902 and 2,903).
+  Mean 459 ms, max 579 ms, RSS 285 MB. Every action, schedule and task event
+  matches its 32-worker trajectory. `best-four-cores.json` freezes the settings.
+- Earlier four-core 3,492 also reproduces exactly through three implementations:
+  mean 627 -> 578 -> 534 ms. These are shared-host observations, not isolated
+  causal timing estimates. The final implementation uses prefix reuse, packed
+  priority order and sparse dispersion counting.
+- All frontier rows: full 2,000 steps, strict 1s, <=32 decimal GB, no errors or
+  timeouts. Timeout exits 124; fixed work never silently returns a partial search.
+- `RANDOM05_PROGRESS.md` has 49 audited history rows, with producing commits,
+  timestamps, seeds, tricks, CPU allocation, matching budgets and evidence.
+  `best.json` / `best-32-workers.json` point to 3,596; four-core best stays separate.
 
-Shared configuration: generated flow field 15, one directional pair reversed
+Common configuration: generated flow field 15 with one direction pair reversed
 (flip seed 5), contrast 2.4; depth 8, noise 200, dispersion 0.8, wait 0.5, turn
-0.6; exact guided matching, keep bonus 0.5, length weight 0.25; horizon 2,000,
-triage scale 1.5; independent RNG per real step. Guidance and horizon remain
-explicit `--trick RANDOM-05`. Continuation averaging is generic.
+0.6; exact guided matching, keep 0.5, length 0.25; horizon 2,000 / triage scale
+1.5; independent RNG per real step. Guidance and known horizon require explicit
+`--trick RANDOM-05`. Continuation search and exact code optimizations are generic,
+but the frontier still uses those declared tricks.
 
-At K1024/local0, five planner seeds 0–4:
-- B4: 3379 / 3393 / 3383 / 3400 / 3408, mean 3392.6.
-- B8: 3451 / 3447 / 3328 / 3422 / 3440, mean 3417.6.
-- Old configuration: 3356 / 3311 / 3325 / 3395 / 3305, mean 3338.4.
-Both improve every pair, averaging +1.6% and +2.4%. Same development input;
-these are not independent task/start instances.
+K2048/B8/start2 across planner seeds 0–4 gives 3478/3443/3522/3501/3472,
+mean **3483.2**, versus the preceding mean 3338.4 (+4.3%; all five positive).
+Same development input, not independent task/start instances. K8192/B8 extra
+planner seeds are now running.
 
-Previous cutoff-free best remains 3,197 on both allocations (+9.7% versus NMS4,
-+0.8% versus NMS32), source b824f5d. New continuation cutoff-free runs unmeasured.
+Previous cutoff-free record remains 3,197 on both allocations, source b824f5d:
++9.7% versus NMS4, +0.8% versus NMS32. New continuation cutoff-free performance
+has not yet been measured; this is a useful next ablation.
 
-## Current batches
+## Fresh validation
 
-Check qstat and completion files before any restart. GRID jobs disappearing from
-qstat may need 30–60s for NFS metadata to appear. Never restart implicitly.
+V1 is complete: frozen source b824f5d at protocol22e7cd1. Seeds50001/50002 give
+3386 vs NMS2920/2957 (+14.5%), and3178 vs2898/2915 (+9.0%); aggregate+11.8%.
+All6 valid on4 physical EPYC9354 cores. Never tune on these inputs and still call
+them held out. See FRESH_VALIDATION.md and results/fresh-validation-v1/audit.json.
 
-- continuations-split-full-v42: 10/10 valid, archived. Default control exactly
-  reproduces the old 3,395 trajectory. B4/K2048 = 3,492 versus single/K2048 = 3,240.
-- continuations-validation-split-full-v42: 8/8 valid, archived, including exact
-  four-core reproduction at 3,400. Local allowances 4/16/64 = 3419/3366/3370.
-- continuations8-validation-split-full-v42: 8/8 valid, archived, including exact
-  four-core reproduction at 3,422. B8/K2048 = 3458; B16/K1024 = 3384; local32 = 3448.
-- operation-reference-rules-split-full-v43: 5/5 valid, archived. Control 1973;
-  success protection 2099; terminal-turn exclusion 1742; both 1820; both with
-  moving-only repair 2008. Not competitive; leave the operation policy off.
-- continuations-scale-split-full-v42: jobs 8899823–8899831. Seven runs collected:
-  K2048/B4/start2 = 3427; K2048/B8/start2 = 3501; K2048/B16/start1 = 3485;
-  K4096/B4/start1 = 3477; K4096/B4/start2 = 3555; K4096/B8/start1 = 3442;
-  K1024/B8/start2 = 3410. Remaining: four-core 3492 reproduction and
-  K4096/B8/start2. Collect them before promoting or restarting anything.
-- shared-prefix-split-full-v44: jobs 8899838–8899841. The 3492 and 3450 full
-  controls reproduce every action, assignment and event. K4096/B8/start2 on four
-  cores fails at step 0 (1133 ms, exit 124). Four-core K2048/B4 remains running.
-  The queued 32-worker jobs were expanded to verified same-model hosts via
-  qalter; host-expansion.json preserves the original request and adjustment.
-- continuation-refinement-split-full-v44: jobs 8899846–8899859. Fourteen full
-  cases: optimized 3501 control and four-core confirmation, planner seeds 0/1/2/4,
-  start3/4, future mutation 0.1/0.6/1.0, B4/start2/mutation0.6, depth6/10.
-  Source da00823, shared-prefix enabled. No results yet at this checkpoint.
+**V2 is running**, frozen before generation at commit **e6b2dbe**:
+- Candidate source e896201 / build-v45, the exact 3,501 four-core configuration.
+- New seeds50003/50004, unchanged generator, no tuning on these inputs.
+- One candidate plus2 NMS repeats per input; use stronger valid NMS per input.
+- Four physical EPYC9354 cores on research33/39, 1s, 30s preprocessing,32GB.
+- Protocol: FRESH_VALIDATION_V2.md and experiments/fresh-validation-v2-protocol.json.
+- Inputs: runs/random05/fresh-inputs-v2/; generation hashes archived under
+  results/fresh-validation-v2/generation.json. Not colleague private instances.
+- Batch: fresh-validation-v2-split-full-v45; jobs8899954–8899959.
+- Audit after all6 finish:
 
-## Source versions
+```sh
+python3 random05/tools/audit_fresh.py \
+  --batch random05/results/fresh-validation-v2-split-full-v45 \
+  --output random05/results/fresh-validation-v2/audit.json \
+  --protocol-commit e6b2dbe \
+  --protocol-json random05/experiments/fresh-validation-v2-protocol.json
+```
 
-- v31 b824f5d: previous 3395, and frozen fresh-input validation candidate.
-- v42 a6ad284: average multiple future priority sequences for each root decision.
-  K is total rollouts, B continuations per root; B divides K. Shared continuation
-  draws across roots; future mutation 0.3, starting after 1 step by default.
-  Default B=1 preserves the complete old trajectory. Dense tests pass.
-- v43 131d6be: optional reference operation success protection and no terminal
-  rotations, based on pinned public EPIBT implementation. Tests pass, no frontier.
-- v44 da00823: optional R05_SHARE_PREFIX=1 reuses exact common rollout prefix,
-  including virtual task turnover, completion/discount score state and reverse
-  turns. Dense tests and full control equivalence pass. Four-core timing pending.
+The audit now verifies source hashes as well as frozen settings, binary/input
+hashes, allocation, validity, latency and RAM. Its original V1 invocation still
+passes unchanged against the completed real dataset. Report every outcome,
+including failures; do not substitute later candidates into the frozen V2 run.
 
-## Fresh-input validation and interpretation
+## Source/build versions
 
-Source b824f5d and its settings were frozen at protocol commit 22e7cd1 before
-inputs 50001/50002 were generated. Candidate 3386 vs NMS 2920/2957 (+14.5%);
-3178 vs 2898/2915 (+9.0%). Aggregate +11.8%, against stronger NMS repeat perinput.
-All six valid on four physical EPYC 9354 cores. Audit checks source/binary/input
-hashes, allocations, deadlines and RAM. See FRESH_VALIDATION.md and
-results/fresh-validation-v1/audit.json. Do not tune on these inputs and still
-call them held out. A new solver validation must predeclare new inputs.
+- v42 a6ad284: continuation averaging. K total rollouts, B branches per root;
+  same first actions and promises, mutation .3 after start1 by default. B1
+  preserves the old full trajectory. This produces3492/3501/3555 before optimizations.
+- v43 131d6be: optional operation success protection and terminal-turn exclusion.
+  Tests pass; full policies remain far below the pipeline and stay off.
+- v44 da00823: exact shared-prefix reuse, including task turnover/discount state.
+- v45 e896201: packed float priority+agent-ID ordering and exact sparse/hole
+  dispersion counts. Full controls match all3555 decisions. Current four-core3501.
+- v46 d933023: thread-local reusable policy arrays and removal of temporary
+  chosen-vector copies. Tests pass, full3555 controls exact. Current overall3596.
+- v47 f9b1143: optional standard-deviation penalty on continuation scores.
+  Dense regressions pass; all nonzero full settings lose. Keep risk0.
+  No source edits after this commit; later commits add protocol/results only.
 
-The colleague's 3531/3715 counts are from private inputs. They are reference
-orientation, not directly comparable scores. Their roughly 27–28% matched gain
-remains the objective; current four-core gain is 19.8%, larger candidates pending.
+Build logs/completions/source hashes are under runs/random05/build-v*/.
+All builds above pass regressions. Source v45 binary hash d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775;
+v46 e29c44b90bbcd4f0a11b2738112ca78eef89db63bd0f0e3463c221a7fd309b41;
+v47 d73e7331238632166dd4dc7500ff65b3c1769f6788616e86bb773aabe2fb2cff.
 
-## Diagnosis and previous negative work
+## Completed latest comparisons
 
-Action replay in results/action-audit-v39 independently verifies moves, task
-locks and 1.6M robot-steps. The old solver has +25.77 loaded waits per common
-completed task versus NMS4 and +35.26 versus NMS32, despite fewer turns. These
-are observations, not a recoverable-throughput estimate.
+- Continuation initial/validation/scale batches v42 all complete and archived.
+  K1024 B4/B8 five-seed means3392.6/3417.6 vs3338.4, all five pairs positive.
+  K2048/B4/start1=3492; K2048/B8/start2=3501; K4096/B4/start2=3555;
+  K4096/B8/start2=3548. Extra local trials did not help consistently.
+- Operation reference rules v43: control1973, protect2099, finish-move1742,
+  both1820, both-moving2008. All valid, none competitive.
+- Shared-prefix v44 controls3492/3450 exact. Four3492 exact; K4096/B8 four fails
+  at step0 after1133ms. Later3501 attempt onresearch58 fails at step3 after1068ms.
+- Continuation refinement v44 complete: start3/4=3449/3389; mutation.1/.6/1=
+  3314/3460/3484; B4/start2/mutation.6=3523; depth6/10=3284/3503. No new best.
+- Continuation coupling v44 complete: turn.4/.8/1=3480/3451/3394; noise100/400=
+  3452/3460; contrast1.6/3.2/4=3395/3482/3499; no-flip3500; fields5/17=3236/3332;
+  NMS imported field2961. All12 valid, none beats3501 at the same K2048/B8 budget.
+- Hotpaths v45: control/packed/dispersion/both all3555, exact full trajectories.
+  Means194/269/192/173ms; CPU time11573/10911/11418/10248s. Packed-only has lower
+  CPU time but worse wall time on shared hosts; do not claim isolation.
+- Hotpaths four v45:3492 and3501 exact full trajectories; K3072/B4=3454. K4096/B4
+  fails step0 after1100ms. Batch complete; best remains3501.
+- Scratch reuse v46: control/reuse3555, exact. Means186/246ms, CPU11090/10547s;
+  another shared-host timing difference. K8192/B4=3439; K8192/B8=3596. All4 valid.
+- Scratch four v46: K4096/B4, K4096/B8, K3840/B4 fail step0 at1084/1042/1019ms;
+  K3584/B8 remains running. Preserve failed records; no implicit restart.
+- Risk v47: at K2048/B8 weights0/.25/.5/1/2=3501/3332/3390/3305/3386; atK4096/B4
+  3555/3454/3499/3392/3369. All valid; default full controls exact. Keep0.
+  Generations2/4/8 atK2048/B8=3512/3520/3482. Gen4 four-core confirmation running.
 
-Full comparisons already rejected: early forward augmentation; field seeds
-1–32 except selected 15; confidence-weighted field penalties; age caps/rollout
-aging/push costs; longer depth or other noise under the old single-continuation
-regime; completion bonuses; visible-pool virtual task forecasting; extra local
-search; regional mutations; opposite-turn penalties; static loads; score blends;
-startup short-task preferences; multigeneration search. See progress log and
-RESEARCH.md for evidence. Do not blindly repeat them. New continuation search
-changes the compute-scaling regime, so old K-scaling losses are not universal.
+## Pending jobs at checkpoint
 
-Short prefixes fail to preserve full-run rankings reliably. Use all 2,000 steps.
+- `scratch-four-split-full-v46` / `k3584-b8-four`: job 8899922, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50003-ours`: job 8899954, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50003-nms-repeat1`: job 8899955, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50003-nms-repeat2`: job 8899956, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50004-ours`: job 8899957, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50004-nms-repeat1`: job 8899958, state r.
+- `fresh-validation-v2-split-full-v45` / `seed50004-nms-repeat2`: job 8899959, state r.
+- `continuation-larger-split-full-v46` / `k8192-b16`: job 8899963, state r.
+- `continuation-larger-split-full-v46` / `k16384-b8`: job 8899964, state r.
+- `continuation-larger-split-full-v46` / `k16384-b16`: job 8899965, state r.
+- `continuation-larger-split-full-v46` / `k16384-b32`: job 8899966, state r.
+- `continuation-larger-split-full-v46` / `k8192-b8-seed0`: job 8899967, state r.
+- `continuation-larger-split-full-v46` / `k8192-b8-seed1`: job 8899968, state r.
+- `continuation-larger-split-full-v46` / `k8192-b8-seed2`: job 8899969, state r.
+- `continuation-larger-split-full-v46` / `k8192-b8-seed4`: job 8899970, state r.
+- `generation-four-split-full-v47` / `generations4-four`: job 8899971, state r.
 
-## Immediate next work
+Do not restart jobs just because they disappear from qstat; NFS metadata may
+lag30–60s. Check their own summary/scheduler.log/qacct first. Preserve any failed
+attempt. Batch manifests list exact jobs and frozen configurations.
 
-1. Collect pending scale/prefix/refinement runs; record valid new bests with
-   actual source, UTC, seed, allocation and explicit tricks.
-2. Confirm optimized four-core timing and trajectories before claiming a speedup.
-3. Investigate exact performance optimizations if larger portfolios help on
-   32 workers but exceed 1s on four cores. Preserve all scoring/tie decisions.
-4. Once a candidate is selected, run fresh predeclared matched input validation.
-5. Audit progress rows, commit/push only our scope, keep this checkpoint current.
+## Next useful work
 
-## Shared workspace and authorization
+1. Collect pending full runs, preserve failed deadline cases, update every valid
+   best with source/time/allocation and explicit tricks. Keep fresh inputs out of
+   configuration selection; report V2 in its own table when all6 runs finish.
+2. Measure cutoff-free continuation performance. Older3197 applies only to v31.
+3. If continuing CPU optimization, profile actual phases before more guesses.
+   K4096 four-core misses largely at startup; cannot move task work into
+   preprocessing because CompetitionSystem.cpp reveals tasks AFTER initialize.
+   `perf` is installed; login perf_event_paranoid=3; no successful profile yet.
+   An optional guided-matching cache of minimum goal-orientation distances could
+   be tested, but it is only a hypothesis and has not been implemented.
+4. Small generation4 gain needs validation. Nonzero continuation risk loses.
+5. Run audit_progress.py before promotions and commit only our scope.
 
-A separate Warehouse session edits cgar/ and experiments/construction-20260918/.
-Only edit/stage/commit random05/ and RANDOM05_PROGRESS.md. Use git commit --only
-with those paths; never include the other session's staged changes. Public
-fywu85/lorr push is authorized. Do not change repository visibility.
-No subagent delegation is authorized.
+## Older evidence and safeguards
 
-GRID physical-core binding, exact CPU-model guard and quota checks remain
-required. Shared hosts are allowed. Verified EPYC 9354 hosts include research32,
-33,34,35,36,37,39,40,41,42,45,46,47,48,49,50,51,53,54,55,56,58. New jobs may use
-that wider list instead of only 33/39, with unchanged per-run core limits.
+Full replay in results/action-audit-v39 validates moves, task locks and1.6M
+robot-steps. Old solver has more loaded waits than NMS despite fewer turns.
+These are observations, not causal/recoverable-throughput estimates. Event
+checkpoints show new gains already by step1000/1500; they do not validate using
+short prefixes for selection. Full2000 steps remain the criterion.
 
-Optional Fable source-bundle approval is pending after auto-review rejection.
-Do not transmit or repackage the blocked payload. Local work remains unblocked.
-Reserved uninitialized session: 27a4316e-b79d-46cf-86b4-41b0f558938a.
-Payload runs/random05/fable-review-01/payload.txt, SHA256
+Already rejected under earlier regimes: early forward fill; field seeds1–32
+except selected15; confidence weighting; age caps/aging/push costs; completion
+bonuses; visible-pool virtual tasks; more local search; regional mutations;
+reverse-turn penalties; static loads; score blends; startup task-length rules.
+See progress log and RESEARCH.md. Recheck only with a specific changed mechanism.
+
+Shared workspace: a separate Warehouse session edits cgar/ and
+experiments/construction-20260918/. Only edit/stage/commit random05/ and
+RANDOM05_PROGRESS.md. Use git commit --only with these paths. Public fywu85/lorr
+push is authorized; do not change visibility. No subagent delegation is authorized.
+Most commands need require_escalated because bwrap namespace creation fails.
+
+GRID: checked physical-core binding/model/quota, shared hosts allowed. Keep
+four-core timing comparisons on research33/39. Verified EPYC9354 wider hosts for
+32-worker runs:32,33,34,35,36,37,39,40,41,42,45,46,47,48,49,50,51,53,54,55,56,58.
+Do not alter Warehouse jobs. Raw runs/binaries stay ignored; copy compact JSON
+summary/spec/allocation/completion evidence only.
+
+Optional Fable exact-source payload approval remains pending after auto-review
+rejection. Do not transmit/repackage it without the specific approval. Local
+work is unblocked. Reserved uninitialized session27a4316e-b79d-46cf-86b4-41b0f558938a;
+payload runs/random05/fable-review-01/payload.txt, SHA256
  ded0889fcaa2cb82a3f4fd9d5dc46f737bdf50cf7a9e466bb66f9114f9661d0f.
-
-## Latest completion update
-
-All v42–v44 batches above are complete. Scale K4096/B8/start2 = 3548; best3555
-unchanged. Prefix 3492 four-core comparison passes exact equivalence, mean
-578 ms versus unoptimized 627 ms in this shared-host pair. New continuation
-five-seed results: 3478/3443/3522/3501/3472, mean3483.2. Refinements did not beat
-3555; details in progress log. The failed four-core3501 run remains in evidence.
-
-Build-v45 job8899866 finished successfully with all regressions (2.96s).
-New options R05_PACKED_ORDER and R05_FAST_DISPERSION defaultoff, preserve exact
-priority order and dispersion pair counts. Full-map performance pending. See
-RESEARCH.md. Keep future four-core timing checks on prior research33/39 hosts;
-wide verified-host eligibility remains useful for32-worker screens.

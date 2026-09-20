@@ -24,18 +24,17 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 14:29 UTC.
+Updated: 2026-09-20 14:39 UTC.
 
-**Best overall single run: 3,555 tasks on 32 workers / 16 physical cores**, or
-**+12.1% versus matched NMS32 = 3,172**. The planner averages four simulated
-continuations for each of 1,024 candidate priority vectors (4,096 futures total),
-keeping each candidate's priorities fixed for the first two simulated steps.
-Producing source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284); planner seed 3.
-The exact optimized version [e896201](https://github.com/fywu85/lorr/commit/e896201)
-preserves the entire trajectory and is frozen in the best-configuration JSON.
-All 2,000 steps are valid. This larger configuration has not been confirmed on
-four cores or fresh inputs. The preceding 3,501-task variant uses only 2,048
-futures; its planner-seed checks and four-core confirmation are complete.
+**Best single run on the archived input: 3,596 tasks on 32 workers / 16 physical cores**, or
+**+13.4% versus matched NMS32 = 3,172**. The planner averages eight simulated
+continuations for each of 1,024 candidate priority vectors (8,192 futures total),
+keeping priorities fixed for the first two simulated steps. Source
+[d933023](https://github.com/fywu85/lorr/commit/d933023), planner seed 3, with exact
+prefix reuse, packed sorting, sparse dispersion and reusable policy buffers.
+Mean latency 308 ms, maximum 421 ms, peak RSS 447 MB. All 2,000 steps are valid.
+This larger portfolio is not a verified four-core configuration. Additional
+planner-seed checks are running; this remains a selected single-run maximum.
 
 **Best confirmed four-core run: 3,501 tasks**, or **+20.1% versus the strongest
 matched NMS4 repeat = 2,914** (other repeats: 2,902 and 2,903). Every action,
@@ -137,6 +136,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T14:04:45.937007+00:00 | [da00823](https://github.com/fywu85/lorr/commit/da00823) | Same full trajectory with exact prefix reuse; B4/K2048/start1/local0/planner seed3; `--trick RANDOM-05` | 3492 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +19.8% | [Full evidence](random05/results/shared-prefix-split-full-v44/shared-k2048-b4-four/summary.json) |
 | 2026-09-20T14:15:04.122374+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Same 3,555 full trajectory with prefix reuse, packed priorities and sparse dispersion; B4/K4096/start2/seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/hotpaths-split-full-v45/both/summary.json) |
 | 2026-09-20T14:24:41.462668+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Exact four-core reproduction of the 3,501 trajectory; B8/K2048/start2/local0/planner seed3; prefix/packed/sparse optimizations; `--trick RANDOM-05` | 3501 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.1% | [Full evidence](random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json) |
+| 2026-09-20T14:29:52.858068+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | Mean of 8 continuations; K8192 total/start2/local0/planner seed3; exact implementation optimizations; `--trick RANDOM-05` | 3596 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +13.4% | [Full evidence](random05/results/scratch-reuse-split-full-v46/k8192-b8/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -795,3 +795,25 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   3,555 actions, schedules and events. This establishes semantic equivalence;
   small shared-host timing differences do not establish a large extra speedup.
   [Equivalence](random05/results/scratch-reuse-split-full-v46/equivalence.json).
+
+- K8192/B8/start2 reaches **3,596 tasks**, a new 32-worker record (+13.4% versus
+  matched NMS32). K8192/B4 gives 3,439, so increasing candidate count alone does
+  not reliably help. The four-core K3072/B4 intermediate gives 3,454; retain the
+  smaller, higher-scoring 3,501 four-core configuration. All these full runs are
+  valid. The 3,596 result has not been reproduced on four cores.
+
+- Continuation variance penalties all lose: at K2048/B8, weights 0/0.25/0.5/1/2
+  give 3,501/3,332/3,390/3,305/3,386; at K4096/B4 they give
+  3,555/3,454/3,499/3,392/3,369. Both zero controls preserve every action,
+  assignment and event. Keep risk zero. Two/four/eight search generations at
+  K2048/B8 give 3,512/3,520/3,482; the small four-generation gain is awaiting
+  four-core confirmation and is not a replicated improvement.
+  [Evidence](random05/results/continuation-risk-split-full-v47/summary.json).
+
+- A second fresh-input validation is frozen at commit
+  [e6b2dbe](https://github.com/fywu85/lorr/commit/e6b2dbe), before generating seeds
+  50003/50004. It tests the confirmed 3,501 four-core configuration from e896201
+  against two NMS repetitions per input. All six jobs have been submitted under the
+  existing 1s/32GB rules. The earlier 50001/50002 inputs remain excluded from
+  tuning, and development continues on the original archived input.
+  [Predeclared protocol](random05/FRESH_VALIDATION_V2.md).
