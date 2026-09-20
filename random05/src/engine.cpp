@@ -48,6 +48,8 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.progress_discount<=0 || c.progress_discount>1 || c.flow_turn_load<0)
         throw std::invalid_argument("discount must be in (0,1] and turn-load multiplier nonnegative");
     c.cycle_portfolio=integer("R05_CYCLE_PORTFOLIO",0);
+    c.early_fill=integer("R05_EARLY_FILL",0);c.early_fill_gain=real("R05_EARLY_FILL_GAIN",0);
+    if(c.early_fill_gain<0)throw std::invalid_argument("early-fill threshold must be nonnegative");
     c.operation_depth=integer("R05_OPERATIONS",0);
     c.operation_revisits=integer("R05_OPERATION_REVISITS",4);
     c.operation_inherit=integer("R05_OPERATION_INHERIT",1);
@@ -491,6 +493,59 @@ void Engine::certify(const Graph& g,const std::vector<int>& from,const std::vect
     }
 }
 
+void Engine::fill_ready_moves(const Frame& f,const std::vector<float>& offsets,std::vector<int>& to) const {
+    const auto& g=*graph;const int n=int(f.loc.size());
+    const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
+    std::vector<int> owner(g.cells,-1),next(n,-1),order(n),stamp(n,-1),index(n);
+    std::vector<unsigned char> eligible(n,0);
+    std::vector<float> gain(n),priority(n);
+    for(int a=0;a<n;++a)owner[to[a]]=a;
+    for(int a=0;a<n;++a) {
+        const Chain* chain=assigned[a];
+        const bool active=chain && f.stage[a]<int(chain->goals.size());
+        auto value=[&](int v,int d) {
+            return active?chain->cost(g,f.stage[a],v,d):cfg.idle_eviction*g.pocket_depth[v];
+        };
+        int age=cfg.rollout_age?f.age[a]:age_[a];if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
+        priority[a]=age+offsets[a]-(active?0:100000);
+        if(cfg.deadends && g.pocket[f.loc[a]] &&
+           (!active || g.pocket[chain->goals[f.stage[a]]]!=g.pocket[f.loc[a]]))priority[a]+=1000000;
+        // Preserve every already promised forward move. An idle robot can only
+        // add a forward move in its current heading; no turn-and-move shortcut.
+        if(to[a]!=f.loc[a])continue;
+        int v=g.next[f.loc[a]][f.dir[a]];if(v<0)continue;
+        next[a]=v;eligible[a]=1;
+        float before=value(f.loc[a],f.dir[a]);
+        for(int d:{(f.dir[a]+1)%4,(f.dir[a]+3)%4})before=std::min(before,value(f.loc[a],d));
+        gain[a]=before-value(v,f.dir[a]);
+    }
+    std::iota(order.begin(),order.end(),0);
+    std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priority[a]>priority[b];});
+    std::vector<int> chain;chain.reserve(n);
+    for(int root:order)if(eligible[root]) {
+        chain.clear();int a=root,begin=0;bool possible=false;
+        while(eligible[a]) {
+            if(stamp[a]==root) {
+                begin=index[a];possible=int(chain.size())-begin>=3;break;
+            }
+            stamp[a]=root;index[a]=int(chain.size());chain.push_back(a);
+            int b=owner[next[a]];
+            if(b<0){possible=true;break;}
+            a=b;
+        }
+        if(!possible)continue;
+        float total=0;for(int k=begin;k<int(chain.size());++k)total+=gain[chain[k]];
+        if(total<=cfg.early_fill_gain+1e-5f)continue;
+        // A cycle cannot accept its incoming tail; a chain must end at an
+        // unreserved cell after the existing promises. Two-agent swaps fail
+        // the minimum cycle-length check above.
+        for(int k=begin;k<int(chain.size());++k)owner[f.loc[chain[k]]]=-1;
+        for(int k=begin;k<int(chain.size());++k) {
+            int b=chain[k];to[b]=next[b];owner[to[b]]=b;eligible[b]=0;
+        }
+    }
+}
+
 void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Action>& actions,
                      uint64_t& expansion_count,bool cycle_moves) const {
     const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
@@ -499,6 +554,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // pending is the already promised forward/wait move. Plan the following
     // movement on its exact resulting occupancy, while current idle robots turn.
     std::vector<int> p=f.pending, moving(n),owner(g.cells,-1),chosen(n,-1),reserve(g.cells,-1);
+    if(cfg.early_fill)fill_ready_moves(f,offsets,p);
     for(int i=0;i<n;++i) {
         moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
         if(moving[i] && g.next[f.loc[i]][f.dir[i]]!=p[i])

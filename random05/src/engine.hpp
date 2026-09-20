@@ -25,7 +25,8 @@ struct Config {
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
-    bool cycle_portfolio=false;
+    bool cycle_portfolio=false, early_fill=false;
+    float early_fill_gain=0;
     int operation_depth=0, operation_revisits=4;
     bool operation_inherit=true, operation_moving=false;
     float operation_cost_weight=0;
@@ -108,6 +109,7 @@ private:
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;
+    void fill_ready_moves(const Frame& frame, const std::vector<float>& offsets, std::vector<int>& to) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                  uint64_t& expansions,bool cycle_moves) const;
 };

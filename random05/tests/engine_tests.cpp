@@ -32,8 +32,8 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false,int operations=0,bool operation_inherit=true,int revisits=4,bool operation_moving=false,bool rollout_match=false,int spare_tasks=0) {
-    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;cfg.operation_depth=operations;cfg.operation_inherit=operation_inherit;cfg.operation_revisits=revisits;cfg.operation_moving=operation_moving;cfg.rollout_match=rollout_match;
+uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false,int operations=0,bool operation_inherit=true,int revisits=4,bool operation_moving=false,bool rollout_match=false,int spare_tasks=0,bool early_fill=false) {
+    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;cfg.operation_depth=operations;cfg.operation_inherit=operation_inherit;cfg.operation_revisits=revisits;cfg.operation_moving=operation_moving;cfg.rollout_match=rollout_match;cfg.early_fill=early_fill;
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     for(int a=0;a<24+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%25,(a+17)%25};e.task_pool[a]=t;}
@@ -168,6 +168,24 @@ void guidance_scale_reference() {
     }
     require(flips==2,"guidance mutation count differs from requested count");
 }
+void early_forward_fill() {
+    auto e=environment(2,2,4);int cells[]={0,1,3,2},heading[]={0,1,2,3};
+    for(int a=0;a<4;++a) {
+        e.curr_states[a].location=cells[a];e.curr_states[a].orientation=heading[a];
+        Task t;t.task_id=a;t.locations={cells[(a+1)%4]};e.task_pool[a]=t;e.curr_task_schedule[a]=a;
+    }
+    Config cfg;cfg.early_fill=true;cfg.futures=1;cfg.depth=1;cfg.matching=false;
+    Engine engine(cfg);engine.initialize(&e);
+    std::vector<Action> plan;std::vector<int> schedule;engine.compute(&e,plan,schedule);
+    require(std::all_of(plan.begin(),plan.end(),[](Action a){return a==FW;}),
+            "already aligned idle cycle waited for another pipeline step");
+    Engine::certify(*engine.graph,{0,1,3,2},{1,3,2,0});
+    auto blocked=environment(1,2,2);blocked.curr_states[1].orientation=2;
+    for(int a=0;a<2;++a){Task t;t.task_id=a;t.locations={1-a};blocked.task_pool[a]=t;blocked.curr_task_schedule[a]=a;}
+    Engine other(cfg);other.initialize(&blocked);other.compute(&blocked,plan,schedule);
+    require(plan[0]==W && plan[1]==W,"early fill admitted a two-agent edge swap");
+}
+
 void completion_objective() {
     // Two robots compete for the same first destination. Only robot0 finishes
     // its chain there; robot1 would still owe another stop. A terminal reward
@@ -237,6 +255,10 @@ void operation_swap_rejection() {
     }
 }
 int main() {
+    early_forward_fill();
+    require(simulation(1,true,0,0,1,0,0,0,0,true,0,true,4,false,false,12,true)==
+            simulation(2,true,0,0,1,0,0,0,0,true,0,true,4,false,false,12,true),
+            "early-fill dense task turnover changed with worker count");
     require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,false,0,true,4,false,true),
             "virtual matching changed a rollout without spare tasks");
     require(simulation(1,true,0,0,1,0,0,0,0,true,0,true,4,false,true,12)==
