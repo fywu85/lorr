@@ -1,0 +1,114 @@
+{
+  "created_utc": "2026-09-20T22:32:32.959965+00:00",
+  "cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "hosts": [
+    "research32",
+    "research33",
+    "research34",
+    "research35",
+    "research36",
+    "research37",
+    "research39",
+    "research40",
+    "research41",
+    "research42",
+    "research45",
+    "research46",
+    "research47",
+    "research48",
+    "research49",
+    "research50",
+    "research51",
+    "research52",
+    "research53",
+    "research54",
+    "research55",
+    "research56",
+    "research58"
+  ],
+  "allocation_evidence": {
+    "research54": "runs/random05/blocked-cycle-thresholds-full-v16/allocation.json",
+    "research33": "runs/random05/build-v12/allocation.json",
+    "research40": "runs/random05/build-v15/allocation.json",
+    "research36": "runs/random05/build-v16/allocation.json",
+    "research37": "runs/random05/build-v1c/allocation.json",
+    "research46": "runs/random05/build-v2/allocation.json",
+    "research41": "runs/random05/build-v21/allocation.json",
+    "research42": "runs/random05/build-v22/allocation.json",
+    "research55": "runs/random05/build-v23/allocation.json",
+    "research45": "runs/random05/build-v29/allocation.json",
+    "research50": "runs/random05/build-v3/allocation.json",
+    "research53": "runs/random05/build-v30/allocation.json",
+    "research48": "runs/random05/build-v32/allocation.json",
+    "research47": "runs/random05/build-v35/allocation.json",
+    "research56": "runs/random05/build-v36/allocation.json",
+    "research52": "runs/random05/build-v46/allocation.json",
+    "research39": "runs/random05/build-v55/allocation.json",
+    "research35": "runs/random05/build-v6/allocation.json",
+    "research58": "runs/random05/flow-first-full-v4/allocation.json",
+    "research32": "runs/random05/nms4-build-v2/allocation.json",
+    "research51": "runs/random05/nms4-full-v1/allocation.json",
+    "research49": "runs/random05/setup-fusion-32-full-v66/allocation.json",
+    "research34": "runs/random05/task-cost-full-v11/allocation.json"
+  },
+  "reason": "Expand queued cases from two hosts to previously verified hosts of the same CPU model; preserve cores, worker count, limits, binaries, inputs and seeds.",
+  "changes": [
+    {
+      "job": 8900789,
+      "state": "r",
+      "changed": false
+    },
+    {
+      "job": 8900790,
+      "state": "qw",
+      "changed": true,
+      "command": [
+        "/opt/n1ge/bin/lx24-amd64/qalter",
+        "-q",
+        "debian.q@research32,debian.q@research33,debian.q@research34,debian.q@research35,debian.q@research36,debian.q@research37,debian.q@research39,debian.q@research40,debian.q@research41,debian.q@research42,debian.q@research45,debian.q@research46,debian.q@research47,debian.q@research48,debian.q@research49,debian.q@research50,debian.q@research51,debian.q@research52,debian.q@research53,debian.q@research54,debian.q@research55,debian.q@research56,debian.q@research58",
+        "8900790"
+      ],
+      "exit": 0,
+      "response": "modified hard queue list of job 8900790\n"
+    },
+    {
+      "job": 8900791,
+      "state": "qw",
+      "changed": true,
+      "command": [
+        "/opt/n1ge/bin/lx24-amd64/qalter",
+        "-q",
+        "debian.q@research32,debian.q@research33,debian.q@research34,debian.q@research35,debian.q@research36,debian.q@research37,debian.q@research39,debian.q@research40,debian.q@research41,debian.q@research42,debian.q@research45,debian.q@research46,debian.q@research47,debian.q@research48,debian.q@research49,debian.q@research50,debian.q@research51,debian.q@research52,debian.q@research53,debian.q@research54,debian.q@research55,debian.q@research56,debian.q@research58",
+        "8900791"
+      ],
+      "exit": 0,
+      "response": "modified hard queue list of job 8900791\n"
+    },
+    {
+      "job": 8900792,
+      "state": "qw",
+      "changed": true,
+      "command": [
+        "/opt/n1ge/bin/lx24-amd64/qalter",
+        "-q",
+        "debian.q@research32,debian.q@research33,debian.q@research34,debian.q@research35,debian.q@research36,debian.q@research37,debian.q@research39,debian.q@research40,debian.q@research41,debian.q@research42,debian.q@research45,debian.q@research46,debian.q@research47,debian.q@research48,debian.q@research49,debian.q@research50,debian.q@research51,debian.q@research52,debian.q@research53,debian.q@research54,debian.q@research55,debian.q@research56,debian.q@research58",
+        "8900792"
+      ],
+      "exit": 0,
+      "response": "modified hard queue list of job 8900792\n"
+    },
+    {
+      "job": 8900793,
+      "state": "qw",
+      "changed": true,
+      "command": [
+        "/opt/n1ge/bin/lx24-amd64/qalter",
+        "-q",
+        "debian.q@research32,debian.q@research33,debian.q@research34,debian.q@research35,debian.q@research36,debian.q@research37,debian.q@research39,debian.q@research40,debian.q@research41,debian.q@research42,debian.q@research45,debian.q@research46,debian.q@research47,debian.q@research48,debian.q@research49,debian.q@research50,debian.q@research51,debian.q@research52,debian.q@research53,debian.q@research54,debian.q@research55,debian.q@research56,debian.q@research58",
+        "8900793"
+      ],
+      "exit": 0,
+      "response": "modified hard queue list of job 8900793\n"
+    }
+  ]
+}

@@ -68,7 +68,7 @@ techniques require --trick RANDOM-05. Throughput is primary, waiting secondary.
 - runs/random05/components-split-full-v68, jobs8900771--8900774:
   source68 controloff; trials32/rounds4/min1; trials32/rounds4/min2;
   trials128/rounds2/min2. Allsource65record settings, seed4/triage1.5,
-  strict1s on matched hosts. Early extra work45–91ms; no full outcome yet.
+  strict1s on matched hosts. All terminal: exactcontrol3852; variants3702/3721/3740. Reject all, keep feature disabled.
 - runs/random05/record-triage-seeds-split-full-v65, jobs8900778/8900779:
   scale1.25 seeds0/3, compare historical3785/3794 atscale1.5.
 - runs/random05/averaged-completion-split-full-v65, jobs8900781--8900783:
@@ -120,3 +120,12 @@ Commit/push only the Random05 scope, preserving others' staged files.
   override uses `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git
   -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
   No credential was printed and repository authentication settings unchanged.
+
+- Components batch is now fully archived: control3852exact, min1=3702,
+  min2/t32=3721, min2/t128=3740. Allstrict/valid. No component frontier.
+- Host restriction33/39 was unnecessarily narrow:23previous build/allocation
+  logs confirm EPYC9354hosts. Four pending directional jobs8900790--8900793
+  received a documented qalter hard-queue expansion;8900789 had already started
+  and was left alone. See results/reference-host-expansion-20260920/queue-change.json
+  and hosts.txt; use that host list for future matched-model batches. No case
+  parameter, budget or executable changed; retain original spec plus amendment.

@@ -1431,3 +1431,14 @@ input/binary hashes and allocation are linked in the audits.
   distance. This changes which tasks appear feasible without simply moving the
   global cutoff. Source69 regression checks pass16.81s; five full cases include
   an unchanged control and mixes.5/1 atscales1.25/1.5. No gain assumed.
+
+- Reject all three general motion-component presets:3,702/3,721/3,740 tasks
+  versus the exact3,852 control. Every full run is valid, so this is a genuine
+  throughput regression, not a timeout or collision issue. Extra local score
+  improvements do not establish throughput gains. Keep the feature disabled.
+  [All outcomes](random05/results/components-split-full-v68/outcomes.json).
+- Expanded four still-queued directional-estimate jobs to23previously verified
+  EPYC9354hosts. Only their hard queue lists changed; inputs, binaries, seeds,
+  sixteen physical cores,32workers and strict limits remain frozen. The running
+  control keeps its original allocation. Runtime CPU-model preflight still applies.
+  [Recorded queue changes](random05/results/reference-host-expansion-20260920/queue-change.json).
