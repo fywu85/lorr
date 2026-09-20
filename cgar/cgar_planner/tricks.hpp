@@ -16,7 +16,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -29,8 +29,9 @@ inline Options options(const std::string& instance) {
     const char* native_bands = std::getenv("CGAR_TRICK_NATIVE_BANDS");
     const char* known_horizon = std::getenv("CGAR_TRICK_KNOWN_HORIZON");
     const char* horizon_margin = std::getenv("CGAR_TRICK_HORIZON_MARGIN");
+    const char* margin_percentile = std::getenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick WAREHOUSE");
         return {};
     }
@@ -50,10 +51,20 @@ inline Options options(const std::string& instance) {
             horizon = horizon * 10 + (*p - '0');
         }
     }
+    int percentile = 0;
+    if (margin_percentile) {
+        if (!*margin_percentile) throw std::invalid_argument("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE must be an integer in [0,100]");
+        for (const char* p = margin_percentile; *p; ++p) {
+            if (*p < '0' || *p > '9' || percentile > (100 - (*p - '0')) / 10)
+                throw std::invalid_argument("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE must be an integer in [0,100]");
+            percentile = percentile * 10 + (*p - '0');
+        }
+    }
     const bool margin = boolean(horizon_margin, false);
+    if (percentile && !margin) throw std::invalid_argument("positive horizon percentile requires horizon margin");
     if (margin && !horizon) throw std::invalid_argument("horizon margin requires a configured positive known horizon");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile};
 }
 
 inline void validate_map(const std::string& name, const std::vector<int>& map, int rows, int cols) {

@@ -1,4 +1,20 @@
-# Warehouse target achieved
+# Active: improve beyond the achieved Warehouse target
+
+The user has explicitly requested another improvement campaign after the target
+was achieved. Continue from the frozen winner, preserving ordinary fairness and
+CGAR protection/recovery. No new numerical ceiling has been established. The
+previous goal's completion is historical, not an instruction to stop this work.
+
+First independent experiments: native_work/variants.json pairs the current4M/
+2round winner with8M/2round and4M/4round fixed work, full seeds0/2; unchanged winner
+on seeds1/3 checks robustness. Use frozen V93 binary and require exact full V92
+control traces before interpreting candidates. Shared5s/32decimalGB,4bound cores
+per case; all Warehouse rules remain explicitly --trick WAREHOUSE. Fable turn45
+resumes the same CLI session to recommend one bounded completion-estimator change.
+Preserve concurrent random05 work. Prior milestone2fb2d5c was already committed,
+pushed, and its goal marked complete; the old closeout checklist below is historical.
+
+## Prior target achievement
 
 Updated2026-09-20 14:08UTC. The user's single-seed target criterion is VERIFIED:
 154889 >= NMS154795, surplus94. Full5000steps/10000robots, complete fixed work,

@@ -732,6 +732,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     short_task_trick_ = trick_options.short_tasks;
     known_horizon_ = trick_options.known_horizon;
     horizon_margin_ = trick_options.horizon_margin;
+    horizon_margins_.configure_percentile(trick_options.horizon_margin_percentile);
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
     stall_limit_ = env_int("CGAR_STALL", 4);
@@ -987,7 +988,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (horizon_margin_ && reassign_pool_)
         throw std::invalid_argument("horizon margin does not support pool exchanges");
     if (horizon_margin_)
-        std::printf("[CGAR_TRICK_HORIZON_MARGIN] enabled=1 estimator=prospective_bucket_mean basis=admission_bound samples=single_holder tiers=margin_feasible_impossible fair=unchanged held=unchanged\n");
+        std::printf("[CGAR_TRICK_HORIZON_MARGIN] enabled=1 estimator=%s basis=admission_bound samples=single_holder tiers=margin_feasible_impossible fair=unchanged held=unchanged\n",
+                    trick_options.horizon_margin_percentile ? "prospective_bucket_percentile" : "prospective_bucket_mean");
+    if (trick_options.horizon_margin_percentile)
+        std::printf("[CGAR_TRICK_HORIZON_PERCENTILE] percentile=%d rank=nearest samples=completed_single_holder fair=unchanged held=unchanged\n", trick_options.horizon_margin_percentile);
     if (known_horizon_)
         std::printf("[CGAR_TRICK_HORIZON] known_horizon=%d assumption=configured lower_bound=spatial_plus_service core=full assignments=new_only fair=unchanged held=unchanged all_impossible=assign after_horizon=ordinary\n", known_horizon_);
     oracle_.init(&cert_, table_mb << 20);
@@ -2004,6 +2008,9 @@ void Cgar::log_summary() {
             horizon_margins_.invalidated, horizon_margins_.excluded_completions, horizon_margins_.bound_violations,
             model.count[0], model.count[1], model.count[2], model.count[3], model.count[4],
             model.excess[0], model.excess[1], model.excess[2], model.excess[3], model.excess[4]);
+        if (model.percentile)
+            std::printf("[cgar-horizon-percentile] t=%d percentile=%d q0=%lld q1=%lld q2=%lld q3=%lld q4=%lld\n",
+                env_->curr_timestep, model.percentile, model.cutoff[0], model.cutoff[1], model.cutoff[2], model.cutoff[3], model.cutoff[4]);
     }
     std::fflush(stdout);
 }

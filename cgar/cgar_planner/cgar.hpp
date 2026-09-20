@@ -39,6 +39,7 @@
 #include <chrono>
 #include <cstdint>
 #include <list>
+#include <map>
 #include <random>
 #include <stdexcept>
 #include <unordered_map>
@@ -328,20 +329,47 @@ struct MatchBudgetShadowStats {
     long long fully_protected_cycles = 0, fully_protected_rows = 0, fully_protected_saving = 0;
 };
 
-// Prospective duration-minus-bound means. Only a task whose first accepted
+// Prospective duration-minus-bound means or exact empirical percentiles.
+// Only a task whose first accepted
 // holder never changes can train a bucket; dropped/retargeted tasks stay excluded.
 class HorizonMargins {
 public:
     struct Snapshot {
-        std::array<long long, 5> count{}, excess{};
+        std::array<long long, 5> count{}, excess{}, cutoff{};
+        int percentile = 0;  // zero preserves the original rational mean
         static int bucket(long long bound) { return bound < 50 ? 0 : bound < 100 ? 1 : bound < 200 ? 2 : bound < 400 ? 3 : 4; }
         int tier(long long bound, long long remaining) const {
             if (bound > remaining) return 2;
             const int k = bucket(bound);
+            if (percentile) return !count[k] || remaining - bound >= cutoff[k] ? 0 : 1;
             return !count[k] || static_cast<__int128>(remaining - bound) * count[k] >= excess[k] ? 0 : 1;
         }
     };
-    Snapshot snapshot() const { return learned_; }
+    void configure_percentile(int value) {
+        if (value < 0 || value > 100) throw std::invalid_argument("horizon percentile must be in [0,100]");
+        if (observed_tick_ >= 0 || !records_.empty()) throw std::logic_error("cannot change a trained horizon estimator");
+        percentile_ = value;
+    }
+    Snapshot snapshot() const {
+        Snapshot result = learned_;
+        if (!percentile_) return result;
+        result.percentile = percentile_;
+        for (size_t k = 0; k < histogram_.size(); ++k) {
+            if (!result.count[k]) continue;
+            // Nearest-rank empirical quantile, with exact counts and no clipped
+            // delays. A frozen five-value snapshot is shared by every pair in
+            // this scheduling entry; comparisons never scan or mutate a histogram.
+            const auto rank = static_cast<long long>((static_cast<__int128>(result.count[k]) * percentile_ + 99) / 100);
+            long long cumulative = 0;
+            bool found = false;
+            for (const auto& entry : histogram_[k]) {
+                cumulative += entry.second;
+                if (cumulative >= rank) { result.cutoff[k] = entry.first; found = true; break; }
+            }
+            if (!found) throw std::logic_error("horizon percentile sample accounting mismatch");
+        }
+        return result;
+    }
     long long invalidated = 0, excluded_completions = 0, bound_violations = 0;
     size_t tracked() const { return records_.size(); }
 
@@ -368,6 +396,7 @@ public:
                     }
                     const int k = Snapshot::bucket(record.bound);
                     ++learned_.count[k]; learned_.excess[k] += duration - record.bound;
+                    if (percentile_) ++histogram_[k][duration - record.bound];
                 } else ++excluded_completions;
                 it = records_.erase(it);
             } else {
@@ -399,6 +428,8 @@ private:
     struct Record { int robot, admitted, final_cell; long long bound; bool single_holder; };
     void invalidate(Record& record) { if (record.single_holder) { record.single_holder = false; ++invalidated; } }
     Snapshot learned_;
+    int percentile_ = 0;
+    std::array<std::map<long long, long long>, 5> histogram_;  // no nodes allocated in mean mode
     std::unordered_map<int, Record> records_;
     int observed_tick_ = -1;
 };

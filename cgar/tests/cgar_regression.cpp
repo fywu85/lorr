@@ -3767,6 +3767,50 @@ void known_horizon_regression() {
  std::cout<<"KNOWN_HORIZON passed metric_table_boundary_cases="<<cases<<" repeated_service_cases=5 active_shelf_detour_cases=2 empty_shortlist_sampled_fallback=1 first_rank_change=1 at_and_past_horizon_ordinary=1 oldest_admission_unchanged=1 held_started_protected=1 task_metadata_unchanged=1 explicit_cli=1 malformed_and_basis_guards=11\n";
 }
 
+void horizon_percentile_regression() {
+ auto require=[](bool x,const char* message){if(!x)throw std::runtime_error(message);};
+ auto rejects=[&](auto run){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,"horizon percentile activation guard failed");};
+ const char* option="CGAR_TRICK_HORIZON_MARGIN_PERCENTILE";
+ setenv(option,"0",1);rejects([&]{tricks::options("");});
+ setenv(option,"75",1);rejects([&]{tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);rejects([&]{tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_KNOWN_HORIZON","5000",1);
+ for(const char* bad:{"","-1","101","1000","1.5","true"," 75"}){setenv(option,bad,1);rejects([&]{tricks::options("WAREHOUSE");});}
+ for(int q:{0,1,50,75,90,100}){const auto value=std::to_string(q);setenv(option,value.c_str(),1);require(tricks::options("WAREHOUSE").horizon_margin_percentile==q,"horizon percentile option changed its value");}
+ unsetenv(option);unsetenv("CGAR_TRICK_HORIZON_MARGIN");unsetenv("CGAR_TRICK_KNOWN_HORIZON");
+ for(int bad:{-1,101})rejects([&]{HorizonMargins m;m.configure_percentile(bad);});
+ int checked=0;
+ // Train through the real prospective ledger on skewed, duplicate observations.
+ // Offline sorted samples give nearest ranks1,3,4,5 of [0,1,1,4,20].
+ for(int q:{0,1,50,75,90,100}){
+  HorizonMargins model;model.configure_percentile(q);
+  SharedEnvironment e;e.num_of_agents=26;e.curr_timestep=0;e.curr_task_schedule.assign(26,-1);e.curr_states.assign(26,State(0,0,0));model.observe(e);
+  std::vector<int> bounds,finish,proposal;
+  for(int bound:{1,50,100,200,400})for(int excess:{0,1,1,4,20}){const int id=bounds.size();bounds.push_back(bound);finish.push_back(bound+excess);proposal.push_back(id);Task t;t.task_id=id;t.locations={0};e.task_pool.emplace(id,t);}
+  bounds.push_back(1);finish.push_back(10000);proposal.push_back(25);Task pending;pending.task_id=25;pending.locations={0};e.task_pool.emplace(25,pending);
+  model.proposed(e,proposal,[&](int,int id){return bounds[id];});e.curr_task_schedule=proposal;for(int id=0;id<26;++id)e.task_pool.at(id).agent_assigned=id;
+  const auto cold=model.snapshot();
+  for(int tick=1;tick<=420;++tick){e.curr_timestep=tick;for(int id=0;id<26;++id)if(finish[id]==tick){e.task_pool.erase(id);e.curr_task_schedule[id]=-1;}model.observe(e);model.observe(e);}
+  const auto learned=model.snapshot();require(learned.percentile==q&&model.tracked()==1,"percentile mode or pending ledger was lost");
+  for(int k=0;k<5;++k){const int bound=bounds[k*5];const int cutoff=q==0?6:q==1?0:q==50?1:q==75?4:20;
+   require(learned.count[k]==5&&learned.excess[k]==26,"percentile trained on unfinished task or repeated observation");
+   require(!q||learned.cutoff[k]==cutoff,"empirical nearest-rank cutoff differs from sorted samples");
+   require(learned.tier(bound,bound+cutoff)==0,"percentile equality must be feasible");
+   require(learned.tier(bound,bound-1)==2,"percentile weakened the physical bound");
+   if(cutoff)require(learned.tier(bound,bound+cutoff-1)==1,"percentile risk boundary lost a tick");
+   require(cold.count[k]==0&&cold.tier(bound,bound)==0,"percentile snapshot changed after training");++checked;
+  }
+  bool rejected=false;try{model.configure_percentile(q);}catch(const std::logic_error&){rejected=true;}require(rejected,"trained percentile can be silently reconfigured");
+ }
+ // Retargeted tasks remain excluded even when the histogram is enabled.
+ {HorizonMargins model;model.configure_percentile(75);SharedEnvironment e;e.num_of_agents=2;e.curr_timestep=0;e.curr_states.assign(2,State(0,0,0));e.curr_task_schedule={-1,-1};model.observe(e);
+  Task t;t.task_id=0;t.locations={0};e.task_pool.emplace(0,t);model.proposed(e,{0,-1},[](int,int){return 1;});e.curr_task_schedule={0,-1};e.task_pool.at(0).agent_assigned=0;
+  e.curr_timestep=1;model.observe(e);model.proposed(e,{-1,0},[](int,int){return 1;});e.curr_task_schedule={-1,0};e.task_pool.at(0).agent_assigned=1;
+  e.curr_timestep=2;model.observe(e);e.curr_timestep=3;e.task_pool.clear();e.curr_task_schedule={-1,-1};model.observe(e);
+  const auto m=model.snapshot();require(m.count[0]==0&&m.cutoff[0]==0&&model.invalidated==1&&model.excluded_completions==1,"retargeted duration entered percentile histogram");}
+ std::cout<<"HORIZON_PERCENTILE passed bucket_rank_checks="<<checked<<" skewed_samples=1 duplicates=1 exact_equality=1 prospective_only=1 immutable_snapshot=1 retarget_excluded=1 configuration_guards=1\n";
+}
+
 void horizon_margin_regression() {
  auto require=[](bool x,const char* message){if(!x)throw std::runtime_error(message);};
  auto rejects=[&](auto run){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,"horizon margin activation guard failed");};
@@ -3825,7 +3869,9 @@ void horizon_margin_regression() {
   {"CGAR_TRICK_NATIVE_METRIC","1"},{"CGAR_TRICK_NATIVE_BANDS","1"},{"CGAR_FLOW_COST_SCALE","20"},
   {"CGAR_TRICK_KNOWN_HORIZON","26"},{"CGAR_SCHED_TABLES","128"}};
  for(auto setting:settings)setenv(setting.first,setting.second,1);
- for(int margin:{0,1}){
+ for(int mode:{0,1,50,75,90}){
+  const int margin=mode!=0,percentile=mode>=50?mode:0;const auto q=std::to_string(percentile);
+  setenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE",q.c_str(),1);
   setenv("CGAR_TRICK_HORIZON_MARGIN",margin?"1":"0",1);SharedEnvironment e;e.trick_instance="WAREHOUSE";
   e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=2;
   for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');
@@ -3841,11 +3887,12 @@ void horizon_margin_regression() {
   Task fresh;fresh.task_id=2;fresh.t_revealed=14;fresh.locations={1515};e.task_pool.emplace(2,fresh);
   policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({margin?2:1,99}),"observed margin did not change the feasible near-boundary admission");
   require(!policy.stats().fair_assignments,"margin activated oldest admission early");
-  if(margin){const auto m=policy.horizon_margins().snapshot();require(m.count[0]==1&&m.excess[0]==3&&policy.stats().horizon_margin_first_rank_change==14,"real margin observation or reversal timestamp failed");}
+  if(margin){const auto m=policy.horizon_margins().snapshot();require(m.count[0]==1&&m.excess[0]==3&&m.percentile==percentile&&(!percentile||m.cutoff[0]==3)&&policy.stats().horizon_margin_first_rank_change==14,"real margin observation or reversal timestamp failed");}
   // Fair admission still overrides the tiers on the next admission wave.
   policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({1,99})&&policy.stats().fair_assignments==1,"margin changed oldest fair admission");
   require(e.curr_task_schedule==std::vector<int>({-1,99})&&e.task_pool.at(1).agent_assigned==-1,"margin mutated simulator metadata");
  }
+ setenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE","75",1);
  // Real native matching: an initially free robot receives a fresh task,
  // then matching hands it to another holder before TaskManager accepts it.
  setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);setenv("CGAR_TRICK_KNOWN_HORIZON","10000",1);
@@ -3879,7 +3926,7 @@ void horizon_margin_regression() {
    policy.schedule(&e,30000,schedule);
   }
   const auto learned=policy.horizon_margins().snapshot();
-  require(learned.count[0]==1&&learned.excess[0]==duration-bound&&policy.horizon_margins().excluded_completions==2&&policy.horizon_margins().bound_violations==0,
+  require(learned.count[0]==1&&learned.excess[0]==duration-bound&&learned.percentile==75&&learned.cutoff[0]==duration-bound&&policy.horizon_margins().excluded_completions==2&&policy.horizon_margins().bound_violations==0,
    "real matching trained displaced task or used fresh robot's pre-matching bound");
  }
  unsetenv("CGAR_TRICK_UNOPENED_MATCH");
@@ -3887,7 +3934,7 @@ void horizon_margin_regression() {
  {SharedEnvironment e;e.trick_instance="WAREHOUSE";e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=1;
   for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');e.curr_states={State(1504,0,0)};e.curr_task_schedule={-1};e.goal_locations={{}};
   rejects([&]{Cgar p;p.initialize(&e,30000);});}
- unsetenv("CGAR_REASSIGN_POOL");unsetenv("CGAR_TRICK_HORIZON_MARGIN");for(auto setting:settings)unsetenv(setting.first);
+ unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");unsetenv("CGAR_REASSIGN_POOL");unsetenv("CGAR_TRICK_HORIZON_MARGIN");for(auto setting:settings)unsetenv(setting.first);
  std::cout<<"HORIZON_MARGIN passed bucket_boundaries="<<buckets<<" fractional_mean=1 prospective_only=1 no_double_count=1 immutable_snapshot=1 retarget_and_drop_excluded=1 final_proposal_holder=1 gap_excluded=1 bound_violation_fails=1 real_fresh_matching_ledger=1 real_scheduler_margin=1 fair_and_held_unchanged=1 activation_guards=7\n";
 }
 
@@ -4036,4 +4083,4 @@ void chain_flow_pricing_regression() {
  std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" production_refresh_cases="<<refresh_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
 }
 
-int main(){try{native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
