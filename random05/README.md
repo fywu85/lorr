@@ -8,8 +8,9 @@ comparable to the colleague's private synthetic instances.
 [Throughput history](../RANDOM05_PROGRESS.md) records each verified best with a
 UTC timestamp, source commit, settings, and linked benchmark evidence. Published
 scores, local NMS references, single-seed bests, and replicated results are
-identified separately. Exact frontier cases are saved in `best.json` and
-`best-four-cores.json`.
+identified separately. Exact frontier cases are saved in `best.json`,
+`best-four-cores.json`, and `best-32-workers.json`. The history audit is run with
+`python3 random05/tools/audit_progress.py`; it requires the frozen local builds.
 
 The solver combines exact oriented task-chain costs, reassignment of unopened
 tasks, a two-step PIBT pipeline, idle pre-rotation, and parallel look-ahead over
@@ -49,3 +50,9 @@ disjoint cores. Each solver process has a 32 GB address-space cap. `results/`
 contains compact evidence; `runs/` contains ignored binaries and full traces.
 Experimental settings stay off unless explicitly enabled; use the configuration
 in the frontier's evidence to reproduce it rather than assuming defaults are best.
+
+For matched-hardware validation, add `--hosts 'research33*|research39*'` and
+`--cpu-model 'AMD EPYC 9354 32-Core Processor'` to benchmark submission. The
+runner selects queue instances on those known hosts and verifies the CPU model
+before starting. Exploratory runs may use other CPU models; record that
+explicitly and validate promising results on the reference hardware.

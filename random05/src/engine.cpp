@@ -530,7 +530,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
                 wait_value=std::min(wait_value,cost(i,p[i],d));
         }
         cand[count++]={p[i],idle_heading[i],wait_value+cfg.wait_cost+0.001f};
-        std::stable_sort(cand.begin(),cand.begin()+count,[](const Candidate& a,const Candidate& b){return a.score<b.score;});
+        // At most five entries: stable insertion sort avoids a temporary
+        // allocation for every robot in every simulated policy step.
+        for(int k=1;k<count;++k) {
+            Candidate value=cand[k];int j=k;
+            while(j>0 && value.score<cand[j-1].score){cand[j]=cand[j-1];--j;}
+            cand[j]=value;
+        }
         candidate_count[i]=count;
     }
     std::vector<int> order(n);std::iota(order.begin(),order.end(),0);

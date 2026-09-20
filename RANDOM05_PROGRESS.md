@@ -24,22 +24,25 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,299 tasks / 2,000 steps** on 32 workers
-(16 physical cores with SMT), versus **3,172** for NMS with the same allocation:
-**+4.0%**. Planner seed0, generated field seed15, K1024, noise200, dispersion0.8,
-local5/equal, wait0.5, exact matching with oriented guidance and keep bonus0.5,
-and known-horizon triage scale1.5 (`--trick RANDOM-05`). Mean latency131 ms,
-maximum224 ms, peak RAM419 MiB. This is a single-seed best.
+Best verified combined result: **3,299 tasks / 2,000 steps on four physical
+cores**. Three NMS four-worker runs give **2,902 / 2,903 / 2,914**: our lead is
+**13.2–13.7%** (13.2% against the strongest repeat). All use EPYC9354 CPUs.
+Mean latency378 ms, maximum486 ms; zero errors or timeouts. The exact trajectory
+also repeats on32 workers, where NMS scores3,172 and our lead is4.0%.
 
-The four-core best is **3,127** versus NMS **2,903** (**+7.7%**). It additionally
-prepares cycles among robots PIBT already leaves waiting. Its six-seed mean is
-3,021, slightly below3,034 without that change: the maximum improved, the mean
-did not. Best without known-horizon triage is **2,914** on four cores. The
-colleague's roughly 27–28% matched advantage remains the campaign objective.
-All frontier/reference runs have zero planner/scheduler errors and timeouts.
+The configuration uses planner seed0, generated field seed15, K1024, noise200,
+dispersion0.8, local5/equal, wait0.5, exact matching with oriented guidance,
+keep bonus0.5 and known-horizon triage scale1.5 (`--trick RANDOM-05`). This is
+one planner seed, replicated across worker counts; it is not a multi-seed mean.
+
+The earlier four-core best3,127 used blocked-cycle preparation. Its six-seed
+mean was3,021 versus3,034 without preparation. Best without known-horizon triage
+remains2,914 on four cores. The colleague's roughly27–28% matched advantage
+remains the campaign objective.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
-[NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
+[NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
+[NMS four-worker repeats](random05/results/nms4-repeats-full-v3/summary.json).
 Historical rows on EPYC7532 or two workers are exploratory comparisons against
 that reference, rather than hardware-matched pairs. The current bests use the
 same EPYC9354 model and allocation as their NMS references. CPU details for every
@@ -74,6 +77,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T09:19:02.607264+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | blocked-extent2; K64; planner seed0; `--trick RANDOM-05` | 3127 | 4 / 4 / EPYC 9354 | 2903 (4 workers) | +7.7% | [Full evidence](random05/results/cycle-portfolio-full-v16/summary.json) |
 | 2026-09-20T09:21:46.636885+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | K1024, 32 workers, field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3231 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +1.9% | [Full evidence](random05/results/frontier-compute-full-v15/summary.json) |
 | 2026-09-20T09:40:30.891971+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | Exact/oriented matching, keep0.5; K1024/32 workers; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +4.0% | [Full evidence](random05/results/compound-search-full-v16/summary.json) |
+| 2026-09-20T10:03:44.348412+00:00 | [79d0e79](https://github.com/fywu85/lorr/commit/79d0e79) | Shared candidate sorting; exact/oriented keep0.5; K1024; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/shared-sort-full-v18/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -264,3 +268,14 @@ The published NMS score of 3,050 used different instances and hardware.
 - Added an independent final directional penalty so guidance contrast can be
   changed while preserving the traffic-assignment street layout. Default
   behavior is unchanged; cost-field variants remain explicit RANDOM-05 tricks.
+
+- Four-core K1024 completes at3,299 with the exact same trajectory as the
+  32-worker frontier. Mean378ms, maximum486ms, so this stronger search fits
+  the strict one-second budget with substantial room. NMS four-worker repeats
+  finish at2,914 and2,902 versus2,903 initially. Promote3,299 to both `best.json`
+  and `best-four-cores.json`; retain `best-32-workers.json` separately.
+- Action diagnosis for that trajectory:484,180 forward moves and481,329 turns,
+  versus NMS32's520,780 forward moves and574,518 turns. Tasks per500 steps are
+  767/831/734/967 versus975/750/754/693. Early throughput remains behind; the
+  known-horizon result benefits heavily near the end. Do not infer that moving
+  more robots alone is the right optimization target.

@@ -58,8 +58,8 @@ def submit(a):
     command=['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)]
     script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in command)+'\n')
     request='h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G,m_topology_inuse=*'+('CTT*'*physical)
-    if a.hosts:request+=',h='+a.hosts
-    args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded',str(slots),
+    queue=','.join('debian.q@'+host for host in a.hosts.split('|')) if a.hosts else 'debian.q'
+    args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','n','-cwd','-q',queue,'-pe','threaded',str(slots),
           '-binding','linear:'+str(physical),'-l',request,'-m','n','-N','r05_'+a.kind,
           '-j','y','-o',str(out/'scheduler.log'),'-S','/bin/bash',str(script)]
     r=subprocess.run(args,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -135,7 +135,7 @@ def execute(a):
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['submit','execute'])
     p.add_argument('--kind',choices=['build','nms4-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
-    p.add_argument('--hosts',help='GRID hostname expression for matched-hardware validation')
+    p.add_argument('--hosts',help='GRID host patterns separated by | for matched-hardware validation')
     p.add_argument('--cpu-model',help='Exact CPU model required at job startup')
     a=p.parse_args();return execute(a) if a.action=='execute' else submit(a)
 if __name__=='__main__':raise SystemExit(main())

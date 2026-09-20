@@ -15,27 +15,37 @@ Directories below are under `runs/random05/`.
 
 | GRID job | Directory | Question |
 |---|---|---|
-| 8899454 | nms4-repeats-full-v3 | How much does the timed NMS reference vary? |
-| 8899456 | large-search-full-v15 | Do K4096, smaller mutations, or noise400 help? |
+| 8899468 | shared-sort-full-v18 | Collect the final old/new K1024 comparison; new build already validated3,299 on four cores. |
+| 8899474 | field-contrast-full-v19 | Does changing directional contrast or turn cost improve the fixed field? |
+| 8899475 | field-search-validation-full-v18 | Validate four alternative fields at K1024. |
+| pending | candidate-sort-full-v20 | Check stable insertion sorting, K2048/3072, and four new planner seeds. |
 
-Collect each final `summary.json`, validate all 2,000 steps, and retain exact
+Collect each final `summary.json`, validate all2,000 steps, and retain exact
 source, binary and input hashes. Promote valid maxima while keeping them separate
-from averages. Repeat promising configurations on additional planner seeds.
-NMS logs are buffered and may remain empty during a healthy 32-minute run.
+from averages. The first two hardware-restricted jobs have an explicit allocation
+request amendment: queue instances replace the ineffective HOST expression.
+The CPU-model guard remains active. Copy that amendment into compact evidence.
 
-Cycle preparation improved some maxima but slightly lowered the six-seed mean.
-The larger-search results also vary with the cycle policy. Keep both policies
-available; investigate mixtures without assuming they will improve throughput.
-The broad remaining gap calls for better decisions as well as parameter search.
+NMS four-core repeats completed:2,902 and2,914 versus2,903 initially. Our3,299
+trajectory is identical on four cores and32 workers; its four-core mean/max
+latency is378/486ms. Compare conservatively against2,914, the strongest repeat.
+
+The additional32-field K128 screen did not beat existing field15. Higher-K
+validation remains useful because field rankings have changed with the search
+budget. Avoid interpreting a selected best seed as a demonstrated mean gain.
 
 ## Reproducible source versions
 
-- Build v15: commit `134faa8`, best overall 3,231 tasks.
+- Build v15: commit `134faa8`, preceding32-worker best3,231 tasks.
 - Build v16: commit `6aed8ba`, best overall 3,299 tasks and four-core best 3,127; adds cycle portfolios.
 - Build v17: commit `e55f951`, tests discounted progress and load-weighted turn
   costs. Tested settings did not improve throughput; both default to off.
 
-All three builds passed regression tests. Compact evidence is in `results/`;
+- Build v18: commit `79d0e79`, shared sorting;3,299 on four cores and exact trajectory reproduction.
+- Build v19: commit `b3bf5d3`, independent final guidance contrast.
+- Build v20: pending commit, stable insertion sort for five-element candidates.
+
+Completed builds passed regression tests. Compact evidence is in `results/`;
 frozen sources, binaries and full traces are under ignored `runs/random05/`.
 The progress audit checks frontier timestamps, scores, validity, binary hashes,
 and the exact planner sources at the linked commits.
@@ -54,5 +64,5 @@ Memory reservation is at least 32 GiB total. The per-process address-space cap i
 failed before solver startup because the wrapper attempted to raise that limit;
 `nms4-repeats-full-v3` is the corrected submission.
 
-Build v18 shares sorting work between the two PIBT passes. Validate exact full
-trajectories and test K1024 with four workers under a strict one-second deadline.
+The shared-sort full comparison is still awaiting the slower original K1024
+case. Its completed K64 pair is exactly equal in trajectory and25.8% faster.
