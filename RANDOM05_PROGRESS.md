@@ -1,5 +1,7 @@
 # RANDOM-05 combined-track throughput progress
 
+[Current verified result summary](random05/RESULTS.md).
+
 Goal: approach the colleague's reported roughly 27–28% gain over matched NMS
 combined-track runs, then improve further. Their 3,531 and 3,715 task counts use
 private synthetic instances; those absolute counts are reference targets, not
@@ -26,15 +28,16 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 20:08 UTC.
+Updated: 2026-09-20 20:49 UTC.
 
 **Best single run on the archived input: 3,852 tasks on 32 workers / 16 physical cores**,
 or **+21.4% versus matched NMS32 = 3,172**. Source
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed 4,
 first K8000 then K16320/B14, screen2/keep4, four generations/E8/P8, blend0.
 Mean478ms, maximum538ms, RSS579MB; all 2,000 steps valid under strict1s.
-This is a selected seed-specific best on the development input. Other seeds
-are being checked; it is not a fresh-input comparison.
+This is a selected seed-specific best on the development input. Four of the
+five original seed runs completed; the timed-out seed completed a declared
+repeat. The original failure remains recorded. It is not a fresh-input comparison.
 [Full evidence](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json).
 
 The same configuration previously scored 3,794 on planner seed 3 (mean473ms,
@@ -46,7 +49,10 @@ The same source first reached3,755 atK8192/B10, then3,776 atK16384/B10.
 Both intermediate records remain in the timestamped history. The five-seed
 K8192/B10 check scores3,730/3,642/3,611/3,755/3,715, mean3,690.6 versus3,636.6
 for ordinaryK8192/B8 (+1.5%, three of five positive pairs). These are planner
-seeds on one input. The larger3,794 configuration has no five-seed check yet.
+seeds on one input. The larger configuration's original five attempts include one timeout. With its
+declared strict repeat, completed outcomes average3,771.4 (+2.19%, all five pairs
+positive); that does not establish five-for-five first-attempt deadline reliability.
+[Completed outcomes with the original failure retained](random05/results/staged-record-seeds-32-split-full-v65/k16320-completed-outcomes-with-repeat.json).
 [Paired evidence](random05/results/staged-seeds-and-budget-32-split-full-v65/paired-seeds.json).
 
 The previous best was3,743 with ordinaryK8192/B8 on plannerseed0,
@@ -145,6 +151,18 @@ bonus 0.5 and length weight 0.25, and directional penalty 2.4. Continuation
 search is a general algorithmic change; its best runs still use these tricks.
 Machine-readable settings are frozen in `random05/best*.json`.
 
+**Fresh-input validation V4 of the frozen 3,770 configuration is complete:**
+3,680 versus NMS repeats2,907/2,870 and3,641 versus2,930/2,918.
+Against the stronger repetition: **+26.59% / +24.27%, aggregate +25.42%**.
+All six original attempts pass the full2,000-step, strict1s, four-core and32GB
+checks. Protocola7bad0c was committed before generating inputs50007/50008;
+source5f81613/seed3 was retained. Candidate means796/791ms, maxima859/852ms.
+This is close to the colleague's reported27–28% improvement range on different
+private inputs; it does not exactly reproduce their experiment. All50001–50008
+inputs remain excluded from tuning.
+[Matched V4 audit](random05/results/fresh-validation-v4/audit.json),
+[protocol and full results](random05/FRESH_VALIDATION_V4.md).
+
 **Fresh-input validation of the frozen 3,637 configuration is complete:**
 it scores 3,698 versus NMS repeats 2,926/2,900 and 3,619 versus 2,906/2,831.
 Against the stronger NMS repeat per input: **+26.38% / +24.54%, aggregate +25.46%**.
@@ -159,22 +177,24 @@ V2 andV3 use different task/start inputs, so this percentage difference is not
 an isolated paired effect. Allsix generated inputs remain outside tuning.
 [Previous matched audit](random05/results/fresh-validation-v2/audit.json).
 
-**Without known-horizon triage**, continuation search completes **3,285 tasks
-on four cores** (+12.7% versus NMS4, K2048/B8) and **3,408 on 32 workers**
-(+7.4% versus NMS32, K8192/B8). Both use one generation and planner seed 3,
-with the same guidance trick. Four-core mean latency 467 ms, maximum 578 ms,
-RSS 287 MB; 32-worker mean 317 ms, maximum 431 ms, RSS 446 MB. Both full runs
-are valid. Known-horizon counterparts score 3,501/3,596; these paired differences
-are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
-[Cutoff-free evidence](random05/results/continuation-no-horizon-split-full/summary.json).
+**Without known-horizon triage**, current configurations complete **3,503 tasks
+on four cores (+20.2% versus matched NMS4)** and **3,632 on32 workers
+(+14.5% versus matched NMS32)**. Both source5f81613 full runs pass strict1s.
+Their matching cutoff-enabled counts are3,770/3,852, so the cutoff contributes
+267/220 tasks (+7.6%/+6.1% relative to cutoff-off) on these selected seeds.
+The generated guidance trick remains enabled; these are not results without
+map tuning. Each paired setting differs only in R05_HORIZON, with identical
+binary and input hashes. Both compared allocations use EPYC9354 CPUs.
+[All full results](random05/results/staged-no-horizon-split-full-v65/summary.json),
+[paired-setting audit](random05/results/staged-no-horizon-split-full-v65/horizon-ablation.json).
 
 **Waiting-time audit of the current throughput records:** the longest completed
-order takes1,947 steps for our four-core run versus1,997 forNMS; the32-worker
-pair is1,950 versus1,976. Both solvers still have step-zero orders unfinished at
-step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-135 versus219 on fourcores,133 versus206 on32workers, out of1,200 initially
-revealed. Initial orders never opened:98 versus102 and98 versus91 respectively.
-Higher throughput does not establish a waiting-time bound.
+order takes1,941 steps for our four-core run versus1,997 forNMS; the32-worker
+pair is1,940 versus1,976. Both solvers still have step-zero orders unfinished at
+step2,000, so eventual maximum latency is unknown and at least2,000 steps.
+Initial orders unfinished:137 versus219 on four cores,138 versus206 on32workers,
+out of1,200 initially revealed. Initial orders never opened:96 versus102 and
+96 versus91 respectively. Higher throughput does not establish a waiting bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [latency history for every frontier](random05/WAITING_PROGRESS.md).
 
@@ -261,6 +281,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T19:47:51.315402+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K4608/B12, screen2/keep4, generations4/E8/P8, seed3, cache512; **trick** guidance+known horizon | 3718 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +27.6% | [full run](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json) |
 | 2026-09-20T20:02:29.833542+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3, cache512, worker binding false; **trick** guidance+known horizon | 3770 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +29.4% | [full run](random05/results/worker-affinity-four-full-v65/summary.json) |
 | 2026-09-20T20:07:08.133068+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4, blend0; **trick** guidance+known horizon | 3852 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +21.4% | [full run](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json) |
+| 2026-09-20T20:36:40.537684+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4; **trick** guidance only | 3632 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +14.5% | [full run](random05/results/staged-no-horizon-split-full-v65/32-k16320-b14-first8000-seed4-no-horizon/summary.json) |
+| 2026-09-20T20:47:29.818820+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3; **trick** guidance only | 3503 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +20.2% | [full run](random05/results/staged-no-horizon-split-full-v65/four-k5760-b12-first4608-seed3-no-horizon/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1294,3 +1316,56 @@ input/binary hashes and allocation are linked in the audits.
   The full four-core comparison continues as separate evidence; no four-core
   timing conclusion is inferred from partial output.
   [Exact trajectory and timing audit](random05/results/setup-fusion-32-full-v66/equivalence-and-timing.json).
+
+
+- Independent full replay of the current3,770/3,852 records and matched NMS
+  confirms collision safety, unique assignments, every waypoint event, and
+  locked-task handling. Our loaded rotations are421,149/416,358 versus
+  NMS561,393/543,475. Total work on final-unfinished orders is12.7%/13.6%
+  of robot-steps versus31.0%/30.0%, while our loaded waits are higher.
+  Shared completed orders require6.62%/1.15% less loaded work. These are
+  observational accounting results; task sets and congestion histories differ.
+  Full paired-setting ablations of known-horizon triage are now running.
+  [Replay report](random05/results/action-audit-frontiers-v65/REPORT.md).
+
+
+- The complete four-core setup-fusion control corroborates the rejection:
+  both full traces exactly reproduce3,770, but mean time rises785.94->798.83ms
+  (+1.64%). Maxima854.99/853.75ms. Source was already restored to5f81613;
+  all experimental evidence remains archived.
+  [Four-core exactness and timing](random05/results/setup-fusion-four-full-v66/equivalence-and-timing.json).
+
+
+- High-budget seed2 completes both declared timeout follow-ups with **3,705**
+  tasks. Their full trajectories are identical under1s and5s entry limits;
+  means506.42/507.34ms, maxima564.12/561.46ms. The original step1850 spike
+  (1422.35ms, exit124) did not recur. This is consistent with transient runtime
+  variation; its cause is not proved and the original failure remains recorded.
+  [Complete trajectory/timing audit](random05/results/staged-seed2-timeout-check-full-v65/equivalence-and-timeout.json).
+- Completed deterministic outcomes at firstK8000/K16320/B14 now average3,771.4
+  (3,785/3,721/3,705/3,794/3,852), versus3,690.6 atK8192/B10: +2.19%, all five
+  planner-seed pairs positive. This uses the declared seed2 strict repeat;
+  the initial five attempts contained one timeout, so this is not a claim of
+  five-for-five first-attempt deadline reliability or fresh-input validation.
+  [All outcomes and failure caveat](random05/results/staged-record-seeds-32-split-full-v65/k16320-completed-outcomes-with-repeat.json).
+- K7056/B12/first4608 scores3,788 on32 workers, but both direct four-core
+  attempts fail at timestep1: cycle-mask0=1073.008ms, mask1=1040.146ms.
+  Neither receives a four-core throughput score or promotion. K6480/K6768
+  give3,733/3,740 on32 workers, below the existing four-core candidate's3,770.
+
+
+- Final larger-budget check K28800/B14/first8000/seed4 completes3,706,
+  below3,852 atK16320 (mean809ms/max916ms). All four headroom experiments
+  are terminal and archived; none changes the strict frontiers.
+- The final no-cutoff four-core ablation completes3,503 tasks, mean806ms,
+  maximum866ms. Its32-worker counterpart scores3,632, mean482ms/max531ms.
+  Both are new no-cutoff frontiers, with guidance still explicitly marked as
+  a trick. The horizon switch contributes7.6%/6.1% on these selected seeds.
+- All submitted Random05 jobs are terminal. The final audit verifies74
+  timestamped frontier rows, all six original freshV4 runs, six independent
+  fresh trajectory replays, and29 compiled engine/simulator source/header files.
+  Fresh25.42% versus the stronger NMS repeats, alongside the selected four-core
+  29.4% gain, establishes the requested reasonably-close performance level.
+  It does not reproduce the colleague's private experiment exactly.
+  [Completion evidence](random05/results/completion-audit.json),
+  [concise results](random05/RESULTS.md).

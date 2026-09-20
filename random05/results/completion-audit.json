@@ -1,0 +1,139 @@
+{
+  "checked_utc": "2026-09-20T20:54:29.195227+00:00",
+  "objective": "Approach the colleague reported roughly27-28% matched improvement over NMS on RANDOM-05 combined track.",
+  "assessment": "Reasonably close: frozen independent inputs show+25.42% aggregate against stronger NMS repeats, with a selected strict four-core development gain+29.4%. This does not claim exact reproduction of private inputs or code.",
+  "all_required_work_verified": true,
+  "requirements": [
+    {
+      "requirement": "RANDOM-05 combined track, full2000 steps, matched input and allocation",
+      "evidence": "random05/results/fresh-validation-v4/audit.json",
+      "status": "verified"
+    },
+    {
+      "requirement": "Candidate frozen before generation; no tuning or substitution on new inputs",
+      "evidence": [
+        "random05/experiments/fresh-validation-v4-protocol.json",
+        "random05/results/fresh-validation-v4/declaration-order.json"
+      ],
+      "status": "verified"
+    },
+    {
+      "requirement": "Strict1s and32GB, correct source and executable",
+      "evidence": [
+        "random05/results/fresh-validation-v4/audit.json",
+        "random05/results/fresh-validation-v4/compiled-source-audit.json"
+      ],
+      "status": "verified"
+    },
+    {
+      "requirement": "Legal actions, locked tasks, waypoint events and complete trajectories",
+      "evidence": "random05/results/fresh-validation-v4/replay-audit.json",
+      "status": "verified"
+    },
+    {
+      "requirement": "Declare map-specific tricks and quantify known-horizon contribution",
+      "evidence": [
+        "random05/best-four-cores.json",
+        "random05/results/staged-no-horizon-split-full-v65/horizon-ablation.json"
+      ],
+      "status": "verified"
+    },
+    {
+      "requirement": "Track best throughput with commit hashes and UTC timestamps; waiting secondary",
+      "evidence": [
+        "RANDOM05_PROGRESS.md",
+        "random05/results/progress-audit.json",
+        "random05/WAITING_PROGRESS.md"
+      ],
+      "status": "verified"
+    },
+    {
+      "requirement": "Finish submitted experiments and retain unsuccessful attempts",
+      "evidence": [
+        {
+          "batch": "fresh-validation-v4-split-full-v65",
+          "completion": "runs/random05/fresh-validation-v4-split-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:37:31.532926+00:00"
+        },
+        {
+          "batch": "staged-headroom-32-split-full-v65",
+          "completion": "runs/random05/staged-headroom-32-split-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:41:16.357653+00:00"
+        },
+        {
+          "batch": "staged-k7056-four-full-v65",
+          "completion": "runs/random05/staged-k7056-four-full-v65/completion.json",
+          "valid": false,
+          "finished_utc": "2026-09-20T20:25:26.924957+00:00"
+        },
+        {
+          "batch": "staged-no-horizon-split-full-v65",
+          "completion": "runs/random05/staged-no-horizon-split-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:48:56.797254+00:00"
+        },
+        {
+          "batch": "staged-seed2-timeout-check-full-v65",
+          "completion": "runs/random05/staged-seed2-timeout-check-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:28:11.726033+00:00"
+        },
+        {
+          "batch": "setup-fusion-four-full-v66",
+          "completion": "runs/random05/setup-fusion-four-full-v66/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:23:35.385774+00:00"
+        },
+        {
+          "batch": "setup-fusion-32-full-v66",
+          "completion": "runs/random05/setup-fusion-32-full-v66/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:14:15.050376+00:00"
+        },
+        {
+          "batch": "worker-affinity-four-full-v65",
+          "completion": "runs/random05/worker-affinity-four-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:02:30.701124+00:00"
+        },
+        {
+          "batch": "worker-affinity-32-full-v65",
+          "completion": "runs/random05/worker-affinity-32-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T19:53:01.951117+00:00"
+        },
+        {
+          "batch": "staged-record-seeds-32-split-full-v65",
+          "completion": "runs/random05/staged-record-seeds-32-split-full-v65/completion.json",
+          "valid": false,
+          "finished_utc": "2026-09-20T20:10:02.043366+00:00"
+        },
+        {
+          "batch": "staged-retention-32-split-full-v65",
+          "completion": "runs/random05/staged-retention-32-split-full-v65/completion.json",
+          "valid": true,
+          "finished_utc": "2026-09-20T20:07:39.338757+00:00"
+        }
+      ],
+      "status": "verified"
+    }
+  ],
+  "candidate_source_commit": "5f81613",
+  "candidate_binary_sha256": "5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3",
+  "regression_build": "runs/random05/build-v65",
+  "regressions_pass": true,
+  "frontier_rows_verified": 74,
+  "fresh_original_attempts_valid": 6,
+  "fresh_original_attempts_total": 6,
+  "source_and_simulator_files_verified": 29,
+  "fresh_gain_percent": 25.424019187939017,
+  "limitations": [
+    "The colleague private inputs and implementation are unavailable; compare matched percentage gains, not private absolute counts.",
+    "Fresh validation has two new task/start streams on one map, not different map layouts.",
+    "Development records are selected seed-specific maxima, and declared guidance/horizon tricks are used.",
+    "An original high-budget seed attempt timed out; its strict repeat and relaxed diagnostic completed identical3705 traces.",
+    "Optional Fable review was attempted but provider credits were unavailable; no Fable feedback is claimed."
+  ]
+}

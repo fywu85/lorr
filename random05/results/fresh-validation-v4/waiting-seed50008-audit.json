@@ -1,0 +1,152 @@
+{
+  "created_utc": "2026-09-20T20:39:58.474633+00:00",
+  "units": "simulation steps, not wall-clock seconds",
+  "completed_latency": "final-waypoint event time minus task release time",
+  "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
+  "unopened": "no first-waypoint event; assignment alone does not open a task",
+  "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
+  "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
+  "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
+  "manifest_sha256": "5a7d76c42f263803f9ba76a9ed6ce109e647b228bf80a117eb5c6011a78c0e1c",
+  "same_starts_horizon_and_task_stream": true,
+  "runs": {
+    "seed50008-ours": {
+      "result": "runs/random05/fresh-validation-v4-split-full-v65/seed50008-ours/seed50008-ours/result.json",
+      "result_sha256": "b3515a09f5fb2ad92095ea59bcdd7a7fc363768676ced4a0ca44aa94861af648",
+      "horizon_steps": 2000,
+      "tasks_finished": 3641,
+      "tasks_revealed": 4841,
+      "completed_latency": {
+        "count": 3641,
+        "mean_steps": 435.4809118374073,
+        "p50_steps": 358,
+        "p95_steps": 1054,
+        "p99_steps": 1661
+      },
+      "maximum_release_to_completion": {
+        "steps": 1948,
+        "task_id": 118,
+        "released_at": 0,
+        "observed_at": 1948
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1944,
+        "task_id": 397,
+        "released_at": 0,
+        "observed_at": 1944
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1190,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1190,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 512,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 678.8358333333333,
+      "initial_still_unfinished": 125,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 29,
+      "event_accounting_valid": true
+    },
+    "seed50008-nms-repeat1": {
+      "result": "runs/random05/fresh-validation-v4-split-full-v65/seed50008-nms-repeat1/seed50008-nms-repeat1/result.json",
+      "result_sha256": "1da9bd8f66739df8c53afd7c808764fa696597b99dc0efdff3f4378406f10e0b",
+      "horizon_steps": 2000,
+      "tasks_finished": 2930,
+      "tasks_revealed": 4130,
+      "completed_latency": {
+        "count": 2930,
+        "mean_steps": 419.71399317406144,
+        "p50_steps": 278,
+        "p95_steps": 1319,
+        "p99_steps": 1738
+      },
+      "maximum_release_to_completion": {
+        "steps": 1991,
+        "task_id": 1137,
+        "released_at": 0,
+        "observed_at": 1991
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1972,
+        "task_id": 1037,
+        "released_at": 0,
+        "observed_at": 1972
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1195,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1190,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 433,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 797.6941666666667,
+      "initial_still_unfinished": 222,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 126,
+      "event_accounting_valid": true
+    },
+    "seed50008-nms-repeat2": {
+      "result": "runs/random05/fresh-validation-v4-split-full-v65/seed50008-nms-repeat2/seed50008-nms-repeat2/result.json",
+      "result_sha256": "76493e494bfdb7c8e432ef5b23631e25682f340702d0c210bb7e18e17db904c5",
+      "horizon_steps": 2000,
+      "tasks_finished": 2918,
+      "tasks_revealed": 4118,
+      "completed_latency": {
+        "count": 2918,
+        "mean_steps": 417.57882111034957,
+        "p50_steps": 272,
+        "p95_steps": 1307,
+        "p99_steps": 1776
+      },
+      "maximum_release_to_completion": {
+        "steps": 1983,
+        "task_id": 912,
+        "released_at": 0,
+        "observed_at": 1983
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1949,
+        "task_id": 243,
+        "released_at": 0,
+        "observed_at": 1949
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1195,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1190,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 434,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 814.0933333333334,
+      "initial_still_unfinished": 231,
+      "initial_still_unopened": 97,
+      "initial_started_unfinished": 134,
+      "event_accounting_valid": true
+    }
+  }
+}

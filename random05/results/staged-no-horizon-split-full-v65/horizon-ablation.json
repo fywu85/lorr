@@ -1,0 +1,64 @@
+{
+  "checked_utc": "2026-09-20T20:50:06.723997+00:00",
+  "source_commit": "5f81613",
+  "all_valid": true,
+  "comparisons": [
+    {
+      "cores": 4,
+      "workers": "4",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "on_tasks": 3770,
+      "off_tasks": 3503,
+      "difference": 267,
+      "gain_relative_to_off_percent": 7.622038252926067,
+      "environment_differences": {
+        "R05_HORIZON": [
+          "2000",
+          "0"
+        ]
+      },
+      "on_evidence": "random05/results/worker-affinity-four-full-v65/summary.json",
+      "off_evidence": "random05/results/staged-no-horizon-split-full-v65/four-k5760-b12-first4608-seed3-no-horizon/summary.json",
+      "off_latency_seconds": {
+        "mean": 0.8064697909155006,
+        "max": 0.865509196
+      },
+      "off_usage": {
+        "user_seconds": 6401.08121,
+        "system_seconds": 12.249618,
+        "peak_rss_kib": 471692,
+        "wall_seconds": 1615.1935507562011,
+        "exit": 0
+      }
+    },
+    {
+      "cores": 16,
+      "workers": "32",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "on_tasks": 3852,
+      "off_tasks": 3632,
+      "difference": 220,
+      "gain_relative_to_off_percent": 6.057268722466969,
+      "environment_differences": {
+        "R05_HORIZON": [
+          "2000",
+          "0"
+        ]
+      },
+      "on_evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json",
+      "off_evidence": "random05/results/staged-no-horizon-split-full-v65/32-k16320-b14-first8000-seed4-no-horizon/summary.json",
+      "off_latency_seconds": {
+        "mean": 0.48179996299400013,
+        "max": 0.530524367
+      },
+      "off_usage": {
+        "user_seconds": 29141.283771,
+        "system_seconds": 24.094046,
+        "peak_rss_kib": 564616,
+        "wall_seconds": 965.9163327459246,
+        "exit": 0
+      }
+    }
+  ],
+  "caveat": "Each pair differs only in the declared horizon setting on the same input; CPU model/allocation match, hosts may differ. These are selected planner seeds. Guidance remains a map-specific trick; no fairness guarantee is inferred."
+}

@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-09-20T20:31:12.337013+00:00",
+  "all_equal": true,
+  "fields": {
+    "actualPaths": true,
+    "plannerPaths": true,
+    "actualSchedule": true,
+    "plannerSchedule": true,
+    "events": true,
+    "tasks": true
+  },
+  "raw_results": [
+    {
+      "path": "runs/random05/staged-seed2-timeout-check-full-v65/32-k16320-b14-first8000-seed2-strict-repeat/result.json",
+      "sha256": "5bb854def39127b503bdf3c98ab2d4ede52e52c5dbe6d1e3d08548ec24a1d992",
+      "step1850_seconds": 0.48037165
+    },
+    {
+      "path": "runs/random05/staged-seed2-timeout-check-full-v65/32-k16320-b14-first8000-seed2-relaxed5s-diagnostic/result.json",
+      "sha256": "f81c6993ae0916a19836f9ed1ad53bf826077e39f903d8e076557376f2cb7f47",
+      "step1850_seconds": 0.481204102
+    }
+  ],
+  "strict": {
+    "mean": 0.5064157566845002,
+    "max": 0.564117366
+  },
+  "relaxed": {
+    "mean": 0.5073430010404995,
+    "max": 0.561462557
+  },
+  "original_failure": {
+    "evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed2/summary.json",
+    "step": 1850,
+    "elapsed_ms": 1422.35,
+    "exit": 124
+  },
+  "conclusion": "Both declared follow-ups complete identical3705 trajectories under fixed work. Original1.422s spike did not recur; transient runtime variation is consistent with this evidence, but its cause is not proved. Original failed attempt remains in the campaign."
+}

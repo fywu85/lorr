@@ -1,5 +1,7 @@
 # Independent RANDOM-05 combined solver
 
+[Verified results and reproduction evidence](RESULTS.md).
+
 A new implementation guided by the colleague's development log supplied by the
 user. Their code and tuned traffic field are unavailable. This campaign uses the
 archived 800-robot RANDOM-05 input, so its absolute scores are not directly
@@ -99,7 +101,7 @@ runs, latency and peak RAM. It needs the original generated inputs (recreatable
 with the documented generator). Do not tune on that validation set.
 
 
-The latest completed fresh-input comparison is [validation V3](FRESH_VALIDATION_V3.md):
+An earlier completed fresh-input comparison is [validation V3](FRESH_VALIDATION_V3.md):
 a frozen four-core configuration beats the stronger of two NMS repetitions by
 26.38% and24.54% on two newly generated task/start inputs,25.46% combined.
 All six runs pass the full2,000-step, strict1s and32GB checks. These inputs remain
@@ -113,3 +115,19 @@ python3 random05/tools/audit_fresh.py \
   --protocol-commit 81bdfbd \
   --protocol-json random05/experiments/fresh-validation-v3-protocol.json
 ```
+
+
+The latest completed comparison is [validation V4](FRESH_VALIDATION_V4.md), declared
+at commit a7bad0c before generating seeds 50007/50008. It uses the 3,770-task
+four-core staged-search configuration and two NMS4 repetitions per input.
+It scores 3,680 and 3,641 against stronger NMS repetitions 2,907 and 2,930:
+**+25.42% combined**, with all six original attempts valid. Later development
+records do not replace this frozen candidate.
+All task/start inputs 50001–50008 remain excluded from tuning.
+
+The current archived-input frontiers also pass an independent
+[full movement and task-work replay](results/action-audit-frontiers-v65/REPORT.md).
+This checks waypoint visits and locked-task assignments as well as collisions.
+A current waiting report can be regenerated after its event audit with
+`python3 random05/tools/render_waiting_report.py`; it selects the runs in the
+best manifests and validates their raw-result hashes.

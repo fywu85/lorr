@@ -1,6 +1,6 @@
 # Order latency at the current RANDOM-05 throughput frontiers
 
-Audited 2026-09-20T20:09:10.777235+00:00. Throughput selects these runs. Durations are simulation steps; completion latency includes queueing and service, from release to the final waypoint.
+Audited 2026-09-20T20:50:26.558088+00:00. Throughput selects these runs. Durations are simulation steps; completion latency includes queueing and service, from release to the final waypoint.
 
 | Allocation / solver | Tasks | Completed mean | Completed p95 | Completed max | Oldest unfinished | Initial unfinished / unopened |
 |---|---:|---:|---:|---:|---:|---|

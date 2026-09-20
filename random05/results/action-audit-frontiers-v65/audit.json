@@ -1,0 +1,381 @@
+{
+  "created_utc": "2026-09-20T20:19:49.303064+00:00",
+  "source_sha256": "967f87ed7b7edbebd60d2d684a9507016fdaed2569d53c5fc0df5d5bbdac6a27",
+  "manifest_sha256": "e119afd71929c296970df2677fd5d2c251115303bc32189d57b0a0b2e7c32285",
+  "runs": {
+    "ours-four-cores-3770": {
+      "result": "runs/random05/worker-affinity-four-full-v65/four-k5760-b12-first4608-omp-bind-false/result.json",
+      "result_sha256": "0c86a4808b87ea11c45058c8f73090fc316499d530ec8ce88d7d7f8c4a0baf44",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "tasks": 3770,
+      "steps": 2000,
+      "agents": 800,
+      "robot_steps": 1600000,
+      "phases": {
+        "unopened": {
+          "W": 46806,
+          "C": 12521,
+          "R": 19038,
+          "F": 30228
+        },
+        "loaded": {
+          "F": 466974,
+          "W": 603284,
+          "R": 250734,
+          "C": 170415
+        },
+        "idle": {}
+      },
+      "work_by_final_status": {
+        "completed": {
+          "unopened": {
+            "W": 31914,
+            "F": 23722,
+            "C": 10290,
+            "R": 15738
+          },
+          "loaded": {
+            "F": 424779,
+            "C": 155810,
+            "R": 229114,
+            "W": 505790
+          }
+        },
+        "unfinished": {
+          "unopened": {
+            "F": 6506,
+            "W": 14892,
+            "C": 2231,
+            "R": 3300
+          },
+          "loaded": {
+            "C": 14605,
+            "F": 42195,
+            "R": 21620,
+            "W": 97494
+          }
+        }
+      },
+      "completed_loaded_lower_bound_cells": 176211,
+      "completed_loaded_detour_cells": 248568,
+      "completed_loaded_mean_steps": 348.9371352785146,
+      "completed_chain_lengths": {
+        "2": 1174,
+        "3": 1083,
+        "5": 593,
+        "4": 920
+      },
+      "unopened_reassignments": 8833,
+      "task_starts": 4469,
+      "waiting_streaks": {
+        "count": 301075,
+        "p50": 1,
+        "p90": 4,
+        "p99": 13,
+        "maximum": 495
+      },
+      "replay_valid": true,
+      "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+    },
+    "ours-32-workers-3852": {
+      "result": "runs/random05/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/32-staged-k16320-b14-first8000-seed4/result.json",
+      "result_sha256": "72ea7d05821609d8dcde658fc832de62f101dc9de34e6b0c27eaf32d020e5853",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "tasks": 3852,
+      "steps": 2000,
+      "agents": 800,
+      "robot_steps": 1600000,
+      "phases": {
+        "unopened": {
+          "W": 47498,
+          "C": 13198,
+          "R": 20391,
+          "F": 31946
+        },
+        "loaded": {
+          "F": 469784,
+          "C": 168901,
+          "W": 600825,
+          "R": 247457
+        },
+        "idle": {}
+      },
+      "work_by_final_status": {
+        "completed": {
+          "unopened": {
+            "W": 32388,
+            "F": 24685,
+            "C": 10603,
+            "R": 16376
+          },
+          "loaded": {
+            "F": 424408,
+            "C": 153054,
+            "W": 497588,
+            "R": 223726
+          }
+        },
+        "unfinished": {
+          "unopened": {
+            "R": 4015,
+            "W": 15110,
+            "F": 7261,
+            "C": 2595
+          },
+          "loaded": {
+            "W": 103237,
+            "R": 23731,
+            "F": 45376,
+            "C": 15847
+          }
+        }
+      },
+      "completed_loaded_lower_bound_cells": 180054,
+      "completed_loaded_detour_cells": 244354,
+      "completed_loaded_mean_steps": 337.16926272066456,
+      "completed_chain_lengths": {
+        "2": 1198,
+        "3": 1106,
+        "4": 924,
+        "5": 624
+      },
+      "unopened_reassignments": 9341,
+      "task_starts": 4570,
+      "waiting_streaks": {
+        "count": 303379,
+        "p50": 1,
+        "p90": 4,
+        "p99": 13,
+        "maximum": 1070
+      },
+      "replay_valid": true,
+      "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+    },
+    "nms-four-cores": {
+      "result": "runs/random05/nms4-repeats-full-v3/nms4-repeat2/result.json",
+      "result_sha256": "902ee635b08f0e2befb73794c1dca42c309875e2bd3a802d6b76e49f6595c288",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "tasks": 2914,
+      "steps": 2000,
+      "agents": 800,
+      "robot_steps": 1600000,
+      "phases": {
+        "unopened": {
+          "R": 17659,
+          "C": 10512,
+          "W": 27187,
+          "F": 21919
+        },
+        "loaded": {
+          "W": 483779,
+          "C": 217093,
+          "R": 344300,
+          "F": 477551
+        },
+        "idle": {}
+      },
+      "work_by_final_status": {
+        "completed": {
+          "unopened": {
+            "R": 12844,
+            "C": 7688,
+            "W": 19757,
+            "F": 16318
+          },
+          "loaded": {
+            "W": 336663,
+            "F": 338537,
+            "R": 226440,
+            "C": 145318
+          }
+        },
+        "unfinished": {
+          "unopened": {
+            "W": 7430,
+            "R": 4815,
+            "C": 2824,
+            "F": 5601
+          },
+          "loaded": {
+            "R": 117860,
+            "C": 71775,
+            "W": 147116,
+            "F": 139014
+          }
+        }
+      },
+      "completed_loaded_lower_bound_cells": 126145,
+      "completed_loaded_detour_cells": 212392,
+      "completed_loaded_mean_steps": 359.28551818805767,
+      "completed_chain_lengths": {
+        "2": 982,
+        "3": 918,
+        "4": 668,
+        "5": 346
+      },
+      "unopened_reassignments": 14317,
+      "task_starts": 3684,
+      "waiting_streaks": {
+        "count": 297845,
+        "p50": 1,
+        "p90": 3,
+        "p99": 6,
+        "maximum": 776
+      },
+      "replay_valid": true,
+      "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+    },
+    "nms-32-workers": {
+      "result": "runs/random05/nms-original-full-v1/nms-original-s0/result.json",
+      "result_sha256": "24cee6f6efbbcf029334a79242641f37a748ef2f1a56a2ab01bb0a9671d0d9d6",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "tasks": 3172,
+      "steps": 2000,
+      "agents": 800,
+      "robot_steps": 1600000,
+      "phases": {
+        "unopened": {
+          "R": 19313,
+          "W": 29594,
+          "C": 11730,
+          "F": 25027
+        },
+        "loaded": {
+          "W": 475108,
+          "R": 332982,
+          "C": 210493,
+          "F": 495753
+        },
+        "idle": {}
+      },
+      "work_by_final_status": {
+        "completed": {
+          "unopened": {
+            "R": 14131,
+            "W": 21500,
+            "F": 18856,
+            "C": 8588
+          },
+          "loaded": {
+            "W": 334268,
+            "F": 356866,
+            "C": 143035,
+            "R": 222082
+          }
+        },
+        "unfinished": {
+          "unopened": {
+            "C": 3142,
+            "R": 5182,
+            "F": 6171,
+            "W": 8094
+          },
+          "loaded": {
+            "C": 67458,
+            "F": 138887,
+            "R": 110900,
+            "W": 140840
+          }
+        }
+      },
+      "completed_loaded_lower_bound_cells": 139268,
+      "completed_loaded_detour_cells": 217598,
+      "completed_loaded_mean_steps": 332.9921185372005,
+      "completed_chain_lengths": {
+        "2": 1061,
+        "3": 973,
+        "4": 748,
+        "5": 390
+      },
+      "unopened_reassignments": 17505,
+      "task_starts": 3941,
+      "waiting_streaks": {
+        "count": 299545,
+        "p50": 1,
+        "p90": 3,
+        "p99": 6,
+        "maximum": 995
+      },
+      "replay_valid": true,
+      "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+    }
+  },
+  "paired": {
+    "ours-four-cores-3770 vs nms-four-cores": {
+      "tasks": 2889,
+      "counts": {
+        "ours-four-cores-3770": {
+          "R": 168049,
+          "F": 307153,
+          "C": 114548,
+          "W": 369265
+        },
+        "nms-four-cores": {
+          "R": 221823,
+          "W": 330514,
+          "F": 332253,
+          "C": 142457
+        }
+      },
+      "task_ids_sha256": "cea95ff4cc2d11fe774e3174c4a5a7767a78c1c9e6b78c50d88fd294c7adbc3a",
+      "caveat": "Same completed task IDs; assignments and congestion histories still differ."
+    },
+    "ours-four-cores-3770 vs nms-32-workers": {
+      "tasks": 3132,
+      "counts": {
+        "ours-four-cores-3770": {
+          "R": 181827,
+          "F": 333968,
+          "C": 124134,
+          "W": 399542
+        },
+        "nms-32-workers": {
+          "C": 139184,
+          "W": 325516,
+          "R": 215927,
+          "F": 347614
+        }
+      },
+      "task_ids_sha256": "0d4e371cac8afed246d195f690108192364902afe1f98d560f6b2930beb279da",
+      "caveat": "Same completed task IDs; assignments and congestion histories still differ."
+    },
+    "ours-32-workers-3852 vs nms-four-cores": {
+      "tasks": 2885,
+      "counts": {
+        "ours-32-workers-3852": {
+          "C": 110182,
+          "F": 300710,
+          "R": 161575,
+          "W": 355542
+        },
+        "nms-four-cores": {
+          "R": 220525,
+          "W": 328645,
+          "F": 330498,
+          "C": 141674
+        }
+      },
+      "task_ids_sha256": "8d072bab6adb7395f16b7bc4458cce58e8789129d37a7bc6ea81850caa1e42fe",
+      "caveat": "Same completed task IDs; assignments and congestion histories still differ."
+    },
+    "ours-32-workers-3852 vs nms-32-workers": {
+      "tasks": 3126,
+      "counts": {
+        "ours-32-workers-3852": {
+          "C": 119241,
+          "F": 326882,
+          "R": 174696,
+          "W": 385085
+        },
+        "nms-32-workers": {
+          "C": 137658,
+          "W": 321791,
+          "R": 213565,
+          "F": 344556
+        }
+      },
+      "task_ids_sha256": "4c9d8b48517ef681a3845cf421d7e8c10b782dad0993f07f48da3d4e38669405",
+      "caveat": "Same completed task IDs; assignments and congestion histories still differ."
+    }
+  }
+}

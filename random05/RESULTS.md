@@ -1,0 +1,85 @@
+# RANDOM-05 results
+
+The requested “reasonably close” performance level is reached locally. A frozen
+candidate improves on the stronger NMS repetition by **25.42% across two untouched
+task/start inputs**, close to the colleague's reported27–28%. Their private code
+and inputs remain unavailable, so this is a reproduction of the performance
+level rather than their exact experiment.
+
+## Selected development records
+
+All runs use800 robots,2,000 steps, strict1s entry limits and a32GB process guard.
+NMS comparisons use the same archived input and matched EPYC9354 allocations.
+
+| Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
+|---|---:|---:|---:|---:|---:|
+| Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
+| 16 physical cores / 32 workers | 3,852 | 3,172 | +21.4% | 478 / 538ms | 579MB |
+
+These are selected single-seed maxima. Exact configurations and executable hashes
+are in [best-four-cores.json](best-four-cores.json) and
+[best-32-workers.json](best-32-workers.json). Both use source
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613), with declared map-specific
+guidance and known-horizon triage enabled by `--trick RANDOM-05`.
+
+## Frozen independent-input comparison
+
+Protocol[a7bad0c](https://github.com/fywu85/lorr/commit/a7bad0c) precedes generation.
+Candidate settings and planner seed3 stayed fixed through all six original runs.
+
+| Task/start seed | Frozen candidate | NMS repeats | Gain over stronger repeat |
+|---|---:|---|---:|
+| 50007 | 3,680 | 2,907 / 2,870 | +26.59% |
+| 50008 | 3,641 | 2,930 / 2,918 | +24.27% |
+
+Aggregate:7,321 versus5,837, **+25.42%**. All six original attempts pass full-run,
+source/binary/input, four-core, deadline and memory checks. Independent replay
+also verifies movements, collisions, locked assignments and every waypoint event.
+Candidate means are796/791ms, maxima859/852ms, with RSS below499MB.
+[Frozen protocol and evidence](FRESH_VALIDATION_V4.md).
+
+Earlier frozenV3 measured+25.46% on different inputs with an older configuration.
+This corroborates the broad performance level; it is not a paired estimate of
+improvement fromV3 toV4. All input seeds50001–50008 remain excluded from tuning.
+
+## What depends on the horizon trick
+
+| Allocation | Cutoff off | Cutoff on | Gain from cutoff | Off versus NMS |
+|---|---:|---:|---:|---:|
+| Four cores | 3,503 | 3,770 | +7.6% | +20.2% |
+| 32 workers | 3,632 | 3,852 | +6.1% | +14.5% |
+
+Each pair differs only in `R05_HORIZON`; binary and input hashes match, as do CPU
+model and allocation. All four full runs pass the strict deadline. The guidance
+trick remains enabled with the cutoff off.
+[Paired-setting audit](results/staged-no-horizon-split-full-v65/horizon-ablation.json).
+
+## Method and retained evidence
+
+The independent implementation uses oriented task-chain costs, guided matching
+of unopened tasks, a two-step PIBT pipeline and randomized look-ahead. Staged
+search evaluates a few futures for every proposed priority vector, then spends
+the remaining futures on promising survivors. Every final candidate is fully
+evaluated. Exact caches and shared prefixes reduce evaluation cost.
+
+A deadline violation fails the run; no partial portfolio is returned. The
+high-budget seed2 initially exceeded1s at step1850. Its declared strict repeat
+and5s diagnostic later produced identical3,705-task trajectories, both with
+maxima below565ms. The original failure remains in the evidence, and no cause
+for the transient spike is asserted. Setup-loop fusion was also rejected after
+full controls showed exact outputs but slower runtime; the faster source was
+restored. Larger work budgets do not reliably improve throughput.
+
+[All74 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[full frontier audit](results/progress-audit.json),
+[completed-goal audit](results/completion-audit.json).
+
+## Secondary waiting metrics
+
+The current development records' longest completed orders take1,941/1,940 steps,
+versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
+step2,000, so eventual maximum latency is unknown and at least2,000. These are
+censored statistics, not a fairness guarantee; throughput selected the runs.
+[Current comparison](results/task-waiting-frontiers-20260920T1612/REPORT.md),
+[fresh-input waiting metrics](results/fresh-validation-v4/WAITING.md),
+[history](WAITING_PROGRESS.md).

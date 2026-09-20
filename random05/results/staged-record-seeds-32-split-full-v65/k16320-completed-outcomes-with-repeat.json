@@ -1,0 +1,74 @@
+{
+  "checked_utc": "2026-09-20T20:31:12.337013+00:00",
+  "rows": [
+    {
+      "planner_seed": 0,
+      "staged_k8192_b10": 3730,
+      "staged_k16320_b14_first8000": 3785,
+      "difference": 55,
+      "used_declared_repeat": false,
+      "old_evidence": "random05/results/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed0-blend0/summary.json",
+      "old_case": "32-screen2-keep4-k8192-b10-seed0-blend0",
+      "new_evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed0/summary.json",
+      "new_case": "32-staged-k16320-b14-first8000-seed0",
+      "source_commit": "5f81613"
+    },
+    {
+      "planner_seed": 1,
+      "staged_k8192_b10": 3642,
+      "staged_k16320_b14_first8000": 3721,
+      "difference": 79,
+      "used_declared_repeat": false,
+      "old_evidence": "random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k8192-b10-seed1-blend0/summary.json",
+      "old_case": "32-screen2-keep4-k8192-b10-seed1-blend0",
+      "new_evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed1/summary.json",
+      "new_case": "32-staged-k16320-b14-first8000-seed1",
+      "source_commit": "5f81613"
+    },
+    {
+      "planner_seed": 2,
+      "staged_k8192_b10": 3611,
+      "staged_k16320_b14_first8000": 3705,
+      "difference": 94,
+      "used_declared_repeat": true,
+      "old_evidence": "random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k8192-b10-seed2-blend0/summary.json",
+      "old_case": "32-screen2-keep4-k8192-b10-seed2-blend0",
+      "original_failure": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed2/summary.json",
+      "new_evidence": "random05/results/staged-seed2-timeout-check-full-v65/summary.json",
+      "new_case": "32-k16320-b14-first8000-seed2-strict-repeat",
+      "source_commit": "5f81613"
+    },
+    {
+      "planner_seed": 3,
+      "staged_k8192_b10": 3755,
+      "staged_k16320_b14_first8000": 3794,
+      "difference": 39,
+      "used_declared_repeat": false,
+      "old_evidence": "random05/results/staged-continuations-32-split-full-v65/32-screen2-keep4-k8192-b10-seed3-blend0/summary.json",
+      "old_case": "32-screen2-keep4-k8192-b10-seed3-blend0",
+      "new_evidence": "random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json",
+      "new_case": "32-screen2-keep4-k16320-b14-seed3-blend0-first8000",
+      "source_commit": "5f81613"
+    },
+    {
+      "planner_seed": 4,
+      "staged_k8192_b10": 3715,
+      "staged_k16320_b14_first8000": 3852,
+      "difference": 137,
+      "used_declared_repeat": false,
+      "old_evidence": "random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k8192-b10-seed4-blend0/summary.json",
+      "old_case": "32-screen2-keep4-k8192-b10-seed4-blend0",
+      "new_evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json",
+      "new_case": "32-staged-k16320-b14-first8000-seed4",
+      "source_commit": "5f81613"
+    }
+  ],
+  "old_mean": 3690.6,
+  "new_mean": 3771.4,
+  "gain_percent": 2.1893459058147657,
+  "positive_pairs": 5,
+  "first_attempts_strict_valid": 4,
+  "first_attempts_total": 5,
+  "strict_followups_valid": 1,
+  "caveat": "Completed deterministic outcomes on one development input, including the predeclared strict repeat of seed2. Original campaign had one timeout among five attempts; this does not establish first-attempt deadline reliability. Both search budget and branches per root change."
+}

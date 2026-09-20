@@ -1,0 +1,57 @@
+{
+  "checked_utc": "2026-09-20T20:26:11.964579+00:00",
+  "all_equal": true,
+  "fields": {
+    "actualPaths": true,
+    "plannerPaths": true,
+    "actualSchedule": true,
+    "plannerSchedule": true,
+    "events": true,
+    "tasks": true
+  },
+  "raw_results": [
+    {
+      "path": "runs/random05/setup-fusion-four-full-v66/four-k5760-b12-first4608-build65/result.json",
+      "sha256": "4e3973e0e0a88a4482a65f2fb213fee01bed10f41a419a7d134ad053abe99ec9"
+    },
+    {
+      "path": "runs/random05/setup-fusion-four-full-v66/four-k5760-b12-first4608-build66/result.json",
+      "sha256": "5bfba13cd3b5f07ad00a3ca74fa1b919d24e5a2966dfce95e5d5efe3901e8a60"
+    }
+  ],
+  "frontier_reference": {
+    "path": "runs/random05/worker-affinity-four-full-v65/four-k5760-b12-first4608-omp-bind-false/result.json",
+    "sha256": "0c86a4808b87ea11c45058c8f73090fc316499d530ec8ce88d7d7f8c4a0baf44",
+    "all_equal": true
+  },
+  "baseline": {
+    "mean": 0.7859417533705017,
+    "max": 0.854993428
+  },
+  "fused": {
+    "mean": 0.7988252625700009,
+    "max": 0.853745861
+  },
+  "mean_change_percent": 1.6392447842665803,
+  "sampled_ns_per_call": {
+    "baseline": {
+      "setup_ns": 18929.731816864678,
+      "candidates_ns": 5033.779556650246,
+      "order_ns": 6912.737032744132,
+      "intent_ns": 14934.662634019125,
+      "kinematic_ns": 17431.57787597798,
+      "cycles_ns": 8972.007968704724,
+      "actions_ns": 10801.497609388583
+    },
+    "fused": {
+      "setup_ns": 20686.81186612576,
+      "candidates_ns": 5077.660388293249,
+      "order_ns": 6873.572297884671,
+      "intent_ns": 14925.76028687337,
+      "kinematic_ns": 17040.891625615764,
+      "cycles_ns": 8880.312735439004,
+      "actions_ns": 10877.826354679803
+    }
+  },
+  "decision": "Four-core control corroborates rejecting fusion: exact3770, slower mean. Source already restored to5f81613 in e7410cf."
+}
