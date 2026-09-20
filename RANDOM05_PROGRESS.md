@@ -454,3 +454,8 @@ The published NMS score of 3,050 used different instances and hardware.
   and redundant three-quarter-turn sequences. An immovable two-cell regression
   requires waiting without swaps or futile rotations. Geometry retains all
   action encodings so shifted inherited plans remain representable.
+
+- One-visit operation ablation stalls in the dense toy case and is rejected as
+  a performance candidate. The selected four-visit policy passes the same
+  mobility test, including deterministic trajectories across worker counts.
+  Its full-map performance is still unmeasured.

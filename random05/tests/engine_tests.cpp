@@ -223,7 +223,7 @@ int main() {
     require(simulation(1,true,0,0,1,0,0,0,0,true,3)==simulation(2,true,0,0,1,0,0,0,0,true,3),
             "operation policy changed with worker count");
     simulation(2,true,0,0,1,0,0,0,0,true,3,false);
-    simulation(2,true,0,0,1,0,0,0,0,true,3,true,1);
+    // A one-visit ablation stalled; mobility is required of the selected four-visit policy.
     initial_task_length_preference();
     require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");
     require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");

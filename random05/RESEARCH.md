@@ -62,3 +62,8 @@ The remaining valid suffix is carried into the next simulated and real step.
 The existing pipeline remains the default. Unlike the upstream timer-driven
 search, this integration completes a fixed rollout count and reports a timeout
 if the entry deadline is exceeded. Full performance evidence is pending.
+
+A one-visit ablation stalled in the dense toy simulation after redundant turns
+were removed. It is rejected as a performance candidate. The selected four-visit
+policy and its no-inheritance ablation retain the full mobility/collision
+regressions; no liveness guarantee is claimed for arbitrary revisit settings.
