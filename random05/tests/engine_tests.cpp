@@ -150,5 +150,22 @@ void guidance_scale_reference() {
         else {require(stronger.weight[v][d]>original.weight[v][d],"opposing cost did not increase");changed=true;}
     }
     require(changed,"guidance test did not contain opposing traffic");
+    cfg.flow_output_penalty=2.4;cfg.flow_flips=2;cfg.flow_flip_seed=7;
+    Graph flipped(e,cfg),repeat(e,cfg);int flips=0;
+    require(flipped.next==original.next,"guidance mutation changed physical connectivity");
+    require(flipped.weight==repeat.weight,"guidance mutation is not reproducible");
+    for(int v=0;v<original.cells;++v) {
+        require(flipped.weight[v][4]==original.weight[v][4],"guidance mutation changed turn costs");
+        for(int d=0;d<4;++d) {
+            int u=original.next[v][d];if(u<=v)continue;
+            int back=(d+2)%4;
+            if(flipped.weight[v][d]!=original.weight[v][d]) {
+                require(flipped.weight[v][d]==original.weight[u][back] &&
+                        flipped.weight[u][back]==original.weight[v][d],"guidance flip changed pair costs");
+                ++flips;
+            }
+        }
+    }
+    require(flips==2,"guidance mutation count differs from requested count");
 }
 int main(){initial_task_length_preference();require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");guidance_scale_reference();idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);simulation(2,true,100,3);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");require(simulation(1,true,0,0,3)==simulation(2,true,0,0,3),"multi-generation worker count changed trajectory");require(simulation(1,true)==simulation(1,true,0,0,1,1),"plain evaluation changed an already unit-cost policy");require(simulation(1,true,0,0,1,0.5)==simulation(2,true,0,0,1,0.5),"blended score changed with worker count");require(simulation(1,true,0,0,1,0,1)==simulation(2,true,0,0,1,0,1),"component policy changed with worker count");require(simulation(1,true,0,0,1,0,2)==simulation(2,true,0,0,1,0,2),"pinned component policy changed with worker count");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}

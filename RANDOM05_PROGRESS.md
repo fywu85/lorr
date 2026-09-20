@@ -434,3 +434,9 @@ The published NMS score of 3,050 used different instances and hardware.
   that a stronger length preference improves total throughput. The remaining
   phase settings also lose: initial2 for250 steps=3316, initial1 for500 steps=3367.
   All7 full runs are valid; the original configuration remains best.
+
+- New guidance experiment: reverse a small, seeded subset of directional cost
+  pairs after generating field15. This preserves every physical edge, positive
+  costs, pair cost sums and turn costs. It requires flow guidance and therefore
+  `--trick RANDOM-05`; count0 preserves the control. Evaluate fullK1024/full
+  horizon because lower-work rankings have repeatedly failed to transfer.

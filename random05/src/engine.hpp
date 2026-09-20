@@ -15,7 +15,7 @@ struct Config {
     float initial_length_weight=-1;
     int initial_length_steps=250;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
-    int flow_seed=1, flow_iterations=20;
+    int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     float flow_penalty=1.6, flow_output_penalty=-1, flow_normalize_ref=-1;
     float flow_turn=0, flow_power=1, flow_alpha=1, flow_betweenness=0;
     bool flow_average=false, flow_normalize=false;

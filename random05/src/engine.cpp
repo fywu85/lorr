@@ -77,6 +77,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("flow output penalty must be nonnegative or -1 for the assignment penalty");
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
+    c.flow_flips=integer("R05_FLOW_FLIPS",0);c.flow_flip_seed=integer("R05_FLOW_FLIP_SEED",1);
+    if(c.flow_flips<0 || (c.flow_flips && c.guidance!="flow"))
+        throw std::invalid_argument("field flips require flow guidance and a nonnegative count");
     if(c.guidance!="none" && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
@@ -239,6 +242,21 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         if(cfg.flow_normalize) {
             float scale=float(2*weight_count/weight_sum);
             for(auto& w:weight)for(int d=0;d<4;++d)w[d]*=scale;
+        }
+    }
+    if(cfg.flow_flips) {
+        // Mutate the existing field without changing its cost scale or removing
+        // physical edges. Equal-cost pairs have no direction to reverse.
+        std::vector<std::pair<int,int>> edges;
+        for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
+            int u=next[v][d];
+            if(u>v && weight[v][d]!=weight[u][(d+2)%4])edges.emplace_back(v,d);
+        }
+        if(cfg.flow_flips>int(edges.size()))throw std::invalid_argument("too many distinct guidance flips");
+        std::mt19937 random(cfg.flow_flip_seed);std::shuffle(edges.begin(),edges.end(),random);
+        for(int k=0;k<cfg.flow_flips;++k) {
+            auto [v,d]=edges[k];int u=next[v][d];
+            std::swap(weight[v][d],weight[u][(d+2)%4]);
         }
     }
     if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");
