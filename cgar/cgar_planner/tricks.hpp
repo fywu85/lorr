@@ -16,7 +16,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -27,8 +27,9 @@ inline Options options(const std::string& instance) {
     const char* remaining_flow = std::getenv("CGAR_TRICK_REMAINING_FLOW");
     const char* native_metric = std::getenv("CGAR_TRICK_NATIVE_METRIC");
     const char* native_bands = std::getenv("CGAR_TRICK_NATIVE_BANDS");
+    const char* known_horizon = std::getenv("CGAR_TRICK_KNOWN_HORIZON");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick WAREHOUSE");
         return {};
     }
@@ -39,8 +40,17 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    int horizon = 0;
+    if (known_horizon) {
+        if (!*known_horizon) throw std::invalid_argument("CGAR_TRICK_KNOWN_HORIZON must be an integer in [0,1000000]");
+        for (const char* p = known_horizon; *p; ++p) {
+            if (*p < '0' || *p > '9' || horizon > (1000000 - (*p - '0')) / 10)
+                throw std::invalid_argument("CGAR_TRICK_KNOWN_HORIZON must be an integer in [0,1000000]");
+            horizon = horizon * 10 + (*p - '0');
+        }
+    }
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false)};
+            boolean(native_metric, false), boolean(native_bands, false), horizon};
 }
 
 inline void validate_map(const std::string& name, const std::vector<int>& map, int rows, int cols) {

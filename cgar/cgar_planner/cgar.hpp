@@ -271,6 +271,9 @@ struct Stats {
     long long safety_waits = 0;
     long long assignments = 0;
     long long fair_assignments = 0;
+    long long horizon_pairs = 0, horizon_impossible_pairs = 0, horizon_rank_changes = 0;
+    long long horizon_assignments = 0, horizon_impossible_assignments = 0;
+    long long horizon_first_rank_change = -1;
     long long evacuations = 0;
     long long schedule_calls = 0, local_assignments = 0, fallback_assignments = 0;
     long long candidate_searches = 0, candidate_nodes = 0, candidate_task_limits = 0;
@@ -465,6 +468,8 @@ private:
     bool enable_locks_ = true;
     bool hrrn_ = true;
     bool short_task_trick_ = false;
+    int known_horizon_ = 0;
+    bool known_horizon_passed_ = false;
     bool repair_fallback_ = true;
     bool refine_chain_costs_ = false;
     bool scheduler_cache_peek_ = false;
