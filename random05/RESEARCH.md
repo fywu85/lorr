@@ -791,3 +791,31 @@ the3,872 preset, declares a50-step startup without reranking, and compares off,
 one-root control,4roots*2futures,8*1,8*2 atinnerK32, plus4*2 atK64. All use
 forecast depth8 and innerB4; strict1s/32GB/full2000. New options stay off until
 full results establish a benefit.
+
+
+## Preserve some priority across intermediate waypoints
+
+The phase audit compares the3,872 trajectory with matched NMS32. In steps1–250,
+ours finishes413 versus521 tasks despite2,196 versus2,181 waypoint events and
+64,590 versus65,286 forward moves. Initial assignments have similar chain-length
+distributions (both314two-stop tasks), and ours has slightly less internal hop
+work. This is observational evidence of different progress concentration, not
+proof that108tasks are recoverable. NMS locally sorts by remaining task distance
+and squares the resulting rank weight on Random05; its algorithm differs in
+many other ways. Read-only source: `nms/Solution/Objects/Environment/robot_handler.cpp`
+and `nms/Solution/Planner/PIBT/pibts.cpp`.
+
+A bounded generic test retains a fraction of accumulated age after an intermediate
+waypoint, rather than resetting all age. `R05_WAYPOINT_AGE_RETAIN` defaults0,
+preserving the previous behavior; .5 halves it and1 keeps it until whole-task
+completion. Whole-task completion still resets age, and unopened reassignment
+does not reset it. Retention keeps the existing inheritance and random-priority
+search; it does not replace them with shortest-remaining-work ordering, which
+the colleague found harmful. It might instead prioritize long chains too much.
+Only full-run results will establish its effect.
+
+Source71 age-retention regressions passed17.89s. They cover intermediate
+waypoints versus whole-task reset, dense turnover and assignment locks, worker
+determinism, snapshot restoration, and optional simulated aging. Five full
+strict cases test retain0/.25/.5/.75/1 on the3,872 seed4 preset; retain0 is
+the unchanged-behavior control.

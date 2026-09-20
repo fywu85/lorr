@@ -167,6 +167,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.idle_eviction=real("R05_IDLE_EVICTION",0);
     c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
     c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
+    c.waypoint_age_retain=real("R05_WAYPOINT_AGE_RETAIN",0);
+    if(!std::isfinite(c.waypoint_age_retain) || c.waypoint_age_retain<0 || c.waypoint_age_retain>1)
+        throw std::invalid_argument("waypoint age retention must be in [0,1]");
     if(c.age_cap>0 && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("capped priority aging requires --trick RANDOM-05");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
@@ -845,7 +848,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         bool arrived=assigned[i] && f.stage[i]<int(assigned[i]->goals.size()) &&
                      p[i]==assigned[i]->goals[f.stage[i]];
         if(arrived)++f.stage[i];
-        if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
+        if(cfg.rollout_age)f.age[i]=arrived?int((f.age[i]+1)*cfg.waypoint_age_retain):f.age[i]+1;
     }
     // Stage is fixed throughout this policy step. Resolve the active chain
     // and its cached row once, rather than for every candidate lookup.
@@ -1420,7 +1423,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         if(id>=0) {
             const auto& task=env->task_pool.at(id);
             frame.stage[a]=task.idx_next_loc;
-            if(id==previous_task_[a] && task.idx_next_loc>previous_stage_[a])age_[a]=0;
+            if(id==previous_task_[a] && task.idx_next_loc>previous_stage_[a])
+                age_[a]=int(age_[a]*cfg.waypoint_age_retain);
             auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task,cfg.cost_cache);
             assigned_[a]=chain.get();
             if(score_graph_) {

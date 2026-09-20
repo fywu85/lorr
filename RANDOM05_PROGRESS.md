@@ -1466,3 +1466,32 @@ input/binary hashes and allocation are linked in the audits.
   preserves every dense decision and persistent state. Six strict full cases
   compare the3,872 control and fixed-budget variants, starting atstep50 to avoid
   repeating startup matching costs. No throughput gain is assumed.
+
+- Replanning original attempts retain two distinct failures:8roots*2futures
+  atK32 never launched because GRID failed to bind16cores (64observed);
+ 4roots*2futures atK64 exited124 atstep62 (1,051ms). Neither is a valid
+  throughput score. Resubmit the allocation-only failure with the same solver
+  settings on the other verified hosts; leave the original evidence intact.
+- **Trick: bounded guidance retune under current averaged search.** Eight
+  predeclared single-factor cases remove the selected flip, extend its seeded
+  prefix to2/4flips, test contrast2/2.8/3.2 or turn0.4/0.8. All other settings
+  stay at3,872, seed4. Prior lower-budget guidance searches mostly lost; this
+  tests interaction with the newer search, not a presumed improvement. Every
+  run uses --trick RANDOM-05 and the archived development input only.
+
+- Phase diagnosis: in the first250steps ours reaches2,196waypoints and finishes
+ 413orders; NMS reaches2,181waypoints and finishes521orders. Initial chain
+  selections are similar. This is a difference in progress concentration, not
+  evidence of108recoverable tasks. The3,857/3,872 actions first diverge at1544.
+  [Audited counts](random05/results/4k-gap-audit-v69/REPORT.md).
+- Next generic hypothesis: retain a fraction of priority age across intermediate
+  waypoints, while still resetting at whole-task completion. Default0 preserves
+  the current solver. This tests chain continuity without replacing PIBT aging
+  with a shortest-task ordering; it may also hurt by favoring long tasks.
+
+- The8root/1future/K32 forecast also exceeds1s atstep459 (1,020ms).
+  Preserve that strict failure. Two separately declared5s diagnostic runs
+  finish this setting and4root/2future/K64 to assess algorithmic throughput
+  despite the strict failures; they cannot enter the strict frontier. This
+  follows the user's allowance for relaxed timing during development while
+  retaining the one-second reference and fixed-work/no-partial-output rule.

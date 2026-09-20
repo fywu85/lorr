@@ -606,6 +606,39 @@ void staged_continuations() {
     }
 }
 
+void waypoint_priority_retention() {
+    for(float retained:{0.0f,0.5f,1.0f}) {
+        auto env=environment(1,3,1);Task task;task.task_id=7;task.locations={0,0};env.task_pool[7]=task;
+        Config cfg;cfg.futures=1;cfg.waypoint_age_retain=retained;
+        Engine engine(cfg);engine.initialize(&env);
+        std::vector<Action> actions;std::vector<int> schedule;
+        for(int step=0;step<3;++step) {
+            engine.compute(&env,actions,schedule);
+            const int expected=step==0?1:step==1?int(2*retained):0;
+            require(engine.ages()[0]==expected,"waypoint age retention/reset is incorrect");
+            auto& state=env.curr_states[0];
+            if(actions[0]==FW)state.location=engine.graph->next[state.location][state.orientation];
+            if(actions[0]==CR)state.orientation=(state.orientation+1)%4;
+            if(actions[0]==CCR)state.orientation=(state.orientation+3)%4;
+            state.timestep=++env.curr_timestep;env.curr_task_schedule=schedule;
+            if(schedule[0]>=0) {
+                auto& current=env.task_pool.at(schedule[0]);
+                if(current.locations.at(current.idx_next_loc)==state.location &&
+                   ++current.idx_next_loc==int(current.locations.size())) {
+                    env.task_pool.erase(schedule[0]);env.curr_task_schedule[0]=-1;
+                }
+            }
+        }
+    }
+    Config cfg;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.waypoint_age_retain=.5;cfg.share_prefix=true;cfg.cost_cache=true;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"priority retention changed across worker counts");
+    require(serial==simulate(cfg,12,5,5,true),"priority retention failed checkpoint replay");
+    cfg.rollout_age=true;simulate(cfg,12);
+}
+
 void replanning_forecast() {
     // A fully evaluated one-root forecast may spend work, but must leave every
     // selected decision, RNG stream and persistent solver vector unchanged.
@@ -693,6 +726,7 @@ void checkpoint_replay() {
 }
 
 int main() {
+    waypoint_priority_retention();
     replanning_forecast();
     normalized_directional_triage();
     motion_component_search();
