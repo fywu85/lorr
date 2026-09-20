@@ -45,8 +45,7 @@ publication lifecycle and scheduler quotes together. It cannot isolate a causal
 lane benefit. If promising, compare forced cache-flush and planner-only variants
 as separate factors. Complete1s decisions,32-billion-byte process RSS, task and
 motion validity, full5,000-step runs and all six seeds remain promotion criteria.
-All commits/results stay labeled **TRICK**, with a separate frontier. No trick
-throughput result or promotion is established by this implementation.
+All commits/results stay labeled **TRICK**, with a separate frontier. The full results below are a two-seed experiment, not a six-seed promotion.
 
 V53 status: all CGAR regressions and five negative CLI fixtures pass. The first
 200-step trick screen fails explicitly at entry0 on seeds0/2 in
@@ -66,6 +65,25 @@ any receipt invalidates a generic run. Full verification is next.
 confirms all10,000initial task assignments exactly match the generic baseline in
 each seed, both planner receipts/result labels are correct, and no learned field
 publication occurs. Source is [abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a).
-Full generic8899271 and TRICK8899272 are running; verification8899274/8899275 is
-held behind them. [Submission records](full-v54-submissions.json). No full score
-or trick frontier has been established.
+Full generic8899271 and TRICK8899272 are complete. Both generic trajectories
+exactly reproduce144,510/144,107. TRICK reaches146,659/146,566 (+1.487%/+1.706%).
+All20,000complete entries across four runs pass1s; TRICKmax984.533/980.945ms,
+peakRSS11.914GB. Four physical cores per process, disjoint concurrent bindings,
+exclusive EPYC9354 hosts and no CPU quota are verified. TRICKmean entries
+311.7/307.7ms, averageCPU1.864/1.876cores, wall27.08/26.73minutes.
+
+Final1000completions29,911/29,906 versus generic30,004/29,856 show no consistent
+late-rate gain. Loaded turns/waits fall, while empty robot-steps increase;
+these are differing task cohorts, not causal component savings. This is only
+two seeds and remains unpromoted. Static lane contents, cold-start metric,
+cache lifecycle and pickup quotes change together.
+[Comparison](../../results/trick-nms-warehouse-full-v54/comparison.json),
+[full checks](../../results/trick-nms-warehouse-full-v54/verification.json),
+[generic isolation](../../results/generic-warehouse-full-v54/trick-verification.json).
+
+Analysis8899275 first failed at its final archive copy because the old full
+verifier expected `motion-analysis-submission.json`. Inputs and benchmark runs
+were intact. Providing that metadata alias and rerunning only the exact frozen
+analysis as8899279 completed verification. The failure and retry receipts are
+preserved with the results; no benchmark was rerun or replaced. Generic analysis
+8899274 passed. [Original submissions](full-v54-submissions.json).

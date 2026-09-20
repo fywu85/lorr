@@ -77,6 +77,8 @@ def main():
         submit.append(str(raw / 'trick-analysis.sh'))
         result = subprocess.run(submit, cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         write(raw / 'trick-analysis-submission.json', dict(command=submit, returncode=result.returncode, response=result.stdout))
+        # Compatibility with the existing full verifier's archive metadata name.
+        shutil.copy2(raw / 'trick-analysis-submission.json', raw / 'motion-analysis-submission.json')
         print(result.stdout, end=''); return result.returncode
     request = read(raw / 'trick-analysis-request.json')
     for path, sha in request['files'].items(): assert digest(Path(path)) == sha, path

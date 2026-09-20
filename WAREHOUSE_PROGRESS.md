@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 02:59:41 UTC.
+Updated: 2026-09-20 03:37:46 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
@@ -40,26 +40,34 @@ pass regressions and both full reference trajectory/deadline checks. The complet
 small-group probe finds44/2,368sampled groups improving both scalar and aggregate
 guidance potential; this is diagnostic evidence, not a new throughput score.
 
-**Track policy:** the scores above remain the **generic frontier**. User-authorized
-map-specific tricks will require `--trick <map-instance-name>`, `[trick]` commit
-titles and **TRICK** log entries, with a separately reported frontier. **No full-run CGAR
-trick-track result yet.** [Policy](experiments/construction-20260918/EXPERIMENT_TRACKS.md).
+**Track policy:** the scores above remain the **generic frontier**. Map-specific
+tricks require `--trick <map-instance-name>`, `[trick]` commit titles and **TRICK**
+log entries. No environment variable or automatic map detection enables them.
+[Policy](experiments/construction-20260918/EXPERIMENT_TRACKS.md).
 
-**TRICK experiment (not promoted):** NMS-derived warehouse lanes now require
-`--trick WAREHOUSE`, with exact layout checks and separate benchmark metadata.
-V53 passes all regressions and five CLI rejection fixtures. Both startup screens
-fail explicitly at entry0 in weighted pickup search; no partial score is accepted.
-The no-flag200-step controls pass on both seeds; seed0matches the prior full
-startup trajectory hash exactly. Source: [6e0612f](https://github.com/fywu85/lorr/commit/6e0612f39ff5d53a6a68d89bb930cafb80315690).
-[Implementation and evidence](experiments/construction-20260918/tricks/nms_warehouse/README.md).
-The revised **TRICK V54** preserves initial dispatch and passes both200-step
-startup screens at3,709/3,710tasks versus2,888/2,857generic; maximum decisions
-994.717/987.554ms. These short results do not enter either full-run frontier.
-Source [abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a);
-[verification](experiments/construction-20260918/results/trick-nms-warehouse-screen-v54/trick-verification.json).
-Full generic/TRICK0/2comparisons are now running on isolated allocations.
+**TRICK full results, not promoted:** NMS-derived directions at CGAR4/16forward
+costs require `--trick WAREHOUSE`. Seeds0/2 reach146,659/146,566, versus exact
+no-flag144,510/144,107. All20,000entries across the four runs pass1s; peakRSS11.914GB.
+The final1000differences are−93/+50, so a sustained-rate gain is not established.
+Only two seeds are tested; static guidance, cache lifecycle and pickup quotes
+change together. V53's earlier explicit startup failures remain archived.
+[Implementation](experiments/construction-20260918/tricks/nms_warehouse/README.md),
+[full comparison](experiments/construction-20260918/results/trick-nms-warehouse-full-v54/comparison.json).
 
+| TRICK completed (UTC) | New TRICK best | Seed | Exact source | Evidence |
+|---|---:|---:|---|---|
+| 2026-09-20 03:21:17 |146,566|2|[abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a)|[verification](experiments/construction-20260918/results/trick-nms-warehouse-full-v54/verification.json)|
+| 2026-09-20 03:21:38 |146,659|0|[abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a)|[verification](experiments/construction-20260918/results/trick-nms-warehouse-full-v54/trick-verification.json)|
 
+These separate TRICK records do not alter the generic record table or satisfy
+the generic six-seed goal. The full no-flag trajectories match the prior reference
+byte for byte, independently confirming that the flag isolates the new behavior.
+[Generic isolation](experiments/construction-20260918/results/generic-warehouse-full-v54/trick-verification.json).
+
+The [generic traffic replay](experiments/construction-20260918/bottleneck_review/FLOW_COHERENCE.md)
+validates400million actions and60published fields. No short corridor has mixed
+toll signs; simple corridor pooling is dropped as the next policy candidate.
+This is diagnostic progress, not a new generic score.
 
 ## New best scores over time
 
