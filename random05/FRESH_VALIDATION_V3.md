@@ -26,3 +26,28 @@ silently restart, substitute a configuration/input, or omit a failed run.
 Existing50001–50004 and these new50005/50006 remain excluded from tuning.
 Development continues on the original archived input, including planner-seed
 checks; those results do not replace this frozen candidate.
+
+
+## Completed results, 2026-09-20
+
+| New task/start seed | Frozen candidate | NMS repeat 1 | NMS repeat 2 | Gain over stronger NMS |
+|---|---:|---:|---:|---:|
+| 50005 | 3,698 | 2,926 | 2,900 | +26.38% |
+| 50006 | 3,619 | 2,906 | 2,831 | +24.54% |
+
+Aggregate: **7,317 versus 5,832, +25.46%**. All six attempts finished all 2,000
+steps with zero planner errors, scheduler errors or entry timeouts, and passed
+CPU allocation/model, binary/source/input hash and 32 GB checks. Candidate
+latency: mean794ms/max927ms on50005, mean797ms/max924ms on50006.
+
+This evaluates exactly source6ce9312/plannerseed3, frozen in protocol81bdfbd
+before generation. Neither the later development seed2 record nor elite-parent
+changes were substituted. These are two new task/start streams on the same map,
+not the colleague's private inputs and not a validation on different map layouts.
+The aggregate gain is close to their reported27–28%; it does not exactly
+reproduce their experiment. V1/V2 use different inputs, so differences between
+campaign percentages are not paired effect estimates.
+
+[Verified matched audit](results/fresh-validation-v3/audit.json),
+[all six full summaries](results/fresh-validation-v3-split-full-v52/summary.json).
+All50001–50006 inputs remain excluded from tuning.

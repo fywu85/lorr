@@ -1,0 +1,76 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:25:46.997959+00:00",
+    "name": "k5120-generations4-seed4",
+    "steps": 2000,
+    "binary_sha256": "a37917e0caea46f9d60c4a789a0e8433813c131adcfc725f0760f2fa5b7de7f8",
+    "environment": {
+      "R05_K": "5120",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "4",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GOAL_CACHE": "1",
+      "R05_GENERATIONS": "4",
+      "R05_RADIX_ORDER": "1",
+      "R05_CANDIDATE_CACHE": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3608,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.924675368
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.7942544513044982,
+      "max": 0.924675368
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "3fe96db04a56797d9dac8b5e87047debfa9c4bf2a7d057e759e3ea76a4a816a2",
+    "valid": true,
+    "usage": {
+      "user_seconds": 6326.625195,
+      "system_seconds": 0.895625,
+      "peak_rss_kib": 300464,
+      "wall_seconds": 1590.561898753047,
+      "exit": 0
+    }
+  }
+]

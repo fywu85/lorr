@@ -26,7 +26,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 16:18 UTC.
+Updated: 2026-09-20 16:36 UTC.
 
 **Best single run on the archived input: 3,689 tasks on 32 workers / 16 physical cores**,
 or **+16.3% versus matched NMS32 = 3,172**. Source
@@ -37,15 +37,17 @@ parents. All exact CPU optimizations are enabled. Mean latency 238 ms, maximum
 not been reproduced on four cores or independent inputs.
 [Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json).
 
-**Best confirmed four-core run: 3,637 tasks**, or **+24.8% versus the strongest
+**Best confirmed four-core run: 3,648 tasks**, or **+25.2% versus the strongest
 matched NMS4 repeat = 2,914**. Source
 [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312), K5120/B8/start2/local0,
-four search generations, planner seed3. Exact prefix reuse, sparse dispersion,
+four search generations, planner seed 2. Exact prefix reuse, sparse dispersion,
 reused policy buffers, shared goal rows, radix sorting and candidate-ranking
-caching all enabled. Mean latency791ms, maximum928ms, peak RSS309MB.
-All2,000 steps are valid. The larger search becomes feasible through the exact
-CPU optimizations. Additional planner seeds and fresh inputs still need checking.
-[Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json).
+caching all enabled. Mean latency 791 ms, maximum 927 ms, peak RSS about 309 MB.
+All 2,000 steps are valid. Planner seeds 0–4 give 3,611 / 3,526 / 3,648 / 3,637 /
+3,608, mean **3,606.0**. This beats K2048/four generations in all five pairs
+(mean 3,531.4), a 2.1% mean improvement on the same development input.
+[Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json).
+The third fresh-input protocol keeps its previously frozen planner seed 3.
 
 The 3,501 configuration remains the frozen candidate for fresh validation V2:
 K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
@@ -72,13 +74,19 @@ bonus 0.5 and length weight 0.25, and directional penalty 2.4. Continuation
 search is a general algorithmic change; its best runs still use these tricks.
 Machine-readable settings are frozen in `random05/best*.json`.
 
-**Fresh-input validation of the frozen 3,501 configuration is complete:**
-it scores 3,494 versus NMS 2,984 and 3,387 versus NMS 2,892, using the stronger
-of two NMS repeats on each input: **+17.1% on both inputs, +17.1% in aggregate**.
-All six full runs pass the four-core / strict 1s / 32GB checks. The candidate and
-settings were frozen before input generation; later 3,520/3,657 records were
-not substituted. These two inputs remain excluded from tuning.
-[Matched audit](random05/results/fresh-validation-v2/audit.json).
+**Fresh-input validation of the frozen 3,637 configuration is complete:**
+it scores 3,698 versus NMS repeats 2,926/2,900 and 3,619 versus 2,906/2,831.
+Against the stronger NMS repeat per input: **+26.38% / +24.54%, aggregate +25.46%**.
+All six full runs pass the four-core / strict 1s / 32GB checks. Protocol81bdfbd
+froze source6ce9312 and plannerseed3 before input generation. The later
+3,648 development seed and elite-parent changes were not substituted.
+[Matched audit](random05/results/fresh-validation-v3/audit.json).
+
+Previous fresh validation of sourcee896201 / the3,501 configuration scored
+3,494 versus NMS2,984 and3,387 versus2,892, **+17.1% aggregate**, allsixvalid.
+V2 andV3 use different task/start inputs, so this percentage difference is not
+an isolated paired effect. Allsix generated inputs remain outside tuning.
+[Previous matched audit](random05/results/fresh-validation-v2/audit.json).
 
 **Without known-horizon triage**, continuation search completes **3,285 tasks
 on four cores** (+12.7% versus NMS4, K2048/B8) and **3,408 on 32 workers**
@@ -90,11 +98,11 @@ are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 [Cutoff-free evidence](random05/results/continuation-no-horizon-split-full/summary.json).
 
 **Waiting-time audit of the current throughput records:** the longest completed
-order takes 1,947 steps for our four-core run versus 1,997 for NMS; the 32-worker
+order takes 1,890 steps for our four-core run versus 1,997 for NMS; the 32-worker
 pair is 1,929 versus 1,976. Both solvers still have step-zero orders unfinished at
 step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-133 versus 219 on four cores, 141 versus 206 on 32 workers, out of 1,200 initially
-revealed. Initial orders never opened: 101 versus 102 and 96 versus 91 respectively.
+135 versus 219 on four cores, 141 versus 206 on 32 workers, out of 1,200 initially
+revealed. Initial orders never opened: 98 versus 102 and 96 versus 91 respectively.
 Higher throughput does not establish a waiting-time bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [latency history for every frontier](random05/WAITING_PROGRESS.md).
@@ -168,6 +176,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T15:29:21.178706+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed0; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed0-four/summary.json) |
 | 2026-09-20T15:50:14.795609+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed3; `--trick RANDOM-05` | 3637 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +24.8% | [Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json) |
 | 2026-09-20T16:15:24.583747+00:00 | [8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3) | K8192/B8/start2/local0; four generations / eight elite parents; planner seed3; exact caches/radix; `--trick RANDOM-05` | 3689 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.3% | [Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json) |
+| 2026-09-20T16:25:39.768782+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed2; `--trick RANDOM-05` | 3648 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.2% | [Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1071,3 +1080,27 @@ input/binary hashes and allocation are linked in the audits.
   now also records completed-order mean/p95/max, the oldest unfinished age and
   initial-cohort unfinished/unopened counts for all historical frontier rows.
   Completed-only latency statistics are explicitly censored by unfinished orders.
+
+- K5120/B8/four-generation planner-seed validation is complete: seeds0–4 give
+  3,611/3,526/3,648/3,637/3,608, mean3,606.0. All five improve against the
+  K2048/four-generation controls, whose mean is3,531.4 (+2.1%). These are
+  planner seeds on the archived development input, not independent input seeds.
+  Each new full four-core run has max latency under928ms and no errors/timeouts.
+- The new persistent-candidate implementation is source05559b7/build-v55.
+  Dense regressions pass in5.99s. Full controls and 2/4/8-vector comparisons are
+  running; no performance claim yet. Reused vectors are re-evaluated against
+  current state, and default carry count1 preserves the previous algorithm.
+- The larger K16384/eight-parent run gives3,673, below K8192/eight-parent3,689.
+  More search work is not guaranteed to improve the selected trajectory.
+
+- Third fresh-input validation is complete and audited: frozen source6ce9312,
+  plannerseed3,3698 vsNMS2926/2900 and3619 vs2906/2831. Against each stronger
+  NMS repeat, gains are26.38%/24.54%, aggregate25.46%. Allsixattempts pass full
+  horizon, strict1s, source/input/binary checks, four physical cores and32GB.
+  Protocol81bdfbd predates input generation. No newer candidate was substituted.
+- Predictive matching loses on the current solver: K2048 gives3450 vs3520;
+  K5120 gives3541 vs3637. The latter full trajectory exactly repeats between
+  four cores and32workers. Leave the option off.
+- Extra parents at four-core K4096/K5120 give3604/3565 (four parents) and
+  K5120/eight parents3610. The selected four-core record remains3648 with one
+  parent, although32-worker K8192 benefits on seed3. Allcasesvalid.

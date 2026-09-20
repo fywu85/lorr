@@ -1,0 +1,304 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:26:36.162828+00:00",
+    "name": "seed50005-ours",
+    "steps": 2000,
+    "binary_sha256": "a37917e0caea46f9d60c4a789a0e8433813c131adcfc725f0760f2fa5b7de7f8",
+    "environment": {
+      "R05_K": "5120",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GOAL_CACHE": "1",
+      "R05_GENERATIONS": "4",
+      "R05_RADIX_ORDER": "1",
+      "R05_CANDIDATE_CACHE": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3698,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.927144921
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.7938802702324991,
+      "max": 0.927144921
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "c23a2ec29dd5e8c451067022f92821dc90660d40b7171af4396089f478c29769",
+    "valid": true,
+    "usage": {
+      "user_seconds": 6324.376169,
+      "system_seconds": 0.751822,
+      "peak_rss_kib": 303312,
+      "wall_seconds": 1589.7853951957077,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50005-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:31:59.026650+00:00",
+    "name": "seed50005-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2926,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503411011154994,
+      "max": 0.950612048
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "433b89cdef86641cc0e23050dc3d1cc789b1197220a5a2d32d55f42b057b4b05",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7594.535977,
+      "system_seconds": 1.271517,
+      "peak_rss_kib": 1646880,
+      "wall_seconds": 1902.6464255191386,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50005-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:31:58.910037+00:00",
+    "name": "seed50005-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2900,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503332887834998,
+      "max": 0.950581658
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "7ad6a696622738b2f84b71bbd1ce20c6ca17246f5d31d5c4cbcf162e48402014",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.684017,
+      "system_seconds": 0.955738,
+      "peak_rss_kib": 1648264,
+      "wall_seconds": 1902.5307817980647,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50005-nms-repeat2/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:26:52.958073+00:00",
+    "name": "seed50006-ours",
+    "steps": 2000,
+    "binary_sha256": "a37917e0caea46f9d60c4a789a0e8433813c131adcfc725f0760f2fa5b7de7f8",
+    "environment": {
+      "R05_K": "5120",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GOAL_CACHE": "1",
+      "R05_GENERATIONS": "4",
+      "R05_RADIX_ORDER": "1",
+      "R05_CANDIDATE_CACHE": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3619,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.923515459
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.7971956797720003,
+      "max": 0.923515459
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "d18bea4aee7d61d8f266f466f5e9b9aca6fb19dad5cd61889ab24c3b9a8c353e",
+    "valid": true,
+    "usage": {
+      "user_seconds": 6350.24458,
+      "system_seconds": 0.9756549999999999,
+      "peak_rss_kib": 301016,
+      "wall_seconds": 1596.5645988360047,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50006-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:32:09.139044+00:00",
+    "name": "seed50006-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2906,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503389714575018,
+      "max": 0.950583421
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "f743585c2079256346cdc6afe8f951e7f8ba16118d5ff828414e28dfa0c94742",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.593501,
+      "system_seconds": 1.147706,
+      "peak_rss_kib": 1646680,
+      "wall_seconds": 1902.6585643235594,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50006-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T16:32:09.139267+00:00",
+    "name": "seed50006-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2831,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503409664004998,
+      "max": 0.950562541
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "203ca27e2e752ce77108ae84a15ebac683ad9cc9d77321b746b6b72fc1fed4e3",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7594.84196,
+      "system_seconds": 1.059606,
+      "peak_rss_kib": 1646748,
+      "wall_seconds": 1902.6644131559879,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v3-split-full-v52/seed50006-nms-repeat2/summary.json"
+  }
+]
