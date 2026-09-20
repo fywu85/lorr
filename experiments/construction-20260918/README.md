@@ -6,17 +6,17 @@ including late full-run states, and records whether construction finishes before
 its own deadline. These fixed-goal motion probes diagnose coordination; full
 5,000-step lifelong runs remain the criterion for adopting CGAR improvements.
 
-The original CGAR control was `CGAR_ORIENTATION_GUIDANCE=1 CGAR_TURN_FIRST=1
-CGAR_TURN_TABLE_MB=8192`, with a six-seed mean of43,176.17 tasks. The current
-[benchmark reference](warehouse-reference-variants.json) adds temporal planning
-and refreshed observed-flow guidance, complete pickup fields and regional repair,
-reaching **143,941.2 mean tasks over all six seeds**. Its
-[full evidence](results/pickup-full-regions-six-seed-v44.json)
-and the root [throughput history](../../WAREHOUSE_PROGRESS.md) supersede the
-original control as the current performance summary. The valid local
-KittyKnight reference completed 152,981 with a larger CPU allocation and more
-than 32 GB memory. The CGAR target remains below 32,000,000,000 measured bytes,
-one-second complete decisions, and generic rules without map-specific policies.
+The original CGAR control used orientation guidance with an8GiB turn table and
+a six-seed mean43,176.17. The current [generic reference](warehouse-reference-variants.json)
+adds temporal planning, observed-flow guidance, complete pickup fields, regional
+repair and bounded matching, reaching144,392.17over six solver seeds. The separate
+explicit Warehouse TRICK now reaches155,057tasks, above the NMS target154,795.
+It uses native Warehouse guidance and a configured horizon with a prospective
+p90 completion margin; ordinary fairness stays enabled.
+[Current full result](results/horizon-percentile-full-v96/summary.md) and the
+[root history](../../WAREHOUSE_PROGRESS.md) supersede historical probe summaries.
+Current development allows shared hosts and5s complete-entry deadlines while
+retaining the32,000,000,000-byte RSS cap; strict1s certification remains separate.
 
 The [current bottleneck and literature review](bottleneck_review/REPORT.md)
 accounts for all 300 million robot steps of the six-seed reference, compares the

@@ -86,7 +86,7 @@ def main():
     work = module(raw / 'work.py', 'unfinished_work'); margin = module(raw / 'margin.py', 'margin_prefix')
     write(out / 'fixtures.json', work.fixtures())
     records = {}; prefixes = {}; mode = v['mode']
-    control = {'work':'trick_native_work4m_regions2', 'pickup':'trick_native_pickup5',
+    control = v.get('control_variant') or {'work':'trick_native_work4m_regions2', 'pickup':'trick_native_pickup5',
                'percentile':'trick_native_percentile0', 'seeds':'trick_native_horizon5000_margin1'}[mode]
     for row in v['rows']:
         path = Path(row['raw_case']) / 'WAREHOUSE.json'; sha = digest(path); data = read(path)

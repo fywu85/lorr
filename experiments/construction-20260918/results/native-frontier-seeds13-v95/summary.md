@@ -24,7 +24,9 @@ development, not strict1s competition certification. No new best or policy chang
 Source bdf5e7a145626f87d0321eb8df8ab08b9ec3cb4f, binary
 c49f8ccef14674ff718b0e94fa0f4c94ddf16c404fe37112eb20a449a6a21c6b.
 This later implementation defers stores for rejected search candidates. Its
-full same-seed controls are being checked in the separate V95 work matrix.
+full same-seed controls now exactly reproduce V92 in the separate V95 work matrix.
+The four same-binary solver seeds0/1/2/3 score154889/154713/154556/154776, mean
+154733.5 (61.5below NMS). [Four-seed evidence](../native-frontier-four-seeds-v95.json).
 
 [Full verification and timestamps](verification.json), [waiting audit](fairness.json),
 [exact configurations](spec.json), [independent unfinished-work replay](../native-frontier-seeds13-v95-outcomes/accounting.json).

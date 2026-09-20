@@ -39,13 +39,15 @@ for obstacles, duplicate destinations, and edge swaps.
 
 [WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
 
-On20September2026, an explicitly enabled Warehouse TRICK reached **154,889tasks**
+On20September2026, an explicitly enabled Warehouse TRICK reached **155,057tasks**
 against the user-specified NMS target154,795: a valid full5,000-step/10,000-robot
-run, seed0, source[92bc748](https://github.com/fywu85/lorr/commit/92bc748e81416de9d66edaec0e83a833ae3bac18).
+run, seed0, source[27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
 It assumes the known5,000-step horizon and requires `--trick WAREHOUSE`.
-Seed2 scores154,556; the generic six-seed reference remains144,392.17. These are
-shared-host5s development results, with a1.012s maximum entry; strict1s certification
-remains separate. [Verified result and exact configuration](experiments/construction-20260918/results/horizon-margin-full-v92/summary.md).
+Seed2 scores154,727; their mean154,892 is97above target. Every task revealed in
+the first half finishes in both runs. The generic six-seed reference remains
+144,392.17. These are shared-host5s development results, with a1.025s maximum
+entry for the best run; strict1s certification remains separate.
+[Verified result and exact configuration](experiments/construction-20260918/results/horizon-percentile-full-v96/summary.md).
 
 
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.

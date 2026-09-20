@@ -34,3 +34,18 @@ seeds0/2 for mean,median,p75,p90 on32bound physical GRID cores (4each). All comp
 fixed work, shared5s development,32decimalGB. Full mean controls must reproduce
 154889/154556 and their complete trajectories. Report task-age tails as well as
 throughput. No quality claim from startup screens; no promotion before full data.
+
+## Full results and refinement
+
+V96 full comparison is verified: mean154889/154556, median154767/154466,
+p75154991/154691, p90155057/154727. p90 improves both seeds168/171, preserves
+ordinary fairness and raises the best to155057. All8full cases pass; both mean
+controls and pre-intervention prefixes are exact. Gains are entirely in the last
+1000steps. [Full evidence](../../results/horizon-percentile-full-v96/summary.md).
+
+The next fixed comparison uses p90 as its exact repeated control against p95/p99
+on seeds0/2, with two additional p90 seeds1/3. Same frozen V96 binary and source,
+4bound physical cores per process, shared5s/32decimalGB. The analyzer freezes
+the verified p90 reference and checks its complete trajectories, avoiding
+an unnecessary repeat of the already reproduced mean baseline. No value above
+p90 is promoted before its full results and waiting tails are checked.

@@ -78,11 +78,13 @@ def main():
     p.add_argument('--commit', required=True)
     p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup'], required=True)
     p.add_argument('--hold-job')
+    p.add_argument('--control', help='Optional existing profile to use as the exact control')
+    p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
     p.add_argument('--execute', action='store_true')
     a = p.parse_args(); raw = a.raw.resolve(); out = a.output.resolve(); support = raw / 'frontier-analysis-support'
     if not a.execute:
         support.mkdir(exist_ok=False)
-        copies = {'analyze.py': Path(__file__), 'reference.json': BASE / 'results/horizon-margin-full-v92/comparison.json',
+        copies = {'analyze.py': Path(__file__), 'reference.json': a.reference or BASE / 'results/horizon-margin-full-v92/comparison.json',
                   'profile.json': BASE / 'results/horizon-margin-full-v92/best-variant.json'}
         for name in ['sequences-20260918/analyze.py', 'motion-20260918/analyze.py', 'assignment-20260918/analyze.py',
                      'throughput-20260918-next/analyze_matrix.py', 'throughput-20260918-strict/analyze.py',
@@ -92,9 +94,11 @@ def main():
         for name, source in copies.items():
             target = support / name; target.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(source, target)
             files[str(target)] = sha(target)
-        write(raw / 'frontier-analysis-request.json', dict(commit=a.commit, mode=a.mode, files=files))
+        write(raw / 'frontier-analysis-request.json', dict(commit=a.commit, mode=a.mode, control=a.control, files=files))
         command = ['/usr/bin/python3', str(support / 'analyze.py'), '--raw', str(raw), '--output', str(out),
                    '--commit', a.commit, '--mode', a.mode, '--execute']
+        if a.control:
+            command += ['--control', a.control]
         script = raw / 'frontier-analysis.sh'; script.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
         submit = ['qsub', '-h', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '2', '-binding', 'linear:2',
                   '-l', 'exclusive=false,h_rt=00:30:00,h_vmem=8G', '-m', 'n', '-N', 'frontier_analysis', '-j', 'y',
@@ -107,13 +111,13 @@ def main():
         result.check_returncode(); assert re.fullmatch(r'\d+\s*', result.stdout)
         print(result.stdout, end='', flush=True); subprocess.run(['qrls', result.stdout.strip()], check=True); return
     request = read(raw / 'frontier-analysis-request.json')
-    assert request['commit'] == a.commit and request['mode'] == a.mode
+    assert request['commit'] == a.commit and request['mode'] == a.mode and request['control'] == a.control
     for name, value in request['files'].items():
         assert sha(name) == value, name
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -121,7 +125,16 @@ def main():
     result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=5000)
     spec = read(raw / 'spec.json'); assert spec['trick'] == 'WAREHOUSE' and spec['experiment_track'] == 'TRICK'
     baseline = next(iter(read(support / 'profile.json').values()))
-    reference = {r['seed']:r for r in read(support / 'reference.json')['rows'] if r['environment']['CGAR_TRICK_HORIZON_MARGIN'] == '1'}
+    control_cases = [c for c in spec['cases'] if c['variant'] == control]
+    assert control_cases, 'requested control is absent from the submitted matrix'
+    control_percentiles = {int(c['environment'].get('CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', '0')) for c in control_cases}
+    assert len(control_percentiles) == 1
+    control_percentile = next(iter(control_percentiles))
+    ref = read(support / 'reference.json')
+    assert ref['all_valid_within_deadline_and_memory'] and not ref['failures']
+    reference = {r['seed']:r for r in ref['rows'] if r['environment']['CGAR_TRICK_HORIZON_MARGIN'] == '1'
+                 and (a.mode != 'percentile' or int(r['environment'].get('CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', '0')) == control_percentile)}
+    assert reference, 'verified reference does not contain the requested control percentile'
     metrics = {m['case']:m for m in read(out / 'metrics.json')}
     samples = {}; fairness = {}
     for r in result['rows']:
@@ -161,7 +174,7 @@ def main():
         pairs.append(dict(seed=r['seed'], variant=r['variant'], tasks=r['tasks'], control_tasks=c['tasks'],
                           difference=r['tasks']-c['tasks'], final1000_difference=r['final1000']-c['final1000'],
                           age_p90_difference=r['outstanding_age_p90']-c['outstanding_age_p90']))
-    result.update(mode=a.mode, exact_reference_control_seeds=sorted(set(controls) & set(reference)), pairs=pairs,
+    result.update(mode=a.mode, control_variant=control, exact_reference_control_seeds=sorted(set(controls) & set(reference)), pairs=pairs,
                   promoted=False, scope='Full fixed-work Warehouse TRICK with ordinary fairness. Shared5s development,32decimalGB. Finite fairness observations do not prove starvation freedom.')
     write(out / 'verification.json', result); write(out / 'work-samples.json', samples); write(out / 'fairness.json', fairness)
     for name in ('frontier-analysis-request.json','frontier-analysis-submission.json'):

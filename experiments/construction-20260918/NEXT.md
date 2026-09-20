@@ -5,19 +5,39 @@ was achieved. Continue from the frozen winner, preserving ordinary fairness and
 CGAR protection/recovery. No new numerical ceiling has been established. The
 previous goal's completion is historical, not an instruction to stop this work.
 
-First independent experiments: native_work/variants.json pairs the current4M/
-2round winner with8M/2round and4M/4round fixed work, full seeds0/2; unchanged winner
-on seeds1/3 checks robustness. Use frozen V93 binary and require exact full V92
-control traces before interpreting candidates. Shared5s/32decimalGB,4bound cores
-per case; all Warehouse rules remain explicitly --trick WAREHOUSE. Fable turn45
-resumes the same CLI session to recommend one bounded completion-estimator change.
+The initial fixed-work and seed checks are complete, with exact original controls.
+The percentile completion model raises the best to155057; its refinement and
+confirmation are now active. Shared5s/32decimalGB,4bound physical cores per case;
+all Warehouse policies remain explicitly --trick WAREHOUSE. Fable turn45 resumed
+the same CLI session but failed due exhausted credits; no new review was received.
 Preserve concurrent random05 work. Prior milestone2fb2d5c was already committed,
 pushed, and its goal marked complete; the old closeout checklist below is historical.
 
-## Running V95–V97 experiments (2026-09-20 15:58 UTC)
+## New active best and follow-up (2026-09-20 16:28 UTC)
 
-- V95 native work matrix8900145 on research38,24distinct bound physical cores;
-  six full cases, sourcebdf5e7a. Automatic frozen verifier8900181.
+V96 p90 VERIFIABLE NEW BEST155057/154727, gains168/171; mean154892>NMS154795.
+Source27be6e3/binary37694eac..., bestcompleted16:18:39.911128UTC. Fullverification
+8900204 andindependentoutcomes8900262 COMPLETE:all8valid, exactmeancontrols,
+400Msteps and3798/3800prefixesPASS. Fairness staysON, allfirsthalftasksfinished,
+oldestneverassigned190/185. Mean450.624ms/RSS11.925GB; shared5s,notstrict1s.
+Bestrecord:results/horizon-percentile-full-v96/best-record.json. Preserve original
+154889record inhistory. Generic reference unchanged. Medianlosesboth; p75wins102/135.
+
+- V98 p90/p95/p99 full seeds0/2:8900274 onresearch44,24physicalcores, verifier
+  8900275 thenoutcomes8900276. Exactp90controls againstV96 required.
+- V98 p90 seeds1/3:8900277 onresearch44,8otherphysicalcores, verifier8900278 then
+  outcomes8900279. SamefrozenV96binary. Both allocations aredisjoint.
+- V97 pickupweights5/8/12 stillrunning8900240, last3200; verifier8900241 then
+  outcomes8900263. Itsmean-margincontrol staysoldprofile; do not mix withp90.
+- New analyzer --control/--reference selects frozen verified percentilecontrols
+  without redundant mean reruns; no production changes. Outcomehelper supports it.
+
+## Completed checks and remaining pickup experiment
+
+- V95 native work8900145/verifier8900181/outcomes8900261 COMPLETE:controls exact
+  full154889/154556.8M154870/154762 (-19/+206), fourround154686/154576(-203/+20).
+  All6valid/fair;4Mreference retained. Four same-binary seeds0..3mean154733.5.
+  See results/native-work-full-v95/summary.md and native-frontier-four-seeds-v95.json.
 - V95 unchanged winner seeds1/3 job8900146 and verifier8900182 COMPLETE:154713/
   154776, allvalid, oldestneverassigned190/185, earlyhalfallcomplete. Outcomeaudit
   8900260 COMPLETE:100Msteps/hash/fixturesPASS, unfinishedwork1162752/1159825.
@@ -27,8 +47,8 @@ pushed, and its goal marked complete; the old closeout checklist below is histor
   Build8900173 complete: full suite passes, all28source/test hashes bound to commit.
   ActiveH200 four-arm screen8900186 complete/allvalid, q0 exact29abe32d... V92;
   q90 changes actual trajectory. Startup counts are not quality evidence.
-- V96 full mean/median/p75/p90 xseeds0/2 job8900203 on research57,32bound physical
-  cores; automatic source/resource/trajectory/fairness verifier8900204. Raw
+- V96 full mean/median/p75/p90 xseeds0/2 job8900203 and verifier8900204 COMPLETE
+  on research57,32bound physical cores. All8valid; p90 wins168/171. Raw
   runs/cgar-horizon-percentile-full-v96-20260920; results/horizon-percentile-full-v96.
 - V96 generic800 job8900187, corrected verifier8900190 COMPLETE, exact generic800 trace. Initial analyzer8900188
   used an incorrect nonexistent dependency and exited on missing unfinished
@@ -36,8 +56,9 @@ pushed, and its goal marked complete; the old closeout checklist below is histor
   mistake, not a solver failure. The replacement waits on the actual benchmark ID.
 - Fable turn45 failed with exhausted usage credits, same persistent CLI session.
   No research feedback received; local implementation/review continues. Next turn46.
-- No new record yet. Keep154889 and generic references unchanged until full verified
-  results. Do not edit production/test files during a build. random05 remains separate.
+- New verified record155057 is in the active section above. Keep historical
+  records and the generic reference. Do not edit production/test files during a
+  build. Preserve the independent random05 fork.
 
 - V97 read-only completion-opportunity audit8900235 COMPLETE15:54UTC; only8/7
   physical and2/0 mean-margin safer-alternative witnesses remain in old winner.
@@ -45,8 +66,8 @@ pushed, and its goal marked complete; the old closeout checklist below is histor
 - V97 pickup comparison8900240 RUNNING, validator8900241: native_pickup/variants.json
   weights5/8/12, seeds0/2, exact V93 binary. Complete work and ordinary fairness
   unchanged.24disjoint bound physical cores; full results pending.
-- Independent outcome audits held after the validators: work8900261, percentile
-  8900262 (also exact pre-intervention prefixes), pickup8900263. Helper native_work/
+- Independent outcome audits work8900261 and percentile8900262 COMPLETE;
+  pickup8900263 is held after its validator. Helper native_work/
   outcomes.py freezes the existing verified work/prefix methods and source hashes.
 
 ## Prior target achievement
