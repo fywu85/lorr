@@ -481,18 +481,29 @@ std::vector<int> TurnDistanceOracle::compute(int goal, std::chrono::steady_clock
         for (auto& bucket : buckets) bucket.clear();
         for (int d = 0; d < 4; ++d) { dist[root + d] = 0; buckets[0].push_back(root + d); }
         size_t pending = 4, popped = 0; int distance = 0;
+        const int bucket_count = static_cast<int>(buckets.size());
+        int current_bucket = 0;
         while (pending) {
             if ((popped & 1023) == 0) check_deadline(deadline, "turn_distance_table");
-            auto& bucket = buckets[distance % buckets.size()];
-            if (bucket.empty()) { ++distance; continue; }
+            auto& bucket = buckets[current_bucket];
+            if (bucket.empty()) {
+                ++distance;
+                if (++current_bucket == bucket_count) current_bucket = 0;
+                continue;
+            }
             const int node = bucket.back(); bucket.pop_back(); --pending; ++popped;
             if (dist[node] != distance) continue;
             const auto pred = predecessors(node);
             for (int k = 0; k < 3; ++k) if (pred[k] >= 0) {
-                const int next_distance = distance + (k == 2 ? forward_cost(cells_[pred[k] / 4], node % 4) : turn_cost_);
+                const int edge = k == 2 ? forward_cost(cells_[pred[k] / 4], node % 4) : turn_cost_;
+                const int next_distance = distance + edge;
                 if (next_distance >= dist[pred[k]]) continue;
                 dist[pred[k]] = next_distance;
-                buckets[next_distance % buckets.size()].push_back(pred[k]); ++pending;
+                // Every positive edge is below bucket_count; one subtraction
+                // preserves the modulo index and the exact existing pop order.
+                int next_bucket = current_bucket + edge;
+                if (next_bucket >= bucket_count) next_bucket -= bucket_count;
+                buckets[next_bucket].push_back(pred[k]); ++pending;
             }
         }
     }
