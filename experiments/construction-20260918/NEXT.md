@@ -1,121 +1,97 @@
 # Continuing Warehouse work
 
-Updated2026-09-20 12:32UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
-5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
+Updated 2026-09-20 12:48UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
+5000-step/10000-robot seed, including explicit --trick WAREHOUSE. 32decimalGB RSS,
 complete fixed work, timeout failure. Shared GRID/5s development authorized;
-strict1s certification separate. Preserve other fork's random05 files/jobs/commits.
+strict1s certification separate. Preserve the concurrent random05 fork's files/jobs/commits.
 
 ## Verified frontier
 
-Best152383 TRICK seed0, sourcec6d9755, completed11:10:21.393890UTC; nativebands
-20/200(+1), turn1, raw potential, matching64,pickupweight5,shortOFF. Gap2412 (1.58285%
-growth). Mean450.823ms,max1.054859s,RSS11879858176. V78 evidence/best-record.
-Genericreference0196851 mean144392.1667 (all six totalwins,+451):
-144967/144869/144511/143340/144446/144220. Generic single145083 remains experimental.
+**153614 TRICK seed0**, source4e1a8fe5e995e275faa6ddfaa0e8f8ae61fc5352,
+completed2026-09-20T12:43:02.857282+00:00. Native20/200(+1bands), turn1,
+rawpotential, matching64,pickupweight5, ordinaryfairness, globalshortOFF,
+explicit CGAR_TRICK_KNOWN_HORIZON=5000. Horizon is CONFIGURED, not simulator-supplied.
+Evidence results/known-horizon-full-v86/best-record.json. Gap1181 (0.76881%growth).
+Mean445.669ms,max989.051ms,RSS11911778304,CPU1.504cores/4,wall2286.316s.
+Shared5s; observed<1s is NOT strict1s certification. Genericreference unchanged:
+0196851 mean144392.1667, six totals144967/144869/144511/143340/144446/144220.
+Generic single145083 stays experimental.
+
+## Newly completed full result
+
+V86 jobs8899651/8899652 COMPLETE/VERIFIED12:43:45UTC, all4full20kentries valid,
+28sources exact, distinct boundcores, no failures. Controls EXACT V80:
+152383/152048; ON153614/153220, gains1231/1172, entirelylast1000.
+Agep90+5/+7, emptywork+86961/+90917. Action/schedule/eventprefixes exactbefore
+first comparator reversal3843/3828. Source4e1a8fe,
+binary3471426137021ea7b39a62cf24c8c57dd0189e1009a1c02a910c555cf8470714.
+Rootprogress/TARGET/newbest updated; target UNMET. No shortest-feasible or margin policy yet.
+
+V86 bound=max(1,spatialpickup)+originalspatialchain+repeats; constBFSpeek/Manhattan.
+Fullcoreguard, no refinedchain, no nativeweightedphysicalbound. Rank impossible
+newadmissionpairs last, ordinaryHRRN within tiers. Preserve endpointbucket/fair
+comparator, held/started/primary/recovery/matching. No drop/parking. Allat/pastHordinary.
+Bound conditionaloncurrentholder; latermatching canrescue initialimpossiblepair.
+V87costkey1guard+independent shelfBFS6/Manhattan4 andemptyshortlistfallback tests
+PASS fullsuite8899685, source158c93b, binary1658c993c33a4eef0d0d246cb163d80048d9ada0958e3b43ed2617fa2e82e18e.
+ProductioncurrentlyV87; fullV86attribution stays4e1a8fe. No production build running.
 
 ## Active work
 
-- V86 known-horizon FULL8899651/analysis8899652 from12:04:56UTC onresearch57,
-  16boundcores/fourperprocess, seeds0/2 xH0/5000. Source4e1a8fe5e995e275faa6ddfaa0e8f8ae61fc5352,
-  binary3471426137021ea7b39a62cf24c8c57dd0189e1009a1c02a910c555cf8470714.
-  Rawruns/cgar-known-horizon-full-v86-20260920;results/known-horizon-full-v86.
-  Expectedfinish~12:40–12:50UTC. Controls MUSTexact152383/152048/V80fullhashes.
-  Fullverifier isfrozen; requiresaction/schedule/eventprefixexactbeforeearliest
-  comparatorreversal (includingheapretention). SevenindependentcutofffixturesPASS.
-- Horizon is anEXPLICITconfiguredassumption: --trickWAREHOUSE plus
-  CGAR_TRICK_KNOWN_HORIZON=5000. Newadmissionsonly, conditionalphysicalLB tier,
-  oldorderwithintier, oldendpointbucket/faircomparator, held/started/primary/recovery/
-  matchingunchanged. No dropping/parking; allat/pastHordinary. Boundmax(1,pickup)+
-  originalspatialchain+repeatedstops; constBFSpeek/Manhattan,noLRU/builds,no nativecost.
-  Fullcore==freeguard,refinedchainrejected. A laterretarget canrescueaninitially
-  impossiblepair; boundisconditionalonkeepingholder,NOTglobaltaskimpossibility.
-- V84 matching-budget FULLdiagnostic8899625/analysis8899626 COMPLETE/VERIFIED20kentries,
-  weight5shortOFF/ON xseeds0/2, stride10sameasrealpass. Sourcea9c2ec2,
-  binarybd6c543934c2aaf8375de172778649b20f82d0b4768f2e837903d80ecad59ebd.
-  Rawruns/cgar-match-budget-subsets-full-v84-20260920;results/match-budget-subsets-full-v84.
-  Allfourfulltrajectories ANDsampledrealworkexactV80. Tick4990fairS2forwardunits/
-  assignment0.014563/0.014911; fullyprotected0.000341/0.000102; witnessrows808/853;
-  descriptiveS2/S1=4.47%/4.69%. ShortS2=1.3445/1.3088, fullyprotected0.1412/0.1279,
-  rows26163/25820,ratio20.46%/20.15%. Deprioritizebudget2forfairbest; notanupperbound. Owncursor/Stats/taskledger,constpeeks,afterrealmatching,same
-  exclusions exceptbudget. WholecyclededupALLtaskIDs, no commits. Whollyprotected
-  subsetseparatefrommixedcycles. Boundedchronologicalguidancewitnesssample, not
-  fullopportunitycount/causalphysicalgain/upperbound. Budget2NOTimplemented.
-- Fable41COMPLETE12:12:03UTC,review/assessmentarchived. No liveCLI. Samepersistent
-  session1ebb1075-3538-49d1-93d1-a00c94fa256a. Promptfollowup-40.md,payload28946bytes,
-  fourchangedsourcesincludingfullhorizonregression. ReviewactualV86code+corrected
-  audit; possiblecalibratedmiddle-tier designONLYifminimalhorizonleavesgap.
-  No calibratedpolicyimplemented. Nextturn42whennewresultsorharddiagnosiswarrants.
+- V89 savedmotion8899717 COMPLETE200Msteps, allinput/phase/lane fixtures;
+  results/known-horizon-motion-audit-v89. Completedchainmean242.954/242.968 ->
+  242.188/242.188; emptyworkrisesasabove; completedloadedoverhead stays~15.88/16.44.
+  Endogenouscohort associations, notcausal decomposition.
+- V89 ONsavedunfinishedwork8899720 running/queued;
+  rawruns/cgar-known-horizon-work-audit-v89-20260920,
+  results/known-horizon-work-audit-v89. After accounting.json exists, run:
+  python3 experiments/construction-20260918/horizon_audit/lower_bounds.py
+   --reference experiments/construction-20260918/results/known-horizon-work-audit-v89/accounting.json
+   --output runs/cgar-known-horizon-bound-audit-v89-20260920
+   --archive experiments/construction-20260918/results/known-horizon-bound-audit-v89
+- Fable42 RUNNING from12:46:14UTC, persistent1ebb1075-3538-49d1-93d1-a00c94fa256a;
+  promptfollowup-41.md, payload9423bytes, 2sourceupdates. Reviewsfullresult andsmallest
+  followup(shortestfeasibleaftertrigger versus calibratedmargin). Testsource range
+  now3116..3769 includes fullV87function. Readstatus/review/metadata, neverrawstream.
+  Nextreview43onlywhenuseful. No internalagents.
 
-- V87 source158c93bd3256c7dbf6765706d2ebf033b8fc7fb1 guards knownH+costkey1 (wrongbaselineforreversallog),
-  which isNOTusedbyactiveV86matrix. Addsindependentshelfdetour(BFS6vsManhattan4)
-  andforcedemptyshortlistsampledfallbacktests. Fullsuite8899685PASS. Binary1658c993c33a4eef0d0d246cb163d80048d9ada0958e3b43ed2617fa2e82e18e.
-  No extra policyfactor/qualitybenchmark;activeV86sourceunchanged.
+## Decision evidence to preserve
 
-## Newly completed evidence
-
-- V80 fullshort8899568/69 VERIFIED40kentries,four exactV78faircontrols. W1fair
-  151901/152066 vs short148256/148397 (-3645/-3669; tails-1708/-1742). W5fair
-  152383/152048 vs short151870/151804 (-513/-244; tails-1071/-922). Meanloss2.4062%/
-  0.24866%. Allfirst1000windowsimprovebutlaterwindowslose: startupqualitymisleads.
-  KeepSHORT OFF. Source85faca5 (V81kernel), binary29ff424...; nofrontierchange.
-- V85 savedshortmotion8899627 COMPLETE400Msteps. W5shortchain242.954/242.968 ->
-  236.395/236.326,empty60.340/60.485 ->67.541/67.533,overhead15.888/16.425 ->
-  16.683/16.785. Descriptivecohortassociation, notcausalpartition.
-- V86build8899629/fullregressionsPASS:28metric/table/boundaryprofiles,fiverepeated
-  servicecases,oldest/held/startedprotection,tenactivation/basisguards.
-  Native2008899631/analysis8899639PASSthreearms: H0/H5000exactV81; H200activevalid
-  firstreversal0. Generic8008899632/analysis8899640PASSexact18958/c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
-- SavedhorizonworkV84: unfinishedtasks1997613/1998338 (~4%of50M), empty635503/
-  635199,loaded1362110/1363139. Noidle/everyrobotcompletes. Postlastcompletion
-  differsduetohandoffs. Firstadmitted>=4600finishes3746/12528and3731/12517 (~30%).
-  Notrecoverableworkestimate. All100Mphasecounts/hash/independenthandofffixturePASS.
-- V86-r2 exactspatialbound/alternativeaudit8899650PASS. Firstadmittedstep>=4000:
-  unfinishedinitialpairLB>R9285/9232; LBfeasiblebutunfinished669/737. Chronological
-  taskdisjointfeasiblealternativewitnesses4024/3980 (reserve BOTHIDs, excludesamebatch
-  actualassignments,alreadyassignedandunrevealedtasks). Enoughsampletowarrantfulltest,
-  NOTcounterfactualrollout/upperbound/predictedgain. ExactBFSstrongerthanproduction
-  Manhattanmisses. Firstaudit8899649failedmeasurementassumption: exactlyONEcompleted
-  latetaskperseedhadinitiallyimpossiblepair,laterretargetrescued. PreservefailureV86;
-  correctedallcompletedFINALholderboundspass. Threeadditionalownership/revealfixtures.
-- Fable40COMPLETE11:51:48UTC/assessmentarchived; reviewsdesign,nocorrectnessissue.
-  Requestedstockauditfulfilled. Relativeendtickis4999, recordedterminalevent5000;
-  avoidconflatingthem. Suggestedshortcircuitoptimizationdeferreduntiltimingmeasurement.
-  Calibrationmiddle-tier andmatchingfeasibilityconstraints areseparatefuturetests.
-- V83auditOFFgeneric800exact, fourstride100native200exact;V84allfourstride10native
-  prefixesANDrealworkexact. Fullsuitepass. V82motion600M/V78twelvefull60kallvalid.
-  V78matchingallseedgains;weight5conditional+482/-18vsw1bands; noindependentfactorial.
-  V81backwardkernelCPU-9.6..15.8%,V77pickupkernelimproved; exactdistances/work,
-  onlykernelperformanceclaims,notwholeentrystepups.
-
-- V88 savedbaseline residual audit8899693COMPLETE/PASS; allpreviousV86-r2cohorts/
-  witnesscountsexact. Twoadditionalhandchecks(singleholderduration5-LB3=2;
-  retargetedcompletionexcluded). Latecompletedunchangedholdermeanresiduals at
-  LBbands0-49/50-99/100-199/200-399/400+: seed0=13.33/15.14/18.43/22.82/28.90,
-  seed2=13.85/15.39/18.82/23.51/30.25. Censoredcompletedcohorts,NOTpredictionorcalibration.
-  horizon_audit/analyze.py nowtakes--configured-horizon5000 toselectONrows;
-  lower_bounds.py takes--referencePATH forcandidateworkaudit. Bothhelperssnapshot
-  beforeexecution; currentfullverifierunchanged. Candidatepostanalysisflow:
-  lane_motion_audit.py --verificationV86 --outputRAW --archiveRESULTS;
-  horizon_audit/analyze.py --verificationV86 --motion-accountingNEWmotion/accounting.json
-  --configured-horizon5000 --outputRAW --archiveRESULTS; then
-  horizon_audit/lower_bounds.py --referenceNEWwork/accounting.json --outputRAW --archiveRESULTS.
-- Read-onlycachecheck: nativeV80guidedfallbackstotal12618 stopgrowingbyt200;
-  turntablebuilds9929byt200,74013by5000. Largerstaticcachealoneisunlikelyqualitylever
-  beyondcoldprefix. All38586compactall-goaltableswouldbe11.911GBphysical, butlogical
-  accountinguses32bits(23.822GB). ExistinggenericV39cache8/16GiBscreenwasneutral;
-  staticall-goalprecompute/completechainpricingisUNIMPLEMENTEDandnotthenexttest.
+- V80 shortpref full8cases40kentries/fourexactcontrols NEGATIVE: weight1deltas
+  -3645/-3669, weight5-513/-244; allstartup1000windowsimprovebutalllaterwindowslose.
+  KeepglobalshortOFF. V85motion400M: shorterchains offsetbylongerempty/loadedoverhead.
+- V84 fullbudgetshadow20kentries/fourtrajectories ANDrealwork EXACT V80, stride10.
+  Ordinaryfair S2/assignment0.014563/0.014911 cost/20forwardunits; fullyprotectedpart
+  0.000341/0.000102, sampledrows808/853, S2/S1~4.47/4.69%. Shortshows1.3445/1.3088
+  butqualityalreadynegative. Deprioritizebudget2; sampleNOTcomplete/upperbound,
+  mixedcyclewholegainNOTsolelyprotectedrows. No secondretargetimplemented.
+- BaselinesavedworkV84 unfinished1997613/1998338 (~4%of50M), empty635503/635199,
+  loaded1362110/1363139; postlastcompletiondiffersduehandoffs. Firstadmitted>=4600
+  finish3746/12528 and3731/12517. Worknotallrecoverable.
+- V86-r2 baselineexactboundaudit late>=4000: unfinishedinitialLB>R9285/9232,
+  LBfeasibleunfinished669/737; chronological task-disjoint feasiblealtwitnesses4024/3980.
+  ReservebothIDs; excludesalreadyassigned/unrevealed/samebatchactualadmissions.
+  Notcounterfactualrollout/gain/upperbound. ExactlyONEcompletedlatecase/seedinitial
+  pairimpossiblelaterretargetrescued. AllcompletedFINALholderboundspass. Firstfailed
+  auditV86preserved; rejectedmeasurementassumption, notsolverfailure.
+- V88baselinecompleted-singleholderresidual auditPASS/allpreviouscohortsexact:
+  lateLB0-49/50-99/100-199/200-399/400+:13.33/15.14/18.43/22.82/28.90(seed0),
+  13.85/15.39/18.82/23.51/30.25(seed2). Censoredcohort, NOTcalibrationforunfinished.
+- Staticcachealoneunlikelyqualitylever: orientedfallbackcount12618stopsbyt200;
+  repeatedtablebuildscostCPU. All38586compacttables~11.911GBphysical but23.822GB
+  logical accounting. No largerprecompute/complete nativechainpolicyimplemented.
+- V81backwardDial/V77pickup indexing exact/kernelCPU9-23%lower, NOTwholeentrygain.
 
 ## Next actions
 
-1. Fable41reviewassessed;guard/testgapsfixedinV87. Do notaddfeatureswithout reason whilefull
-   minimalhorizontrialruns. No source/testeditsduringnewbuilds (nonecurrentlyactive).
-2. V84shadowfullverified/summarywritten. Preserveallcounterqualifications.
-3. VerifyV86full, thenupdateANYnewvalidbestwithsource/hash/seed/flags/time. If>=154795
-   goalachievedunderusercriterion; strict1scheckdeferred, genericreferenceunchanged.
-   Replayunfinishedwork/formallatewindowcounts; ifbelowtargetchooseconditionalnext.
-4. Commit/pushoursEXPLICITpaths;neverstageotherfork. Preservefailedexperiments.
-5. Useexplicitworkdir/set-e; NFSvisibilitycanlag. CLIreviewsread-onlysame-session,
-   no internal subagents. Keepuserupdated~60s duringongoingwork.
+1. Complete ONwork/bound/slackreplay; assessFable42; chooseboundedfollowup onactual
+   evidence. Ifshortestfeasibletested, comparatorMUSTbe frozen perentry: latchtrigger
+   forNEXTentry, neverchange comparatorwhileheapis populated. Separateflag/TRICK.
+   Trigger(choice: firstimpossiblepair vsfirstcomparatorreversal) remainsundecided.
+2. Commit/pushours EXPLICIT paths. No production/test edits duringCGARbuilds.
+3. Update anyvalidnewpeak immediately; goalcompleteonlyat>=154795plusneededproof/log.
+4. Explicitworkdir/set-e, NFSartifactlagpossible. execneedsrequire_escalated duebrokenbwrap.
+   ExistingClaudeCLIauthorization coverssourcepayload. Keepuserupdated~60s.
 
 ## Historical notes below (current status above supersedes old running labels)
 

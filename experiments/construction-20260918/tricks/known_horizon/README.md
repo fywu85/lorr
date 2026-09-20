@@ -65,3 +65,5 @@ results remain unchanged. New independent shelf fixture has Manhattan4 but BFS6
 plus one repeated service: cached versus absent spatial tables change the tier.
 A forced empty-shortlist fixture exercises sampled fallback at exact feasibility.
 Both and the full suite pass; no additional policy factor is introduced.
+
+Full result verified2026-09-20 12:43:45UTC:153614/153220, exact152383/152048 controls, gains1231/1172. All20kentries valid, exact pre-reversal prefixes3843/3828. New peak153614, targetgap1181. See results/known-horizon-full-v86/summary.md. No generic promotion or strict1s certification. Saved motion/work/bound replay follows before another policy decision.
