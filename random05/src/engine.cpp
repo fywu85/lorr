@@ -29,6 +29,12 @@ Config Config::environment(const SharedEnvironment& env) {
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
+    c.initial_length_weight=real("R05_INITIAL_LENGTH_WEIGHT",-1);
+    c.initial_length_steps=integer("R05_INITIAL_LENGTH_STEPS",250);
+    if((c.initial_length_weight<0 && c.initial_length_weight!=-1) || c.initial_length_steps<0)
+        throw std::invalid_argument("invalid initial task-length preference");
+    if(c.initial_length_weight>=0 && env.trick_instance!="RANDOM-05")
+        throw std::invalid_argument("initial task-length preference requires --trick RANDOM-05");
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
@@ -353,6 +359,8 @@ void Engine::initialize(SharedEnvironment* env) {
 void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     const auto& g=*graph;const int n=env->num_of_agents;
     schedule=env->curr_task_schedule;
+    const float length_weight=cfg.initial_length_weight>=0 && env->curr_timestep<cfg.initial_length_steps
+        ?cfg.initial_length_weight:cfg.length_weight;
     std::vector<int> agents, tasks;std::unordered_set<int> locked;
     for(int i=0;i<n;++i) {
         int id=schedule[i];
@@ -385,19 +393,19 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         if(cfg.predict_matching && !pending_.empty())p=pending_[a];
         for(int j=0;j<int(tasks.size());++j) {
             int t=tasks[j];const auto& task=env->task_pool.at(t);
-            float cost=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+cfg.length_weight*length[j];
+            float cost=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+length_weight*length[j];
             if(cfg.guided_matching) {
                 const int goal=g.from_grid[task.locations[task.idx_next_loc]];
                 float approach=INF;
                 for(int d=0;d<4;++d)approach=std::min(approach,g.dist(goal*4+d,p*4+env->curr_states[a].orientation));
-                cost=approach/2+cfg.length_weight*length[j];
+                cost=approach/2+length_weight*length[j];
             }
             if(cfg.chain_matching) {
                 const int goal=g.from_grid[task.locations[0]];
                 cost=INF;
                 for(int d=0;d<4;++d)cost=std::min(cost,
                     (g.dist(goal*4+d,p*4+env->curr_states[a].orientation)
-                     +cfg.length_weight*continuation[j][d])/2);
+                     +length_weight*continuation[j][d])/2);
             }
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
             if(exact)matrix[size_t(row)*tasks.size()+j]=cost;

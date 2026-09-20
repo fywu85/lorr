@@ -10,9 +10,10 @@ private synthetic instances and code are unavailable. The goal is not complete.
   NMS repeats2,902/2,903/2,914; use strongest2,914: **+16.0%**.
 - Same configuration across seeds0–4:3,374/3,231/3,365/3,379/3,350, mean3,339.8.
   These are planner seeds on one fixed instance, not independent task instances.
-- Best32-worker result:3,374, exactly the same trajectory as four-core seed0.
-  Sixteen physical cores with SMT, mean84ms/max190ms. Matched NMS32=3,172,
-  so the competition-allocation lead is6.4%, distinct from the four-core lead.
+- Best32-worker result:3,379, exactly the same trajectory as four-core seed3.
+  Source32b333a, sixteen physical cores with SMT, mean105ms/max235ms. Matched
+  NMS32=3,172, so the competition-allocation lead is6.5%. Active-row validation now preserves all
+  control actions/schedules/events and averages309.6ms vs325.6ms on four cores.
 - All recent matched runs use EPYC9354, strict1s deadlines, and a32GB ceiling.
 - `best.json`, `best-four-cores.json`, `best-32-workers.json` freeze the producing
   configuration and link compact evidence. Map tricks require `--trick RANDOM-05`.
@@ -31,9 +32,9 @@ whether a missing summary is still running or an allocation failure.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
-| 8899560–8899567 | local-rotation-split-full-v26 | Four-core control, opposite-turn penalties0.1/0.3/1, local25/100, mutation0.1/0.03. |
-| 8899572–8899577 | regional-mutation-split-full-v27 | 32-worker full runs, regional radius2/4/8, mutation0.3/1. Control repeats3,374; radius2/mutation0.3 loses at3,195. |
-| 8899579–8899580 | active-cost-split-full-v28 | Four-core seed0 control for task-cost lookup speed; seed3 on32 workers to check3,379 trajectory. |
+| 8899560–8899567 | local-rotation-split-full-v26 | Control3,374; penalties0.1/0.3/1 =3,335/3,252/3,123; local25=3,294; mutation0.1/0.03 =3,310/3,148. Local100=3,294. All complete and valid; every variation loses. |
+| 8899572–8899577 | regional-mutation-split-full-v27 | All complete: control3,374; radius2/4/8 at mutation0.3 =3,195/3,217/3,348; radius2/4 at mutation1 =3,224/3,222. All lose. |
+| 8899579–8899580 | active-cost-split-full-v28 | Four-core seed0 control for task-cost lookup speed; seed3 on32 workers now repeats3,379 exactly; control-four repeats3,374 exactly; mean309.6ms versus325.6ms before. Complete. |
 
 All earlier batches through fixed-scale contrast and step-RNG validation have
 finished and are collected. Current full-run changes are experimental until
@@ -54,7 +55,8 @@ validation; no unmeasured option has been enabled in the best configuration.
   This retrospective sample does not establish a reliable stopping rule.
 - Performance optimizations preserved complete trajectories: shared sorting
   lowered mean500→378ms, insertion sorting→335ms, direct recursion→323ms.
-  v28 resolves active cost rows once per policy step; full latency test pending.
+  v28 resolves active cost rows once per policy step; full control actions,
+  assignments and events match exactly, with observed mean310ms (one pair).
 - See `RESEARCH.md`: inspected the 2024 winner authors' EPIBT follow-up and its
   public MIT implementation. A three-step operation kernel with bounded revisits
   and inherited valid operations is a possible structural next experiment.
@@ -70,6 +72,8 @@ validation; no unmeasured option has been enabled in the best configuration.
 - v26 `3b80801`: optional opposite-turn score penalty, off.
 - v27 `3e25c56`: optional regional priority mutation, off.
 - v28 `32b333a`: cache active task-cost row pointer per simulated step.
+- v29 `5630ba1`: same engine asv28; adds cached/uncached full toy-trajectory
+  equivalence regression across task completions and replacements.
 
 All these builds passed regression tests. Frozen sources/binary hashes are in
 `runs/random05/build-v*/spec.json` and `completion.json`. Run
@@ -87,3 +91,8 @@ on four cores before claiming a four-core result or latency.
 A separate Warehouse session edits cgar/ and experiments/construction-20260918/.
 Only stage/commit RANDOM05_PROGRESS.md and random05/. Shared main may advance.
 Public fywu85/lorr push is authorized; do not change repository visibility.
+
+Next measured bottleneck: in the first500 steps, ours visits3,393 task stops
+versus NMS4's3,346 but completes779 tasks versus879. It completes fewer two-stop
+chains (407 versus486). Test stronger task-length weighting at startup, guarded
+by --trick RANDOM-05; the new option is off by default and preserves opened tasks.

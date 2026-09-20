@@ -41,9 +41,12 @@ Those five seeds score **3,374 / 3,231 / 3,365 / 3,379 / 3,350**: mean
 only adds **0.45%** to the mean. These vary planner randomness on one fixed
 instance; they are not five independently generated instances.
 
-The seed-0 trajectory also repeats exactly on **32 workers / 16 physical
-cores**, scoring **3,374** against NMS **3,172**: **+6.4%**. Mean latency is
-84 ms, maximum 190 ms. The four-core and 32-worker comparisons remain separate.
+The seed-3 trajectory also repeats exactly on **32 workers / 16 physical
+cores**, scoring **3,379** against NMS **3,172**: **+6.5%**. That run uses the
+active-cost-row implementation and averages 105 ms (maximum 235 ms). The separate four-core control
+repeats all actions, assignments and events exactly, with observed mean latency
+326→310ms (one pair on shared hosts). The four-core and
+32-worker throughput comparisons remain separate.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -92,6 +95,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T10:57:32.632101+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step random streams; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.8% | [Full evidence](random05/results/load-depth-split-full-v22/step-rng-k1024/summary.json) |
 | 2026-09-20T11:09:45.903706+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Same3,374 trajectory; independent per-step RNG; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.4% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-workers32/summary.json) |
 | 2026-09-20T11:17:50.924764+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step RNG; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3379 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.0% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-seed3/summary.json) |
+| 2026-09-20T11:25:19.439602+00:00 | [32b333a](https://github.com/fywu85/lorr/commit/32b333a) | Same seed3 trajectory on32 workers; active cost rows; K1024, contrast2.4, field15; `--trick RANDOM-05` | 3379 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.5% | [Full evidence](random05/results/active-cost-split-full-v28/seed3-workers32/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -395,3 +399,31 @@ The published NMS score of 3,050 used different instances and hardware.
   simulated step, removing repeated stage/cache checks from neighbor ranking.
   The arithmetic and candidate ordering are unchanged. Full trajectory identity
   and measured latency are required before claiming a speed improvement.
+- Local/rotation tests (K1024, four cores, per-step RNG): control repeats3,374;
+  reversal penalties0.1/0.3/1 give3,335/3,252/3,123. More local refinement
+  (25 trials) gives3,294; mutation fractions0.1/0.03 give3,310/3,148. These
+  changes remain off. Penalizing this signal did not improve completed-task throughput.
+- Regional mutation on32 workers: unchanged control repeats3,374; radius2/4/8
+  with mutation0.3 gives3,195/3,217/3,348; radius2/4 with mutation1 gives
+  3,224/3,222. All complete without errors or timeouts. Limiting most changes
+  to one region does not improve this configuration. Evidence is in
+  `random05/results/regional-mutation-split-full-v27/`.
+
+- Local100 finishes at3,294, the same task count as local25 and below control
+  3,374. More local priority trials do not recover the gap. All8 local/rotation
+  cases are complete and valid.
+
+- Initial500-step diagnosis: ours3,379 visits3,393 stops and finishes779 tasks;
+  strongest NMS4 visits3,346 and finishes879. Forward actions are nearly equal
+  (123,634 versus124,058). Ours completes407 two-stop tasks versus NMS486.
+  This motivates a startup task-length preference, not a claim that task choice
+  explains the whole gap. The new phase-specific experiment is guarded by
+  `--trick RANDOM-05`; opened tasks remain locked. Default behavior is unchanged.
+  The full3,379 run actually finishes more five-stop tasks (522 versus346).
+
+- Active-cost-row validation: the complete control stays3,374 with identical
+  actions, schedules and task events. On four cores, measured mean latency is
+  309.6ms versus325.6ms for the preceding implementation; maxima424.5/434.9ms.
+  This is one fixed-work pair on shared EPYC9354 hosts. The cached/uncached
+  regression across task changes also passes. Evidence:
+  `random05/results/active-cost-split-full-v28/control-equivalence.json`.

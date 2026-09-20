@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research33*,debian.q@research39*",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:16",
+    "-l",
+    "h_rt=03:00:00,h_vmem=1G,m_topology_inuse=*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_benchmark",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/regional-mutation-split-full-v27/r0-m0.3/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/regional-mutation-split-full-v27/r0-m0.3/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899572\n"
+}
