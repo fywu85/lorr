@@ -35,21 +35,22 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulate(Config cfg,int spare_tasks=0) {
-    auto e=environment(5,5,24);
+uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5) {
+    const int cells=rows*cols,n=cells-1;
+    auto e=environment(rows,cols,n);
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
-    for(int a=0;a<24+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%25,(a+17)%25};e.task_pool[a]=t;}
-    int next_task=24+spare_tasks,total_moved=0;
+    for(int a=0;a<n+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%cells,(a+17)%cells};e.task_pool[a]=t;}
+    int next_task=n+spare_tasks,total_moved=0;
     for(int step=0;step<150;++step) {
         e.curr_timestep=step;std::vector<Action> actions;std::vector<int> assignment;
         engine.compute(&e,actions,assignment);
-        for(int a=0;a<24;++a) {
+        for(int a=0;a<n;++a) {
             signature=(signature^uint64_t(actions[a]+1))*1099511628211ULL;
             signature=(signature^uint64_t(assignment[a]+1))*1099511628211ULL;
         }
-        std::vector<int> from(24),to(24);
-        for(int a=0;a<24;++a) {
+        std::vector<int> from(n),to(n);
+        for(int a=0;a<n;++a) {
             auto& s=e.curr_states[a];from[a]=s.location;to[a]=s.location;
             if(actions[a]==FW) {to[a]=engine.graph->next[s.location][s.orientation];++total_moved;}
             else if(actions[a]==CR)s.orientation=(s.orientation+1)%4;
@@ -60,14 +61,14 @@ uint64_t simulate(Config cfg,int spare_tasks=0) {
         }
         Engine::certify(*engine.graph,from,to);
         auto sorted=assignment;std::sort(sorted.begin(),sorted.end());
-        for(int a=1;a<24;++a)require(sorted[a]<0 || sorted[a]!=sorted[a-1],"duplicate task assignment");
+        for(int a=1;a<n;++a)require(sorted[a]<0 || sorted[a]!=sorted[a-1],"duplicate task assignment");
         e.curr_task_schedule=assignment;
-        for(int a=0;a<24;++a)if(assignment[a]>=0) {
+        for(int a=0;a<n;++a)if(assignment[a]>=0) {
             auto& task=e.task_pool.at(assignment[a]);task.agent_assigned=a;
             if(task.locations[task.idx_next_loc]==e.curr_states[a].location) {
                 if(++task.idx_next_loc==int(task.locations.size())) {
                     e.task_pool.erase(assignment[a]);e.curr_task_schedule[a]=-1;
-                    Task t;t.task_id=next_task++;t.locations={(step+a+9)%25,(step+2*a+3)%25};e.task_pool[t.task_id]=t;
+                    Task t;t.task_id=next_task++;t.locations={(step+a+9)%cells,(step+2*a+3)%cells};e.task_pool[t.task_id]=t;
                 }
             }
         }
@@ -449,6 +450,38 @@ void continuation_risk() {
     }
 }
 
+void cycle_word_masks() {
+    auto e=environment(9,17,0);
+    for(int cell:{3,21,35,64,70,89,121,144})e.map[cell]=1;
+    Config geometry;geometry.cycle_mask=true;geometry.loop_extent=8;
+    Graph graph(e,geometry);
+    require(graph.cells>128 && graph.cycle_masks.size()==graph.cycles.size(),"missing multiword cycle geometry");
+    for(size_t r=0;r<graph.cycles.size();++r) {
+        std::vector<int> decoded;
+        for(const auto& mask:graph.cycle_masks[r]) {
+            uint64_t bits=mask.bits;
+            while(bits){decoded.push_back(int(mask.word*64+__builtin_ctzll(bits)));bits&=bits-1;}
+        }
+        auto original=graph.cycles[r];std::sort(decoded.begin(),decoded.end());std::sort(original.begin(),original.end());
+        require(decoded==original,"cycle mask omitted, duplicated or added a perimeter vertex");
+    }
+    for(int variant=0;variant<4;++variant) {
+        Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+        cfg.radix_order=true;cfg.rollout_match=true;cfg.random_by_step=true;
+        cfg.candidate_cache=true;cfg.cache_slots=8;cfg.kinematic_mask=true;
+        if(variant)cfg.loop_extent=3;
+        if(variant==2)cfg.pre_cycles=3;
+        if(variant==3){cfg.pre_cycles=2;cfg.intent_mode=2;}
+        // Dense turnover spans word boundaries; larger and preselected rings
+        // exercise overlap removal and robots with a forced future heading.
+        const auto original=simulate(cfg,12,9,10);cfg.cycle_mask=true;
+        require(original==simulate(cfg,12,9,10),"cycle mask changed dense movement or overlapping cycle order");
+        cfg.threads=2;
+        require(original==simulate(cfg,12,9,10),"cycle mask changed with worker count");
+    }
+}
+
 void cached_kinematic_masks() {
     for(int variant=0;variant<6;++variant) {
         Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
@@ -515,6 +548,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    cycle_word_masks();
     cached_kinematic_masks();
     elite_continuations();
     initial_search_budget();

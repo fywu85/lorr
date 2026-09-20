@@ -30,6 +30,7 @@ struct PolicyScratch {
     std::vector<CachedRanking*> ranking_slots;
     std::vector<unsigned char> ranking_hits;
     std::vector<unsigned int> kinematic_masks;
+    std::vector<uint64_t> cycle_ready;
 };
 }
 Config Config::environment(const SharedEnvironment& env) {
@@ -56,6 +57,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     c.kinematic_mask=integer("R05_KINEMATIC_MASK",0);
+    c.cycle_mask=integer("R05_CYCLE_MASK",0);
     c.cache_slots=integer("R05_CACHE_SLOTS",64);
     if(c.cache_slots<8 || c.cache_slots>1024 || (c.cache_slots&(c.cache_slots-1)))
         throw std::invalid_argument("candidate cache slots must be a power of two in [8,1024]");
@@ -416,6 +418,23 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         for(int xx=x+width-2;xx>=x;--xx)ring.push_back(from_grid[(y+height-1)*cols+xx]);
         for(int yy=y+height-2;yy>y;--yy)ring.push_back(from_grid[yy*cols+x]);
         if(std::all_of(ring.begin(),ring.end(),[](int v){return v>=0;}))cycles.push_back(std::move(ring));
+    }
+    if(cfg.cycle_mask) {
+        cycle_masks.reserve(cycles.size());
+        for(const auto& ring:cycles) {
+            std::vector<CycleWordMask> masks;
+            for(int v:ring) {
+                const size_t word=size_t(v)/64;const uint64_t bit=uint64_t(1)<<(v%64);
+                auto found=std::find_if(masks.begin(),masks.end(),[&](const auto& item){return item.word==word;});
+                if(found==masks.end())masks.push_back({word,bit});else found->bits|=bit;
+            }
+            // Reject a nonstationary perimeter cheaply; checking denser words
+            // first changes no cycle ordering or subsequent gain arithmetic.
+            std::stable_sort(masks.begin(),masks.end(),[](const auto& a,const auto& b){
+                return __builtin_popcountll(a.bits)>__builtin_popcountll(b.bits);
+            });
+            cycle_masks.push_back(std::move(masks));
+        }
     }
     // Peel tree pockets. Agents exiting these get precedence over agents entering.
     pocket.assign(cells,0);
@@ -999,15 +1018,30 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     mark_policy(4);
     if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {
-        // Geometry is precomputed; evaluate only obstacle-free perimeters.
-        for(const auto& v:g.cycles) {
-            const int count=int(v.size());std::array<int,32> a{};bool good=true;
-            for(int k=0;k<count;++k) {
-                if(owner[v[k]]<0){good=false;break;}
-                a[k]=owner[v[k]];
-                if(chosen[a[k]]!=v[k] || forced_heading[a[k]]>=0){good=false;break;}
+        auto& ready=scratch.cycle_ready;
+        if(cfg.cycle_mask) {
+            ready.assign((g.cells+63)/64,0);
+            for(int i=0;i<n;++i)if(chosen[i]==p[i] && forced_heading[i]<0)
+                ready[size_t(p[i])/64]|=uint64_t(1)<<(p[i]%64);
+        }
+        // Visit the same geometric rings in the same order. A word mask only
+        // replaces the test that every vertex has an eligible stationary robot.
+        for(size_t ring_index=0;ring_index<g.cycles.size();++ring_index) {
+            const auto& v=g.cycles[ring_index];
+            const int count=int(v.size());std::array<int,32> a;bool good=true;
+            if(cfg.cycle_mask) {
+                for(const auto& mask:g.cycle_masks[ring_index])
+                    if((ready[mask.word]&mask.bits)!=mask.bits){good=false;break;}
+                if(!good)continue;
+                for(int k=0;k<count;++k)a[k]=owner[v[k]];
+            } else {
+                for(int k=0;k<count;++k) {
+                    if(owner[v[k]]<0){good=false;break;}
+                    a[k]=owner[v[k]];
+                    if(chosen[a[k]]!=v[k] || forced_heading[a[k]]>=0){good=false;break;}
+                }
+                if(!good)continue;
             }
-            if(!good)continue;
             float best_gain=cfg.loop_threshold;int sign=0;
             for(int s:{1,count-1}) {
                 float gain=0;bool ok=true;
@@ -1018,7 +1052,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
                 }
                 if(ok && gain>best_gain){best_gain=gain;sign=s;}
             }
-            if(sign)for(int k=0;k<count;++k)chosen[a[k]]=v[(k+sign)%count];
+            if(sign)for(int k=0;k<count;++k) {
+                chosen[a[k]]=v[(k+sign)%count];
+                // Later overlapping rings must see these robots as committed,
+                // just as the original chosen-position checks did.
+                if(cfg.cycle_mask)ready[size_t(v[k])/64]&=~(uint64_t(1)<<(v[k]%64));
+            }
         }
     }
     mark_policy(5);

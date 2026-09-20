@@ -510,3 +510,15 @@ mean3669.0, versus3636.6 forK8192/B8. This is+0.89%,3/5 positive pairs.
 Its best3741 is slightly below the smaller-budget selected3743. More
 continuations improve the five-seed mean modestly but have not improved the
 maximum further. These remain planner seeds on one development input.
+
+
+R05_CYCLE_MASK implements the optional exact cycle-scan optimization (default0).
+Precompute each existing ring's sparse64-bit word masks over compact vertex IDs.
+After executable PIBT and pre-cycle proposals, mark occupied stationary vertices
+without forced headings. Keep the original ring order and gain arithmetic;
+use the masks only for eligibility, clearing accepted rings before considering
+overlapping ones. The legacy scan remains available for paired controls.
+Regression cases decode all masks on an obstacle map spanning three words, and
+compare dense multiword trajectories with task turnover, larger rings, forced
+headings, overlapping proposals and one/two workers. No performance claim before
+full timing and trajectory checks. This is a general implementation change.
