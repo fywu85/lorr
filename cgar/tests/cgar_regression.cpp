@@ -556,21 +556,43 @@ void assignment_permutation_regression() {
  check(fixed.column==std::vector<int>({0,1,2,3})&&pickup_permutation_cycles(blocked,fixed,1,[]{}).empty(),
        "forbidden edges allowed a non-identity permutation");
 
- for(int n=1;n<=6;++n){
+ // Exhaustively compare every feasible permutation on many small matrices.
+ // Positive diagonals, tied costs and forbidden off-diagonals exercise real
+ // rematching; all-zero diagonals would only test the trivial identity optimum.
+ std::mt19937 matrix_rng(481507);int nonidentity=0,forbidden_cases=0;
+ for(int n=1;n<=6;++n)for(int trial=0;trial<32;++trial){
   std::vector<int> costs(size_t(n)*n);
-  for(int i=0;i<n;++i)for(int j=0;j<n;++j)
-   costs[i*n+j]=(i==j?0:1+((i*17+j*7+n*5)%19));
+  for(int i=0;i<n;++i)for(int j=0;j<n;++j){
+   costs[i*n+j]=int(matrix_rng()%17);
+   if(i!=j&&matrix_rng()%5==0){costs[i*n+j]=inf;++forbidden_cases;}
+  }
   auto answer=minimum_pickup_permutation(costs,n,inf,[]{});
   std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
   long long best_cost=std::numeric_limits<long long>::max();int best_changed=n+1;
   do{
-   long long total=0;int changed=0;
-   for(int i=0;i<n;++i){total+=costs[i*n+order[i]];changed+=order[i]!=i;}
-   if(total<best_cost||(total==best_cost&&changed<best_changed)){best_cost=total;best_changed=changed;}
+   long long total=0;int changed=0;bool feasible=true;
+   for(int i=0;i<n;++i){feasible=feasible&&costs[i*n+order[i]]<inf;
+    total+=costs[i*n+order[i]];changed+=order[i]!=i;}
+   if(feasible&&(total<best_cost||(total==best_cost&&changed<best_changed))){best_cost=total;best_changed=changed;}
   }while(std::next_permutation(order.begin(),order.end()));
-  check(answer.after==best_cost&&answer.changed==best_changed,
-        "Hungarian result disagrees with brute-force lexicographic optimum");
+  check(answer.after==best_cost&&answer.changed==best_changed&&
+        std::set<int>(answer.column.begin(),answer.column.end()).size()==size_t(n),
+        "Hungarian result disagrees with exhaustive feasible lexicographic optimum");
+  nonidentity+=answer.changed>0;
  }
+ check(nonidentity>80&&forbidden_cases>100,"brute-force matrices do not exercise nontrivial/forbidden matching");
+ // Integer arithmetic near INT_MAX must remain lossless for a maximum group.
+ const int huge_inf=std::numeric_limits<int>::max();std::vector<int> huge(32*32,huge_inf);
+ for(int i=0;i<32;++i){huge[i*32+i]=huge_inf-1;huge[i*32+(i+1)%32]=huge_inf-100;}
+ auto huge_answer=minimum_pickup_permutation(huge,32,huge_inf,[]{});
+ check(huge_answer.changed==32&&huge_answer.before==32LL*(huge_inf-1)&&
+       huge_answer.after==32LL*(huge_inf-100),"large finite pickup cost arithmetic overflowed");
+ // A strong cycle can be retained while a disjoint weak cycle stays identity.
+ std::vector<int> split={100,1,inf,inf, 1,100,inf,inf, inf,inf,100,99, inf,inf,99,100};
+ auto split_answer=minimum_pickup_permutation(split,4,inf,[]{});
+ auto split_cycles=pickup_permutation_cycles(split,split_answer,4,[]{});
+ check(split_cycles.size()==2&&split_cycles[0].accepted&&!split_cycles[1].accepted,
+       "independent cycle thresholds did not separate strong and weak savings");
  bool rejected=false;
  try { minimum_pickup_permutation(std::vector<int>{inf,1,1,inf},2,inf,[]{ }); }
  catch(const std::invalid_argument&) { rejected=true; }
@@ -580,7 +602,7 @@ void assignment_permutation_regression() {
   minimum_pickup_permutation(cycle_costs,3,inf,[]{throw Timeout("assignment_regression");});
  } catch(const Timeout&) { timeout=true; }
  check(timeout,"Hungarian callback exception was swallowed");
- std::cout<<"ASSIGNMENT_PERMUTATION passed brute_force_n<=6 three_cycle=1 forbidden_edges=1 tie_break=1 explicit_callback=1\n";
+ std::cout<<"ASSIGNMENT_PERMUTATION passed brute_force_n<=6 matrices=192 nontrivial_optima=1 int_max_group32=1 partial_cycles=1 three_cycle=1 forbidden_edges=1 tie_break=1 explicit_callback=1\n";
 }
 void unopened_matching_production() {
  auto e=swap_fixture();e.num_of_agents=3;e.curr_states={State(0,0,0),State(11,0,2),State(1,0,0)};
