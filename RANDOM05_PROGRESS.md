@@ -24,24 +24,23 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,363 tasks / 2,000 steps on four physical
-cores**. Three NMS four-worker runs give **2,902 / 2,903 / 2,914**: our lead is
-**15.4% against the strongest repeat**. All use EPYC 9354 CPUs. Mean latency
-**333 ms**, maximum **435 ms**, with zero errors or timeouts.
+Best verified combined result: **3,374 tasks / 2,000 steps on four physical
+cores**, versus **2,914** for the strongest of three matched NMS repeats
+(2,902 / 2,903 / 2,914): **+15.8%**. All use EPYC 9354 CPUs. Mean latency
+**327 ms**, maximum **436 ms**, with zero errors or timeouts.
 
-The configuration uses planner seed 0, generated field seed 15, K=1024,
-noise=200, dispersion=0.8, five local trials with equal-score acceptance,
-wait cost=0.5, exact matching with oriented guidance, keep bonus=0.5,
-final directional penalty=2.4 and known-horizon triage scale=1.5
-(`--trick RANDOM-05`). Five planner seeds now give 3,363 / 3,276 / 3,344 / 3,329 / 3,312: mean
-**3,325**, or **14.1%** above the strongest NMS repeat. All five improve over
-the corresponding preceding configuration; the best remains 15.4% ahead.
+The new best enables independent random streams per simulation step. Its other
+settings are planner seed 0, generated field seed 15, K=1024, noise=200,
+dispersion=0.8, five local trials with equal-score acceptance, wait cost=0.5,
+exact/guided matching with keep bonus=0.5, directional penalty=2.4 and
+known-horizon triage scale=1.5 (`--trick RANDOM-05`). The 11-task increase over
+the previous best is a single-seed observation, not a replicated average gain.
 
-The preceding directional penalty of 1.6 scored 3,299 / 3,185 / 3,284 / 3,214 /
-3,061 over five planner seeds: mean **3,209**, or **10.1%** above the strongest
-NMS repeat. Its best trajectory repeated exactly on 32 workers, where NMS
-scores 3,172 and the matched lead was 4.0%. The newer 3,363 configuration has
-only been validated on four-core allocations so far.
+With the preceding random-stream mode, five seeds at directional penalty2.4
+score 3,363 / 3,276 / 3,344 / 3,329 / 3,312: mean **3,325**, or **14.1%** above
+NMS. All five improve over the same seeds with penalty1.6 (mean3,209), a3.6%
+mean gain. The earlier 3,299 trajectory repeated exactly on32 workers against
+NMS3,172. The current best has only been validated on four-core allocations.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -87,6 +86,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T10:19:47.676357+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | Same score; stable insertion sorting lowers mean latency to335ms; K1024, field15/seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/candidate-sort-full-v20/summary.json) |
 | 2026-09-20T10:23:12.419038+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast3.2; K1024, field15/seed0; `--trick RANDOM-05` | 3351 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.0% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
 | 2026-09-20T10:23:13.900548+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast2.4; K1024, field15/seed0; `--trick RANDOM-05` | 3363 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.4% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
+| 2026-09-20T10:57:32.632101+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step random streams; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.8% | [Full evidence](random05/results/load-depth-split-full-v22/step-rng-k1024/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -347,3 +347,17 @@ The published NMS score of 3,050 used different instances and hardware.
   mode2 preserves ready components and fills the rest with kinematic PIBT.
   Dense turnover and worker-determinism regressions pass. Full-map throughput
   validation is pending; mode0 retains the current solver.
+
+- Independent per-step random streams reach **3,374** at K1024 versus3,363
+  with the preceding stream. This11-task maximum is not evidence of a mean
+  improvement yet. The mode keeps global candidate prefixes and local-refinement
+  random draws independent of the rollout count, improving budget comparisons.
+- Production-budget load multipliers1/1.5 give3,281/3,307, below3,363 control;
+  depth6 at K1024 gives3,234. Again, small gains at K128 did not transfer.
+- Component-policy screens at K128: baseline3,199; ready-components-only1,663;
+  ready components plus kinematic PIBT3,101. Full-budget checks remain running.
+- Added a fixed reference for guidance normalization. Changing counterflow
+  penalties can now preserve preferred-direction, turn, wait and matching cost
+  scales. Unit tests verify that an equal reference reproduces old weights
+  exactly and that stronger counterflow prices leave preferred edges unchanged.
+  Full-map fixed-scale contrast validation is pending.

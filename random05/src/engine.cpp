@@ -60,6 +60,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.predict_matching=integer("R05_SCHED_PREDICT",0);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
     c.flow_output_penalty=real("R05_FLOW_OUTPUT_PENALTY",-1);
+    c.flow_normalize_ref=real("R05_FLOW_NORMALIZE_REF",-1);
+    if(c.flow_normalize_ref<0 && c.flow_normalize_ref!=-1)
+        throw std::invalid_argument("flow normalization reference must be nonnegative or -1");
     if(c.flow_output_penalty<0 && c.flow_output_penalty!=-1)
         throw std::invalid_argument("flow output penalty must be nonnegative or -1 for the assignment penalty");
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
@@ -212,8 +215,16 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
             int u=next[v][d];if(u<0)continue;
             weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+output_penalty);
-            weight[v][d]*=1+cfg.flow_betweenness*float((load[v]+load[u])/(2*mean_load));
-            weight_sum+=weight[v][d];++weight_count;
+            const float load_factor=1+cfg.flow_betweenness*float((load[v]+load[u])/(2*mean_load));
+            weight[v][d]*=load_factor;
+            if(cfg.flow_normalize_ref>=0) {
+                // Hold the preferred-direction scale fixed while changing the
+                // price of opposing traffic. Otherwise global normalization
+                // also changes the relative prices of turns, waits and matching.
+                float reference=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+cfg.flow_normalize_ref);
+                reference*=load_factor;weight_sum+=reference;
+            } else weight_sum+=weight[v][d];
+            ++weight_count;
         }
         if(cfg.flow_normalize) {
             float scale=float(2*weight_count/weight_sum);

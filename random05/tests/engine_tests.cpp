@@ -121,4 +121,20 @@ void idle_pocket_eviction() {
     }
     require(e.curr_states[0].location!=7,"goal-less robot kept reserving the dead-end doorway");
 }
-int main(){idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);simulation(2,true,100,3);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");require(simulation(1,true,0,0,3)==simulation(2,true,0,0,3),"multi-generation worker count changed trajectory");require(simulation(1,true)==simulation(1,true,0,0,1,1),"plain evaluation changed an already unit-cost policy");require(simulation(1,true,0,0,1,0.5)==simulation(2,true,0,0,1,0.5),"blended score changed with worker count");require(simulation(1,true,0,0,1,0,1)==simulation(2,true,0,0,1,0,1),"component policy changed with worker count");require(simulation(1,true,0,0,1,0,2)==simulation(2,true,0,0,1,0,2),"pinned component policy changed with worker count");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
+void guidance_scale_reference() {
+    auto e=environment(4,4,1);Config cfg;
+    cfg.guidance="flow";cfg.flow_iterations=3;cfg.flow_average=true;
+    cfg.flow_normalize=true;cfg.flow_betweenness=0.75;cfg.flow_output_penalty=2.4;
+    Graph original(e,cfg);
+    cfg.flow_normalize_ref=2.4;Graph reference(e,cfg);
+    require(original.weight==reference.weight,"equal reference changed normalized guidance");
+    cfg.flow_output_penalty=4.8;Graph stronger(e,cfg);bool changed=false;
+    for(int v=0;v<original.cells;++v)for(int d=0;d<4;++d) {
+        int u=original.next[v][d];if(u<0)continue;
+        if(original.weight[v][d]<=original.weight[u][(d+2)%4])
+            require(stronger.weight[v][d]==original.weight[v][d],"preferred-direction cost changed with fixed reference");
+        else {require(stronger.weight[v][d]>original.weight[v][d],"opposing cost did not increase");changed=true;}
+    }
+    require(changed,"guidance test did not contain opposing traffic");
+}
+int main(){guidance_scale_reference();idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);simulation(2,true,100,3);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");require(simulation(1,true,0,0,3)==simulation(2,true,0,0,3),"multi-generation worker count changed trajectory");require(simulation(1,true)==simulation(1,true,0,0,1,1),"plain evaluation changed an already unit-cost policy");require(simulation(1,true,0,0,1,0.5)==simulation(2,true,0,0,1,0.5),"blended score changed with worker count");require(simulation(1,true,0,0,1,0,1)==simulation(2,true,0,0,1,0,1),"component policy changed with worker count");require(simulation(1,true,0,0,1,0,2)==simulation(2,true,0,0,1,0,2),"pinned component policy changed with worker count");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
