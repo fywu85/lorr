@@ -16,7 +16,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -32,8 +32,9 @@ inline Options options(const std::string& instance) {
     const char* margin_percentile = std::getenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");
     const char* neutral_tail = std::getenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL");
     const char* match_horizon = std::getenv("CGAR_TRICK_MATCH_HORIZON");
+    const char* native_turn_cost = std::getenv("CGAR_TRICK_NATIVE_TURN_COST");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick WAREHOUSE");
         return {};
     }
@@ -62,6 +63,18 @@ inline Options options(const std::string& instance) {
             percentile = percentile * 10 + (*p - '0');
         }
     }
+    int native_turn = 1;
+    if (native_turn_cost) {
+        native_turn = 0;
+        if (!*native_turn_cost) throw std::invalid_argument("native turn cost must be an integer in [1,16]");
+        for (const char* p = native_turn_cost; *p; ++p) {
+            if (*p < '0' || *p > '9' || native_turn > (16 - (*p - '0')) / 10)
+                throw std::invalid_argument("native turn cost must be an integer in [1,16]");
+            native_turn = native_turn * 10 + (*p - '0');
+        }
+        if (native_turn < 1 || !boolean(native_metric, false))
+            throw std::invalid_argument("native turn cost requires a native metric and value in [1,16]");
+    }
     const bool neutral = boolean(neutral_tail, false);
     if (neutral && !boolean(native_metric, false))
         throw std::invalid_argument("native neutral tail requires the native metric");
@@ -72,7 +85,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn};
 }
 
 inline void validate_map(const std::string& name, const std::vector<int>& map, int rows, int cols) {

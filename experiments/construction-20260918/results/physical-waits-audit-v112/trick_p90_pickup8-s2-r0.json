@@ -1,0 +1,107 @@
+{
+  "steps": 5000,
+  "robots": 10000,
+  "tasks_completed": 155056,
+  "physical_actions_checked": 50000000,
+  "service_events_checked": 316431,
+  "phase_steps_idle_empty_loaded": [
+    0,
+    9322172,
+    40677828
+  ],
+  "cohorts": {
+    "1": {
+      "wait_actions": 1512799,
+      "at_current_goal": 289,
+      "obstacle_ahead": 5,
+      "free_ahead_after_other_actions": 125660,
+      "free_and_manhattan_closer": 123452,
+      "occupied_ahead_after_other_actions": 1386845,
+      "ahead_vacated_by_other_action": 95587,
+      "incoming_blocker": 857234,
+      "completed_task_waiter": 1473794,
+      "completed_waiter_unfinished_blocker": 15583,
+      "completed_waiter_completed_blocker": 1335360,
+      "unfinished_waiter_completed_blocker": 14070,
+      "idle_blocker": 0,
+      "blocker_waiting": 268406,
+      "blocker_rotating": 261205,
+      "blocker_moving": 857234,
+      "wait_phases_idle_empty_loaded": [
+        0,
+        361605,
+        1151194
+      ]
+    },
+    "4001": {
+      "wait_actions": 295953,
+      "at_current_goal": 51,
+      "obstacle_ahead": 0,
+      "free_ahead_after_other_actions": 24931,
+      "free_and_manhattan_closer": 24568,
+      "occupied_ahead_after_other_actions": 270971,
+      "ahead_vacated_by_other_action": 18686,
+      "incoming_blocker": 167685,
+      "completed_task_waiter": 256948,
+      "completed_waiter_unfinished_blocker": 15583,
+      "completed_waiter_completed_blocker": 219486,
+      "unfinished_waiter_completed_blocker": 14070,
+      "idle_blocker": 0,
+      "blocker_waiting": 51243,
+      "blocker_rotating": 52043,
+      "blocker_moving": 167685,
+      "wait_phases_idle_empty_loaded": [
+        0,
+        70213,
+        225740
+      ]
+    },
+    "4601": {
+      "wait_actions": 133417,
+      "at_current_goal": 18,
+      "obstacle_ahead": 0,
+      "free_ahead_after_other_actions": 11406,
+      "free_and_manhattan_closer": 11215,
+      "occupied_ahead_after_other_actions": 121993,
+      "ahead_vacated_by_other_action": 8535,
+      "incoming_blocker": 74541,
+      "completed_task_waiter": 94654,
+      "completed_waiter_unfinished_blocker": 15371,
+      "completed_waiter_completed_blocker": 70949,
+      "unfinished_waiter_completed_blocker": 13847,
+      "idle_blocker": 0,
+      "blocker_waiting": 24396,
+      "blocker_rotating": 23056,
+      "blocker_moving": 74541,
+      "wait_phases_idle_empty_loaded": [
+        0,
+        34979,
+        98438
+      ]
+    },
+    "4901": {
+      "wait_actions": 39736,
+      "at_current_goal": 7,
+      "obstacle_ahead": 0,
+      "free_ahead_after_other_actions": 3506,
+      "free_and_manhattan_closer": 3427,
+      "occupied_ahead_after_other_actions": 36223,
+      "ahead_vacated_by_other_action": 2583,
+      "incoming_blocker": 21163,
+      "completed_task_waiter": 13909,
+      "completed_waiter_unfinished_blocker": 6536,
+      "completed_waiter_completed_blocker": 5959,
+      "unfinished_waiter_completed_blocker": 6014,
+      "idle_blocker": 0,
+      "blocker_waiting": 7682,
+      "blocker_rotating": 7378,
+      "blocker_moving": 21163,
+      "wait_phases_idle_empty_loaded": [
+        0,
+        12482,
+        27254
+      ]
+    }
+  },
+  "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+}

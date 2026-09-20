@@ -1,0 +1,242 @@
+{
+  "repeated_goal_service": {
+    "steps": 2,
+    "robots": 1,
+    "tasks_completed": 1,
+    "physical_actions_checked": 2,
+    "service_events_checked": 2,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      1,
+      1
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 2,
+        "at_current_goal": 2,
+        "obstacle_ahead": 0,
+        "free_ahead_after_other_actions": 0,
+        "free_and_manhattan_closer": 0,
+        "occupied_ahead_after_other_actions": 0,
+        "ahead_vacated_by_other_action": 0,
+        "incoming_blocker": 0,
+        "completed_task_waiter": 2,
+        "completed_waiter_unfinished_blocker": 0,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 0,
+        "blocker_rotating": 0,
+        "blocker_moving": 0,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "free_forward": {
+    "steps": 3,
+    "robots": 1,
+    "tasks_completed": 1,
+    "physical_actions_checked": 3,
+    "service_events_checked": 1,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      3,
+      0
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 1,
+        "at_current_goal": 0,
+        "obstacle_ahead": 0,
+        "free_ahead_after_other_actions": 1,
+        "free_and_manhattan_closer": 1,
+        "occupied_ahead_after_other_actions": 0,
+        "ahead_vacated_by_other_action": 0,
+        "incoming_blocker": 0,
+        "completed_task_waiter": 1,
+        "completed_waiter_unfinished_blocker": 0,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 0,
+        "blocker_rotating": 0,
+        "blocker_moving": 0,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "stationary_blocker": {
+    "steps": 2,
+    "robots": 2,
+    "tasks_completed": 0,
+    "physical_actions_checked": 4,
+    "service_events_checked": 0,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      4,
+      0
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 4,
+        "at_current_goal": 0,
+        "obstacle_ahead": 0,
+        "free_ahead_after_other_actions": 2,
+        "free_and_manhattan_closer": 2,
+        "occupied_ahead_after_other_actions": 2,
+        "ahead_vacated_by_other_action": 0,
+        "incoming_blocker": 0,
+        "completed_task_waiter": 0,
+        "completed_waiter_unfinished_blocker": 0,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 2,
+        "blocker_rotating": 0,
+        "blocker_moving": 0,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          4,
+          0
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "vacated_forward": {
+    "steps": 2,
+    "robots": 2,
+    "tasks_completed": 2,
+    "physical_actions_checked": 4,
+    "service_events_checked": 2,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      4,
+      0
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 1,
+        "at_current_goal": 0,
+        "obstacle_ahead": 0,
+        "free_ahead_after_other_actions": 1,
+        "free_and_manhattan_closer": 1,
+        "occupied_ahead_after_other_actions": 0,
+        "ahead_vacated_by_other_action": 1,
+        "incoming_blocker": 0,
+        "completed_task_waiter": 1,
+        "completed_waiter_unfinished_blocker": 0,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 0,
+        "blocker_rotating": 0,
+        "blocker_moving": 0,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "incoming_blocker": {
+    "steps": 2,
+    "robots": 2,
+    "tasks_completed": 0,
+    "physical_actions_checked": 4,
+    "service_events_checked": 0,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      4,
+      0
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 3,
+        "at_current_goal": 0,
+        "obstacle_ahead": 1,
+        "free_ahead_after_other_actions": 0,
+        "free_and_manhattan_closer": 0,
+        "occupied_ahead_after_other_actions": 2,
+        "ahead_vacated_by_other_action": 0,
+        "incoming_blocker": 1,
+        "completed_task_waiter": 0,
+        "completed_waiter_unfinished_blocker": 0,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 1,
+        "blocker_rotating": 0,
+        "blocker_moving": 1,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          3,
+          0
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "completed_waiter_unfinished_blocker": {
+    "steps": 3,
+    "robots": 2,
+    "tasks_completed": 1,
+    "physical_actions_checked": 6,
+    "service_events_checked": 1,
+    "phase_steps_idle_empty_loaded": [
+      0,
+      6,
+      0
+    ],
+    "cohorts": {
+      "1": {
+        "wait_actions": 2,
+        "at_current_goal": 0,
+        "obstacle_ahead": 0,
+        "free_ahead_after_other_actions": 1,
+        "free_and_manhattan_closer": 1,
+        "occupied_ahead_after_other_actions": 1,
+        "ahead_vacated_by_other_action": 0,
+        "incoming_blocker": 0,
+        "completed_task_waiter": 1,
+        "completed_waiter_unfinished_blocker": 1,
+        "completed_waiter_completed_blocker": 0,
+        "unfinished_waiter_completed_blocker": 0,
+        "idle_blocker": 0,
+        "blocker_waiting": 1,
+        "blocker_rotating": 0,
+        "blocker_moving": 0,
+        "wait_phases_idle_empty_loaded": [
+          0,
+          2,
+          0
+        ]
+      }
+    },
+    "limits": "Physical one-step forward availability under all other observed actions, not five-step-plan feasibility or a required direction. At-goal waits are separated; rotations could also serve that goal. Manhattan closeness is not weighted-route preference. Finished/unfinished labels use eventual observed outcomes for post-hoc diagnosis only, never as planner inputs. Counts are not recoverable delays, causal effects, counterfactual task completions or a throughput upper bound."
+  },
+  "reject_edge_swap": {
+    "rejected": true,
+    "reason": "edge collision"
+  },
+  "reject_vertex_collision": {
+    "rejected": true,
+    "reason": "vertex or obstacle collision"
+  },
+  "reject_missing_service": {
+    "rejected": true,
+    "reason": "service event missing or spurious"
+  }
+}

@@ -799,7 +799,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (turn_surcharge_ < 0 || turn_surcharge_ > 15 ||
         (turn_surcharge_ && (!flow_strength_ || !temporal_ || turn_cost_ != 1)))
         throw std::invalid_argument("turn surcharge requires temporal flow, unit physical turns and a value in [0,15]");
-    guidance_turn_cost_ = native_trick_metric_ ? 1 : turn_cost_ * flow_cost_scale_ + turn_surcharge_;
+    guidance_turn_cost_ = native_trick_metric_ ? trick_options.native_turn_cost : turn_cost_ * flow_cost_scale_ + turn_surcharge_;
     if (guidance_turn_cost_ > 16)
         throw std::invalid_argument("scaled turn cost plus surcharge must not exceed 16");
     guide_enabled_ = env_int("CGAR_GUIDE_ROUTES", 0) != 0;
@@ -1008,6 +1008,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (horizon_margin_)
         std::printf("[CGAR_TRICK_HORIZON_MARGIN] enabled=1 estimator=%s basis=admission_bound samples=single_holder tiers=margin_feasible_impossible fair=unchanged held=unchanged\n",
                     trick_options.horizon_margin_percentile ? "prospective_bucket_percentile" : "prospective_bucket_mean");
+    if (native_trick_metric_ && guidance_turn_cost_ != 1)
+        std::printf("[CGAR_TRICK_NATIVE_TURN] cost=%d default_cost=1 physical_ticks=1 forward_base=20 field=unchanged scope=route_and_pickup\n", guidance_turn_cost_);
     if (native_neutral_tail_)
         std::printf("[CGAR_TRICK_NATIVE_SERVICE] policy=neutral_tail credit=after_action_hit reservations=complete protected=unchanged\n");
     if (trick_options.horizon_margin_percentile)
@@ -1027,8 +1029,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
             if (native_trick_metric_) {
-                std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=1 score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), trick_options.native_bands, tricks::native_field_hash(trick_options.native_bands),
+                std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=%d score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), trick_options.native_bands, guidance_turn_cost_, tricks::native_field_hash(trick_options.native_bands),
                     static_cast<unsigned long long>(installed_fingerprint), tricks::warehouse_occupancy_sha256);
             } else {
                 std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
@@ -1958,8 +1960,8 @@ void Cgar::log_movement() const {
 }
 
 void Cgar::log_summary() {
-    if (native_trick_metric_) std::printf("[cgar-native-metric] t=%d forward_base=20 turn=1 cost_limit=%d wide_fallback_tables=%lld\n",
-        env_->curr_timestep, guidance_cost_limit_, turn_oracle_.wide_fallback_tables);
+    if (native_trick_metric_) std::printf("[cgar-native-metric] t=%d forward_base=20 turn=%d cost_limit=%d wide_fallback_tables=%lld\n",
+        env_->curr_timestep, guidance_turn_cost_, guidance_cost_limit_, turn_oracle_.wide_fallback_tables);
     int in_txn = 0, locks = 0, idle = 0;
     for (const Agent& a : agents_) { in_txn += a.in_txn; idle += a.goal < 0; }
     for (int h : pocket_lock_) locks += h >= 0;

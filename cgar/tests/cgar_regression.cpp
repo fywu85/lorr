@@ -3387,7 +3387,7 @@ void native_metric_regression() {
  TemporalGeometry geometry;geometry.initialize(cert.free,e.rows,e.cols,[]{});
  long long checked_states=0,checked_macros=0,service_macros=0,prefetched_states=0,seed_macros=0;
  long long neutral_changed=0,departed_start_without_service=0;
- for(bool bands:{false,true}){
+ for(int native_turn:{1,2,4})for(bool bands:{false,true}){
   const auto weights=native_forward_costs("WAREHOUSE",e.map,e.rows,e.cols,bands);
   uint64_t hash=14695981039346656037ULL;for(uint8_t w:weights)hash=(hash^w)*1099511628211ULL;
   require(hash==(bands?warehouse_native_bands_fnv1a64:warehouse_native_nobands_fnv1a64),"native asset differs from independently verified NMS dump");
@@ -3395,7 +3395,7 @@ void native_metric_regression() {
   auto corrupt=weights;corrupt[0]^=1;
   rejects([&]{validate_native_field(corrupt,bands);},"native corrupted vector accepted");
   rejects([&]{validate_native_field(std::vector<uint8_t>{20},bands);},"native short vector accepted");
-  TurnDistanceOracle oracle;oracle.init(&cert,32<<20,1,true,20,bands?201:200);oracle.set_forward_costs(weights);
+  TurnDistanceOracle oracle;oracle.init(&cert,32<<20,native_turn,true,20,bands?201:200);oracle.set_forward_costs(weights);
   for(int goal:{4,1504}){
    require(!e.map[goal],"native goal fixture blocked");
    std::vector<int> expected(e.map.size()*4,kInf);
@@ -3406,7 +3406,7 @@ void native_metric_regression() {
     if(expected[state]!=cost)continue;
     const int cell=state/4,h=state%4;
     auto relax=[&](int to,int edge){if(expected[to]>cost+edge){expected[to]=cost+edge;heap.push({cost+edge,to});}};
-    relax(cell*4+(h+1)%4,1);relax(cell*4+(h+3)%4,1);
+    relax(cell*4+(h+1)%4,native_turn);relax(cell*4+(h+3)%4,native_turn);
     const int from=neighbor(cell,(h+2)%4);if(from>=0)relax(from*4+h,weights[from*4+h]);
    }
    const auto* table=oracle.table(goal,deadline());
@@ -3416,7 +3416,7 @@ void native_metric_regression() {
    // Scratch must use the installed 200/201 maximum, including four workers.
    std::vector<int> batch{goal};for(int cell=0;batch.size()<4;++cell)if(!e.map[cell]&&cell!=goal)batch.push_back(cell);
    for(int threads:{1,4}){
-    TurnDistanceOracle parallel;parallel.init(&cert,32<<20,1,true,20,bands?201:200);
+    TurnDistanceOracle parallel;parallel.init(&cert,32<<20,native_turn,true,20,bands?201:200);
     parallel.set_forward_costs(weights);parallel.prefetch(batch,threads,deadline());
     require(parallel.prefetched_builds==4&&!parallel.peek(goal),"native prefetch published before demand");
     const auto* admitted=parallel.table(goal,deadline());
@@ -3482,15 +3482,15 @@ void native_metric_regression() {
   return cell+(h==0?1:h==1?6:h==2?-1:-6);};
  auto allowed=[](int cell){return cell>=0&&cell<12;};
  CompletePickupSearch complete;OrientedPickupSearch bounded;FullPickupField output;
- for(int limit:{16,201,255}){
+ for(int native_turn:{1,2,4,16})for(int limit:{16,201,255}){
   auto edge=[&](int cell,int h){return 1+(cell*53+h*37)%limit;};
   std::vector<int> expected(48,kInf);expected[0]=0;
   using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> heap;heap.push({0,0});
   while(!heap.empty()){auto item=heap.top();heap.pop();int at=item.second,cost=item.first;if(expected[at]!=cost)continue;
    int cell=at/4,h=at%4;auto offer=[&](int to,int price){if(expected[to]>cost+price){expected[to]=cost+price;heap.push({cost+price,to});}};
-   offer(cell*4+(h+1)%4,1);offer(cell*4+(h+3)%4,1);int to=next(cell,h);if(to>=0)offer(to*4+h,edge(cell,h));}
-  complete.run(12,0,0,1,kInf,next,allowed,edge,[]{},output,limit);
-  std::vector<int> observed(12,kInf);auto stats=bounded.run(12,0,0,65536,1,next,allowed,edge,[&](int cell,int d){observed[cell]=d;return false;},[]{},limit);
+   offer(cell*4+(h+1)%4,native_turn);offer(cell*4+(h+3)%4,native_turn);int to=next(cell,h);if(to>=0)offer(to*4+h,edge(cell,h));}
+  complete.run(12,0,0,native_turn,kInf,next,allowed,edge,[]{},output,limit);
+  std::vector<int> observed(12,kInf);auto stats=bounded.run(12,0,0,65536,native_turn,next,allowed,edge,[&](int cell,int d){observed[cell]=d;return false;},[]{},limit);
   require(!stats.limited&&stats.cells==12,"native bounded pickup did not finish small oracle fixture");
   for(int cell=0;cell<12;++cell){int best=*std::min_element(expected.begin()+4*cell,expected.begin()+4*cell+4);
    require(output.distance[cell]==best&&observed[cell]==best,"native pickup distances differ from independent heap");}
@@ -3656,6 +3656,24 @@ void native_metric_regression() {
   require(!serial.stats.native_service_choices&&!parallel.stats.native_service_changed_choices,"disabled neutral tail performed diagnostic work");
   native_original_episodes.emplace(bands,serial);
  }
+ // Explicit native turn1 exactly retains the absent-selector trace. New
+ // route/pickup prices2/4 must remain legal and independent of preparation order.
+ int changed_turn_episodes=0;
+ for(const char* bands:{"0","1"}) {
+  setenv("CGAR_TRICK_NATIVE_TURN_COST","1",1);
+  require(episode(bands,4).values==native_original_episodes.at(bands).values,"explicit native turn1 changed baseline");
+  for(const char* cost:{"2","4"}) {
+   setenv("CGAR_TRICK_NATIVE_TURN_COST",cost,1);
+   const auto serial=episode(bands,1),parallel=episode(bands,4);
+   require(serial.values==parallel.values&&serial.services==parallel.services&&
+    serial.stats.oriented_builds==parallel.stats.oriented_builds&&serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops,
+    "native turn price depends on preparation order");
+   changed_turn_episodes+=serial.values!=native_original_episodes.at(bands).values;
+  }
+ }
+ unsetenv("CGAR_TRICK_NATIVE_TURN_COST");
+ require(changed_turn_episodes>0,"native turn-price service fixtures were vacuous");
+ std::cout<<"NATIVE_TURN_COST_EPISODES passed pairs=4 independent_actions=24576 explicit_default_exact=1 serial_parallel_exact=1 started_protection=1 one_retarget=1 changed_traces="<<changed_turn_episodes<<"\n";
  // Exercise the changed scorer in real service/rotation episodes. Every
  // physical action is checked independently, with serial/parallel equality.
  setenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL","1",1);
@@ -3767,10 +3785,23 @@ void native_metric_regression() {
   setenv(bad.first,bad.second,1);rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"native incompatible profile accepted");
   if(existed)setenv(bad.first,old.c_str(),1);else unsetenv(bad.first);
  }
+ for(const char* good:{"1","2","4","16"}) {
+  setenv("CGAR_TRICK_NATIVE_TURN_COST",good,1);
+  require(options("WAREHOUSE").native_turn_cost==std::stoi(good),"native turn selector lost value");
+ }
+ for(const char* bad:{"","0","-1","17","1000000000000000000","2x","1.5"}) {
+  setenv("CGAR_TRICK_NATIVE_TURN_COST",bad,1);
+  rejects([&]{options("WAREHOUSE");},"invalid native turn cost accepted");
+ }
+ unsetenv("CGAR_TRICK_NATIVE_TURN_COST");
  for(auto setting:settings)unsetenv(setting.first);
  setenv("CGAR_TRICK_NATIVE_BANDS","1",1);rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"native bands accepted without native metric");unsetenv("CGAR_TRICK_NATIVE_BANDS");
  setenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL","1",1);
  rejects([&]{options("WAREHOUSE");},"neutral tail accepted without native metric");unsetenv("CGAR_TRICK_NATIVE_NEUTRAL_TAIL");
+ setenv("CGAR_TRICK_NATIVE_TURN_COST","1",1);
+ rejects([&]{options("WAREHOUSE");},"native turn selector accepted without native metric");
+ rejects([&]{options("");},"native turn selector accepted without explicit CLI");
+ unsetenv("CGAR_TRICK_NATIVE_TURN_COST");
  for(const char* key:{"CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_NATIVE_BANDS","CGAR_TRICK_NATIVE_NEUTRAL_TAIL"}){
   setenv(key,"0",1);rejects([&]{options("");},"native selector accepted without CLI");
   for(const char* bad:{"", "-1", "2", "true"}){setenv(key,bad,1);rejects([&]{options("WAREHOUSE");},"native malformed selector accepted");}
