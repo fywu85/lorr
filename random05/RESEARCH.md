@@ -75,3 +75,15 @@ stationary footprint could stop search before considering temporary detours.
 `R05_OPERATION_MOVING=1` tests moving footprints only, while retaining the
 entire inherited plan as the safe fallback when all repairs fail. The default
 remains0; full-run results, not this rationale, will decide whether it helps.
+
+## Terminal task completion reward
+
+Our rollout keeps each robot's current task chain fixed for its short horizon.
+After completion it predicts an idle robot, without assigning a new task. The
+sum of distance decreases may therefore undervalue finishing a chain relative
+to making equal progress on a longer chain. `R05_COMPLETE_BONUS` adds an optional
+reward for each whole chain completed within the simulated horizon; default0
+preserves the existing objective. This is distinct from urgency-weighted distance
+or an assignment length preference. A two-robot contested-goal regression checks
+that the reward can select the completing task. Full benchmarks must establish
+whether this hypothesis translates to throughput; none is assumed.

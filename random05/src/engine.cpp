@@ -40,6 +40,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
     c.plain_score=real("R05_PLAIN_SCORE",0);
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
+    c.completion_bonus=real("R05_COMPLETE_BONUS",0);
+    if(c.completion_bonus<0)throw std::invalid_argument("completion bonus must be nonnegative");
     if(c.reverse_penalty<0)throw std::invalid_argument("reverse-turn penalty must be nonnegative");
     if(c.plain_score<0 || c.plain_score>1)
         throw std::invalid_argument("plain score blend must be in [0,1]");
@@ -742,6 +744,13 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
         }
         return score_graph_?guided*(1-cfg.plain_score)+plain*cfg.plain_score:guided;
     };
+    auto completed=[&](const Frame& f) {
+        int count=0;
+        for(int i=0;i<int(f.loc.size());++i)
+            count+=assigned_[i] && f.stage[i]>=int(assigned_[i]->goals.size());
+        return count;
+    };
+    const int initial_completed=cfg.completion_bonus>0?completed(frame):0;
     double initial=total_cost(frame),previous=initial,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
     for(int t=0;t<cfg.depth;++t) {
@@ -757,6 +766,10 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     r.score=(initial-total_cost(frame))/2.0;
     if(cfg.progress_discount<1)r.score=discounted*cfg.depth/(2*weight_sum);
     r.score-=cfg.reverse_penalty*frame.reverse_turns;
+    // Finished agents have no replacement task inside these short rollouts.
+    // An optional terminal reward tests whether pure distance decrease therefore
+    // undervalues completing a chain relative to advancing an unfinished one.
+    if(cfg.completion_bonus>0)r.score+=cfg.completion_bonus*(completed(frame)-initial_completed);
     if(cfg.dispersion) {
         std::vector<int> occupancy(g.from_grid.size(),0);
         for(int v:frame.loc)occupancy[g.to_grid[v]]=1;

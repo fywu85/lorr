@@ -168,6 +168,26 @@ void guidance_scale_reference() {
     }
     require(flips==2,"guidance mutation count differs from requested count");
 }
+void completion_objective() {
+    // Two robots compete for the same first destination. Only robot0 finishes
+    // its chain there; robot1 would still owe another stop. A terminal reward
+    // should select the finishing agent even with task matching disabled.
+    auto e=environment(1,3,2);e.curr_states[1].location=2;e.curr_states[1].orientation=2;
+    Task a;a.task_id=0;a.locations={1};e.task_pool[0]=a;
+    Task b;b.task_id=1;b.locations={1,0};e.task_pool[1]=b;e.curr_task_schedule={0,1};
+    Config cfg;cfg.futures=64;cfg.depth=2;cfg.matching=false;cfg.completion_bonus=20;
+    Engine engine(cfg);engine.initialize(&e);
+    std::vector<Action> plan;std::vector<int> schedule;
+    engine.compute(&e,plan,schedule);
+    for(int i=0;i<2;++i) {
+        require(plan[i]!=FW,"first pipeline action moved before its promise");
+        if(plan[i]==CR)e.curr_states[i].orientation=(e.curr_states[i].orientation+1)%4;
+        if(plan[i]==CCR)e.curr_states[i].orientation=(e.curr_states[i].orientation+3)%4;
+    }
+    e.curr_timestep=1;engine.compute(&e,plan,schedule);
+    require(plan[0]==FW && plan[1]!=FW,"completion reward did not select the finishing task");
+    Engine::certify(*engine.graph,{0,2},{1,2});
+}
 void operation_geometry() {
     auto e=environment(3,3,1);e.map[4]=1;Config cfg;Graph g(e,cfg);OperationModel model(g);
     for(int state=0;state<g.states;++state)for(int code=0;code<OperationModel::count;++code) {
@@ -218,6 +238,7 @@ void operation_swap_rejection() {
 }
 int main() {
     simulation(2,true,0,0,1,0,0,0,0,true,3,true,4,true);
+    completion_objective();
     operation_geometry();
     operation_dense_cycle();
     operation_swap_rejection();
