@@ -592,3 +592,29 @@ PTY58092; next promptisfollowup-25.md after this completes. Asked it to audit th
 diagnostic and the conditional generic degree2chain pooling operator, with
 minimum mean evidenceperedge preserved. Suppliedfullsnapshots+startupfacts.
 No generic production policy has changed in this turn.
+
+
+## Current handoff: verified full V54 / coherence V55 (2026-09-20 03:36 UTC)
+
+All GRID jobs8899271/72/74/78/79complete; no live GRID workload. Generic full0/2
+exact144510/144107trajectories; TRICK146659/146566, all20kentriespass1s, RSS11.914GB.
+TRICKtail−93/+50 means no consistent sustained-rate gain. Separate TRICK records
+in WAREHOUSE_PROGRESS; generic frontier unchanged. All26source/testfiles exactabbe36b.
+TRICKanalysis8899275archive-filename failure retained, alias+verifier-only8899279
+passes. Frozen benchmark/source/analysis inputs unchanged; no benchmark rerun.
+
+V55replaypasses400Mactions/60fields/sevenfixtures. Zero mixed toll signs across
+ALL60short-chainfields; latepoolingchangesonly202–240directedcosts. Drop short-chain
+pooling. Allresults archived, FLOW_COHERENCE.mdupdated. Cross-junction circulation
+stillunmeasured. No new generic production change yet.
+
+Fableturn25complete/archived. Turn26running samepersistentCLI, PTY98363, prompt
+followup-25.md; no sourceupdates. Sent fullTRICK/generic/coherence facts. Proposed
+GENERIC default-off score ablation: omit only paidforwardextra from local score,
+keep SAME learned potential/turns/opscale/assignment/work/protectedprimary. Reject
+next-errand/guideroute combinations initially. Currentcode NOT YET edited; awaiting
+review while archiving. Nextturn27/followup-26.md after completion if useful.
+
+Fable26completed; visible review/metadata and qualified assessment archived. It
+supports the remaining-flow ablation as a cheap test, with neutral/negative prior.
+No live CLI; nextturn27/followup-26.md. Implementing the narrow generic factor now.

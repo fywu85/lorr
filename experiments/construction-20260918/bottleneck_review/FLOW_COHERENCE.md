@@ -11,23 +11,33 @@ three interior cells each. The incident edges include each chain's two exits to
 junctions. Four independent topology fixtures pass.
 [Coverage evidence](../results/warehouse-degree2-corridor-coverage.json).
 
-The full traffic replay is queued as GRID8899278 on three exclusive physical
-cores, eight traces with at most three concurrent processes. An initial
-submission failed because all eligible hosts had their exclusive resource in
-use. The identical frozen request was enqueued with immediate-availability
-verification disabled; CPU binding, isolation and memory limits remain. The
-failure and accepted retry are both preserved in
-`runs/flow-coherence-v55-20260920`. No C++ replay result is available yet.
+The full replay completed on GRID8899278 at2026-09-20T03:22:11UTC using three
+exclusive physical cores. All400million actions match independent accounting;
+all vertex/edge actions are valid; all60generic publications match production
+counters and independently recomputed edge costs; seven C++ fixtures pass.
+The initial availability rejection and accepted isolated retry are preserved.
+[Verification](../results/flow-coherence-v55/verification.json).
 
-The [replay](flow_coherence.cpp) reconstructs the actual positions and headings,
-checks every vertex/edge action, and counts movement crossings in both directions
-on each undirected edge. The [driver](run_flow_coherence.py) requires all400million
-actions and saved input hashes to match previous independent accounting.
-It also reconstructs all60CGAR publication frames with the unchanged production
-FlowGuidance, checks every published cost against a separate count formula, and
-compares publication times/counts/moves/penalized edges with the production logs.
-Seven hand-counted C++ topology/count fixtures must pass before accepting outputs.
-These are required checks, not claims that the queued run has already passed.
+Across all60publications there are **zero mixed toll signs within a short chain**
+and zero adjacent sign reversals. At the final publication, pooling would change
+only202–240directed edge costs. Historical crossings over those changed directions
+are0.036–0.044%of corridor crossings. These are historical crossings, not a
+counterfactual trajectory or a bound on a possible effect. The result does not
+support implementing short-chain pooling now.
+
+Actual movement coverage is70.92–74.07%for generic CGAR,82.06%for KittyKnight and
+77.08%for the diagnostic NMS run. Generic chain-minority shares are3.24–3.59%over
+the full run and1.20–1.35%in the final1000steps; KittyKnight has0%, NMS about0.18%.
+Every edge-minority numerator equals its chain-minority numerator on these saved
+traces. This does not establish simultaneous opposing traffic or wasted work.
+[Per-seed summary](../results/flow-coherence-v55/summary.json).
+
+The [replay](flow_coherence.cpp) reconstructs actual positions and headings;
+the [driver](run_flow_coherence.py) checks hashes, independent action accounting,
+and publication counters. The chains have only2or3interior cells, so broader
+coordination through junctions remains an open question. Epoch-level counts,
+simultaneous heading exposure and maximal straight runs across junctions are
+possible follow-ups; none has been measured by this replay.
 
 Two traffic ratios are deliberately kept distinct:
 
@@ -51,8 +61,8 @@ retaining reference margin25, strength4 and base4. Minimum evidence is kept at
 eight observations **per edge on average**, requiring pooled support at least
 eight times the number of edges. It records which tolls would change on the
 observed trace. This is not a measured throughput benefit or an implemented
-production policy. A positive signal would justify a controlled default-off
-generic experiment, with rotation/reflection and complete-decision tests.
+production policy. This completed replay provides no compelling pooling signal, so no production
+pooling experiment is being implemented.
 
 The primary generic frontier remains144,510single-run and143,941.2six-seed mean.
 Full TRICK runs are a separate experiment and cannot replace those records.

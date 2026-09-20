@@ -1,0 +1,76 @@
+{
+  "team_size": 10000,
+  "steps": 5000,
+  "tasks": 152981,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "topology": {
+    "free_cells": 38586,
+    "undirected_edges": 51199,
+    "straight_degree2_cells": 24360,
+    "chains": 9760,
+    "chain_length_histogram": {
+      "2": 4920,
+      "3": 4840
+    },
+    "incident_edges": 34120
+  },
+  "learned_field_reconstruction": false,
+  "fixtures_passed": 7,
+  "publications": [],
+  "actions": {
+    "fw": 46628313,
+    "cr": 787443,
+    "ccr": 778180,
+    "wait": 1806064,
+    "other": 0
+  },
+  "traffic": {
+    "all": {
+      "all_forward_moves": 46628313,
+      "corridor_forward_moves": 38263844,
+      "movement_coverage": 0.8206139475815906,
+      "sum_chain_minority_moves": 0,
+      "sum_edge_minority_moves": 0,
+      "chain_minority_share": 0.0,
+      "edge_minority_share": 0.0,
+      "visited_chains": 9760,
+      "bidirectional_chains": 0
+    },
+    "after1000": {
+      "all_forward_moves": 37567907,
+      "corridor_forward_moves": 31120937,
+      "movement_coverage": 0.8283915577197314,
+      "sum_chain_minority_moves": 0,
+      "sum_edge_minority_moves": 0,
+      "chain_minority_share": 0.0,
+      "edge_minority_share": 0.0,
+      "visited_chains": 9760,
+      "bidirectional_chains": 0
+    },
+    "final1000": {
+      "all_forward_moves": 9409453,
+      "corridor_forward_moves": 7813263,
+      "movement_coverage": 0.8303631465080914,
+      "sum_chain_minority_moves": 0,
+      "sum_edge_minority_moves": 0,
+      "chain_minority_share": 0.0,
+      "edge_minority_share": 0.0,
+      "visited_chains": 9760,
+      "bidirectional_chains": 0
+    }
+  },
+  "learned_active_forward_moves": 0,
+  "learned_active_corridor_moves": 0,
+  "tolled_forward_moves": 0,
+  "tolled_corridor_moves": 0,
+  "limits": [
+    "Observed movement only; task cohorts, resources and guidance differ across planners.",
+    "Minority shares count edge crossings, not distinct trips; stops inside a chain can change edge balances.",
+    "Pooled fields are offline counterfactuals on the observed trace, not measured policy gains.",
+    "Competitor replay is diagnostic and does not qualify its deadline or memory usage."
+  ],
+  "input_sha256": "1b3c1cf93ad9c0e5502e22b4e455d9ee18fb0a94740104bbd92e0e9bb6f2c2d8",
+  "bound_cpu": 0
+}

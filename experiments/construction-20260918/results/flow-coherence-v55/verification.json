@@ -1,0 +1,34 @@
+{
+  "checked_utc": "2026-09-20T03:22:11.328029+00:00",
+  "cases": [
+    "seed0",
+    "seed1",
+    "seed2",
+    "seed3",
+    "seed4",
+    "seed5",
+    "kittyknight",
+    "nms_diagnostic"
+  ],
+  "robot_steps": 400000000,
+  "fixtures_passed": 7,
+  "all_saved_input_hashes_exact": true,
+  "all_action_totals_exact_to_independent_accounting": true,
+  "all_60_generic_publication_frames_exact": true,
+  "all_vertex_and_edge_actions_replayed_valid": true,
+  "binary_sha256": "52a1642487b6b0f98d4ec033bd99f56f20f278c15aec303dd913f7cc5c7673d1",
+  "compile_command": [
+    "taskset",
+    "-c",
+    "0",
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/support",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/support/flow_coherence.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/flow-coherence-v55-20260920/coherence"
+  ],
+  "limits": "Read-only comparison; no causal or achieved throughput improvement is established."
+}
