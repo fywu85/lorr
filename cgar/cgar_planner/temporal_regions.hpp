@@ -11,6 +11,9 @@ namespace cgar {
 struct TemporalRegionOptions {
     int parts = 4, rounds = 2, steps = 25000, threads = 4;
     int temperature_ppm = 1000;
+    // Per region and round; zero preserves the original attempt-only budget.
+    // Stop between complete attempts, so the last attempt can exceed this count.
+    long long candidate_limit = 0;
     bool audit_peaks = false;
 };
 
@@ -39,6 +42,7 @@ struct TemporalRegionPeaks {
 struct TemporalRegionStats {
     long long active_robots = 0, candidates = 0, repairs = 0, accepted = 0;
     long long kept_regions = 0, reverted_regions = 0, frozen_crossers = 0;
+    long long candidate_limited_batches = 0, max_batch_candidates = 0;
     double score_before = 0, score_after = 0;
     std::vector<double> round_scores;
     TemporalRegionPeaks peaks;
@@ -53,7 +57,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         const TemporalRegionOptions& options, std::mt19937_64& rng,
         TemporalRegionStats& stats, Deadline check) {
     if (options.parts < 1 || options.parts > 32 || options.rounds < 1 ||
-        options.steps < 0 || options.threads < 1 || options.threads > options.parts ||
+        options.steps < 0 || options.candidate_limit < 0 || options.threads < 1 || options.threads > options.parts ||
         options.temperature_ppm < 0 || options.temperature_ppm > 10000)
         throw std::invalid_argument("invalid temporal region work limits");
     const int count = static_cast<int>(choices.size()), cells = rows * cols;
@@ -114,7 +118,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
                     check();
                     auto search = std::make_unique<TemporalPibt>(cells, choices, fixed[region], power,
                         displacement_limit, seeds[region], &selected, &choice_regions, region);
-                    search->repair(options.steps, check, 0, &roots[region], options.temperature_ppm,
+                    search->repair(options.steps, check, options.candidate_limit, &roots[region], options.temperature_ppm,
                                    options.audit_peaks ? &audits[region] : nullptr);
                     check(); results[region] = std::move(search);
                 } catch (...) { errors[region] = std::current_exception(); }
@@ -142,6 +146,9 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
             const auto& observed = results[region]->stats;
             stats.candidates += observed.candidates; stats.repairs += observed.repairs;
             stats.accepted += observed.repairs_accepted;
+            stats.max_batch_candidates = std::max(stats.max_batch_candidates, observed.candidates);
+            stats.candidate_limited_batches += options.candidate_limit &&
+                observed.candidates >= options.candidate_limit && observed.repairs < options.steps;
             stats.kept_regions += observed.repair_batches_kept;
             stats.reverted_regions += observed.repair_batches_reverted;
             if (options.audit_peaks) stats.peaks.observe(audits[region]);

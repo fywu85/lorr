@@ -880,6 +880,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_region_options_.parts = env_int("CGAR_TEMPORAL_REGIONS", 4);
     temporal_region_options_.rounds = env_int("CGAR_TEMPORAL_REGION_ROUNDS", 2);
     temporal_region_options_.steps = env_int("CGAR_TEMPORAL_REGION_STEPS", 25000);
+    temporal_region_options_.candidate_limit = env_int("CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT", 0);
+    if (temporal_region_options_.candidate_limit < 0 || temporal_region_options_.candidate_limit > 100000000 ||
+        (temporal_region_options_.candidate_limit && !temporal_regions_))
+        throw std::invalid_argument("regional candidate limit requires enabled regions and 0-100000000 candidates");
     temporal_region_options_.temperature_ppm = env_int("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM", 1000);
     temporal_region_options_.threads = env_int("CGAR_TEMPORAL_REGION_THREADS", temporal_region_options_.parts);
     const int region_peak_audit = env_int("CGAR_TEMPORAL_REGION_PEAK_AUDIT", 0);

@@ -520,6 +520,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                         temporal_region_options_.threads, temporal_region_options_.temperature_ppm, region_stats.active_robots, region_stats.candidates,
                         region_stats.repairs, region_stats.accepted, region_stats.kept_regions, region_stats.reverted_regions,
                         region_stats.frozen_crossers, region_stats.score_before, region_stats.score_after);
+            if (temporal_region_options_.candidate_limit)
+                std::printf("[cgar-regional-work] step=%d candidate_limit=%lld limited_batches=%lld max_batch_candidates=%lld\n",
+                    env_->curr_timestep + 1, temporal_region_options_.candidate_limit,
+                    region_stats.candidate_limited_batches, region_stats.max_batch_candidates);
             for (size_t round = 0; round < region_stats.round_scores.size(); ++round)
                 std::printf("[cgar-temporal-region-round] step=%d round=%zu score_before=%.3f score_after=%.3f\n",
                     env_->curr_timestep + 1, round, round ? region_stats.round_scores[round - 1] : region_stats.score_before,
