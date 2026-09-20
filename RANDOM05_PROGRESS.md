@@ -53,8 +53,12 @@ The earlier active-cost-row optimization preserves the complete3,374 control
 trajectory and lowers observed four-core mean latency326→310ms in one shared-host
 pair. Its speed evidence remains separate from the new guidance record.
 
-Best without known-horizon triage remains 2,914 on four cores. The colleague's
-roughly 27–28% matched advantage remains the campaign objective.
+The current configuration without known-horizon triage scores **3,197 on32
+workers**, versus NMS3,172 (+0.8%). It retains the explicit map-guidance trick.
+The cutoff adds198 tasks (+6.2%) on this seed. A four-core confirmation is
+pending; the preceding verified four-core no-cutoff score was2,914.
+[Cutoff comparison](random05/results/frontier-triage-split-full-v31/summary.json).
+The colleague's roughly27–28% matched advantage remains the campaign objective.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
@@ -523,3 +527,9 @@ The published NMS score of 3,050 used different instances and hardware.
   rebased, and actual schedules remain unchanged. This forecast does not see
   hidden future tasks or rematch all unopened assignments. No gain is assumed;
   regression and full-run evidence are required.
+
+- Full cutoff comparison, unchanged best field/planner seed3/32 workers:
+  no cutoff3,197; scales0.75/1/1.25/1.5/1.75/2/2.5/3 give
+  3,372/3,380/3,367/3,395/3,367/3,335/3,236/3,117. All9 are valid. Scale1.5
+  remains selected. This is a198-task (6.2%) contribution on this seed, separate
+  from the method's performance without knowing the run length. Sourceb824f5d.
