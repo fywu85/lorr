@@ -1,114 +1,83 @@
 # Continuing Warehouse work
 
-Updated 2026-09-20 11:15 UTC. Preserve CGAR. Target NMS154,795: any valid full
-5,000-step / 10,000-robot seed may qualify, including explicit `--trick WAREHOUSE`.
-Keep32GB process RSS, complete fixed work, and timeout failure without partial
-quality scores. Shared GRID hosts and5s development deadlines are authorized;
-strict1s checks remain separate. Preserve the other fork's random05 changes/jobs.
+Updated 2026-09-20 11:49 UTC. Preserve CGAR. Target NMS154795, any verified full
+5000-step /10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
+complete fixed work, timeout failure. Shared GRID and5s development authorized;
+strict1s certification separate. Preserve other fork's random05 files/jobs.
 
-## Current best and generic reference
+## Verified frontier and reference
 
-- Overall best **152,383 TRICK seed0**, native20/200(+1bands), turn1, raw remaining
-  potential, matching64, pickupweight5, shortOFF. Sourcec6d9755, completed
-  11:10:21.393890UTC, hashfa9db0011bb18de9da0c7ad9eb1c59c568df1975f789bef6eb790bd417c3701d.
-  Mean450.823ms,max1.054859191s,RSS11879858176bytes,1.4979CPUcores of4reserved.
-  Shared5s, notstrict1s certified. Gap2412tasks;1.58285%growth needed.
-- V78 all12full cases pass60kentries/four exact nativeOFFcontrols. No bands:
-  OFF149915/149871,matching1=150510/150406,matching5=150565/150526. Bands:
-  OFF151443/151630,matching1=151901/152066,matching5=152383/152048. Weight5band
-  increment+482/-18 overmatching1; keepseed2lossvisible. Both matchedweights
-  beatunmatchedonbothseeds. Results/native-assignment-full-v78 (best-record,
-  summary,comparison,normalizedassignmentcounteraudit). Priorbest151630V73.
-- V73 all eight full cases pass40kentries/four exact controls. Native without bands
-  149915/149871; with bands151443/151630. Band gains over remaining controls+4021/
-  +4128, tails+937/+1035, mean+2.7631%. Results/native-metric-full-v73, exactsource06a8258.
-- V74 legacy lanes+remaining+matching64+weight5 also valid148373/148440, +241/+339
-  over exactweight1controls148132/148101. Sourcec696d5f. Results/combined-pickup-full-v74.
-  The148440row was an interim verified record before V73 analysis completed.
-- Generic reference matching64 mean144392.1667, source0196851. Seeds0..5:
-  144967/144869/144511/143340/144446/144220. All totals improve, mean+451,
-  five tails improve; seed5tail-49 and seed3agep90+2 remain documented.
-  warehouse-reference-variants.json selects this. Generic best single145083
-  remaining-flow stays experimental OFF after mixed six-seed results.
+- Best152383 TRICK seed0, sourcec6d9755, completed11:10:21.393890UTC; nativebands
+  20/200(+1), turn1, raw potential, matching64, pickupweight5, shortOFF. Gap2412,
+  growth1.58285%. Mean450.823ms,max1.054859s,RSS11879858176. Evidence V78.
+- V78 full12cases all60kentries valid/four exactV73controls. No bands unmatched
+  149915/149871,matchw1=150510/150406,matchw5=150565/150526. Bands unmatched
+  151443/151630,matchw1=151901/152066,matchw5=152383/152048. Weight5increment
+  +482/-18 withbands; no unmatchedweight5 arm, so no independent weight effect.
+- Genericreference0196851: seeds0..5=144967/144869/144511/143340/144446/144220,
+  mean144392.1667 (+451), alltotalwins, five tailwins; seed5tail-49/seed3age+2.
+  Generic single145083 remaining-flow staysOFFaftermixedsixseed.
 
-## Active experiment and completed implementation
+## Active and newly completed work
 
-- V80 full short comparison8899568/analysis8899569 RUNNING from11:12UTC: nativebands
-  +matching64, pickupweights1/5 xshortOFF/ON xseeds0/2,8parallelcases/32boundcores.
+- V80 full short8899568/analysis8899569 stillrunning, research31/32cores/fourpercase,
+  nativebands+match64 weights1/5 xshortOFF/ON xseeds0/2. SourceOPTIMIZEDV81
+  85faca5, binary29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
   Rawruns/cgar-native-short-full-v80-20260920; results/native-short-full-v80.
-  UsesOPTIMIZEDV81source85faca5 (despiteexperimentlabelV80), binary
-  29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
-  Allfourfaircontrols must reproduceV78exactly. Fullanalyzer--short-study frozen
-  and bindsV78reference; expectationsweight1=151901/152066,weight5=152383/152048.
-  Initialreferencefilelookup transientlyfailed onsubmitnode but immutablefull
-  verifierhadalreadycompleted; followupreadchecksall12/fourcontrols before
-  freezinganalysis. No benchmark/source/resultwaschanged. Alwaysuse set-e for
-  dependent shellchecks and explicitworkdir; NFSvisibilitymaylag.
-- V82 savedV78motionaudit8899570:12fullinputs/600Mrobotsteps, no policychange.
-  Rawruns/cgar-native-assignment-motion-audit-v82-20260920; expected archive
-  results/native-assignment-motion-audit-v82. Waitforverificationbeforeclaims.
-- V75 source1c936a0 native matching capability20(default16), installed-fieldFNV,
-  fullserial/paralleloracles, macroop0, scaleinvariance, closed-loop repeated service
-  tests allpass. Native/genericstartupcontrols exact. Build-provenance/v75.
-- V77 sourcec6d9755 removes runtime modulo from complete pickup Dial indexing;
-  exactdistances/pops/states and candidate/controlprefixes. Controlledkernel CPU
-  improvements9.4-23.3% versusV75,8.8-12.3% versusoriginallegacyconstexpr variants.
-  Notwholeentryspeedup or throughputclaim. Allregressionspass; generic800exact18958/
-  c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
-  Build-provenance/v77, pickup_ring/, results/pickup-ring-*.
-- V80 sourcefd2d23b native/remaining short-preference compatibility PASSED fullsuite.
-  Onlytwo productionguards relaxed; allothergates/defaults unchanged. Testscover
-  24metric/age/weight/admissioncases,4realmatchingcycles, startedlongtaskprotection.
-  Build-provenance/v80; raw runs/cgar-native-short-build-v80-20260920,
-  binary74fb3313aa6b1c90aefcc735ce08fd7fa501039070432ecde013f4080bd056ea.
-  Preparingnativebands+matching64 shortOFF/ON atweights1/5 with exactV78controls.
-  No short full experiment queued yet; originalpreference losesunderlegacymetric.
-  Startup8899525/analysis8899526 andgeneric8008899527/analysis8899528 COMPLETE.
-  Allfourstartupcasesvalid/twofairprefixesexact; generic18958/c0f1...exact.
+  Fourfullfaircontrols mustexactV78. Estimatedfinish11:50UTC. No shortwin assumed.
+- V82 savedV78motion replay COMPLETE12runs600Mrobotsteps, independentfixtures/hashes.
+  Bandmatchw5 completedchain242.954/242.968,empty60.340/60.485,loadedoverhead
+  15.888/16.425 percompletion. W1chains242.317/242.293,empty61.662/61.631.
+  Descriptivecohortassociations; NMSdiagnostic unmatched/timeout, notcertifiedpair.
+- V83 source038a1bb adds defaultOFF read-only budget-inclusive matching shadow.
+  Allregressions pass; four200stepnativeprofiles/audit100 exactV81hashes and real
+  work; generic800auditOFF exact18958/c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
+  Owncursor/Stats/taskledger, constpeeks, afterrealpass, allsameprotections except
+  budgeteligible. Nevercommit, wholecycle dedup byALLparticipatingtaskIDs.
+- V84 sourcea9c2ec2b1ef354dbc91e182c8d1a52b583c700cf adds wholly-protected-cycle
+  subsetcounter (mixedcycle savingnotsolelyattributabletoprotectedrows).
+  Build8899595/fullsuitePASS, binarybd6c543934c2aaf8375de172778649b20f82d0b4768f2e837903d80ecad59ebd.
+  Startup8899597/analysis8899598PASSallfour/audit10exactV81hashes ANDrealwork.
+- V84 FULLdiagnostic8899625 submitted11:47UTC,16cores/fourprocesses. Weight5only
+  shortOFF/ON xseeds0/2, stride10 (samecadenceasrealpass). Raw
+  runs/cgar-match-budget-subsets-full-v84-20260920. Analyzer NOTYETQUEUED because
+  its frozenunshadowedV80comparison.json ispending. MUSTqueue afterV80verification:
+  python3 match_budget_shadow/analyze.py --raw RAW --output results/match-budget-subsets-full-v84
+  --commit a9c2ec2b1ef354dbc91e182c8d1a52b583c700cf --hold-job 8899625
+  No diagnosticqualityscore. Evenstride10isboundedchronologicalwitnesssample,
+  notcompleteopportunitycount/upperbound/causalphysicalbenefit. Budget2NOTimplemented.
+- V84 savedend-censoringaudit8899596COMPLETE;results/horizon-work-audit-v84.
+  Bestfairweight5seeds0/2 unfinishedtaskwork1997613/1998338 (~4%of50M), split
+  empty635503/635199 andloaded1362110/1363139. Postlastcompletion1986804/1988417
+  includes4902/4157stepsontaskscompletedbyOTHERrobots; distinguishthesetotals.
+  Noidle, allrobotscomplete; firstadmitted>=4600completed3746/12528and3731/12517
+  (~30%). Independenthandofffixture/conservation100M/hashesPASS. Notrecoverableworkestimate.
+- V81 backward Dial indexing optimization: weightedkernelCPU-9.6..15.8%, exact
+  distances/deadlinechecks; generic800andall4nativeprefixesexact. Kernelonly,
+  noentryspeedupclaim. V77 pickupkerneloptimization alsoexact; allprovenancearchived.
 
-## Diagnosis and review
+## Review and next actions
 
-- V79 native motion replay checks400Mphysicalsteps/eightfullruns. Nativebandloaded
-  overhead16.370/16.113 andempty62.498/62.430 percompletedtask; completedshortestchain
-  remains242.283/242.340. Originalremaining controls21.624/21.528overhead,
- 65.781/65.678empty. Accountingassociations, notcausalpartition. Lanealignmentonly
-  uses4/16directionmask; notnativeweightedcost/bandvisitation. Results/native-motion-audit-v79.
-- ArchivedNMSdiagnostic chain234.794/empty62.021/loadedoverhead16.755 hadone timeout
-  andunmatchedresources/cohort. Suggeststaskselectiontest; notguaranteedsavings.
-- Persistent Fable turn37complete10:27:16UTC, session1ebb1075-3538-49d1-93d1-a00c94fa256a,
-  no live CLI. Review/assessment archived. AgreesV78; recommends conditional short
-  atopbestnative+matching+weight5. Secondfinite retarget onlywithpositivechain/empty
-  evidenceandshadowdiagnosis. Do notrevivemultiworkerswithoutnewreason.
-  Turn38alsoCOMPLETE10:59:45UTC, no live CLI, nextturn39/followup-38.md.
-  Newassessmentqualifiesinference: retargetcapacitynotprovedbinding; excludedcycle
-  savingswouldbediagnosticnotphysicalcausalwork. Prioritizeconditionalmatching-budget
-  shadowoverstaticchain-priceaudit. Moresearchnotyetwarranted;4Mmeanscandidate
-  evaluations,NOTattempts. Privatecomputealreadyhasproperlysizedscratchthroughallcallers.
-  Realfour200-stepintegrationcasescovernative+short+matching; no redundantfixtureadded.
-
-## Next actions
-
-1. V80screensallpass. V81kernel85faca5/fullregressionspass, binary29ff424871b721a43c3fa76708e16fa8598002698f60dc324789005ab39a20fd.
-   Native2008899550/51completeallfourhashesexactV80includingnewshortONprofiles.
-   Generic8008899552/53COMPLETEexact18958/c0f1...; fullshortwilluseV81.
-   SHORT.mdsourceupdatepredeclaredbeforefullsubmission; exactV78fullcontrolsrequired.
-   BackwardkernelCPUimproves9.6-15.8%weighted; unchangedBFS+0.8%; notwholeentryspeedup.
-   Bench8899542completeafterqueuedhost-selectorcorrection. Results/turn-ring-kernel-v81.
-2. V78verified,152383bestrecordupdated. VerifyV80fullshortafterfinish(~11:50UTCestimate). Updateanyfullnewbestonly
-   aftercompletevalidity/source/resource/work/trajectorychecks. Recordfailures too.
-3. V80fullshortalreadyrunning. ConditionalnextFable38: budget-inclusive matching
-   shadowifshortshrinkscompletedchainsbutleavesemptydeficit. No shadowimplemented.
-   Staticnativechainpriceaudit rankssecond;8Mworknotyetjustified. Anotherpossible
-   explicittrickisconfiguredknown-horizonadmission,NOTimplemented/tested. SharedEnv
-   hasno endtime; archive simulation_time.json says5000; initialtasksrevealedAFTER
-   preprocessing, so cannotprecomputeinitialtask-specificassignments there. No
-   futurehidden-task access. Noneofthesehypotheses ispromoted.
-4. Commit/push source/evidence/history usingexplicitpaths; neverstageotherforkwork.
-5. Goalstillactive; donotmarkcompletebelow154795. Sixseedgenericpromotionisseparate.
-
-All evidence lives under experiments/construction-20260918/results. Build and
-benchmark snapshots are immutable in ignored runs/. Prefixes neverfullquality.
-Legacyanalyzersmayneedinactive-native-receiptnormalization. Activejobs usefrozenhelpers.
+- Fable39COMPLETE/assessmentarchived, no mutationfound. Adoptedfullyprotected
+  subsetcounter/stride10. Qualifiedclaimthatcadencemakesauditcomplete; still
+  bounded,chronological,onunexecutedtrajectory. Existingstride100ratiosare
+  snapshotaccounting, notmatchedexposurerates. Don'tuseaspolicygate.
+- Fable40RUNNINGfrom11:47:35UTC,pid9024,samesession1ebb1075-3538-49d1-93d1-a00c94fa256a.
+  Rawruns/fable-cgar-session/turn40;promptfollowup-39.md. Authorizedreviewofthe
+  newauditandminimalhorizonadmissiondesign. No horizoncodeyet. Nextturn41afterfinish.
+- ProposedhorizontrickexplicitCGAR_TRICK_KNOWN_HORIZON=5000after--trickWAREHOUSE,
+  assumptionevidentreceipt, newadmissionsonly, retainstarted/held/primary/recovery/
+  fairpass/matching. Rankprovablyunfinishablepairslast, oldorderwithintiers, assign
+  evenifallhopeless. At/pastHrevertordinaryandlog. SpatialLBmax(1,pickup)+chain+
+  repeated-locationservicecount, constBFSpeek/Manhattan; nevernative/20. Require
+  fullcore==free (verified38586/38586 Warehouse) andrejectrefinedchain forboundvalidity.
+  Keepoldper-cellbucketordering/faircomparator; logfirstchangedcomparison and
+  requireexactprefixbeforeit. Hknownconfigurationisassumption, notcompetitionclaim.
+- FirstverifyV80full. Recordnewbestonlyaftercompletevalidity,source,work,resource,
+  exactcontrols. Ifshortloses, horizonstudyprioritizedifreviewfindsnoflaw. Still
+  targetgap; donotmarkgoalcompletebelow154795. Multiseedgenericpromotionseparate.
+- Commit/pushourswithEXPLICITpaths. No production/testeditsduringbuilds. Use
+  explicitworkdir/set-e; NFSvisibilitymaylag. Neverstageotherforkfiles.
 
 ## Historical notes below (current status above supersedes old running labels)
 
