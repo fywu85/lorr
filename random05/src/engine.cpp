@@ -24,6 +24,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.generations=integer("R05_GENERATIONS",1);
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+    c.mutation_radius=integer("R05_MUTATION_RADIUS",0);
+    if(c.mutation_radius<0)throw std::invalid_argument("mutation radius must be nonnegative");
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
@@ -797,8 +799,21 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         const auto& parent=generation?results[best].offsets:best_offsets_;
         for(int k=begin;k<end;++k) {
             offsets[k]=parent;
-            if(k>begin)for(int a=0;a<n;++a)
-                if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
+            if(k>begin) {
+                // Keep one quarter of the portfolio global. Other futures can
+                // change one spatial neighborhood while preserving its context.
+                int center=-1;
+                if(cfg.mutation_radius>0 && k%4!=0)
+                    center=g.to_grid[frame.loc[std::uniform_int_distribution<int>(0,n-1)(global_rng)]];
+                for(int a=0;a<n;++a) {
+                    if(center>=0) {
+                        int p=g.to_grid[frame.loc[a]];
+                        if(std::abs(p/g.cols-center/g.cols)>cfg.mutation_radius ||
+                           std::abs(p%g.cols-center%g.cols)>cfg.mutation_radius)continue;
+                    }
+                    if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
+                }
+            }
         }
         #pragma omp parallel for num_threads(cfg.threads) schedule(static)
         for(int k=begin;k<end;++k) {

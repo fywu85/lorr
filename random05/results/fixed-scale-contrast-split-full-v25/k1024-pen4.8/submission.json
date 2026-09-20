@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research33*,debian.q@research39*",
+    "-pe",
+    "threaded",
+    "8",
+    "-binding",
+    "linear:4",
+    "-l",
+    "h_rt=03:00:00,h_vmem=4G,m_topology_inuse=*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_benchmark",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/fixed-scale-contrast-split-full-v25/k1024-pen4.8/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/fixed-scale-contrast-split-full-v25/k1024-pen4.8/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899549\n"
+}

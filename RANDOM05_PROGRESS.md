@@ -39,8 +39,9 @@ the previous best is a single-seed observation, not a replicated average gain.
 With the preceding random-stream mode, five seeds at directional penalty2.4
 score 3,363 / 3,276 / 3,344 / 3,329 / 3,312: mean **3,325**, or **14.1%** above
 NMS. All five improve over the same seeds with penalty1.6 (mean3,209), a3.6%
-mean gain. The earlier 3,299 trajectory repeated exactly on32 workers against
-NMS3,172. The current best has only been validated on four-core allocations.
+mean gain. The new3,374 trajectory also repeats exactly on32 workers (16physical cores),
+versus NMS3,172 on the same allocation: **+6.4%**. That run averages84ms per
+step (maximum190ms). The four-core and32-worker comparisons remain separate.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -87,6 +88,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T10:23:12.419038+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast3.2; K1024, field15/seed0; `--trick RANDOM-05` | 3351 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.0% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
 | 2026-09-20T10:23:13.900548+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast2.4; K1024, field15/seed0; `--trick RANDOM-05` | 3363 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.4% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
 | 2026-09-20T10:57:32.632101+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step random streams; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.8% | [Full evidence](random05/results/load-depth-split-full-v22/step-rng-k1024/summary.json) |
+| 2026-09-20T11:09:45.903706+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Same3,374 trajectory; independent per-step RNG; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.4% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-workers32/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -377,3 +379,12 @@ The published NMS score of 3,050 used different instances and hardware.
   opposite turns. The old3,299 trace contains58,071 such reversals. The penalty
   includes the previous real action at the rollout boundary; the default is0.
   This is a hypothesis about wasted rotations, not yet a measured improvement.
+
+- Fixed preferred-edge scale, output penalty4.8: fullK1024 gives3,362 versus
+  the matched control3,363. The low-K gain does not carry through. Keep the
+  existing contrast2.4 configuration.
+- Experimental regional priority search: keep25% of candidates fully global,
+  but optionally limit other mutations to a local rectangle. This targets the
+  hypothesis that changing240 unrelated priorities at once loses useful local
+  repairs. Radius0 preserves the existing algorithm. Full comparisons pending.
+  `random05/RESEARCH.md` records this and the inspected EPIBT follow-up.

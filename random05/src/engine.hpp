@@ -19,7 +19,7 @@ struct Config {
     bool flow_average=false, flow_normalize=false;
     int loop_extent=2;
     bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
-    int local_trials=0, horizon=0, hungarian_limit=0;
+    int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
