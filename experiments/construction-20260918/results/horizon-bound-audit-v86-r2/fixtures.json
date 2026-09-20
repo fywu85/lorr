@@ -1,0 +1,67 @@
+{
+  "available": {
+    "configured_horizon": 5,
+    "cohorts": {
+      "1": {
+        "completed": 0,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 1,
+        "uncompleted_lb_feasible": 0
+      }
+    },
+    "chronological_witnesses": 1,
+    "exposed_impossible_unfinished_admissions": 1,
+    "overlapping_actual_tasks_skipped": 0,
+    "bfs_searches": 1,
+    "manhattan_candidate_exposures": 1,
+    "examples": [
+      {
+        "assignment_step": 5,
+        "decision_tick": 4,
+        "robot": 0,
+        "actual_task": 0,
+        "actual_bound": 10,
+        "remaining": 1,
+        "alternative_task": 1,
+        "alternative_bound": 1
+      }
+    ],
+    "limits": "Exact spatial bounds conditional on keeping the holder, stronger than production cache misses. Later matching may rescue an initially impossible pair. Sequential task-disjoint witnesses against the unchanged pool; same-batch assignments conservatively excluded. Not a counterfactual rollout, complete opportunity count, throughput estimate or upper bound. Reveals and later assignments would change under a new policy."
+  },
+  "not_revealed": {
+    "configured_horizon": 5,
+    "cohorts": {
+      "1": {
+        "completed": 0,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 1,
+        "uncompleted_lb_feasible": 0
+      }
+    },
+    "chronological_witnesses": 0,
+    "exposed_impossible_unfinished_admissions": 1,
+    "overlapping_actual_tasks_skipped": 0,
+    "bfs_searches": 0,
+    "manhattan_candidate_exposures": 0,
+    "examples": [],
+    "limits": "Exact spatial bounds conditional on keeping the holder, stronger than production cache misses. Later matching may rescue an initially impossible pair. Sequential task-disjoint witnesses against the unchanged pool; same-batch assignments conservatively excluded. Not a counterfactual rollout, complete opportunity count, throughput estimate or upper bound. Reveals and later assignments would change under a new policy."
+  },
+  "already_assigned": {
+    "configured_horizon": 5,
+    "cohorts": {
+      "1": {
+        "completed": 0,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 1,
+        "uncompleted_lb_feasible": 1
+      }
+    },
+    "chronological_witnesses": 0,
+    "exposed_impossible_unfinished_admissions": 1,
+    "overlapping_actual_tasks_skipped": 0,
+    "bfs_searches": 0,
+    "manhattan_candidate_exposures": 0,
+    "examples": [],
+    "limits": "Exact spatial bounds conditional on keeping the holder, stronger than production cache misses. Later matching may rescue an initially impossible pair. Sequential task-disjoint witnesses against the unchanged pool; same-batch assignments conservatively excluded. Not a counterfactual rollout, complete opportunity count, throughput estimate or upper bound. Reveals and later assignments would change under a new policy."
+  }
+}

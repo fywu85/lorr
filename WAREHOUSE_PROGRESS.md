@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 11:49 UTC.
+Updated: 2026-09-20 12:11 UTC.
 
 **Best overall validated single run: 152,383 tasks (TRICK, seed 0)**, using the NMS-derived native Warehouse cost field with bands, raw remaining-potential scoring, matching64 and pickupweight5, explicitly enabled by `--trick WAREHOUSE`. Short preference is OFF. This leaves **2,412 tasks** to the NMS target of **154,795** (**1.58% growth** needed). Any valid full seed may achieve the target; promotion of the generic benchmark reference remains separate.
 
@@ -26,9 +26,9 @@ Updated: 2026-09-20 11:49 UTC.
 
 Records above follow validation order. Parallel comparisons can finish their checks later even when their run-completion timestamp is earlier; 148,440 was an interim verified best before the full native comparison was checked.
 
-The [full native assignment comparison](experiments/construction-20260918/results/native-assignment-full-v78/summary.md) raises the best to152,383. Matching improves both seeds under each native field. Pickupweight5 adds482tasks on band seed0 but loses18 on seed2 versus matching/weight1; all tested matched profiles beat their unmatched controls. All12full runs and four exact controls pass. Best mean450.823ms/max1.054859s/RSS11.880GB, shared5s development. Eight full short-preference cases now test the remaining gap; no short-preference win is assumed.
+The [full native assignment comparison](experiments/construction-20260918/results/native-assignment-full-v78/summary.md) raises the best to152,383. Matching improves both seeds under each native field. Pickupweight5 adds482tasks on band seed0 but loses18 on seed2 versus matching/weight1; all tested matched profiles beat their unmatched controls. All12full runs and four exact controls pass. Best mean450.823ms/max1.054859s/RSS11.880GB, shared5s development. The [eight full short-preference cases](experiments/construction-20260918/results/native-short-full-v80/summary.md) are now verified: short preference loses3645/3669 atweight1 and513/244 atweight5, so it stays OFF.
 
-The [saved-run horizon audit](experiments/construction-20260918/results/horizon-work-audit-v84/summary.md) finds about4% of robot work on tasks still unfinished at the end, consistently across both best-profile seeds. This motivates an explicitly configured-horizon experiment; it is not recoverable-work or throughput evidence. The new read-only matching-budget audit passes exact native trajectories and generic isolation. Its full stride10 comparison is running; no additional retarget policy is enabled.
+The [saved-run horizon audit](experiments/construction-20260918/results/horizon-work-audit-v84/summary.md) finds about4% of robot work on tasks still unfinished at the end, consistently across both best-profile seeds. The [corrected lower-bound audit](experiments/construction-20260918/results/horizon-bound-audit-v86-r2/summary.md) finds4024/3980 distinct feasible-alternative witnesses, sufficient to justify a test but not a predicted gain. A later retarget can rescue an initially impossible pair. The full [configured-horizon experiment](experiments/construction-20260918/tricks/known_horizon/README.md) is running on seeds0/2 with ordinary fairness, explicit --trick WAREHOUSE and a disclosed known-horizon assumption; it has no verified full result yet. The new read-only matching-budget audit passes exact native trajectories and generic isolation. Its full stride10 comparison is running; no additional retarget policy is enabled.
 
 The earlier increasing-record table below remains the **generic** history. A future valid single-seed best updates the appropriate history immediately, with its source, timestamp and flags; it does not imply repeatability across seeds.
 
