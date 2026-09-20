@@ -1,0 +1,21 @@
+# Next diagnosis: joint pairing of newly free robots
+
+Status: source review and a bounded audit design only. No new production mode, benchmark, or quality claim. Finish V101 / V102 / V103 before choosing the next implementation.
+
+The current scheduler computes complete forward pickup-distance fields for up to 64 newly free robots, retains per-robot candidates, and greedily commits pairs. Its later unopened-task matching pass runs every ten steps, groups up to 32 spatially nearby eligible holders, and requires complete resident reverse tables. The forward fields remain available until the scheduling call returns, but that matching pass does not use them. The completed V104 audit shows the 64-field quota covers every newly free robot until steps 4,952 / 4,957 on the current two seeds.
+
+A possible general improvement is to preserve exactly the task set selected by ordinary HRRN/fair admission, then improve only its pairing with newly free robots. This would retain long-task service, avoid repeated unrestricted rematching, and reuse already-computed distances. It is not yet known whether the greedy pairing leaves enough room or whether the existing matching pass already captures it.
+
+The first implementation should be a read-only audit after the real matching pass, before `record_horizon_proposal`, while the complete forward fields are still alive:
+
+1. Start with the existing `unopened_candidates(proposed, false)` eligibility rules. Restrict to robots that were free at entry and have a complete forward field, whose proposed tasks were unassigned in the input environment. Preserve primary / next-primary, recovery, commitment, cooldown, forced-oldest and one-retarget protections. Do not admit started tasks or expand the task set.
+2. Form a bounded matrix of at most 64 holders from the complete immutable forward fields. The selected tasks remain the columns. Use the existing deterministic assignment solver and report both optimal positive cycles and the subset passing the existing cycle-acceptance margins. No table construction, cache promotion, RNG draw or proposal mutation.
+3. For configured-horizon runs, report only cycles that do not worsen any task's current feasibility tier under the same frozen margin snapshot and production spatial-bound convention. A different holder can change that tier even when the task set is unchanged. Keep the unfiltered count separately as a diagnostic, never as safely implementable work.
+4. Use a separate task-disjoint witness ledger and counters. Savings are guidance-cost units, not physical robot steps or predicted completions. Report ordinary steps separately from ticks where the real matching pass ran, and separate early / late cohorts.
+5. Exercise a real forward-field three-way improvement, identity optimum, protected rows, missing or infinite fields, horizon-tier exclusion and deadline failure. Enabled audit and disabled control must reproduce complete native and generic trajectories and every real work counter exactly. Any timeout fails explicitly; no partial audit-driven scheduling decision is allowed.
+
+Only an exposed, nontrivial residual would justify a production permutation pass and full paired quality benchmarks. A future commit must decide explicitly how a pre-acceptance permutation consumes the existing retarget bookkeeping; using the current conservative cycle-commit rules is safer than silently creating a second rematching allowance. Final-holder horizon training must continue to happen after all real pairing changes.
+
+This mechanism depends on robot states and task geometry, not Warehouse coordinates. A future generic mode should work with the existing immutable learned field as well as the explicitly enabled static Warehouse field. The current Warehouse profile still requires `--trick WAREHOUSE` because of its guidance and known horizon. The old second-retarget audit measured a different residual among held tasks; its small result does not measure this fresh-only question.
+
+Relevant code: [scheduler and matching](../../../cgar/cgar_planner/cgar.cpp), [deterministic permutation solver](../../../cgar/cgar_planner/assignment_permutation.hpp), [complete pickup fields](../../../cgar/cgar_planner/pickup_full.hpp), [quota evidence](../results/pickup-quota-audit-v104/summary.md).

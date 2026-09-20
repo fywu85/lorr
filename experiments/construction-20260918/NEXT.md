@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 17:45 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
+Updated 2026-09-20 18:04 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
 
 ## New verified best: 155,120
 
@@ -10,7 +10,7 @@ Winning source remains `27be6e312fdd79ad310583d33eeb2a4781d75b97`, binary `37694
 
 ## Active jobs; do not resubmit
 
-- **V102 best p90 / weight-8 seeds 1 / 3:** benchmark 8900345, verifier 8900346, outcomes 8900347. Raw `runs/cgar-p90-pickup8-seeds13-v102-20260920`; results `results/p90-pickup8-seeds13-v102`. Same frozen V96 binary. Two cases, eight physical cores. Started about 17:21 UTC; expect roughly 18:00.
+- **V102 COMPLETE:** seeds 1 / 3 = 154,999 / 155,020; verification 17:59:57 and accounting 18:00:20 UTC. Four weight-8 seeds [155120,154999,155056,155020], mean 155048.75, all above target. All first-half tasks finish; seed3 maximum outstanding age1331 versus1072 before remains documented. Exact 27be source / V96 binary. `results/p90-pickup8-four-seeds-v102.json`; no new single-run record.
 - **V101 neutral-tail full, p90 / weight 8, OFF/ON seeds 0 / 2:** benchmark 8900363, verifier 8900364, outcomes 8900365. Raw `runs/cgar-native-neutral-tail-full-v101-20260920`; results `results/native-neutral-tail-full-v101`. Frozen e757965 / c7f7b320 binary, **full-variants.json**. Research38, 16 physical cores, started 17:28:50 UTC; expect roughly 18:08. Exact OFF controls must reproduce 155,120 / 155,056 and complete V99 trajectories.
 - **V103 full-depth 1 / 2 / 4 workers, p90 / weight 8, seeds 0 / 2:** benchmark 8900366, verifier 8900367, outcomes 8900368. Raw `runs/cgar-native-workers-full-v103-20260920`; results `results/native-workers-full-v103`. Frozen V96 binary, no neutral-tail mode. Each worker retains 4M candidates / 1M attempts, so aggregate work increases. Research38, 24 other physical cores, started 17:28:50 UTC. Allocations are disjoint from V101; V102 is on research46.
 
@@ -37,7 +37,7 @@ The full neutral comparison was submitted only after both compatibility checks p
 ## Immediate work
 
 1. The 155,120 record and passing V101 build are committed and pushed as `bb92cfd`. V100 / compatibility results, full profiles and stronger reference selection are committed and pushed as `fcb004e`. New physical-work summaries in `results/p90-pickup-combined-v99/work-budget.md` and V100 `work-budget.json` use validated artifacts: ~94% forward, 3% turns, 3% waits; 18.6% before pickup; 2.14% unfinished work overlaps those partitions. Temporal zero blocked/safety counters are not causal congestion evidence. Preserve random05 edits.
-2. Finish V102 seed confirmation and V101 / V103 full comparisons through their independent validators/accounting. Do not promote startup scores or partial matrices. No additional experiment is currently required while these are active.
+2. Commit V102 confirmation and finish V101 / V103 full comparisons through their independent validators/accounting. Do not promote startup scores or partial matrices. No additional experiment is currently required while these are active.
 3. Update best history immediately for any increasing valid full score, with exact source/time/seed/flags/hash. Preserve the preceding weight-5 four-seed mean separately from the new weight-8 profile.
 
 Fable turn 45 exhausted credits in the persistent Claude CLI session; no new review. Next turn would be 46 only after quota is available. Shell tools require escalation because default bwrap fails. Never edit production/tests while a build is running; freeze/check sources before every benchmark. All old quality matrices use their own frozen binaries, independent of the new experimental source.

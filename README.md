@@ -43,9 +43,10 @@ On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,120 ta
 against the user-specified NMS target of 154,795: a valid full 5,000-step / 10,000-robot
 run, seed 0, source [27be6e3](https://github.com/fywu85/lorr/commit/27be6e312fdd79ad310583d33eeb2a4781d75b97).
 It assumes the known 5,000-step horizon and requires `--trick WAREHOUSE`.
-Seed 2 scores 155,056; their mean is 155,088. Every first-half task finishes in both
-runs. These are solver seeds on one fixed input. The preceding pickup-weight-5
-profile averaged 154,885.5 over four seeds. The generic six-seed reference remains
+The same profile scores 155,120 / 154,999 / 155,056 / 155,020 on solver seeds 0–3,
+mean **155,048.75**; all four exceed target and finish every first-half task. These
+are solver seeds on one fixed input. The preceding pickup-weight-5 profile averaged
+154,885.5. [Four-seed verification](experiments/construction-20260918/results/p90-pickup8-seeds13-v102/summary.md). The generic six-seed reference remains
 144,392.17. These are shared-host 5s development results; strict 1s certification
 remains separate. [Verified result and exact configuration](experiments/construction-20260918/results/p90-pickup-combined-v99/summary.md).
 

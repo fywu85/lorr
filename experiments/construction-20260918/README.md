@@ -12,9 +12,10 @@ adds temporal planning, observed-flow guidance, complete pickup fields, regional
 repair and bounded matching, reaching144,392.17over six solver seeds. The separate
 explicit Warehouse TRICK now reaches 155,120 tasks, above the NMS target of 154,795.
 It uses native Warehouse guidance, pickup weight 8 and a configured horizon with a
-prospective p90 completion margin; ordinary fairness stays enabled. The paired seed
-scores 155,056. Both finish every first-half task. The previous weight-5 profile
-averaged 154,885.5 over four solver seeds on this fixed input.
+prospective p90 completion margin; ordinary fairness stays enabled. All four solver
+seeds now exceed target: 155,120 / 154,999 / 155,056 / 155,020, mean 155,048.75. Every
+first-half task finishes. The previous weight-5 profile averaged 154,885.5 on this
+fixed input. [Four-seed confirmation](results/p90-pickup8-seeds13-v102/summary.md).
 [Current full result](results/p90-pickup-combined-v99/summary.md) and the
 [root history](../../WAREHOUSE_PROGRESS.md) supersede historical probe summaries.
 Current development allows shared hosts and5s complete-entry deadlines while

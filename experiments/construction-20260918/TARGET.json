@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T17:20:21.235896+00:00",
+  "updated_utc": "2026-09-20T18:05:02.955458+00:00",
   "source": "User correction: target is NMS154795; success may be any valid full seed, with or without explicitly enabled tricks. Preserve a separate multiseed generic reference.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": 154795,
@@ -23,7 +23,7 @@
   "current_best_single_source": "27be6e312fdd79ad310583d33eeb2a4781d75b97",
   "current_best_single_completed_utc": "2026-09-20T17:16:12.716303+00:00",
   "current_best_single_budget": "Shared-host 5s development; max 0.996732765s, RSS11944546304bytes. Not strict1s certified.",
-  "pending_confirmation": "V102 best p90/weight8 solver seeds1/3 running (8900345/46/47). V100 shorter parallel portfolios lose both seeds; complete and independently audited. V101 neutral-tail OFF/ON full (8900363/64/65) follows exact native/generic compatibility; V103 full-depth 1/2/4 workers (8900366/67/68) increases aggregate compute. Both compare with p90/weight8 exact controls.",
+  "pending_confirmation": "V102 p90/weight8 four-seed confirmation COMPLETE, all four above target. V101 neutral-tail OFF/ON full (8900363/64/65) and V103 full-depth 1/2/4 workers (8900366/67/68) remain running on exact weight8 controls. Read-only quota audit finds only small final-48-step exposure; fresh-only joint matching remains a proposed audit, not implemented.",
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
   "minimum_successful_seeds": 1,
@@ -51,12 +51,18 @@
   "target_surplus_from_best_single": 325,
   "current_trick_tested_seeds": [
     0,
-    2
+    1,
+    2,
+    3
   ],
   "current_trick_tested_totals": [
     155120,
-    155056
+    154999,
+    155056,
+    155020
   ],
   "current_trick_two_seed_mean": 155088.0,
-  "previous_p90_pickup5_four_seed_mean": 154885.5
+  "previous_p90_pickup5_four_seed_mean": 154885.5,
+  "current_trick_four_seed_mean": 155048.75,
+  "current_trick_confirmation_evidence": "experiments/construction-20260918/results/p90-pickup8-four-seeds-v102.json"
 }

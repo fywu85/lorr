@@ -34,6 +34,6 @@ All other settings, fairness, resource limits and fixed search work remain
 unchanged. The two component gains need not add: assignment changes calibration
 data, traffic and the task pool. Record the measured interaction instead.
 
-The combination is now fully verified: **155,120 / 155,056**, gains **63 / 329** over exact p90 / weight-5 controls. Both beat NMS; mean 155,088. All first-half tasks finish, empty work falls and outstanding-age p90 improves. [New best record](../results/p90-pickup-combined-v99/summary.md). Additional weight-8 seeds 1 / 3 are running with the same frozen V96 binary.
+The combination is now fully verified: **155,120 / 155,056**, gains **63 / 329** over exact p90 / weight-5 controls. Both beat NMS; mean 155,088. All first-half tasks finish, empty work falls and outstanding-age p90 improves. [New best record](../results/p90-pickup-combined-v99/summary.md). Additional weight-8 seeds 1 / 3 are verified at 154,999 / 155,020. All four seeds exceed NMS; mean 155,048.75, +163.25 over weight 5. [Four-seed confirmation](../results/p90-pickup8-seeds13-v102/summary.md).
 
 The [read-only quota audit](../results/pickup-quota-audit-v104/summary.md) finds 461 / 454 robots beyond the complete-field quota, first appearing at steps 4,952 / 4,957. This is about 0.3% of post-startup admissions and does not establish bad assignments or a throughput gain from a higher quota. Defer that comparison until the active motion/worker results are known.
