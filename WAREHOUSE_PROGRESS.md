@@ -1,8 +1,8 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 05:21 UTC.
+Updated: 2026-09-20 05:33 UTC.
 
-**Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
+**Best single run: 145,083 tasks**, up573 from144,510 in the new remaining-flow scoring trial. It is a shared-host,5-second development result; observed maximum entry time907.656ms. Six-seed confirmation is pending. **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). The confirmed reference is still the earlier regional-repair policy; the new scoring candidate has only two full paired seeds so far. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
 The six totals are **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
 
@@ -119,10 +119,18 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 19:05:34 | 143,767 | Complete fields64 + four 4M workers / 1 | [1661176](https://github.com/fywu85/lorr/commit/1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9) | [data](experiments/construction-20260918/results/pickup-full-workers-confirm-v43/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v43/) · not promoted: seed5 regresses |
 | 2026-09-19 20:30:36 | 144,107 | Complete fields64 + two regional rounds / 2 | [f6d0ae4](https://github.com/fywu85/lorr/commit/f6d0ae448504762136c4f5d85f25d7d207207965) | [data](experiments/construction-20260918/results/pickup-full-regions-full-v44/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v44/) · six-seed improvement confirmed |
 | 2026-09-19 20:32:02 | 144,510 | Complete fields64 + two regional rounds / 0 | [f6d0ae4](https://github.com/fywu85/lorr/commit/f6d0ae448504762136c4f5d85f25d7d207207965) | [data](experiments/construction-20260918/results/pickup-full-regions-full-v44/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v44/) · six-seed improvement confirmed |
+| 2026-09-20 05:28:00 | 145,083 | Remaining-flow temporal score / 0 | [4524843](https://github.com/fywu85/lorr/commit/45248431dc38702ebdef9dd1ab2893697c00e00f) | [verified full pair](experiments/construction-20260918/results/remaining-flow-full-v56-shared/comparison.json) · shared-host5s development; six-seed confirmation pending |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
 “Legacy timing” means that the original run predates complete entry-time instrumentation. Its configured deadline, explicit timeout result, simulator validity and measured RSS are retained, but it does not supply the later per-decision timing evidence. CPU models and core counts also vary; this table tracks task completions, not runtime speedups.
+
+The latest generic trial improves both full seeds0/2:145,083/144,215 versus exact
+144,510/144,107 controls, a paired mean gain0.235953%. Final1000windows rise72/112;
+outstanding-age p90 falls2/4. All20,000entries are valid under the authorized5s
+budget and peakRSS11.340GB. One candidate entry reached1004.262ms; these shared-host
+runs do not certify strict1s performance. Remaining seeds1/3/4/5 × OFF/ON are queued
+under8899325 with held analysis8899327. The reference configuration remains unchanged.
 
 ## Confirmed reference milestones
 

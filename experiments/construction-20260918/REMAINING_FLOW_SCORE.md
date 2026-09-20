@@ -41,14 +41,36 @@ The best candidate will receive a later exact one-second validation.
 
 The shared200-step screen passed on both arms, with maxima898.487/893.222ms;
 the unchanged control reproduces its exact reference trajectory and all first128
-steps match before publication. Full seeds0/2 × OFF/ON are running in parallel
-under job8899305, held verification8899306. Both baseline and candidate use the
+steps match before publication. Full seeds0/2 × OFF/ON completed under job8899305, verification8899306 (results below). Both baseline and candidate use the
 same frozen binary/source4524843 and sixteen distinct physical cores. Record full
 totals, per1000windows, task age, empty work and loaded turns/waits. The screen is
-feasibility evidence only; no new quality result or promotion is claimed.
+feasibility evidence only; the full exploratory result below remains unpromoted.
 [Screen verification](results/remaining-flow-screen-v56-shared/comparison.json).
 
 The preceding traffic replay rejects simple short-chain pooling as the next
 candidate. Full static-lane TRICK results have little late-rate gain, weakening
 an explanation based only on the learned field; coupled assignment/scoring
 effects remain possible. [Fable review and qualifications](fable-flow-session/turn26/assessment.md).
+
+## Full exploratory result
+
+Verified2026-09-20T05:29:41UTC. Both unchanged controls reproduce their historical
+full trajectories exactly; all26 source/test hashes and the frozen executable match
+4524843. All20,000complete entries are valid under the5s development budget.
+
+| Seed | OFF | ON | Difference | Final1000 difference | Age p90 difference |
+|---|---:|---:|---:|---:|---:|
+|0|144510|145083|+573|+72|−2|
+|2|144107|144215|+108|+112|−4|
+
+The paired mean gain is0.235953%.145,083 is the new generic single-run record,
+completed2026-09-20T05:28:00.961539UTC, but the policy is not promoted yet. Both ON
+runs reduce loaded waiting; turns rise and empty work rises, particularly on seed2.
+These component associations do not establish an additive causal saving.
+Candidate mean latency428.778–437.432ms, observed max1004.262ms, peakRSS11.340GB,
+CPU1.605–1.663cores/4 reserved, full duration36.85–37.57minutes. Shared-host results
+do not certify the1s competition limit.
+
+The remaining seeds1/3/4/5 × OFF/ON run concurrently as8899325, held analysis8899327,
+same V56 binary and source. No reference-profile change occurs until all six seeds
+are assessed. [Full pair and provenance](results/remaining-flow-full-v56-shared/comparison.json).

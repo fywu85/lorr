@@ -107,7 +107,8 @@ def main():
     profile = next(iter(read(support / 'reference-profile.json').values()))
     cases = spec['cases']
     seeds = sorted({c['seed'] for c in cases})
-    assert seeds == ([0] if horizon == 200 else [0, 2]) and len(cases) == 2 * len(seeds)
+    assert (seeds == [0] if horizon == 200 else seeds in ([0, 2], [1, 3, 4, 5], [0, 1, 2, 3, 4, 5]))
+    assert len(cases) == 2 * len(seeds)
     by_seed = {seed: {} for seed in seeds}
     receipts, intervals = {}, []
     allocation = read(raw / 'allocation.json')
@@ -193,7 +194,7 @@ def main():
                          age_p90_difference=row['outstanding_age_p90'] - control['outstanding_age_p90'],
                          candidate_per1000=metrics[row['case']]['completed_per_1000'],
                          control_per1000=metrics[control['case']]['completed_per_1000']))
-        complete = not result['failures'] and len(pairs) == 2
+        complete = not result['failures'] and len(pairs) == len(seeds)
         result.update(full_run=True, exact_control_seeds=sorted(controls), pairs=pairs,
                       mean_effect_percent=(statistics.mean(r['tasks'] for r in pairs) / statistics.mean(r['control_tasks'] for r in pairs) - 1) * 100 if complete else None,
                       all_tested_totals_improve=complete and all(r['task_difference'] > 0 for r in pairs), promoted=False)

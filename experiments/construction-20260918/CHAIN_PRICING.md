@@ -48,3 +48,15 @@ missing coverage, published tolls, nonzero ratios and unchanged scheduling/cache
 work are asserted. The warehouse shadow remains a diagnostic until exact native
 and mode4 hashes are verified. Active pricing is still not promoted.
 [Build/test receipt](build-provenance/v59/status.json).
+
+The V59 startup screen8899323/analysis8899324 is valid and both native and shadow
+trajectories exactly match the200-step reference hash. All71 active calls through
+timestep199 have snapshot and ranking records. Nonzero resident coverage is0.34%
+on the first post-publication call,3.62% over calls2–16,20.12% over17–64 and31.51%
+over65–71. Snapshot ratios span approximately1.0161–1.0188. Coverage is weighted by
+repeated task observations. Conditional alternative first choices do occur, while
+actual scheduling and actions remain identical. No throughput gain is claimed.
+[Evidence](results/chain-shadow-screen-v59/coverage.json).
+Full seed0 shadow8899328, held analysis8899329, runs on four verified physical cores
+of shared research46 with the5s development deadline. It must reproduce the full
+native144,510 trajectory before this diagnostic is used to choose active trials.

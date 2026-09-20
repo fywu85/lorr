@@ -27,21 +27,16 @@ was cancelled for failed GRID binding (64-core mask for32 requested, overlapping
 other-map cores), analysis8899311 cancelled too. This is an infrastructure failure,
 not an algorithm score. Launcher rejects unapplied binding before any simulator.
 
-Generic remaining-flow full0/2 OFF/ON8899305 and analysis8899306 continue on
-research52. Other-nine generalization8899301/analysis8899303 continue on research38;
-GAME and RANDOM-05 exceeded5s and have no accepted score. Preserve their CPU
+Generic remaining-flow full0/2 OFF/ON8899305 and analysis8899306 completed successfully on research52; see the new peak and confirmation below. Other-nine generalization8899301/analysis8899303 completed:7 valid at5s, GAME/RANDOM-05 fail at342/41 in regional repair. RANDOM04mean3.070s is too slow for competition. Full report experiments/generalization-20260920/results/summary.md. Preserve their CPU
 contention note from the cancelled overlapping trial. No new generic record.
 
 Fable turn30 completed in the same session. Read the local assessment before
-adopting claims. The task-pricingV57-r3 source96d9bc4 passes all regressions;
-turn29 diagnostic improvements and shadow benchmarks remain pending after the
-explicitly requested short-task factorial. Existing chain_pricing/analyze_shadow.py
-is prepared but has not been executed. The active target is154795, not stale goal
+adopting claims. The task-pricingV59 sourceb50eebd passes the expanded full suite (60 hand cases, both native bases, active resident/missing quotes, unchanged work). Turn29 diagnostic fixes are implemented. Native/shadow200-step GRID8899323/analysis8899324 passed: both hashes exactly match reference,71 per-call snapshots cover t=129..199. Coverage grows0.34% after publication to31.51% for calls65..71;κ≈1.016–1.019; conditional rank changes observed, no quality claim. Full seed0 shadow8899328/analysis8899329 now runs on research46 with4 verified physical cores, raw runs/cgar-chain-shadow-full-v59-20260920. It must reproduce144510 and481323a5... exactly. The active target is154795, not stale goal
 metadata152981; shared5s runs are allowed but cannot claim strict1s certification.
 
 ## Confirmed reference and frontier
 
-Best single run remains144,510. No new single-run record was set this turn.
+New generic single-run best145,083 (source4524843, completed2026-09-20T05:28:00.961539UTC). Remaining-flow scoring improves full0/2 by573/108, paired mean+0.235953%; tails+72/+112 and agep90−2/−4. All20k entries valid at5s, max1004.262ms, peakRSS11.340GB. Both controls exact. Not promoted; reference remains regional. Confirmation seeds1/3/4/5 × OFF/ON job8899325, analysis8899327, raw runs/cgar-remaining-flow-confirm-v56-shared-20260920. Shared research44 with32 physical cores verified.
 The newly confirmed six-seed mean is143,941.1667, versus142,474.8333 (+1.02919%).
 Seeds0..5:144510/143933/144107/143134/143934/144029. All six full totals improve;
 five tails and ages improve, with seed1tail−108 and agep90+1. The mean is5.909% below
@@ -62,7 +57,7 @@ all six exact V42 controls and every sampled regional counter. Candidate mean en
 401.2–419.4ms, max962.689ms, CPU1.726–1.770cores/4reserved, RSS13.909GB,
 full34.50–35.93minutes. Lower loaded turns/waits are associations, not causal savings.
 
-WAREHOUSE_PROGRESS.md has42 increasing single-run records (unchanged) and8 confirmed
+WAREHOUSE_PROGRESS.md has43 increasing single-run records and8 confirmed
 milestones. Latest milestone completed2026-09-19T21:14:15.691307UTC. Preserve the
 user's .WAREHOUSE_PROGRESS.md.swp; exclude from Git and never delete it. Read and
 compare progress-file contents before editing because the user may have it open.

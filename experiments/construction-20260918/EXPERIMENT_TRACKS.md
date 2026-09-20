@@ -5,7 +5,7 @@ map-specific tricks. If generic improvement proves difficult to close the gap,
 map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
-The generic frontier remains144,510single-run tasks and143,941.2over six seeds.
+The generic single-run frontier is145,083 under the shared-host5s development policy; the confirmed six-seed reference remains143,941.2.
 The lane-only TRICK reaches146,659/146,566 on full seeds0/2, pending six-seed confirmation. A trick-assisted score must not replace
 the generic frontier or be reported as a generic algorithm improvement.
 

@@ -1,7 +1,7 @@
 # Generic solver transfer to the other nine instances
 
 Requested by the user while warehouse optimization continues. GRID job8899301
-is running for all nine other MR24 instances concurrently, with one planner seed0.
+completed for all nine other MR24 instances concurrently, with one planner seed0.
 This is an initial transfer check, not multi-seed repeatability evidence.
 
 The same verified generic warehouse configuration is used unchanged. No trick
@@ -49,8 +49,19 @@ indirectly through different executed decisions. The comparison therefore tests
 the existing warehouse-selected parameters on new instances; it does not establish
 that the parameters were selected independently of warehouse performance.
 
-Analysis job8899303 is held behind the benchmark. It will verify source/binary
-hashes, unchanged settings, generic activation, physical core allocation, all
-complete-entry limits and action accounting before producing the per-instance
-report. Invalid runs retain their failure status and no accepted task score.
+Analysis job8899303 completed on2026-09-20T05:38:51UTC and verified source/binary
+hashes, unchanged settings, generic activation, physical core allocation, full
+complete-entry limits and action accounting for every accepted result. Invalid runs retain their failure status and no accepted task score.
 [Analysis submission](analysis-submission.json).
+
+Seven instances finish validly under the shared-host5s development budget.
+GAME times out at342 (5003.714ms,
+temporal_region_repair); RANDOM-05 at41 (5000.342ms, same stage). No partial
+quality scores are accepted. [Full results and timing](results/summary.md),
+[verification](results/verification.json).
+
+This is mixed transfer of the unchanged warehouse configuration. RANDOM-04's
+mean entry is3.070s and maximum4.646s, so the warehouse work allocation does not
+meet competition timing there. All measured process RSS values remain under32GB.
+Other-map tuning is not applied in this initial transfer check, and there is no
+new SoTA or six-seed claim.
