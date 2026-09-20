@@ -3241,12 +3241,53 @@ void warehouse_trick_regression() {
    throw std::runtime_error("static remaining-flow integration invalid or published learned costs");
  }
  for(const auto& bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_TRICK_LANES","0"},
-     {"CGAR_TRICK_SHORT_TASKS","1"},{"CGAR_TRICK_UNOPENED_MATCH","1"},{"CGAR_TEMPORAL_NEXT_ERRAND","1"},
+     {"CGAR_TRICK_SHORT_TASKS","1"},{"CGAR_TEMPORAL_NEXT_ERRAND","1"},
      {"CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE","1"},{"CGAR_TEMPORAL_BRANCH_WORK","1"}}){
   setenv(bad.first,bad.second,1);rejected=false;
   try{Cgar invalid;invalid.initialize(&flagged,30000);}catch(const std::invalid_argument&){rejected=true;}
   unsetenv(bad.first);if(!rejected)throw std::runtime_error("static remaining-flow accepted incompatible component");
  }
+ // Static remaining-potential scoring and bounded matching share the same
+ // immutable oriented metric. Exercise a real beneficial cycle in both scores,
+ // including primary protection, task metadata and the one-retarget budget.
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
+ int base=-1;
+ for(int cell=0;cell<int(e.map.size());++cell)if(cell%e.cols+12<=e.cols){
+  bool free=true;for(int k=0;k<12;++k)free=free&&!e.map[cell+k];
+  if(free){base=cell;break;}
+ }
+ if(base<0)throw std::runtime_error("static matching fixture lacks free segment");
+ for(int score:{0,1}){
+  setenv("CGAR_TRICK_REMAINING_FLOW",score?"1":"0",1);
+  auto test=flagged;test.curr_timestep=0;test.num_of_agents=3;
+  test.curr_states={State(base,0,0),State(base+11,0,2),State(base+1,0,0)};
+  test.curr_task_schedule={0,1,2};test.goal_locations={{{base+10,0}},{{base+1,0}},{{base+11,0}}};test.task_pool.clear();
+  for(int i=0;i<3;++i){Task task;task.task_id=i;task.t_revealed=-5;task.agent_assigned=i;
+   task.locations={i==0?base+10:(i==1?base+1:base+11)};test.task_pool.emplace(i,task);}
+  Cgar policy;policy.initialize(&test,30000);
+  for(int t=0;t<2;++t){test.curr_timestep=t;policy.plan(&test,30000,actions);
+   auto next=step(test,test.curr_states,actions);
+   if(next.empty())throw std::runtime_error("static score/matching setup collided");test.curr_states=next;}
+  test.curr_timestep=10;policy.schedule(&test,30000,schedule);
+  if(schedule!=std::vector<int>({0,2,1})||policy.stats().match_moved!=2||
+     policy.stats().match_accepted_cycles!=1||policy.stats().match_saving<8||
+     policy.stats().match_primary_protected!=1||policy.stats().flow_publications||
+     policy.stats().match_groups>4||policy.stats().match_nodes>8192)
+   throw std::runtime_error("static score/matching failed protected beneficial cycle: score="+std::to_string(score)+
+    " moved="+std::to_string(policy.stats().match_moved)+" primary="+std::to_string(policy.stats().match_primary_protected));
+  for(int i=0;i<3;++i)if(test.curr_task_schedule[i]!=i||test.task_pool.at(i).agent_assigned!=i||
+      test.task_pool.at(i).t_revealed!=-5||test.task_pool.at(i).idx_next_loc)
+   throw std::runtime_error("static score/matching changed simulator metadata");
+  test.curr_task_schedule=schedule;
+  for(int i=0;i<3;++i){auto& task=test.task_pool.at(schedule[i]);task.agent_assigned=i;test.goal_locations[i]={{{task.locations[0],10}}};}
+  policy.plan(&test,30000,actions);
+  if(step(test,test.curr_states,actions).empty())throw std::runtime_error("static score/matching post-swap plan collided");
+  test.curr_timestep=20;policy.schedule(&test,30000,schedule);
+  if(schedule!=test.curr_task_schedule||policy.stats().match_moved!=2)
+   throw std::runtime_error("static score/matching bypassed the finite retarget protection");
+ }
+ unsetenv("CGAR_TRICK_UNOPENED_MATCH");
+ std::cout<<"TRICK_SCORE_MATCHING passed metric_modes=2 beneficial_cycles=2 primary_protected=1 simulator_metadata_unchanged=1 bounded_retargets=1 valid_post_swap_plan=1\n";
  unsetenv("CGAR_TRICK_REMAINING_FLOW");
  // Distinguish age preference from the independent forced-oldest admission.
  // Both tasks have the same pickup, so only their chain and age differ.

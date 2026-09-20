@@ -801,7 +801,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         ((remaining_flow || trick_options.remaining_flow) &&
          (!temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
           temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)) ||
-        (trick_options.remaining_flow && (!static_trick_metric_ || short_task_trick_ || trick_options.matching)))
+        (trick_options.remaining_flow && (!static_trick_metric_ || short_task_trick_)))
         throw std::invalid_argument("remaining-flow scoring requires generic learned flow or explicit CGAR_TRICK_REMAINING_FLOW with static lanes only; incompatible with guide, next-errand, paid-progress audits or branching");
     temporal_remaining_flow_ = remaining_flow != 0 || trick_options.remaining_flow;
     if (temporal_remaining_flow_)
@@ -905,8 +905,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (reassign_match && !env->trick_instance.empty()) ||
         ((reassign_match || trick_options.matching) &&
          (!temporal_ || !orientation_guidance_ || !pickup_flow_ || (!flow_strength_ && !static_trick_metric_) ||
-          guide_enabled_ || reassign_ || reassign_pool_ || chain_flow_pricing_ || temporal_remaining_flow_)))
-        throw std::invalid_argument("unopened pickup matching requires temporal/oriented pickup flow, a boolean selector and no other rematching, chain pricing, remaining-flow score or guides; under --trick use CGAR_TRICK_UNOPENED_MATCH");
+          guide_enabled_ || reassign_ || reassign_pool_ || chain_flow_pricing_ ||
+          (temporal_remaining_flow_ && !trick_options.remaining_flow))))
+        throw std::invalid_argument("unopened pickup matching requires temporal/oriented pickup flow, a boolean selector and no other rematching, chain pricing, generic remaining-flow score or guides; under --trick use CGAR_TRICK_UNOPENED_MATCH");
     reassign_match_ = reassign_match != 0 || trick_options.matching;
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
