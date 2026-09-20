@@ -3265,6 +3265,118 @@ void temporal_group_snapshot_regression() {
  std::cout<<"TEMPORAL_GROUP_SNAPSHOT passed single_two_and_edge_owners=1 outside_owners=1 all_choices=1 deep_copy=1 fixed_protection=1 immutable_rng=1 explicit_timeout=1 serial_parallel_actions=4800\n";
 }
 
+void sortation_trick_regression() {
+ using namespace cgar::tricks;
+ auto require=[](bool value,const char* message){if(!value)throw std::runtime_error(message);};
+ auto rejects=[&](auto run,const char* message){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,message);};
+ SharedEnvironment e;e.rows=sortation_rows;e.cols=sortation_cols;e.num_of_agents=1;
+ for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(sortation_masks[cell]=='x');
+ validate_name("SORTATION");validate_map("SORTATION",e.map,e.rows,e.cols);
+ for(const std::string name:{"sortation","SORTATION-other","RANDOM-05",""})
+  rejects([&]{validate_name(name);},"Sortation provider accepted an unknown trick name");
+ auto bad=e.map;bad[0]=!bad[0];
+ rejects([&]{validate_map("SORTATION",bad,e.rows,e.cols);},"Sortation accepted modified occupancy");
+ rejects([&]{validate_map("SORTATION",e.map,e.rows+1,e.cols);},"Sortation accepted wrong dimensions");
+ bad=e.map;bad.pop_back();
+ rejects([&]{validate_map("SORTATION",bad,e.rows,e.cols);},"Sortation accepted truncated occupancy");
+ std::vector<int> warehouse;for(int cell=0;cell<warehouse_rows*warehouse_cols;++cell)warehouse.push_back(warehouse_masks[cell]=='x');
+ rejects([&]{validate_map("SORTATION",warehouse,e.rows,e.cols);},"Sortation accepted the same-size Warehouse map");
+ rejects([&]{validate_map("WAREHOUSE",e.map,e.rows,e.cols);},"Warehouse accepted the same-size Sortation map");
+ require(std::string(occupancy_hash("SORTATION"))==sortation_occupancy_sha256&&
+  std::string(lane_field_hash("SORTATION"))==sortation_field_sha256,"Sortation receipt uses a different asset");
+ const auto adapted=forward_costs("SORTATION",e.map,e.rows,e.cols);
+ Certificate cert;cert.rows=e.rows;cert.cols=e.cols;
+ for(int wall:e.map)cert.free.push_back(!wall);cert.core=cert.free;cert.pocket.assign(e.map.size(),-1);
+ const int goal=std::find(e.map.begin()+e.map.size()/2,e.map.end(),0)-e.map.begin();
+ require(goal<int(e.map.size()),"Sortation fixture has no central goal");
+ long long field_values=0,oriented_states=0;
+ for(bool bands:{false,true}) {
+  const auto native=native_forward_costs("SORTATION",e.map,e.rows,e.cols,bands);
+  require(validate_native_field(native,bands,"SORTATION")==
+   (bands?sortation_native_bands_fnv1a64:sortation_native_nobands_fnv1a64),"Sortation native fingerprint differs");
+  require(std::string(native_field_hash(bands,"SORTATION"))==
+   (bands?sortation_native_bands_field_sha256:sortation_native_nobands_field_sha256),"Sortation native receipt differs");
+  rejects([&]{validate_native_field(native,bands);},"Sortation field passed Warehouse fingerprint check");
+  auto corrupt=native;corrupt[goal*4]^=1;
+  rejects([&]{validate_native_field(corrupt,bands,"SORTATION");},"Sortation accepted corrupt native costs");
+  rejects([&]{validate_native_field(std::vector<uint8_t>{20},bands,"SORTATION");},"Sortation accepted truncated native costs");
+  for(int cell=0;cell<int(e.map.size());++cell)for(int h=0;h<4;++h) {
+   // Independent formulas from the archived NMS constructor, without decoding
+   // either generated mask. Wall entries are deliberately normalized.
+   const int row=cell/e.cols,col=cell%e.cols;
+   const int horizontal=((0b1001>>(row%4))&1)?0:2;
+   const int vertical=((0b1100>>(col%4))&1)?1:3;
+   const bool against=h==horizontal||h==vertical;
+   const int extra=bands&&(row<=8||row>=130);
+   require(adapted[cell*4+h]==(e.map[cell]?4:(against?16:4)),"Sortation adapted formula mismatch");
+   require(native[cell*4+h]==(e.map[cell]?20:(against?200:20)+extra),"Sortation native formula mismatch");
+   ++field_values;
+  }
+  // An independent heap search checks propagation through the new field in
+  // the actual reverse oriented distance oracle, including outer bands.
+  std::vector<int> expected(e.map.size()*4,kInf);
+  using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> heap;
+  for(int h=0;h<4;++h){expected[goal*4+h]=0;heap.push({0,goal*4+h});}
+  while(!heap.empty()) {
+   const auto item=heap.top();heap.pop();const int distance=item.first,key=item.second;
+   if(expected[key]!=distance)continue;
+   const int cell=key/4,h=key%4;
+   auto relax=[&](int next,int price){if(distance+price<expected[next]){expected[next]=distance+price;heap.push({distance+price,next});}};
+   relax(cell*4+(h+1)%4,1);relax(cell*4+(h+3)%4,1);
+   const int previous=nb(cell,(h+2)%4,e.rows,e.cols);
+   if(previous>=0&&!e.map[previous])relax(previous*4+h,native[previous*4+h]);
+  }
+  TurnDistanceOracle oracle;oracle.init(&cert,16<<20,1,true,20,bands?201:200);oracle.set_forward_costs(native);
+  const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(30));
+  for(int cell=0;cell<int(e.map.size());++cell)if(!e.map[cell])for(int h=0;h<4;++h) {
+   require(oracle.value(*table,cell,h)==expected[cell*4+h],"Sortation oriented distance differs from heap oracle");++oriented_states;
+  }
+ }
+ int start=-1;for(int cell=0;cell+12<int(e.map.size());++cell)if(cell/e.cols==(cell+11)/e.cols) {
+  bool clear=true;for(int k=0;k<12;++k)clear=clear&&!e.map[cell+k];if(clear){start=cell;break;}
+ }
+ require(start>=0,"Sortation fixture lacks a free segment");
+ e.map_name="sortation_large.map";e.curr_states={State(start,0,0)};e.curr_task_schedule={-1};e.goal_locations={{}};
+ Task task;task.task_id=0;task.t_revealed=0;task.locations={start+11};e.task_pool.emplace(0,task);
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","128"},
+  {"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_FLOW_STRENGTH","4"},{"CGAR_FLOW_COST_SCALE","4"},
+  {"CGAR_FLOW_WARMUP","2"},{"CGAR_FLOW_MIN_SAMPLES","1"},{"CGAR_FLOW_REFRESH_INTERVAL","2"},
+  {"CGAR_PICKUP_FLOW","1"},{"CGAR_PICKUP_FULL_ROBOTS","1"}};
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ auto plain=e,control=e;control.trick_instance="SORTATION";
+ Cgar generic;generic.initialize(&plain,30000);
+ setenv("CGAR_TRICK_LANES","0",1);
+ rejects([&]{options("");},"zero-valued Sortation selector accepted without CLI");
+ Cgar ablation;ablation.initialize(&control,30000);unsetenv("CGAR_TRICK_LANES");
+ for(int tick=0;tick<8;++tick) {
+  plain.curr_timestep=control.curr_timestep=tick;
+  std::vector<int> a,b;generic.schedule(&plain,30000,a);ablation.schedule(&control,30000,b);
+  require(a==b,"Sortation lanes-off control changed generic scheduling");
+  plain.curr_task_schedule=control.curr_task_schedule=a;
+  plain.goal_locations=control.goal_locations={{{start+11,tick}}};
+  plain.task_pool.at(0).agent_assigned=control.task_pool.at(0).agent_assigned=0;
+  std::vector<Action> x,y;generic.plan(&plain,30000,x);ablation.plan(&control,30000,y);
+  require(x==y,"Sortation lanes-off control changed generic actions");
+  const auto next=step(plain,plain.curr_states,x);require(!next.empty(),"Sortation generic control has invalid actions");
+  plain.curr_states=control.curr_states=next;
+ }
+ require(generic.stats().flow_publications==ablation.stats().flow_publications,"Sortation control changed learned publications");
+ setenv("CGAR_FLOW_COST_SCALE","20",1);setenv("CGAR_TRICK_LANES","1",1);
+ setenv("CGAR_TRICK_REMAINING_FLOW","1",1);setenv("CGAR_TRICK_NATIVE_METRIC","1",1);
+ for(const char* bands:{"0","1"}) {
+  setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);auto active=e;active.trick_instance="SORTATION";active.curr_timestep=10;
+  Cgar planner;planner.initialize(&active,30000);std::vector<int> schedule;planner.schedule(&active,30000,schedule);
+  require(schedule==std::vector<int>{0}&&planner.stats().pickup_full_fields==1,"Sortation native pickup field inactive");
+  active.curr_task_schedule=schedule;active.goal_locations={{{start+11,10}}};active.task_pool.at(0).agent_assigned=0;
+  std::vector<Action> actions;planner.plan(&active,30000,actions);
+  require(!step(active,active.curr_states,actions).empty()&&!planner.stats().flow_publications,"Sortation native integration invalid or overwritten");
+ }
+ for(auto setting:settings)unsetenv(setting.first);
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_REMAINING_FLOW","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_NATIVE_BANDS"})unsetenv(key);
+ std::cout<<"SORTATION_TRICK passed independent_field_values="<<field_values<<" independent_oriented_states="<<oriented_states
+  <<" explicit_activation=1 cross_map_rejection=1 generic_control_actions=8 native_pickup_and_plan=2\n";
+}
+
 void warehouse_trick_regression() {
  using namespace cgar::tricks;
  for(const auto& name:std::vector<std::string>{"", "warehouse", "RANDOM-01", "WAREHOUSE-other"}) {
@@ -4498,4 +4610,4 @@ void fresh_pickup_audit_regression() {
  std::cout<<"FRESH_PICKUP_AUDIT passed actual_forward_field_cycle=1 task_column_tier_guard=1 three_way=1 identity=1 missing_field=1 started_protected=1 task_disjoint=1 deadline=1 real_work_exact=1 config_guards=7\n";
 }
 
-int main(){try{temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

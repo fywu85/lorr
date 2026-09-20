@@ -1,0 +1,48 @@
+{
+  "completed_utc": "2026-09-20T23:34:39.214427+00:00",
+  "track": "TRICK",
+  "activation": "--trick SORTATION",
+  "native_source_unchanged": true,
+  "compiler_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/Solution",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/inc",
+    "-isystem",
+    "/shared/share_mala/fw2449/lorr2024/env/include",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-sortation-native-asset-v1-20260920/support/dump_native.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/graph_guidance.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/map.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/info.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Basic/position.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-sortation-native-asset-v1-20260920/dump_native"
+  ],
+  "native_binary_sha256": "ca3346c401b4ce49c429d7146d9de9266c4b74bd46900fed0ebd1621d5715772",
+  "native_dump_sha256": "99734d68c2d62abe3b9d280348f25b50d4abc13ec24dc62cc83f0aa17ed7d36c",
+  "header_sha256": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+  "rows": 140,
+  "cols": 500,
+  "free_cells": 54320,
+  "field_hashes": {
+    "sortation_map_sha256": "edc993b6a9882f26c74810a8d31568bb4d175518d833fd41eedbfb8cdcfd115b",
+    "sortation_occupancy_sha256": "485792bb90d2def63019caf0206b0f21c27b5196ccf4b9bb879031d019481305",
+    "sortation_field_sha256": "9c8a2184a862a4b485fb9e2ab8a59b83cbe1ccc7543f9e5f4f48751721cadd25",
+    "sortation_native_bands_field_sha256": "fc2d38e764103283eca34101f099176a42a71169fb45f907fbc26956b0d0d2ab",
+    "sortation_native_nobands_field_sha256": "79ada33e6ad1054a9c5034685dbeb3f4c066ab03307f6ac5a2f89f441a71ebd4"
+  },
+  "verified_forward_values": 280000,
+  "verified_nonforward_values": 840000,
+  "independent_formula_check": true,
+  "direction_offsets": [
+    1,
+    500,
+    -1,
+    -500
+  ],
+  "wall_normalization": "unused4 for adapted lanes, unused20 for native field; NMS stores0onwalls"
+}

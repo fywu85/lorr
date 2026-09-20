@@ -79,7 +79,7 @@ def execute(out):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--trick', choices=['WAREHOUSE'], help='Explicit map-specific policy for trick_ profiles only')
+    parser.add_argument('--trick', choices=['WAREHOUSE', 'SORTATION'], help='Explicit map-specific policy for trick_ profiles only')
     parser.add_argument('--variants', type=Path, help='JSON object mapping variant names to CGAR environment overrides')
     parser.add_argument('--binary', type=Path, default=ROOT / 'cgar/build/lifelong')
     parser.add_argument('--source-manifest', type=Path)

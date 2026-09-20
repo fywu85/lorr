@@ -995,10 +995,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     rng_.seed(static_cast<unsigned>(env_int("CGAR_SEED", 0)));
 
     if (!env->trick_instance.empty() && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ || reassign_ || reassign_pool_))
-        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR without guide routes or rematching");
+        throw std::invalid_argument("an activated map trick requires temporal/oriented CGAR without guide routes or rematching");
     if (static_trick_metric_ && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ ||
         flow_cost_scale_ != (native_trick_metric_ ? 20 : 4) || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
-        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, the selected metric scale (legacy4/native20), unit physical turns, no turn surcharge or cache-only refresh");
+        throw std::invalid_argument("an activated map trick requires temporal/oriented CGAR, the selected metric scale (legacy4/native20), unit physical turns, no turn surcharge or cache-only refresh");
 
     const auto t0 = Clock::now();
     if (pibt_reference_ && !enable_locks_) {
@@ -1049,17 +1049,17 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             auto field = native_trick_metric_ ?
                 tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands) :
                 tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols);
-            const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands) : 0;
+            const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands, env->trick_instance) : 0;
             turn_oracle_.set_forward_costs(std::move(field));
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
             if (native_trick_metric_) {
                 std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=%d score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), trick_options.native_bands, guidance_turn_cost_, tricks::native_field_hash(trick_options.native_bands),
-                    static_cast<unsigned long long>(installed_fingerprint), tricks::warehouse_occupancy_sha256);
+                    env->trick_instance.c_str(), trick_options.native_bands, guidance_turn_cost_, tricks::native_field_hash(trick_options.native_bands, env->trick_instance),
+                    static_cast<unsigned long long>(installed_fingerprint), tricks::occupancy_hash(env->trick_instance));
             } else {
                 std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
+                    env->trick_instance.c_str(), tricks::lane_field_hash(env->trick_instance), tricks::occupancy_hash(env->trick_instance));
             }
         }
         if (!env->trick_instance.empty()) {

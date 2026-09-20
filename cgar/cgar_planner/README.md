@@ -459,3 +459,14 @@ candidate limits end by rolling back any unfinished branch; a deadline exception
 fails the entire decision through the existing entry layer. No elapsed-time
 selection or partial result is returned. Full throughput is still experimental.
 See the [transaction study](../../experiments/construction-20260918/TEMPORAL_TRANSACTIONS.md).
+
+Explicit map tricks accept `--trick WAREHOUSE` and `--trick SORTATION`. Each
+requires its exact MR24 occupancy; neither activates from the map filename.
+SORTATION adds NMS's row/column lane pattern through the existing CGAR static
+metric provider. `CGAR_TRICK_NATIVE_METRIC=1` uses forward costs20/200 and
+unit turns, with optional `CGAR_TRICK_NATIVE_BANDS=1` for its+1outer bands.
+This requires `CGAR_TRICK_LANES=1`, `CGAR_TRICK_REMAINING_FLOW=1` and
+`CGAR_FLOW_COST_SCALE=20`; the remaining temporal/oriented requirements are
+unchanged. `CGAR_TRICK_LANES=0` is an explicit generic ablation control.
+No Sortation profile is promoted solely by adding this capability. Provenance
+and controlled experiments live in `experiments/allmaps-20260920/sortation/`.
