@@ -1,0 +1,468 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:18:57.852530+00:00",
+    "name": "control",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 2997,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.167374206
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.049746027594000014,
+      "max": 0.167374206
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "feb16f113dc557201fd7b93dde98098263aa644166b79ea1390bc5fa270c88cd",
+    "valid": true,
+    "usage": {
+      "user_seconds": 349.856923,
+      "system_seconds": 0.49946399999999996,
+      "peak_rss_kib": 271016,
+      "wall_seconds": 101.44567205850035,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:02.607264+00:00",
+    "name": "blocked-extent2",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "3",
+      "R05_LOOP_EXTENT": "2"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3127,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.169328841
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.05210556218300009,
+      "max": 0.169328841
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "98d80c7a091bbd9ada0e21aab9c6ea3ca1213b4a09c4d49c388dc653f0f12ee0",
+    "valid": true,
+    "usage": {
+      "user_seconds": 364.188092,
+      "system_seconds": 0.52245,
+      "peak_rss_kib": 270008,
+      "wall_seconds": 106.20289879851043,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:21.840594+00:00",
+    "name": "blocked-extent3",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "3",
+      "R05_LOOP_EXTENT": "3"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3109,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.17466563
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.0616463263945001,
+      "max": 0.17466563
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "482faba06908ee446153cb446650325fac267cae1ea1b513bf5cccaa2c454aa4",
+    "valid": true,
+    "usage": {
+      "user_seconds": 423.337817,
+      "system_seconds": 0.616258,
+      "peak_rss_kib": 269660,
+      "wall_seconds": 125.42466852068901,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:37.906979+00:00",
+    "name": "blocked-extent4",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "3",
+      "R05_LOOP_EXTENT": "4"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3063,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.178651552
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.06962984993899998,
+      "max": 0.178651552
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "4321c8531cff51d277b5f3df8263f8ad7ca7e8d5348178fb2c97a438710f9f0c",
+    "valid": true,
+    "usage": {
+      "user_seconds": 471.63411,
+      "system_seconds": 0.6322439999999999,
+      "peak_rss_kib": 269956,
+      "wall_seconds": 141.4948335411027,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:18:59.945513+00:00",
+    "name": "portfolio1-extent2",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "1",
+      "R05_LOOP_EXTENT": "2",
+      "R05_CYCLE_PORTFOLIO": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 2899,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.160574067
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.050791461961499966,
+      "max": 0.160574067
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "0c9c290fe64e6886051315847ea9249b01003d3bd326ff4681814f112d2e9a7d",
+    "valid": true,
+    "usage": {
+      "user_seconds": 356.690843,
+      "system_seconds": 0.622622,
+      "peak_rss_kib": 271116,
+      "wall_seconds": 103.53899374976754,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:32.865497+00:00",
+    "name": "portfolio1-extent4",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "1",
+      "R05_LOOP_EXTENT": "4",
+      "R05_CYCLE_PORTFOLIO": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 2793,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.171847274
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.06711093234250012,
+      "max": 0.171847274
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "fac154b739040bc05239c56cb8c23b412a6a468c38edd62f6cc1278a6b6cebfd",
+    "valid": true,
+    "usage": {
+      "user_seconds": 453.382359,
+      "system_seconds": 0.733615,
+      "peak_rss_kib": 267500,
+      "wall_seconds": 136.45911158435047,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:01.494189+00:00",
+    "name": "portfolio2-extent2",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "2",
+      "R05_LOOP_EXTENT": "2",
+      "R05_CYCLE_PORTFOLIO": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 2954,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.161474299
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.051563614098499966,
+      "max": 0.161474299
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "fb8a3cd5bbc52a03d8f9ef67f1872d48081eb9235f4374da9c1a1f7d75cb5938",
+    "valid": true,
+    "usage": {
+      "user_seconds": 363.253598,
+      "system_seconds": 0.555183,
+      "peak_rss_kib": 269460,
+      "wall_seconds": 105.0867971573025,
+      "exit": 0
+    }
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T09:19:45.039270+00:00",
+    "name": "portfolio2-extent4",
+    "steps": 2000,
+    "binary_sha256": "7e0bbc776ac0b9865f81369d3369f6a7dfa3fc6827827bbc35e29849697bfbf3",
+    "environment": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_PRE_CYCLES": "2",
+      "R05_LOOP_EXTENT": "4",
+      "R05_CYCLE_PORTFOLIO": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 2720,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.181865663
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.07318110604549986,
+      "max": 0.181865663
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "41fb1bd196fd13c2fc9492ea1ed56f9e25c844cc7a7bfd00d7cc38abd83fb36e",
+    "valid": true,
+    "usage": {
+      "user_seconds": 493.286806,
+      "system_seconds": 0.631962,
+      "peak_rss_kib": 270604,
+      "wall_seconds": 148.62738808896393,
+      "exit": 0
+    }
+  }
+]

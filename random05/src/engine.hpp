@@ -24,6 +24,7 @@ struct Config {
     int age_cap=0, pre_cycles=0;
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
+    float progress_discount=1, flow_turn_load=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;

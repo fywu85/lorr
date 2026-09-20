@@ -49,7 +49,7 @@ def submit(a):
             if c.get('team')=='nms':
                 shutil.copytree(ROOT/'nms',work/'cwd',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
             else:(work/'cwd').mkdir()
-    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(sum(c.get('memory_gib',4 if c.get('team')=='nms' else 2) for c in spec['cases'])+slots-1)//slots)
+    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(max(32,sum(c.get('memory_gib',4 if c.get('team')=='nms' else 2) for c in spec['cases']))+slots-1)//slots)
     spec.update(physical=physical,slots=slots,exclusive=False,memory_per_slot_gib=memory_per_slot)
     write(out/'spec.json',spec)
     # Freeze the runner too; ROOT for the frozen script is supplied by its spec.
@@ -103,7 +103,9 @@ def execute(a):
         if c.get('trick'):command+=['--trick','RANDOM-05']
         command=['/usr/bin/python3',str(ROOT/'tools/run_with_usage.py'),'--output',str(work/'usage.json'),'--']+command
         write(work/'case.json',dict(c,cpus=cpus,started_utc=now(),command=command))
-        command=['/usr/bin/prlimit','--as=32000000000','--']+command
+        inherited_as=resource.getrlimit(resource.RLIMIT_AS)[1]
+        as_limit=32000000000 if inherited_as==resource.RLIM_INFINITY else min(32000000000,inherited_as)
+        command=['/usr/bin/prlimit','--as='+str(as_limit),'--']+command
         with (work/'native.log').open('w') as f:
             r=subprocess.run(command,cwd=work/'cwd',env=env,stdout=f,stderr=subprocess.STDOUT)
         summary={'exit':r.returncode,'finished_utc':now(),'name':c['name'],'steps':c.get('steps',2000),

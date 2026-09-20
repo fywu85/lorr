@@ -28,6 +28,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
+    if(c.progress_discount<=0 || c.progress_discount>1 || c.flow_turn_load<0)
+        throw std::invalid_argument("discount must be in (0,1] and turn-load multiplier nonnegative");
     c.cycle_portfolio=integer("R05_CYCLE_PORTFOLIO",0);
     c.idle_eviction=real("R05_IDLE_EVICTION",0);
     c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
@@ -190,6 +193,8 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             load[v]+=flow[v][d]+flow[next[v][d]][(d+2)%4];
         for(double x:load)total_load+=x;
         const double mean_load=std::max(1.0,total_load/cells);
+        if(cfg.flow_turn_load>0)for(int v=0;v<cells;++v)
+            weight[v][4]*=float((1+cfg.flow_turn_load*load[v]/mean_load)/(1+cfg.flow_turn_load));
         double weight_sum=0;int weight_count=0;
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
             int u=next[v][d];if(u<0)continue;
@@ -613,13 +618,19 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
         for(int i=0;i<int(f.loc.size());++i)if(assigned_[i])s+=assigned_[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
         return s;
     };
-    double initial=total_cost(frame);
+    double initial=total_cost(frame),previous=initial,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
     for(int t=0;t<cfg.depth;++t) {
         advance(frame,offsets,actions,r.expansions,cycle_moves);
         if(t==0){r.first=frame;r.actions=actions;}
+        if(cfg.progress_discount<1) {
+            double current=total_cost(frame);
+            discounted+=weight*(previous-current);weight_sum+=weight;
+            weight*=cfg.progress_discount;previous=current;
+        }
     }
     r.score=(initial-total_cost(frame))/2.0;
+    if(cfg.progress_discount<1)r.score=discounted*cfg.depth/(2*weight_sum);
     if(cfg.dispersion) {
         std::vector<int> occupancy(g.from_grid.size(),0);
         for(int v:frame.loc)occupancy[g.to_grid[v]]=1;

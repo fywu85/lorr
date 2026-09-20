@@ -9,6 +9,10 @@ direct baselines for the archived competition instance.
 
 - RANDOM-05: 800 robots, 2,000 simulation steps, combined planner and scheduler.
 - Compare both solvers on the same input hashes, horizon and CPU allocation.
+- The 32-worker allocation means 16 physical cores with two SMT threads each,
+  matching the topology in the archived 2024 evaluation specification. Local
+  NMS and recent four-core frontiers use AMD EPYC9354 hosts; the historical
+  server used EPYC7R32, so comparisons to published scores remain indirect.
 - Record valid completion, planner/scheduler errors, entry timeouts, latency,
   CPU use and peak process RAM. Our implementation must fit within 32 GB.
 - Map-specific guidance and known-horizon triage require `--trick RANDOM-05`.
@@ -20,15 +24,18 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,997 tasks / 2,000 steps**, planner seed0,
-generated field seed15, K64, dispersion0.8, local5/equal, priority noise200,
-wait0.5, greedy matching and known-horizon triage scale1.5
-(`--trick RANDOM-05`). This is **+3.2%** against our four-worker NMS reference
-of **2,903 tasks**. It remains **5.5% below** the 32-worker NMS reference of
-**3,172**. The colleague's roughly27–28% matched advantage remains the objective.
-Best without horizon triage is currently **2,594**, pending a new ablation.
-These are single-seed results. All frontier/reference runs have zero planner
-errors, scheduler errors and timeouts.
+Best verified combined result: **3,231 tasks / 2,000 steps** on 32 workers
+(16 physical cores with SMT), versus **3,172** for NMS with the same allocation:
+**+1.9%**. Planner seed0, generated field seed15, K1024, noise200, dispersion0.8,
+local5/equal, wait0.5, greedy matching and known-horizon triage scale1.5
+(`--trick RANDOM-05`). Mean latency134 ms, maximum239 ms, peak RAM421 MiB.
+
+The four-core best is **3,127** versus NMS **2,903** (**+7.7%**). It additionally
+prepares cycles among robots PIBT already leaves waiting. Its six-seed mean is
+3,021, slightly below3,034 without that change: the maximum improved, the mean
+did not. Best without known-horizon triage is **2,914** on four cores. The
+colleague's roughly27–28% matched advantage remains the campaign objective.
+All frontier/reference runs have zero planner/scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
@@ -36,21 +43,21 @@ The four-worker build changes only the existing local reference's worker constan
 both references retain the earlier constructor-initialization safety fix documented
 in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 
-| Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
+| Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | NMS reference | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
-| 2026-09-20T07:55:37.615086+00:00 | [215fd6d](https://github.com/fywu85/lorr/commit/215fd6d167c96695e9ac6db6f8517791f2dab077) | Generated flow seed 1; turn cost 0.6; K=16; planner seed 0; `--trick RANDOM-05` | 54 | Pending | Pending | [Full evidence](random05/results/flow-first-v4/summary.json) |
-| 2026-09-20T07:58:41.020438+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | lanes-intent; K=16; seed 0; `--trick RANDOM-05` | 2113 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
-| 2026-09-20T07:58:41.152623+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow-intent; K=16; seed 0; `--trick RANDOM-05` | 2230 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
-| 2026-09-20T07:58:41.330442+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow06-disp08; K=16; seed 0; `--trick RANDOM-05` | 2346 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
-| 2026-09-20T07:58:42.118225+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | upstream-intent; K=16; seed 0; `--trick RANDOM-05` | 2431 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
-| 2026-09-20T08:02:13.099706+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k64-disp0-sched0; seed 0; `--trick RANDOM-05` | 2488 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
-| 2026-09-20T08:05:44.745252+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched1; seed 0; `--trick RANDOM-05` | 2562 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
-| 2026-09-20T08:05:50.770563+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched0; seed 0; `--trick RANDOM-05` | 2594 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
-| 2026-09-20T08:10:24.936747+00:00 | [8993a43](https://github.com/fywu85/lorr/commit/8993a43) | K=64; local5; equal; dispersion 0.8; horizon 2000; seed 0; `--trick RANDOM-05` | 2658 | Pending | Pending | [Full evidence](random05/results/refinements-full-v6/summary.json) |
-| 2026-09-20T08:18:53.857208+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | predict-match; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2669 | Four-worker pending | Pending | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
-| 2026-09-20T08:19:08.147723+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | loop4; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2677 | Four-worker pending | Pending | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
+| 2026-09-20T07:55:37.615086+00:00 | [215fd6d](https://github.com/fywu85/lorr/commit/215fd6d167c96695e9ac6db6f8517791f2dab077) | Generated flow seed 1; turn cost 0.6; K=16; planner seed 0; `--trick RANDOM-05` | 54 | 2903 (4 workers) | -98.1% | [Full evidence](random05/results/flow-first-v4/summary.json) |
+| 2026-09-20T07:58:41.020438+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | lanes-intent; K=16; seed 0; `--trick RANDOM-05` | 2113 | 2903 (4 workers) | -27.2% | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:41.152623+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow-intent; K=16; seed 0; `--trick RANDOM-05` | 2230 | 2903 (4 workers) | -23.2% | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:41.330442+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow06-disp08; K=16; seed 0; `--trick RANDOM-05` | 2346 | 2903 (4 workers) | -19.2% | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:42.118225+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | upstream-intent; K=16; seed 0; `--trick RANDOM-05` | 2431 | 2903 (4 workers) | -16.3% | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T08:02:13.099706+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k64-disp0-sched0; seed 0; `--trick RANDOM-05` | 2488 | 2903 (4 workers) | -14.3% | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:05:44.745252+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched1; seed 0; `--trick RANDOM-05` | 2562 | 2903 (4 workers) | -11.7% | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:05:50.770563+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched0; seed 0; `--trick RANDOM-05` | 2594 | 2903 (4 workers) | -10.6% | [Full evidence](random05/results/scale-full-v5/summary.json) |
+| 2026-09-20T08:10:24.936747+00:00 | [8993a43](https://github.com/fywu85/lorr/commit/8993a43) | K=64; local5; equal; dispersion 0.8; horizon 2000; seed 0; `--trick RANDOM-05` | 2658 | 2903 (4 workers) | -8.4% | [Full evidence](random05/results/refinements-full-v6/summary.json) |
+| 2026-09-20T08:18:53.857208+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | predict-match; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2669 | 2903 (4 workers) | -8.1% | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
+| 2026-09-20T08:19:08.147723+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | loop4; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2677 | 2903 (4 workers) | -7.8% | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
 
-| 2026-09-20T08:32:56.449253+00:00 | [6fb222e](https://github.com/fywu85/lorr/commit/6fb222e) | Wait0.5; cached K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2729 | Four-worker pending | Pending | [Full evidence](random05/results/wait-cost-full-v9/summary.json) |
+| 2026-09-20T08:32:56.449253+00:00 | [6fb222e](https://github.com/fywu85/lorr/commit/6fb222e) | Wait0.5; cached K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2729 | 2903 (4 workers) | -6.0% | [Full evidence](random05/results/wait-cost-full-v9/summary.json) |
 
 | 2026-09-20T08:41:54.502028+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | exact160-guided; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2766 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
 | 2026-09-20T08:41:56.906339+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | triage09; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2767 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
@@ -66,6 +73,10 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T09:05:15.036957+00:00 | [b79a218](https://github.com/fywu85/lorr/commit/b79a218) | noise200; generated field; K64; planner seed0; `--trick RANDOM-05` | 2916 | 2903 (4 workers) | +0.4% | [Full evidence](random05/results/priority-search-full-v13/summary.json) |
 
 | 2026-09-20T09:14:27.889620+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | field15-triage15; K64/noise200; planner seed0; `--trick RANDOM-05` | 2997 | 2903 (4 workers) | +3.2% | [Full evidence](random05/results/pockets-combinations-full-v15/summary.json) |
+
+| 2026-09-20T09:19:02.607264+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | blocked-extent2; K64; planner seed0; `--trick RANDOM-05` | 3127 | 2903 (4 workers) | +7.7% | [Full evidence](random05/results/cycle-portfolio-full-v16/summary.json) |
+
+| 2026-09-20T09:21:46.636885+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | K1024, 32 workers, field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3231 | 3172 (32 workers) | +1.9% | [Full evidence](random05/results/frontier-compute-full-v15/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -189,3 +200,30 @@ The published NMS score of 3,050 used different instances and hardware.
   throughput (eviction2=2,757; eviction4/8=2,846; with distinct pocket components
   2,855). Keep it off in the frontier. Combining field15 with noise200 gives
   2,960; triage1.5 gives2,997. Field5 with triage1.5 gives2,926.
+
+- Six-seed validation of the 2,997 configuration: seeds0–5 give
+  2,997/3,050/3,093/2,991/3,075/2,999 (mean3,034). Without known horizon,
+  seed0 gives2,796: triage contributes201 tasks (+7.2%) in that pair.
+- General cycle preparation restricted to already-waiting robots works:
+  extents2/3/4 give3,127/3,109/3,063 versus2,997 control. Baseline/forced-cycle
+  portfolios give2,720–2,954 and remain off. The improvement comes from
+  preparing blocked groups while preserving PIBT's useful existing moves.
+
+- Larger portfolios on the competition CPU topology: K1024=3,231 and
+  K2048=3,205, versus3,172 NMS. All valid; respective mean latencies134/230ms,
+  maxima239/340ms. Save the overall best in `random05/best.json` and the
+  four-core best in `random05/best-four-cores.json`.
+- Six-seed blocked-cycle results: 3,127/3,025/2,974/2,974/2,961/3,063;
+  mean3,021 versus3,034 without preparation. This improves the best seed,
+  not the six-seed mean. Without horizon triage the blocked-cycle run gives
+  2,914, compared with2,796 without preparation.
+- Scheduler settings on the preceding four-core control (2,997): keep bonuses
+  0/0.25/0.5/1/4 give3,042/3,050/3,092/3,010/3,084. Exact/oriented matching
+  with keep0.5 gives3,109; length0.1/0.5 gives3,018/3,067.
+- Policy settings on that control: dispersion0/0.4/1.6/3.2 gives
+  3,023/3,034/2,995/2,838; local20/50 gives3,007/2,968;
+  noise400/800 gives3,064/3,051. Compound settings require their own validation.
+- Two NMS repeat attempts failed before solver launch because the harness
+  requested a 32GB process limit above the smaller inherited GRID limit.
+  The runner now reserves at least32GiB total and never raises an inherited
+  hard limit. These are harness failures; the repeats are resubmitted.
