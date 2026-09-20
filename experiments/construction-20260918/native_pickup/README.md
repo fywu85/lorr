@@ -19,3 +19,17 @@ per run, shared5s development,32decimalGB RSS. Verify both control totals and
 complete trajectories against V92, source/binary identity, movement accounting,
 fixed-work receipts and task waiting tails. Report all arms, including regressions.
 No generic default change or claimed improvement before full validation.
+
+## Verified result and combination
+
+V97 all6full cases pass, with exact controls. Weight8 gives154929/154965, gains
+40/409; both exceed NMS154795. Empty work falls27184/21623robot steps, agep90
+falls11/14, and all first-half tasks still finish. Weight12 gives154820/154844
+(-69/+288), so8is the stronger tested candidate. This is a two-seed result, not
+an increase over the separate p90 single-run peak155057.
+
+Next compare p90+weight5 versus p90+weight8 on full seeds0/2 using the frozen V96
+binary. Require exact complete p90 controls against their verified trajectories.
+All other settings, fairness, resource limits and fixed search work remain
+unchanged. The two component gains need not add: assignment changes calibration
+data, traffic and the task pool. Record the measured interaction instead.

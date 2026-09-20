@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 16:25 UTC.
+Updated: 2026-09-20 16:48 UTC.
 
 **Best verified Warehouse run:155,057tasks (TRICK, seed0)**,262above the NMS target154,795. Its matched seed2 reaches154,727; mean154,892 is97above target. Full5,000steps/10,000robots, zero errors or timeouts. Native Warehouse bands, raw remaining potential, matching64, pickupweight5, configuredH=5000 and the prospective **p90** completion margin require `--trick WAREHOUSE`. Ordinary fairness stays enabled and short preference stays OFF. [Full result and configuration](experiments/construction-20260918/results/horizon-percentile-full-v96/summary.md).
 
@@ -9,6 +9,8 @@ The best run averages450.624ms per entry and1.502CPU cores out of4reserved, peak
 The unchanged mean-margin configuration now also completes **154,713 /154,776** on solver seeds1/3. Both full runs pass, with no initially revealed task left never assigned and every task revealed by2500 completed by5000. Oldest never-assigned ages are190/185. These are additional solver seeds on the same fixed input, not new generated instances. The later V93 implementation is used here; full same-seed controls now exactly reproduce the original V92 trajectories. [Four-seed same-binary evidence](experiments/construction-20260918/results/native-frontier-four-seeds-v95.json). [Seed confirmation and fairness](experiments/construction-20260918/results/native-frontier-seeds13-v95/summary.md).
 
 The [larger native search comparison](experiments/construction-20260918/results/native-work-full-v95/summary.md) is complete:8M candidates gives154870/154762 (mean154816,21above NMS), with mixed effects-19/+206 and about30%higher observed entry time. Four regional rounds gives154686/154576, also mixed. No new single-run best; retain4M/two rounds while testing completion margins and pickup weighting. All six cases pass, keep ordinary fairness, and finish all first-half tasks.
+
+The [pickup-weight comparison](experiments/construction-20260918/results/native-pickup-full-v97/summary.md) is now verified: weight 8 with the mean margin finishes **154,929 / 154,965**, gains **40 / 409** and both above NMS. Its mean is 154,947; it does not exceed the separate 155,057 single-run best. Empty work and outstanding-age p90 improve, with every first-half task completed. The full p90 + weight 8 combination is running; component gains are not assumed to add. The [p90 opportunity audit](experiments/construction-20260918/results/p90-opportunity-audit-v99/summary.md) finds only 9 / 4 conservative physical alternative witnesses, without establishing a ceiling.
 
 The [final saved-work audit](experiments/construction-20260918/results/horizon-margin-work-audit-v94/summary.md) finds29%less robot work left on unfinished tasks, with slightly longer completed chains. Both seeds gain entirely in the last1,000steps; this is a cutoff-aware improvement. All20,000entries and200million replayed robot steps pass their checks.
 

@@ -80,12 +80,13 @@ def main():
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
+    p.add_argument('--profile', type=Path, help='One frozen base profile; only the mode-specific parameters may vary')
     p.add_argument('--execute', action='store_true')
     a = p.parse_args(); raw = a.raw.resolve(); out = a.output.resolve(); support = raw / 'frontier-analysis-support'
     if not a.execute:
         support.mkdir(exist_ok=False)
         copies = {'analyze.py': Path(__file__), 'reference.json': a.reference or BASE / 'results/horizon-margin-full-v92/comparison.json',
-                  'profile.json': BASE / 'results/horizon-margin-full-v92/best-variant.json'}
+                  'profile.json': a.profile or BASE / 'results/horizon-margin-full-v92/best-variant.json'}
         for name in ['sequences-20260918/analyze.py', 'motion-20260918/analyze.py', 'assignment-20260918/analyze.py',
                      'throughput-20260918-next/analyze_matrix.py', 'throughput-20260918-strict/analyze.py',
                      'construction-20260918/verify_full.py']:
@@ -111,7 +112,7 @@ def main():
         result.check_returncode(); assert re.fullmatch(r'\d+\s*', result.stdout)
         print(result.stdout, end='', flush=True); subprocess.run(['qrls', result.stdout.strip()], check=True); return
     request = read(raw / 'frontier-analysis-request.json')
-    assert request['commit'] == a.commit and request['mode'] == a.mode and request['control'] == a.control
+    assert request['commit'] == a.commit and request['mode'] == a.mode and request.get('control') == a.control
     for name, value in request['files'].items():
         assert sha(name) == value, name
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
@@ -133,7 +134,7 @@ def main():
     ref = read(support / 'reference.json')
     assert ref['all_valid_within_deadline_and_memory'] and not ref['failures']
     reference = {r['seed']:r for r in ref['rows'] if r['environment']['CGAR_TRICK_HORIZON_MARGIN'] == '1'
-                 and (a.mode != 'percentile' or int(r['environment'].get('CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', '0')) == control_percentile)}
+                 and int(r['environment'].get('CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', '0')) == control_percentile}
     assert reference, 'verified reference does not contain the requested control percentile'
     metrics = {m['case']:m for m in read(out / 'metrics.json')}
     samples = {}; fairness = {}

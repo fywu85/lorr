@@ -1,74 +1,35 @@
 # Active: improve beyond the achieved Warehouse target
 
-The user has explicitly requested another improvement campaign after the target
-was achieved. Continue from the frozen winner, preserving ordinary fairness and
-CGAR protection/recovery. No new numerical ceiling has been established. The
-previous goal's completion is historical, not an instruction to stop this work.
+Updated 2026-09-20 16:48 UTC. The user requested continued throughput improvement. Preserve the CGAR framework, ordinary fairness and the separate generic reference. No numerical ceiling has been established. The earlier goal's completion is historical, not an instruction to stop.
 
-The initial fixed-work and seed checks are complete, with exact original controls.
-The percentile completion model raises the best to155057; its refinement and
-confirmation are now active. Shared5s/32decimalGB,4bound physical cores per case;
-all Warehouse policies remain explicitly --trick WAREHOUSE. Fable turn45 resumed
-the same CLI session but failed due exhausted credits; no new review was received.
-Preserve concurrent random05 work. Prior milestone2fb2d5c was already committed,
-pushed, and its goal marked complete; the old closeout checklist below is historical.
+## Verified best
 
-## New active best and follow-up (2026-09-20 16:28 UTC)
+**155,057 tasks**, p90 completion margin with pickup weight 5, seed 0; seed 2 is 154,727. Mean 154,892 exceeds NMS 154,795 by 97. Source `27be6e312fdd79ad310583d33eeb2a4781d75b97`, binary `37694eacdc5c829c2f77673c4e4cf6070d1fca2cd8512b91cab6672249385752`. Best completed 2026-09-20 16:18:39.911128 UTC. All eight V96 cases validate, exact mean controls and pre-intervention prefixes pass, and independent accounting covers 400 million robot steps.
 
-V96 p90 VERIFIABLE NEW BEST155057/154727, gains168/171; mean154892>NMS154795.
-Source27be6e3/binary37694eac..., bestcompleted16:18:39.911128UTC. Fullverification
-8900204 andindependentoutcomes8900262 COMPLETE:all8valid, exactmeancontrols,
-400Msteps and3798/3800prefixesPASS. Fairness staysON, allfirsthalftasksfinished,
-oldestneverassigned190/185. Mean450.624ms/RSS11.925GB; shared5s,notstrict1s.
-Bestrecord:results/horizon-percentile-full-v96/best-record.json. Preserve original
-154889record inhistory. Generic reference unchanged. Medianlosesboth; p75wins102/135.
+Exact record: `results/horizon-percentile-full-v96/best-record.json`. All first-half tasks finish; ordinary HRRN, forced-oldest admission and held/started protection stay on, at most one unopened retarget. No formal starvation guarantee. This is an explicit `--trick WAREHOUSE` profile with configured horizon 5,000. Shared 5-second development, 32 decimal GB RSS, four bound physical cores per case. Mean 450.624 ms, max 1.024536 s, RSS 11.925 GB; strict one-second certification remains separate.
 
-- V98 p90/p95/p99 full seeds0/2:8900274 onresearch44,24physicalcores, verifier
-  8900275 thenoutcomes8900276. Exactp90controls againstV96 required.
-- V98 p90 seeds1/3:8900277 onresearch44,8otherphysicalcores, verifier8900278 then
-  outcomes8900279. SamefrozenV96binary. Both allocations aredisjoint.
-- V97 pickupweights5/8/12 stillrunning8900240, last3200; verifier8900241 then
-  outcomes8900263. Itsmean-margincontrol staysoldprofile; do not mix withp90.
-- New analyzer --control/--reference selects frozen verified percentilecontrols
-  without redundant mean reruns; no production changes. Outcomehelper supports it.
+## Running full comparisons; do not resubmit
 
-## Completed checks and remaining pickup experiment
+- **V98 p90 / p95 / p99, seeds 0 / 2:** benchmark 8900274, verifier 8900275, outcomes 8900276. Raw `runs/cgar-horizon-percentile-refine-v98-20260920`; results `results/horizon-percentile-refine-v98`. Research44, 24 physical cores. Require exact V96 p90 control trajectories. Started 16:22 UTC; last observed around step 2,400 at 16:42.
+- **V98 p90 seeds 1 / 3:** benchmark 8900277, verifier 8900278, outcomes 8900279. Raw `runs/cgar-horizon-percentile-seeds13-v98-20260920`; corresponding results. Research44, eight other physical cores; allocation is disjoint from refinement. These are solver RNG seeds on the same fixed input. Started 16:22 UTC.
+- **V99 p90 + pickup weight 5 versus 8, seeds 0 / 2:** benchmark 8900293, verifier 8900295, outcomes 8900296. Raw `runs/cgar-p90-pickup-combined-v99-20260920`; results `results/p90-pickup-combined-v99`. Research50, 16 physical cores, four per run. Started 16:37:56 UTC. Require exact V96 p90 controls. Profiles in `native_pickup/p90-combined-variants.json`.
 
-- V95 native work8900145/verifier8900181/outcomes8900261 COMPLETE:controls exact
-  full154889/154556.8M154870/154762 (-19/+206), fourround154686/154576(-203/+20).
-  All6valid/fair;4Mreference retained. Four same-binary seeds0..3mean154733.5.
-  See results/native-work-full-v95/summary.md and native-frontier-four-seeds-v95.json.
-- V95 unchanged winner seeds1/3 job8900146 and verifier8900182 COMPLETE:154713/
-  154776, allvalid, oldestneverassigned190/185, earlyhalfallcomplete. Outcomeaudit
-  8900260 COMPLETE:100Msteps/hash/fixturesPASS, unfinishedwork1162752/1159825.
-  These are solver-seed checks on the same input, not new instances or a new best.
-- V96 percentile source27be6e312fdd79ad310583d33eeb2a4781d75b97, binary
-  37694eacdc5c829c2f77673c4e4cf6070d1fca2cd8512b91cab6672249385752.
-  Build8900173 complete: full suite passes, all28source/test hashes bound to commit.
-  ActiveH200 four-arm screen8900186 complete/allvalid, q0 exact29abe32d... V92;
-  q90 changes actual trajectory. Startup counts are not quality evidence.
-- V96 full mean/median/p75/p90 xseeds0/2 job8900203 and verifier8900204 COMPLETE
-  on research57,32bound physical cores. All8valid; p90 wins168/171. Raw
-  runs/cgar-horizon-percentile-full-v96-20260920; results/horizon-percentile-full-v96.
-- V96 generic800 job8900187, corrected verifier8900190 COMPLETE, exact generic800 trace. Initial analyzer8900188
-  used an incorrect nonexistent dependency and exited on missing unfinished
-  summary; its receipt/log are preserved. This is an infrastructure invocation
-  mistake, not a solver failure. The replacement waits on the actual benchmark ID.
-- Fable turn45 failed with exhausted usage credits, same persistent CLI session.
-  No research feedback received; local implementation/review continues. Next turn46.
-- New verified record155057 is in the active section above. Keep historical
-  records and the generic reference. Do not edit production/test files during a
-  build. Preserve the independent random05 fork.
+All use the same frozen V96 binary and complete prescribed work. No production source changes since 27be6e3. Validator snapshots are frozen with actual dependency receipts; collect full verification and outcome audits before accepting scores. Component gains may interact; never add them as a predicted combined score.
 
-- V97 read-only completion-opportunity audit8900235 COMPLETE15:54UTC; only8/7
-  physical and2/0 mean-margin safer-alternative witnesses remain in old winner.
-  See results/horizon-opportunity-audit-v97/summary.md. Not a throughput ceiling.
-- V97 pickup comparison8900240 RUNNING, validator8900241: native_pickup/variants.json
-  weights5/8/12, seeds0/2, exact V93 binary. Complete work and ordinary fairness
-  unchanged.24disjoint bound physical cores; full results pending.
-- Independent outcome audits work8900261 and percentile8900262 COMPLETE;
-  pickup8900263 is held after its validator. Helper native_work/
-  outcomes.py freezes the existing verified work/prefix methods and source hashes.
+## Newly completed evidence
+
+- **V97 pickup weights 5 / 8 / 12:** all six full cases, exact controls and 300-million-step accounting pass (8900240 / 8900241 / 8900263). Weight 8 gives **154,929 / 154,965**, gains **40 / 409**; mean 154,947 and both seeds exceed NMS. This uses the old mean-margin profile, so it does not replace the 155,057 single-run best. Weight 12 gives 154,820 / 154,844 (-69 / +288). Weight 8 reduces empty work 27,184 / 21,623, age p90 11 / 14, and all first-half tasks finish. See `results/native-pickup-full-v97/summary.md`.
+- **V99 p90 opportunity audit:** 8900292 complete. Only 9 / 4 conservative physical alternative witnesses; feasible unfinished admissions from 4,000 fall to 791 / 788 from 1,053 / 1,065 under the mean. Not an exhaustive count or upper bound. Its mean-margin subdiagnostic is an offline comparison, not the active p90 rule. See `results/p90-opportunity-audit-v99/summary.md`.
+- **V95 native work:** complete exact controls 154,889 / 154,556; 8M gives 154,870 / 154,762 (-19 / +206), four rounds 154,686 / 154,576 (-203 / +20). Keep 4M / two rounds. The 8M arm often hits the unchanged one-million repair-attempt ceiling; do not claim twice the executed work.
+- **Old mean-margin seeds 1 / 3:** 154,713 / 154,776, all valid. Four same-binary seeds mean 154,733.5. See `results/native-frontier-four-seeds-v95.json`. Generic six-seed reference remains 144,392.1667; generic experimental peak 145,083 stays separate.
+
+## Next actions
+
+1. Commit the V97 results, V99 audit, combination profiles and analyzer extension; preserve concurrent random05 changes and jobs. Push to the public repository using existing authorization.
+2. Collect both V98 comparisons and the V99 combination through their held validators and independent audits. Record every arm and regression. Update the best table immediately for a verified increasing full-run record, with exact source, timestamp, environment and hashes.
+3. If refinement or the combination improves, choose the next controlled comparison from that evidence. Do not assume percentile and pickup effects add. No new production feature is currently required.
+
+Fable turn 45 failed due exhausted credits in the same persistent Claude CLI session; no new review was received. Next turn would be 46 only after quota is available. Workspace shell calls currently require escalation because default bwrap fails. Stage and commit explicit Warehouse paths only; preserve the independent random05 fork. Historical notes below retain their original context.
 
 ## Prior target achievement
 
