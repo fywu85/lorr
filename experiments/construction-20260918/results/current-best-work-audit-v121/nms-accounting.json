@@ -1,0 +1,92 @@
+{
+  "checked_utc": "2026-09-20T01:58:56.655611+00:00",
+  "scope": "Descriptive replay of a saved NMS run with one timeout and RSS above 32 GB; not an admissible performance score.",
+  "tasks": 154981,
+  "robot_steps": 50000000,
+  "components": {
+    "completed_chain_lower_bound": 36388557,
+    "completed_forward_detour": 469900,
+    "completed_turns": 899276,
+    "completed_waits": 1227465,
+    "empty_including_unfinished": 9612055,
+    "loaded_unfinished": 1343933,
+    "idle": 58814
+  },
+  "per_completed_task": {
+    "completed_chain_lower_bound": 234.7936650299069,
+    "completed_forward_detour": 3.0319845658500073,
+    "completed_turns": 5.802491918364186,
+    "completed_waits": 7.92009988321149,
+    "empty_including_unfinished": 62.020860621624585,
+    "loaded_unfinished": 8.67159845400404,
+    "idle": 0.3794916796252444
+  },
+  "cgar_minus_nms_per_completed_task": {
+    "completed_chain_lower_bound": 7.0672746827303285,
+    "completed_forward_detour": 4.654132563023247,
+    "completed_turns": 3.9441047814448797,
+    "completed_waits": 5.632232261750515,
+    "empty_including_unfinished": 2.2739496422911074,
+    "loaded_unfinished": 1.5517485847745363,
+    "idle": -0.3794916796252444
+  },
+  "kittyknight_per_completed_task": {
+    "completed_chain_lower_bound": 233.8357050875599,
+    "completed_forward_detour": 4.593563906628928,
+    "completed_turns": 5.678476412103464,
+    "completed_waits": 8.410684987024533,
+    "empty_including_unfinished": 65.69140612232891,
+    "loaded_unfinished": 8.628136827449161,
+    "idle": 0.0
+  },
+  "pooled_cgar_per_completed_task": {
+    "completed_chain_lower_bound": 241.86093971263722,
+    "completed_forward_detour": 7.686117128873255,
+    "completed_turns": 9.746596699809066,
+    "completed_waits": 13.552332144962005,
+    "empty_including_unfinished": 64.29481026391569,
+    "loaded_unfinished": 10.223347038778575,
+    "idle": 0.0
+  },
+  "historical_raw_hash_reproduced": true,
+  "all_five_action_fixtures_pass": true,
+  "accounting_corrections": {
+    "nms_diagnostic": {
+      "implicit_initial_idle_steps": 10000,
+      "changed_fields": {
+        "unassigned_robot_steps": {
+          "old": 48814,
+          "new": 58814
+        },
+        "loaded_robot_steps_including_unfinished_tasks": {
+          "old": 40339131,
+          "new": 40329131
+        }
+      }
+    }
+  },
+  "nms_source_root": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc",
+  "inspected_source_sha256": {
+    "CMakeLists.txt": "384e20fb3a623b32c16559ad3fc8a5cabf8c53360fb8a8a6a6fd6503eb4eb68f",
+    "src/Entry.cpp": "6328c73a287e9425b1705c5af2b8e9ffae95f3d5ba60f0e51ed166312d84f538",
+    "src/MAPFPlanner.cpp": "96b9dada1a7f96444492eb841474d110dadaf8ad3421c19c013807cee8d42864",
+    "src/TaskScheduler.cpp": "01b5092bec9d6a497f672362782598259bd12f2c576b1ca0b0406da375719cff",
+    "Solution/settings.hpp": "158efcdb1c5096ec42b235d47f7fc27b1fa988a87ecf2b20ac4e02284a80753a",
+    "Solution/Planner/eplanner.cpp": "28e29fa627d2fab13d501e19bafc3b63c60c37677365e76ecb7e4abf341f165a",
+    "Solution/Planner/PIBT/pibts.cpp": "dc3bf5a5d2c6af7881aa82f2a01f25da8f651739e71995c82ca926874b4d7357",
+    "Solution/Objects/Environment/environment.cpp": "5d70358763d4a734a8ef4f7ba56d353ef79af84a29946a102e29c340ac5bd329",
+    "Solution/Objects/Environment/robot_handler.cpp": "747b79e32f4b8ce5392ca0e5d8438dbf5d60b342e073b2b443370730d7fdab26",
+    "Solution/Objects/Environment/graph_guidance.cpp": "fc618c68000eb634bd2bdadf58eca0139873a6038685a3b558131057c95f310e",
+    "Solution/Objects/Environment/heuristic_matrix.cpp": "73a22ea763061c44a7721427145e2b377d6a8afab185c53cd71621989ec5170c",
+    "Solution/Objects/Environment/operations.cpp": "7babe88598563ed52fb6a739dfa26980f1bff0730c591a35ac3723368f048ac7",
+    "Solution/Objects/Environment/info.cpp": "1ca3fc94c52c7f65210a12a2a8608eda9517bbe0bc5b27cbd62f752f9c39ed4e",
+    "Solution/Scheduler/scheduler.cpp": "e1624f34245c71bfe887cd6ee96d1893499e5612ccc05e65cbe2f32b68326c47",
+    "Solution/Scheduler/scheduler_solver.cpp": "79afc2b56c9a24fd7f4b448c7900bfeaa91e7247ca5a21c16b7653b59c29f582"
+  },
+  "limits": [
+    "Different task cohorts and resources; deltas are not causal recoverable savings.",
+    "The first timeout is idle time with its original non-motion markers retained.",
+    "The old NMS report remains unchanged; its initial idle/loaded residual error is explicitly corrected here.",
+    "Pool snapshots do not establish a bound between checkpoints or identify a rematching treatment effect."
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-current-best-work-audit-v121-20260920/analysis/boundary-fixture.json",
+  "team_size": 2,
+  "steps": 4,
+  "completed_tasks": 1,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "loaded": {
+      "adjacent": 1,
+      "stationary": 1
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 4,
+      "other": 0
+    },
+    "empty": {
+      "fw": 0,
+      "cr": 1,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 1,
+      "cr": 1,
+      "ccr": 1,
+      "wait": 0,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "implicit_initial_idle_steps": 0,
+  "unassigned_robot_steps": 4,
+  "empty_forward_actions": 0,
+  "empty_turn_actions": 1,
+  "empty_wait_actions": 0,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 1,
+  "loaded_robot_steps_including_unfinished_tasks": 3,
+  "robot_steps_per_completed_task": 8.0,
+  "revealed_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "completed_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "assigned_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 1,
+    "mean": 0.0,
+    "p90": 0,
+    "sum": 0
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 1,
+    "mean": 0.0,
+    "p90": 0,
+    "sum": 0
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "completed_loaded_steps": {
+    "n": 1,
+    "mean": 3.0,
+    "p90": 3,
+    "sum": 3
+  },
+  "completed_loaded_action_totals": {
+    "fw": 1,
+    "cr": 1,
+    "ccr": 1,
+    "wait": 0,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 1.0,
+    "cr": 1.0,
+    "ccr": 1.0,
+    "wait": 0.0,
+    "other": 0.0
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 1,
+    "stationary": 1
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 1.0,
+    "stationary": 1.0
+  },
+  "completed_loaded_forward_excess_over_shortest": 0,
+  "observed_pickup_steps_per_shortest_cell": null,
+  "completed_loaded_steps_per_shortest_cell": 3.0,
+  "tasks_with_multiple_assignments": 0,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 0,
+  "distance_queries": 3,
+  "complete_bfs_tables": 2,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic."
+}

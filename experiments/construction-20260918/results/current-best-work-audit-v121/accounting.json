@@ -1,0 +1,92 @@
+{
+  "checked_utc": "2026-09-20T21:43:41.603497+00:00",
+  "all_valid": true,
+  "offline_only": true,
+  "source_commit": "37f592a48bdb24b936f8d0be8be22ddd405b4ddb",
+  "binary_sha256": "3f66eefd2a54589e48965b5b4031cbbe4d67bd8e6423c8cdc1cb3108f24bf641",
+  "all_five_fixtures_pass": true,
+  "all_phase_counters_exact": true,
+  "raw_hashes_exact": true,
+  "rows": [
+    {
+      "case": "trick_matchguard1-s0-r0",
+      "seed": 0,
+      "tasks": 155173,
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0",
+      "raw_sha256": "d78800958e8140fa4e9d85cfaa6d80b96199ab8f9fe7cf4d715618831afe2148",
+      "components": {
+        "completed_chain_lower_bound": 37625856,
+        "completed_forward_detour": 465976,
+        "completed_turns": 877876,
+        "completed_waits": 1123426,
+        "empty_including_unfinished": 9321770,
+        "loaded_unfinished": 585096,
+        "idle": 0
+      },
+      "per_completed_task": {
+        "completed_chain_lower_bound": 242.47682264311445,
+        "completed_forward_detour": 3.002945099985178,
+        "completed_turns": 5.657401738704543,
+        "completed_waits": 7.239829093978979,
+        "empty_including_unfinished": 60.07340194492598,
+        "loaded_unfinished": 3.770604422161072,
+        "idle": 0.0
+      },
+      "robot_steps_per_completed_task": 322.2210049428702
+    },
+    {
+      "case": "trick_matchguard1-s2-r0",
+      "seed": 2,
+      "tasks": 155090,
+      "trajectory_sha256": "274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b",
+      "raw_sha256": "5a38ceecb2a1958eb4c33a595c7c8d09d73acf2d47faa44880956d473bcaa8dd",
+      "components": {
+        "completed_chain_lower_bound": 37601974,
+        "completed_forward_detour": 465912,
+        "completed_turns": 876615,
+        "completed_waits": 1132506,
+        "empty_including_unfinished": 9326353,
+        "loaded_unfinished": 596640,
+        "idle": 0
+      },
+      "per_completed_task": {
+        "completed_chain_lower_bound": 242.45260171513314,
+        "completed_forward_detour": 3.004139531884712,
+        "completed_turns": 5.652298665291121,
+        "completed_waits": 7.302250306273777,
+        "empty_including_unfinished": 60.135102198723324,
+        "loaded_unfinished": 3.8470565478109484,
+        "idle": 0.0
+      },
+      "robot_steps_per_completed_task": 322.39344896511705
+    }
+  ],
+  "pooled_per_completed_task": {
+    "completed_chain_lower_bound": 242.46471541885433,
+    "completed_forward_detour": 3.0035421561707327,
+    "completed_turns": 5.654850884572121,
+    "completed_waits": 7.271031350821723,
+    "empty_including_unfinished": 60.1042438189536,
+    "loaded_unfinished": 3.8088202589416076,
+    "idle": 0.0
+  },
+  "nms_diagnostic_per_completed_task": {
+    "completed_chain_lower_bound": 234.7936650299069,
+    "completed_forward_detour": 3.0319845658500073,
+    "completed_turns": 5.802491918364186,
+    "completed_waits": 7.92009988321149,
+    "empty_including_unfinished": 62.020860621624585,
+    "loaded_unfinished": 8.67159845400404,
+    "idle": 0.3794916796252444
+  },
+  "cgar_minus_nms_diagnostic": {
+    "completed_chain_lower_bound": 7.671050388947435,
+    "completed_forward_detour": -0.028442409679274583,
+    "completed_turns": -0.14764103379206528,
+    "completed_waits": -0.6490685323897676,
+    "empty_including_unfinished": -1.9166168026709869,
+    "loaded_unfinished": -4.862778195062432,
+    "idle": -0.3794916796252444
+  },
+  "limits": "Different task cohorts and resources; observational decomposition, not causal savings. NMS saved run had one timeout and RSS above32GB and is not a qualifying score. No new solver benchmark or throughput record."
+}

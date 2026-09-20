@@ -1,0 +1,60 @@
+{
+  "source_sha256": "67de25f8463c8f94223897c16b4eb21c16b9ef484f26d9b71fe8a29a7596c096",
+  "script_sha256": "6d0bdc96e98c7bb5905a396449ef789cc5d0b45291ea4d2c805f16caa831b154",
+  "binary_sha256": "583ced2ec4ce94b24a534b63f4c10118b1e29e0fa8834f0302960e94d4c4fd86",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-current-best-work-audit-v121-20260920/analysis/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-current-best-work-audit-v121-20260920/analysis/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "opposite_turn_fixture_passed": true,
+  "phase_boundary_fixture_passed": true,
+  "initial_gap_fixture_passed": true,
+  "allocation": {
+    "hostname": "research44",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      32
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        32
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      32
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "trick_matchguard1-s0-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-match-horizon-native-full-v110-20260920/trick_matchguard1-s0-r0/WAREHOUSE.json",
+      "sha256": "d78800958e8140fa4e9d85cfaa6d80b96199ab8f9fe7cf4d715618831afe2148"
+    },
+    "trick_matchguard1-s2-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-match-horizon-native-full-v110-20260920/trick_matchguard1-s2-r0/WAREHOUSE.json",
+      "sha256": "5a38ceecb2a1958eb4c33a595c7c8d09d73acf2d47faa44880956d473bcaa8dd"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/runs/cgar-current-best-work-audit-v121-20260920/warehouse.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}
