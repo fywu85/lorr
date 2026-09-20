@@ -1,0 +1,47 @@
+{
+  "source_commit": "233f5bf",
+  "cases": [
+    {
+      "name": "32-directed-triage-mix0-scale1.25-seed4",
+      "tasks": 3857,
+      "valid": true,
+      "mean_ms": 494.14038723600015,
+      "max_ms": 563.3194569999999,
+      "delta_from_3857": 0
+    },
+    {
+      "name": "32-directed-triage-mix0.5-scale1.25-seed4",
+      "tasks": 3872,
+      "valid": true,
+      "mean_ms": 499.96281383799953,
+      "max_ms": 535.476509,
+      "delta_from_3857": 15
+    },
+    {
+      "name": "32-directed-triage-mix1-scale1.25-seed4",
+      "tasks": 3841,
+      "valid": true,
+      "mean_ms": 491.9724662824994,
+      "max_ms": 534.798001,
+      "delta_from_3857": -16
+    },
+    {
+      "name": "32-directed-triage-mix0.5-scale1.5-seed4",
+      "tasks": 3832,
+      "valid": true,
+      "mean_ms": 493.9051397039999,
+      "max_ms": 538.8230520000001,
+      "delta_from_3857": -25
+    },
+    {
+      "name": "32-directed-triage-mix1-scale1.5-seed4",
+      "tasks": 3843,
+      "valid": true,
+      "mean_ms": 482.97234050199955,
+      "max_ms": 540.339519,
+      "delta_from_3857": -14
+    }
+  ],
+  "control_exact": true,
+  "decision": "Select3872 as a single-seed frontier; only mix0.5 atscale1.25 beats3857. Replication pending."
+}

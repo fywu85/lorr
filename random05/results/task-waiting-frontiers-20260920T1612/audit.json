@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-20T22:09:52.335587+00:00",
+  "created_utc": "2026-09-20T22:51:55.337887+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "99a61793d3c4d5553dca14c5cf00f6714b17cb9261da0cd026cadd3f715b0488",
+  "manifest_sha256": "d1fc0c75048578330fb5870576faee950c0fcabab4daaa926cbcf6f28611509b",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -1020,6 +1020,52 @@
       "initial_still_unfinished": 135,
       "initial_still_unopened": 102,
       "initial_started_unfinished": 33,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3872": {
+      "result": "runs/random05/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/32-directed-triage-mix0.5-scale1.25-seed4/result.json",
+      "result_sha256": "268537d871793e90d2aa377e6911559967632a3804d917b03b7951f65d442784",
+      "horizon_steps": 2000,
+      "tasks_finished": 3872,
+      "tasks_revealed": 5072,
+      "completed_latency": {
+        "count": 3872,
+        "mean_steps": 411.21771694214874,
+        "p50_steps": 345,
+        "p95_steps": 1019,
+        "p99_steps": 1553
+      },
+      "maximum_release_to_completion": {
+        "steps": 1944,
+        "task_id": 768,
+        "released_at": 0,
+        "observed_at": 1944
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1972,
+        "task_id": 751,
+        "released_at": 0,
+        "observed_at": 1972
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 500,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 639.1225,
+      "initial_still_unfinished": 138,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 42,
       "event_accounting_valid": true
     }
   }

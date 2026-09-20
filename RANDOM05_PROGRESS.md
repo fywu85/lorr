@@ -30,16 +30,17 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 22:04 UTC.
+Updated: 2026-09-20 22:49 UTC.
 
-**Best single run on the archived input: 3,857 tasks on 32 workers / 16 physical cores**,
-or **+21.6% versus matched NMS32 = 3,172**. Source
-[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed4,
-firstK8000 thenK16320/B14/s2/q4/G4/E8/P8, with the declared horizon trick's
-scale reduced1.5->1.25. Mean491ms, maximum552ms, RSS578MB; all2,000steps valid.
-This is a five-task selected increment over3,852, not a replicated improvement.
-The paired1.75 setting scores3,798. The4,000 target remains143tasks away.
-[Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json).
+**Best single run on the archived input: 3,872 tasks on32 workers /16 physical cores**,
+or **+22.1% versus matched NMS32=3,172**. Source
+[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf), planner seed4,
+firstK8000 thenK16320/B14/s2/q4/G4/E8/P8. The declared horizon trick uses
+scale1.25 and a0.5 blend of normalized directional remaining cost.
+Mean500ms, maximum535ms, RSS579MB; all2,000steps valid and independently replayed.
+This is15tasks above3,857 on one selected seed; replication is pending.
+The4,000 target remains128tasks away.
+[Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json).
 
 The previous3,852 record used scale1.5. A new diagnostic build reproduces its
 entire trajectory while recording exact pre-decision snapshots. Four of that
@@ -291,6 +292,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T20:36:40.537684+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4; **trick** guidance only | 3632 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +14.5% | [full run](random05/results/staged-no-horizon-split-full-v65/32-k16320-b14-first8000-seed4-no-horizon/summary.json) |
 | 2026-09-20T20:47:29.818820+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3; **trick** guidance only | 3503 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +20.2% | [full run](random05/results/staged-no-horizon-split-full-v65/four-k5760-b12-first4608-seed3-no-horizon/summary.json) |
 | 2026-09-20T22:04:50.502045+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25; `--trick RANDOM-05` | 3857 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +21.6% | [Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json) |
+| 2026-09-20T22:49:18.963497+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3872 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.1% | [Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1442,3 +1444,25 @@ input/binary hashes and allocation are linked in the audits.
   sixteen physical cores,32workers and strict limits remain frozen. The running
   control keeps its original allocation. Runtime CPU-model preflight still applies.
   [Recorded queue changes](random05/results/reference-host-expansion-20260920/queue-change.json).
+
+- Cutoff scale1.25 did not improve the two replication seeds: seed0=3,780
+  (versus3,785 at1.5), seed3=3,785 (versus3,794). The seed4 maximum3,857
+  remains a selected result, with no replicated gain established.
+  [All outcomes](random05/results/record-triage-seeds-split-full-v65/outcomes.json).
+- Completion bonuses2/4/8 with14-future averaged scoring give3,746/3,811/3,781
+  versus3,852 atbonus0. All strict full runs are valid; reject these presets.
+  [All outcomes](random05/results/averaged-completion-split-full-v65/outcomes.json).
+
+- Directional-triage mix0.5 atscale1.25 reaches **3,872**,15tasks above3,857.
+  Mix1 at1.25=3,841; mixes.5/1 at1.5=3,832/3,843. All five full runs valid,
+  with the disabled control reproducing all six trajectory fields of3,857.
+  Independent replay of3,872 passed; source233f5bf, finish22:49:18UTC, mean500ms,
+  max535ms, RSS579MB. This remains a selected seed4 gain until replication.
+  [Outcomes and control](random05/results/directed-triage-split-full-v69/outcomes.json),
+  [replay](random05/results/directed-triage-split-full-v69/replay-3872.json).
+
+- Source70 adds optional repeated replanning inside short forecasts, using only
+  the current visible task pool. Regression suite passes27.78s; a one-root check
+  preserves every dense decision and persistent state. Six strict full cases
+  compare the3,872 control and fixed-budget variants, starting atstep50 to avoid
+  repeating startup matching costs. No throughput gain is assumed.

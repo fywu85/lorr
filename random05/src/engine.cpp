@@ -71,6 +71,16 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.component_trials<0 || c.component_trials>1024 || c.component_rounds<1 || c.component_rounds>8 ||
        c.component_parents<2 || c.component_parents>64 || c.component_min_agents<1)
         throw std::invalid_argument("invalid motion-component search settings");
+    c.replan_roots=integer("R05_REPLAN_ROOTS",0);
+    c.replan_futures=integer("R05_REPLAN_FUTURES",1);
+    c.replan_k=integer("R05_REPLAN_K",32);
+    c.replan_steps=integer("R05_REPLAN_STEPS",8);
+    c.replan_continuations=integer("R05_REPLAN_CONTINUATIONS",4);
+    c.replan_start=integer("R05_REPLAN_START",0);
+    if(c.replan_roots<0 || c.replan_roots>32 || c.replan_futures<1 || c.replan_futures>8 ||
+       c.replan_k<1 || c.replan_k>1024 || c.replan_steps<2 || c.replan_steps>32 ||
+       c.replan_continuations<1 || c.replan_k%c.replan_continuations || c.replan_start<0)
+        throw std::invalid_argument("invalid closed-loop forecast settings");
     c.branch_diagnostics=integer("R05_BRANCH_DIAGNOSTICS",0);
     c.snapshot_interval=integer("R05_SNAPSHOT_EVERY",0);
     c.snapshot_candidates=integer("R05_SNAPSHOT_CANDIDATES",8);
@@ -200,6 +210,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
     if(c.component_trials && (c.early_fill || c.operation_depth))
         throw std::invalid_argument("motion-component search requires the ordinary fixed first-position pipeline");
+    if(c.replan_roots && (c.operation_depth || c.plain_score || c.reverse_penalty || c.progress_discount!=1))
+        throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
@@ -602,7 +614,7 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
-    rng_.seed(cfg.seed);graph=std::make_unique<Graph>(*env,cfg);
+    rng_.seed(cfg.seed);graph=std::make_shared<Graph>(*env,cfg);
     if(cfg.plain_score>0) {
         // The policy can prefer traffic lanes while evaluation measures actual
         // unit-cost forward/turn actions, including every remaining task stop.
@@ -1359,6 +1371,7 @@ static std::vector<int> elite_indices(const std::vector<Rollout>& results,int us
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule,int forced_candidate) {
+    replan_stats_=ReplanStats{};
     const bool save_snapshot=cfg.snapshot_interval>0 && env->curr_timestep>0 &&
                              env->curr_timestep%cfg.snapshot_interval==0;
     nlohmann::json snapshot;
@@ -1724,6 +1737,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             env->curr_timestep,cfg.component_rounds,cfg.component_trials,component_evaluations,
             donors.size(),available,accepted,(unsigned long long)hybrid_expansions);
     }
+    if(cfg.replan_roots && env->curr_timestep>=cfg.replan_start)
+        best=rank_replanned(*env,schedule,results,best);
     if(save_snapshot) {
         // Observe only already-completed roots. Powers-of-two ranks cover both
         // close alternatives and a wider score range; duplicate first decisions
@@ -1802,7 +1817,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             (unsigned long long)total.nanoseconds[4],(unsigned long long)total.nanoseconds[5],
             (unsigned long long)total.nanoseconds[6]);
     }
-    if(env->curr_timestep%100==0) {
+    if(!quiet_ && env->curr_timestep%100==0) {
         if(cfg.screen_branches)
             std::fprintf(stderr,"R05_SCREEN t=%d roots=%d finalists=%d branch_evaluations=%d screen_branches=%d full_branches=%d\n",
                          env->curr_timestep,roots,roots/cfg.screen_keep,evaluated,cfg.screen_branches,cfg.continuations);

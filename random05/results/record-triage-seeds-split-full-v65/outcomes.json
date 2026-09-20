@@ -1,0 +1,25 @@
+{
+  "created_utc": "2026-09-20T22:45:50.139637+00:00",
+  "source_commit": "5f81613",
+  "cases": [
+    {
+      "name": "32-record-triage1.25-seed0",
+      "tasks": 3780,
+      "valid": true,
+      "control_tasks": 3785,
+      "delta_tasks": -5,
+      "mean_ms": 493.1090397850006,
+      "max_ms": 563.604596
+    },
+    {
+      "name": "32-record-triage1.25-seed3",
+      "tasks": 3785,
+      "valid": true,
+      "control_tasks": 3794,
+      "delta_tasks": -9,
+      "mean_ms": 494.79531150499986,
+      "max_ms": 532.4691339999999
+    }
+  ],
+  "decision": "No replicated benefit from scale1.25: seed0 loses5 tasks, seed3 loses9 versus scale1.5. The selected seed4 maximum remains3857."
+}

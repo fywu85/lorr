@@ -14,6 +14,7 @@ struct Config {
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
     int screen_branches=0, screen_keep=4;
     int component_trials=0, component_rounds=2, component_parents=8, component_min_agents=1;
+    int replan_roots=0, replan_futures=1, replan_k=32, replan_steps=8, replan_continuations=4, replan_start=0;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
@@ -125,10 +126,15 @@ struct alignas(64) PolicyTiming {
     uint64_t calls=0,samples=0;
     std::array<uint64_t,7> nanoseconds{};
 };
+struct ReplanStats {
+    int roots=0, futures=0, steps=0, decisions=0, selected_rank=0;
+    int pool_before=0, min_pool_after=0, max_completed=0;
+    uint64_t branch_evaluations=0;
+};
 class Engine {
 public:
     Config cfg;
-    std::unique_ptr<Graph> graph;
+    std::shared_ptr<const Graph> graph;
     explicit Engine(Config config):cfg(std::move(config)){}
     void initialize(SharedEnvironment* env);
     void compute(SharedEnvironment* env, std::vector<Action>& plan, std::vector<int>& schedule,
@@ -139,8 +145,15 @@ public:
     void match(SharedEnvironment* env,std::vector<int>& schedule);
     const std::vector<int>& ages() const { return age_; }
     int triaged() const { return triaged_; }
+    const ReplanStats& replan_stats() const { return replan_stats_; }
 private:
     std::mt19937 rng_;
+    bool quiet_=false;
+    ReplanStats replan_stats_;
+    std::vector<std::unique_ptr<Engine>> replan_engines_;
+    int rank_replanned(const SharedEnvironment& env,const std::vector<int>& schedule,
+                       const std::vector<Rollout>& results,int best);
+    void copy_replan_state(Engine& target,const Config& config) const;
     bool policy_profile_active_=false;
     mutable std::vector<PolicyTiming> policy_timings_;
     uint64_t ranking_epoch_=0;

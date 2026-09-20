@@ -35,17 +35,25 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_restore=false) {
+uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_restore=false,bool replan_control=false) {
     const int cells=rows*cols,n=cells-1;
     auto e=environment(rows,cols,n);
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
+    std::unique_ptr<Engine> control;
+    if(replan_control) {auto base=cfg;base.replan_roots=0;control=std::make_unique<Engine>(base);control->initialize(&e);}
     for(int a=0;a<n+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%cells,(a+17)%cells};e.task_pool[a]=t;}
     int next_task=n+spare_tasks,total_moved=0;
     for(int step=0;step<150;++step) {
         e.curr_timestep=step;std::vector<Action> actions;std::vector<int> assignment;
         const auto before=check_restore && step%17==0?engine.checkpoint(e):nlohmann::json();
         engine.compute(&e,actions,assignment);
+        if(control) {
+            std::vector<Action> base_actions;std::vector<int> base_schedule;
+            control->compute(&e,base_actions,base_schedule);
+            require(actions==base_actions && assignment==base_schedule,"single-root forecast changed the decision");
+            require(engine.checkpoint(e)==control->checkpoint(e),"forecast mutated persistent solver state");
+        }
         if(!before.is_null()) {
             const auto after=engine.checkpoint(e);
             engine.restore(before,e);std::vector<Action> replay_actions;std::vector<int> replay_schedule;
@@ -598,6 +606,33 @@ void staged_continuations() {
     }
 }
 
+void replanning_forecast() {
+    // A fully evaluated one-root forecast may spend work, but must leave every
+    // selected decision, RNG stream and persistent solver vector unchanged.
+    Config cfg;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.depth=6;cfg.threads=2;
+    cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    cfg.scratch_reuse=true;cfg.share_prefix=true;cfg.hungarian_limit=1000;cfg.guided_matching=true;
+    cfg.replan_roots=1;cfg.replan_k=4;cfg.replan_continuations=2;cfg.replan_steps=4;
+    simulate(cfg,12,5,5,false,true);
+    cfg.replan_roots=4;cfg.replan_futures=2;cfg.random_by_step=true;cfg.threads=1;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"replanning forecast changed across worker counts");
+    require(serial==simulate(cfg,12,5,5,true),"replanning forecast changed after checkpoint restoration");
+    // Finish the only visible task in a forecast. Do not invent a replacement,
+    // and do not mutate the live task or advance the actual environment.
+    auto env=environment(1,3,1);Task task;task.task_id=7;task.locations={0};env.task_pool[7]=task;
+    cfg=Config{};cfg.futures=1;cfg.replan_roots=1;cfg.replan_steps=4;
+    cfg.replan_k=4;cfg.replan_continuations=2;Engine engine(cfg);engine.initialize(&env);
+    std::vector<Action> actions;std::vector<int> schedule;engine.compute(&env,actions,schedule);
+    const auto stats=engine.replan_stats();
+    require(stats.pool_before==1 && stats.min_pool_after==0 && stats.max_completed==1,
+            "closed-loop forecast failed visible-task depletion");
+    require(stats.decisions==3 && stats.branch_evaluations==12,"forecast changed its declared work budget");
+    require(env.curr_timestep==0 && env.task_pool.size()==1 && env.task_pool.at(7).idx_next_loc==0 &&
+            env.curr_task_schedule[0]==-1,"forecast modified the real task environment");
+}
+
 void normalized_directional_triage() {
     // Same one-cell distance, but the second robot must turn around first.
     // Pool normalization keeps total estimated distance2, assigning .5/1.5.
@@ -658,6 +693,7 @@ void checkpoint_replay() {
 }
 
 int main() {
+    replanning_forecast();
     normalized_directional_triage();
     motion_component_search();
     checkpoint_replay();

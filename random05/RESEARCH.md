@@ -751,3 +751,43 @@ guaranteed remaining-time bound. A controlled two-robot fixture distinguishes
 a one-cell forward trip from an equal-distance trip requiring a half-turn; dense
 checks cover task replacement, collision safety and worker determinism. Test
 mix.5/1 at the existing scales1.25/1.5 only after regression validation.
+
+
+## Replanning inside the forecast
+
+The saved-state diagnostics show that a root's short averaged score does not
+reliably rank its128-step completions under subsequent replanning. This is an
+observational result on a small correlated sample, not proof of a causal defect.
+Completion bonuses and motion-component recombination also fail their full runs.
+
+The next bounded generic hypothesis is to rerank several fully evaluated first
+decisions by simulating repeated solver calls with a smaller fixed inner budget.
+Each inner step uses the same task matcher and pipeline, with deterministic
+future seeds common to all compared roots. Only the currently visible task pool
+is copied: completed tasks are removed, and no hidden replacements are read or
+invented. Progress is measured along the task executed at each step, rebased
+after reassignment. All selected roots and future steps finish before selection;
+no elapsed-time stopping or partial answer is permitted.
+
+The ordinary search still supplies the candidates and persistent priority
+vectors. Immutable map and chain tables may be shared, while runtime state and
+caches stay separate. A one-root control must preserve the full selected
+trajectory and persistent state. Full2000-step benchmarks will decide whether
+a more faithful, but smaller-budget, future policy is useful.
+
+`R05_REPLAN_ROOTS` now implements this optional forecast (default0). Select
+distinct first actions/promises at expanding score ranks. Each of
+`R05_REPLAN_FUTURES` common-seed futures executes that first decision, then
+`R05_REPLAN_STEPS-1` actual solver calls at fixed `R05_REPLAN_K`, with
+`R05_REPLAN_CONTINUATIONS` branches per inner root and one search generation.
+The inner calls run serially within each future; whole futures run in parallel.
+No nested reranking, wall-clock stopping, or invented replacement tasks occurs.
+All motion, task-lock and visible-pool accounting checks run in each forecast.
+
+Source70 regressions passed27.78s, including exact one-root decisions and
+persistent state over dense turnover, worker-count/checkpoint determinism, and
+a depleted visible pool with unchanged live task state. The full batch uses
+the3,872 preset, declares a50-step startup without reranking, and compares off,
+one-root control,4roots*2futures,8*1,8*2 atinnerK32, plus4*2 atK64. All use
+forecast depth8 and innerB4; strict1s/32GB/full2000. New options stay off until
+full results establish a benefit.

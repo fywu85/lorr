@@ -14,16 +14,17 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,857 | 3,172 | +21.6% | 491 / 552ms | 578MB |
+| 16 physical cores / 32 workers | 3,872 | 3,172 | +22.1% | 500 / 535ms | 579MB |
 
-The current goal is4,000 tasks. The latest32-worker record improves3,852 by
-only five tasks after reducing horizon-triage scale1.5->1.25; this small selected
-increment has not been replicated across seeds.
+The current goal is4,000 tasks. The latest32-worker record improves3,857 by
+15tasks using a0.5 normalized directional-cost blend in the horizon cutoff,
+at scale1.25. This selected seed4 gain has not yet been replicated.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
-[best-32-workers.json](best-32-workers.json). Both use source
-[5f81613](https://github.com/fywu85/lorr/commit/5f81613), with declared map-specific
+[best-32-workers.json](best-32-workers.json). The four-core source is
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
+[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Frozen independent-input comparison
@@ -75,13 +76,13 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All75 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All76 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [completed-goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,937 steps,
+The current development records' longest completed orders take1,941/1,944 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.
