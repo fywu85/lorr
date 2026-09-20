@@ -87,3 +87,14 @@ preserves the existing objective. This is distinct from urgency-weighted distanc
 or an assignment length preference. A two-robot contested-goal regression checks
 that the reward can select the completing task. Full benchmarks must establish
 whether this hypothesis translates to throughput; none is assumed.
+
+`R05_ROLLOUT_MATCH=1` is the second test of that diagnosis. After a simulated
+completion, a greedy joint matcher assigns a replacement from tasks that were
+visible and unassigned at the real step's start. Each rollout has its own mask,
+so a task cannot be duplicated. Existing assignments stay fixed, and no hidden
+future tasks or real schedules are modified. Progress is accumulated between
+assignments; the cost of newly assigned work is rebased instead of counted as
+negative progress. The forecast is still approximate: it does not continuously
+rematch unopened tasks or predict newly revealed tasks. Default0 preserves the
+prior behavior. Dense regressions check no-spare-task equivalence, task locks,
+collision freedom, and worker-count determinism with spare tasks.

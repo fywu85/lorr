@@ -70,7 +70,7 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.intent_mode<0 || c.intent_mode>2 || (c.intent_mode && !c.intent_rotation))
         throw std::invalid_argument("intent mode must be 0..2 and requires intent rotation");
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
-    c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.cost_cache=integer("R05_COST_CACHE",0);
+    c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.rollout_match=integer("R05_ROLLOUT_MATCH",0);c.cost_cache=integer("R05_COST_CACHE",0);
     c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
     c.flow_turn=real("R05_FLOW_TURN",0);
     c.flow_power=real("R05_FLOW_POWER",1);c.flow_alpha=real("R05_FLOW_ALPHA",1);
@@ -493,6 +493,7 @@ void Engine::certify(const Graph& g,const std::vector<int>& from,const std::vect
 
 void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Action>& actions,
                      uint64_t& expansion_count,bool cycle_moves) const {
+    const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
     const int cycle_mode=cycle_moves?cfg.pre_cycles:0;
     const auto& g=*graph;const int n=int(f.loc.size());
     // pending is the already promised forward/wait move. Plan the following
@@ -502,8 +503,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
         if(moving[i] && g.next[f.loc[i]][f.dir[i]]!=p[i])
             throw std::runtime_error("pending move not aligned with heading");
-        bool arrived=assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size()) &&
-                     p[i]==assigned_[i]->goals[f.stage[i]];
+        bool arrived=assigned[i] && f.stage[i]<int(assigned[i]->goals.size()) &&
+                     p[i]==assigned[i]->goals[f.stage[i]];
         if(arrived)++f.stage[i];
         if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
     }
@@ -512,7 +513,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     std::vector<const Chain*> active_chain(n,nullptr);
     std::vector<const float*> cost_table(n,nullptr);
     for(int a=0;a<n;++a) {
-        const Chain* chain=assigned_[a];
+        const Chain* chain=assigned[a];
         if(chain && f.stage[a]<int(chain->goals.size())) {
             active_chain[a]=chain;
             if(!chain->values.empty())cost_table[a]=chain->values[f.stage[a]].data();
@@ -540,10 +541,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         int age=cfg.rollout_age?f.age[i]:age_[i];
         if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
         float priority=age+offsets[i];
-        const bool active=assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size());
+        const bool active=assigned[i] && f.stage[i]<int(assigned[i]->goals.size());
         if(!active)priority-=100000;
         if(cfg.deadends && g.pocket[p[i]] &&
-           (!active || g.pocket[assigned_[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
+           (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
     }
     auto propose_cycles=[&](bool blocked_only) {
@@ -734,42 +735,90 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     f.loc=std::move(p);f.pending=std::move(chosen);
 }
 
+void Engine::match_future(Frame& frame) const {
+    const auto& g=*graph;
+    std::vector<int> ready;
+    for(int a=0;a<int(frame.loc.size());++a) {
+        const Chain* task=frame.active_chains[a];
+        if(task && frame.stage[a]>=int(task->goals.size())) {
+            ready.push_back(a);frame.active_chains[a]=nullptr;
+            if(score_graph_)frame.plain_chains[a]=nullptr;
+            frame.stage[a]=0;
+        }
+    }
+    // Match only newly finished robots to tasks visible and unassigned at the
+    // real step's start. Do not inspect hidden future tasks or alter the real
+    // schedule. Each rollout owns its availability mask.
+    while(!ready.empty()) {
+        float best=INF;int robot=-1,task=-1,position=-1;
+        for(int k=0;k<int(ready.size());++k) {
+            int a=ready[k],p=frame.loc[a],goal;
+            for(int j=0;j<int(future_tasks_.size());++j)if(frame.free_tasks[j]) {
+                goal=future_tasks_[j]->goals[0];
+                float approach=g.hop(goal,p);
+                if(cfg.guided_matching) {
+                    approach=INF;
+                    for(int d=0;d<4;++d)approach=std::min(approach,g.dist(goal*4+d,p*4+frame.dir[a])/2);
+                }
+                float cost=approach+cfg.length_weight*future_lengths_[j];
+                if(cost<best){best=cost;robot=a;task=j;position=k;}
+            }
+        }
+        if(task<0)break;
+        frame.active_chains[robot]=future_tasks_[task];
+        if(score_graph_)frame.plain_chains[robot]=future_plain_[task];
+        frame.free_tasks[task]=0;ready.erase(ready.begin()+position);
+    }
+}
+
 Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves) const {
     const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;
     auto total_cost=[&](const Frame& f) {
         double guided=0,plain=0;
-        for(int i=0;i<int(f.loc.size());++i)if(assigned_[i]) {
-            guided+=assigned_[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
-            if(score_graph_)plain+=score_assigned_[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
+        const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
+        const auto& plain_assigned=cfg.rollout_match?f.plain_chains:score_assigned_;
+        for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
+            guided+=assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
+            if(score_graph_)plain+=plain_assigned[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
         }
         return score_graph_?guided*(1-cfg.plain_score)+plain*cfg.plain_score:guided;
     };
     auto completed=[&](const Frame& f) {
         int count=0;
+        const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
         for(int i=0;i<int(f.loc.size());++i)
-            count+=assigned_[i] && f.stage[i]>=int(assigned_[i]->goals.size());
+            count+=assigned[i] && f.stage[i]>=int(assigned[i]->goals.size());
         return count;
     };
-    const int initial_completed=cfg.completion_bonus>0?completed(frame):0;
-    double initial=total_cost(frame),previous=initial,discounted=0,weight=1,weight_sum=0;
+    int completions=0;
+    double initial=total_cost(frame),previous=initial,progress=0,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
     for(int t=0;t<cfg.depth;++t) {
+        const int before_completed=cfg.completion_bonus>0?completed(frame):0;
         if(cfg.operation_depth)advance_operations(frame,offsets,actions,r.expansions);
         else advance(frame,offsets,actions,r.expansions,cycle_moves);
         if(t==0){r.first=frame;r.actions=actions;}
-        if(cfg.progress_discount<1) {
+        if(cfg.completion_bonus>0)completions+=completed(frame)-before_completed;
+        if(cfg.progress_discount<1 || cfg.rollout_match) {
             double current=total_cost(frame);
+            progress+=previous-current;
             discounted+=weight*(previous-current);weight_sum+=weight;
             weight*=cfg.progress_discount;previous=current;
         }
+        if(cfg.rollout_match && t+1<cfg.depth) {
+            match_future(frame);
+            // New task cost is a new baseline, not negative progress. Credit
+            // only distance actually reduced while executing each chain.
+            previous=total_cost(frame);
+        }
     }
-    r.score=(initial-total_cost(frame))/2.0;
+    r.score=(cfg.rollout_match?progress:initial-total_cost(frame))/2.0;
     if(cfg.progress_discount<1)r.score=discounted*cfg.depth/(2*weight_sum);
     r.score-=cfg.reverse_penalty*frame.reverse_turns;
     // Finished agents have no replacement task inside these short rollouts.
     // An optional terminal reward tests whether pure distance decrease therefore
     // undervalues completing a chain relative to advancing an unfinished one.
-    if(cfg.completion_bonus>0)r.score+=cfg.completion_bonus*(completed(frame)-initial_completed);
+    if(cfg.completion_bonus>0)r.score+=cfg.completion_bonus*completions;
     if(cfg.dispersion) {
         std::vector<int> occupancy(g.from_grid.size(),0);
         for(int v:frame.loc)occupancy[g.to_grid[v]]=1;
@@ -829,6 +878,29 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             }
         }
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
+    }
+    if(cfg.rollout_match) {
+        frame.active_chains=assigned_;if(score_graph_)frame.plain_chains=score_assigned_;
+        future_tasks_.clear();future_plain_.clear();future_lengths_.clear();
+        std::unordered_set<int> used(schedule.begin(),schedule.end());
+        std::vector<int> ids;
+        for(const auto& item:env->task_pool)if(!used.count(item.first) && item.second.idx_next_loc==0)
+            ids.push_back(item.first);
+        std::sort(ids.begin(),ids.end());
+        for(int id:ids) {
+            const auto& task=env->task_pool.at(id);
+            auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task,cfg.cost_cache);
+            future_tasks_.push_back(chain.get());
+            float length=0;
+            for(int k=1;k<int(chain->goals.size());++k)length+=g.hop(chain->goals[k],chain->goals[k-1]);
+            future_lengths_.push_back(length);
+            if(score_graph_) {
+                auto& plain=score_chains_[id];
+                if(!plain)plain=std::make_shared<Chain>(*score_graph_,task,cfg.cost_cache);
+                future_plain_.push_back(plain.get());
+            }
+        }
+        frame.free_tasks.assign(future_tasks_.size(),1);
     }
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;

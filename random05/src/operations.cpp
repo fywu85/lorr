@@ -52,6 +52,7 @@ OperationModel::OperationModel(const Graph& g) {
 
 void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
                                 std::vector<Action>& actions,uint64_t& expansion_count) const {
+    const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
     const auto& g=*graph;const auto& model=*operation_model_;const int n=int(f.loc.size());
     constexpr int H=OperationModel::horizon;
     std::vector<int> state(n),chosen=f.operations,order(n),visits(n,0);
@@ -69,7 +70,7 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
     };
     for(int a=0;a<n;++a) {
         state[a]=f.loc[a]*4+f.dir[a];
-        const Chain* chain=assigned_[a];
+        const Chain* chain=assigned[a];
         bool active=chain && f.stage[a]<int(chain->goals.size());
         int age=cfg.rollout_age?f.age[a]:age_[a];
         if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
@@ -165,8 +166,8 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
         const auto& path=model.path(state[a],chosen[a]);
         actions[a]=Action(chosen[a]&3);
         f.loc[a]=path[0]/4;f.dir[a]=path[0]%4;
-        bool arrived=assigned_[a] && f.stage[a]<int(assigned_[a]->goals.size()) &&
-                     f.loc[a]==assigned_[a]->goals[f.stage[a]];
+        bool arrived=assigned[a] && f.stage[a]<int(assigned[a]->goals.size()) &&
+                     f.loc[a]==assigned[a]->goals[f.stage[a]];
         if(arrived)++f.stage[a];
         if(cfg.rollout_age)f.age[a]=arrived?0:f.age[a]+1;
         f.operations[a]=cfg.operation_inherit?(chosen[a]>>2)|(int(W)<<4):OperationModel::waiting;

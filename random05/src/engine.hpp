@@ -20,7 +20,7 @@ struct Config {
     float flow_turn=0, flow_power=1, flow_alpha=1, flow_betweenness=0;
     bool flow_average=false, flow_normalize=false;
     int loop_extent=2;
-    bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
+    bool predict_matching=false, rollout_age=false, rollout_match=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0, intent_mode=0;
@@ -60,6 +60,8 @@ struct Frame {
     std::vector<Action> last_actions;
     int reverse_turns=0;
     std::vector<int> operations;
+    std::vector<const Chain*> active_chains, plain_chains;
+    std::vector<unsigned char> free_tasks;
 };
 struct Rollout {
     double score=-1e100;
@@ -96,11 +98,13 @@ private:
     std::unique_ptr<Graph> score_graph_;
     std::unique_ptr<OperationModel> operation_model_;
     std::vector<int> operations_;
-    std::vector<const Chain*> assigned_, score_assigned_;
+    std::vector<const Chain*> assigned_, score_assigned_, future_tasks_, future_plain_;
+    std::vector<float> future_lengths_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
     std::vector<Action> last_actions_;
     std::vector<int> predicted_loc_, predicted_dir_;
+    void match_future(Frame& frame) const;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;

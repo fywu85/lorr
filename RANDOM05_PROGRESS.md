@@ -504,3 +504,22 @@ The published NMS score of 3,050 used different instances and hardware.
   343/817/1,118; K32 cost1=743 and no inheritance=577. These do not approach
   the pipeline. K128 remains queued/running. The generic operation prototype
   has not reproduced the reference algorithm's reported performance.
+
+- Full-budget field revalidation is complete: field15 remains best at3,379
+  without the local flip; the other15 fields range3,012–3,270. The existing
+  field choice survives the stronger K1024/planner-seed3 comparison. All16 runs
+  are valid. The moving-footprint operation K128 case finishes at711; all6
+  operation ablations are complete, valid, and below the pipeline frontier.
+
+- Source369e2df/v36 adds an optional whole-task completion bonus in the rollout
+  score. The contested-goal regression passes; full bonus0/2/4/8/16/32 runs are
+  queued. Separately, the frontier is being measured with no horizon cutoff and
+  cutoff scales0.75–3. These are full-horizon comparisons, with unchanged tasks,
+  guidance, planner seed and allocation.
+
+- Optional known-pool task turnover in rollouts tests the same completion
+  diagnosis more directly. Finished simulated agents can take currently visible
+  free tasks; a per-rollout mask prevents duplicate use. Newly assigned cost is
+  rebased, and actual schedules remain unchanged. This forecast does not see
+  hidden future tasks or rematch all unopened assignments. No gain is assumed;
+  regression and full-run evidence are required.
