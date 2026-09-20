@@ -30,18 +30,25 @@ public:
         if (buckets_.size() != size_t(cost_limit + 1)) buckets_.assign(cost_limit + 1, {});
         for (auto& bucket : buckets_) bucket.clear();
         output.distance.assign(cells, infinity); output.pops = output.states = 0;
-        int pending = 0;
+        int pending = 0, current = 0, current_bucket = 0;
+        const int bucket_count = cost_limit + 1;
         auto offer = [&](int state, int cost) {
             if (cost >= distance_[state]) return;
             distance_[state] = cost;
-            buckets_[cost % buckets_.size()].push_back(state); ++pending;
+            // Every offer is current+edge, with edge in[0,cost_limit]. Keep
+            // the cyclic index directly instead of dividing in the hot loop.
+            int bucket = current_bucket + (cost - current);
+            if (bucket >= bucket_count) bucket -= bucket_count;
+            buckets_[bucket].push_back(state); ++pending;
         };
         offer(start * 4 + heading, 0);
-        int current = 0;
         while (pending) {
             if ((output.pops & 1023) == 0) check();
-            while (buckets_[current % buckets_.size()].empty()) ++current;
-            auto& bucket = buckets_[current % buckets_.size()];
+            while (buckets_[current_bucket].empty()) {
+                ++current;
+                if (++current_bucket == bucket_count) current_bucket = 0;
+            }
+            auto& bucket = buckets_[current_bucket];
             const int state = bucket.back(); bucket.pop_back(); --pending; ++output.pops;
             if (settled_[state] || distance_[state] != current) continue;
             settled_[state] = 1; ++output.states;
