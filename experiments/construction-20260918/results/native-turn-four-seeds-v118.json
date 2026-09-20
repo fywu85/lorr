@@ -1,0 +1,56 @@
+{
+  "checked_utc": "2026-09-20T22:09:54.149930+00:00",
+  "all_valid": true,
+  "source_commit": "dac3fc75cb6a149b3e9a6b4770b64170ead87ed9",
+  "binary_sha256": "4f194edc5a806ae31198ef5ff29b995372b2e92bf266f490c010dbf0574481a5",
+  "inputs": [
+    {
+      "path": "experiments/construction-20260918/results/native-turn-full-v113/verification.json",
+      "sha256": "58c7074ab141f62f174d125d2660d3fcc58d28b6996fce51eb9057ae0153119f"
+    },
+    {
+      "path": "experiments/construction-20260918/results/native-turn-full-v113-outcomes/accounting.json",
+      "sha256": "1abc2f485a424b5a1a66aa4fadd009928ff03cd801b66ca14a475a6645bacd6b"
+    },
+    {
+      "path": "experiments/construction-20260918/results/native-turn-seeds13-v118/verification.json",
+      "sha256": "68083c893ec1aa05a261995c6572d198f24e6d167a0358e784236e32c2a3fea3"
+    },
+    {
+      "path": "experiments/construction-20260918/results/native-turn-seeds13-v118-outcomes/accounting.json",
+      "sha256": "f3dc944434d638e7c3877e0aa4b7105f09cb8f4a26321c164ef0a6942dad7d7d"
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "control_totals": [
+    155120,
+    154999,
+    155056,
+    155020
+  ],
+  "candidate_totals": [
+    155095,
+    155115,
+    155146,
+    154861
+  ],
+  "differences": [
+    -25,
+    116,
+    90,
+    -159
+  ],
+  "control_mean": 155048.75,
+  "candidate_mean": 155054.25,
+  "mean_difference": 5.5,
+  "wins": 2,
+  "losses": 2,
+  "candidate_promoted": false,
+  "decision": "Retain guidance turn price 1. Price 4 has two wins and two losses, mean +5.5 tasks and no record. The guarded turn-4 pair is also mixed against the guarded turn-1 reference.",
+  "limits": "One fixed input and four solver seeds, guard OFF for this isolated turn-price comparison. Finite fairness evidence is not a starvation proof. Shared-host 5s development; strict 1s not certified."
+}

@@ -24,3 +24,12 @@ physical cores each, shared-host5s entry deadline, RSS below32decimalGB. Exact
 p90 controls must reproduce155173/155090 and their full V110 trajectory hashes.
 Preserve full action/task/waiting/resource accounting; no prefix-based ranking.
 No production code changes or new quality result are introduced by this profile.
+
+V120 is complete. The exact p90 controls reproduce155173/155090 and their
+full hashes. P95 scores155077/155036 (−96/−54), and p99 scores154811/154787
+(−362/−303). All losses occur in the final1000steps; both empty work and
+unfinished-task work increase. All six full cases, 300million actions, exact
+pre-intervention prefixes, fixed work and resource/ownership checks pass.
+Retain p90. These results agree with the earlier higher-quantile losses under
+pickupweight5 (V98); the new trial includes pickup8 and the matching guard.
+[Full report](../results/cutoff-quantiles-full-v120/summary.md).

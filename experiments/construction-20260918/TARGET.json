@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T21:28:50.788622+00:00",
+  "updated_utc": "2026-09-20T22:20:01.562382+00:00",
   "source": "User correction: target is NMS154795; success may be any valid full seed, with or without explicitly enabled tricks. Preserve a separate multiseed generic reference.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": 154795,
@@ -23,7 +23,7 @@
   "current_best_single_source": "37f592a48bdb24b936f8d0be8be22ddd405b4ddb",
   "current_best_single_completed_utc": "2026-09-20T20:36:47.428452+00:00",
   "current_best_single_budget": "Shared-host5s development; max0.991801379s, RSS11946876928bytes. Not strict1s certified.",
-  "pending_confirmation": "Guard confirmed across four solver seeds: +53/+57/+34/-12, mean +33, three wins. Native turn2 rejected; turn4 mixed -25/+90, further seeds1/3 V118 and turn4+guard V119 running. All-goal prewarm V117 full regressions pass; native/generic800screens pass; six full cases queued as8900733. No new peak beyond155173.",
+  "pending_confirmation": "None from V117/V118/V119/V120: all20full runs and independent accounting complete. Retain guarded turn1/p90/prewarmOFF profile. Turn4 four-seed mean+5.5 with two losses; guarded turn4 pair mixed; prewarm loses38/323; p95 loses96/54 and p99 loses362/303. Larger unwarmed cache exact on both seeds. Best155173 unchanged; strict1s certification remains deferred.",
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
   "minimum_successful_seeds": 1,
@@ -72,5 +72,11 @@
     155056,
     155020
   ],
-  "previous_guard_off_four_seed_evidence": "experiments/construction-20260918/results/p90-pickup8-four-seeds-v102.json"
+  "previous_guard_off_four_seed_evidence": "experiments/construction-20260918/results/p90-pickup8-four-seeds-v102.json",
+  "latest_completed_comparison_evidence": [
+    "experiments/construction-20260918/results/native-prewarm-full-v117/summary.md",
+    "experiments/construction-20260918/results/native-turn-seeds13-v118/summary.md",
+    "experiments/construction-20260918/results/native-turn-guard-full-v119/summary.md",
+    "experiments/construction-20260918/results/cutoff-quantiles-full-v120/summary.md"
+  ]
 }

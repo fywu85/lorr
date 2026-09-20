@@ -1,0 +1,803 @@
+{
+  "checked_utc": "2026-09-20T22:12:57.539468+00:00",
+  "all_valid": true,
+  "all_cases_completed": true,
+  "mode": "prewarm",
+  "reports": {
+    "trick_prewarm_base-s0-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 155173,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9321770,
+        "loaded": 40678230
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 470494,
+        "loaded": 585096
+      },
+      "post_last_completion_total": 1055590,
+      "post_last_completion_fraction": 0.0211118,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 11404,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469585,
+        "loaded": 585096
+      },
+      "unfinished_task_total": 1054681,
+      "unfinished_task_fraction": 0.02109362,
+      "completed_task_duration": {
+        "n": 155173,
+        "sum": 48945319,
+        "mean": 315.4241975085872,
+        "p90": 545
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34133,
+          "completed": 24165,
+          "completion_fraction": 0.7079658981044736,
+          "picked_unfinished": 6301,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 24165,
+            "sum": 6946091,
+            "mean": 287.4442789157873,
+            "p90": 498
+          },
+          "assignment_events_including_retargets": 38355
+        },
+        "4250": {
+          "first_admitted": 26345,
+          "completed": 16378,
+          "completion_fraction": 0.6216739419244638,
+          "picked_unfinished": 6300,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 16378,
+            "sum": 4445347,
+            "mean": 271.42184637928926,
+            "p90": 465
+          },
+          "assignment_events_including_retargets": 29908
+        },
+        "4500": {
+          "first_admitted": 18490,
+          "completed": 8551,
+          "completion_fraction": 0.46246619794483507,
+          "picked_unfinished": 6272,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 8551,
+            "sum": 2009023,
+            "mean": 234.94597123143492,
+            "p90": 371
+          },
+          "assignment_events_including_retargets": 21384
+        },
+        "4600": {
+          "first_admitted": 15380,
+          "completed": 5462,
+          "completion_fraction": 0.3551365409622887,
+          "picked_unfinished": 6251,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 5462,
+            "sum": 1180130,
+            "mean": 216.0618820944709,
+            "p90": 321
+          },
+          "assignment_events_including_retargets": 17986
+        },
+        "4750": {
+          "first_admitted": 10552,
+          "completed": 1048,
+          "completion_fraction": 0.09931766489764973,
+          "picked_unfinished": 5837,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 1048,
+            "sum": 153949,
+            "mean": 146.8979007633588,
+            "p90": 208
+          },
+          "assignment_events_including_retargets": 12408
+        },
+        "4900": {
+          "first_admitted": 5595,
+          "completed": 27,
+          "completion_fraction": 0.00482573726541555,
+          "picked_unfinished": 2158,
+          "unpicked": 3410,
+          "completed_elapsed": {
+            "n": 27,
+            "sum": 1888,
+            "mean": 69.92592592592592,
+            "p90": 91
+          },
+          "assignment_events_including_retargets": 6020
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_base-s0-r0/WAREHOUSE.json",
+      "input_sha256": "5a75681376c172bf9fa246166557d70ea7cfc41f7785d648558963ef6120e00d",
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0"
+    },
+    "trick_prewarm_cache-s0-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 155173,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9321770,
+        "loaded": 40678230
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 470494,
+        "loaded": 585096
+      },
+      "post_last_completion_total": 1055590,
+      "post_last_completion_fraction": 0.0211118,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 11404,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469585,
+        "loaded": 585096
+      },
+      "unfinished_task_total": 1054681,
+      "unfinished_task_fraction": 0.02109362,
+      "completed_task_duration": {
+        "n": 155173,
+        "sum": 48945319,
+        "mean": 315.4241975085872,
+        "p90": 545
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34133,
+          "completed": 24165,
+          "completion_fraction": 0.7079658981044736,
+          "picked_unfinished": 6301,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 24165,
+            "sum": 6946091,
+            "mean": 287.4442789157873,
+            "p90": 498
+          },
+          "assignment_events_including_retargets": 38355
+        },
+        "4250": {
+          "first_admitted": 26345,
+          "completed": 16378,
+          "completion_fraction": 0.6216739419244638,
+          "picked_unfinished": 6300,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 16378,
+            "sum": 4445347,
+            "mean": 271.42184637928926,
+            "p90": 465
+          },
+          "assignment_events_including_retargets": 29908
+        },
+        "4500": {
+          "first_admitted": 18490,
+          "completed": 8551,
+          "completion_fraction": 0.46246619794483507,
+          "picked_unfinished": 6272,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 8551,
+            "sum": 2009023,
+            "mean": 234.94597123143492,
+            "p90": 371
+          },
+          "assignment_events_including_retargets": 21384
+        },
+        "4600": {
+          "first_admitted": 15380,
+          "completed": 5462,
+          "completion_fraction": 0.3551365409622887,
+          "picked_unfinished": 6251,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 5462,
+            "sum": 1180130,
+            "mean": 216.0618820944709,
+            "p90": 321
+          },
+          "assignment_events_including_retargets": 17986
+        },
+        "4750": {
+          "first_admitted": 10552,
+          "completed": 1048,
+          "completion_fraction": 0.09931766489764973,
+          "picked_unfinished": 5837,
+          "unpicked": 3667,
+          "completed_elapsed": {
+            "n": 1048,
+            "sum": 153949,
+            "mean": 146.8979007633588,
+            "p90": 208
+          },
+          "assignment_events_including_retargets": 12408
+        },
+        "4900": {
+          "first_admitted": 5595,
+          "completed": 27,
+          "completion_fraction": 0.00482573726541555,
+          "picked_unfinished": 2158,
+          "unpicked": 3410,
+          "completed_elapsed": {
+            "n": 27,
+            "sum": 1888,
+            "mean": 69.92592592592592,
+            "p90": 91
+          },
+          "assignment_events_including_retargets": 6020
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_cache-s0-r0/WAREHOUSE.json",
+      "input_sha256": "af8dc8881923a32d2bdea4edf797ccbe438ec494b4274cad9632236ccd0a5d71",
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0"
+    },
+    "trick_prewarm_all-s0-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 155135,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9320150,
+        "loaded": 40679850
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 471285,
+        "loaded": 595316
+      },
+      "post_last_completion_total": 1066601,
+      "post_last_completion_fraction": 0.02133202,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 12384,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 471145,
+        "loaded": 595316
+      },
+      "unfinished_task_total": 1066461,
+      "unfinished_task_fraction": 0.02132922,
+      "completed_task_duration": {
+        "n": 155135,
+        "sum": 48933539,
+        "mean": 315.4255261546395,
+        "p90": 546
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34109,
+          "completed": 24145,
+          "completion_fraction": 0.707877686241168,
+          "picked_unfinished": 6278,
+          "unpicked": 3686,
+          "completed_elapsed": {
+            "n": 24145,
+            "sum": 6935776,
+            "mean": 287.25516670118037,
+            "p90": 498
+          },
+          "assignment_events_including_retargets": 38279
+        },
+        "4250": {
+          "first_admitted": 26260,
+          "completed": 16296,
+          "completion_fraction": 0.6205635948210205,
+          "picked_unfinished": 6278,
+          "unpicked": 3686,
+          "completed_elapsed": {
+            "n": 16296,
+            "sum": 4425925,
+            "mean": 271.5957903780069,
+            "p90": 464
+          },
+          "assignment_events_including_retargets": 29769
+        },
+        "4500": {
+          "first_admitted": 18441,
+          "completed": 8524,
+          "completion_fraction": 0.46223089854129384,
+          "picked_unfinished": 6231,
+          "unpicked": 3686,
+          "completed_elapsed": {
+            "n": 8524,
+            "sum": 2003655,
+            "mean": 235.06041764429844,
+            "p90": 371
+          },
+          "assignment_events_including_retargets": 21257
+        },
+        "4600": {
+          "first_admitted": 15324,
+          "completed": 5434,
+          "completion_fraction": 0.35460715217958755,
+          "picked_unfinished": 6204,
+          "unpicked": 3686,
+          "completed_elapsed": {
+            "n": 5434,
+            "sum": 1171808,
+            "mean": 215.6437246963563,
+            "p90": 320
+          },
+          "assignment_events_including_retargets": 17874
+        },
+        "4750": {
+          "first_admitted": 10460,
+          "completed": 1019,
+          "completion_fraction": 0.0974187380497132,
+          "picked_unfinished": 5755,
+          "unpicked": 3686,
+          "completed_elapsed": {
+            "n": 1019,
+            "sum": 148862,
+            "mean": 146.0863591756624,
+            "p90": 208
+          },
+          "assignment_events_including_retargets": 12337
+        },
+        "4900": {
+          "first_admitted": 5585,
+          "completed": 31,
+          "completion_fraction": 0.005550581915846016,
+          "picked_unfinished": 2114,
+          "unpicked": 3440,
+          "completed_elapsed": {
+            "n": 31,
+            "sum": 2195,
+            "mean": 70.80645161290323,
+            "p90": 87
+          },
+          "assignment_events_including_retargets": 6038
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_all-s0-r0/WAREHOUSE.json",
+      "input_sha256": "5de3012d12caa3945c7ef5b5b84f75603631a5b80078e335608c3d31f6e10819",
+      "trajectory_sha256": "28fdd80753b054d6955321922cd67b92f213d58cdbbd8fd83ea0ab901dcc7ec1"
+    },
+    "trick_prewarm_base-s2-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 155090,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9326353,
+        "loaded": 40673647
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 470419,
+        "loaded": 596640
+      },
+      "post_last_completion_total": 1067059,
+      "post_last_completion_fraction": 0.02134118,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 12693,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469239,
+        "loaded": 596640
+      },
+      "unfinished_task_total": 1065879,
+      "unfinished_task_fraction": 0.02131758,
+      "completed_task_duration": {
+        "n": 155090,
+        "sum": 48934121,
+        "mean": 315.5208008253272,
+        "p90": 546
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34130,
+          "completed": 24168,
+          "completion_fraction": 0.7081160269557574,
+          "picked_unfinished": 6340,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 24168,
+            "sum": 6951432,
+            "mean": 287.6295928500497,
+            "p90": 499
+          },
+          "assignment_events_including_retargets": 38065
+        },
+        "4250": {
+          "first_admitted": 26282,
+          "completed": 16321,
+          "completion_fraction": 0.620995358039723,
+          "picked_unfinished": 6339,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 16321,
+            "sum": 4436463,
+            "mean": 271.8254396176705,
+            "p90": 466
+          },
+          "assignment_events_including_retargets": 29528
+        },
+        "4500": {
+          "first_admitted": 18443,
+          "completed": 8517,
+          "completion_fraction": 0.46180122539716967,
+          "picked_unfinished": 6304,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 8517,
+            "sum": 2001459,
+            "mean": 234.9957731595632,
+            "p90": 371
+          },
+          "assignment_events_including_retargets": 21084
+        },
+        "4600": {
+          "first_admitted": 15312,
+          "completed": 5414,
+          "completion_fraction": 0.3535788923719958,
+          "picked_unfinished": 6276,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 5414,
+            "sum": 1166634,
+            "mean": 215.48466937569265,
+            "p90": 319
+          },
+          "assignment_events_including_retargets": 17726
+        },
+        "4750": {
+          "first_admitted": 10490,
+          "completed": 1031,
+          "completion_fraction": 0.0982840800762631,
+          "picked_unfinished": 5837,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 1031,
+            "sum": 151302,
+            "mean": 146.75266731328807,
+            "p90": 208
+          },
+          "assignment_events_including_retargets": 12274
+        },
+        "4900": {
+          "first_admitted": 5534,
+          "completed": 30,
+          "completion_fraction": 0.005421033610408385,
+          "picked_unfinished": 2142,
+          "unpicked": 3362,
+          "completed_elapsed": {
+            "n": 30,
+            "sum": 2156,
+            "mean": 71.86666666666666,
+            "p90": 90
+          },
+          "assignment_events_including_retargets": 5930
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_base-s2-r0/WAREHOUSE.json",
+      "input_sha256": "f36fcd0db37cb87e6d40b1fd963c3196795e1f66f35635fd6a1cd938de95d503",
+      "trajectory_sha256": "274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b"
+    },
+    "trick_prewarm_cache-s2-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 155090,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9326353,
+        "loaded": 40673647
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 470419,
+        "loaded": 596640
+      },
+      "post_last_completion_total": 1067059,
+      "post_last_completion_fraction": 0.02134118,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 12693,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469239,
+        "loaded": 596640
+      },
+      "unfinished_task_total": 1065879,
+      "unfinished_task_fraction": 0.02131758,
+      "completed_task_duration": {
+        "n": 155090,
+        "sum": 48934121,
+        "mean": 315.5208008253272,
+        "p90": 546
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34130,
+          "completed": 24168,
+          "completion_fraction": 0.7081160269557574,
+          "picked_unfinished": 6340,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 24168,
+            "sum": 6951432,
+            "mean": 287.6295928500497,
+            "p90": 499
+          },
+          "assignment_events_including_retargets": 38065
+        },
+        "4250": {
+          "first_admitted": 26282,
+          "completed": 16321,
+          "completion_fraction": 0.620995358039723,
+          "picked_unfinished": 6339,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 16321,
+            "sum": 4436463,
+            "mean": 271.8254396176705,
+            "p90": 466
+          },
+          "assignment_events_including_retargets": 29528
+        },
+        "4500": {
+          "first_admitted": 18443,
+          "completed": 8517,
+          "completion_fraction": 0.46180122539716967,
+          "picked_unfinished": 6304,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 8517,
+            "sum": 2001459,
+            "mean": 234.9957731595632,
+            "p90": 371
+          },
+          "assignment_events_including_retargets": 21084
+        },
+        "4600": {
+          "first_admitted": 15312,
+          "completed": 5414,
+          "completion_fraction": 0.3535788923719958,
+          "picked_unfinished": 6276,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 5414,
+            "sum": 1166634,
+            "mean": 215.48466937569265,
+            "p90": 319
+          },
+          "assignment_events_including_retargets": 17726
+        },
+        "4750": {
+          "first_admitted": 10490,
+          "completed": 1031,
+          "completion_fraction": 0.0982840800762631,
+          "picked_unfinished": 5837,
+          "unpicked": 3622,
+          "completed_elapsed": {
+            "n": 1031,
+            "sum": 151302,
+            "mean": 146.75266731328807,
+            "p90": 208
+          },
+          "assignment_events_including_retargets": 12274
+        },
+        "4900": {
+          "first_admitted": 5534,
+          "completed": 30,
+          "completion_fraction": 0.005421033610408385,
+          "picked_unfinished": 2142,
+          "unpicked": 3362,
+          "completed_elapsed": {
+            "n": 30,
+            "sum": 2156,
+            "mean": 71.86666666666666,
+            "p90": 90
+          },
+          "assignment_events_including_retargets": 5930
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_cache-s2-r0/WAREHOUSE.json",
+      "input_sha256": "552003d1d2d61df56c85353840b636b6f3624bb2cae9d9f9235d9a702a96570a",
+      "trajectory_sha256": "274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b"
+    },
+    "trick_prewarm_all-s2-r0": {
+      "steps": 5000,
+      "robots": 10000,
+      "completed": 154767,
+      "all_robot_steps": 50000000,
+      "phase_steps": {
+        "idle": 0,
+        "empty": 9320111,
+        "loaded": 40679889
+      },
+      "post_last_completion_steps": {
+        "idle": 0,
+        "empty": 470624,
+        "loaded": 605295
+      },
+      "post_last_completion_total": 1075919,
+      "post_last_completion_fraction": 0.02151838,
+      "post_last_completion_work_on_tasks_completed_by_another_robot": 13482,
+      "robots_with_no_completion": 0,
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469056,
+        "loaded": 605295
+      },
+      "unfinished_task_total": 1074351,
+      "unfinished_task_fraction": 0.02148702,
+      "completed_task_duration": {
+        "n": 154767,
+        "sum": 48925649,
+        "mean": 316.12455497619004,
+        "p90": 546
+      },
+      "late_first_admission_cohorts": {
+        "4000": {
+          "first_admitted": 34012,
+          "completed": 24047,
+          "completion_fraction": 0.7070151711160767,
+          "picked_unfinished": 6296,
+          "unpicked": 3669,
+          "completed_elapsed": {
+            "n": 24047,
+            "sum": 6925162,
+            "mean": 287.9844471243814,
+            "p90": 498
+          },
+          "assignment_events_including_retargets": 38189
+        },
+        "4250": {
+          "first_admitted": 26213,
+          "completed": 16250,
+          "completion_fraction": 0.6199214130393317,
+          "picked_unfinished": 6294,
+          "unpicked": 3669,
+          "completed_elapsed": {
+            "n": 16250,
+            "sum": 4421170,
+            "mean": 272.072,
+            "p90": 464
+          },
+          "assignment_events_including_retargets": 29670
+        },
+        "4500": {
+          "first_admitted": 18401,
+          "completed": 8478,
+          "completion_fraction": 0.46073582957447967,
+          "picked_unfinished": 6254,
+          "unpicked": 3669,
+          "completed_elapsed": {
+            "n": 8478,
+            "sum": 1998907,
+            "mean": 235.77577258787448,
+            "p90": 373
+          },
+          "assignment_events_including_retargets": 21167
+        },
+        "4600": {
+          "first_admitted": 15290,
+          "completed": 5394,
+          "completion_fraction": 0.3527795945062132,
+          "picked_unfinished": 6227,
+          "unpicked": 3669,
+          "completed_elapsed": {
+            "n": 5394,
+            "sum": 1162669,
+            "mean": 215.54857248794957,
+            "p90": 319
+          },
+          "assignment_events_including_retargets": 17792
+        },
+        "4750": {
+          "first_admitted": 10441,
+          "completed": 1011,
+          "completion_fraction": 0.09682980557417872,
+          "picked_unfinished": 5761,
+          "unpicked": 3669,
+          "completed_elapsed": {
+            "n": 1011,
+            "sum": 148473,
+            "mean": 146.85756676557864,
+            "p90": 209
+          },
+          "assignment_events_including_retargets": 12278
+        },
+        "4900": {
+          "first_admitted": 5551,
+          "completed": 36,
+          "completion_fraction": 0.006485317960727797,
+          "picked_unfinished": 2104,
+          "unpicked": 3411,
+          "completed_elapsed": {
+            "n": 36,
+            "sum": 2653,
+            "mean": 73.69444444444444,
+            "p90": 93
+          },
+          "assignment_events_including_retargets": 5980
+        }
+      },
+      "input_path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-full-v117-20260920/trick_prewarm_all-s2-r0/WAREHOUSE.json",
+      "input_sha256": "f084a2db536b0882431ff7dc9085511762b95d3b625e5bf29c4ba9a0b9651d0d",
+      "trajectory_sha256": "4dca03a09e7ba58dc28da0541bbe2a9c8e903c1ee14d8ae7c7b33b9354fc06a9"
+    }
+  },
+  "pairs": [
+    {
+      "seed": 0,
+      "variant": "trick_prewarm_cache",
+      "tasks_difference": 0,
+      "empty_work_difference": 0,
+      "unfinished_work_difference": 0
+    },
+    {
+      "seed": 0,
+      "variant": "trick_prewarm_all",
+      "tasks_difference": -38,
+      "empty_work_difference": -1620,
+      "unfinished_work_difference": 11780
+    },
+    {
+      "seed": 2,
+      "variant": "trick_prewarm_cache",
+      "tasks_difference": 0,
+      "empty_work_difference": 0,
+      "unfinished_work_difference": 0
+    },
+    {
+      "seed": 2,
+      "variant": "trick_prewarm_all",
+      "tasks_difference": -323,
+      "empty_work_difference": -6242,
+      "unfinished_work_difference": 8472
+    }
+  ],
+  "verification_sha256": "5cdd0a84bf734c6506df15a8630c0aaa4baaf01951c63d34b751e8f9e4034047",
+  "allocation": {
+    "hostname": "research57",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      32,
+      96
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        32,
+        96
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      32
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "job_id": "8900736",
+  "limits": "Independent accounting of verified complete trajectories. End-censored work and changed cohorts are not causal savings or a throughput upper bound. Prefix checks apply only to percentile profiles."
+}

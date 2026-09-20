@@ -1,0 +1,397 @@
+{
+  "checked_utc": "2026-09-20T22:13:49.981247+00:00",
+  "all_valid": true,
+  "source_commit": "3e319f175859396b91f97364b320c6794a85cbb7",
+  "binary_sha256": "e3ec32ecdfdaf06f7db139da3857af8fa0ad43b98bd67479f7b9bd969dc1302c",
+  "inputs": {
+    "verification": {
+      "path": "experiments/construction-20260918/results/native-prewarm-full-v117/verification.json",
+      "sha256": "5cdd0a84bf734c6506df15a8630c0aaa4baaf01951c63d34b751e8f9e4034047"
+    },
+    "metrics": {
+      "path": "experiments/construction-20260918/results/native-prewarm-full-v117/metrics.json",
+      "sha256": "8ab554cf864b937b54efd0fa2f4fbb377ef7318123a81ba9c017ff18ce08d1d3"
+    },
+    "accounting": {
+      "path": "experiments/construction-20260918/results/native-prewarm-full-v117-outcomes/accounting.json",
+      "sha256": "4c2492efa31613a7df15b8ad6fa62cd1b23ea7d7fb16d50dd779c2db741c8016"
+    }
+  },
+  "summarizer_sha256": "d6c023295aa75cd4fa518ebe0a0de16eca82a6b56f04ecd4525eff908ca69279",
+  "rows": [
+    {
+      "case": "trick_prewarm_base-s0-r0",
+      "seed": 0,
+      "variant": "trick_prewarm_base",
+      "tasks": 155173,
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46990020,
+        "turn": 1512971,
+        "wait": 1497009
+      },
+      "action_fractions": {
+        "forward": 0.9398004,
+        "turn": 0.03025942,
+        "wait": 0.02994018
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8351879,
+            "turn": 613186,
+            "wait": 356705
+          },
+          "total": 9321770,
+          "fraction_of_all_actions": 0.1864354
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38638141,
+            "turn": 899785,
+            "wait": 1140304
+          },
+          "total": 40678230,
+          "fraction_of_all_actions": 0.8135646
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469585,
+        "loaded": 585096
+      },
+      "unfinished_task_total": 1054681,
+      "unfinished_task_fraction": 0.02109362,
+      "completed_task_robot_work": {
+        "n": 155173,
+        "sum": 48945319,
+        "mean": 315.4241975085872,
+        "p90": 545
+      },
+      "robots_with_no_completion": 0
+    },
+    {
+      "case": "trick_prewarm_cache-s0-r0",
+      "seed": 0,
+      "variant": "trick_prewarm_cache",
+      "tasks": 155173,
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46990020,
+        "turn": 1512971,
+        "wait": 1497009
+      },
+      "action_fractions": {
+        "forward": 0.9398004,
+        "turn": 0.03025942,
+        "wait": 0.02994018
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8351879,
+            "turn": 613186,
+            "wait": 356705
+          },
+          "total": 9321770,
+          "fraction_of_all_actions": 0.1864354
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38638141,
+            "turn": 899785,
+            "wait": 1140304
+          },
+          "total": 40678230,
+          "fraction_of_all_actions": 0.8135646
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469585,
+        "loaded": 585096
+      },
+      "unfinished_task_total": 1054681,
+      "unfinished_task_fraction": 0.02109362,
+      "completed_task_robot_work": {
+        "n": 155173,
+        "sum": 48945319,
+        "mean": 315.4241975085872,
+        "p90": 545
+      },
+      "robots_with_no_completion": 0
+    },
+    {
+      "case": "trick_prewarm_all-s0-r0",
+      "seed": 0,
+      "variant": "trick_prewarm_all",
+      "tasks": 155135,
+      "trajectory_sha256": "28fdd80753b054d6955321922cd67b92f213d58cdbbd8fd83ea0ab901dcc7ec1",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46982147,
+        "turn": 1512761,
+        "wait": 1505092
+      },
+      "action_fractions": {
+        "forward": 0.93964294,
+        "turn": 0.03025522,
+        "wait": 0.03010184
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8349513,
+            "turn": 612373,
+            "wait": 358264
+          },
+          "total": 9320150,
+          "fraction_of_all_actions": 0.186403
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38632634,
+            "turn": 900388,
+            "wait": 1146828
+          },
+          "total": 40679850,
+          "fraction_of_all_actions": 0.813597
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 471145,
+        "loaded": 595316
+      },
+      "unfinished_task_total": 1066461,
+      "unfinished_task_fraction": 0.02132922,
+      "completed_task_robot_work": {
+        "n": 155135,
+        "sum": 48933539,
+        "mean": 315.4255261546395,
+        "p90": 546
+      },
+      "robots_with_no_completion": 0
+    },
+    {
+      "case": "trick_prewarm_base-s2-r0",
+      "seed": 2,
+      "variant": "trick_prewarm_base",
+      "tasks": 155090,
+      "trajectory_sha256": "274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46974668,
+        "turn": 1513460,
+        "wait": 1511872
+      },
+      "action_fractions": {
+        "forward": 0.93949336,
+        "turn": 0.0302692,
+        "wait": 0.03023744
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8350526,
+            "turn": 614335,
+            "wait": 361492
+          },
+          "total": 9326353,
+          "fraction_of_all_actions": 0.18652706
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38624142,
+            "turn": 899125,
+            "wait": 1150380
+          },
+          "total": 40673647,
+          "fraction_of_all_actions": 0.81347294
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469239,
+        "loaded": 596640
+      },
+      "unfinished_task_total": 1065879,
+      "unfinished_task_fraction": 0.02131758,
+      "completed_task_robot_work": {
+        "n": 155090,
+        "sum": 48934121,
+        "mean": 315.5208008253272,
+        "p90": 546
+      },
+      "robots_with_no_completion": 0
+    },
+    {
+      "case": "trick_prewarm_cache-s2-r0",
+      "seed": 2,
+      "variant": "trick_prewarm_cache",
+      "tasks": 155090,
+      "trajectory_sha256": "274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46974668,
+        "turn": 1513460,
+        "wait": 1511872
+      },
+      "action_fractions": {
+        "forward": 0.93949336,
+        "turn": 0.0302692,
+        "wait": 0.03023744
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8350526,
+            "turn": 614335,
+            "wait": 361492
+          },
+          "total": 9326353,
+          "fraction_of_all_actions": 0.18652706
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38624142,
+            "turn": 899125,
+            "wait": 1150380
+          },
+          "total": 40673647,
+          "fraction_of_all_actions": 0.81347294
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469239,
+        "loaded": 596640
+      },
+      "unfinished_task_total": 1065879,
+      "unfinished_task_fraction": 0.02131758,
+      "completed_task_robot_work": {
+        "n": 155090,
+        "sum": 48934121,
+        "mean": 315.5208008253272,
+        "p90": 546
+      },
+      "robots_with_no_completion": 0
+    },
+    {
+      "case": "trick_prewarm_all-s2-r0",
+      "seed": 2,
+      "variant": "trick_prewarm_all",
+      "tasks": 154767,
+      "trajectory_sha256": "4dca03a09e7ba58dc28da0541bbe2a9c8e903c1ee14d8ae7c7b33b9354fc06a9",
+      "total_actions": 50000000,
+      "actions": {
+        "forward": 46882247,
+        "turn": 1518576,
+        "wait": 1599177
+      },
+      "action_fractions": {
+        "forward": 0.93764494,
+        "turn": 0.03037152,
+        "wait": 0.03198354
+      },
+      "phases": {
+        "idle": {
+          "actions": {
+            "forward": 0,
+            "turn": 0,
+            "wait": 0
+          },
+          "total": 0,
+          "fraction_of_all_actions": 0.0
+        },
+        "empty": {
+          "actions": {
+            "forward": 8330539,
+            "turn": 612937,
+            "wait": 376635
+          },
+          "total": 9320111,
+          "fraction_of_all_actions": 0.18640222
+        },
+        "loaded": {
+          "actions": {
+            "forward": 38551708,
+            "turn": 905639,
+            "wait": 1222542
+          },
+          "total": 40679889,
+          "fraction_of_all_actions": 0.81359778
+        }
+      },
+      "unfinished_task_steps": {
+        "idle": 0,
+        "empty": 469056,
+        "loaded": 605295
+      },
+      "unfinished_task_total": 1074351,
+      "unfinished_task_fraction": 0.02148702,
+      "completed_task_robot_work": {
+        "n": 154767,
+        "sum": 48925649,
+        "mean": 316.12455497619004,
+        "p90": 546
+      },
+      "robots_with_no_completion": 0
+    }
+  ],
+  "limits": [
+    "Summarizes completed verified artifacts; does not replay raw actions again.",
+    "Empty/loaded/idle partitions and forward/turn/wait partitions each sum to all actions.",
+    "Unfinished work overlaps both partitions; never add it as a separate cost.",
+    "Empty travel, turns and waits include necessary work, not just avoidable overhead.",
+    "Temporal offered actions are overwritten with the final plan before movement logging; zero blocked/safety counts cannot establish uncongested motion.",
+    "End-censored work and action fractions are not causal savings or throughput upper bounds."
+  ]
+}

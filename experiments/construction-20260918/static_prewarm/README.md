@@ -55,3 +55,14 @@ assignments agree across all three arms. Complete prewarming changes the trace,
 prepares38586tables in23.114s during real initialization, peaks at15.957GB RSS,
 and has maximum entry0.760948s in this screen. The startup task counts are not
 ranked. Generic800screen8900723/verifier8900724 passes at21:29:31UTC, exact18958/hashc0f1c9fb... . Full benchmark8900733 now compares all six full cases; no prefix quality ranking.
+
+All six full V117 runs and independent accounting pass. Prewarming gives
+155135/154767, losing38/323 against the exact155173/155090 controls, so it
+remains OFF. The larger unwarmed cache reproduces both full trajectories exactly.
+Full prewarm RSS is19.694/19.692GB, versus15.317/15.313GB for the larger
+unwarmed cache and11.949/11.968GB for the original cache. The prewarm component
+takes23.577/23.477s within successful30s initialization; ordinary entries peak
+at0.7474/0.7466s. These shared-host timings do not certify strict1s behavior
+or isolate a speedup. All first-half tasks complete, initialnever0, maximum
+one retarget and no after-pickup reassignment. Waiting-time tails are mixed.
+[Full results](../results/native-prewarm-full-v117/summary.md).

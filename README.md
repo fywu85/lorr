@@ -53,6 +53,8 @@ These are solver seeds on one fixed input. The generic six-seed reference remain
 144,392.17. Shared-host 5s development results are separate from strict 1s
 certification. [Verified result and exact configuration](experiments/construction-20260918/results/match-horizon-native-full-v110/summary.md).
 
+The [latest 20 full refinement runs](experiments/construction-20260918/results/warehouse-refinement-round-v117-v120.md) preserve this best: turn-price changes are mixed, complete prewarming loses throughput, and larger cutoff margins lose on both seeds. The confirmed configuration remains unchanged.
+
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 
 [Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. Those diagnostic prototypes were separate from the production planner. A [follow-up Fable 5.1 Max review](experiments/throughput-20260918-fable/README.md) was completed through Claude Code CLI.

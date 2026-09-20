@@ -1,0 +1,69 @@
+--- a/experiments/construction-20260918/static_prewarm/run.py
++++ b/experiments/construction-20260918/static_prewarm/run.py
+@@ -8,7 +8,7 @@
+ def write(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
+ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+ def main():
+- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--raw',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--execute',action='store_true');p.add_argument('--threads',type=int,choices=[4,8,16],default=4);a=p.parse_args();raw=a.raw.resolve();out=a.output.resolve()
++ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--raw',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.raw.resolve();out=a.output.resolve()
+  if not a.execute:
+   raw.mkdir(exist_ok=False,parents=True);build=ROOT/'runs/cgar-native-turn-build-v113-20260920';b=read(build/'build.json')
+   copies={'run.py':Path(__file__),'probe.cpp':Path(__file__).with_name('probe.cpp'),'build.json':build/'build.json','warehouse.map':ROOT/'mr24/warehouse.domain/maps/warehouse_large.map','cpu_resources.py':ROOT/'tools/cpu_resources.py'}
+@@ -17,19 +17,19 @@
+   for source in (ROOT/'cgar/inc').rglob('*'):
+    if source.is_file():copies.setdefault(str(source.relative_to(ROOT)),source)
+   for name,source in copies.items():target=raw/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+-  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),output=str(out),files={n:sha(raw/n) for n in copies},source_commit=b['source_commit'],threads=a.threads,mode='isolated_feasibility_only'))
+-  cmd=['/usr/bin/python3',str(raw/'run.py'),'--raw',str(raw),'--output',str(out),'--threads',str(a.threads),'--execute'];job=raw/'job.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,cmd))+'\n')
+-  submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded',str(a.threads),'-binding','linear:'+str(a.threads),'-l','exclusive=false,h_rt=00:15:00,h_vmem='+str(32//a.threads)+'G','-m','n','-N','native_prewarm_probe','-j','y','-o',str(raw/'job.log'),'-S','/bin/bash',str(job)]
++  write(raw/'request.json',dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),root=str(ROOT),output=str(out),files={n:sha(raw/n) for n in copies},source_commit=b['source_commit'],mode='isolated_feasibility_only'))
++  cmd=['/usr/bin/python3',str(raw/'run.py'),'--raw',str(raw),'--output',str(out),'--execute'];job=raw/'job.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,cmd))+'\n')
++  submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','4','-binding','linear:4','-l','exclusive=false,h_rt=00:15:00,h_vmem=8G','-m','n','-N','native_prewarm_probe','-j','y','-o',str(raw/'job.log'),'-S','/bin/bash',str(job)]
+   r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);write(raw/'submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout));r.check_returncode();assert re.fullmatch(r'\d+\s*',r.stdout);print(r.stdout,end='');subprocess.run(['qrls',r.stdout.strip()],check=True);return
+- request=read(raw/'request.json');assert request['output']==str(out) and request['threads']==a.threads
++ request=read(raw/'request.json');assert request['output']==str(out)
+  for name,h in request['files'].items():assert sha(raw/name)==h,name
+  sys.path.insert(0,str(raw));from cpu_resources import cpu_resources
+- cpu=cpu_resources();assert cpu['effective_cpu_quota'] is None and cpu['physical_cores_visible']==a.threads;assert cpu['cpu_model']=='AMD EPYC 9354 32-Core Processor';os.sched_setaffinity(0,cpu['representative_cpus']);write(raw/'allocation.json',cpu)
++ cpu=cpu_resources();assert cpu['effective_cpu_quota'] is None and cpu['physical_cores_visible']==4;assert cpu['cpu_model']=='AMD EPYC 9354 32-Core Processor';os.sched_setaffinity(0,cpu['representative_cpus']);write(raw/'allocation.json',cpu)
+  b=read(raw/'build.json')
+  for name,h in dict(b['sources'],**b['test_sources']).items():assert sha(raw/name)==h
+  compiler=ROOT/'env/bin/x86_64-conda-linux-gnu-c++';command=[str(compiler),'-O3','-DNDEBUG','-std=c++17','-pthread','-I'+str(raw/'cgar/cgar_planner'),'-I'+str(raw/'cgar/inc'),'-isystem',str(ROOT/'env/include'),'-Wl,-rpath,'+str(ROOT/'env/lib'),str(raw/'probe.cpp'),str(raw/'cgar/cgar_planner/cgar.cpp'),'-o',str(raw/'probe')]
+- subprocess.run(command,check=True);subprocess.run([str(raw/'probe'),str(raw/'warehouse.map'),str(raw/'report.json'),str(a.threads)],check=True)
+- report=read(raw/'report.json');assert report['all_valid'] and report['offline_only'] and report['goals']==38586 and report['threads']==a.threads and report['independent_heap_states']==4*4*38586
++ subprocess.run(command,check=True);subprocess.run([str(raw/'probe'),str(raw/'warehouse.map'),str(raw/'report.json')],check=True)
++ report=read(raw/'report.json');assert report['all_valid'] and report['offline_only'] and report['goals']==38586 and report['threads']==4 and report['independent_heap_states']==4*4*38586
+  for name,h in request['files'].items():assert sha(raw/name)==h,name
+  out.mkdir(exist_ok=False,parents=True)
+  for name in ['request.json','submission.json','allocation.json','report.json']:shutil.copy2(raw/name,out/name)
+--- a/experiments/construction-20260918/static_prewarm/probe.cpp
++++ b/experiments/construction-20260918/static_prewarm/probe.cpp
+@@ -12,9 +12,7 @@
+ using json=nlohmann::ordered_json;
+ using Clock=std::chrono::steady_clock;
+ int main(int argc,char**argv) {
+- if(argc!=4)throw std::runtime_error("usage: probe MAP OUTPUT THREADS");
+- const int threads=std::stoi(argv[3]);
+- if(threads<1||threads>32)throw std::runtime_error("threads outside [1,32]");
++ if(argc!=3)throw std::runtime_error("usage: probe MAP OUTPUT");
+  std::ifstream input(argv[1]);std::string word;int rows=0,cols=0;
+  while(input>>word&&word!="map"){if(word=="height")input>>rows;else if(word=="width")input>>cols;}
+  std::vector<int> map;
+@@ -32,7 +30,7 @@
+  long long stored=0;json checkpoints=json::array();
+  for(size_t first=0;first<goals.size();first+=32){
+   const std::vector<int> batch(goals.begin()+first,goals.begin()+std::min(goals.size(),first+32));
+-  oracle.prefetch(batch,threads,deadline);
++  oracle.prefetch(batch,4,deadline);
+   for(int goal:batch){const auto* t=oracle.table(goal,deadline);stored+=t->storage_bytes();
+    for(int h=0;h<4;++h)if(oracle.value(*t,goal,h)!=0)throw std::runtime_error("self distance not zero");}
+   oracle.trim();
+@@ -64,7 +62,7 @@
+  struct rusage usage{};getrusage(RUSAGE_SELF,&usage);
+  const long long peak=usage.ru_maxrss*1024LL;
+  if(peak>=32000000000LL)throw std::runtime_error("probe exceeds decimal32GB");
+- json result={{"all_valid",true},{"offline_only",true},{"goals",goals.size()},{"threads",threads},{"logical_capacity",oracle.capacity()},
++ json result={{"all_valid",true},{"offline_only",true},{"goals",goals.size()},{"threads",4},{"logical_capacity",oracle.capacity()},
+   {"logical_cache_limit_bytes",cache_limit},{"stored_table_bytes",stored},{"peak_rss_bytes",peak},{"prewarm_wall_seconds",wall},
+   {"prewarm_cpu_seconds",cpu},{"prefetched_builds",oracle.prefetched_builds},{"wide_fallback_tables",oracle.wide_fallback_tables},
+   {"independent_heap_states",compared},{"field_fnv1a64",fingerprint},{"checkpoints",checkpoints},

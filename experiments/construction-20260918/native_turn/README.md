@@ -46,3 +46,14 @@ onseed2. No new peak. V118 full seeds1/3 compares1vs4 on the frozen V113 binary
 and exact V102 controls. V119 separately compares turn4 guardOFFvsON on seeds0/2,
 with exact V113 turn4 controls. Full validation and independent accounting are
 queued after each benchmark; no prefix selection or assumed additive gains.
+
+V118 and V119 are complete, with exact controls and independent accounting.
+Across all four guard-OFF seeds, turn4 gives155095/155115/155146/154861
+against155120/154999/155056/155020: differences−25/+116/+90/−159,
+mean+5.5, two wins and two losses. Retain turn1. The separate guarded turn4
+pair is155164/155144, changes+69/−2 against turn4 guardOFF, and−9/+54
+against guarded turn1. No new record; keep the confirmed turn1 guardON profile.
+Every first-half task completes and all unopened/started ownership limits hold;
+waiting-time tails remain mixed. See [four-seed aggregate](../results/native-turn-four-seeds-v118.json),
+[V118](../results/native-turn-seeds13-v118/summary.md), and
+[V119](../results/native-turn-guard-full-v119/summary.md).
