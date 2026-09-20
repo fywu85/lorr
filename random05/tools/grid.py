@@ -45,14 +45,15 @@ def submit(a):
             if c.get('team')=='nms':
                 shutil.copytree(ROOT/'nms',work/'cwd',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
             else:(work/'cwd').mkdir()
-    spec.update(physical=physical,slots=slots,exclusive=False)
+    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(32*len(spec['cases'])+slots-1)//slots)
+    spec.update(physical=physical,slots=slots,exclusive=False,memory_per_slot_gib=memory_per_slot)
     write(out/'spec.json',spec)
     # Freeze the runner too; ROOT for the frozen script is supplied by its spec.
     shutil.copy2(Path(__file__),out/'runner.py')
     command=['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)]
     script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in command)+'\n')
     args=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','e','-cwd','-q','debian.q','-pe','threaded',str(slots),
-          '-binding','linear:'+str(physical),'-l','h_rt=03:00:00,h_vmem=8G','-m','n','-N','r05_'+a.kind,
+          '-binding','linear:'+str(physical),'-l','h_rt=03:00:00,h_vmem='+str(memory_per_slot)+'G','-m','n','-N','r05_'+a.kind,
           '-j','y','-o',str(out/'scheduler.log'),'-S','/bin/bash',str(script)]
     r=subprocess.run(args,cwd=ROOT,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     write(out/'submission.json',{'command':args,'returncode':r.returncode,'response':r.stdout})

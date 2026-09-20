@@ -17,7 +17,7 @@ struct Config {
     float flow_penalty=1.6;
     float flow_turn=0;
     int loop_extent=2;
-    bool predict_matching=false;
+    bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0;
     float triage_scale=0.45;
     bool accept_equal=false;
@@ -40,10 +40,11 @@ struct Graph {
 struct Chain {
     std::vector<int> goals;
     std::vector<std::array<float,4>> tail;
-    Chain(const Graph& g, const Task& t);
+    std::vector<std::vector<float>> values;
+    Chain(const Graph& g, const Task& t,bool cache=false);
     float cost(const Graph& g,int stage,int cell,int direction) const;
 };
-struct Frame { std::vector<int> loc, dir, pending, stage; };
+struct Frame { std::vector<int> loc, dir, pending, stage, age; };
 struct Rollout {
     double score=-1e100;
     Frame first;

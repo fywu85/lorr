@@ -34,6 +34,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
+    c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.cost_cache=integer("R05_COST_CACHE",0);
+    c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
     c.flow_turn=real("R05_FLOW_TURN",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
     c.predict_matching=integer("R05_SCHED_PREDICT",0);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
@@ -190,6 +192,14 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         int v=leaves.front();leaves.pop();pocket[v]=1;
         for(int u:next[v])if(u>=0 && !pocket[u] && --deg[u]==1)leaves.push(u);
     }
+    if(cfg.pocket_components) {
+        auto peeled=pocket;std::fill(pocket.begin(),pocket.end(),0);int component=0;
+        for(int seed=0;seed<cells;++seed)if(peeled[seed] && !pocket[seed]) {
+            ++component;std::vector<int> q={seed};pocket[seed]=component;
+            for(size_t k=0;k<q.size();++k)for(int u:next[q[k]])
+                if(u>=0 && peeled[u] && !pocket[u]){pocket[u]=component;q.push_back(u);}
+        }
+    }
     hops.assign(size_t(cells)*cells,65535);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int target=0;target<cells;++target) {
@@ -224,7 +234,7 @@ int Graph::direction(int a,int b) const {
     for(int d=0;d<4;++d)if(next[a][d]==b)return d;
     return -1;
 }
-Chain::Chain(const Graph& g,const Task& task) {
+Chain::Chain(const Graph& g,const Task& task,bool cache) {
     for(int p:task.locations) {
         if(p<0 || p>=int(g.from_grid.size()) || g.from_grid[p]<0)throw std::invalid_argument("task on blocked cell");
         goals.push_back(g.from_grid[p]);
@@ -236,9 +246,18 @@ Chain::Chain(const Graph& g,const Task& task) {
             for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[k+1]*4+q,goals[k]*4+o)+tail[k+1][q]);
             tail[k][o]=best;
         }
+    if(cache) {
+        values.resize(goals.size(),std::vector<float>(g.states));
+        for(int k=0;k<int(goals.size());++k)for(int state=0;state<g.states;++state) {
+            float best=INF;
+            for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[k]*4+q,state)+tail[k][q]);
+            values[k][state]=best;
+        }
+    }
 }
 float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     if(stage>=int(goals.size()))return 0;
+    if(!values.empty())return values[stage][cell*4+direction];
     float best=INF;
     for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[stage]*4+q,cell*4+direction)+tail[stage][q]);
     return best;
@@ -324,8 +343,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
         if(moving[i] && g.next[f.loc[i]][f.dir[i]]!=p[i])
             throw std::runtime_error("pending move not aligned with heading");
-        if(assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size()) &&
-           p[i]==assigned_[i]->goals[f.stage[i]])++f.stage[i];
+        bool arrived=assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size()) &&
+                     p[i]==assigned_[i]->goals[f.stage[i]];
+        if(arrived)++f.stage[i];
+        if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
     }
     auto cost=[&](int a,int v,int d) {return assigned_[a]?assigned_[a]->cost(g,f.stage[a],v,d):0.0f;};
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
@@ -342,11 +363,11 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
         idle_heading[i]=best_dir;
         base_cost[i]=cost(i,p[i],best_dir);
-        float priority=age_[i]+offsets[i];
+        float priority=(cfg.rollout_age?f.age[i]:age_[i])+offsets[i];
         const bool active=assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size());
         if(!active)priority-=100000;
         if(cfg.deadends && g.pocket[p[i]] &&
-           (!active || !g.pocket[assigned_[i]->goals[f.stage[i]]]))priority+=1000000;
+           (!active || g.pocket[assigned_[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
     }
     auto choose=[&](bool kinematic) {
@@ -499,7 +520,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             const auto& task=env->task_pool.at(id);
             frame.stage[a]=task.idx_next_loc;
             if(id==previous_task_[a] && task.idx_next_loc>previous_stage_[a])age_[a]=0;
-            auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task);
+            auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task,cfg.cost_cache);
             assigned_[a]=chain.get();
             if(cfg.horizon>0) {
                 double remaining=0;int p=frame.loc[a];
@@ -514,6 +535,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
     }
+    frame.age=age_;
     std::vector<std::vector<float>> offsets(cfg.futures,best_offsets_);
     std::uniform_real_distribution<float> unit(0,1),noise(-cfg.noise,cfg.noise);
     for(int k=1;k<cfg.futures;++k)for(int a=0;a<n;++a)

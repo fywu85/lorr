@@ -1,0 +1,131 @@
+[
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "control",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "cached",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "age",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_ROLLOUT_AGE": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "pockets",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_POCKET_COMPONENTS": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "age-pockets",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_ROLLOUT_AGE": "1",
+      "R05_POCKET_COMPONENTS": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "cached-k256",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1"
+    }
+  }
+]

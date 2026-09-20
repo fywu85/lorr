@@ -19,6 +19,9 @@ void validation() {
     }
     Task t;t.locations={1,3};Chain chain(g,t);
     require(chain.cost(g,0,0,0)==6,"orientation-aware chained distance is wrong");
+    Chain cached(g,t,true);
+    for(int k=0;k<=int(t.locations.size());++k)for(int v=0;v<g.cells;++v)for(int o=0;o<4;++o)
+        require(cached.cost(g,k,v,o)==chain.cost(g,k,v,o),"cached cost differs from exact oriented chain cost");
 }
 void scheduling() {
     auto e=environment(3,3,2);Config cfg;Engine engine(cfg);engine.initialize(&e);

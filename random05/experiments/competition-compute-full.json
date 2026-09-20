@@ -1,0 +1,24 @@
+[
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v9/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 16,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "cached-k1024-32threads",
+    "smt": 2,
+    "env": {
+      "R05_K": "1024",
+      "R05_THREADS": "32",
+      "R05_GUIDANCE": "file",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1"
+    }
+  }
+]
