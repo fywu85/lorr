@@ -1,0 +1,254 @@
+{
+  "checked_utc": "2026-09-20T02:45:52.264557+00:00",
+  "exact_production_source_commit": "f1c3c8abc4717ec921ca6e241366b63f77cea3e3",
+  "verified_source_and_test_files": 22,
+  "binary_sha256": "d10ced2f535a619c79986b2e5fcc7f12ff410be6c11eae92fca0767ee1ca0101",
+  "full_cases": 2,
+  "complete_entry_samples": 10000,
+  "failed_cases": 0,
+  "failures": [],
+  "all_valid_within_deadline_and_memory": true,
+  "all_completed_runs_valid_within_deadline_and_memory": true,
+  "disjoint_physical_bindings_during_concurrent_execution": true,
+  "no_cpu_quota": true,
+  "rows": [
+    {
+      "case": "snapshot_on-s0-r0",
+      "seed": 0,
+      "variant": "snapshot_on",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE": "67",
+        "CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT": "8"
+      },
+      "tasks": 144510,
+      "final1000": 30004,
+      "outstanding_age_p90": 641,
+      "empty_robot_steps": 9269146,
+      "loaded_turns": 1415227,
+      "loaded_waits": 1952048,
+      "trajectory_sha256": "481323a5d60e9ef34336af3efc52194d149ca02129c086ef5cb3f4d3cbcdf6bd",
+      "mean_entry_ms": 402.38215152300063,
+      "max_entry_seconds": 0.964585298,
+      "peak_rss_bytes": 11331960832,
+      "average_cpu_cores": 1.7233356434767653,
+      "wall_seconds": 2074.837,
+      "finished_utc": "2026-09-20T02:45:37.273330+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/snapshot_on-s0-r0",
+      "evidence": "experiments/construction-20260918/results/group-snapshot-full-v52"
+    },
+    {
+      "case": "snapshot_on-s2-r0",
+      "seed": 2,
+      "variant": "snapshot_on",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TEMPORAL_CONFLICT_AUDIT_STRIDE": "67",
+        "CGAR_TEMPORAL_GROUP_SNAPSHOT_COUNT": "8"
+      },
+      "tasks": 144107,
+      "final1000": 29856,
+      "outstanding_age_p90": 643,
+      "empty_robot_steps": 9263667,
+      "loaded_turns": 1448441,
+      "loaded_waits": 1987197,
+      "trajectory_sha256": "22de1fcb346b3380e0b464223adf623568468a4aa359d06051f913caf6c029c6",
+      "mean_entry_ms": 383.74207356620104,
+      "max_entry_seconds": 0.908276982,
+      "peak_rss_bytes": 11333328896,
+      "average_cpu_cores": 1.7716213587258012,
+      "wall_seconds": 1982.619,
+      "finished_utc": "2026-09-20T02:44:05.057160+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/snapshot_on-s2-r0",
+      "evidence": "experiments/construction-20260918/results/group-snapshot-full-v52"
+    }
+  ],
+  "capture_results": {
+    "snapshot_on-s0-r0": {
+      "captured_frames": 74,
+      "captured_groups": 1184,
+      "log_sha256": "e45d8e4fe657938e8f7f14a1551b5548bdd378d8eaee7190fe1e01a157dd10e9",
+      "all_reference_search_counters_exact": true,
+      "windows": {
+        "all": {
+          "2": {
+            "groups": 592,
+            "any_feasible": 267,
+            "any_scalar_improving": 15,
+            "any_both_improving": 12
+          },
+          "3": {
+            "groups": 592,
+            "any_feasible": 234,
+            "any_scalar_improving": 15,
+            "any_both_improving": 11
+          }
+        },
+        "after1000": {
+          "2": {
+            "groups": 480,
+            "any_feasible": 229,
+            "any_scalar_improving": 14,
+            "any_both_improving": 12
+          },
+          "3": {
+            "groups": 480,
+            "any_feasible": 201,
+            "any_scalar_improving": 12,
+            "any_both_improving": 9
+          }
+        },
+        "final1000": {
+          "2": {
+            "groups": 120,
+            "any_feasible": 51,
+            "any_scalar_improving": 1,
+            "any_both_improving": 1
+          },
+          "3": {
+            "groups": 120,
+            "any_feasible": 60,
+            "any_scalar_improving": 6,
+            "any_both_improving": 4
+          }
+        }
+      }
+    },
+    "snapshot_on-s2-r0": {
+      "captured_frames": 74,
+      "captured_groups": 1184,
+      "log_sha256": "64facee6734e908f041b81ff84d68251d5680a7614c604911dd2929f20052e12",
+      "all_reference_search_counters_exact": true,
+      "windows": {
+        "all": {
+          "2": {
+            "groups": 592,
+            "any_feasible": 293,
+            "any_scalar_improving": 22,
+            "any_both_improving": 10
+          },
+          "3": {
+            "groups": 592,
+            "any_feasible": 232,
+            "any_scalar_improving": 17,
+            "any_both_improving": 11
+          }
+        },
+        "after1000": {
+          "2": {
+            "groups": 480,
+            "any_feasible": 240,
+            "any_scalar_improving": 18,
+            "any_both_improving": 10
+          },
+          "3": {
+            "groups": 480,
+            "any_feasible": 203,
+            "any_scalar_improving": 13,
+            "any_both_improving": 8
+          }
+        },
+        "final1000": {
+          "2": {
+            "groups": 120,
+            "any_feasible": 63,
+            "any_scalar_improving": 3,
+            "any_both_improving": 2
+          },
+          "3": {
+            "groups": 120,
+            "any_feasible": 44,
+            "any_scalar_improving": 2,
+            "any_both_improving": 1
+          }
+        }
+      }
+    }
+  },
+  "probe_binary_sha256": "b9997f50cf89b3ab1ca02ec1fd4db0c156b05cb863c4d8d764e460b2739cbd6c",
+  "compile_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/joint_probe.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/joint_probe"
+  ],
+  "scope": "Same-state complete small-group diagnostic; no production reachability or throughput gain established."
+}

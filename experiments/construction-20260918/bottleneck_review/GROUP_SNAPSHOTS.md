@@ -43,6 +43,30 @@ groups, two have one, one improves scalar score, and none improves both scalar
 and aggregate potential by the required threshold. This early sample is not a
 full-run or population conclusion. [Probe evidence](../results/joint-probe-screen-v52/summary.json).
 
-The next step is full5,000-step seeds0/2 with capture enabled, exact reference
-trajectory and work-counter verification, then the same exhaustive analysis.
-No production repair policy has changed.
+Full GRID8899258 plus independent analysis8899259 now completes seeds0/2 at
+144,510/144,107tasks, exactly matching both reference trajectories and all
+recorded global/regional/preparation work counters. All10,000complete entries
+meet1s; processRSS stays below11.334GB. The22source/test hashes match
+`f1c3c8abc4717ec921ca6e241366b63f77cea3e3`. No production repair policy changed.
+[Full verification and exhaustive witnesses](../results/group-snapshot-full-v52/audit.json).
+
+Each seed records74frames and1,184groups, split592/592 between root-plus-one and
+root-plus-two owners. Across both seeds:
+
+| Group size | Sampled groups | Any feasible forward replacement | Scalar improvement | Scalar + aggregate potential improvement |
+|---|---:|---:|---:|---:|
+| 2robots |1,184|560|37|22|
+| 3robots |1,184|466|32|22|
+
+Thus44/2,368sampled groups (1.86%) have a replacement improving both scores.
+In the final1,000steps this is8/480groups (1.67%). Feasibility alone is much more
+common; the tradeoff with displaced robots' costs removes most candidates.
+These are stratified samples of qualifying stationary roots, not population
+prevalence or a throughput bound. The aggregate potential includes guidance,
+not observed physical work. Candidate0, search order and rollback/depth rules
+mean a witness may be unavailable to the production DFS. Larger groups, changed
+outside reservations and longer horizons remain outside this diagnostic.
+
+The evidence lowers the priority of another tiny-group pass relative to testing
+guidance and fresh-task coverage; it neither proves a repair ceiling nor claims
+an achieved throughput gain.

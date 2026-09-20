@@ -524,8 +524,28 @@ identical; no promotion from a short screen. First trick changes the metric,
 cold-start/cache lifecycle and pickup quotes together; separation arms later.
 
 V53 build8899264 passes all regressions; five CLI failure checks pass. Generic
-200-step8899265 completes seeds0/2 at2888/2857 with all400entries<1s; analysis8899267
-is queued (confirm actual submission id). TRICK8899266 fails both at entry0
+200-step8899265 completes seeds0/2 at2888/2857 with all400entries<1s; analysis8899268
+is complete. TRICK8899266 fails both at entry0
 in pickup_flow_candidates at1000.201/1000.189ms; no score. Fable turn24 reviewing
 minimal fixed startup change via persistent CLI, raw runs/fable-cgar-session/turn24,
 PTY33150. Next V54 keeps generic initial dispatch, then static pickup from tick1.
+
+Full generic snapshot8899258/analysis8899259 complete: exact0/2reference trajectories,
+all10,000entries valid<1s, unchanged work counters,22source/test hashes exactf1c3c8.
+2,368complete groups;44have both scalar and aggregate guidance-potential improvement
+(22of1,184each group size),8of480final-window groups. Not a population estimate,
+physical-work gain or production reachability proof. Report/witnesses archived.
+V53 source+tests exact6e0612f; generic200-step seed0hash exactV52reference, seed2
+2,857tasks, all400entries pass. V54 build8899269 now running with generic tick0
+dispatch and tick1 static pickup admission; no default/generic policy change.
+
+V54 build8899269 passes all regressions. TRICK200-step8899270 passes both seeds:
+3,709/3,710tasks; max entries994.717/987.554ms; RSS5.996/5.965GB; unique expected
+planner receipts and result track labels verified. These are startup results only;
+no full-run score or frontier promotion. Next full generic/trick0/2 on isolated
+four-core EPYC allocations, maintaining1s and32decimalGB.
+Fable24 completed same session; source review finds no concrete defect, supports
+startup fix; adopted two-sided receipt validity guard. Raw/archive turn24.
+Generic degree2corridor topology check passes4fixtures:63.13%free cells and66.64%
+edges incident to such chains, all chains2or3nodes. Enough coverage to measure
+traffic/coherence; no claim of field incoherence yet.

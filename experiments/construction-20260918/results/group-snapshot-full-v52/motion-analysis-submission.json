@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-hold_jid",
+    "8899258",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=01:00:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "group_analysis",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/group-analysis.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-group-snapshot-full-v52-20260920/group-analysis.sh"
+  ],
+  "returncode": 0,
+  "response": "8899259\n"
+}

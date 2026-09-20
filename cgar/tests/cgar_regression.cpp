@@ -2779,7 +2779,7 @@ void warehouse_trick_regression() {
   ++compared;
  }
  // Short integrated lifecycle: the static field is available for scheduling
- // immediately and can never be overwritten by observed-flow publications.
+ // after the generic mass dispatch and cannot be overwritten by publications.
  int start=goal;
  for(int cell=goal+1;cell<int(e.map.size());++cell)if(!e.map[cell]){start=cell;break;}
  e.curr_states={State(start,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);
@@ -2792,8 +2792,13 @@ void warehouse_trick_regression() {
  Cgar generic;generic.initialize(&e,30000);
  auto flagged=e;flagged.trick_instance="WAREHOUSE";Cgar trick;trick.initialize(&flagged,30000);
  std::vector<int> schedule;std::vector<Action> actions;
- trick.schedule(&flagged,30000,schedule);
- if(trick.stats().pickup_flow_warmup_calls!=0)throw std::runtime_error("static pickup metric delayed until flow publication");
+ std::vector<int> initial_generic;
+ generic.schedule(&e,30000,initial_generic);trick.schedule(&flagged,30000,schedule);
+ if(schedule!=initial_generic||trick.stats().pickup_flow_warmup_calls!=1)
+  throw std::runtime_error("static trick changed generic initial dispatch");
+ flagged.curr_timestep=1;trick.schedule(&flagged,30000,schedule);
+ if(trick.stats().pickup_flow_warmup_calls!=1)
+  throw std::runtime_error("static pickup metric not activated after initial dispatch");
  for(int t=0;t<8;++t){
   e.curr_timestep=flagged.curr_timestep=t;
   generic.plan(&e,30000,actions);trick.plan(&flagged,30000,actions);
@@ -2801,7 +2806,7 @@ void warehouse_trick_regression() {
  if(trick.stats().flow_publications||trick.stats().flow_cache_resets||generic.stats().flow_publications==0)
   throw std::runtime_error("static trick activation or publication isolation failed");
  for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_PICKUP_FLOW","CGAR_FLOW_WARMUP","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
- std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" static_metric_from_start=1 no_flow_publications=1 generic_flow_preserved=1\n";
+ std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1\n";
 }
 
 int main(){try{warehouse_trick_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

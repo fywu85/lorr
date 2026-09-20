@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 02:45:58 UTC.
+Updated: 2026-09-20 02:48:22 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
@@ -36,7 +36,9 @@ adds active-source checks and complete action/task-pool accounting. Its lower
 loaded overhead accompanies map-specific guidance and long-task deferral;
 this is diagnostic evidence, not a new CGAR score. The
 [read-only group snapshots](experiments/construction-20260918/bottleneck_review/GROUP_SNAPSHOTS.md)
-pass regressions and paired200-step trajectory/deadline checks.
+pass regressions and both full reference trajectory/deadline checks. The complete
+small-group probe finds44/2,368sampled groups improving both scalar and aggregate
+guidance potential; this is diagnostic evidence, not a new throughput score.
 
 **Track policy:** the scores above remain the **generic frontier**. User-authorized
 map-specific tricks will require `--trick <map-instance-name>`, `[trick]` commit
@@ -47,7 +49,8 @@ trick-track result yet.** [Policy](experiments/construction-20260918/EXPERIMENT_
 `--trick WAREHOUSE`, with exact layout checks and separate benchmark metadata.
 V53 passes all regressions and five CLI rejection fixtures. Both startup screens
 fail explicitly at entry0 in weighted pickup search; no partial score is accepted.
-The no-flag200-step controls pass on both seeds.
+The no-flag200-step controls pass on both seeds; seed0matches the prior full
+startup trajectory hash exactly. Source: [6e0612f](https://github.com/fywu85/lorr/commit/6e0612f39ff5d53a6a68d89bb930cafb80315690).
 [Implementation and evidence](experiments/construction-20260918/tricks/nms_warehouse/README.md).
 
 

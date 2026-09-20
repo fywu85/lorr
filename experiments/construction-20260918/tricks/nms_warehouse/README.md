@@ -18,7 +18,8 @@ This adaptation uses forward4 in the preferred direction and16 against it,
 with CGAR turn4 and unchanged operation/progress units. It omits NMS's coordinate
 band surcharge and cheap turns, and retains CGAR's paid forward toll. It is not
 a reproduction of the complete NMS policy. The static metric is available from
-initialization to planner and enabled pickup quotes. Observed flow cannot
+initialization to the planner. V54 preserves generic pickup quotes for the mass
+initial assignment at tick0, then uses static pickup quotes from tick1. Observed flow cannot
 overwrite it or flush its tables.
 
 The candidate needs temporal planning, orientation guidance, cost scale4 and
@@ -54,3 +55,9 @@ V53 status: all CGAR regressions and five negative CLI fixtures pass. The first
 Next test: preserve the generic initial dispatch, then admit the same static
 pickup metric from tick1. This is a fixed startup policy, not elapsed-time
 selection or partial work.
+
+V54 status: all regressions and both200-step TRICK screens pass at3,709/3,710tasks
+versus generic2,888/2,857. Max complete entries994.717/987.554ms, peakRSS5.996/5.965GB.
+These are startup-only results, not a full-run record. The benchmark now requires
+a unique planner receipt with the expected field hash and matching result track;
+any receipt invalidates a generic run. Full verification is next.

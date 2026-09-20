@@ -29,7 +29,22 @@ def header(path):
         match = re.search(r'"' + key + r'"\s*:\s*([-+0-9.eE]+)', text)
         if match:
             result[key] = float(match.group(1)) if key.endswith('Seconds') else int(match.group(1))
+    for key in ['experimentTrack', 'trick']:
+        match = re.search(r'"' + key + r'"\s*:\s*("[^"\n]*")', text)
+        if match:
+            result[key] = json.loads(match.group(1))
     return result
+
+
+def trick_receipt_valid(log, instance, expected_hash):
+    receipts = [line for line in log.splitlines() if line.startswith('[CGAR_TRICK] ')]
+    if not instance:
+        return not receipts
+    if len(receipts) != 1:
+        return False
+    fields = dict(field.split('=', 1) for field in receipts[0].split()[1:] if '=' in field)
+    return fields.get('instance') == instance and fields.get('field_sha256') == expected_hash
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -94,9 +109,20 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
+    expected_trick_field = None
+    if args.trick:
+        asset_name = 'cgar/tricks/warehouse_lanes.hpp'
+        asset = (ROOT / asset_name).read_bytes()
+        if provenance is not None and provenance['sources'].get(asset_name) != hashlib.sha256(asset).hexdigest():
+            parser.error('trick receipt asset does not match the frozen binary source manifest')
+        match = re.search(r'warehouse_field_sha256\[\] = "([0-9a-f]{64})"', asset.decode())
+        if not match:
+            parser.error('trick asset does not declare its field hash')
+        expected_trick_field = match.group(1)
     metadata = {"started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "experiment_track": "TRICK" if args.trick else "GENERIC",
                 "trick": args.trick, "trick_argv": ["--trick", args.trick] if args.trick else [],
+                "expected_trick_field_sha256": expected_trick_field,
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
                 "log_detail_level": args.log_detail_level,
                 "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES,
@@ -161,8 +187,17 @@ def main():
                                                     0 <= entry_time <= args.plan_time_limit_ms / 1000.0)
         peak_bytes = usage.get("peak_rss_kib", 0) * 1024
         memory_valid = 0 < peak_bytes <= MAX_PROCESS_MEMORY_BYTES
-        valid = valid and entry_timing_valid and memory_valid
-        outcome = "success" if valid else ("timeout" if internal_timeout or data["numEntryTimeouts"] or not entry_timing_valid
+        receipt_valid = trick_receipt_valid((out / (name + ".log")).read_text(), args.trick, expected_trick_field)
+        # New binaries derive these labels from the CLI value received by BaseSystem.
+        # Failed entries have no result; legacy generic binaries may omit the labels.
+        track_valid = (not output.exists() or
+                       (data.get('experimentTrack') == ('TRICK' if args.trick else 'GENERIC') and
+                        data.get('trick') == (args.trick or '')) or
+                       (not args.trick and 'experimentTrack' not in data and
+                        provenance is not None and 'cgar/src/driver.cpp' not in provenance['sources']))
+        valid = valid and entry_timing_valid and memory_valid and receipt_valid and track_valid
+        outcome = "success" if valid else ("flag_mismatch" if not receipt_valid or not track_valid else
+                                           "timeout" if internal_timeout or data["numEntryTimeouts"] or not entry_timing_valid
                                            else "memory_limit" if peak_bytes > MAX_PROCESS_MEMORY_BYTES else "failed")
         row = {"instance": name, "before": old["numTaskFinished"], "after": data["numTaskFinished"],
                "delta_percent": (100 * (data["numTaskFinished"] / old["numTaskFinished"] - 1)
@@ -174,6 +209,7 @@ def main():
                "outcome": outcome, "internal_timeouts": int(internal_timeout), "valid": valid, "process_resources": usage,
                "entry_compute_max_seconds": entry_time, "entry_compute_samples": data.get("entryComputeSamples"),
                "entry_timing_valid": entry_timing_valid, "memory_valid": memory_valid,
+               "trick_receipt_valid": receipt_valid, "experiment_track_valid": track_valid,
                "peak_process_rss_bytes": peak_bytes, "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES}
         return row
 

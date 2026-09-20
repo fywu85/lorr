@@ -2163,8 +2163,12 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     // last complete published metric without changing that lifecycle. Before
     // its first publication the original scheduler is preserved exactly.
     // An explicitly requested static trick is complete at initialization.
-    // No map identity or environment variable can activate this branch.
-    const bool pickup_metric = pickup_flow_ && (static_trick_metric_ || flow_guidance_.publications() > 0);
+    // Keep the generic mass dispatch at tick0: weighted searches for all
+    // initially free robots exceed the entry budget. Later pickup work uses
+    // the static field under the same fixed quotas. This is a fixed startup
+    // rule, never an elapsed-time fallback. No environment variable activates it.
+    const bool pickup_metric = pickup_flow_ &&
+        ((static_trick_metric_ && env->curr_timestep > 0) || flow_guidance_.publications() > 0);
     const int pickup_scale = pickup_metric ? flow_cost_scale_ : 1;
     if (pickup_flow_) {
         stats_.pickup_flow_snapshot_publication = flow_guidance_.publications();
