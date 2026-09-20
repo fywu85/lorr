@@ -1,0 +1,21 @@
+[
+  {
+    "seed": -1,
+    "exit": 0,
+    "command": [
+      "/usr/bin/prlimit",
+      "--as=32000000000",
+      "--",
+      "/usr/bin/taskset",
+      "-c",
+      "4,68,5,69,6,70,7,71,12,76,13,77,14,78,15,79,20,84,21,85,22,86,23,87,28,92,29,93,30,94,31,95",
+      "/shared/share_mala/fw2449/lorr2024/runs/random05/decision-probe-original-control-v67/probe",
+      "/shared/share_mala/fw2449/lorr2024/runs/random05/decision-probe-original-control-v67/snapshot.json",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "/shared/share_mala/fw2449/lorr2024/runs/random05/decision-probe-original-control-v67/seed-1.json",
+      "16320",
+      "128",
+      "-1"
+    ]
+  }
+]

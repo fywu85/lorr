@@ -716,3 +716,19 @@ groups, including two parents competing for the same hole. Full-run improvement
 is still a hypothesis. Regression checks cover that collision trap, independent
 rotations, dense ongoing tasks, shared-prefix equivalence, worker determinism,
 and saved-state replay. Forced first decisions must not change under averaging.
+
+## Recheck completion value after continuation averaging
+
+The seven saved-state probes show weak score/128-step completion correlations,
+particularly in the later states. This is not proof of a causal model defect:
+only eight correlated candidate decisions and three cheaper downstream seeds
+were measured. Full-budget control reproduces the original trajectory metrics,
+so the replay mechanism itself is independently checked.
+
+An earlier completion bonus failed with single-future candidate scores. The
+current14-future average and staged survivors can reduce that reward's sampling
+noise, which is a concrete reason for a bounded recheck (bonuses2/4/8). Everything
+else stays at the3,852 configuration, including horizon scale1.5, seed4 and fixed
+K16320. Compare complete strict1s runs to the existing exact control; do not
+assume a win or expand the sweep without evidence. This remains the same general
+completion-value feature, not a new algorithm or an isolated test of averaging.

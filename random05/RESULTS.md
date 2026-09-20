@@ -1,6 +1,6 @@
 # RANDOM-05 results
 
-The requested “reasonably close” performance level is reached locally. A frozen
+The previous “reasonably close” performance level is reached locally. A frozen
 candidate improves on the stronger NMS repetition by **25.42% across two untouched
 task/start inputs**, close to the colleague's reported27–28%. Their private code
 and inputs remain unavailable, so this is a reproduction of the performance
@@ -14,7 +14,11 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,852 | 3,172 | +21.4% | 478 / 538ms | 579MB |
+| 16 physical cores / 32 workers | 3,857 | 3,172 | +21.6% | 491 / 552ms | 578MB |
+
+The current goal is4,000 tasks. The latest32-worker record improves3,852 by
+only five tasks after reducing horizon-triage scale1.5->1.25; this small selected
+increment has not been replicated across seeds.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
@@ -49,6 +53,7 @@ improvement fromV3 toV4. All input seeds50001–50008 remain excluded from tunin
 | Four cores | 3,503 | 3,770 | +7.6% | +20.2% |
 | 32 workers | 3,632 | 3,852 | +6.1% | +14.5% |
 
+These ablations use the earlier3,770/3,852 configurations with triage scale1.5.
 Each pair differs only in `R05_HORIZON`; binary and input hashes match, as do CPU
 model and allocation. All four full runs pass the strict deadline. The guidance
 trick remains enabled with the cutoff off.
@@ -70,13 +75,13 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All74 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All75 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [completed-goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,940 steps,
+The current development records' longest completed orders take1,941/1,937 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

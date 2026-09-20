@@ -1,0 +1,801 @@
+{
+  "created_utc": "2026-09-20T22:09:22.467821+00:00",
+  "original_sha256": "72ea7d05821609d8dcde658fc832de62f101dc9de34e6b0c27eaf32d020e5853",
+  "capture_sha256": "cd1c378fd008c47d069129d3d7ee6a9d0ab4037588c699a831ebde913c3daf28",
+  "full_trajectory_fields_equal": [
+    "actualPaths",
+    "plannerPaths",
+    "actualSchedule",
+    "plannerSchedule",
+    "events",
+    "tasks"
+  ],
+  "snapshots_match_original_state": true,
+  "control_cumulative_fields_equal": [
+    "finished",
+    "waypoints",
+    "forwards",
+    "rotations",
+    "waits"
+  ],
+  "control_steps": 128,
+  "states": [
+    {
+      "timestep": 250,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5028.182125308684,
+          "values": [
+            255,
+            259,
+            263
+          ],
+          "mean": 259,
+          "selected": true
+        },
+        {
+          "rank": 3,
+          "score": -5029.063179107649,
+          "values": [
+            243,
+            244,
+            232
+          ],
+          "mean": 239.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 4,
+          "score": -5032.114568101509,
+          "values": [
+            259,
+            247,
+            239
+          ],
+          "mean": 248.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 5,
+          "score": -5032.379415650453,
+          "values": [
+            259,
+            247,
+            252
+          ],
+          "mean": 252.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5034.451347133943,
+          "values": [
+            251,
+            263,
+            241
+          ],
+          "mean": 251.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5041.200015538505,
+          "values": [
+            240,
+            243,
+            247
+          ],
+          "mean": 243.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5047.055821208017,
+          "values": [
+            257,
+            244,
+            245
+          ],
+          "mean": 248.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5052.9598529828445,
+          "values": [
+            247,
+            232,
+            255
+          ],
+          "mean": 244.66666666666666,
+          "selected": false
+        }
+      ],
+      "selected_mean": 259,
+      "best_observed_mean": 259,
+      "best_observed_rank": 0,
+      "spearman_by_horizon": {
+        "8": 0.0,
+        "16": 0.2754540402400496,
+        "32": 0.5389318178609666,
+        "64": -0.5238095238095238,
+        "128": 0.2619047619047619
+      },
+      "leave_one_seed_out_gains": [
+        0,
+        0,
+        0
+      ],
+      "snapshot_sha256": "c06748bd5f9639a0dc334628a998332301d0af23687b2026a9bb6929dd56058f",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 500,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5083.128570471491,
+          "values": [
+            227,
+            207,
+            219
+          ],
+          "mean": 217.66666666666666,
+          "selected": true
+        },
+        {
+          "rank": 2,
+          "score": -5083.593378601329,
+          "values": [
+            227,
+            228,
+            210
+          ],
+          "mean": 221.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 4,
+          "score": -5085.4309106235,
+          "values": [
+            213,
+            215,
+            208
+          ],
+          "mean": 212,
+          "selected": false
+        },
+        {
+          "rank": 5,
+          "score": -5086.635906668646,
+          "values": [
+            212,
+            222,
+            213
+          ],
+          "mean": 215.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5090.4396459162235,
+          "values": [
+            202,
+            214,
+            230
+          ],
+          "mean": 215.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5094.070346206427,
+          "values": [
+            205,
+            228,
+            230
+          ],
+          "mean": 221,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5098.064005698477,
+          "values": [
+            214,
+            235,
+            226
+          ],
+          "mean": 225,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5103.624840821539,
+          "values": [
+            223,
+            235,
+            211
+          ],
+          "mean": 223,
+          "selected": false
+        }
+      ],
+      "selected_mean": 217.66666666666666,
+      "best_observed_mean": 225,
+      "best_observed_rank": 32,
+      "spearman_by_horizon": {
+        "8": 0.6467181814331598,
+        "16": -0.024397501823713332,
+        "32": -0.47619047619047616,
+        "64": -0.2515015150017844,
+        "128": -0.5
+      },
+      "leave_one_seed_out_gains": [
+        -13,
+        0,
+        -8
+      ],
+      "snapshot_sha256": "bd3869ec08f647877fe1671657341e6ae8cce8afab008e3aaf8cdc2833dc43df",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 750,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5041.849958370839,
+          "values": [
+            226,
+            221,
+            211
+          ],
+          "mean": 219.33333333333334,
+          "selected": true
+        },
+        {
+          "rank": 1,
+          "score": -5046.945330181292,
+          "values": [
+            208,
+            213,
+            210
+          ],
+          "mean": 210.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 2,
+          "score": -5050.091015530484,
+          "values": [
+            226,
+            223,
+            218
+          ],
+          "mean": 222.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 4,
+          "score": -5050.535197724189,
+          "values": [
+            226,
+            209,
+            212
+          ],
+          "mean": 215.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5055.8473250206025,
+          "values": [
+            213,
+            215,
+            219
+          ],
+          "mean": 215.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5061.453117843185,
+          "values": [
+            227,
+            239,
+            207
+          ],
+          "mean": 224.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5068.234394309776,
+          "values": [
+            216,
+            217,
+            205
+          ],
+          "mean": 212.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5073.28278947728,
+          "values": [
+            213,
+            210,
+            212
+          ],
+          "mean": 211.66666666666666,
+          "selected": false
+        }
+      ],
+      "selected_mean": 219.33333333333334,
+      "best_observed_mean": 224.33333333333334,
+      "best_observed_rank": 16,
+      "spearman_by_horizon": {
+        "8": 0.22754898976351923,
+        "16": 0.5389318178609666,
+        "32": 0.7065994945288229,
+        "64": 0.28743030285918214,
+        "128": 0.17964393928698885
+      },
+      "leave_one_seed_out_gains": [
+        1,
+        2,
+        -4
+      ],
+      "snapshot_sha256": "fd51d9a25312687e81c8a7bafb5f42812b8c86809727c15242a030396adf884d",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 1000,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5056.666364071624,
+          "values": [
+            209,
+            206,
+            217
+          ],
+          "mean": 210.66666666666666,
+          "selected": true
+        },
+        {
+          "rank": 1,
+          "score": -5057.8919881901575,
+          "values": [
+            212,
+            214,
+            200
+          ],
+          "mean": 208.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 2,
+          "score": -5058.483558935778,
+          "values": [
+            222,
+            201,
+            196
+          ],
+          "mean": 206.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 4,
+          "score": -5058.6029767904965,
+          "values": [
+            206,
+            224,
+            202
+          ],
+          "mean": 210.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5059.824401947005,
+          "values": [
+            210,
+            208,
+            204
+          ],
+          "mean": 207.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5065.651203608939,
+          "values": [
+            212,
+            215,
+            208
+          ],
+          "mean": 211.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5070.207417673299,
+          "values": [
+            210,
+            213,
+            205
+          ],
+          "mean": 209.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5074.5586045107675,
+          "values": [
+            212,
+            210,
+            217
+          ],
+          "mean": 213,
+          "selected": false
+        }
+      ],
+      "selected_mean": 210.66666666666666,
+      "best_observed_mean": 213,
+      "best_observed_rank": 64,
+      "spearman_by_horizon": {
+        "8": -0.02536731447159205,
+        "16": -0.30689288508764767,
+        "32": -0.20359646452525404,
+        "64": -0.047619047619047616,
+        "128": -0.44312171690790586
+      },
+      "leave_one_seed_out_gains": [
+        3,
+        4,
+        -15
+      ],
+      "snapshot_sha256": "06d390bba82eef4ea9de17d05adb25ef3ab52d3fa9116157f5f59a3675725597",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 1250,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5050.573317048805,
+          "values": [
+            194,
+            196,
+            211
+          ],
+          "mean": 200.33333333333334,
+          "selected": true
+        },
+        {
+          "rank": 1,
+          "score": -5055.696179524064,
+          "values": [
+            201,
+            188,
+            186
+          ],
+          "mean": 191.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 3,
+          "score": -5060.062917568854,
+          "values": [
+            199,
+            191,
+            191
+          ],
+          "mean": 193.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 5,
+          "score": -5061.268558651209,
+          "values": [
+            210,
+            201,
+            217
+          ],
+          "mean": 209.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5063.733737843378,
+          "values": [
+            197,
+            201,
+            204
+          ],
+          "mean": 200.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5067.062588185072,
+          "values": [
+            192,
+            215,
+            200
+          ],
+          "mean": 202.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5070.360811308026,
+          "values": [
+            206,
+            189,
+            200
+          ],
+          "mean": 198.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5076.058134447251,
+          "values": [
+            197,
+            204,
+            204
+          ],
+          "mean": 201.66666666666666,
+          "selected": false
+        }
+      ],
+      "selected_mean": 200.33333333333334,
+      "best_observed_mean": 209.33333333333334,
+      "best_observed_rank": 5,
+      "spearman_by_horizon": {
+        "8": -0.07229440390678198,
+        "16": 0.27006573887713,
+        "32": -0.5,
+        "64": -0.047619047619047616,
+        "128": -0.42857142857142855
+      },
+      "leave_one_seed_out_gains": [
+        16,
+        5,
+        6
+      ],
+      "snapshot_sha256": "46abd09b3e8b86ad03ff45e431c457662f568bb90a78e270d17235bd87291436",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 1500,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5076.28610802974,
+          "values": [
+            237,
+            228,
+            235
+          ],
+          "mean": 233.33333333333334,
+          "selected": true
+        },
+        {
+          "rank": 1,
+          "score": -5076.951039767691,
+          "values": [
+            243,
+            244,
+            231
+          ],
+          "mean": 239.33333333333334,
+          "selected": false
+        },
+        {
+          "rank": 3,
+          "score": -5079.785383298993,
+          "values": [
+            235,
+            242,
+            224
+          ],
+          "mean": 233.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 4,
+          "score": -5082.721722736955,
+          "values": [
+            249,
+            234,
+            227
+          ],
+          "mean": 236.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5085.594760171005,
+          "values": [
+            230,
+            245,
+            242
+          ],
+          "mean": 239,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5089.022622389452,
+          "values": [
+            237,
+            241,
+            238
+          ],
+          "mean": 238.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5095.004187950066,
+          "values": [
+            240,
+            231,
+            230
+          ],
+          "mean": 233.66666666666666,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5100.49048526798,
+          "values": [
+            245,
+            244,
+            242
+          ],
+          "mean": 243.66666666666666,
+          "selected": false
+        }
+      ],
+      "selected_mean": 233.33333333333334,
+      "best_observed_mean": 243.66666666666666,
+      "best_observed_rank": 64,
+      "spearman_by_horizon": {
+        "8": -0.363696483726654,
+        "16": -0.5542570966186618,
+        "32": -0.29940656547831473,
+        "64": 0.10778636357219332,
+        "128": -0.43114545428877327
+      },
+      "leave_one_seed_out_gains": [
+        -7,
+        16,
+        7
+      ],
+      "snapshot_sha256": "88d68079ade2a4d1aad784a3339852d0297a8e5f6a9ac95a0a80a4c910ba9141",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    },
+    {
+      "timestep": 1750,
+      "candidates": [
+        {
+          "rank": 0,
+          "score": -5072.570846702371,
+          "values": [
+            299,
+            305,
+            296
+          ],
+          "mean": 300,
+          "selected": true
+        },
+        {
+          "rank": 1,
+          "score": -5074.724906448807,
+          "values": [
+            317,
+            312,
+            321
+          ],
+          "mean": 316.6666666666667,
+          "selected": false
+        },
+        {
+          "rank": 2,
+          "score": -5076.423987403512,
+          "values": [
+            302,
+            299,
+            302
+          ],
+          "mean": 301,
+          "selected": false
+        },
+        {
+          "rank": 5,
+          "score": -5080.415761607034,
+          "values": [
+            316,
+            313,
+            297
+          ],
+          "mean": 308.6666666666667,
+          "selected": false
+        },
+        {
+          "rank": 8,
+          "score": -5085.866848247392,
+          "values": [
+            314,
+            323,
+            297
+          ],
+          "mean": 311.3333333333333,
+          "selected": false
+        },
+        {
+          "rank": 16,
+          "score": -5093.444014579058,
+          "values": [
+            306,
+            310,
+            314
+          ],
+          "mean": 310,
+          "selected": false
+        },
+        {
+          "rank": 32,
+          "score": -5097.155199212687,
+          "values": [
+            304,
+            314,
+            308
+          ],
+          "mean": 308.6666666666667,
+          "selected": false
+        },
+        {
+          "rank": 64,
+          "score": -5102.209137895277,
+          "values": [
+            317,
+            319,
+            296
+          ],
+          "mean": 310.6666666666667,
+          "selected": false
+        }
+      ],
+      "selected_mean": 300,
+      "best_observed_mean": 316.6666666666667,
+      "best_observed_rank": 1,
+      "spearman_by_horizon": {
+        "8": 0.3353353533357125,
+        "16": -0.22754898976351923,
+        "32": -0.19047619047619047,
+        "64": -0.5,
+        "128": -0.29940656547831473
+      },
+      "leave_one_seed_out_gains": [
+        18,
+        7,
+        1
+      ],
+      "snapshot_sha256": "27ea38998bf844d6dfb86837b1e7d76c48bfa0a0f04c2b8288b5c111bf5c9b85",
+      "probe_binary_sha256": "4f13cc748de730ada9341df20207831bed350d686e2ffd2124b18dc37136ebd5"
+    }
+  ],
+  "caveats": [
+    "All states come from one development trajectory, not independent task/start inputs.",
+    "Downstream work1280 differs from real search16320; common seeds reduce but do not remove noise.",
+    "Best observed means select on the same samples and overstate recoverable gain.",
+    "Leave-one-seed-out root choice uses offline counterfactual outcomes, not a deployable policy.",
+    "These partial continuations are diagnostics, never full-run throughput frontiers."
+  ]
+}

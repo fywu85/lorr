@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research33*,debian.q@research39*",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:16",
+    "-l",
+    "h_rt=02:00:00,h_vmem=1G,m_topology_inuse=*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_probe",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/decision-probe-v67-t1750/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/decision-probe-v67-t1750/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900769\n"
+}

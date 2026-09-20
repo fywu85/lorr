@@ -30,17 +30,22 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 20:49 UTC.
+Updated: 2026-09-20 22:04 UTC.
 
-**Best single run on the archived input: 3,852 tasks on 32 workers / 16 physical cores**,
-or **+21.4% versus matched NMS32 = 3,172**. Source
-[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed 4,
-first K8000 then K16320/B14, screen2/keep4, four generations/E8/P8, blend0.
-Mean478ms, maximum538ms, RSS579MB; all 2,000 steps valid under strict1s.
-This is a selected seed-specific best on the development input. Four of the
-five original seed runs completed; the timed-out seed completed a declared
-repeat. The original failure remains recorded. It is not a fresh-input comparison.
-[Full evidence](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json).
+**Best single run on the archived input: 3,857 tasks on 32 workers / 16 physical cores**,
+or **+21.6% versus matched NMS32 = 3,172**. Source
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed4,
+firstK8000 thenK16320/B14/s2/q4/G4/E8/P8, with the declared horizon trick's
+scale reduced1.5->1.25. Mean491ms, maximum552ms, RSS578MB; all2,000steps valid.
+This is a five-task selected increment over3,852, not a replicated improvement.
+The paired1.75 setting scores3,798. The4,000 target remains143tasks away.
+[Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json).
+
+The previous3,852 record used scale1.5. A new diagnostic build reproduces its
+entire trajectory while recording exact pre-decision snapshots. Four of that
+configuration's five original seeds completed; the timed-out seed completed a
+declared repeat. Preserve the original failure and the distinction between
+selected development records and independent-input validation.
 
 The same configuration previously scored 3,794 on planner seed 3 (mean473ms,
 maximum525ms). Two worker-placement controls reproduce that full trajectory;
@@ -285,6 +290,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T20:07:08.133068+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4, blend0; **trick** guidance+known horizon | 3852 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +21.4% | [full run](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json) |
 | 2026-09-20T20:36:40.537684+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4; **trick** guidance only | 3632 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +14.5% | [full run](random05/results/staged-no-horizon-split-full-v65/32-k16320-b14-first8000-seed4-no-horizon/summary.json) |
 | 2026-09-20T20:47:29.818820+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3; **trick** guidance only | 3503 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +20.2% | [full run](random05/results/staged-no-horizon-split-full-v65/four-k5760-b12-first4608-seed3-no-horizon/summary.json) |
+| 2026-09-20T22:04:50.502045+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25; `--trick RANDOM-05` | 3857 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +21.6% | [Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1395,3 +1401,25 @@ input/binary hashes and allocation are linked in the audits.
 - Fable was resumed in the same session with a6,664-byte research summary
   and no new source payload. Provider returned out-of-usage-credits again,
   zero usage/cost, so no review or recommendations were received.
+
+- The4k campaign's first selected increment is **3,857** on32workers, only
+  five tasks above3,852. The sole setting change is horizon-triage scale1.5->1.25;
+  this remains a declared trick. The1.75 alternative gives3,798. Both full runs
+  pass strict1s; no robust across-seed gain is claimed from this small record.
+- Snapshot capture reproduces every action, assignment, event and task of the
+  complete3,852 control. All seven saved states are now available for offline
+  decision comparisons; new motion-component benchmarks are queued/running.
+
+- The seven-state decision audit confirms exact snapshot state and whole-run
+  trajectory equality.128-step score/completion correlations are weak and mostly
+  negative later, but three-seed leave-one-out gains are mixed. This supports
+  further diagnosis, not a proven scoring defect. All168counterfactuals finish
+  and reproduce their saved first decision.
+  [Audit and limitations](random05/results/decision-probes-v67/REPORT.md).
+-3,857 passes independent full action/task replay. All75timestamped frontiers
+  audit against hashes and strict full runs. Its completed max1937steps,
+  initial unfinished135/unopened102; final maximum remains censored at>=2000.
+- Additional declared controls: triage1.25 on planner seeds0/3, and completion
+  bonuses2/4/8 with the current14-future average. The latter failed before
+  averaging; this recheck tests the specific change in reward noise, with
+  complete settings frozen and no gain assumed.
