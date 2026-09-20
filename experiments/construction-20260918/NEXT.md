@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated2026-09-20 13:17UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
+Updated2026-09-20 13:32UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
 5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
 complete fixed work; timeout failure. Shared GRID/5s development authorized;
 strict1s certification separate. Preserve the concurrent random05 fork's files/jobs/commits.
@@ -19,24 +19,30 @@ Generic single145083 remains experimental.
 
 ## Active work
 
-- V92 optional margin STARTUP8899761/analyzer8899764, raw
-  runs/cgar-horizon-margin-screen-v92-20260920;results/horizon-margin-screen-v92.
-  Four200step cases,H200/H5000 xmarginOFF/ON,seed0. OFF controls MUSTexactV86;
-  H5000ON MUSTexactstartup too. H200ON marginfirstreversal observed88;prefixbefore
-  thattick MUSTexactminimalH200. Frozen verifier checks28sources,binary,receipts,
-  physicalcores,RSS/deadlines,nondecreasingbucketcounts,zero boundviolations.
-- Generic800control8899762/analyzer8899765, raw
-  runs/cgar-horizon-margin-generic-v92-20260920;results/horizon-margin-generic-v92.
-  Mustexact18958/c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
-  Uses separateeligiblehosts fromstartupmatrix. No fullmarginqualityrunyet.
-- Source92bc748e81416de9d66edaec0e83a833ae3bac18; V92build8899759/fullsuitePASS,
-  binaryd3f464a8c6fed95a53f54b6a623eb6492a1b7830f5c3602122914c93711910e8.
-  Rawruns/cgar-horizon-margin-build-v92-20260920;build-provenance/v92.
-  NO production build running; no liveFable review.
-- V91source8546afa3bfcc705dd666a0af4f1f2ea53d730e19/build8899758alsoPASS,
-  binary09aa847c76fac31d48c05c8e5bf8076eb5dfe827efd10cf94d545f2ccb32c7e1.
-  V92 adds failure on physical-bound violation +actualfreshmatchingledgerfixture,
-  no rankingchange. Retainbothprovenance, runperformanceonV92.
+- Full margin comparison8899779/analyzer8899780 is RUNNING since13:21:24UTC,
+  research38,16 bound physical cores/four per case. Seeds0/2 xmarginOFF/ON,H5000,
+  shared5s/32decimalGB. Expected finish about14:00UTC, then frozen verification.
+  Raw runs/cgar-horizon-margin-full-v92-20260920;
+  results/horizon-margin-full-v92. No partial quality score.
+  Exact source92bc748e81416de9d66edaec0e83a833ae3bac18; binary
+  d3f464a8c6fed95a53f54b6a623eb6492a1b7830f5c3602122914c93711910e8.
+  OFF controls MUST reproduce153614/153220 and V86 trajectory hashes; ON prefixes
+  must be exact before the first margin comparator reversal. Require zero bound
+  violations, complete fixed work, exact receipts and valid resource allocations.
+- V92 startup8899761/8899764 PASS13:16:35UTC, allfour200-step cases; OFF controls
+  exact, H5000ON exact too. H200ON first margin reversal88, preceding prefixexact.
+  results/horizon-margin-screen-v92/comparison.json.
+- Generic8008899762/8899765 PASS13:20:45UTC: exact18958tasks and trajectory
+  c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
+  results/horizon-margin-generic-v92/comparison.json. These are controls, no new
+  full-run quality score. Both passed before the full matrix was submitted.
+- V92build8899759/fullsuitePASS;build-provenance/v92. V91source8546afa/build8899758
+  alsoPASS. V92 adds physical-bound failure and real fresh matching ledger fixture,
+  no ranking change. No production build or Fable review running.
+- Bounded independent investigation: prototype deferred candidate-index stores in
+  TemporalPibt outside production and measure exact kernel equivalence/timing.
+  Static native table rebuild kernel extrapolation is only~115CPU seconds across
+  ~3300processCPU seconds/full run, so avoid a large cache redesign without evidence.
 
 ## Margin policy now implemented (not yet a throughput claim)
 
@@ -104,17 +110,15 @@ finalholder,gap,boundfailure,actualCgarnewadmission/fair/held,realfreshmatchingl
 
 ## Next actions
 
-1. Checkstartup+genericfrozenverifiers; onlyafterbothpass launchFULL seeds0/2 x
-   marginOFF/ON atH5000 usingtricks/horizon_margin/full-variants.json,4parallelcases,
-   4corespercase,5s/32GB/sharedhost. No horizonprofile=>5000. Binary/provenanceV92.
-   Freeze tricks/horizon_margin/analyze.py with --hold-job. ControlsMUST153614/153220
-   hashesV86; prefixbeforefirstmarginreversalexact. Source92bc748 regardlesslaterHEAD.
-2. UpdateANYvalidnewpeakimmediately. Goalcompleteonly>=154795plusrequiredproof/log.
-   IfbelowtargetdiagnoseactualONresiduals; avoidprematurebestclaimorpartialquality.
-3. Commit/pushours EXPLICITpaths. No production/test edits duringbuilds. Preserve
-   otherfork/workers. execrequire_escalated needed duebrokenbwrap; explicitworkdir/set-e.
-4. Rootprogress/TARGETalready153614. Lastpushca1d14f; currentnewmargincommits/docs
-   stillneedpush aftercurrentarchivecommit. Keepuserupdated~60s; no>60sblockingwait.
+1. Check full8899779/8899780 and frozen verifier. Do not duplicate the submission.
+   Update any valid new peak immediately; goal complete only>=154795 with proof/log.
+2. If below target, diagnose actual ON residuals. horizon_audit/analyze.py currently
+   filters configuredH=5000; add an explicit margin selector before using it on
+   the new matrix, whose four cases all haveH5000. Avoid selecting allfour as two.
+3. Archive startup/generic evidence and commit/push only our explicit paths.
+   Preserve random05 fork files/jobs/commits. No production/test edits duringbuilds.
+4. Last successful push286546a at13:19UTC. Rootprogress/TARGET153614. Keep user
+   updated~60s; no blockingwait>60s. Use require_escalated due broken bwrap.
 
 ## Historical notes below (current status above supersedes old running labels)
 

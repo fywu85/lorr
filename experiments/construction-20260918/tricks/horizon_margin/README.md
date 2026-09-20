@@ -55,5 +55,8 @@ V91source8546afa and V92source92bc748 both pass the complete regression suite.
 V92 adds an explicit failure for a physically impossible calibration observation
 and the actual fresh-task matching integration test requested by Fable43. Exact
 source/binary records are in build-provenance/v91 and v92. No new ranking factor
-is added by this hardening. V92 startup8899761/analysis8899764 and generic800
-8899762/analysis8899765 are running; full comparison waits for their validation.
+is added by this hardening. V92 startup8899761/analysis8899764 passed at13:16:35UTC,
+including the exact88-step pre-margin prefix in the activeH200 case. The generic800
+control8899762/analysis8899765 passed at13:20:45UTC with the exact18958-task trajectory.
+Full comparison8899779/analysis8899780 started13:21:24UTC on16 bound physical cores
+of shared research38. It uses frozen V92 source/binary; no full margin result yet.

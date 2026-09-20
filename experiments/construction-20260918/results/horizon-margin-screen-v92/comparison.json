@@ -1,0 +1,87 @@
+{
+  "full_run": false,
+  "all_valid": true,
+  "exact_controls": true,
+  "active_margin_prefix_steps": 88,
+  "source_commit": "92bc748e81416de9d66edaec0e83a833ae3bac18",
+  "source_files_verified": 28,
+  "binary_sha256": "d3f464a8c6fed95a53f54b6a623eb6492a1b7830f5c3602122914c93711910e8",
+  "receipts": {
+    "trick_native_horizon200_margin0-s0-r0": {
+      "configured_horizon": 200,
+      "margin": 0,
+      "assumption": "configured",
+      "first_rank_change": 0,
+      "first_margin_rank_change": null,
+      "last_margin_model": null
+    },
+    "trick_native_horizon200_margin1-s0-r0": {
+      "configured_horizon": 200,
+      "margin": 1,
+      "assumption": "configured",
+      "first_rank_change": 0,
+      "first_margin_rank_change": 88,
+      "last_margin_model": {
+        "t": 0,
+        "risky_pairs": 0,
+        "risky_assignments": 0,
+        "rank_changes": 0,
+        "first_rank_change": -1,
+        "tracked": 10000,
+        "invalidated": 0,
+        "excluded_completions": 0,
+        "bound_violations": 0,
+        "n0": 0,
+        "n1": 0,
+        "n2": 0,
+        "n3": 0,
+        "n4": 0,
+        "sum0": 0,
+        "sum1": 0,
+        "sum2": 0,
+        "sum3": 0,
+        "sum4": 0
+      }
+    },
+    "trick_native_horizon5000_margin0-s0-r0": {
+      "configured_horizon": 5000,
+      "margin": 0,
+      "assumption": "configured",
+      "first_rank_change": null,
+      "first_margin_rank_change": null,
+      "last_margin_model": null
+    },
+    "trick_native_horizon5000_margin1-s0-r0": {
+      "configured_horizon": 5000,
+      "margin": 1,
+      "assumption": "configured",
+      "first_rank_change": null,
+      "first_margin_rank_change": null,
+      "last_margin_model": {
+        "t": 0,
+        "risky_pairs": 0,
+        "risky_assignments": 0,
+        "rank_changes": 0,
+        "first_rank_change": -1,
+        "tracked": 10000,
+        "invalidated": 0,
+        "excluded_completions": 0,
+        "bound_violations": 0,
+        "n0": 0,
+        "n1": 0,
+        "n2": 0,
+        "n3": 0,
+        "n4": 0,
+        "sum0": 0,
+        "sum1": 0,
+        "sum2": 0,
+        "sum3": 0,
+        "sum4": 0
+      }
+    }
+  },
+  "checked_utc": "2026-09-20T13:16:35.394145+00:00",
+  "competition_budget_confirmed": false,
+  "promoted": false,
+  "scope": "TRICK --trick WAREHOUSE with configured known horizon and optional prospective mean-margin tier. Original fairness, held/started protection and matching retained. Controls exact against V86 minimal horizon; action/schedule/event prefixes exact before first comparator reversal relative to minimal horizon. Shared5s,32decimalGB; no strict1s or competition-horizon-knowledge claim."
+}
