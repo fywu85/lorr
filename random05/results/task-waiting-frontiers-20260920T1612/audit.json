@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-20T19:52:11.653272+00:00",
+  "created_utc": "2026-09-20T20:09:10.777235+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "27041130b8abf9cd4573139a6af43ac6d4db67121bb0135287a0b18c8db2654b",
+  "manifest_sha256": "3917570f0a78fd3a49d12d2c22d5b5450b1f8beadd944abc684b44133a9fcd4c",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -790,6 +790,98 @@
       "initial_still_unfinished": 136,
       "initial_still_unopened": 105,
       "initial_started_unfinished": 31,
+      "event_accounting_valid": true
+    },
+    "ours-four-cores-3770": {
+      "result": "runs/random05/worker-affinity-four-full-v65/four-k5760-b12-first4608-omp-bind-false/result.json",
+      "result_sha256": "0c86a4808b87ea11c45058c8f73090fc316499d530ec8ce88d7d7f8c4a0baf44",
+      "horizon_steps": 2000,
+      "tasks_finished": 3770,
+      "tasks_revealed": 4970,
+      "completed_latency": {
+        "count": 3770,
+        "mean_steps": 421.8323607427056,
+        "p50_steps": 346,
+        "p95_steps": 1065,
+        "p99_steps": 1592
+      },
+      "maximum_release_to_completion": {
+        "steps": 1941,
+        "task_id": 279,
+        "released_at": 0,
+        "observed_at": 1941
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1928,
+        "task_id": 357,
+        "released_at": 0,
+        "observed_at": 1928
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 501,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 647.905,
+      "initial_still_unfinished": 137,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 41,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3852": {
+      "result": "runs/random05/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/32-staged-k16320-b14-first8000-seed4/result.json",
+      "result_sha256": "72ea7d05821609d8dcde658fc832de62f101dc9de34e6b0c27eaf32d020e5853",
+      "horizon_steps": 2000,
+      "tasks_finished": 3852,
+      "tasks_revealed": 5052,
+      "completed_latency": {
+        "count": 3852,
+        "mean_steps": 406.1726375908619,
+        "p50_steps": 341,
+        "p95_steps": 1015,
+        "p99_steps": 1561
+      },
+      "maximum_release_to_completion": {
+        "steps": 1940,
+        "task_id": 768,
+        "released_at": 0,
+        "observed_at": 1940
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1964,
+        "task_id": 1054,
+        "released_at": 0,
+        "observed_at": 1964
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 482,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 638.6075,
+      "initial_still_unfinished": 138,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 42,
       "event_accounting_valid": true
     }
   }

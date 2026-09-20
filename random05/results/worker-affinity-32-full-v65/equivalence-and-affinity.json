@@ -1,0 +1,193 @@
+{
+  "checked_utc": "2026-09-20T19:55:39.784341+00:00",
+  "reference": "runs/random05/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/result.json",
+  "reference_sha256": "a07bde1993f04202a6540db0d6b3f2397cbdb0b2ff22f8c72fff19e97cfd8540",
+  "all_equal": true,
+  "cases": [
+    {
+      "name": "32-k16320-b14-first8000-omp-bind-false",
+      "fields_equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "b4c7ea9200ff2baa0bb2e213f40eaa1adbafd0c2632fd46fb502b559f899165d",
+      "affinity_records": 64032,
+      "unique_masks": [
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111
+        ]
+      ],
+      "all_inside_allocation": true,
+      "latency_seconds": {
+        "mean": 0.5034868893444998,
+        "max": 0.584604133
+      },
+      "usage": {
+        "user_seconds": 30367.553827,
+        "system_seconds": 26.384866,
+        "peak_rss_kib": 564996,
+        "wall_seconds": 1009.4623341076076,
+        "exit": 0
+      }
+    },
+    {
+      "name": "32-k16320-b14-first8000-omp-bind-close",
+      "fields_equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "003e8fb7cb7fd66a0dfacf1f42187fbd36e0348549ff3a93c7111d5cc97a9ec4",
+      "affinity_records": 64032,
+      "unique_masks": [
+        [
+          48
+        ],
+        [
+          49
+        ],
+        [
+          50
+        ],
+        [
+          51
+        ],
+        [
+          52
+        ],
+        [
+          53
+        ],
+        [
+          54
+        ],
+        [
+          55
+        ],
+        [
+          56
+        ],
+        [
+          57
+        ],
+        [
+          58
+        ],
+        [
+          59
+        ],
+        [
+          60
+        ],
+        [
+          61
+        ],
+        [
+          62
+        ],
+        [
+          63
+        ],
+        [
+          112
+        ],
+        [
+          113
+        ],
+        [
+          114
+        ],
+        [
+          115
+        ],
+        [
+          116
+        ],
+        [
+          117
+        ],
+        [
+          118
+        ],
+        [
+          119
+        ],
+        [
+          120
+        ],
+        [
+          121
+        ],
+        [
+          122
+        ],
+        [
+          123
+        ],
+        [
+          124
+        ],
+        [
+          125
+        ],
+        [
+          126
+        ],
+        [
+          127
+        ]
+      ],
+      "all_inside_allocation": true,
+      "latency_seconds": {
+        "mean": 0.5004024246695002,
+        "max": 0.874110274
+      },
+      "usage": {
+        "user_seconds": 30102.657668,
+        "system_seconds": 29.582611,
+        "peak_rss_kib": 565624,
+        "wall_seconds": 1002.9864319320768,
+        "exit": 0
+      }
+    }
+  ],
+  "caveat": "Two concurrent cases on disjoint CPU sets within one host. Both include affinity diagnostic overhead. Mean difference is small; this pair alone does not establish a speedup."
+}

@@ -1,15 +1,16 @@
 {
   "source_commit": "5f81613",
-  "evidence": "random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json",
+  "evidence": "random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json",
   "case": {
     "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v65/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
     "cores": 16,
+    "smt": 2,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "32-screen2-keep4-k16320-b14-seed3-blend0-first8000",
+    "name": "32-staged-k16320-b14-first8000-seed4",
     "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
@@ -34,7 +35,7 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "3",
+      "R05_SEED": "4",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "14",
@@ -60,7 +61,6 @@
       "R05_SCREEN_BRANCHES": "2",
       "R05_SCREEN_KEEP": "4"
     },
-    "smt": 2,
     "binary_sha256": "5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3",
     "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v65/build/lifelong_random05",
     "input_hashes": {

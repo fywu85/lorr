@@ -1,0 +1,83 @@
+{
+  "checked_utc": "2026-09-20T20:04:55.739698+00:00",
+  "reference": "runs/random05/staged-next-budget-32-split-full-v65/32-screen2-keep4-first4608-k5760-b12-seed3/32-screen2-keep4-first4608-k5760-b12-seed3/result.json",
+  "reference_sha256": "f500d008473d98a965a7419c0ce00547fd20f3fa3c260f9fd01ea1064e7a1cdd",
+  "all_equal": true,
+  "cases": [
+    {
+      "name": "four-k5760-b12-first4608-omp-bind-false",
+      "fields_equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "0c86a4808b87ea11c45058c8f73090fc316499d530ec8ce88d7d7f8c4a0baf44",
+      "physical_cores": 4,
+      "affinity_records": 8004,
+      "unique_masks": [
+        [
+          40,
+          41,
+          42,
+          43
+        ]
+      ],
+      "all_inside_allocation": true,
+      "latency_seconds": {
+        "mean": 0.78757272389,
+        "max": 0.845397932
+      },
+      "usage": {
+        "user_seconds": 6257.99168,
+        "system_seconds": 10.488781,
+        "peak_rss_kib": 473328,
+        "wall_seconds": 1577.385529499501,
+        "exit": 0
+      }
+    },
+    {
+      "name": "four-k5760-b12-first4608-omp-bind-close",
+      "fields_equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "0de33522ad271db20869d593a66234b23e8ddaa7dbcbc36b30b61ac12cc2ea43",
+      "physical_cores": 4,
+      "affinity_records": 8004,
+      "unique_masks": [
+        [
+          48
+        ],
+        [
+          49
+        ],
+        [
+          50
+        ],
+        [
+          51
+        ]
+      ],
+      "all_inside_allocation": true,
+      "latency_seconds": {
+        "mean": 0.7879824159064991,
+        "max": 0.842683244
+      },
+      "usage": {
+        "user_seconds": 6261.860335,
+        "system_seconds": 10.058259,
+        "peak_rss_kib": 485512,
+        "wall_seconds": 1578.199731161818,
+        "exit": 0
+      }
+    }
+  ],
+  "caveat": "Full same-host comparison on disjoint sets of four physical cores, including equal affinity diagnostic overhead. Both reproduce3770 exactly; means are effectively equal."
+}

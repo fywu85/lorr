@@ -1,0 +1,36 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-20T20:05:43.154684+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "a7bad0c400db112475fbdff72ba5c49a7b01540d",
+  "hosts": "research33*|research39*",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "cases": [
+    {
+      "name": "seed50008-nms-repeat2",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/nms4-build-v2/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v4/seed50008/RANDOM-05.json",
+      "cores": 4,
+      "smt": 1,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "reference_change": "THREADS=4; otherwise original combined entry, original compiler/linker flags",
+      "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/nms4-build-v2/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v4/seed50008/RANDOM-05.json": "014d3f035087c25f0817b6e105f524cb67b50001ba95c64b7a064953d291def8",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v4/seed50008/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v4/seed50008/agents.agents": "a2f665f25e7857cf2d8beb9af230a3d51750e315412d2f14d89066b50ce338f9",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v4/seed50008/tasks.tasks": "a26ee0dd86b931f8c128eb8c61a7afab892d77727acd984070bff1c1944d7d7d"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v4-split-full-v65/seed50008-nms-repeat2.cases.json",
+  "physical": 4,
+  "slots": 8,
+  "exclusive": false,
+  "memory_per_slot_gib": 4
+}

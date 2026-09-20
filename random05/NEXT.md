@@ -1,194 +1,148 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 19:41 UTC.
-
-The goal remains ACTIVE. The user wants continued throughput improvement until
-our evening check-in; waiting time is secondary. This turn made clear progress:
-strict four-core3709 (+27.3% vs NMS) and overall3794 (+19.6%), plus a new general
-search method, full controls, diagnostics and audits. This is not blocked.
-Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`. Warehouse work
-shares main; leave other files, staged changes and GRID jobs alone. No subagent
+Updated: 2026-09-20 20:15 UTC. Goal ACTIVE. The user wants continued throughput
+improvement and an evening check-in; waiting time is secondary. There is clear
+progress, not a blocker. Finish the pending frozen validation and full controls.
+Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; Warehouse work
+shares main. Leave other files, staged changes and GRID jobs alone. No subagent
 delegation. Public fywu85/lorr; pushing is authorized. Do not change visibility.
 
-## Verified records
+## Current verified frontiers
 
-- Four physical cores: **3709**, source **f81b760**, build-v61.
-  First K5120 then K6144/B8, start2/local0, generations4/E8/P8, seed3,
-  future elite blend0.5, cache512, kinematic and cycle masks enabled.
-  Mean819.611ms, max888.504ms, RSS451716KiB (463MB), user6530s/wall1641s.
-  **+27.3% vs strongest matched NMS4=2914**. Finished18:59:34.727026 UTC.
-  Evidence: results/cycle-mask-strict-candidate-split-full-v61/
-  four-first5120-k6144-blend0.5-cycle-mask1-strict/summary.json.
-  The whole trace equals the earlier relaxed5s source60c5f9b3709 result.
-  That older run is separate; its mean923/max1495ms was never a strict frontier.
-  This reaches the colleague's reported gain range on the development input;
-  it is not yet fresh-input validation of this selected configuration.
-- Overall /32 workers (16 physical cores, SMT2): **3794**, source **5f81613**,
-  build-v65. First8000 thenK16320/B14, screen2/keep4, generations4/E8/P8,
-  seed3, blend0, cache64, kinematic mask1, cycle mask0. Mean473.240ms,
-  max525.342ms, RSS564328KiB (578MB). **+19.6% vs matched NMS32=3172**.
-  Finished19:23:22.219359 UTC. Evidence:
-  results/staged-initial-budget-32-split-full-v65/
-  32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json.
-- Intermediate records this turn are retained:3755 atK8192/B10/seed3,
-  mean257/max353ms;3776 atK16384/B10/seed3, mean567/max768ms, finished
-  19:21:39.535205 UTC. All source5f81613. Best manifests select3709/3794.
-  Progress audit PASSED69 frontier rows. Waiting history/manifest/report updated.
+- Four physical cores: **3770**, source **5f81613/build-v65**, seed3, firstK4608
+  thenK5760/B12, screen2/keep4, generations4/E8/P8, blend0, cache512,
+  kinematicmask1/cyclemask0. **+29.4% vs strongest matched NMS4=2914**.
+  Mean787.573ms, max845.398ms, RSS473328KiB (485MB), user6258s/wall1577s.
+  Finished2026-09-20T20:02:29.833542+00:00, case
+  four-k5760-b12-first4608-omp-bind-false, in
+  `results/worker-affinity-four-full-v65/summary.json` (UNSPLIT batch).
+  Both false/close binding cases score3770 and exactly match all six trajectory
+  fields of the earlier fast32 run. Both use four physical cores; the job reserves
+  eight total. All observed worker masks stay within disjoint case allocations.
+  Binding means788/788ms, maxima845/843ms: no useful speedup claim.
+- Overall /32 workers (16 physical cores, SMT2): **3852**, source **5f81613**,
+  seed4, firstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8,
+  blend0/cache64/kinematicmask1/cyclemask0. **+21.4% vs NMS32=3172**.
+  Mean478.098ms, max538.443ms, RSS565044KiB (579MB), user28875s/wall959s.
+  Finished2026-09-20T20:07:08.133068+00:00. Evidence:
+  `results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json`.
+- Intermediate records remain:3718 four-core K4608/B12 (628ms mean/756ms max),
+  earlier3709 four-core;3755/3776/3794 overall. Best manifests select3770/3852.
+  Progress audit PASSED72 rows, including raw waiting accounting.
+- Build-v65 SHA:
+  5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3.
+  Canonical records are full2000/strict1s/30s preprocessing/32decimalGB guard,
+  zero errors/timeouts, verified EPYC9354 allocation. Shared hosts are allowed.
+  No deadline-driven partial result. Fixed work completes or exits124.
 
-All canonical frontiers: 2000 steps, strict1s,30s preprocessing,32 decimal GB
-address-space cap, zero errors/timeouts, EPYC9354, verified GRID affinity.
-Shared hosts allowed. Fixed work; timeout exits124, no partial search returned.
-Map-specific generated guidance and known-horizon triage require --trick
-RANDOM-05. Search/cache mechanisms are general; best cases still use the tricks.
-NMS4 strongest2914 (other repeats2902/2903), NMS32=3172. Both local builds retain
-the documented constructor fix; four-worker variant only changes worker count.
+Exact config is in best manifests. Common tricks: generated flow field15,
+1flip/flipseed5, contrast2.4; known horizon2000/triage1.5. All require --trick
+RANDOM-05. Search mechanisms/caches are general; records still use these tricks.
+Common depth8/noise200/dispersion.8, turn.6/wait.5, guided Hungarian1000,
+keep.5/length.25, per-step RNG, continuationstart2/local0/futuremutation.3.
+All exact prefix/order/cache optimizations enabled. Use manifests, not defaults.
 
-Common policy: generated flow field15, average/normalize, power3,
-betweenness.75, penalty2.4, one flip/flipseed5; turn.6/wait.5;
-depth8/noise200/dispersion.8; guided Hungarian1000, keep.5/length.25;
-horizon2000/triage1.5; per-step RNG. Exact flags include shareprefix, packedorder,
-fastdispersion, scratchreuse, goalcache, radixorder, candidatecache.
-Use measured best manifests, not defaults. Mutation/future mutation.3, decay1,
-risk0. No tuning on independent inputs50001–50006.
+## Frozen V4 validation RUNNING -- do not change candidate
 
-## New method and validation
+Protocol commit **a7bad0c**, files FRESH_VALIDATION_V4.md and
+experiments/fresh-validation-v4-{protocol,full}.json. Committed BEFORE generating
+new inputs50007/50008. Source5f81613/build-v65, exact3770 four-core false-binding
+configuration, including affinity diagnostics. No later source/seed substitution.
+Six predeclared full runs: candidate once and NMS4 twice on each input.
+`fresh-validation-v4-split-full-v65`, jobs8900630-35, started about20:05UTC.
+All six allocations checked: four physical EPYC9354 cores, no CPU quota cap.
+Expected candidates ~20:32, NMS ~20:37UTC. Preserve all attempts.
+Collect, archive compact metadata, then run:
 
-Current engine source5f81613/build-v65, SHA
-5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3.
-R05_SCREEN_BRANCHES=s (default0) and R05_SCREEN_KEEP=q (default4): screen every
-root with s complete futures; retain exactly1/q, including first anchor within
-quota; finish all B futures for survivors. At least2 survivors per generation
-ensure both anchor and leader survive. Only fully evaluated candidates compete,
-become elite parents or persist. K is exact branch-evaluation work: each q-root
-group costs q*s+B-s, and every generation must have complete groups. Prefix and
-score sums resume in branch order. Runtime count assertion checks global work.
-No clock-based selection. Local trials retain their separate declared budget.
+    python3 random05/tools/audit_fresh.py --batch runs/random05/fresh-validation-v4-split-full-v65 --output random05/results/fresh-validation-v4/audit.json --protocol-commit a7bad0c --protocol-json random05/experiments/fresh-validation-v4-protocol.json
 
-Example: K5120/B14/s2/q4/g4 gives1024 roots and256 full finalists. K8192/B10
-uses2048 roots/512 full finalists. This changes search, unlike cache flags.
-Tests compare exhaustive/staged identical-future searches with equal root draws,
-shared prefix on/off, smaller first-step budget; stochastic risk/turnover checks
-verify worker determinism and collision/task locks. Complete suite PASSES13.73s.
-Failed build-v64/source21f0cb8 is preserved: tiny fixture allowed only one
-survivor and forcing the anchor removed the leader. v65 rejects that contract.
+Use stronger NMS repeat per input. Add separate per-input waiting audits if
+useful; do not mix different task/start streams into the archived-input waiting
+manifest (it correctly rejects that). Inputs50001--50008 remain OUT OF TUNING.
+Fresh V3 stays frozen:3698 vs2926/2900 and3619 vs2906/2831, aggregate+25.46%,
+all six valid. V3 uses different inputs: comparisons between percentages are
+not paired causal effects. Colleague's private inputs/code remain unavailable.
 
-Branch diagnostics: source d4a6047/build-v62 added observational per-branch
-scores; source678f905/build-v63 buffers each generation into one log write.
-An unbuffered3709 diagnostic failed step0=1035.4ms; corrected build completes
-3709 on32workers, mean160.9/max234.7ms. Original failure remains archived.
-Three complete diagnostic traces EXACTLY reproduce3743/3741/3709 counterparts.
-At20 sampled steps x4 generations each, two-future/top-quarter screening keeps
-all240 batch winners and99.1%/97.2%/97.0% of top-eight candidates.
-Evidence: results/branch-ranking-20260920/{audit.json,REPORT.md,equivalence.json}.
-This supports testing, not a throughput guarantee or independent-input claim.
+## Other live jobs and next decisions
 
-Unchanged source65 control reproduces every field of3743, mean220/max326ms.
-Initial staged32 results (all full strict): K5120/B14/blend0/.5=3670/3574;
-K5120/B10/blend0=3635. K8192/B10/blend0 planner seeds0–4:
-3730/3642/3611/3755/3715, mean3690.6, versus ordinaryK8192/B8
-3743/3492/3730/3705/3513, mean3636.6 (+1.485%,3/5 positive pairs).
-This is one development input, not independent task/start validation.
-Paired evidence: results/staged-seeds-and-budget-32-split-full-v65/paired-seeds.json.
+1. **setup-fusion-four-full-v66**, job8900602, UNSPLIT paired job, each four
+   cores. Full K5760/B12/first4608 control build65 versus new build66.
+   Started19:56:55UTC, expected~20:24. Both have policy profiling enabled.
+2. **setup-fusion-32-full-v66**, job8900603, UNSPLIT pair, each16 cores/32workers.
+   Repeats3794 first8000/K16320/B14/seed3. Build65 completed3794, mean505.759ms,
+   max576.620ms at~20:14. Build66 nearing completion at last check.
+   Verify all six raw trajectory fields, then compare full timing/profile phases.
+   Early matched-step setup timing is WORSE (~+10--15% setup, +2--3% total).
+   Revert source fusion if full results confirm no benefit; do not invent speedup.
+3. **staged-seed2-timeout-check-full-v65**, job8900641, UNSPLIT paired job.
+   The original high-budget seed2 failed at step1850/1422.350ms (exit124), while
+   other seeds completed. Explicit follow-ups use identical fixed work under
+   strict1s and relaxed5s on disjoint same-host allocations. Started~20:11,
+   expected~20:28. Preserve the original failure. Relaxed result cannot enter
+   strict frontier. Determine whether spike repeats; don't assert contention
+   without evidence. Compare full traces if both complete.
+4. **staged-headroom-32-split-full-v65**, jobs8900643--46, started~20:14:
+   B12/first4608, seed3, K6480/6768/7056; B14/first8000, seed4, K28800.
+   Fast32 full strict runs. First three probe potentially feasible four-core
+   work, but cannot be promoted as four-core without direct strict confirmation.
 
-Direct four-coreK5120/B14 controls score3670/3574, means693/690ms,
-maxima825/825ms, exactly matching fast32 traces. Unchanged control3655 also
-matches its old trace, mean672/max810ms. No throughput promotion over3709.
-Four-corefirst5120 thenK6000/B14 andK6144/B10 score3664/3654, mean818/848ms,
-max891/912ms. Both EXACT fast32 counterparts; neither improves3709.
-Evidence in staged-continuations-four and staged-larger-four-split-full-v65.
+Current working C++ source is **fde9172/build-v66**: fuses three per-robot setup
+passes and eliminates redundant pointer/flag clears. No semantic change intended.
+Full regression suite PASSED13.61s. SHA
+fc6111644108e180b78f27c2db2fe24177cc1cbd238bf031028f001ff3e6d445.
+Source65 remains the measured best and frozenV4. `results/setup-fusion-v66/`
+contains build provenance. If reverting, restore ONLY engine.cpp from5f81613;
+keep all experiment evidence and scoped log work. Do not revert Warehouse files.
 
-Larger32 work: fullK16384/B10/seed0 andK16320/B14/seed3 fail atstep0=1093.3/
-1133.0ms, preserved. New startup budgets8192/8000 complete3667/3794.
-FullK16384/B10/seed3 completes3776. Explicit startup counts can change the
-trajectory; they are new configurations, not silent retries or clock fallbacks.
+## Completed comparisons this turn
 
-Fixed1024-root/256-finalist comparisons: s2/B12/K4608=3718;
-s2/B14/K5120=3670; s2/B16/K5632=3695; s4/B16/K7168=3664. Allseed3.
-First4608 thenB12/K5760 scores3770, versus3660 atK6120. Direct four-core
-confirmations are pending; fast32 results do not establish four-core scores.
+- Fixed1024 roots: B12/K4608=3718;B14/K5120=3670;B16/K5632=3695;
+  s4/B16/K7168=3664. B12/B16 directfour exactly match fast32 full traces.
+- K5760/B12/first4608 planner seeds0--4:3663/3669/3732/3770/3654,
+  mean3697.6 vs earlier ordinaryK5120/B8/E1/P1 mean3606 (+2.54%,5/5positive).
+  Complete configurations and different work, not an isolated screening effect.
+  `results/staged-record-seeds-32-split-full-v65/k5760-paired-seeds.json`.
+- Higher-budget K16320/B14/first8000 seeds0--4:
+  3785/3721/FAILED/3794/3852. Original seed2 failure prevents a five-seed strict
+  mean; `k16320-original-seeds.json` retains all attempts. Do not omit the failure
+  or silently replace it with the declared repeat.
+- Near-K5760 retention comparison: s2/q2 gives3675, s2/q8=3509,
+  s1/q4=3639, s1/q8=3737. All valid, below3770. Slightly different exact budgets
+  ensure whole groups; see manifests. Retain s2/q4. Observational old-score
+  diagnostic showed q8 loses some leaders; audit in branch-ranking-20260920.
+- Larger K24000/B14/first8000/seed3=3702, below3794 atK16320. More work not monotonic.
+- 32-worker binding false/close both EXACT3794; means503/500ms, maxima585/874ms.
+  All observed affinity records inside allocation. No isolated speedup claimed.
+- Earlier staged K8192/B10 seeds mean3690.6 vs ordinaryK8192/B8 mean3636.6
+  (+1.485%,3/5 positive). All five strict. Separate from newer failed-seed batch.
 
-## GRID work to collect next
+Staged search source65: screen each root with s full futures, retain exactly1/q
+(including anchor within quota), complete B for survivors; only fully evaluated
+candidates can win/become parents/persist. K exact branch count, group cost
+q*s+B-s, complete groups per generation, >=2 survivors. Tests13.73s pass.
+Failed v64 tiny-anchor test was corrected before benchmarks; preserve history.
 
-All source5f81613/build-v65. Full2000/strict1s. Inspect completion/summary,
-not only qstat. Never assign throughput to a failed or partial run.
+## Waiting and operations
 
-- staged-b16-four-split-full-v65, job8900496, nearing completion:
-  s2/B16/K5632/roots1024/seed3. Expected3695 from fast32; verify whole trace.
-- staged-b12-four-split-full-v65, job8900514, started about19:26 UTC:
-  s2/B12/K4608/roots1024/seed3. Expected3718; promote only after full4-core
-  deadline and trace checks. Cache512 versus64 on fast32 should be exact.
-- staged-next-budget-32-split-full-v65, jobs8900515–17:
-  first4608/K5760/B12 COMPLETE3770; K6120 COMPLETE3660.
-  first8000/K24000/B14/seed3 STILL RUNNING, attempts more work than3794.
-- worker-affinity-four-full-v65, job8900535, started about19:35 UTC:
-  TWO cases in ONE allocation, each4 physical cores, disjoint CPU masks.
-  first4608/K5760/B12 (fast32=3770), envOMP_PROC_BIND false vs close,
-  OMP_PLACES threads, OMP_DISPLAY_ENV/AFFINITY true in both. This is a direct
-  four-core confirmation plus a worker-placement comparison. Whole traces
-  must match fast32 and each other. Job reserves8 cores total, each solver4.
-- worker-affinity-32-full-v65, job8900536, about19:35 UTC:
-  TWO cases, each16 physical cores/32 workers, disjoint masks, same host.
-  Repeats3794 with the two binding policies above. Job reserves32 cores total.
-  Do not use split_grid collect on these TWO unsplit affinity batches; native
-  summaries are directly BATCH/summary.json and raw traces BATCH/CASE/result.json.
+Current completed max:3770four=1941,3852overall=1940; NMS4=1997,NMS32=1976.
+Initial unfinished137/138 vs219/206. Every solver has initial orders unfinished
+at2000, so eventual longest latency unknown and >=2000; completed stats censored.
+`tools/render_waiting_report.py` now regenerates current REPORT.md from audited
+best manifests. Run after audit_task_waits; it validates manifest/raw hashes and
+rejects missing frontier rows. Executed successfully for3770/3852.
 
-Binding probe: results/worker-affinity-probe-20260920/{probe.cpp,audit.json}.
-Uses same libgomp as solver; confirms close binds four workers to four distinct
-single-CPU masks within taskset allocation. Running paired-job affinity logs
-also checked: every observed mask inside its case's allocated CPUs; close has
-one unique singleton per worker. Snapshots in each result batch's early-affinity-
-audit.json. Recheck full logs after completion. Early timing is mixed; no
-speedup claimed. OMP_DISPLAY_AFFINITY emits again for fresh teams each step,
-so both controls retain the same diagnostic overhead. GNU docs linked in RESEARCH.
-
-All earlier staged/diagnostic/cycle batches complete and archived. Cycle32mask
-controls exactly3743, different-host means305/279ms, no isolated speedup claim.
-Four mask0 control3655, mean670/max793ms; mask1 control failedstep0=1278ms.
-The standalone3709 configuration did complete strictly. Preserve all failures.
-Runner preflight failures now produce terminal invalid summaries without a
-solver launch; three-condition regression test passes. Source64 failed tests
-were corrected in65 before any throughput run.
-
-Possible next steps after the pending results: freeze a new independent-input
-validation for the best confirmed four-core candidate; consider planner seeds
-for3794 (not yet checked). Earlier start3/4 continuations lost52/112 tasks at
-K2048/generation1; do not blindly repeat that setting. A changed method might
-justify a specific compute/quality comparison, but none is queued. CPU setup
-still consumes significant sampled time; exact loop fusion or carefully keyed
-cross-step ranking caches are unimplemented ideas, not measured improvements.
-
-## Fresh validation and secondary metrics
-
-Fresh V3 remains frozen at protocol81bdfbd, source6ce9312/build-v52,
-K5120/B8/g4/E1/P1/seed3 (development3637). Input50005:3698 vsNMS2926/2900;
-50006:3619 vs2906/2831. Aggregate+25.46% vs stronger repeats, all6 valid.
-No later best replaces that candidate. Inputs50001–50006 stay out of tuning.
-A future V4 needs a new frozen candidate/protocol and new inputs (e.g.50007/8),
-after these pending improvements settle. Do not claim the selected3709 or3794
-has fresh validation yet. Colleague absolute counts use private inputs.
-
-Current max completed latency: four3709=1947 steps vsNMS1997;32-worker3794=1950
-vsNMS1976. Initial unfinished135/133 vsNMS219/206; unopened98/98 vs102/91.
-All have initial orders unfinished at2000, so eventual max unknown, at least2000.
-Completed-only means are censored. Throughput stays the selection criterion.
-Matched report: results/task-waiting-frontiers-20260920T1612/REPORT.md.
-
-Fable's exact approved79KB payload was attempted15:01UTC with session
-27a4316e-b79d-46cf-86b4-41b0f558938a; provider429/model_requires_usage_credits,
-zero usage, NO REVIEW. User informed. Old payload is source7506a, not this
-new staged search. Do not claim feedback or silently replace authorized bytes.
-Optional exact-payload retry if credits return; not a blocker to local work.
-
-## Routine operations
-
-Collect with split_grid.py collect. Archive only direct *.json and */*.json
-metadata (summary, completion, spec, allocation, submission, batch). Never
-recursively copy NMS cwd/raw outputs. Preserve every invalid attempt.
-Full equivalence fields: actualPaths, plannerPaths, actualSchedule,
-plannerSchedule, events, tasks; record both raw hashes.
-Promote strict records only after source/input/allocation/trace checks; update
-best*.json, timestamped progress row, matched waiting manifest/report and audit.
-`audit_progress.py` regenerates WAITING_PROGRESS.md. Scope every commit:
-`git add -- random05 RANDOM05_PROGRESS.md`
-`git commit --only --quiet -m '...' -- random05 RANDOM05_PROGRESS.md`
+Collect split batches with split_grid.py collect. UNSPLIT jobs write their own
+root summary; do not use split collector on them. Archive only direct *.json
+and */*.json metadata named summary/completion/spec/allocation/submission/batch.
+Never recursively copy NMS cwd or raw outputs. Full equivalence fields:
+actualPaths,plannerPaths,actualSchedule,plannerSchedule,events,tasks; hash raws.
+On promotion update best manifests, timestamped progress, waiting manifest/audit,
+run audit_progress.py (regenerates WAITING_PROGRESS), render_waiting_report.py.
+Scope all commits to random05/ and RANDOM05_PROGRESS.md; never touch Warehouse.
 Push with GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= and gh credential helper.
+
+Fable exact approved79KB payload attempt at15:01UTC failed provider429 /
+model_requires_usage_credits, zero usage, NO REVIEW. Session
+27a4316e-b79d-46cf-86b4-41b0f558938a. Payload under
+runs/random05/fable-review-01/payload.txt, source7506a, not current staged search.
+Do not claim feedback or silently replace the authorized payload bytes.

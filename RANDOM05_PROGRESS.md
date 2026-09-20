@@ -26,15 +26,21 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 19:51 UTC.
+Updated: 2026-09-20 20:08 UTC.
 
-**Best single run on the archived input: 3,794 tasks on32 workers /16 physical cores**,
-or **+19.6% versus matched NMS32 =3,172**. Source
-[5f81613](https://github.com/fywu85/lorr/commit/5f81613), plannerseed3,
-firstK8000 thenK16320/B14, screen2/keep4, fourgenerations/E8/P8, blend0.
-Mean473ms, maximum525ms, RSS578MB; all2,000steps valid under strict1s.
-This is a selected best on the development input, not a fresh-input comparison.
-[Full evidence](random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json).
+**Best single run on the archived input: 3,852 tasks on 32 workers / 16 physical cores**,
+or **+21.4% versus matched NMS32 = 3,172**. Source
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed 4,
+first K8000 then K16320/B14, screen2/keep4, four generations/E8/P8, blend0.
+Mean478ms, maximum538ms, RSS579MB; all 2,000 steps valid under strict1s.
+This is a selected seed-specific best on the development input. Other seeds
+are being checked; it is not a fresh-input comparison.
+[Full evidence](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json).
+
+The same configuration previously scored 3,794 on planner seed 3 (mean473ms,
+maximum525ms). Two worker-placement controls reproduce that full trajectory;
+pinning changes mean time by less than1% and has a larger maximum in this pair.
+[Placement controls](random05/results/worker-affinity-32-full-v65/equivalence-and-affinity.json).
 
 The same source first reached3,755 atK8192/B10, then3,776 atK16384/B10.
 Both intermediate records remain in the timestamped history. The five-seed
@@ -63,17 +69,30 @@ versus3,636.6 forK8192/B8 (+0.89%, three of five positive pairs). These are
 planner seeds on one input; its highest score remains below3,743.
 [Budget comparison](random05/results/persistent-budget-split-full-v55/summary.json).
 
-**Best confirmed four-core run: 3,718 tasks**, or **+27.6% versus the strongest
-matched NMS4 repeat =2,914**. Source
-[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed3,
-K4608/B12, screen2/keep4, four generations/E8/P8, blend0, cache512,
-kinematic mask enabled. Mean628ms, maximum756ms, RSS474MB; all2,000steps
-valid under a strict1s deadline. Every action, assignment, event and task equals
-the fast32-worker run. The staged search both improves the former3,709 result
-and requires less measured time on four cores. Fresh-input validation below
-still refers to the earlier frozen candidate.
-[Full evidence](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json),
-[trajectory equivalence](random05/results/staged-b12-four-split-full-v65/equivalence.json).
+**Best confirmed four-core run: 3,770 tasks**, or **+29.4% versus the strongest
+matched NMS4 repeat = 2,914**. Source
+[5f81613](https://github.com/fywu85/lorr/commit/5f81613), planner seed 3,
+first K4608 then K5760/B12, screen2/keep4, four generations/E8/P8, blend0,
+cache512 and kinematic mask enabled. Mean788ms, maximum845ms, RSS485MB;
+all 2,000 steps are valid under a strict one-second deadline. Two placement
+controls on disjoint four-core sets reproduce every action, assignment, event
+and task from the faster 32-worker run. Worker pinning gives effectively equal
+mean time in this pair; it is not a measured optimization.
+[Full evidence](random05/results/worker-affinity-four-full-v65/summary.json),
+[trajectory and affinity audit](random05/results/worker-affinity-four-full-v65/equivalence-and-affinity.json).
+
+The five planner seeds at this configuration score 3,663/3,669/3,732/3,770/3,654,
+mean **3,697.6**. Compared with the earlier ordinary K5120/B8/E1/P1 configuration,
+all five pairs improve (+2.54% mean). This compares complete configurations on
+one development input, not an isolated effect of screening or fresh inputs.
+The new frozen V4 protocol tests two untouched task/start streams.
+[Seed evidence](random05/results/staged-record-seeds-32-split-full-v65/k5760-paired-seeds.json),
+[V4 protocol](random05/FRESH_VALIDATION_V4.md).
+
+The immediately preceding four-core record was 3,718 at K4608/B12: mean628ms,
+maximum756ms, RSS474MB. That cheaper configuration and its exact 32-worker
+trajectory confirmation remain in the timestamped history.
+[Previous evidence](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json).
 
 The former four-core best was3,709, sourcef81b760, firstK5120 thenK6144/B8,
 seed3, future blend0.5. It completed strictly (mean820ms, maximum889ms), with
@@ -240,6 +259,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T19:21:39.535205+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16384/B10, firstK0, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3776 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.0% | [full run](random05/results/staged-seeds-and-budget-32-split-full-v65/32-screen2-keep4-k16384-b10-seed3-blend0/summary.json) |
 | 2026-09-20T19:23:22.219359+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed3, blend0; **trick** guidance+known horizon | 3794 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +19.6% | [full run](random05/results/staged-initial-budget-32-split-full-v65/32-screen2-keep4-k16320-b14-seed3-blend0-first8000/summary.json) |
 | 2026-09-20T19:47:51.315402+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K4608/B12, screen2/keep4, generations4/E8/P8, seed3, cache512; **trick** guidance+known horizon | 3718 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +27.6% | [full run](random05/results/staged-b12-four-split-full-v65/four-screen2-keep4-k4608-b12-roots1024-seed3/summary.json) |
+| 2026-09-20T20:02:29.833542+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3, cache512, worker binding false; **trick** guidance+known horizon | 3770 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +29.4% | [full run](random05/results/worker-affinity-four-full-v65/summary.json) |
+| 2026-09-20T20:07:08.133068+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | FirstK8000 thenK16320/B14, screen2/keep4, generations4/E8/P8, seed4, blend0; **trick** guidance+known horizon | 3852 | 32 / 16 / EPYC 9354 | 3172 NMS32 | +21.4% | [full run](random05/results/staged-record-seeds-32-split-full-v65/32-staged-k16320-b14-first8000-seed4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1220,3 +1241,47 @@ input/binary hashes and allocation are linked in the audits.
   waits after declared horizon triage: about13% of our loaded waits have a
   suppressed goal. This is descriptive accounting, not recoverable throughput.
   [Current action and suppression report](random05/results/action-audit-current-v55/REPORT.md).
+
+
+- Staged search, source5f81613: the fixed1,024-root comparison gives3,718 at
+  B12/K4608,3,670 at B14/K5120,3,695 at B16/K5632 and3,664 with a four-branch
+  screen at B16/K7168. All full32-worker runs are valid. Direct four-core B12
+  andB16 confirmations reproduce every trajectory field, with means628/755ms
+  and maxima756/898ms. The3,718 result becomes the four-core frontier.
+- FirstK4608 thenK5760/B12 gives3,770 on32workers;K6120 gives3,660.
+  FirstK8000 thenK24000/B14 finishes3,702, below3,794 atK16320. More work
+  does not guarantee more throughput. Worker-pinning controls and five-seed
+  checks of the leading configurations are running; results are not assumed.
+- Sampled rollout profiling attributes22.6% of worker time to setup in the
+  former3,709 four-core record. The next source combines three independent
+  per-robot setup passes and removes redundant pointer/flag clears, while
+  preserving neighbor-dependent work after the full pass. Build-v66 regression
+  and complete-trajectory controls must pass before any speedup claim.
+
+
+- Full worker-placement controls reproduce3,770 on four cores and3,794 on
+  32 workers, including every action, assignment, event and task. Every observed
+  worker CPU mask remains inside its case's allocated cores. Four-core means
+  are788/788ms and maxima845/843ms for binding false/close. The32-worker means
+  are503/500ms, maxima585/874ms. No useful pinning speedup is established.
+- The firstK4608/K5760/B12 configuration averages3,697.6 across planner seeds
+  0–4:3,663/3,669/3,732/3,770/3,654. All five improve versus the earlier
+  ordinaryK5120/B8/E1/P1 configuration (mean3,606, +2.54%), but this compares
+  complete configurations and search budgets, not an isolated screening effect.
+- The higher-budget firstK8000/K16320/B14 configuration scores3,785/3,721/
+  failed/3,794/**3,852** for seeds0–4. Seed2 exits124 at timestep1850 with
+  elapsed1422.350ms; no five-seed strict mean is claimed. The new3,852 seed4
+  best is fully valid (mean478ms/max538ms). A declared strict repeat and a
+  relaxed5s diagnostic preserve the original failure and use identical fixed
+  work. The relaxed result cannot enter the strict frontier.
+- Screening alternatives at approximately K5760/B12: two branches/keep-half
+  gives3,675; two/keep-eighth3,509; one/keep-quarter3,639; one/keep-eighth3,737.
+  All four full runs are valid and below3,770. Exact K and startup work vary
+  slightly to fit whole generation groups; manifests retain those counts.
+- V4 froze source5f81613 and the3,770 four-core candidate in protocol
+  [a7bad0c](https://github.com/fywu85/lorr/commit/a7bad0c) before generating
+  inputs50007/50008. All six candidate/NMS runs have verified four-core EPYC9354
+  allocations and are underway. Later records do not replace that candidate.
+- Setup fusion, sourcefde9172/build-v66, passes all regressions in13.61s.
+  Paired full controls remain underway. Early matched-step profiling is slower
+  in the setup phase; do not claim an optimization or use it in frozenV4.
