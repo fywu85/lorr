@@ -344,7 +344,33 @@ void continuation_risk() {
     const auto serial=simulate(cfg,12);cfg.threads=2;
     require(serial==simulate(cfg,12),"continuation risk changed with worker count");
 }
+void shared_goal_costs() {
+    auto e=environment(4,5,1);e.map[6]=1;
+    Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;cfg.turn_cost=0.6;
+    Graph original(e,cfg);cfg.goal_cache=true;Graph cached(e,cfg);
+    for(int goal=0;goal<original.cells;++goal)for(int state=0;state<original.states;++state)
+        require(original.approach(goal,state)==cached.approach(goal,state),
+                "shared goal row changed oriented approach cost");
+    Task task;task.locations={4,16,2,19};Chain first(original,task,true),second(cached,task,true),uncached(cached,task);
+    for(int stage=0;stage<=int(task.locations.size());++stage)
+        for(int cell=0;cell<original.cells;++cell)for(int d=0;d<4;++d) {
+            require(first.cost(original,stage,cell,d)==second.cost(cached,stage,cell,d),
+                    "shared terminal row changed chained task cost");
+            require(first.cost(original,stage,cell,d)==uncached.cost(cached,stage,cell,d),
+                    "shared goal row changed uncached task cost");
+        }
+    cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.packed_order=true;
+    cfg.fast_dispersion=true;cfg.dispersion=0.8;cfg.guided_matching=true;cfg.hungarian_limit=1000;
+    cfg.rollout_match=true;cfg.random_by_step=true;cfg.goal_cache=false;
+    const auto reference=simulate(cfg,12);cfg.goal_cache=true;
+    require(reference==simulate(cfg,12),"shared goal cache changed dense matching/task turnover");
+    cfg.threads=2;
+    require(reference==simulate(cfg,12),"shared goal cache changed with worker count");
+}
+
 int main() {
+    shared_goal_costs();
     Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
     const auto unmeasured=simulate(measured,12);measured.profile=true;
     require(unmeasured==simulate(measured,12),"phase profiling changed the trajectory");

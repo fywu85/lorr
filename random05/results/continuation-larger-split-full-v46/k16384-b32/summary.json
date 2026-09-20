@@ -1,16 +1,11 @@
-{
-  "source_commit": "d933023",
-  "evidence": "random05/results/continuation-larger-split-full-v46/k16384-b8/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05",
-    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 16,
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:56:18.726585+00:00",
+    "name": "k16384-b32",
     "steps": 2000,
-    "limit_ms": 1000,
-    "preprocess_ms": 30000,
-    "trick": true,
-    "name": "k16384-b8",
-    "env": {
+    "binary_sha256": "e29c44b90bbcd4f0a11b2738112ca78eef89db63bd0f0e3463c221a7fd309b41",
+    "environment": {
       "R05_K": "16384",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -37,14 +32,41 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATIONS": "32",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
       "R05_FAST_DISPERSION": "1",
       "R05_SCRATCH_REUSE": "1"
     },
-    "smt": 2,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05"
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3594,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.711233978
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.5784505012655005,
+      "max": 0.711233978
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "5927a7e1d1449076337cb6ee2ce1e86f6a92f545dad7c80ed344c7344ffc1e21",
+    "valid": true,
+    "usage": {
+      "user_seconds": 36383.69948,
+      "system_seconds": 17.397082,
+      "peak_rss_kib": 379620,
+      "wall_seconds": 1159.248305555433,
+      "exit": 0
+    }
   }
-}
+]

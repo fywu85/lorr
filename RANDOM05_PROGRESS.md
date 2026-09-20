@@ -24,23 +24,25 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 14:50 UTC.
+Updated: 2026-09-20 15:04 UTC.
 
-**Best single run on the archived input: 3,596 tasks on 32 workers / 16 physical cores**, or
-**+13.4% versus matched NMS32 = 3,172**. The planner averages eight simulated
-continuations for each of 1,024 candidate priority vectors (8,192 futures total),
+**Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
+**+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
+continuations for each of 2,048 candidate priority vectors (16,384 futures total),
 keeping priorities fixed for the first two simulated steps. Source
 [d933023](https://github.com/fywu85/lorr/commit/d933023), planner seed 3, with exact
 prefix reuse, packed sorting, sparse dispersion and reusable policy buffers.
-Mean latency 308 ms, maximum 421 ms, peak RSS 447 MB. All 2,000 steps are valid.
-This larger portfolio is not a verified four-core configuration. Additional
-planner-seed checks are running; this remains a selected single-run maximum.
+Mean latency 607 ms, maximum 726 ms, peak RSS 364 MB. All 2,000 steps are valid.
+This is a selected single-run maximum and has not been reproduced on four cores.
 
-**Best confirmed four-core run: 3,509 tasks**, or **+20.4% versus the strongest
+**Best confirmed four-core run: 3,520 tasks**, or **+20.8% versus the strongest
 matched NMS4 repeat = 2,914**. Source
-[d933023](https://github.com/fywu85/lorr/commit/d933023), K3584/B8/start2/local0,
-planner seed 3. Mean latency 785 ms, maximum 930 ms, peak RSS 293 MB; all 2,000
-steps are valid. This is an eight-task gain over the preceding 3,501 record.
+[f9b1143](https://github.com/fywu85/lorr/commit/f9b1143), K2048/B8/start2/local0,
+four search generations, planner seed 3. Mean latency 456 ms, maximum 571 ms,
+peak RSS 287 MB; all 2,000 steps are valid. Every action, schedule and event
+matches the 32-worker run. This selected record is 11 tasks above the preceding
+3,509 four-core record; replication across planner seeds remains to be done.
+[Equivalence](random05/results/generation-four-split-full-v47/equivalence.json).
 
 The 3,501 configuration remains the frozen candidate for fresh validation V2:
 K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
@@ -140,6 +142,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T14:24:41.462668+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Exact four-core reproduction of the 3,501 trajectory; B8/K2048/start2/local0/planner seed3; prefix/packed/sparse optimizations; `--trick RANDOM-05` | 3501 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.1% | [Full evidence](random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json) |
 | 2026-09-20T14:29:52.858068+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | Mean of 8 continuations; K8192 total/start2/local0/planner seed3; exact implementation optimizations; `--trick RANDOM-05` | 3596 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +13.4% | [Full evidence](random05/results/scratch-reuse-split-full-v46/k8192-b8/summary.json) |
 | 2026-09-20T14:45:45.463667+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | B8/K3584/start2/local0/planner seed3 with exact implementation optimizations; `--trick RANDOM-05` | 3509 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.4% | [Full evidence](random05/results/scratch-four-split-full-v46/k3584-b8-four/summary.json) |
+| 2026-09-20T14:52:24.059199+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; exact optimizations; planner seed3; `--trick RANDOM-05` | 3520 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +20.8% | [Full evidence](random05/results/generation-four-split-full-v47/generations4-four/summary.json) |
+| 2026-09-20T14:57:15.935581+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | K16384/B8/start2/local0; exact optimizations; planner seed3; `--trick RANDOM-05` | 3657 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +15.3% | [Full evidence](random05/results/continuation-larger-split-full-v46/k16384-b8/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -834,3 +838,28 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   candidate generation, look-ahead and final checks. Full regression tests pass,
   including identical decisions with profiling on/off. Short diagnostic runs
   will use a relaxed deadline and will never enter the full-throughput frontier.
+
+- K16384/B8 completes **3,657 tasks**, a new 32-worker record (+15.3% versus
+  matched NMS32), at mean 607 ms / maximum 726 ms. K16384/B16 and B32 give
+  3,551 and 3,594. Wider branching is not uniformly better. All three are valid
+  full runs; none has four-core feasibility established.
+  [Evidence](random05/results/continuation-larger-split-full-v46/summary.json).
+
+- Four generations at K2048/B8 reproduce **3,520 tasks on four cores**, with
+  exactly the same complete trajectory as 32 workers. Mean 456 ms / maximum
+  571 ms and RSS 287 MB. This is a small selected gain, not a replicated claim.
+  The predeclared fresh-input candidate remains the older 3,501 configuration.
+
+- Timing diagnosis shows K4096/B4 spends about 963 ms in first-step look-ahead,
+  93 ms in matching and 12 ms building task costs. Subsequent matching is about
+  1 ms. Greedy startup matching is slower (115 ms), so it is not adopted.
+  These are 120-step profiles with a 10s guard, excluded from the throughput
+  table. A tested optional map-only distance cache now shares final-errand cost
+  rows and guided approach distances; full timing/equivalence checks are next.
+  [Profile evidence](random05/results/phase-profile-split-prefix-v48/timings.json).
+
+- The user approved the exact prepared Fable payload. The CLI invocation used
+  Fable 5.1 / max effort with tools disabled and the reserved persistent session,
+  but the provider returned an out-of-usage-credits error (zero billed usage).
+  No review was produced. Keep the approved payload/session for a later retry;
+  local development and benchmark evidence do not depend on that review.

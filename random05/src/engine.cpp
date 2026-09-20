@@ -42,6 +42,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.share_prefix=integer("R05_SHARE_PREFIX",0);
     c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
     c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);c.profile=integer("R05_PROFILE",0);
+    c.goal_cache=integer("R05_GOAL_CACHE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -427,6 +428,23 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             if(u>=0)relax(u*4+o,weight[u][o]);
         }
     }
+    if(cfg.goal_cache) {
+        // This table depends only on the map and its costs, so preprocessing
+        // may build it before any tasks or starting states are revealed.
+        any_heading_distance.resize(size_t(cells)*states);
+        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+        for(int target=0;target<cells;++target)for(int source=0;source<states;++source) {
+            float best=INF;
+            for(int d=0;d<4;++d)best=std::min(best,dist(target*4+d,source));
+            any_heading_distance[size_t(target)*states+source]=best;
+        }
+    }
+}
+float Graph::approach(int target,int source) const {
+    if(!any_heading_distance.empty())return any_heading_distance[size_t(target)*states+source];
+    float best=INF;
+    for(int d=0;d<4;++d)best=std::min(best,dist(target*4+d,source));
+    return best;
 }
 int Graph::direction(int a,int b) const {
     for(int d=0;d<4;++d)if(next[a][d]==b)return d;
@@ -445,17 +463,29 @@ Chain::Chain(const Graph& g,const Task& task,bool cache) {
             tail[k][o]=best;
         }
     if(cache) {
-        values.resize(goals.size(),std::vector<float>(g.states));
-        for(int k=0;k<int(goals.size());++k)for(int state=0;state<g.states;++state) {
-            float best=INF;
-            for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[k]*4+q,state)+tail[k][q]);
-            values[k][state]=best;
+        values.resize(goals.size());
+        for(int k=0;k<int(goals.size());++k) {
+            // The final errand has no remaining tail. Borrow the immutable
+            // map-level row instead of rebuilding a copy for every task.
+            if(k+1==int(goals.size()) && !g.any_heading_distance.empty())continue;
+            values[k].resize(g.states);
+            for(int state=0;state<g.states;++state) {
+                float best=INF;
+                for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[k]*4+q,state)+tail[k][q]);
+                values[k][state]=best;
+            }
         }
     }
 }
+const float* Chain::cached_row(const Graph& g,int stage) const {
+    if(!values.empty() && !values[stage].empty())return values[stage].data();
+    if(stage+1==int(goals.size()) && !g.any_heading_distance.empty())
+        return g.any_heading_distance.data()+size_t(goals[stage])*g.states;
+    return nullptr;
+}
 float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     if(stage>=int(goals.size()))return 0;
-    if(!values.empty())return values[stage][cell*4+direction];
+    if(const float* row=cached_row(g,stage))return row[cell*4+direction];
     float best=INF;
     for(int q=0;q<4;++q)best=std::min(best,g.dist(goals[stage]*4+q,cell*4+direction)+tail[stage][q]);
     return best;
@@ -479,6 +509,8 @@ void Engine::initialize(SharedEnvironment* env) {
                  graph->distance.size()*sizeof(float)/1e6);
 }
 void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
+    std::chrono::steady_clock::time_point match_start;
+    if(cfg.profile)match_start=std::chrono::steady_clock::now();
     const auto& g=*graph;const int n=env->num_of_agents;
     schedule=env->curr_task_schedule;
     const float length_weight=cfg.initial_length_weight>=0 && env->curr_timestep<cfg.initial_length_steps
@@ -518,9 +550,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             float cost=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+length_weight*length[j];
             if(cfg.guided_matching) {
                 const int goal=g.from_grid[task.locations[task.idx_next_loc]];
-                float approach=INF;
-                for(int d=0;d<4;++d)approach=std::min(approach,g.dist(goal*4+d,p*4+env->curr_states[a].orientation));
-                cost=approach/2+length_weight*length[j];
+                cost=g.approach(goal,p*4+env->curr_states[a].orientation)/2+length_weight*length[j];
             }
             if(cfg.chain_matching) {
                 const int goal=g.from_grid[task.locations[0]];
@@ -534,6 +564,17 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             else pairs.push_back({cost,a,j});
         }
     }
+    std::chrono::steady_clock::time_point matrix_done;
+    if(cfg.profile)matrix_done=std::chrono::steady_clock::now();
+    auto report_match=[&]() {
+        if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
+            const auto now=std::chrono::steady_clock::now();
+            std::fprintf(stderr,"R05_MATCH_PROFILE t=%d agents=%zu tasks=%zu matrix_ms=%.3f solve_ms=%.3f\n",
+                env->curr_timestep,agents.size(),tasks.size(),
+                std::chrono::duration<double,std::milli>(matrix_done-match_start).count(),
+                std::chrono::duration<double,std::milli>(now-matrix_done).count());
+        }
+    };
     if(exact) {
         const int nr=int(agents.size()),nc=int(tasks.size());
         std::vector<double> u(nr+1),v(nc+1);
@@ -557,7 +598,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
         }
         for(int j=1;j<=nc;++j)if(owner[j])schedule[agents[owner[j]-1]]=tasks[j-1];
-        return;
+        report_match();return;
     }
     std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {
         if(a.cost!=b.cost)return a.cost<b.cost;
@@ -567,6 +608,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     for(const auto& p:pairs)if(schedule[p.agent]<0 && !used[p.task]) {
         schedule[p.agent]=tasks[p.task];used[p.task]=true;
     }
+    report_match();
 }
 void Engine::certify(const Graph& g,const std::vector<int>& from,const std::vector<int>& to) {
     if(from.size()!=to.size())throw std::runtime_error("invalid move count");
@@ -671,7 +713,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         const Chain* chain=assigned[a];
         if(chain && f.stage[a]<int(chain->goals.size())) {
             active_chain[a]=chain;
-            if(!chain->values.empty())cost_table[a]=chain->values[f.stage[a]].data();
+            cost_table[a]=chain->cached_row(g,f.stage[a]);
         }
     }
     auto cost=[&](int a,int v,int d) {

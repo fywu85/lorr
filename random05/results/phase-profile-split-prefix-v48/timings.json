@@ -1,0 +1,41 @@
+{
+  "purpose": "Timing diagnosis only; 120 steps with 10s guard, excluded from throughput frontier",
+  "cases": {
+    "exact-k4096-b4": {
+      "raw_log": "runs/random05/phase-profile-split-prefix-v48/exact-k4096-b4/exact-k4096-b4/native.log",
+      "sha256": "a24e796de9573f08ad96b1be9db688ca1a35b255a978e6474274b4521fa1fcbc",
+      "timings": [
+        "R05_PROFILE t=0 assignment_ms=93.295 task_cost_ms=11.584 candidates_ms=10.100 lookahead_ms=962.711 final_ms=0.065",
+        "R05_PROFILE t=1 assignment_ms=18.838 task_cost_ms=0.139 candidates_ms=9.299 lookahead_ms=959.899 final_ms=0.039",
+        "R05_PROFILE t=2 assignment_ms=14.697 task_cost_ms=0.135 candidates_ms=9.295 lookahead_ms=955.891 final_ms=0.023",
+        "R05_PROFILE t=3 assignment_ms=13.910 task_cost_ms=0.135 candidates_ms=9.289 lookahead_ms=955.804 final_ms=0.026",
+        "R05_PROFILE t=4 assignment_ms=11.750 task_cost_ms=0.137 candidates_ms=9.588 lookahead_ms=957.788 final_ms=0.026",
+        "R05_PROFILE t=100 assignment_ms=1.465 task_cost_ms=0.103 candidates_ms=9.309 lookahead_ms=950.416 final_ms=0.026"
+      ]
+    },
+    "exact-k2048-b8": {
+      "raw_log": "runs/random05/phase-profile-split-prefix-v48/exact-k2048-b8/exact-k2048-b8/native.log",
+      "sha256": "53f427e0b3a7345979b1502046ca3253bd3b83af02c6ecfca0833276d4ccba6d",
+      "timings": [
+        "R05_PROFILE t=0 assignment_ms=91.669 task_cost_ms=11.086 candidates_ms=2.929 lookahead_ms=469.043 final_ms=0.017",
+        "R05_PROFILE t=1 assignment_ms=19.216 task_cost_ms=0.104 candidates_ms=2.714 lookahead_ms=469.320 final_ms=0.021",
+        "R05_PROFILE t=2 assignment_ms=14.331 task_cost_ms=0.142 candidates_ms=2.694 lookahead_ms=466.766 final_ms=0.019",
+        "R05_PROFILE t=3 assignment_ms=12.694 task_cost_ms=0.121 candidates_ms=2.735 lookahead_ms=465.785 final_ms=0.020",
+        "R05_PROFILE t=4 assignment_ms=10.577 task_cost_ms=0.116 candidates_ms=2.692 lookahead_ms=463.511 final_ms=0.021",
+        "R05_PROFILE t=100 assignment_ms=1.010 task_cost_ms=0.104 candidates_ms=2.751 lookahead_ms=457.907 final_ms=0.020"
+      ]
+    },
+    "greedy-start-k4096-b4": {
+      "raw_log": "runs/random05/phase-profile-split-prefix-v48/greedy-start-k4096-b4/greedy-start-k4096-b4/native.log",
+      "sha256": "c336db21b497a9bbf292f4a748f83e514246e7233ebb4b6c96b2cd3235bdd973",
+      "timings": [
+        "R05_PROFILE t=0 assignment_ms=115.172 task_cost_ms=10.416 candidates_ms=10.063 lookahead_ms=969.223 final_ms=0.099",
+        "R05_PROFILE t=1 assignment_ms=20.473 task_cost_ms=0.196 candidates_ms=9.327 lookahead_ms=965.761 final_ms=0.023",
+        "R05_PROFILE t=2 assignment_ms=16.462 task_cost_ms=0.155 candidates_ms=9.438 lookahead_ms=965.688 final_ms=0.023",
+        "R05_PROFILE t=3 assignment_ms=12.379 task_cost_ms=0.118 candidates_ms=9.288 lookahead_ms=964.172 final_ms=0.025",
+        "R05_PROFILE t=4 assignment_ms=11.627 task_cost_ms=0.125 candidates_ms=9.425 lookahead_ms=962.466 final_ms=0.027",
+        "R05_PROFILE t=100 assignment_ms=1.000 task_cost_ms=0.115 candidates_ms=9.310 lookahead_ms=943.951 final_ms=0.027"
+      ]
+    }
+  }
+}

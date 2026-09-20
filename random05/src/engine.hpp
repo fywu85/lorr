@@ -12,7 +12,7 @@ struct Config {
     int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1;
     int continuations=1, continuation_start=1;
     float future_mutation=0.3, continuation_risk=0;
-    bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false;
+    bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false;
     float noise=50, mutation=0.3, dispersion=0, push_price=0, loop_threshold=1;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
     float initial_length_weight=-1;
@@ -47,11 +47,12 @@ struct Graph {
     std::vector<std::array<float,5>> weight;
     std::vector<std::vector<int>> cycles, nearby;
     int all_nearby_pairs=0;
-    std::vector<float> distance;
+    std::vector<float> distance, any_heading_distance;
     std::vector<uint16_t> hops;
     Graph(const SharedEnvironment& env, const Config& cfg);
     float dist(int target, int source) const { return distance[size_t(target)*states+source]; }
     int hop(int target, int source) const { return hops[size_t(target)*cells+source]; }
+    float approach(int target,int source) const;
     int direction(int a,int b) const;
     int nearby_pairs(const std::vector<int>& locations) const;
 };
@@ -60,6 +61,7 @@ struct Chain {
     std::vector<std::array<float,4>> tail;
     std::vector<std::vector<float>> values;
     Chain(const Graph& g, const Task& t,bool cache=false);
+    const float* cached_row(const Graph& g,int stage) const;
     float cost(const Graph& g,int stage,int cell,int direction) const;
 };
 struct Frame {
