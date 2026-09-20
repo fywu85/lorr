@@ -37,7 +37,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
     c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.cost_cache=integer("R05_COST_CACHE",0);
     c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
-    c.flow_turn=real("R05_FLOW_TURN",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
+    c.flow_turn=real("R05_FLOW_TURN",0);
+    c.flow_power=real("R05_FLOW_POWER",1);c.flow_alpha=real("R05_FLOW_ALPHA",1);
+    c.flow_betweenness=real("R05_FLOW_BETWEENNESS",0);
+    c.flow_average=integer("R05_FLOW_AVERAGE",0);c.flow_normalize=integer("R05_FLOW_NORMALIZE",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
     c.predict_matching=integer("R05_SCHED_PREDICT",0);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
@@ -98,7 +101,7 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         std::mt19937 random(cfg.flow_seed);
         std::uniform_real_distribution<float> jitter(0,0.2f);
         std::vector<std::array<float,4>> price(cells),bias(cells);
-        std::vector<std::array<double,4>> flow(cells);
+        std::vector<std::array<double,4>> flow(cells),average(cells);
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d)price[v][d]=bias[v][d]=1+jitter(random);
         for(int iteration=0;iteration<cfg.flow_iterations;++iteration) {
             std::vector<std::vector<std::array<double,4>>> partial(
@@ -160,18 +163,37 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
                 flow[v][d]=0;
                 for(int t=0;t<cfg.threads;++t)flow[v][d]+=partial[t][v][d];
+                if(cfg.flow_average) {
+                    average[v][d]+=(flow[v][d]-average[v][d])/(iteration+1);
+                    flow[v][d]=average[v][d];
+                }
                 if(next[v][d]>=0){sum+=flow[v][d];++edges;}
             }
             const double mean=std::max(1.0,sum/edges);
             for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
                 int u=next[v][d];if(u<0)continue;
                 float target=bias[v][d]+float((flow[v][d]+cfg.flow_penalty*flow[u][(d+2)%4])/mean);
+                if(cfg.flow_power!=1 || cfg.flow_alpha!=1)
+                    target=bias[v][d]+cfg.flow_alpha*std::pow(float(flow[v][d]/mean),cfg.flow_power)
+                         +cfg.flow_penalty*std::pow(float(flow[u][(d+2)%4]/mean),cfg.flow_power);
                 price[v][d]=0.65f*price[v][d]+0.35f*target;
             }
         }
+        std::vector<double> load(cells,0);double total_load=0;
+        for(int v=0;v<cells;++v)for(int d=0;d<4;++d)if(next[v][d]>=0)
+            load[v]+=flow[v][d]+flow[next[v][d]][(d+2)%4];
+        for(double x:load)total_load+=x;
+        const double mean_load=std::max(1.0,total_load/cells);
+        double weight_sum=0;int weight_count=0;
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
             int u=next[v][d];if(u<0)continue;
             weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+cfg.flow_penalty);
+            weight[v][d]*=1+cfg.flow_betweenness*float((load[v]+load[u])/(2*mean_load));
+            weight_sum+=weight[v][d];++weight_count;
+        }
+        if(cfg.flow_normalize) {
+            float scale=float(2*weight_count/weight_sum);
+            for(auto& w:weight)for(int d=0;d<4;++d)w[d]*=scale;
         }
     }
     if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");

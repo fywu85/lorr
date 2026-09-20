@@ -20,13 +20,15 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,767 tasks / 2,000 steps**, planner seed 0,
+Best verified combined result: **2,841 tasks / 2,000 steps**, planner seed 0,
 public guidance, dispersion 0.8, K=64, five local refinements, equal-score
-acceptance, wait cost 0.5, and explicitly enabled known-horizon triage with
-scale 0.9. Four-worker NMS completed **2,903 tasks**; our best is **4.7% below**
-that reference. The 32-logical-CPU NMS reference is **3,172 tasks** (12.8% gap).
-Our best without horizon triage remains **2,594 tasks**. All frontier/reference
-runs have zero planner errors, scheduler errors and timeouts.
+acceptance, wait cost 0.5, exact joint matching using oriented approach costs,
+and known-horizon triage scale 0.9 (`--trick RANDOM-05`). Mean entry latency
+46.8 ms, max 132.3 ms on four physical cores. Four-worker NMS completed
+**2,903 tasks**; our best is **2.1% below** that reference. The 32-logical-CPU
+NMS reference is **3,172 tasks** (10.4% gap). Our best without horizon triage
+remains **2,594 tasks**. All frontier/reference runs have zero planner errors,
+scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json).
@@ -52,6 +54,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 
 | 2026-09-20T08:41:54.502028+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | exact160-guided; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2766 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
 | 2026-09-20T08:41:56.906339+00:00 | [f7ca98c](https://github.com/fywu85/lorr/commit/f7ca98c) | triage09; wait0.5; K64/local5/equal/horizon2000; seed0; `--trick RANDOM-05` | 2767 | 2903 (4 workers) | -4.7% | [Full evidence](random05/results/matching-wait-full-v10/summary.json) |
+
+| 2026-09-20T08:48:21.604864+00:00 | [8619b95](https://github.com/fywu85/lorr/commit/8619b95) | exact800-guide; K64/wait0.5/local5/equal/horizon2000 scale0.9; seed0; `--trick RANDOM-05` | 2841 | 2903 (4 workers) | -2.1% | [Full evidence](random05/results/task-cost-full-v11/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -126,3 +130,14 @@ The published NMS score of 3,050 used different instances and hardware.
   but latency is contended and cannot be treated as isolated. Future submissions
   fail immediately if GRID does not honor binding. Earlier frontier and NMS
   reference allocations have the expected physical-core count.
+
+- Borrowed guidance, same fixed K64 wait0.5 control: public field=2,729,
+  NMS bitmap=2,446, public weights power0.5=2,332, power2=2,701,
+  half turn cost=2,638, double turn cost=2,534. All valid. The unchanged
+  control repeats exactly despite the documented CPU contention.
+
+- v11 task-cost ablation: control=2,767; exact matching including the initial
+  800-agent assignment=2,763; with oriented approach cost=2,841. Oriented
+  task-chain matching cost gives 2,803 with greedy matching, but 2,631 with
+  exact matching. Length weights0/0.5/1 give 2,557/2,733/2,733. Do not combine
+  favorable individual changes without testing their interaction.

@@ -47,7 +47,7 @@ def submit(a):
             if c.get('team')=='nms':
                 shutil.copytree(ROOT/'nms',work/'cwd',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
             else:(work/'cwd').mkdir()
-    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(32*len(spec['cases'])+slots-1)//slots)
+    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(sum(c.get('memory_gib',4 if c.get('team')=='nms' else 2) for c in spec['cases'])+slots-1)//slots)
     spec.update(physical=physical,slots=slots,exclusive=False,memory_per_slot_gib=memory_per_slot)
     write(out/'spec.json',spec)
     # Freeze the runner too; ROOT for the frozen script is supplied by its spec.
