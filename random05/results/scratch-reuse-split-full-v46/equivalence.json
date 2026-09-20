@@ -1,0 +1,56 @@
+{
+  "checked_utc": "2026-09-20T14:29:30.013970+00:00",
+  "reference": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuations-scale-split-full-v42/k4096-b4-start2/k4096-b4-start2/result.json",
+  "reference_sha256": "05d7266d04338367377217c57bfa19d644afe00a881d16a2f78c2c033922ccad",
+  "all_equal": true,
+  "runs": [
+    {
+      "name": "control",
+      "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/scratch-reuse-split-full-v46/control/control/result.json",
+      "sha256": "8dacbeef2fee0fb394c7408066d5e43e5556b38f28e9b06604883e2792cad672",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "latency_seconds": {
+        "mean": 0.18639976133199956,
+        "max": 0.290442633
+      },
+      "usage": {
+        "user_seconds": 11089.54106,
+        "system_seconds": 15.203522,
+        "peak_rss_kib": 436440,
+        "wall_seconds": 375.2077723490074,
+        "exit": 0
+      }
+    },
+    {
+      "name": "reuse",
+      "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/scratch-reuse-split-full-v46/reuse/reuse/result.json",
+      "sha256": "f1fb6a8c64dde9e95c4b2ccb93be6a46257df4aba007cf6efd85daddd2ae86b4",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "latency_seconds": {
+        "mean": 0.24626407906550032,
+        "max": 0.317781557
+      },
+      "usage": {
+        "user_seconds": 10546.77467,
+        "system_seconds": 14.248656,
+        "peak_rss_kib": 436332,
+        "wall_seconds": 501.6670366600156,
+        "exit": 0
+      }
+    }
+  ]
+}

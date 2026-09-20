@@ -1,17 +1,12 @@
-{
-  "source_commit": "e896201",
-  "evidence": "random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05",
-    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 4,
+[
+  {
+    "exit": 124,
+    "finished_utc": "2026-09-20T14:19:36.024767+00:00",
+    "name": "k3840-b4-four",
     "steps": 2000,
-    "limit_ms": 1000,
-    "preprocess_ms": 30000,
-    "trick": true,
-    "name": "retry3501-four",
-    "env": {
-      "R05_K": "2048",
+    "binary_sha256": "e29c44b90bbcd4f0a11b2738112ca78eef89db63bd0f0e3463c221a7fd309b41",
+    "environment": {
+      "R05_K": "3840",
       "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
@@ -37,13 +32,21 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATIONS": "4",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
-      "R05_FAST_DISPERSION": "1"
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1"
     },
-    "smt": 1,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05"
+    "trick": true,
+    "valid": false,
+    "usage": {
+      "user_seconds": 5.550367,
+      "system_seconds": 0.035937,
+      "peak_rss_kib": 121612,
+      "wall_seconds": 1.5324588865041733,
+      "exit": 124
+    }
   }
-}
+]

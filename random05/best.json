@@ -1,15 +1,15 @@
 {
-  "source_commit": "a6ad284",
-  "evidence": "random05/results/continuations-scale-split-full-v42/k4096-b4-start2/summary.json",
+  "source_commit": "e896201",
+  "evidence": "random05/results/hotpaths-split-full-v45/both/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v42/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
     "cores": 16,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "k4096-b4-start2",
+    "name": "both",
     "env": {
       "R05_K": "4096",
       "R05_THREADS": "32",
@@ -38,9 +38,12 @@
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "4",
-      "R05_CONTINUATION_START": "2"
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1"
     },
     "smt": 2,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v42/build/lifelong_random05"
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05"
   }
 }

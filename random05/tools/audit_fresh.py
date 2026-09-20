@@ -19,13 +19,41 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--batch', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--protocol-commit', default=PROTOCOL_COMMIT)
+    parser.add_argument('--protocol-json', help='Repository-relative JSON protocol frozen at protocol-commit')
     args = parser.parse_args()
-    frozen = json.loads(subprocess.check_output(
-        ['git', 'show', PROTOCOL_COMMIT + ':random05/experiments/fresh-validation-full.json'], cwd=ROOT))
-    generation = read(ROOT / 'random05/results/fresh-validation-v1/generation.json')
+    def frozen_json(path):
+        return json.loads(subprocess.check_output(
+            ['git', 'show', args.protocol_commit + ':' + path], cwd=ROOT))
+    if args.protocol_json:
+        protocol = frozen_json(args.protocol_json)
+        candidate_source = protocol['candidate_source_commit']
+        candidate = protocol['candidate_binary_sha256']
+        reference = protocol['reference_binary_sha256']
+        frozen = frozen_json(protocol['manifest'])
+        generation = read(ROOT / protocol['generation'])
+        assert generation['created_utc'] > protocol['declared_utc'], 'inputs generated before declaration'
+        assert [r['seed'] for r in generation['records']] == protocol['seeds'], 'changed validation seeds'
+    else:
+        frozen = frozen_json('random05/experiments/fresh-validation-full.json')
+        generation = read(ROOT / 'random05/results/fresh-validation-v1/generation.json')
+        reference = read(ROOT / 'random05/results/nms4-repeats-full-v3/summary.json')[0]['binary_sha256']
+        candidate = read(ROOT / 'random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json')[0]['binary_sha256']
+        candidate_source = 'b824f5d'
     records = {str(Path(r['input']).parent): r for r in generation['records']}
-    reference = read(ROOT / 'random05/results/nms4-repeats-full-v3/summary.json')[0]['binary_sha256']
-    candidate = read(ROOT / 'random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json')[0]['binary_sha256']
+    expected_names = {'seed{}-{}'.format(r['seed'], suffix) for r in generation['records']
+                      for suffix in ('ours', 'nms-repeat1', 'nms-repeat2')}
+    assert len(frozen) == len(expected_names) and {c['name'] for c in frozen} == expected_names
+    builds = []
+    for path in (ROOT / 'runs/random05').glob('build-*/completion.json'):
+        completion = read(path)
+        if completion.get('exit') == 0 and completion.get('binary_sha256') == candidate:
+            builds.append(read(path.parent / 'spec.json'))
+    assert builds, 'candidate build provenance not found'
+    for source, digest in builds[0]['source_hashes'].items():
+        if source == 'CMakeLists.txt' or (source.startswith('src/') and Path(source).suffix in ('.cpp', '.hpp', '.h')):
+            content = subprocess.check_output(['git', 'show', candidate_source + ':random05/' + source], cwd=ROOT)
+            assert hashlib.sha256(content).hexdigest() == digest, ('candidate source mismatch', source)
     runs = {}
     for expected in frozen:
         name = expected['name']
@@ -68,7 +96,7 @@ def main():
                                 stronger_nms=max(nms), gain_percent=(ours / max(nms) - 1) * 100))
     ratio = sum(c['ours'] for c in comparisons) / sum(c['stronger_nms'] for c in comparisons)
     result = dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                  protocol_commit=PROTOCOL_COMMIT, candidate_source_commit='b824f5d',
+                  protocol_commit=args.protocol_commit, candidate_source_commit=candidate_source,
                   all_valid=True, comparisons=comparisons,
                   aggregate_gain_percent=(ratio-1)*100, runs=runs,
                   caveat='Two held-out task/start instances on the same map. These are not the colleague\'s private inputs; no 32-worker validation is implied.')

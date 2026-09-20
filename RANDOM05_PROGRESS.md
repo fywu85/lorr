@@ -24,31 +24,30 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 14:07 UTC.
+Updated: 2026-09-20 14:29 UTC.
 
 **Best overall single run: 3,555 tasks on 32 workers / 16 physical cores**, or
 **+12.1% versus matched NMS32 = 3,172**. The planner averages four simulated
 continuations for each of 1,024 candidate priority vectors (4,096 futures total),
 keeping each candidate's priorities fixed for the first two simulated steps.
-Source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284); planner seed 3.
+Producing source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284); planner seed 3.
+The exact optimized version [e896201](https://github.com/fywu85/lorr/commit/e896201)
+preserves the entire trajectory and is frozen in the best-configuration JSON.
 All 2,000 steps are valid. This larger configuration has not been confirmed on
 four cores or fresh inputs. The preceding 3,501-task variant uses only 2,048
-futures; its planner-seed checks are complete, while four-core validation remains open.
+futures; its planner-seed checks and four-core confirmation are complete.
 
-**Best confirmed four-core run: 3,492 tasks**, or **+19.8% versus the strongest
+**Best confirmed four-core run: 3,501 tasks**, or **+20.1% versus the strongest
 matched NMS4 repeat = 2,914** (other repeats: 2,902 and 2,903). Every action,
-assignment and task event matches its 32-worker counterpart. Original mean
-latency 627 ms, maximum 755 ms; exact prefix reuse gives mean 578 ms,
-maximum 694 ms and peak RSS 296 MB, with the same complete trajectory.
-These are one pair of shared-host timing observations. Both runs have no errors
-or timeouts. Sources [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) and
-[da00823](https://github.com/fywu85/lorr/commit/da00823); four continuations,
-2,048 futures, one fixed initial step, planner seed 3.
-[Worker equivalence](random05/results/continuations-scale-split-full-v42/worker-equivalence.json),
-[optimization equivalence](random05/results/shared-prefix-split-full-v44/four-core-equivalence.json).
-The 3,501 configuration's four-core run failed at step 3 after 1,068 ms on a
-newly included shared host. Its failure is retained; no four-core result is
-claimed for that configuration yet.
+assignment and task event matches its 32-worker counterpart. Mean latency
+459 ms, maximum 579 ms and peak RSS 285 MB; no errors or timeouts.
+Source [e896201](https://github.com/fywu85/lorr/commit/e896201); eight continuations,
+2,048 futures, two fixed initial steps, planner seed 3. It enables exact prefix
+reuse, packed priority sorting and sparse dispersion counting.
+[Full worker/implementation equivalence](random05/results/hotpaths-four-split-full-v45/3501-equivalence.json).
+The earlier implementation timed out on a different shared host; that failed
+attempt remains archived. The larger 3,555-task configuration still exceeds the
+strict one-second four-core deadline and is only a verified 32-worker result.
 
 **Repeated improvement on the development input:** across planner seeds 0–4,
 four-continuation search averages 3,392.6 tasks and eight-continuation search
@@ -136,6 +135,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T13:57:09.026640+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of 4 continuations; K4096 total/local0; mutation starts after 2 steps; field15/flip5/planner seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/continuations-scale-split-full-v42/k4096-b4-start2/summary.json) |
 | 2026-09-20T14:00:11.259204+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Four-core reproduction of all actions/schedules/events; B4/K2048/start1/local0/planner seed3; `--trick RANDOM-05` | 3492 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +19.8% | [Full evidence](random05/results/continuations-scale-split-full-v42/mean4-k2048-four/summary.json) |
 | 2026-09-20T14:04:45.937007+00:00 | [da00823](https://github.com/fywu85/lorr/commit/da00823) | Same full trajectory with exact prefix reuse; B4/K2048/start1/local0/planner seed3; `--trick RANDOM-05` | 3492 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +19.8% | [Full evidence](random05/results/shared-prefix-split-full-v44/shared-k2048-b4-four/summary.json) |
+| 2026-09-20T14:15:04.122374+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Same 3,555 full trajectory with prefix reuse, packed priorities and sparse dispersion; B4/K4096/start2/seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/hotpaths-split-full-v45/both/summary.json) |
+| 2026-09-20T14:24:41.462668+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Exact four-core reproduction of the 3,501 trajectory; B8/K2048/start2/local0/planner seed3; prefix/packed/sparse optimizations; `--trick RANDOM-05` | 3501 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.1% | [Full evidence](random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -782,3 +783,15 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   Those failures remain excluded. K3584/B8 is running. A new optional search
   experiment penalizes variation among continuation scores; zero preserves the
   mean. Regression checks pass; no throughput gain is yet claimed.
+
+- The optimized K2048/B8/start2 configuration completes the full strict four-core
+  run with **3,501 tasks**, exactly reproducing all actions, schedules and events
+  from the 32-worker run. The four-core record is now **+20.1% versus NMS4**.
+  Its earlier failed four-core attempt used the preceding implementation and a
+  different shared host; retain both records rather than attributing the whole
+  timing difference to the optimization.
+
+- Full v46 controls with and without reusable policy arrays both reproduce all
+  3,555 actions, schedules and events. This establishes semantic equivalence;
+  small shared-host timing differences do not establish a large extra speedup.
+  [Equivalence](random05/results/scratch-reuse-split-full-v46/equivalence.json).

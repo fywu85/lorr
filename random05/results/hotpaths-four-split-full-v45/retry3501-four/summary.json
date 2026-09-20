@@ -1,16 +1,11 @@
-{
-  "source_commit": "e896201",
-  "evidence": "random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05",
-    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 4,
-    "steps": 2000,
-    "limit_ms": 1000,
-    "preprocess_ms": 30000,
-    "trick": true,
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:24:41.462668+00:00",
     "name": "retry3501-four",
-    "env": {
+    "steps": 2000,
+    "binary_sha256": "d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775",
+    "environment": {
       "R05_K": "2048",
       "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
@@ -43,7 +38,34 @@
       "R05_PACKED_ORDER": "1",
       "R05_FAST_DISPERSION": "1"
     },
-    "smt": 1,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v45/build/lifelong_random05"
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3501,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.578986891
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.459008932692,
+      "max": 0.578986891
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "ae31450905adaea1887f161b6bb08f3b6016efa0d3f841302abc2903802ff6bc",
+    "valid": true,
+    "usage": {
+      "user_seconds": 3642.059369,
+      "system_seconds": 0.739678,
+      "peak_rss_kib": 278196,
+      "wall_seconds": 920.0525536444038,
+      "exit": 0
+    }
   }
-}
+]
