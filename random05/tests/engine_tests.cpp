@@ -32,14 +32,19 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-void simulation() {
-    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=2;
+uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0) {
+    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;
+    uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     for(int a=0;a<24;++a) {Task t;t.task_id=a;t.locations={(a+7)%25,(a+17)%25};e.task_pool[a]=t;}
     int next_task=24,total_moved=0;
     for(int step=0;step<150;++step) {
         e.curr_timestep=step;std::vector<Action> actions;std::vector<int> assignment;
         engine.compute(&e,actions,assignment);
+        for(int a=0;a<24;++a) {
+            signature=(signature^uint64_t(actions[a]+1))*1099511628211ULL;
+            signature=(signature^uint64_t(assignment[a]+1))*1099511628211ULL;
+        }
         std::vector<int> from(24),to(24);
         for(int a=0;a<24;++a) {
             auto& s=e.curr_states[a];from[a]=s.location;to[a]=s.location;
@@ -66,6 +71,7 @@ void simulation() {
     }
     require(total_moved>150,"dense rollout is immobile");
     std::cout<<"dense simulation moves="<<total_moved<<"\n";
+    return signature;
 }
 void triage_task_change() {
     auto e=environment(3,3,1);e.curr_states[0].location=4;
@@ -98,4 +104,4 @@ void exact_matching() {
     std::vector<int> schedule;engine.match(&e,schedule);
     require(schedule[0]==11 && schedule[1]==10,"joint minimum-cost matching failed the greedy trap");
 }
-int main(){validation();scheduling();simulation();triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
+int main(){validation();scheduling();simulation();require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}

@@ -20,7 +20,8 @@ struct Config {
     int loop_extent=2;
     bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0;
-    bool prospective_wait=false, chain_matching=false;
+    bool prospective_wait=false, chain_matching=false, random_by_step=false;
+    int age_cap=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;

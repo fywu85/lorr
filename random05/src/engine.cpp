@@ -28,6 +28,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
+    if(c.age_cap>0 && env.trick_instance!="RANDOM-05")
+        throw std::invalid_argument("capped priority aging requires --trick RANDOM-05");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
@@ -430,7 +433,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
         idle_heading[i]=best_dir;
         base_cost[i]=cost(i,p[i],best_dir);
-        float priority=(cfg.rollout_age?f.age[i]:age_[i])+offsets[i];
+        int age=cfg.rollout_age?f.age[i]:age_[i];
+        if(cfg.age_cap>0)age=std::min(age,cfg.age_cap);
+        float priority=age+offsets[i];
         const bool active=assigned_[i] && f.stage[i]<int(assigned_[i]->goals.size());
         if(!active)priority-=100000;
         if(cfg.deadends && g.pocket[p[i]] &&
@@ -611,9 +616,22 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     frame.age=age_;
     std::vector<std::vector<float>> offsets(cfg.futures,best_offsets_);
+    // Independent per-step streams preserve candidate prefixes across K and
+    // keep local-refinement draws independent of the number of global futures.
+    auto mix=[](uint64_t x) {
+        x+=0x9e3779b97f4a7c15ULL;x=(x^(x>>30))*0xbf58476d1ce4e5b9ULL;
+        x=(x^(x>>27))*0x94d049bb133111ebULL;return x^(x>>31);
+    };
+    std::mt19937 step_random,local_random;
+    if(cfg.random_by_step) {
+        uint64_t key=(uint64_t(uint32_t(cfg.seed))<<32)|uint32_t(env->curr_timestep);
+        step_random.seed(uint32_t(mix(key)));local_random.seed(uint32_t(mix(key^0xd1b54a32d192ed03ULL)));
+    }
+    auto& global_rng=cfg.random_by_step?step_random:rng_;
+    auto& local_rng=cfg.random_by_step?local_random:rng_;
     std::uniform_real_distribution<float> unit(0,1),noise(-cfg.noise,cfg.noise);
     for(int k=1;k<cfg.futures;++k)for(int a=0;a<n;++a)
-        if(k%4==0 || unit(rng_)<cfg.mutation)offsets[k][a]=noise(rng_);
+        if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
     std::vector<Rollout> results(cfg.futures);
     std::vector<std::exception_ptr> errors(cfg.futures);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
@@ -629,11 +647,11 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     for(int trial=0;trial<cfg.local_trials;++trial) {
         auto local=results[best].offsets;
-        int center=std::uniform_int_distribution<int>(0,n-1)(rng_);
+        int center=std::uniform_int_distribution<int>(0,n-1)(local_rng);
         int p=g.to_grid[frame.loc[center]];
         for(int a=0;a<n;++a) {
             int q=g.to_grid[frame.loc[a]];
-            if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(rng_);
+            if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(local_rng);
         }
         Rollout candidate=rollout(frame,local);
         if(candidate.score>results[best].score+1e-7 ||
