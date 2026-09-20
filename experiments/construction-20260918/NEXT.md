@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 17:32 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
+Updated 2026-09-20 17:45 UTC. Continue the user's throughput improvement campaign. Preserve the CGAR framework, ordinary fairness, explicit `--trick WAREHOUSE` gating, fixed complete work and 32 decimal GB RSS. The old goal's completion does not stop the new campaign. Preserve concurrent random05 files/jobs/commits; stage explicit Warehouse paths only.
 
 ## New verified best: 155,120
 
@@ -26,6 +26,7 @@ The full neutral comparison was submitted only after both compatibility checks p
 
 ## Completed recent evidence
 
+- V104 read-only pickup-quota audit 8900400 COMPLETE: 461 / 454 robots exceed 64 fields, only on 29 / 27 decisions beginning 4952 / 4957. Maximum burst 109 / 102. Every sampled cumulative field counter matches event-derived counts; full hashes match. Existing bounded fallback still assigns these robots. This is a small late exposure, no proven gain; defer larger-quota benchmark until active comparisons finish. `results/pickup-quota-audit-v104/summary.md`.
 - **V100 prescribed-total-work portfolios:** all six full cases, exact V96 controls and 300 million robot steps pass. Two workers 154,710 / 154,669 (-347 / -58), four 154,583 / 154,687 (-474 / -40). Mean entry 333.897 / 272.173 ms versus 453.313 ms. All first-half tasks finish. Lower latency but lower throughput; retain one worker. `results/native-portfolio-full-v100/summary.md`.
 - V98 p90 / p95 / p99: all six full cases pass, p90 controls exact. P95 loses 21 / 12 and p99 loses 201 / 235; retain p90. All losses in final 1,000. No further upward percentile sweep justified.
 - V98 p90 / weight-5 four-seed confirmation: 155,057 / 154,846 / 154,727 / 154,912; mean 154,885.5, three above NMS; all first-half tasks finish. `results/horizon-percentile-four-seeds-v98.json`. This mean belongs to the previous weight-5 profile, not the new weight-8 winner.
@@ -35,7 +36,7 @@ The full neutral comparison was submitted only after both compatibility checks p
 
 ## Immediate work
 
-1. The 155,120 record and passing V101 build are committed and pushed as `bb92cfd`. Commit the now-complete V100 and compatibility results, updated full profiles, and stronger reference selection; preserve random05 edits.
+1. The 155,120 record and passing V101 build are committed and pushed as `bb92cfd`. V100 / compatibility results, full profiles and stronger reference selection are committed and pushed as `fcb004e`. New physical-work summaries in `results/p90-pickup-combined-v99/work-budget.md` and V100 `work-budget.json` use validated artifacts: ~94% forward, 3% turns, 3% waits; 18.6% before pickup; 2.14% unfinished work overlaps those partitions. Temporal zero blocked/safety counters are not causal congestion evidence. Preserve random05 edits.
 2. Finish V102 seed confirmation and V101 / V103 full comparisons through their independent validators/accounting. Do not promote startup scores or partial matrices. No additional experiment is currently required while these are active.
 3. Update best history immediately for any increasing valid full score, with exact source/time/seed/flags/hash. Preserve the preceding weight-5 four-seed mean separately from the new weight-8 profile.
 

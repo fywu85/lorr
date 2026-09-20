@@ -16,7 +16,7 @@ All 30,000 complete entries satisfy the 5-second development deadline and 32 dec
 
 Every first-half task finishes in every arm, with no initially revealed task left never assigned and no post-pickup reassignment. Oldest never-assigned ages are 187 / 187 for two workers and 188 / 185 for four, versus 190 / 185 for the controls. Outstanding-age p90 changes are 0 / -1 and +1 / 0. Ordinary fairness and one-retarget protection remain unchanged.
 
-Independent accounting verifies 300 million robot steps. Empty-work changes are +82 / -2,556 for two workers and +1,888 / -2,128 for four; unfinished-work changes are -1,428 / +2,064 and +6,034 / +488. These small mixed accounting differences do not explain the score change causally.
+Independent accounting verifies 300 million robot steps. Empty-work changes are +82 / -2,556 for two workers and +1,888 / -2,128 for four; unfinished-work changes are -1,428 / +2,064 and +6,034 / +488. These small mixed accounting differences do not explain the score change causally. The [physical-action summary](work-budget.json) also shows more loaded waiting in every split arm: +82,665 / +11,486 actions for two workers and +100,251 / +2,818 for four. Loaded turns increase by +5,894 / +2,748 and +8,234 / +2,467. This is consistent with weaker movement plans from the shorter searches, but changed trajectories and task cohorts prevent a causal attribution.
 
 Source `27be6e312fdd79ad310583d33eeb2a4781d75b97`, binary `37694eacdc5c829c2f77673c4e4cf6070d1fca2cd8512b91cab6672249385752`. Validation completed 2026-09-20 17:29:11 UTC; independent accounting completed 17:29:51 UTC. This uses the preceding p90 / pickup-weight-5 profile, with explicit `--trick WAREHOUSE` and known horizon 5,000.
 
