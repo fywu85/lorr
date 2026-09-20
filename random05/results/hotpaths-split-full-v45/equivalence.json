@@ -1,0 +1,76 @@
+{
+  "checked_utc": "2026-09-20T14:21:39.137944+00:00",
+  "reference": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuations-scale-split-full-v42/k4096-b4-start2/k4096-b4-start2/result.json",
+  "reference_sha256": "05d7266d04338367377217c57bfa19d644afe00a881d16a2f78c2c033922ccad",
+  "all_equal": true,
+  "runs": [
+    {
+      "name": "control",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "e1e43b370d50005e32844b1456b9baa2318ee54a2b94281a5b010b1aac19ed39",
+      "latency_seconds": {
+        "mean": 0.19378649093449987,
+        "max": 0.300068551
+      },
+      "user_seconds": 11573.015762
+    },
+    {
+      "name": "packed",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "a6f48869cf4dda3b298438b06dbd6efdad6519a401c9e59960f041a46c5ca4ab",
+      "latency_seconds": {
+        "mean": 0.2689494044580002,
+        "max": 0.336932255
+      },
+      "user_seconds": 10910.565879
+    },
+    {
+      "name": "dispersion",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "e6724a09726742820c92bd6a2c657ef4f5f871ec42af4086d6d5eb0f6c1a4055",
+      "latency_seconds": {
+        "mean": 0.191562038904,
+        "max": 0.296434506
+      },
+      "user_seconds": 11417.835427
+    },
+    {
+      "name": "both",
+      "checks": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "18d5b6c7888b2580c3b47a266009654eb224a799ca329342d3fc1300f2e69747",
+      "latency_seconds": {
+        "mean": 0.17275153640050017,
+        "max": 0.287332791
+      },
+      "user_seconds": 10247.665924
+    }
+  ]
+}

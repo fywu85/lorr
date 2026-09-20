@@ -768,3 +768,17 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   budgets, maximum entry latency <=1s and peak RSS <=32 decimal GB, in addition
   to full-run validity, input hashes, CPU allocation and producing source.
   All 46 recorded frontier rows pass. Failed deadline runs remain separate.
+
+- All four v45 optimization cases reproduce the complete 3,555 trajectory,
+  including actions, assignments and events. Mean 32-worker latency is 194 ms
+  for the control, 269 ms for packed sorting, 192 ms for sparse dispersion and
+  173 ms for both. Packed-only uses less CPU time despite greater wall time;
+  these shared-host timings are noisy, so do not attribute every difference to
+  the code. Combined CPU time is about 11% lower in this pair.
+  [Full equivalence and timing](random05/results/hotpaths-split-full-v45/equivalence.json).
+
+- Reused policy buffers pass full regressions, but K4096/B4, K4096/B8 and
+  K3840/B4 still exceed the first-step four-core deadline at 1,084/1,042/1,019 ms.
+  Those failures remain excluded. K3584/B8 is running. A new optional search
+  experiment penalizes variation among continuation scores; zero preserves the
+  mean. Regression checks pass; no throughput gain is yet claimed.

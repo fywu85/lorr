@@ -247,3 +247,18 @@ The spatial/kinematic policy no longer needs a temporary copy of the chosen
 assignment when filling its intent buffer. Scratch state is thread-local.
 Build-v46 passes dense turnover, component-policy, cycle-preparation and worker
 identity regressions. Full trajectories and timings remain required.
+
+## Continuation score variance
+
+Averaging several future priorities improves the development input, but selecting
+from hundreds of roots may still favor decisions that scored well because of a
+few favorable sampled tails. `R05_CONTINUATION_RISK` tests a penalty equal to the
+population standard deviation of continuation scores times the configured weight.
+It leaves the same roots, future draws, first decision and fixed work budget.
+Weight zero preserves the existing mean and its floating-point summation order.
+Identical continuations have zero penalty. Dense worker-identity tests pass in
+build-v47. This is a hypothesis; full throughput comparisons decide whether to use it.
+
+The same new mean-score regime also warrants rechecking two/four/eight search
+generations at fixed total work. Those settings lost under single-continuation
+scoring; the changed evaluation landscape provides a specific reason to retest.

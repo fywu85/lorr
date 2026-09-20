@@ -334,7 +334,18 @@ void exact_hot_paths() {
     }
 }
 
+void continuation_risk() {
+    Config cfg;cfg.futures=16;cfg.continuations=4;cfg.future_mutation=0;cfg.depth=6;
+    cfg.random_by_step=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+    cfg.packed_order=true;cfg.fast_dispersion=true;cfg.dispersion=0.8;
+    const auto equal=simulate(cfg,12);cfg.continuation_risk=2;
+    require(equal==simulate(cfg,12),"risk changed identical continuation scores");
+    cfg.future_mutation=0.3;cfg.continuation_risk=0.5;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"continuation risk changed with worker count");
+}
 int main() {
+    continuation_risk();
     exact_hot_paths();
     for(int prefix:{1,2}) {
         Config cfg;cfg.futures=16;cfg.continuations=4;cfg.continuation_start=prefix;cfg.depth=6;
