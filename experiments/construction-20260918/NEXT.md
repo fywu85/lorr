@@ -22,6 +22,10 @@ Read-only CGAR_FRESH_PICKUP_AUDIT defaultOFF requiresdiagnostics/HRRN/matching/f
 
 800native benchmark8900439/verifier8900442 COMPLETE18:40:30UTC, exactreferenceprefix andOFF/ONhash085e97f9...,101realdiagnosticlinesexact. Audit21410eligible,1099positivecycles/83870rawcost,7accepted/witnesscycles15tasks/1352rawcost(67.6guidanceforwardunits). No Hedgesexcludedyet. Generic8008900440/8900443 COMPLETE18:39:25UTC, exactknownhashc0f1c9fb...,81realdiagnosticlines;89witnesscycles198tasks/5940rawcost(1485units). All4runs valid; native max1.124s onsharedhost(5sdeadline). Results fresh-pickup-{native,generic}-screen-v105. Smallnativeacceptedresidual; donotimplementfreshpermutationpassblindly.
 
+## V107 startup pairing probe COMPLETE
+
+GRID8900470, results/bootstrap-pickup-audit-v107, rawruns/cgar-bootstrap-pickup-audit-v107-20260920. ExactfullV99hashesseeds0/2, sameinitialsnapshotdeduplicated. Exclude0+82alreadyatpickup;9917robots310groups<=32. Native7,593,417->7,275,691(-4.18%);physicalshortestpickup350479->346563(-3916/-1.12%)underthatpairing, ownphysicalopt339381(-11098/-3.17%). Existingthreshold1113rows/153294nativegain butphysicaldeltaonly2721. Fourfullfields independentlyheap-Dijkstraexact. Dualmetricfullfield+matching9.145s on4boundcores,~423MBchildRSSincludescompiler. Noactualsavesteps/throughputclaim, nogloballowerbound, nolivepolicychange. Deprioritizeall-robot completefieldstartup. Driverpreprocessingbeforetaskreveal/state-sync, cannotmovetask-specificmatchingtherehonestly. Summaryhasresourceandtaskcohortlimitations.
+
 ## Completed rejects; don't repeat
 
 V101neutral-tail154930/154882vs155120/155056(-190/-174);moreloadedwait/turn despite lowerempty. V103full-depth2workers154979/155084(-141/+28),4workers154809/154795(-311/-261);retain1. V100splittotal4M2/4workers26%/40%fasterbutlowerqualitybothseeds. V104quota64misses461/454robots only29/27late decisionsbegin4952/4957, fallbackstillassigns; no demonstratedquotagain. Completedreportscommitted/pushede68fa82; V102confirmation8caab22. Worksummary3d23e5d. Genericreference0196851sixmean144392.1667 unchanged; genericpeak145083experimental.

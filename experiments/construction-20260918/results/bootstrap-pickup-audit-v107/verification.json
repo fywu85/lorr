@@ -1,0 +1,75 @@
+{
+  "checked_utc": "2026-09-20T18:55:22.222948+00:00",
+  "all_valid": true,
+  "offline_only": true,
+  "sources": [
+    {
+      "case": "trick_p90_pickup8-s0-r0",
+      "seed": 0,
+      "tasks": 155120,
+      "raw_sha256": "45b8dadf72609a8d5b1cc342c519f8fcf25fb979e9bcf6c907c458314362ddb1",
+      "trajectory_sha256": "2547282c1613fcfc6582fd4a1dabc7d2fb7a23cecba390d33ca027f616e5cb8f",
+      "fixture_sha256": "f8225d3abd3ae9e1a30b54855df0dafb1b652d893df2f4cbe8c472fd03caa310",
+      "fixture": "initial-0",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "input_sha256": "c65dc820e04477c644667806245a52d7ba88734118ea6554a3bba5dd46834e20"
+    },
+    {
+      "case": "trick_p90_pickup8-s2-r0",
+      "seed": 2,
+      "tasks": 155056,
+      "raw_sha256": "874c1154a5cdf9f1afb62fa9c0780333c6c64cd89877a78cc62a9555bbbaede2",
+      "trajectory_sha256": "55ab5e1fa7dfcb2da081a176da54a5c499b85e5035c5341a7bf62c4595371580",
+      "fixture_sha256": "f8225d3abd3ae9e1a30b54855df0dafb1b652d893df2f4cbe8c472fd03caa310",
+      "fixture": "initial-0",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+      "input_sha256": "c65dc820e04477c644667806245a52d7ba88734118ea6554a3bba5dd46834e20"
+    }
+  ],
+  "initial_task_cohorts": [
+    {
+      "seed": 0,
+      "initial_tasks": 10000,
+      "all_picked": true,
+      "pickup_times": {
+        "mean": 47.8284,
+        "p90": 96,
+        "max": 165
+      },
+      "interpretation": "Elapsed pickup times for the initial task cohort; not original-holder travel."
+    },
+    {
+      "seed": 2,
+      "initial_tasks": 10000,
+      "all_picked": true,
+      "pickup_times": {
+        "mean": 47.9753,
+        "p90": 96,
+        "max": 191
+      },
+      "interpretation": "Elapsed pickup times for the initial task cohort; not original-holder travel."
+    }
+  ],
+  "unique_fixtures": {
+    "initial-0": {
+      "fixture_sha256": "f8225d3abd3ae9e1a30b54855df0dafb1b652d893df2f4cbe8c472fd03caa310",
+      "result_sha256": "12f2c93dc2fa425a7765cb0a46458c0436bb7ceb26243c81ae6a30dc93b454c5"
+    }
+  },
+  "compile_command": [
+    "g++",
+    "-std=c++17",
+    "-O3",
+    "-DNDEBUG",
+    "-pthread",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-bootstrap-pickup-audit-v107-20260920/cgar/cgar_planner",
+    "-I/shared/share_mala/fw2449/lorr2024/runs/cgar-bootstrap-pickup-audit-v107-20260920/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-bootstrap-pickup-audit-v107-20260920/probe.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-bootstrap-pickup-audit-v107-20260920/probe"
+  ],
+  "binary_sha256": "1258300f6b08e4c428c86f46ff3b32b0f8b28b3d1037d237ddb49e23490cceff",
+  "frozen_headers_match_source": "778ac779aefd3d7f4557e399ea7544b1cebd8cd0",
+  "child_peak_rss_bytes": 422580224,
+  "scope": "Offline conditional cost witnesses and computational cost only. No live policy change, competition-time feasibility, physical saving or throughput improvement claimed."
+}
