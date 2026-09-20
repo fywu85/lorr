@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 14:39 UTC.
+Updated: 2026-09-20 14:50 UTC.
 
 **Best single run on the archived input: 3,596 tasks on 32 workers / 16 physical cores**, or
 **+13.4% versus matched NMS32 = 3,172**. The planner averages eight simulated
@@ -36,17 +36,19 @@ Mean latency 308 ms, maximum 421 ms, peak RSS 447 MB. All 2,000 steps are valid.
 This larger portfolio is not a verified four-core configuration. Additional
 planner-seed checks are running; this remains a selected single-run maximum.
 
-**Best confirmed four-core run: 3,501 tasks**, or **+20.1% versus the strongest
-matched NMS4 repeat = 2,914** (other repeats: 2,902 and 2,903). Every action,
-assignment and task event matches its 32-worker counterpart. Mean latency
-459 ms, maximum 579 ms and peak RSS 285 MB; no errors or timeouts.
-Source [e896201](https://github.com/fywu85/lorr/commit/e896201); eight continuations,
-2,048 futures, two fixed initial steps, planner seed 3. It enables exact prefix
-reuse, packed priority sorting and sparse dispersion counting.
-[Full worker/implementation equivalence](random05/results/hotpaths-four-split-full-v45/3501-equivalence.json).
-The earlier implementation timed out on a different shared host; that failed
-attempt remains archived. The larger 3,555-task configuration still exceeds the
-strict one-second four-core deadline and is only a verified 32-worker result.
+**Best confirmed four-core run: 3,509 tasks**, or **+20.4% versus the strongest
+matched NMS4 repeat = 2,914**. Source
+[d933023](https://github.com/fywu85/lorr/commit/d933023), K3584/B8/start2/local0,
+planner seed 3. Mean latency 785 ms, maximum 930 ms, peak RSS 293 MB; all 2,000
+steps are valid. This is an eight-task gain over the preceding 3,501 record.
+
+The 3,501 configuration remains the frozen candidate for fresh validation V2:
+K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
+complete trajectory repeats across four cores and 32 workers.
+[Equivalence](random05/results/hotpaths-four-split-full-v45/3501-equivalence.json).
+Later development records never replace a candidate inside a frozen validation.
+The larger K4096 configurations have so far exceeded the strict four-core
+first-step deadline; their valid 32-worker scores remain a separate record.
 
 **Repeated improvement on the development input:** across planner seeds 0–4,
 four-continuation search averages 3,392.6 tasks and eight-continuation search
@@ -137,6 +139,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T14:15:04.122374+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Same 3,555 full trajectory with prefix reuse, packed priorities and sparse dispersion; B4/K4096/start2/seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/hotpaths-split-full-v45/both/summary.json) |
 | 2026-09-20T14:24:41.462668+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | Exact four-core reproduction of the 3,501 trajectory; B8/K2048/start2/local0/planner seed3; prefix/packed/sparse optimizations; `--trick RANDOM-05` | 3501 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.1% | [Full evidence](random05/results/hotpaths-four-split-full-v45/retry3501-four/summary.json) |
 | 2026-09-20T14:29:52.858068+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | Mean of 8 continuations; K8192 total/start2/local0/planner seed3; exact implementation optimizations; `--trick RANDOM-05` | 3596 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +13.4% | [Full evidence](random05/results/scratch-reuse-split-full-v46/k8192-b8/summary.json) |
+| 2026-09-20T14:45:45.463667+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | B8/K3584/start2/local0/planner seed3 with exact implementation optimizations; `--trick RANDOM-05` | 3509 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.4% | [Full evidence](random05/results/scratch-four-split-full-v46/k3584-b8-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -817,3 +820,17 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   existing 1s/32GB rules. The earlier 50001/50002 inputs remain excluded from
   tuning, and development continues on the original archived input.
   [Predeclared protocol](random05/FRESH_VALIDATION_V2.md).
+
+- The K3584/B8 four-core run completes with **3,509 tasks** (+20.4% versus NMS4),
+  eight more than the preceding record, at mean 785 ms and maximum 930 ms.
+  The smaller 3,501 configuration remains frozen for fresh-input validation V2.
+
+- K8192/B8 across planner seeds 0–4 gives 3,528/3,579/3,457/3,596/3,580,
+  mean **3,548**, versus 3,483.2 at K2048/B8 (+1.9%; four of five pairs improve).
+  These are 32-worker runs on the same input; four-core feasibility is not
+  implied. K8192/B16 gives 3,399. Larger K16384 runs are still in progress.
+
+- Build-v48 adds optional phase timing for assignment, task-cost preparation,
+  candidate generation, look-ahead and final checks. Full regression tests pass,
+  including identical decisions with profiling on/off. Short diagnostic runs
+  will use a relaxed deadline and will never enter the full-throughput frontier.

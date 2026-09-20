@@ -1,6 +1,7 @@
 #include "engine.hpp"
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -40,7 +41,7 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("continuation risk must be finite and nonnegative");
     c.share_prefix=integer("R05_SHARE_PREFIX",0);
     c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
-    c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);
+    c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);c.profile=integer("R05_PROFILE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -1041,6 +1042,15 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
+    std::chrono::steady_clock::time_point measured;
+    if(cfg.profile)measured=std::chrono::steady_clock::now();
+    std::array<double,5> phase_ms{};
+    auto mark=[&](int phase) {
+        if(!cfg.profile)return;
+        const auto now=std::chrono::steady_clock::now();
+        phase_ms[phase]+=std::chrono::duration<double,std::milli>(now-measured).count();
+        measured=now;
+    };
     const auto& g=*graph;const int n=env->num_of_agents;
     Frame frame;frame.loc.resize(n);frame.dir.resize(n);frame.stage.resize(n);
     for(int a=0;a<n;++a) {
@@ -1051,7 +1061,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     if(pending_.empty())pending_=frame.loc;
     frame.pending=pending_;
     if(cfg.operation_depth)frame.operations=operations_;
-    match(env,schedule);
+    match(env,schedule);mark(0);
     for(auto it=chains_.begin();it!=chains_.end();) {
         if(!env->task_pool.count(it->first))it=chains_.erase(it);else ++it;
     }
@@ -1109,6 +1119,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
         frame.free_tasks.assign(future_tasks_.size(),1);
     }
+    mark(1);
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
     const int roots=cfg.futures/cfg.continuations;
@@ -1166,11 +1177,13 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 }
             }
         }
+        mark(2);
         #pragma omp parallel for num_threads(cfg.threads) schedule(static)
         for(int k=begin;k<end;++k) {
             try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1); }
             catch(...) { errors[k]=std::current_exception(); }
         }
+        mark(3);
         for(int k=begin;k<end;++k) {
             if(errors[k])std::rethrow_exception(errors[k]);
             if(results[k].score>results[best].score+1e-7 ||
@@ -1209,6 +1222,10 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     predicted_loc_=selected.first.loc;predicted_dir_=selected.first.dir;
     if(cfg.reverse_penalty>0)last_actions_=selected.actions;
     total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
+    mark(4);
+    if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0))
+        std::fprintf(stderr,"R05_PROFILE t=%d assignment_ms=%.3f task_cost_ms=%.3f candidates_ms=%.3f lookahead_ms=%.3f final_ms=%.3f\n",
+                     env->curr_timestep,phase_ms[0],phase_ms[1],phase_ms[2],phase_ms[3],phase_ms[4]);
     if(env->curr_timestep%100==0) {
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;

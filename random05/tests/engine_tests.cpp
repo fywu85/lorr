@@ -345,6 +345,9 @@ void continuation_risk() {
     require(serial==simulate(cfg,12),"continuation risk changed with worker count");
 }
 int main() {
+    Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
+    const auto unmeasured=simulate(measured,12);measured.profile=true;
+    require(unmeasured==simulate(measured,12),"phase profiling changed the trajectory");
     continuation_risk();
     exact_hot_paths();
     for(int prefix:{1,2}) {

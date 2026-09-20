@@ -262,3 +262,14 @@ build-v47. This is a hypothesis; full throughput comparisons decide whether to u
 The same new mean-score regime also warrants rechecking two/four/eight search
 generations at fixed total work. Those settings lost under single-continuation
 scoring; the changed evaluation landscape provides a specific reason to retest.
+
+## First-step compute diagnosis
+
+The large four-core portfolios miss the deadline at the first step. Optional
+`R05_PROFILE=1` reports wall time for assignment, task-chain cost preparation,
+candidate preparation, parallel look-ahead and final work. It does not change
+candidate counts or introduce early termination. Diagnostic prefixes are only
+for timing; full 2,000-step runs remain the throughput selection criterion.
+The simulator reveals the initial task pool after initialization, so moving its
+assignment into preprocessing would require information the interface has not
+yet exposed. Investigate actual measured costs before further optimization.
