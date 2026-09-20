@@ -53,10 +53,11 @@ The earlier active-cost-row optimization preserves the complete3,374 control
 trajectory and lowers observed four-core mean latency326→310ms in one shared-host
 pair. Its speed evidence remains separate from the new guidance record.
 
-The current configuration without known-horizon triage scores **3,197 on32
-workers**, versus NMS3,172 (+0.8%). It retains the explicit map-guidance trick.
-The cutoff adds198 tasks (+6.2%) on this seed. A four-core confirmation is
-pending; the preceding verified four-core no-cutoff score was2,914.
+The current configuration without known-horizon triage scores **3,197 on both
+allocations**, with identical actions, assignments and task events. That is
+**+9.7% versus four-core NMS**, or **+0.8% versus32-worker NMS**. It retains the
+explicit map-guidance trick. Four-core mean316ms/max421ms, peak RSS293MB; all
+2000 steps are valid. The cutoff adds198 tasks (+6.2%) on this seed.
 [Cutoff comparison](random05/results/frontier-triage-split-full-v31/summary.json).
 The colleague's roughly27–28% matched advantage remains the campaign objective.
 
@@ -107,6 +108,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T11:25:19.439602+00:00 | [32b333a](https://github.com/fywu85/lorr/commit/32b333a) | Same seed3 trajectory on32 workers; active cost rows; K1024, contrast2.4, field15; `--trick RANDOM-05` | 3379 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.5% | [Full evidence](random05/results/active-cost-split-full-v28/seed3-workers32/summary.json) |
 | 2026-09-20T11:51:07.120923+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | One directional pair reversed, flip seed5; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3395 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.0% | [Full evidence](random05/results/guidance-local-split-full-v31/flips1-seed5/summary.json) |
 | 2026-09-20T12:08:42.946296+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Four-core repeat of the same actions/assignments/events; one pair reversed, flip seed5; field15/planner seed3; `--trick RANDOM-05` | 3395 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.5% | [Full evidence](random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json) |
+| 2026-09-20T12:21:57.244760+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +0.8% | [Full evidence](random05/results/frontier-triage-split-full-v31/no-horizon/summary.json) |
+| 2026-09-20T12:37:00.784376+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +9.7% | [Full evidence](random05/results/no-horizon-four-split-full-v31/no-horizon-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -533,3 +536,26 @@ The published NMS score of 3,050 used different instances and hardware.
   3,372/3,380/3,367/3,395/3,367/3,335/3,236/3,117. All9 are valid. Scale1.5
   remains selected. This is a198-task (6.2%) contribution on this seed, separate
   from the method's performance without knowing the run length. Sourceb824f5d.
+
+- The cutoff-free3,197 trajectory repeats exactly on four physical cores,
+  mean316ms/max421ms and peak RSS293MB. This is+9.7% over matched NMS4=2,914,
+  and+0.8% over matched NMS32=3,172. Guidance remains a declared map trick.
+  Worker-equivalence evidence is in `random05/results/no-horizon-four-split-full-v31/`.
+
+- Completion reward full results, bonus0/2/4/8/16/32:
+  3,395/3,281/3,327/3,289/3,253/3,054. All6 runs valid, every bonus loses.
+  Keep the option off. Source369e2df, results under
+  `random05/results/completion-reward-split-full-v36/`.
+
+- Visible-task turnover full results, K256/512/1024:3,254/3,225/3,335. Adding
+  completion bonus8 atK1024 gives3,379; without the horizon cutoff it gives3,122
+  versus the no-cutoff control3,197. All6 runs including control are valid.
+  Keep turnover off. The default3,395 control has identical actions, schedules
+  and events acrossv31/v36/v37. Source5db6827, evidence under
+  `random05/results/future-tasks-split-full-v37/`.
+
+- Fresh validation is declared before results in `random05/FRESH_VALIDATION.md`.
+  Freeze sourceb824f5d and its3,395 configuration, then test new generator seeds
+  50001/50002 with two NMS4 repetitions each. All six jobs use full2000 steps,
+  checked EPYC9354 four-core allocations,1s deadlines and32GB limits. These are
+  new task/start instances, not extra planner seeds on the archived input.

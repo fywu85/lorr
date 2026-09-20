@@ -18,11 +18,14 @@ and synthetic instances are unavailable. The goal is not complete.
 - New field across planner seeds0–4:3,356/3,311/3,325/3,395/3,305, mean3,338.4.
   Previous field:3,374/3,231/3,365/3,379/3,350, mean3,339.8. Two pairs improve;
   no average gain. These are planner seeds on one input, not fresh instances.
-- Best JSONs freeze source/configuration/evidence. Log audit verifies34 rows.
+- Best JSONs freeze source/configuration/evidence. Log audit verifies36 rows.
 - Config: flow seed15, one flip seed5, output contrast2.4, K1024/depth8/noise200,
   dispersion0.8/local5/equal, wait0.5/turn0.6, exact guided matching,
   keep0.5/length0.25, horizon2000/triage1.5, independent per-step RNG.
-- Previous no-horizon best2,914 has not yet been rerun with latest changes.
+- Without the horizon cutoff:3,197 on both allocations, exact actions/schedules/
+  events; +9.7% versusNMS4, +0.8% versusNMS32. Four-core mean316ms/max421ms,
+  RSS293MB. Guidance remains an explicit map trick. Cutoff contribution198 tasks
+  (+6.2%). New best-no-horizon JSONs preserve both configurations.
 
 ## Pending batches
 
@@ -33,12 +36,15 @@ raw traces and binaries. Frontier links should point to the child summary list.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
-| 8899654–8899669 | field-revalidation-split-full-v31 | Full K1024/planner seed3, flow seeds1–16, unmutated fields. Original field selection used lowK; production-budget rankings can differ. Source b824f5d. |
-| 8899670–8899675 | operation-moving-split-full-v35 | Optional moving-footprint search under the three-step operation policy; K1/8/32/128 plus cost/no-inheritance ablations. Source0754ed8. |
+| 8899702–8899705 | operation-revisits-split-full-v35 | More revisits after16 improved the weak prototype. Revisit64/K32=1973; three other cases still running/queued. Source0754ed8. |
+| 8899706–8899708 | frontier-depth-split-full-v31 | Longer look-ahead10/12/16, K1024 on32 workers. Depth10=3302; other results pending. Sourceb824f5d. |
+| 8899709–8899714 | fresh-validation-split-full-v31 | Two new task/start instances50001/50002; frozen3395 candidate once each, NMS4 twice each. Four physical cores each, full2000,1s. Read FRESH_VALIDATION.md. |
 
-Complete and collected: guidance-local-split-full-v31 (25/25),
-guidance-local-validation-split-full-v31 (5/5), operation-policy-split-full-v34
-(8/8). All earlier batches throughv30 are also terminal; do not restart them.
+All batches through future-tasks-split-full-v37 are complete and collected,
+including field-revalidation16/16, operation-moving6/6, frontier-triage9/9,
+completion-reward6/6, future-tasks6/6 and no-horizon-four1/1. Do not restart them.
+Raw input data for fresh validation is under runs/random05/fresh-inputs-v1/;
+the generator and metadata hashes are committed. Recreate only if missing.
 
 ## Structural experiment
 
@@ -55,8 +61,8 @@ These are valid but weak. The pipeline remains the default.
 v35 R05_OPERATION_MOVING=1 excludes stationary footprints from active repair
 candidates, retaining the whole inherited plan as fallback. This addresses one
 concrete difference from the reference, which excludes all-wait from its active
-choices. Dense regression passes. Full K1/8/32=343/817/1118; cost1=743 and no
-inheritance=577. K128 remains pending. This does not close the gap. Default optionoff.
+choices. Dense regression passes. Full K1/8/32/128=343/817/1118/711; cost1=743 and no
+inheritance=577. All are valid but weak; default optionoff.
 
 Other potential operation differences: the reference protects successful paths
 for the rest of the search pass, while our recursion clears the stack on success;
@@ -78,8 +84,30 @@ agent-ID tie order. Fixed work must finish; no deadline-triggered partial return
   observed four-core mean326→310ms, one pair on shared EPYC9354 hosts.
 - First500: ours3379 trajectory visits3393 stops versus NMS4's3346, but completes
   779 tasks versus879. Startup length preference did not fix total throughput.
-  Late known-horizon triage explains much of the final advantage. Best non-horizon
-  result remainsolder2914; do not present the frontier as horizon-independent.
+  The latest cutoff-free control now scores3197; known-horizon triage adds198
+  tasks on the frontier seed. Do not present3395 as horizon-independent.
+
+## Latest rejected hypotheses
+
+- Full K1024 field seeds1–16: field15 remains best3379 without its local flip;
+  other fields range3012–3270. The field choice survives full-budget validation.
+- Cutoff scales0.75/1/1.25/1.5/1.75/2/2.5/3:
+  3372/3380/3367/3395/3367/3335/3236/3117. No cutoff3197. Keep1.5.
+- R05_COMPLETE_BONUS0/2/4/8/16/32:3395/3281/3327/3289/3253/3054. All lose.
+- R05_ROLLOUT_MATCH1 predicts task turnover using only the visible free pool.
+  K256/512/1024=3254/3225/3335; bonus8 atK1024=3379; no-cutoff3122 versus3197.
+  All lose. The default control remains3395 with exactly identical actions,
+  schedules and events acrossv31/v36/v37. Keep both new options off.
+- The virtual forecast is approximate: fixed existing assignments, no new hidden
+  task reveal, no reapplication of horizon triage to new virtual assignments.
+  It also loses without cutoff, so the horizon mismatch alone is not established
+  as the explanation. Do not assume a more detailed forecast helps throughput.
+
+Fresh validation is held out from configuration selection: sourceb824f5d and
+its settings were frozen before generating inputs. Do not tune on50001/50002
+and continue calling them held out. Report every candidate result and both NMS
+repetitions, using the stronger valid NMS run per input. No matching colleague
+private instances or exact regeneration protocol is available.
 
 ## Source versions and tests
 
@@ -93,6 +121,10 @@ agent-ID tie order. Fixed work must finish; no deadline-triggered partial return
 - v34 `b72a51e`: rejects one-visit performancecandidate; four-visit/inheritance
   and no-inheritance mobility tests pass. Same enginebinary asv33.
 - v35 `0754ed8`: optional moving-footprint repair; regressions pass.
+- v36 `369e2df`: optional whole-task completion reward; contested-goal test passes.
+- v37 `5db6827`: optional visible free-task turnover inside rollouts; no-spare
+  trajectory identity and dense spare-task worker determinism pass. Full control
+  equality is verified. Every full run is valid, but none improves throughput.
 
 Frozen build source hashes and tests are under runs/random05/build-v*/.
 Before promotion/commit run `python3 random05/tools/audit_progress.py`.
