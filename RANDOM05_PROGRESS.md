@@ -35,15 +35,15 @@ prefix reuse, packed sorting, sparse dispersion and reusable policy buffers.
 Mean latency 607 ms, maximum 726 ms, peak RSS 364 MB. All 2,000 steps are valid.
 This is a selected single-run maximum and has not been reproduced on four cores.
 
-**Best confirmed four-core run: 3,562 tasks**, or **+22.2% versus the strongest
+**Best confirmed four-core run: 3,637 tasks**, or **+24.8% versus the strongest
 matched NMS4 repeat = 2,914**. Source
-[f9b1143](https://github.com/fywu85/lorr/commit/f9b1143), K2048/B8/start2/local0,
-four search generations. Planner seeds 4 and 0 both reach this score, with their
-complete trajectories reproduced from the 32-worker runs. The first completed
-four-core record (seed4) averages 455 ms, maximum 574 ms, peak RSS 285 MB.
-All 2,000 steps are valid. These are selected maxima on the development input;
-fresh-input validation still applies to the separately frozen candidate below.
-[Equivalence](random05/results/generation-confirm-four-split-full-v47/equivalence.json).
+[6ce9312](https://github.com/fywu85/lorr/commit/6ce9312), K5120/B8/start2/local0,
+four search generations, planner seed3. Exact prefix reuse, sparse dispersion,
+reused policy buffers, shared goal rows, radix sorting and candidate-ranking
+caching all enabled. Mean latency791ms, maximum928ms, peak RSS309MB.
+All2,000 steps are valid. The larger search becomes feasible through the exact
+CPU optimizations. Additional planner seeds and fresh inputs still need checking.
+[Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json).
 
 The 3,501 configuration remains the frozen candidate for fresh validation V2:
 K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
@@ -153,6 +153,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T15:02:34.822809+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | No known horizon; K2048/B8/start2/local0; planner seed3; guidance still `--trick RANDOM-05` | 3285 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +12.7% | [Full evidence](random05/results/continuation-no-horizon-split-full/no-horizon-four/summary.json) |
 | 2026-09-20T15:29:14.931221+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed4; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed4-four/summary.json) |
 | 2026-09-20T15:29:21.178706+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed0; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed0-four/summary.json) |
+| 2026-09-20T15:50:14.795609+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed3; `--trick RANDOM-05` | 3637 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +24.8% | [Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1013,3 +1014,10 @@ input/binary hashes and allocation are linked in the audits.
   and worker-count regressions pass. A bounded full four-core comparison tests
   2/4/8/16 parents and one interaction with the small optimism bonus. No gain
   is assumed before full results. This is a general search change.
+
+- All three K5120/B8 full four-core runs pass the strict1s limit. One/two/four
+  generations give3,537/3,591/**3,637**, with mean latencies792/793/791ms and
+  maxima961/927/928ms. Four generations sets the new confirmed four-core record,
+  **+24.8% versus NMS4**. RSS309MB. The existing V2 validation remains tied to
+  its older3,501 candidate; a third protocol is declared before generating new
+  inputs to test this larger search honestly.

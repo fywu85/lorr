@@ -1,16 +1,11 @@
-{
-  "source_commit": "6ce9312",
-  "evidence": "random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json",
-  "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v52/build/lifelong_random05",
-    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
-    "cores": 4,
-    "steps": 2000,
-    "limit_ms": 1000,
-    "preprocess_ms": 30000,
-    "trick": true,
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:50:14.795609+00:00",
     "name": "ranking-k5120-b8-generations4",
-    "env": {
+    "steps": 2000,
+    "binary_sha256": "a37917e0caea46f9d60c4a789a0e8433813c131adcfc725f0760f2fa5b7de7f8",
+    "environment": {
       "R05_K": "5120",
       "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
@@ -48,6 +43,34 @@
       "R05_RADIX_ORDER": "1",
       "R05_CANDIDATE_CACHE": "1"
     },
-    "smt": 1
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3637,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.928239679
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.7912077953770006,
+      "max": 0.928239679
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "5fdf9c0951be00c40b42676acdb23beddcff649c9aae1833084f795f84c75562",
+    "valid": true,
+    "usage": {
+      "user_seconds": 6302.488451,
+      "system_seconds": 0.7518039999999999,
+      "peak_rss_kib": 301396,
+      "wall_seconds": 1584.379400914535,
+      "exit": 0
+    }
   }
-}
+]
