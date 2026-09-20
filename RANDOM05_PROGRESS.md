@@ -1136,3 +1136,8 @@ input/binary hashes and allocation are linked in the audits.
   powers of two8–1024/default64. Exact dense tests with frequent eviction and
   larger128/256 tables pass in7.35s. Full64/128/256/512 comparisons and larger-K
   timing checks are underway. Memory capacity changes must preserve trajectories.
+
+- Larger-cache32-worker controls with128 and512 slots both reproduce3,637,
+  with every action, assignment, event and task identical to the prior64-slot
+  run. Four-core full timing checks and K6144 attempts remain in progress.
+  [Exact controls](random05/results/ranking-capacity-control-split-full-v58/control-equivalence.json).

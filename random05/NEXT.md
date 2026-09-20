@@ -232,3 +232,9 @@ fourcores, but a32worker success alone does NOT prove fourcore1sfeasibility.
 At t100/200 the larger ranking caches showed only modest lookahead savings;
 all6144 variants had passed the oldtimestep2failurepoint. This is NOT a full
 validity or speedup claim. Await fullsummaries and compare exact trajectories.
+
+
+Both v58 32-worker capacity controls (slots128/512) are now full-run EXACT
+trajectory matches to3637 across actions/schedules/events/tasks. Evidence:
+results/ranking-capacity-control-split-full-v58/control-equivalence.json.
+Four-core timing and larger-K runs remain pending; no capacity speedup claim.
