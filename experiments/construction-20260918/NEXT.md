@@ -618,3 +618,52 @@ review while archiving. Nextturn27/followup-26.md after completion if useful.
 Fable26completed; visible review/metadata and qualified assessment archived. It
 supports the remaining-flow ablation as a cheap test, with neutral/negative prior.
 No live CLI; nextturn27/followup-26.md. Implementing the narrow generic factor now.
+
+
+## V56 generic candidate awaiting isolated build (2026-09-20 03:50 UTC)
+
+Implemented default-off CGAR_TEMPORAL_REMAINING_FLOW: omit only paidforwardextra
+from temporal objective. Protected construction/oracle/scheduler unchanged.
+Reject statictrick/guide/next-errand/paid-progress audit/branch combinations.
+Four productionfiles+regressionfile changed; build8899283QUEUED, no test result.
+All eligible exclusivehosts occupied; PEthreaded reports0availableslots. Same
+frozen4core/16GiBrequest enqueued with-w n, originalavailabilityfailurepreserved.
+Do not resubmit or edit frozenproduction sources while job pending/running.
+Raw runs/cgar-remaining-flow-build-v56-20260920; pendingarchivebuild-provenance/v56.
+
+Afterbuildpasses: archivebuild/allocation/log; bind26sourcehashes toexactcommit;
+runremaining-flow-variants.json seed0,200steps,two4corecases inparallel onEPYC9354;
+remaining_flow/analyze.py freezes/verifiescode,receipts,genericlabels,full128action
+andassignmentprefix,equalworklimits,exactdefault200hash. Thenfull0/2x2arms16cores,
+5ksteps,1s/32decimalGB; analyze.py supportsfullvalid/failurearchiving andexactcontrols.
+No new benchmark has been submitted or scored yet. REMAINING_FLOW_SCORE.md.
+
+
+## Latest pending work (2026-09-20 04:02 UTC)
+
+User requested a quick generalization check while warehouse continues: queued
+GRID8899287, nine otherinstances allconcurrent, seed0, fullcompetitionhorizons,
+36physicalcores total/4each, exclusiveEPYC9354,1s/32decimalGB. EXACTverifiedV54
+binarybace95.../sourceabbe36b, unchangedwarehouse-referenceprofile,no --trick,
+no new remaining-flow option. Rawruns/cgar-generalization-other9-v54-20260920;
+request/status/sourcebinding inexperiments/generalization-20260920. Initial
+availabilityfailurepreserved, same resource request queued with-w n.
+
+Answered user randomness question: CGAR_SEEDcontrols PIBTties, temporalroots,
+horizons/displacementchoices/annealing and regional search streams. Inputs/task
+sequence fixed; reveal times/learnedfields differ indirectly. Sixseeds areplanner
+realizations on sameinstance, notnewworkloads; testedfixedworkrepeatability.
+
+Fable27completed/archived, samepersistentCLI, no livecall. Found no scoring or
+protected-constructiondefect; adopted realactiveadapterdifference fixture and
+specificconfigurationguardchecks. Corrected its false claim that regionaltests
+neverassertnonzeropenalties; theyalreadydo. Retainingturnpayments isintentional.
+Build8899283cancelledWHILEQUEUED, noexecution. Strongertest-only revision frozen
+and queuedas8899285, rawruns/cgar-remaining-flow-build-v56-r2-20260920, archive
+build-provenance/v56-r2. Productionhashesidenticaltofirstv56. Do NOTeditfrozen
+source/testfiles while pending. No v56testresult or benchmark yet.
+
+Generalization analysis8899288heldbehind8899287; frozenhelpers/sourcebinding
+checks, fullper-instancevalidity, resource/actionaccounting and results/summary.md
+underexperiments/generalization-20260920. No rerun or retuning planned before
+readinginitialtransferresults. Current questionaboutRNG answeredincommentary.
