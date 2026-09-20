@@ -1,17 +1,23 @@
 # Continuing warehouse work
 
-Updated 2026-09-20 08:42 UTC. CGAR remains the framework. Target is NMS154,795;
+Updated 2026-09-20 09:09 UTC. CGAR remains the framework. Target is NMS154,795;
 any valid full5,000-step seed, generic or explicit --trick WAREHOUSE, can satisfy
 the goal. 32GB RSS, fixed work and explicit timeout failure. Shared hosts and5s
 development deadlines are authorized; later strict1s check remains separate.
 
 ## Active overnight continuation (supersedes historical statuses below)
 
-**New overall best147,328 (TRICK,seed0), source5a8a51a**, completed
-2026-09-20T08:38:32.494327UTC. Static lanes + matching64, short preference OFF.
-Seed2=147,204. Verified full report results/trick-match-full-v65/summary.md and
-best-record.json. Gap7,467 (5.0683% growth). Headline/TARGET/progress table updated.
-Generic peak145,083; confirmed generic six-seed mean143,941.17 unchanged.
+**New overall best147,502 (TRICK,seed2), source0f4183f**, completed
+2026-09-20T09:07:01.739904UTC. Static lanes + remaining-potential score,
+matchingOFF/shortOFF. Seed0=147,422. Verified full report
+results/trick-potential-full-v68/summary.md and best-record.json. Gap7,293
+(4.94434% growth). Prior best147,328 lanes+matching64 remains a control.
+Generic peak145,083; confirmed generic six-seed mean144,392.17 (matching64 promoted).
+
+V68 full8899413/8899414 now complete and valid: +763/+936 tasks, tails+201/+195,
+mean+0.579419%, emptywork−154900/−176219, both exact lane controls. V71 saved-run
+cohort/static-lane audit8899433 now running, raw runs/cgar-potential-motion-audit-v71-20260920,
+output results/potential-motion-audit-v71. Next: isolate score×matching interaction.
 
 Completed:
 - V64 full OFF/4/64 x seeds0/2 all valid and exact controls. Matching64
@@ -74,6 +80,28 @@ single-seed best immediately; keep generic and TRICK histories distinct.
 - Persistent Fable turn35 is running in session1ebb1075-3538-49d1-93d1-a00c94fa256a,
   claude-fable-5-1/max, via Claude Code. Prompt followup-34.md includes the new
   cohort evidence, V68 source/tests and a conditional native-metric design request.
+
+- V66 full mixed grouping8899402/8899408 completed valid:144632/144398 versus
+  exact local64 controls144967/144511. Differences−335/−113, tails−3/−61,
+  mean−0.154761%, despite slightly lower emptywork. Keep pickup_groups0.
+  results/pickup-group-full-v66/summary.md; full20k entries/max0.892794s/RSS11.940GB.
+
+- V64 confirmation8899409/8899410 complete: all six totals improve; mean144392.17
+  (+451,+0.3133%), five tails positive, seed5tail−49, seed3agep90+2. All12valid,
+  six exact controls. Reference profile now matching64; prior regional-only
+  profile preserved separately and trick analyzers explicitly bind that base.
+- V72 build8899437 passes all regressions; sourcec696d5f, all27hashes verified.
+  Score+matching explicit static interaction only. Screen8899439/8899440 runs
+  score-only/matching-only/combined, seed0,200steps; exact V68/V65 prefixes required.
+  Full six cases only after screen verification. V70 pickupweight full stillruns.
+- V71 potential motion audit8899433 complete valid. Chainsnearlyunchanged;
+  empty/task falls1.4–1.6, loadedoverhead falls0.30/0.51, detours/waitsfall,
+  turnsrise. Contraflow fraction~0.18%→~1.54%. No causal decomposition claim.
+- Fable turn35 complete; archived review and qualified assessment available.
+
+- V72 screen8899439/8899440 complete, all3valid and both exact prefixes. Full
+  score-only/matching-only/combined x0/2 now8899444/analysis8899445,24physicalcores,
+  frozen c696d5f, shared5s/32GB. Raw runs/cgar-trick-score-match-full-v72-20260920.
 
 ## Current jobs and latest steering
 

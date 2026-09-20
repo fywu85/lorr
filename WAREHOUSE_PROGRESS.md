@@ -1,22 +1,24 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 08:42 UTC.
+Updated: 2026-09-20 09:17 UTC.
 
-**Best overall validated single run: 147,328 tasks (TRICK, seed0)**, using NMS-derived static lanes plus bounded matching with explicit `--trick WAREHOUSE`. This leaves **7,467 tasks** to the NMS target of154,795 (**5.07% growth** needed). The user now accepts any valid full seed, with or without explicitly flagged tricks, as achieving the target. That criterion is separate from promoting the generic benchmark reference.
+**Best overall validated single run: 147,502 tasks (TRICK, seed 2)**, using NMS-derived static lanes and remaining-potential scoring with explicit `--trick WAREHOUSE`. Matching and short preference are OFF. This leaves **7,293 tasks** to the NMS target of **154,795** (**4.94% growth** needed). Any valid full seed may achieve the target; promotion of the generic benchmark reference remains separate.
 
-**Best generic single run:145,083**, from remaining-flow scoring, source4524843. Its six-seed check is complete: mean144,060.17 versus143,941.17, four wins and two losses; the additional four seeds average only+8.25tasks. Keep this candidate OFF. **Confirmed six-seed generic reference:143,941.17** remains graded-flow pickup plus two regional repair rounds. [Remaining-flow confirmation](experiments/construction-20260918/results/remaining-flow-six-seed-v56-shared.json).
+**Best generic single run: 145,083**, from remaining-flow scoring; that candidate stays OFF after its mixed six-seed result. **Confirmed six-seed generic reference: 144,392.17**, using graded-flow pickup, two regional repair rounds and bounded matching64. All six full totals improve over the prior 143,941.17 reference. [Six-seed matching confirmation](experiments/construction-20260918/results/match-quota-confirm-v64/summary.md).
 
 | Best overall record completed (UTC) | Full tasks | Seed / policy | Source and evidence |
 |---|---:|---|---|
 |2026-09-20 03:21:38.087713|**146,659**|0 / **TRICK** static NMS warehouse lanes, `--trick WAREHOUSE`|[abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a); [full verification](experiments/construction-20260918/results/trick-nms-warehouse-full-v54/verification.json).5,000steps,10,000robots, zero failures, max984.533ms, RSS11.914GB. Reproduced exactly in the [later factorial](experiments/construction-20260918/results/trick-short-tasks-full-v58-r2/factorial-verification.json).|
 |2026-09-20 08:38:20.944797|**147,204**|2 / **TRICK** static lanes + matching64, `--trick WAREHOUSE`|[5a8a51a](https://github.com/fywu85/lorr/commit/5a8a51a38a8355811d49595f777572a819f9d10e); [full verification](experiments/construction-20260918/results/trick-match-full-v65/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-match-full-v65/comparison.json).5,000steps,10,000robots, zero failures; shared-host5s development, max1010.043ms, RSS11.939GB.|
 |2026-09-20 08:38:32.494327|**147,328**|0 / **TRICK** static lanes + matching64, `--trick WAREHOUSE`|[5a8a51a](https://github.com/fywu85/lorr/commit/5a8a51a38a8355811d49595f777572a819f9d10e); [full verification](experiments/construction-20260918/results/trick-match-full-v65/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-match-full-v65/comparison.json).5,000steps,10,000robots, zero failures; shared-host5s development, max1011.861ms, RSS11.928GB.|
+|2026-09-20 09:06:50.927809|**147,422**|0 / **TRICK** static lanes + remaining potential, `--trick WAREHOUSE`|[0f4183f](https://github.com/fywu85/lorr/commit/0f4183fcdafcaab391ace632f70a0c513caba14b); [full verification](experiments/construction-20260918/results/trick-potential-full-v68/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-potential-full-v68/best-record.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max 981.850ms, RSS 11.912GB.|
+|2026-09-20 09:07:01.739904|**147,502**|2 / **TRICK** static lanes + remaining potential, `--trick WAREHOUSE`|[0f4183f](https://github.com/fywu85/lorr/commit/0f4183fcdafcaab391ace632f70a0c513caba14b); [full verification](experiments/construction-20260918/results/trick-potential-full-v68/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-potential-full-v68/best-record.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max 979.072ms, RSS 11.839GB.|
 
 The earlier increasing-record table below remains the **generic** history. A future valid single-seed best updates the appropriate history immediately, with its source, timestamp and flags; it does not imply repeatability across seeds.
 
-The six totals are **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
+The preceding regional-only reference totals were **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
 
-The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The current six-seed mean needs **7.54% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The NMS target remains unmet. A valid full generic or explicitly enabled TRICK seed may satisfy it under the user's revised criterion; six-seed generic reference promotion remains separate. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
+The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The current six-seed mean needs **7.20% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The NMS target remains unmet. A valid full generic or explicitly enabled TRICK seed may satisfy it under the user's revised criterion; six-seed generic reference promotion remains separate. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
 
 The previously highest six-seed mean,143,111.2 from sixteen global workers, had three total regressions and was not promoted. Regional repair now exceeds that mean and improves all six paired full totals. The larger pickup quotas128/256 produce exactly the same full trajectories as64 on both tested seeds; they provide no observed quality gain. [Regional configuration and checks](experiments/construction-20260918/PICKUP_FULL_REGIONS.md) · [Quota comparison](experiments/construction-20260918/results/pickup-full-quota-full-v46.json).
 
@@ -156,6 +158,7 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | 2026-09-19 18:12:34 | 141,147.8 | 139,697–141,925 | Graded pickup + complete fields16 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-six-seed-v42.json) |
 | 2026-09-19 18:13:40 | 142,474.8 | 141,802–143,325 | Graded pickup + complete fields64 | [4872d04](https://github.com/fywu85/lorr/commit/4872d048dd8155927074ac2a4d27a55756266fd5) | [data](experiments/construction-20260918/results/pickup-full-six-seed-v42.json) |
 | 2026-09-19 21:14:15 | 143,941.2 | 143,134–144,510 | Complete fields64 + two regional repair rounds | [f6d0ae4](https://github.com/fywu85/lorr/commit/f6d0ae448504762136c4f5d85f25d7d207207965) | [data](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json) |
+| 2026-09-20 09:13:44 | 144,392.2 | 143,340–144,967 | Regional reference + bounded matching64 | [0196851](https://github.com/fywu85/lorr/commit/019685109769788dfcc318815e8d102a376982a9) | [data](experiments/construction-20260918/results/match-quota-six-seed-v64.json); shared5s development |
 
 ## Confirmation and reversals
 
@@ -193,7 +196,7 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | Cost-based complete-field discovery | Fields32 seeds0/2: **135,244 /137,131**; fields64: **135,773 /79,601** | **Both rejected.** Fields32 loses 2.248% to the healthy disabled control despite rescuing its collapsed counterpart. Fields64 loses both seeds to original64 and collapses seed2. Empty travel and outstanding ages rise. All four default controls exactly reproduce v42. [Evidence](experiments/construction-20260918/results/pickup-cost-key-full-v43/comparison.json). |
 | Complete fields64 + four planning workers | Six seeds: **143,340 /143,767 /143,409 /143,359 /142,868 /139,710**, mean **142,742.2** | **Not promoted.** Mean+0.188%, five wins, but seed5 loses3,207tasks, finalwindow1,933 and agep90 rises53steps. All12runs valid and six controls exactly reproduce. [Evidence](experiments/construction-20260918/results/pickup-full-workers-six-seed-v43.json). |
 | Traffic strength with complete fields64 | Strength2 seeds0/2: **141,776 /143,213**; strength6: **141,085 /142,854**; strength8: **139,351 /142,470** | **Retain strength4.** Strength2 has mixed totals and +0.060% mean, with both final windows/ages improving. Strength6/8 loses both full totals. All8runs valid, both controls exact. [Evidence](experiments/construction-20260918/results/pickup-full-flow-strength-full-v43/comparison.json). |
-| Complete fields64 + two regional rounds | Six seeds: **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**, mean **143,941.2** | **Current benchmark reference.** All six full totals improve, mean **+1.029%**. Five tails/ages improve; seed1tail−108/age+1. All12 runs valid and six controls exact. [Evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json). |
+| Complete fields64 + two regional rounds | Six seeds: **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**, mean **143,941.2** | **Prior benchmark reference; superseded by matching64.** All six full totals improve, mean **+1.029%**. Five tails/ages improve; seed1tail−108/age+1. All12 runs valid and six controls exact. [Evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json). |
 | Complete pickup quotas128/256 | Seeds0/2 exactly reproduce64-field full trajectories:141,829 /142,988 | No observed effect on either tested seed; retain64 fields and four construction threads. All6 runs valid. [Evidence](experiments/construction-20260918/results/pickup-full-quota-full-v46.json). |
 | Revealed next-errand scoring | Seeds0/2:143,529 /144,090 versus144,510 /144,107 | **Not promoted.** Both totals and final windows lose; paired mean−0.346%. All20k complete entries valid and controls exact. [Evidence](experiments/construction-20260918/results/next-errand-full-v47/comparison.json). |
 | Zero-temperature regional repair | Seeds0/2:143,600 /144,083 | **Not promoted.** Both totals lose; paired mean−0.324%. All20k entries valid and controls exact. Full audit finds only9/10 discarded peaks per40k reference batches. [Evidence](experiments/construction-20260918/results/regional-peak-full-v48/comparison.json). |
@@ -225,6 +228,14 @@ the defects and the full suite passes after repair. A fixed matching-quota
 comparison is now being prepared. [Design and evidence](experiments/construction-20260918/unopened_matching/README.md).
 
 ## Resource cost of the current benchmark reference
+
+The promoted matching64 profile averages **387.3–401.2 ms** per complete step,
+maximum **921.361 ms**, RSS **12.105 GB**, CPU **1.727–1.772 cores** of four reserved,
+and **33.33–34.47 minutes** per full run. All six candidates are valid under the
+shared-host5s development limit. [Verified resources](experiments/construction-20260918/results/match-quota-six-seed-v64.json).
+
+The following measurements describe the preceding regional-only reference.
+
 
 V50's duplicate deadline-callback optimization now passes full seeds0/2 with
 **exactly the existing144,510 /144,107 trajectories and sampled search counters**.
@@ -371,6 +382,22 @@ isolated TRICK experiment changes only paid-forward-extra scoring under the fixe
 static lane metric; source0f4183f, all regressions and exact-control startup screen
 pass. Full0/2 comparison8899413/8899414 is running/queued. Fable turn34's qualified
 review is archived. No prefix is treated as a new full-run record.
+
+## 2026-09-20 09:17 UTC: general confirmation and another TRICK best
+
+Generic matching64 is promoted:144967/144869/144511/143340/144446/144220,
+mean144392.17, +451 (+0.3133%) over the exact prior six-seed reference.
+All six totals and five tails improve; seed5tail−49, seed3agep90+2 remain visible.
+[Confirmation](experiments/construction-20260918/results/match-quota-confirm-v64/summary.md).
+
+Static remaining-potential scoring reaches147422/147502 without matching,
+both full totals and tails above lane-only. This sets the new overall TRICK best.
+[Full evidence](experiments/construction-20260918/results/trick-potential-full-v68/summary.md).
+Mixed pickup grouping loses both full seeds and stays OFF. The combined static
+score+matching policy passes all regressions and is in its three-arm startup
+screen8899439/8899440. A separate pickupweight1/5 x shortOFF/ON full factorial
+continues8899427/8899428; no outcome claimed yet. Fable turn35 is complete in the
+same persistent session; native metric work is the next separate motion test.
 
 ## Updating this log
 

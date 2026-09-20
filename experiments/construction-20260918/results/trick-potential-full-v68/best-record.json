@@ -1,5 +1,8 @@
 {
-  "flow4_pickupfull64_work4m_regions4_rounds2_steps25k_match64": {
+  "case": "trick_lanes_potential1-s2-r0",
+  "seed": 2,
+  "variant": "trick_lanes_potential1",
+  "environment": {
     "CGAR_DIAGNOSTICS": "1",
     "CGAR_ORIENTATION_GUIDANCE": "1",
     "CGAR_TURN_FIRST": "1",
@@ -37,7 +40,33 @@
     "CGAR_TEMPORAL_REGION_STEPS": "25000",
     "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
     "CGAR_TEMPORAL_REGION_ROUNDS": "2",
-    "CGAR_REASSIGN_MATCH": "1",
-    "CGAR_REASSIGN_MATCH_GROUPS": "64"
-  }
+    "CGAR_TRICK_LANES": "1",
+    "CGAR_TRICK_SHORT_TASKS": "0",
+    "CGAR_TRICK_UNOPENED_MATCH": "0",
+    "CGAR_TRICK_REMAINING_FLOW": "1"
+  },
+  "tasks": 147502,
+  "final1000": 30101,
+  "outstanding_age_p90": 633,
+  "empty_robot_steps": 9687565,
+  "loaded_turns": 1012339,
+  "loaded_waits": 1663406,
+  "trajectory_sha256": "14af230267909d4b3b12fe50c5413627fb512d59e3a3fb39c6e2b585d8d79508",
+  "mean_entry_ms": 309.6257311914002,
+  "max_entry_seconds": 0.979071793,
+  "peak_rss_bytes": 11839000576,
+  "average_cpu_cores": 1.8422460910247125,
+  "wall_seconds": 1615.265,
+  "finished_utc": "2026-09-20T09:07:01.739904+00:00",
+  "reserved_physical_cores": 4,
+  "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-trick-potential-full-v68-20260920/trick_lanes_potential1-s2-r0",
+  "evidence": "experiments/construction-20260918/results/trick-potential-full-v68",
+  "source_commit": "0f4183fcdafcaab391ace632f70a0c513caba14b",
+  "required_flag": "--trick WAREHOUSE",
+  "track": "TRICK",
+  "decision_limit_ms": 5000,
+  "competition_budget_confirmed": false,
+  "record_checked_utc": "2026-09-20T09:09:53.787677+00:00",
+  "target": 154795,
+  "target_gap": 7293
 }

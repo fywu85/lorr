@@ -6,7 +6,7 @@ map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
 The generic single-run frontier is145,083 under the shared-host5s development policy; the confirmed six-seed reference remains143,941.2.
-Static lanes plus bounded matching now reaches147,328/147,204 on full seeds0/2;147,328 is the best overall validated single run. Lane-only146,659/146,566 remains the exact control. [Verified matching factorial](results/trick-match-full-v65/summary.md). Per the user's latest instruction, any valid full seed reaching154,795 may achieve the NMS target, including an explicitly flagged trick. It must remain labelled TRICK and must not be reported as a generic algorithm improvement.
+Static lanes plus remaining-potential scoring now reaches **147,422/147,502** on full seeds 0/2; **147,502** is the best overall validated single run. Matching and short preference are OFF in that run. [Verified score comparison](results/trick-potential-full-v68/summary.md). The prior lanes+matching64 best is 147,328. Any valid full seed reaching 154,795 may achieve the user target, including an explicitly flagged trick; it must remain labelled TRICK.
 
 For a map-specific implementation or experiment:
 

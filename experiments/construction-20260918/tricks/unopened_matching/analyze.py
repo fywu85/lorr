@@ -60,7 +60,7 @@ def main():
             shutil.copy2(ROOT / 'experiments' / name, dest)
             files.append(dest)
         for name, source in [('reference.json', BASE / 'results/trick-short-tasks-full-v58-r2/factorial-verification.json'),
-                             ('reference-profile.json', BASE / 'warehouse-reference-variants.json'),
+                             ('reference-profile.json', BASE / 'warehouse-regional-reference-variants.json'),
                              ('reference-screen.json', BASE / 'results/trick-short-tasks-screen-v58/trajectory-fingerprints.json')]:
             shutil.copy2(source, support / name)
             files.append(support / name)

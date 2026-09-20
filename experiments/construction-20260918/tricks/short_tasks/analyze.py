@@ -65,7 +65,7 @@ def main():
             shutil.copy2(ROOT / 'experiments' / name, dest)
             files.append(dest)
         references = {
-            'profile.json': BASE / 'warehouse-reference-variants.json',
+            'profile.json': BASE / 'warehouse-regional-reference-variants.json',
             'generic-full.json': BASE / 'results/pickup-full-regions-six-seed-v44.json',
             'lane-full.json': BASE / 'results/trick-nms-warehouse-full-v54/trick-verification.json',
             'lane-screen.json': BASE / 'results/trick-nms-warehouse-screen-v54/trick-verification.json',

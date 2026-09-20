@@ -35,3 +35,10 @@ physical bindings, complete entries, RSS, simulator validity, exact component/fi
 and score receipts, absence of matching, and prescribed global/regional work.
 Full reports compare totals, final1,000steps, ages, empty work, loaded turns/waits.
 Aggregate movement changes are not task-cohort-matched causal savings.
+
+Full comparison is complete: **147,422/147,502** versus exact lane controls146,659/146,566, +763/+936 tasks and +201/+195 final-window tasks. All full runs pass; shared5s development. [Full report](../../results/trick-potential-full-v68/summary.md).
+
+V72 tests the score with bounded matching after the positive full comparison.
+The explicit static-lane combination is permitted; generic remaining-flow with
+matching remains rejected. Short preference remains incompatible. Existing
+matching work limits, protections and oriented cost field are unchanged.
