@@ -461,3 +461,22 @@ scalar+fullunitaggregatepotentialbetter. Earlysample only; noqualityconclusion.
 Needfull0/2capture+exactreferencehash/counter/deadline/sourceverification, then
 samecompleteprobe. Buildfrozen runs/cgar-group-snapshot-build-v52-20260920,
 build-provenance/v52 archived. No productionpolicychange.
+
+
+V52 source/test exact commit f1c3c8abc4717ec921ca6e241366b63f77cea3e3 (22hashes).
+Full capture8899258 RUNNING since02:11:02UTC onresearch31,8physical total,4/seed,
+rawruns/cgar-group-snapshot-full-v52-20260920. Held verification+completeprobe8899259,
+frozen raw/support/analyze_group_snapshots.py +5analyzerdependencies+verify_full.py+
+joint_probe.cpp. Outputresults/group-snapshot-full-v52. It validates allcompleted
+referencehashes/counters,5000entries,32GB,physicalbinding,74frames<=16groups each,
+thenexhaustivelychecksallcapturedgroups. Invalidfullruns stayvisible, no partialscores.
+Fable22 PTY57520 closed, no liveCLI. NextFable23mustinclude newusertrickauthorization
+and mandatory --trick <map-instance-name> gate; donotrepeatoldabsoluteimportban.
+
+KK8899243 all5tasks FINISHED by02:14:44UTC: suppliedrematch r0/r1=152872/152786,
+suppliedkeep142510,uniformrematch24574,uniformkeep23620. EVERYrun1timeout,
+0planner/scheduleerrors,38.18–38.85GB; all diagnostic-only. Account8899246running,
+pools8899251held. Initial suppliedrematch decomposition succeeds with frozen
+pre-initial-gap-fix analyzer; do not assume NMS's missing-initial-schedule bug
+also affects KK or prematurely rerun/modify frozen jobs. Needfullaction/cohort/
+budget analysis before interpreting the strong supplied/uniformcontrast.

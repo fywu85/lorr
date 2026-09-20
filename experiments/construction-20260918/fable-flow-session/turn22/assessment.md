@@ -9,7 +9,8 @@ The user subsequently authorized considering map-specific tricks if generic
 improvement cannot readily close the gap, provided commits and logs mark them
 as tricks. Fable's answer predates that scope change. Its absolute restriction
 on importing warehouse guidance is historical; generic and trick results must
-now be tracked separately. Deadline, validity and memory requirements remain.
+now be tracked separately. The user additionally requires `--trick <map-instance-name>`
+as the sole activation switch. Deadline, validity and memory requirements remain.
 
 ## Useful next measurements
 
@@ -24,9 +25,8 @@ candidate product. Neither establishes future throughput benefit.
 The 200-step snapshot-off/on screen now passes with identical trajectories and
 all decisions under1s. Counts are8 per owner class per67steps, not the permitted
 maximum32. Two frames (steps67/134) bracket the first flow publication at128,
-but do not measure a coincident heavy publication/capture tick. Their periods
-can intersect later in a full run, so require every full entry to pass and keep
-explicit timeout failure. Complete geometry in the diagnostic makes the offline
+but do not measure a coincident heavy publication/capture tick. The screen does not bound overhead on other timelines or later heavy ticks;
+require every full entry to pass and keep explicit timeout failure. Complete geometry in the diagnostic makes the offline
 feasibility check independent; do not compress it away before validating replay.
 
 ## Inferences and design details that need correction
