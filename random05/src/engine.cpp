@@ -28,6 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.intent_rotation=integer("R05_INTENT_ROTATION",1);
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
     c.flow_penalty=real("R05_FLOW_PENALTY",c.flow_penalty);c.guided_matching=integer("R05_SCHED_GUIDE",0);
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
@@ -300,10 +301,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
            (!active || !g.pocket[assigned_[i]->goals[f.stage[i]]]))priority+=1000000;
         priorities[i]=priority;
     }
+    auto choose=[&](bool kinematic) {
+    std::fill(chosen.begin(),chosen.end(),-1);
+    std::fill(reserve.begin(),reserve.end(),-1);
     for(int i=0;i<n;++i) {
         auto& cand=candidates[i];int count=0;
         for(int d=0;d<4;++d) {
-            int v=g.next[p[i]][d];if(v<0 || !allowed(i,d))continue;
+            int v=g.next[p[i]][d];if(v<0 || (kinematic && !allowed(i,d)))continue;
             float score=cost(i,v,d)+g.weight[p[i]][d];
             int b=owner[v];
             if(cfg.push_price>0 && b>=0 && b!=i) {
@@ -347,6 +351,11 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     };
     for(int a:order)if(chosen[a]<0)pibt(a);
     expansion_count+=expansions;
+    return chosen;
+    };
+    std::vector<int> intent;
+    if(cfg.intent_rotation)intent=choose(false);
+    chosen=choose(true);
     if(cfg.loops) {
         // 2x2 rectangular cycles. All four destinations must currently be waits.
         for(int y=0;y+1<g.rows;++y)for(int x=0;x+1<g.cols;++x) {
@@ -377,6 +386,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(moving[i])actions[i]=FW;
         else {
             int d=chosen[i]==p[i]?idle_heading[i]:g.direction(p[i],chosen[i]);
+            if(cfg.intent_rotation && chosen[i]==p[i] && intent[i]!=p[i]) {
+                int wanted=g.direction(p[i],intent[i]);
+                if(turn(wanted,f.dir[i])==2) {
+                    int right=(f.dir[i]+1)%4,left=(f.dir[i]+3)%4;
+                    d=cost(i,p[i],right)<=cost(i,p[i],left)?right:left;
+                } else d=wanted;
+            }
             int delta=(d-f.dir[i]+4)%4;
             if(delta==2)throw std::runtime_error("pipeline requested an impossible half-turn");
             if(delta==1)actions[i]=CR;

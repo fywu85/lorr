@@ -12,7 +12,7 @@ struct Config {
     int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000;
     float noise=50, mutation=0.3, dispersion=0, push_price=0, loop_threshold=1;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
-    bool matching=true, loops=true, deadends=true, guided_matching=false;
+    bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20;
     float flow_penalty=1.6;
     std::string guidance="none", weights;

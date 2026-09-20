@@ -25,7 +25,7 @@ starting point, far below the target. The full NMS reference is running.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
-| 2026-09-20T07:55:37.615086+00:00 | Initial source checkpoint (linked below) | Generated flow seed 1; turn cost 0.6; K=16; planner seed 0; `--trick RANDOM-05` | 54 | Pending | Pending | [Full evidence](random05/results/flow-first-v4/summary.json) |
+| 2026-09-20T07:55:37.615086+00:00 | [215fd6d](https://github.com/fywu85/lorr/commit/215fd6d167c96695e9ac6db6f8517791f2dab077) | Generated flow seed 1; turn cost 0.6; K=16; planner seed 0; `--trick RANDOM-05` | 54 | Pending | Pending | [Full evidence](random05/results/flow-first-v4/summary.json) |
 
 ## Reference evidence supplied by the user
 
