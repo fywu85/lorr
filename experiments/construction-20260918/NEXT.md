@@ -1,6 +1,6 @@
 # Continuing warehouse work
 
-Updated 2026-09-20 05:21 UTC. USER TARGET CORRECTION supersedes the old goal-tool text
+Updated 2026-09-20 06:18 UTC. USER TARGET CORRECTION supersedes the old goal-tool text
 and historical notes below: reach154,795 tasks repeatably across six full
 5,000-step/10,000-robot warehouse seeds. The active, unbudgeted goal remains unmet. USER RESOURCE CORRECTION: development runs may use shared GRID hosts and a5000ms
 complete-entry timeout; algorithmic work remains fixed and timeout means failure.
@@ -20,9 +20,9 @@ CGAR_TRICK_SHORT_TASKS removes HRRN and forced-oldest admission only after
 preserves earlier lane behavior. No started task is dropped. All four200-step
 screens verified; both generic-control and lane-only hashes exactly reproduce.
 
-Full factorial job8899316 runs all eight cases (seeds0/2 × four arms),32 bound
-physical cores on shared research50,5s deadline/32GB RSS. Analysis8899317 is held;
-raw runs/cgar-short-task-trick-full-v58-r2-20260920. The first full launch8899310
+Full factorial8899316 completed all eight valid cases (seeds0/2 × four arms),32 bound
+physical cores on shared research50,5s deadline/32GB RSS. Analysis8899317 completed and independently verified all full hashes, fixed work, age/travel accounting and chain inventory;
+raw runs/cgar-short-task-trick-full-v58-r2-20260920. Raw totals: control144510/144107, short136833/134580, lanes146659/146566, both137985/137934. All exact controls match. Short loses5.961%/5.902% without/with lanes; empty work+34.31%/+32.83%, unpicked4000 rises0→1356–1392. Keep OFF. Fable turn31 now reviews bounded next steps in the same session. The first full launch8899310
 was cancelled for failed GRID binding (64-core mask for32 requested, overlapping
 other-map cores), analysis8899311 cancelled too. This is an infrastructure failure,
 not an algorithm score. Launcher rejects unapplied binding before any simulator.
@@ -31,12 +31,20 @@ Generic remaining-flow full0/2 OFF/ON8899305 and analysis8899306 completed succe
 contention note from the cancelled overlapping trial. No new generic record.
 
 Fable turn30 completed in the same session. Read the local assessment before
-adopting claims. The task-pricingV59 sourceb50eebd passes the expanded full suite (60 hand cases, both native bases, active resident/missing quotes, unchanged work). Turn29 diagnostic fixes are implemented. Native/shadow200-step GRID8899323/analysis8899324 passed: both hashes exactly match reference,71 per-call snapshots cover t=129..199. Coverage grows0.34% after publication to31.51% for calls65..71;κ≈1.016–1.019; conditional rank changes observed, no quality claim. Full seed0 shadow8899328/analysis8899329 now runs on research46 with4 verified physical cores, raw runs/cgar-chain-shadow-full-v59-20260920. It must reproduce144510 and481323a5... exactly. The active target is154795, not stale goal
+adopting claims. The task-pricingV59 sourceb50eebd passes the expanded full suite (60 hand cases, both native bases, active resident/missing quotes, unchanged work). Turn29 diagnostic fixes are implemented. Native/shadow200-step GRID8899323/analysis8899324 passed: both hashes exactly match reference,71 per-call snapshots cover t=129..199. Coverage grows0.34% after publication to31.51% for calls65..71;κ≈1.016–1.019; conditional rank changes observed, no quality claim. Full seed0 shadow8899328/analysis8899329 completed: exact144510/481323a5..., all5000valid, max959.305ms/RSS11.358GB. Coverage grows0.575% firstcall→54.170% after256; full4871rankreports through4999. See results/chain-shadow-full-v59. The active target is154795, not stale goal
 metadata152981; shared5s runs are allowed but cannot claim strict1s certification.
+
+V60-R3 job8899333 passed all regressions, including20 real scheduling publication/
+flush/rebuild cases in all pricing modes/scales/native caches. Production sources
+and binary exactly V59; source4964309. The first two fixture failures are archived,
+not solver failures. Active three-arm screen8899334/8899339 passed, exactnative and128-step prefix.
+Full8899340 now runs native0/resident-imputed2/ratio-only3 × seeds0/2 on shared
+research50,24physicalcores requested,4percase,5s/32GB. Frozen source4964309.
+Raw runs/cgar-chain-pricing-full-v60-20260920; held analysis writes results/chain-pricing-full-v60.
 
 ## Confirmed reference and frontier
 
-New generic single-run best145,083 (source4524843, completed2026-09-20T05:28:00.961539UTC). Remaining-flow scoring improves full0/2 by573/108, paired mean+0.235953%; tails+72/+112 and agep90−2/−4. All20k entries valid at5s, max1004.262ms, peakRSS11.340GB. Both controls exact. Not promoted; reference remains regional. Confirmation seeds1/3/4/5 × OFF/ON job8899325, analysis8899327, raw runs/cgar-remaining-flow-confirm-v56-shared-20260920. Shared research44 with32 physical cores verified.
+New generic single-run best145,083 (source4524843, completed2026-09-20T05:28:00.961539UTC). Remaining-flow scoring improves full0/2 by573/108, paired mean+0.235953%; tails+72/+112 and agep90−2/−4. All20k entries valid at5s, max1004.262ms, peakRSS11.340GB. Both controls exact. Not promoted; reference remains regional. Confirmation8899325/8899327 is complete. All6paired effects+573/+606/+108/-793/+223/-3; mean144060.1667 (+119,+0.08267%),4wins2losses, remaining4mean+8.25. Keep defaultOFF/referenceunchanged. results/remaining-flow-six-seed-v56-shared.json. Shared5s,32physicalcores verified; all12fullvalid/exactcontrols.
 The newly confirmed six-seed mean is143,941.1667, versus142,474.8333 (+1.02919%).
 Seeds0..5:144510/143933/144107/143134/143934/144029. All six full totals improve;
 five tails and ages improve, with seed1tail−108 and agep90+1. The mean is5.909% below

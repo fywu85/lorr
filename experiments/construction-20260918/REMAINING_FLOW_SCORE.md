@@ -74,3 +74,18 @@ do not certify the1s competition limit.
 The remaining seeds1/3/4/5 × OFF/ON run concurrently as8899325, held analysis8899327,
 same V56 binary and source. No reference-profile change occurs until all six seeds
 are assessed. [Full pair and provenance](results/remaining-flow-full-v56-shared/comparison.json).
+
+## Full six-seed outcome
+
+All 12 full candidate/control runs are independently valid at the authorized shared
+5s budget, with exact old control trajectories. Candidate totals at seeds 0..5 are
+145083 / 144539 / 144215 / 142341 / 144157 / 144026. Paired differences are
++573 / +606 / +108 / -793 / +223 / -3. The mean is 144060.1667 versus 143941.1667:
++119 tasks (+0.08267%), four wins and two losses. The four confirmation seeds add
+only 8.25 tasks on average; seed 3 loses 417 completions in its final 1000 steps.
+
+Keep OFF. The selected 0/2 improvement did not generalize convincingly to the four
+remaining planner seeds. The 145083 single-run record remains valid and visible,
+but it does not justify replacing the confirmed regional policy. These seeds use
+one fixed instance/task stream, not six independent workloads. [Combined report](results/remaining-flow-six-seed-v56-shared.json),
+[confirmation](results/remaining-flow-confirm-v56-shared/comparison.json).

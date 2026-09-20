@@ -60,3 +60,30 @@ actual scheduling and actions remain identical. No throughput gain is claimed.
 Full seed0 shadow8899328, held analysis8899329, runs on four verified physical cores
 of shared research46 with the5s development deadline. It must reproduce the full
 native144,510 trajectory before this diagnostic is used to choose active trials.
+
+V60-R3 adds20 controlled production scheduling cases across a changed publication,
+covering both native caches, scales1/4 and modes0..4. The first quotes, complete
+flush/native fallback and rebuilt quotes are checked against hand costs. All
+regressions pass; production sources and the binary are exactly V59. Earlier
+fixture failures and their correction are [documented](build-provenance/v60-r3/README.md).
+Source4964309. The prepared next comparison is native0 versus resident/imputed2
+versus ratio-only3, preserving age preference, ordinary matching and search work.
+It is not promoted; the checks and launch below supersede the earlier pending status.
+
+Full shadow verification completed 2026-09-20T06:12:12UTC: 144510 tasks and the
+exact full baseline trajectory, all 5000 decisions valid, max959.305ms and
+11.358GB peak RSS on shared research46. All 4871 active calls through t4999 have
+coverage/ranking reports. Nonzero chain coverage by elapsed calls is 0.575% at1,
+4.990% at2–16, 21.492% at17–64, 41.242% at65–256 and 54.170% after256. The snapshot
+ratio ranges1.01612–1.02308. Among143309 native retained shortlists:109800 unchanged,
+27016 mode2-only,2066 mode3-only,3004 both-same,1423 both-different. These are
+conditional first-choice rankings, not actual assignment changes or throughput.
+[Verified shadow](results/chain-shadow-full-v59/verification.json), [coverage](results/chain-shadow-full-v59/coverage.json).
+
+Active startup8899334/analysis8899339 passed for native0, resident/imputed2 and
+ratio-only3. The control is exact, and all128 prepublication action/schedule steps
+are identical across arms. Startup totals do not establish a quality ranking.
+[Screen](results/chain-pricing-screen-v60/comparison.json). Full job8899340 compares
+all three modes at seeds0/2 concurrently, four physical cores per case on shared
+research50,5s deadline/32GB RSS. Frozen source4964309/binaryfbee2a5; held independent
+analysis reports complete totals, age tails, empty work and mode2 versus mode3.
