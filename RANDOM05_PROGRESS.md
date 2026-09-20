@@ -963,3 +963,21 @@ input/binary hashes and allocation are linked in the audits.
   The confirmed record rises to **+22.2% versus NMS4**. Both are valid full
   strict-deadline runs. This does not replace or extend the frozen fresh-input
   result of +17.1%; the predeclared candidate remains source e896201 / seed3.
+
+- All 16 newly sampled guidance layouts (seeds33–48) lose to the existing
+  field15 control at the same full K2048/B8/four-generation budget. The best
+  new field is47 at 3,444 versus 3,520 for field15. All17 runs are valid.
+  The field15 control preserves every action, assignment and task event through
+  the goal cache, radix ordering and ranking cache. Keep field15.
+  [Full results](random05/results/flow-expansion-33-48-split-full-v52/summary.json),
+  [control equivalence](random05/results/flow-expansion-33-48-split-full-v52/control-equivalence.json).
+
+- Build-v53 permits a finite signed continuation coefficient: positive values
+  retain the previous variance penalty, zero retains the exact mean, and
+  negative values test a bonus for promising variable futures. This tests
+  whether mean random continuation outcomes undervalue the next real step's
+  re-optimization. Every configured rollout still runs to completion; this
+  changes the scoring rule, not deadline handling. Zero-variance and worker
+  equivalence regressions pass. Eight full four-core A/B cases are prepared:
+  coefficients0/-0.25/-0.5/-1 with one/four generations, seed3, same K2048/B8.
+  No throughput benefit is assumed before these results.

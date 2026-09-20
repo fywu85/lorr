@@ -39,8 +39,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
     c.continuation_risk=real("R05_CONTINUATION_RISK",0);
-    if(!std::isfinite(c.continuation_risk) || c.continuation_risk<0)
-        throw std::invalid_argument("continuation risk must be finite and nonnegative");
+    if(!std::isfinite(c.continuation_risk))
+        throw std::invalid_argument("continuation coefficient must be finite");
     c.share_prefix=integer("R05_SHARE_PREFIX",0);
     c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
     c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);c.profile=integer("R05_PROFILE",0);
@@ -1148,15 +1148,16 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
            branch.first.stage!=result.first.stage || branch.first.operations!=result.first.operations)
             throw std::runtime_error("continuation changed the first decision");
         score+=branch.score;result.expansions+=branch.expansions;
-        if(cfg.continuation_risk>0) {
+        if(cfg.continuation_risk!=0) {
             ++count;double delta=branch.score-mean;mean+=delta/count;
             variance_sum+=delta*(branch.score-mean);
         }
     }
     result.score=score/(continuations.size()+1);
-    // Penalize decisions whose apparent progress depends heavily on which
-    // future priority sequence follows. Zero retains the original mean exactly.
-    if(cfg.continuation_risk>0)
+    // Positive coefficients penalize sensitivity to future priorities; negative
+    // coefficients test optimism about the next real step's re-optimization.
+    // Both still execute every configured continuation. Zero preserves the mean.
+    if(cfg.continuation_risk!=0)
         result.score-=cfg.continuation_risk*std::sqrt(std::max(0.0,variance_sum/count));
     return result;
 }
