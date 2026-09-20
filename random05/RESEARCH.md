@@ -330,3 +330,13 @@ state; only vectors persist. Fixed global rollout work is unchanged. Dense
 regressions cover task replacement, future-task reassignment, duplicate vectors
 and worker determinism. Full default-control trajectory checks and throughput
 measurements are required before promotion.
+
+
+A next general hypothesis is to reduce mutation probability in later search
+generations. Constant0.3 mutation replaces roughly240 priority offsets per root
+on800robots, even after a useful coordinated pattern has been found. A smaller
+late mutation may refine that pattern while retaining the existing fully random
+candidates for exploration. `R05_MUTATION_DECAY` defaults to1; generationg uses
+`mutation * decay^g`. It changes neither the total rollout budget nor global
+restart amplitude/frequency. Values0.25/0.5/0.75 are experimental, with unchanged
+controls. No performance gain is claimed before full runs and seed checks.

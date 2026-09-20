@@ -58,6 +58,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+    c.mutation_decay=real("R05_MUTATION_DECAY",1);
+    if(!std::isfinite(c.mutation_decay) || c.mutation_decay<=0 || c.mutation_decay>1)
+        throw std::invalid_argument("mutation decay must be in (0,1]");
     c.mutation_radius=integer("R05_MUTATION_RADIUS",0);
     if(c.mutation_radius<0)throw std::invalid_argument("mutation radius must be nonnegative");
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
@@ -1301,10 +1304,13 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     std::vector<Rollout> results(roots);
     std::vector<std::exception_ptr> errors(roots);
-    int best=0;
+    int best=0;float generation_mutation=cfg.mutation;
     for(int generation=0;generation<cfg.generations;++generation) {
         const int begin=generation*roots/cfg.generations;
         const int end=(generation+1)*roots/cfg.generations;
+        // Later generations can preserve more of their evaluated parents.
+        // Full random restarts keep their original amplitude and frequency.
+        if(generation && cfg.mutation_decay!=1)generation_mutation*=cfg.mutation_decay;
         // Keep the total number of complete rollouts fixed. Later batches
         // refine this step's incumbent; one generation preserves the original
         // random draws, candidate order, and equal-score acceptance behavior.
@@ -1346,7 +1352,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                         if(std::abs(p/g.cols-center/g.cols)>cfg.mutation_radius ||
                            std::abs(p%g.cols-center%g.cols)>cfg.mutation_radius)continue;
                     }
-                    if(k%4==0 || unit(global_rng)<cfg.mutation)offsets[k][a]=noise(global_rng);
+                    if(k%4==0 || unit(global_rng)<generation_mutation)offsets[k][a]=noise(global_rng);
                 }
             }
         }

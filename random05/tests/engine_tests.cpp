@@ -364,6 +364,23 @@ void elite_parents() {
 }
 
 
+
+void annealed_mutation() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
+    cfg.candidate_cache=true;cfg.radix_order=true;cfg.scratch_reuse=true;
+    cfg.dispersion=0.8;cfg.fast_dispersion=true;cfg.rollout_match=true;
+    // The first generation has the original mutation rate at every real step.
+    const auto single_generation=simulate(cfg,12);cfg.mutation_decay=0.25;
+    require(single_generation==simulate(cfg,12),"mutation decay changed a single generation");
+    cfg.generations=3;cfg.elites=4;cfg.persist_elites=4;
+    for(float decay:{0.25f,0.5f}) {
+        cfg.mutation_decay=decay;cfg.threads=1;
+        const auto serial=simulate(cfg,12);cfg.threads=2;
+        require(serial==simulate(cfg,12),"annealed search changed with worker count");
+    }
+}
+
 void persistent_elites() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=4;cfg.elites=4;cfg.share_prefix=true;cfg.random_by_step=true;
@@ -441,6 +458,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    annealed_mutation();
     persistent_elites();
     elite_parents();
     cached_candidate_rankings();
