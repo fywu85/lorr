@@ -52,12 +52,17 @@ def audit():
         spec = read((ROOT / evidence).parent / 'spec.json')
         case = next(c for c in spec['cases'] if c['name'] == result['name'])
         allocation = read((ROOT / evidence).parent / 'allocation.json')
+        assert case.get('limit_ms', 1000) == 1000, (utc, 'frontier entry budget is not 1s')
+        assert result['latency_seconds']['max'] <= 1.0, (utc, 'frontier entry exceeds 1s')
+        assert result['usage']['peak_rss_kib'] * 1024 <= 32000000000, (utc, 'frontier exceeds 32GB RSS')
         cpu = allocation['resources']['cpu_model']
         workers = int(case['env']['R05_THREADS'])
         expected = '{} / {} / {}'.format(workers, case['cores'], cpu.split(' 32-Core')[0].replace('AMD ', ''))
         assert compute == expected, (utc, 'compute metadata mismatch')
         nms_tasks = int(nms_reference.split()[0].replace(',', ''))
         reference_case, reference_allocation, reference_name = references[nms_tasks]
+        assert case.get('limit_ms', 1000) == reference_case.get('limit_ms', 1000), (utc, 'NMS entry-budget mismatch')
+        assert case.get('preprocess_ms', 30000) == reference_case.get('preprocess_ms', 30000), (utc, 'NMS preprocessing-budget mismatch')
         for path, value in reference_case['input_hashes'].items():
             assert case['input_hashes'][path] == value, (utc, 'NMS input mismatch', path)
         expected_gain = (int(tasks) / nms_tasks - 1) * 100
@@ -76,7 +81,10 @@ def audit():
                            evidence=evidence, binary_sha256=digest, workers=workers,
                            physical_cores=case['cores'], cpu_model=cpu, nms_tasks=nms_tasks,
                            nms_evidence='random05/results/' + reference_name + '/summary.json',
-                           matched_cpu_model_and_allocation=matched))
+                           matched_cpu_model_and_allocation=matched,
+                           entry_limit_ms=case.get('limit_ms', 1000),
+                           maximum_entry_seconds=result['latency_seconds']['max'],
+                           peak_rss_bytes=result['usage']['peak_rss_kib'] * 1024))
     assert report, 'no frontier rows found'
     return dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 checks=report, all_valid=True)

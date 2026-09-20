@@ -238,3 +238,12 @@ nonfinite fallback, independent geometric pair counts across every occupancy
 of an obstacle map, and full dense task-turnover equivalence across worker counts.
 The features default off. Full-map trajectory and latency comparisons are required
 before claiming performance improvements.
+
+`R05_SCRATCH_REUSE=1` additionally retains each worker's temporary policy arrays
+between simulated steps. Ownership, reservations and heading constraints are
+reset explicitly; overwritten arrays retain capacity. Frame positions and
+promises exchange their vector storage with the scratch arrays after each step.
+The spatial/kinematic policy no longer needs a temporary copy of the chosen
+assignment when filling its intent buffer. Scratch state is thread-local.
+Build-v46 passes dense turnover, component-policy, cycle-preparation and worker
+identity regressions. Full trajectories and timings remain required.

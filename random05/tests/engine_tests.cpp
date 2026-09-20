@@ -319,12 +319,19 @@ void exact_hot_paths() {
     cfg.random_by_step=true;cfg.cost_cache=true;cfg.dispersion=0.8;
     cfg.share_prefix=true;cfg.rollout_match=true;cfg.local_trials=4;
     const auto control=simulate(cfg,12);
-    for(int flags=1;flags<=3;++flags) {
-        cfg.packed_order=flags&1;cfg.fast_dispersion=flags&2;
+    for(int flags=1;flags<=7;++flags) {
+        cfg.packed_order=flags&1;cfg.fast_dispersion=flags&2;cfg.scratch_reuse=flags&4;
         require(control==simulate(cfg,12),"hot-path optimization changed dense task-turnover decisions");
     }
     cfg.threads=2;
     require(control==simulate(cfg,12),"hot-path optimization changed with worker count");
+    for(int mode:{0,1,2})for(int cycles:{0,3}) {
+        Config branch;branch.futures=4;branch.depth=6;branch.random_by_step=true;
+        branch.intent_mode=mode;branch.pre_cycles=cycles;
+        const auto reference=simulate(branch,12);
+        branch.scratch_reuse=true;
+        require(reference==simulate(branch,12),"scratch reuse leaked into intent/cycle policy branches");
+    }
 }
 
 int main() {

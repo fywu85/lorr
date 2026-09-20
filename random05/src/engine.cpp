@@ -18,6 +18,15 @@ constexpr float INF=1e20f;
 int integer(const char* key,int value) { const char* v=std::getenv(key);return v?std::stoi(v):value; }
 float real(const char* key,float value) { const char* v=std::getenv(key);return v?std::stof(v):value; }
 int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
+struct MoveCandidate { int v,d;float score; };
+struct PolicyScratch {
+    std::vector<int> p,moving,owner,chosen,reserve,idle_heading,forced_heading,candidate_count,order,prepared,intent;
+    std::vector<float> base_cost,priorities;
+    std::vector<const Chain*> active_chain;
+    std::vector<const float*> cost_table;
+    std::vector<std::array<MoveCandidate,5>> candidates;
+    std::vector<uint64_t> priority_keys;
+};
 }
 Config Config::environment(const SharedEnvironment& env) {
     Config c;
@@ -28,6 +37,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
     c.share_prefix=integer("R05_SHARE_PREFIX",0);
     c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
+    c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -115,19 +125,20 @@ Config Config::environment(const SharedEnvironment& env) {
     return c;
 }
 
-std::vector<int> priority_order(const std::vector<float>& priorities,bool packed) {
-    std::vector<int> order(priorities.size());
+static void order_priorities(const std::vector<float>& priorities,bool packed,
+                             std::vector<int>& order,std::vector<uint64_t>& keys) {
+    order.resize(priorities.size());
     std::iota(order.begin(),order.end(),0);
     if(!packed || !std::all_of(priorities.begin(),priorities.end(),[](float p){return std::isfinite(p);})) {
         std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
-        return order;
+        return;
     }
     static_assert(sizeof(float)==sizeof(uint32_t) && std::numeric_limits<float>::is_iec559,
                   "packed priorities require IEEE binary32");
     // Sort the float value and original agent ID together. This avoids an
     // indirect float lookup per comparison and preserves stable tie ordering.
     // Normalize signed zero because the original float comparator equates them.
-    std::vector<uint64_t> keys(priorities.size());
+    keys.resize(priorities.size());
     for(size_t a=0;a<priorities.size();++a) {
         float p=priorities[a]==0?0.0f:priorities[a];uint32_t bits;
         std::memcpy(&bits,&p,sizeof(bits));
@@ -136,6 +147,10 @@ std::vector<int> priority_order(const std::vector<float>& priorities,bool packed
     }
     std::sort(keys.begin(),keys.end());
     for(size_t k=0;k<keys.size();++k)order[k]=int(uint32_t(keys[k]));
+}
+std::vector<int> priority_order(const std::vector<float>& priorities,bool packed) {
+    std::vector<int> order;std::vector<uint64_t> keys;
+    order_priorities(priorities,packed,order,keys);
     return order;
 }
 
@@ -626,7 +641,14 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     const auto& g=*graph;const int n=int(f.loc.size());
     // pending is the already promised forward/wait move. Plan the following
     // movement on its exact resulting occupancy, while current idle robots turn.
-    std::vector<int> p=f.pending, moving(n),owner(g.cells,-1),chosen(n,-1),reserve(g.cells,-1);
+    PolicyScratch fresh;
+    thread_local PolicyScratch reused;
+    auto& scratch=cfg.scratch_reuse?reused:fresh;
+    auto& p=scratch.p;p=f.pending;
+    auto& moving=scratch.moving;moving.resize(n);
+    auto& owner=scratch.owner;owner.assign(g.cells,-1);
+    auto& chosen=scratch.chosen;chosen.resize(n);
+    auto& reserve=scratch.reserve;reserve.resize(g.cells);
     if(cfg.early_fill)fill_ready_moves(f,offsets,p);
     for(int i=0;i<n;++i) {
         moving[i]=p[i]!=f.loc[i];owner[p[i]]=i;
@@ -639,8 +661,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     }
     // Stage is fixed throughout this policy step. Resolve the active chain
     // and its cached row once, rather than for every candidate lookup.
-    std::vector<const Chain*> active_chain(n,nullptr);
-    std::vector<const float*> cost_table(n,nullptr);
+    auto& active_chain=scratch.active_chain;active_chain.assign(n,nullptr);
+    auto& cost_table=scratch.cost_table;cost_table.assign(n,nullptr);
     for(int a=0;a<n;++a) {
         const Chain* chain=assigned[a];
         if(chain && f.stage[a]<int(chain->goals.size())) {
@@ -654,11 +676,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         return cfg.idle_eviction*g.pocket_depth[v];
     };
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
-    std::vector<int> idle_heading(n),forced_heading(n,-1);
-    std::vector<float> base_cost(n),priorities(n);
-    struct Candidate { int v,d;float score; };
-    std::vector<std::array<Candidate,5>> candidates(n);
-    std::vector<int> candidate_count(n);
+    auto& idle_heading=scratch.idle_heading;idle_heading.resize(n);
+    auto& forced_heading=scratch.forced_heading;forced_heading.assign(n,-1);
+    auto& base_cost=scratch.base_cost;base_cost.resize(n);
+    auto& priorities=scratch.priorities;priorities.resize(n);
+    auto& candidates=scratch.candidates;candidates.resize(n);
+    auto& candidate_count=scratch.candidate_count;candidate_count.resize(n);
     for(int i=0;i<n;++i) {
         int best_dir=f.dir[i];float best=cost(i,p[i],best_dir);
         if(!moving[i])for(int q:{(f.dir[i]+1)%4,(f.dir[i]+3)%4}) {
@@ -739,14 +762,15 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         // At most five entries: stable insertion sort avoids a temporary
         // allocation for every robot in every simulated policy step.
         for(int k=1;k<count;++k) {
-            Candidate value=cand[k];int j=k;
+            MoveCandidate value=cand[k];int j=k;
             while(j>0 && value.score<cand[j-1].score){cand[j]=cand[j-1];--j;}
             cand[j]=value;
         }
         candidate_count[i]=count;
     }
-    std::vector<int> order=priority_order(priorities,cfg.packed_order);
-    std::vector<int> prepared;
+    auto& order=scratch.order;
+    order_priorities(priorities,cfg.packed_order,order,scratch.priority_keys);
+    auto& prepared=scratch.prepared;prepared.clear();
     auto choose=[&](bool kinematic) {
     std::fill(chosen.begin(),chosen.end(),-1);
     std::fill(reserve.begin(),reserve.end(),-1);
@@ -781,10 +805,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     };
     for(int a:order)if(chosen[a]<0)pibt(pibt,a);
     expansion_count+=expansions;
-    return chosen;
     };
-    std::vector<int> intent;
-    if(cfg.intent_rotation)intent=choose(false);
+    auto& intent=scratch.intent;intent.clear();
+    if(cfg.intent_rotation){choose(false);intent=chosen;}
     if(cfg.intent_mode) {
         // The collision-free spatial assignment decomposes into disjoint chains
         // ending at holes and cycles. Commit a component only when every member
@@ -806,7 +829,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     }
     // Mode 1 executes only complete ready components. Mode 2 pins those moves
     // and fills the remaining space with the usual kinematic PIBT policy.
-    chosen=cfg.intent_mode==1?prepared:choose(true);
+    if(cfg.intent_mode==1)chosen=prepared;else choose(true);
     if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {
         // Geometry is precomputed; evaluate only obstacle-free perimeters.
@@ -860,7 +883,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
                              (actions[i]==CCR && f.last_actions[i]==CR);
         f.last_actions=actions;
     }
-    f.loc=std::move(p);f.pending=std::move(chosen);
+    f.loc.swap(p);f.pending.swap(chosen);
 }
 
 void Engine::match_future(Frame& frame) const {

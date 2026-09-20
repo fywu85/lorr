@@ -750,3 +750,21 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   dispersion counting preserves the original geometric pair count. Both default
   off until full-map timing and trajectory comparisons. These change evaluation
   cost, not the search objective or map policy.
+
+- The new continuation method preserves the main guidance settings: turn costs
+  0.4/0.8/1.0 give 3,480/3,451/3,394; noise 100/400 gives 3,452/3,460;
+  contrast 1.6/3.2/4.0 gives 3,395/3,482/3,499; no directional flip gives 3,500.
+  Fields 5/17 give 3,236/3,332, and the imported NMS field gives 2,961. All 12
+  full runs are valid, none beats the 3,501 control at the same K2048/B8 budget.
+  [Evidence](random05/results/continuation-coupling-split-full-v44/summary.json).
+
+- The independent event-checkpoint audit finds the 3,492 and 3,555 trajectories
+  already ahead of the preceding solver at step 1,000 (1,680/1,705 versus 1,645)
+  and step 1,500 (2,480/2,505 versus 2,402). This describes when gains appear;
+  it does not identify their cause or validate short prefixes for selecting runs.
+  [Checkpoint evidence](random05/results/continuation-progress-audit-v45/checkpoints.json).
+
+- The progress audit now explicitly verifies matching planner/preprocessing
+  budgets, maximum entry latency <=1s and peak RSS <=32 decimal GB, in addition
+  to full-run validity, input hashes, CPU allocation and producing source.
+  All 46 recorded frontier rows pass. Failed deadline runs remain separate.
