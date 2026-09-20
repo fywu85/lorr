@@ -104,4 +104,37 @@ std::vector<PickupPermutationCycle> pickup_permutation_cycles(const std::vector<
     }
     check(); return result;
 }
+
+// Read-only diagnostic: compare the same selected task set, optionally forbidding
+// a new holder from worsening that task's original completion-feasibility tier.
+// The task is the column: its reference is the column's diagonal, not the row's.
+struct FreshPickupPermutationAudit {
+    std::vector<PickupPermutationCycle> unrestricted, guarded;
+    long long horizon_excluded_pairs = 0;
+};
+
+template<class Check>
+FreshPickupPermutationAudit audit_fresh_pickup_permutation(const std::vector<int>& costs,
+        const std::vector<int>& tiers, int n, int unreachable, int unit_cost, int unit_limit, Check check) {
+    const auto ordinary = minimum_pickup_permutation(costs, n, unreachable, check);
+    FreshPickupPermutationAudit result;
+    result.unrestricted = pickup_permutation_cycles(costs, ordinary, unit_cost, check, unit_limit);
+    if (!tiers.empty() && tiers.size() != costs.size())
+        throw std::invalid_argument("invalid fresh pickup tier matrix");
+    auto guarded = costs;
+    for (int tier : tiers) if (tier < 0 || tier > 2)
+        throw std::invalid_argument("invalid fresh pickup feasibility tier");
+    if (!tiers.empty()) for (int row = 0; row < n; ++row) for (int column = 0; column < n; ++column) {
+        check();
+        const int index = row * n + column;
+        if (guarded[index] < unreachable && tiers[index] > tiers[column * n + column]) {
+            guarded[index] = unreachable;
+            ++result.horizon_excluded_pairs;
+        }
+    }
+    result.guarded = result.horizon_excluded_pairs ?
+        pickup_permutation_cycles(guarded, minimum_pickup_permutation(guarded, n, unreachable, check),
+                                  unit_cost, check, unit_limit) : result.unrestricted;
+    check(); return result;
+}
 }  // namespace cgar

@@ -950,6 +950,13 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         std::printf("[cgar-match-budget-shadow-config] stride=%d read_only=1 after_real_match=1 resident_only=1 include_budget=1 cooldown=20 task_disjoint_witnesses=1\n", match_budget_audit_stride_);
     if (reassign_match_)
         std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_pickup_groups_);
+    const int fresh_audit = env_int("CGAR_FRESH_PICKUP_AUDIT", 0);
+    if (fresh_audit < 0 || fresh_audit > 1 || (fresh_audit &&
+        (!diagnostics_ || !reassign_match_ || !hrrn_ || pickup_full_robots_ < 1 || pickup_full_robots_ > 64 || short_task_trick_)))
+        throw std::invalid_argument("fresh pickup audit requires diagnostics, matching, 1-64 full pickup fields and ordinary fairness");
+    fresh_pickup_audit_ = fresh_audit != 0;
+    if (fresh_pickup_audit_)
+        std::printf("[cgar-fresh-pickup-config] read_only=1 after_real_match=1 fresh_only=1 group_size=32 groups=2 cap=64 metric=complete_forward horizon=nonworsening_per_task task_disjoint=1\n");
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
@@ -1914,6 +1921,16 @@ void Cgar::log_movement() const {
     std::printf("[cgar-orientation] steps=%d enabled=%d turn_first=%d build_limit=%d builds=%lld guided=%lld fallback=%lld\n",
                 env_->curr_timestep + 1, orientation_guidance_, turn_first_, turn_build_limit_, stats_.oriented_builds,
                 stats_.oriented_guided, stats_.oriented_fallback);
+    if (fresh_pickup_audit_) {
+        const auto& a = fresh_pickup_shadow_;
+        std::printf("[cgar-fresh-pickup] step=%d passes=%lld eligible=%lld missing=%lld groups=%lld matrix_entries=%lld positive_cycles=%lld positive_saving=%lld accepted_cycles=%lld accepted_saving=%lld horizon_excluded_pairs=%lld guarded_cycles=%lld guarded_saving=%lld witness_cycles=%lld witness_rows=%lld witness_saving=%lld duplicate_cycles=%lld ordinary_witness_saving=%lld match_tick_witness_saving=%lld late_witness_saving=%lld unique_tasks=%zu unit=%d read_only=1\n",
+            env_->curr_timestep + 1, a.passes, a.eligible, a.missing, a.groups, a.matrix_entries,
+            a.positive_cycles, a.positive_saving, a.accepted_cycles, a.accepted_saving,
+            a.horizon_excluded_pairs, a.guarded_cycles, a.guarded_saving,
+            a.witness_cycles, a.witness_rows, a.witness_saving, a.duplicate_cycles,
+            a.ordinary_witness_saving, a.match_tick_witness_saving, a.late_witness_saving,
+            fresh_pickup_seen_tasks_.size(), flow_cost_scale_);
+    }
     for (int phase = 0; phase < 3; ++phase) {
         const auto& m = stats_.movement[phase];
         std::printf("[cgar-movement] steps=%d phase=%d fw=%lld cr=%lld ccr=%lld wait=%lld "
@@ -2599,6 +2616,95 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
     check_deadline(deadline_, "unopened_match_complete");
 }
 
+void Cgar::audit_fresh_pickup(const std::vector<int>& proposed, const std::vector<int>& full_slots) {
+    // Only the shadow ledger changes. Eligibility uses the same protected rows
+    // as real matching, and every distance below is from an already-built field.
+    if (!fresh_pickup_audit_) return;
+    if (full_slots.size() != static_cast<size_t>(n_) || proposed.size() != static_cast<size_t>(n_))
+        throw std::logic_error("fresh pickup audit has incomplete scheduling state");
+    auto& audit = fresh_pickup_shadow_;
+    ++audit.passes;
+    const auto eligible = unopened_candidates(proposed, false);
+    std::vector<int> remaining;
+    for (int robot : eligible.robots) {
+        check_deadline(deadline_, "fresh_pickup_eligibility");
+        const auto& task = env_->task_pool.at(proposed[robot]);
+        if (env_->curr_task_schedule[robot] >= 0 || task.agent_assigned >= 0) continue;
+        const int slot = full_slots[robot];
+        if (slot < 0) { ++audit.missing; continue; }
+        const auto& field = pickup_full_fields_.at(slot);
+        if (field.distance.at(task.locations.front()) >= kInf) { ++audit.missing; continue; }
+        remaining.push_back(robot);
+    }
+    if (remaining.size() > 64) throw std::logic_error("fresh pickup audit exceeded fixed field quota");
+    audit.eligible += remaining.size();
+    const auto model = horizon_margins_.snapshot();
+    const int now = env_->curr_timestep;
+    const bool horizon = known_horizon_ && now < known_horizon_;
+    auto tier = [&](int robot, int task_id) {
+        if (!horizon) return 0;
+        const auto& task = env_->task_pool.at(task_id);
+        const int from = env_->curr_states[robot].location, goal = task.locations.front();
+        const auto* table = oracle_.peek(goal);  // const peek, no LRU mutation
+        int spatial = table ? oracle_.value(*table, from) : oracle_.manhattan(from, goal);
+        if (spatial >= kInf) spatial = oracle_.manhattan(from, goal);
+        long long bound = std::max(1, spatial) + static_cast<long long>(chain_cost_.at(task_id));
+        for (size_t k = 1; k < task.locations.size(); ++k)
+            bound += task.locations[k] == task.locations[k - 1];
+        const long long left = static_cast<long long>(known_horizon_) - now;
+        return horizon_margin_ ? model.tier(bound, left) : (bound > left ? 2 : 0);
+    };
+    int group_count = 0;
+    while (remaining.size() >= 2) {
+        check_deadline(deadline_, "fresh_pickup_group");
+        if (++group_count > 2) throw std::logic_error("fresh pickup audit exceeded two groups");
+        const int anchor = env_->curr_states[remaining.front()].location;
+        auto proximity = [&](int robot) {
+            const int cell = env_->curr_states[robot].location;
+            return std::abs(cell / cert_.cols - anchor / cert_.cols) +
+                   std::abs(cell % cert_.cols - anchor % cert_.cols);
+        };
+        std::sort(remaining.begin(), remaining.end(), [&](int a, int b) {
+            const int da = proximity(a), db = proximity(b);
+            return da != db ? da < db : a < b;
+        });
+        const int n = std::min<int>(32, remaining.size());
+        std::vector<int> group(remaining.begin(), remaining.begin() + n);
+        remaining.erase(remaining.begin(), remaining.begin() + n);
+        ++audit.groups;
+        std::vector<int> costs(static_cast<size_t>(n) * n), tiers(horizon ? static_cast<size_t>(n) * n : 0);
+        for (int row = 0; row < n; ++row) for (int column = 0; column < n; ++column) {
+            check_deadline(deadline_, "fresh_pickup_matrix");
+            const int robot = group[row], task_id = proposed[group[column]];
+            const int goal = env_->task_pool.at(task_id).locations.front();
+            const int index = row * n + column;
+            costs[index] = pickup_full_fields_.at(full_slots[robot]).distance.at(goal);
+            if (horizon) tiers[index] = tier(robot, task_id);
+            ++audit.matrix_entries;
+        }
+        const auto report = audit_fresh_pickup_permutation(costs, tiers, n, kInf, flow_cost_scale_,
+            native_trick_metric_ ? 20 : 16, [&] { check_deadline(deadline_, "fresh_pickup_permutation"); });
+        audit.horizon_excluded_pairs += report.horizon_excluded_pairs;
+        for (const auto& cycle : report.unrestricted) {
+            const long long gain = cycle.before - cycle.after;
+            if (gain > 0) { ++audit.positive_cycles; audit.positive_saving += gain; }
+            if (cycle.accepted) { ++audit.accepted_cycles; audit.accepted_saving += gain; }
+        }
+        for (const auto& cycle : report.guarded) if (cycle.accepted) {
+            const long long gain = cycle.before - cycle.after;
+            ++audit.guarded_cycles; audit.guarded_saving += gain;
+            bool repeated = false;
+            for (int row : cycle.rows) repeated |= fresh_pickup_seen_tasks_.count(proposed[group[row]]) != 0;
+            if (repeated) { ++audit.duplicate_cycles; continue; }
+            ++audit.witness_cycles; audit.witness_rows += cycle.rows.size(); audit.witness_saving += gain;
+            (now % 10 ? audit.ordinary_witness_saving : audit.match_tick_witness_saving) += gain;
+            if (horizon && now >= known_horizon_ - 1000) audit.late_witness_saving += gain;
+            for (int row : cycle.rows) fresh_pickup_seen_tasks_.insert(proposed[group[row]]);
+        }
+    }
+    check_deadline(deadline_, "fresh_pickup_audit_complete");
+}
+
 void Cgar::record_horizon_proposal(const std::vector<int>& proposed) {
     if (!horizon_margin_) return;
     horizon_margins_.proposed(*env_, proposed, [&](int robot, int id) -> long long {
@@ -3132,6 +3238,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     reassign_unopened(proposed);
     exchange_unopened_with_pool(proposed);
     match_unopened(proposed);
+    if (fresh_pickup_audit_ && !full_pickup_slot.empty()) audit_fresh_pickup(proposed, full_pickup_slot);
     record_horizon_proposal(proposed);
     check_deadline(deadline_, "scheduling_complete");
 }

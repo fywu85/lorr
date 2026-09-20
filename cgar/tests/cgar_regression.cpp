@@ -3558,8 +3558,9 @@ void native_metric_regression() {
  // and parallel preparation must yield identical schedules/actions/cache work.
  setenv("CGAR_TURN_PREFETCH_THREADS","4",1);setenv("CGAR_TURN_TABLE_MB","64",1);setenv("CGAR_TURN_COMPACT","1",1);
  setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
- struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;int services=0,repeated=0,completed=0,rotations=0;};
- auto episode=[&](const char* bands,int preparation,int audit=0){
+ struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;FreshPickupShadowStats fresh;int services=0,repeated=0,completed=0,rotations=0;};
+ auto episode=[&](const char* bands,int preparation,int audit=0,int fresh=0){
+  setenv("CGAR_FRESH_PICKUP_AUDIT",std::to_string(fresh).c_str(),1);
   setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",std::to_string(audit).c_str(),1);
   setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);setenv("CGAR_TEMPORAL_PREP_THREADS",std::to_string(preparation).c_str(),1);
   auto test=e;test.curr_timestep=0;test.num_of_agents=24;test.curr_states.clear();test.task_pool.clear();
@@ -3590,7 +3591,7 @@ void native_metric_regression() {
     }
    }
   }
-  trace.stats=policy.stats();trace.shadow=policy.match_budget_shadow();
+  trace.stats=policy.stats();trace.shadow=policy.match_budget_shadow();trace.fresh=policy.fresh_pickup_shadow();
   require(trace.services>0&&trace.repeated>0&&trace.completed>0,"native service episode was vacuous");
   if(trace.stats.flow_publications||trace.stats.flow_cache_resets||trace.stats.temporal_prepared_robots!=24*128||
      trace.stats.temporal_cold_worker_runs!=128||
@@ -3630,6 +3631,24 @@ void native_metric_regression() {
  std::cout<<"NATIVE_NEUTRAL_TAIL passed replayed_macros="<<checked_macros<<" changed_macros="<<neutral_changed
   <<" departed_start_without_service="<<departed_start_without_service<<" changed_episode_traces="<<neutral_trace_changes
   <<" independent_actions=12288 serial_parallel_exact=1 repeated_errands=1 started_protection=1 fixed_work=1\n";
+ // Complete native scheduling episodes: the diagnostic cannot alter actions,
+ // matching, horizon calibration or cache work, including a configured horizon.
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","0",1);setenv("CGAR_HRRN","1",1);
+ setenv("CGAR_PICKUP_FULL_ROBOTS","64",1);
+ for(int horizon:{0,128})for(const char* bands:{"0","1"}){
+  setenv("CGAR_TRICK_KNOWN_HORIZON",std::to_string(horizon).c_str(),1);
+  setenv("CGAR_TRICK_HORIZON_MARGIN",horizon?"1":"0",1);
+  setenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE",horizon?"90":"0",1);
+  const auto baseline=episode(bands,4,0,0),shadow=episode(bands,4,0,1);
+  require(baseline.values==shadow.values&&baseline.services==shadow.services&&baseline.fresh.passes==0&&
+   shadow.fresh.passes>0&&shadow.fresh.eligible>0,"fresh pickup native episode was inactive or changed a trace");
+  for(auto member:{&Stats::assignments,&Stats::fair_assignments,&Stats::oriented_builds,&Stats::pickup_full_pops,&Stats::pickup_full_scans,
+   &Stats::temporal_cold_worker_runs,&Stats::match_moved,&Stats::match_saving,&Stats::horizon_rank_changes,&Stats::horizon_margin_rank_changes})
+   require(baseline.stats.*member==shadow.stats.*member,"fresh pickup native episode changed real work or calibration decisions");
+ }
+ unsetenv("CGAR_FRESH_PICKUP_AUDIT");unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_HORIZON_MARGIN");
+ unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);
+ std::cout<<"FRESH_PICKUP_NATIVE_EPISODES passed pairs=4 independent_actions=24576 horizon_p90=1 source_fields=complete trace_and_work_exact=1\n";
  // Dedicated closed-loop shadow neutrality with native+short+matching together.
  setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","1",1);
  for(const char* bands:{"0","1"}){auto baseline=episode(bands,4,0),shadow=episode(bands,4,10);
@@ -3646,6 +3665,7 @@ void native_metric_regression() {
  rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"matching budget audit accepted disabled matching");
  unsetenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_DIAGNOSTICS");
  std::cout<<"MATCH_BUDGET_SHADOW passed protected_beneficial_cycles=4 task_disjoint_dedup=1 no_commit=1 started_primary_cooldown_protected=1 real_work_exact=1 closed_loop_pairs=2 independent_action_checks=12288 guards=6\n";
+ unsetenv("CGAR_FRESH_PICKUP_AUDIT");
  unsetenv("CGAR_TURN_PREFETCH_THREADS");unsetenv("CGAR_TURN_TABLE_MB");unsetenv("CGAR_TURN_COMPACT");
  unsetenv("CGAR_TEMPORAL_PREP_THREADS");unsetenv("CGAR_PICKUP_FULL_THREADS");setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
  std::cout<<"NATIVE_EPISODES passed robots=24 ticks_per_episode=128 profiles=4 services="<<episode_services<<" repeated="<<episode_repeated
@@ -4124,4 +4144,86 @@ void chain_flow_pricing_regression() {
  std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" production_refresh_cases="<<refresh_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
 }
 
-int main(){try{native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+
+void fresh_pickup_audit_regression() {
+ auto require=[](bool ok,const char* text){if(!ok)throw std::runtime_error(text);};
+ const int inf=1000000;
+ const std::vector<int> costs{10,0,1,10};
+ auto clear=audit_fresh_pickup_permutation(costs,{0,1,0,2},2,inf,1,16,[]{});
+ require(clear.horizon_excluded_pairs==0&&clear.guarded.size()==1&&clear.guarded[0].accepted&&
+  clear.guarded[0].before-clear.guarded[0].after==19,"fresh audit compared feasibility with the receiving row instead of the task's original holder");
+ auto blocked=audit_fresh_pickup_permutation(costs,{0,1,1,2},2,inf,1,16,[]{});
+ require(blocked.horizon_excluded_pairs==1&&blocked.unrestricted.size()==1&&blocked.guarded.empty(),
+  "fresh audit allowed a task's feasibility tier to worsen");
+ const std::vector<int> cycle{20,1,50,50,20,1,1,50,20};
+ auto three=audit_fresh_pickup_permutation(cycle,{},3,inf,1,16,[]{});
+ require(three.guarded.size()==1&&three.guarded[0].rows.size()==3&&three.guarded[0].accepted&&
+  three.guarded[0].before-three.guarded[0].after==57,"fresh audit missed an improving three-way cycle");
+ require(audit_fresh_pickup_permutation({0,2,2,0},{},2,inf,1,16,[]{}).guarded.empty(),"fresh audit moved an optimal identity");
+ bool timed_out=false;int checks=0;
+ try{audit_fresh_pickup_permutation(cycle,{},3,inf,1,16,[&]{if(++checks==5)throw Timeout("fresh_audit_test");});}
+ catch(const Timeout&){timed_out=true;}
+ require(timed_out&&costs==std::vector<int>({10,0,1,10})&&cycle==std::vector<int>({20,1,50,50,20,1,1,50,20}),
+  "fresh audit failed deadline propagation or mutated input costs");
+ for(const std::vector<int> invalid:std::vector<std::vector<int>>{{0},{0,3,0,2}}){
+  bool rejected=false;try{audit_fresh_pickup_permutation(costs,invalid,2,inf,1,16,[]{});}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,"fresh audit accepted an invalid tier matrix");
+ }
+ for(const auto& setting:std::vector<std::pair<const char*,const char*>>{
+  {"CGAR_DIAGNOSTICS","1"},{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","128"},
+  {"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_FLOW_STRENGTH","1"},{"CGAR_FLOW_COST_SCALE","1"},
+  {"CGAR_FLOW_WARMUP","1"},{"CGAR_FLOW_MIN_SAMPLES","1"},{"CGAR_FLOW_MIN_MARGIN_PERCENT","0"},
+  {"CGAR_FLOW_REFRESH_INTERVAL","0"},{"CGAR_PICKUP_FLOW","1"},{"CGAR_HRRN","1"},
+  {"CGAR_PICKUP_WEIGHT","1"},{"CGAR_PICKUP_FULL_ROBOTS","2"},{"CGAR_PICKUP_FULL_THREADS","1"},
+  {"CGAR_REASSIGN_MATCH","1"}})setenv(setting.first,setting.second,1);
+ auto blank=[](){SharedEnvironment e;e.rows=7;e.cols=41;e.num_of_agents=4;e.map.assign(e.rows*e.cols,0);
+  e.curr_states={State(3*41+5,0,0),State(3*41+13,0,0),State(41+5,0,0),State(5*41+5,0,0)};
+  e.curr_task_schedule={-1,-1,102,103};e.goal_locations.resize(4);
+  for(int r:{2,3}){Task task;task.task_id=100+r;task.t_revealed=0;task.locations={e.curr_states[r].location,e.curr_states[r].location+25};
+   task.idx_next_loc=1;task.agent_assigned=r;e.task_pool.emplace(task.task_id,task);e.goal_locations[r]={{{task.locations[1],0}}};}
+  return e;};
+ struct Trace{std::vector<int> schedule;Stats stats;FreshPickupShadowStats shadow;};
+ auto run=[&](bool audit,int quota){
+  setenv("CGAR_FRESH_PICKUP_AUDIT",audit?"1":"0",1);setenv("CGAR_PICKUP_FULL_ROBOTS",std::to_string(quota).c_str(),1);
+  auto e=blank();Cgar policy;policy.initialize(&e,5000);std::vector<Action> actions;
+  const std::array<Action,3> observed{Action::FW,Action::CR,Action::CR};
+  for(int tick=0;tick<3;++tick){e.curr_timestep=tick;policy.plan(&e,5000,actions);
+   auto next=step(e,e.curr_states,std::vector<Action>(4,observed[tick]));require(!next.empty(),"fresh pickup warmup trace collided");e.curr_states=next;}
+  require(policy.stats().flow_publications>0,"fresh pickup test never published its metric");
+  e.curr_timestep=3;
+  for(int id=0;id<2;++id){Task task;task.task_id=id;task.t_revealed=3;task.locations={3*41+(id?26:11)};e.task_pool.emplace(id,task);}
+  std::vector<int> proposed;policy.schedule(&e,5000,proposed);
+  require(proposed==std::vector<int>({1,0,102,103}),"fresh pickup fixture did not expose the intended greedy crossing");
+  const auto first=policy.fresh_pickup_shadow();
+  if(audit&&quota==2)require(first.eligible==2&&first.groups==1&&first.witness_cycles==1&&first.witness_rows==2&&first.witness_saving>=4,
+   "fresh pickup actual forward-field fixture missed a useful cycle");
+  if(audit&&quota==1)require(first.missing==1&&first.eligible==1&&first.groups==0,"fresh pickup audit used an absent forward field");
+  require(e.curr_task_schedule==std::vector<int>({-1,-1,102,103})&&e.task_pool.at(0).agent_assigned==-1&&e.task_pool.at(1).agent_assigned==-1&&
+   e.task_pool.at(102).idx_next_loc==1&&e.task_pool.at(103).idx_next_loc==1,"fresh pickup audit changed metadata or a started task");
+  policy.schedule(&e,5000,proposed);
+  if(audit&&quota==2)require(policy.fresh_pickup_shadow().witness_saving==first.witness_saving&&
+   policy.fresh_pickup_shadow().duplicate_cycles==1,"fresh pickup audit double-counted task witnesses");
+  return Trace{proposed,policy.stats(),policy.fresh_pickup_shadow()};
+ };
+ for(int quota:{1,2}){const auto baseline=run(false,quota),shadow=run(true,quota);
+  require(baseline.schedule==shadow.schedule&&baseline.shadow.passes==0,"fresh pickup diagnostic changed actual assignments or ran disabled");
+  for(auto member:{&Stats::assignments,&Stats::fair_assignments,&Stats::oriented_builds,&Stats::flow_publications,
+   &Stats::pickup_full_fields,&Stats::pickup_full_pops,&Stats::pickup_full_scans,&Stats::pickup_full_estimates,
+   &Stats::pickup_flow_cached_estimates,&Stats::pickup_flow_approximate_estimates,&Stats::estimated_pickup_cost,
+   &Stats::estimated_chain_cost,&Stats::route_queries,&Stats::match_moved,&Stats::match_saving})
+   require(baseline.stats.*member==shadow.stats.*member,"fresh pickup diagnostic changed real work or caches");
+ }
+ for(const auto& invalid:std::vector<std::pair<const char*,const char*>>{{"CGAR_FRESH_PICKUP_AUDIT","-1"},{"CGAR_FRESH_PICKUP_AUDIT","2"},
+  {"CGAR_PICKUP_FULL_ROBOTS","0"},{"CGAR_PICKUP_FULL_ROBOTS","65"},{"CGAR_DIAGNOSTICS","0"},{"CGAR_HRRN","0"},{"CGAR_REASSIGN_MATCH","0"}}){
+  setenv("CGAR_FRESH_PICKUP_AUDIT","1",1);setenv("CGAR_PICKUP_FULL_ROBOTS","2",1);setenv("CGAR_DIAGNOSTICS","1",1);
+  setenv("CGAR_HRRN","1",1);setenv("CGAR_REASSIGN_MATCH","1",1);setenv(invalid.first,invalid.second,1);
+  bool rejected=false;try{auto e=blank();Cgar policy;policy.initialize(&e,5000);}catch(const std::invalid_argument& error){rejected=std::string(error.what()).find("fresh pickup audit")!=std::string::npos;}
+  require(rejected,"fresh pickup diagnostic accepted an unsupported configuration");
+ }
+ for(const char* key:{"CGAR_DIAGNOSTICS","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_FLOW_STRENGTH",
+  "CGAR_FLOW_COST_SCALE","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL",
+  "CGAR_PICKUP_FLOW","CGAR_HRRN","CGAR_PICKUP_WEIGHT","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS","CGAR_REASSIGN_MATCH","CGAR_FRESH_PICKUP_AUDIT"})unsetenv(key);
+ std::cout<<"FRESH_PICKUP_AUDIT passed actual_forward_field_cycle=1 task_column_tier_guard=1 three_way=1 identity=1 missing_field=1 started_protected=1 task_disjoint=1 deadline=1 real_work_exact=1 config_guards=7\n";
+}
+
+int main(){try{fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

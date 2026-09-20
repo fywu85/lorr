@@ -330,6 +330,15 @@ struct MatchBudgetShadowStats {
     long long fully_protected_cycles = 0, fully_protected_rows = 0, fully_protected_saving = 0;
 };
 
+// Separate diagnostic ledger; none of these values governs real assignments.
+struct FreshPickupShadowStats {
+    long long passes = 0, eligible = 0, missing = 0, groups = 0, matrix_entries = 0;
+    long long positive_cycles = 0, positive_saving = 0, accepted_cycles = 0, accepted_saving = 0;
+    long long horizon_excluded_pairs = 0, guarded_cycles = 0, guarded_saving = 0;
+    long long witness_cycles = 0, witness_rows = 0, witness_saving = 0, duplicate_cycles = 0;
+    long long ordinary_witness_saving = 0, match_tick_witness_saving = 0, late_witness_saving = 0;
+};
+
 // Prospective duration-minus-bound means or exact empirical percentiles.
 // Only a task whose first accepted
 // holder never changes can train a bucket; dropped/retargeted tasks stay excluded.
@@ -451,6 +460,7 @@ public:
     const Stats& stats() const { return stats_; }
     const HorizonMargins& horizon_margins() const { return horizon_margins_; }
     const MatchBudgetShadowStats& match_budget_shadow() const { return match_budget_shadow_; }
+    const FreshPickupShadowStats& fresh_pickup_shadow() const { return fresh_pickup_shadow_; }
     // Destination proposals before the LoRR turn adapter; native-grid conformance only.
     const std::vector<int>& proposed_cells() const { return next_; }
 
@@ -502,6 +512,7 @@ private:
     };
     void prune_reassignment_records();
     UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only, bool include_budget = false) const;
+    void audit_fresh_pickup(const std::vector<int>& proposed, const std::vector<int>& full_slots);
     void reassign_unopened(std::vector<int>& proposed);
     void exchange_unopened_with_pool(std::vector<int>& proposed);
     void match_unopened(std::vector<int>& proposed);
@@ -608,6 +619,9 @@ private:
     size_t match_budget_audit_cursor_ = 0;
     MatchBudgetShadowStats match_budget_shadow_;
     std::unordered_set<int> match_budget_audit_seen_tasks_;
+    bool fresh_pickup_audit_ = false;
+    FreshPickupShadowStats fresh_pickup_shadow_;
+    std::unordered_set<int> fresh_pickup_seen_tasks_;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;
