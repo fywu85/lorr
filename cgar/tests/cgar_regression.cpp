@@ -3811,6 +3811,11 @@ void horizon_margin_regression() {
  {HorizonMargins model;auto e=empty(1);model.observe(e);Task task;task.task_id=0;task.locations={0};e.task_pool.emplace(0,task);
   model.proposed(e,{0},[](int,int){return 1;});e.curr_timestep=2;e.task_pool.clear();model.observe(e);
   require(model.snapshot().count[0]==0&&model.excluded_completions==1,"gapped observations trained a guessed finish time");}
+ // A sound physical bound must never exceed the observed single-holder duration.
+ {HorizonMargins model;auto e=empty(1);model.observe(e);Task task;task.task_id=0;task.locations={0};e.task_pool.emplace(0,task);
+  model.proposed(e,{0},[](int,int){return 2;});e.curr_timestep=1;e.task_pool.clear();bool failed=false;
+  try{model.observe(e);}catch(const std::logic_error&){failed=true;}
+  require(failed&&model.bound_violations==1&&model.snapshot().count[0]==0,"physical-bound violation was silently discarded");}
  // Real scheduler integration: bound11 task completes after14 ticks. The
  // learned +3 margin demotes an old bound12 task at R12, but admits bound1.
  const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","128"},
@@ -3841,12 +3846,49 @@ void horizon_margin_regression() {
   policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({1,99})&&policy.stats().fair_assignments==1,"margin changed oldest fair admission");
   require(e.curr_task_schedule==std::vector<int>({-1,99})&&e.task_pool.at(1).agent_assigned==-1,"margin mutated simulator metadata");
  }
+ // Real native matching: an initially free robot receives a fresh task,
+ // then matching hands it to another holder before TaskManager accepts it.
+ setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);setenv("CGAR_TRICK_KNOWN_HORIZON","10000",1);
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
+ {
+  SharedEnvironment e;e.trick_instance="WAREHOUSE";e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=3;
+  for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');
+  const int base=1504;for(int k=0;k<=24;++k)require(!e.map[base+k],"margin matching corridor fixture changed");
+  e.curr_states={State(base+24,0,0),State(base+11,0,2),State(base+1,0,0)};
+  e.curr_task_schedule={0,-1,2};e.goal_locations={{{base+10,0}},{},{{base+1,0}}};
+  for(int id=0;id<3;++id){Task task;task.task_id=id;task.t_revealed=-5;task.locations={id==0?base+10:base+1};task.agent_assigned=id==1?-1:id;e.task_pool.emplace(id,task);}
+  Cgar policy;policy.initialize(&e,30000);std::vector<int> schedule;std::vector<Action> actions;
+  policy.schedule(&e,30000,schedule);require(schedule==std::vector<int>({0,1,2}),"margin matching initial fresh admission failed");
+  e.curr_task_schedule=schedule;e.task_pool.at(1).agent_assigned=1;e.goal_locations[1]={{{base+1,0}}};
+  for(int tick=0;tick<10;++tick){e.curr_timestep=tick;if(tick)policy.schedule(&e,30000,schedule);
+   if(tick<2){policy.plan(&e,30000,actions);auto next=step(e,e.curr_states,actions);require(!next.empty(),"margin matching warmup collided");e.curr_states=next;}}
+  e.curr_timestep=10;e.curr_states[2].location=base+1;e.curr_task_schedule[2]=-1;e.goal_locations[2].clear();e.task_pool.erase(2);
+  Task fresh;fresh.task_id=3;fresh.t_revealed=10;fresh.locations={base+10};e.task_pool.emplace(3,fresh);
+  const int holder_cell=e.curr_states[1].location;
+  std::vector<int> distance(e.map.size(),-1),queue{base+10};distance[base+10]=0;
+  for(size_t h=0;h<queue.size();++h)for(int dir=0;dir<4;++dir){int v=nb(queue[h],dir,e.rows,e.cols);if(v>=0&&!e.map[v]&&distance[v]<0){distance[v]=distance[queue[h]]+1;queue.push_back(v);}}
+  const int pickup=distance[holder_cell],bound=std::max(1,pickup);
+  require(pickup==std::abs(holder_cell/e.cols-(base+10)/e.cols)+std::abs(holder_cell%e.cols-(base+10)%e.cols),"margin matching final-holder fixture has a hidden detour");
+  policy.schedule(&e,30000,schedule);
+  require(schedule==std::vector<int>({0,3,1})&&policy.stats().match_moved==2&&policy.horizon_margins().invalidated==1,"real matching did not invalidate displaced holder or move fresh admission");
+  e.curr_task_schedule=schedule;for(int r=0;r<3;++r){auto& task=e.task_pool.at(schedule[r]);task.agent_assigned=r;e.goal_locations[r]={{{task.locations[0],10}}};}
+  const int duration=pickup?bound+2:1;
+  for(int dt=1;dt<=duration;++dt){e.curr_timestep=10+dt;
+   if(dt==1){e.task_pool.erase(1);e.curr_task_schedule[2]=-1;e.goal_locations[2].clear();}
+   if(dt==duration){e.curr_states[1].location=base+10;e.task_pool.erase(3);e.curr_task_schedule[1]=-1;e.goal_locations[1].clear();}
+   policy.schedule(&e,30000,schedule);
+  }
+  const auto learned=policy.horizon_margins().snapshot();
+  require(learned.count[0]==1&&learned.excess[0]==duration-bound&&policy.horizon_margins().excluded_completions==2&&policy.horizon_margins().bound_violations==0,
+   "real matching trained displaced task or used fresh robot's pre-matching bound");
+ }
+ unsetenv("CGAR_TRICK_UNOPENED_MATCH");
  setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);setenv("CGAR_REASSIGN_POOL","1",1);
  {SharedEnvironment e;e.trick_instance="WAREHOUSE";e.rows=cgar::tricks::warehouse_rows;e.cols=cgar::tricks::warehouse_cols;e.num_of_agents=1;
   for(int cell=0;cell<e.rows*e.cols;++cell)e.map.push_back(cgar::tricks::warehouse_masks[cell]=='x');e.curr_states={State(1504,0,0)};e.curr_task_schedule={-1};e.goal_locations={{}};
   rejects([&]{Cgar p;p.initialize(&e,30000);});}
  unsetenv("CGAR_REASSIGN_POOL");unsetenv("CGAR_TRICK_HORIZON_MARGIN");for(auto setting:settings)unsetenv(setting.first);
- std::cout<<"HORIZON_MARGIN passed bucket_boundaries="<<buckets<<" fractional_mean=1 prospective_only=1 no_double_count=1 immutable_snapshot=1 retarget_and_drop_excluded=1 final_proposal_holder=1 gap_excluded=1 real_scheduler_margin=1 fair_and_held_unchanged=1 activation_guards=7\n";
+ std::cout<<"HORIZON_MARGIN passed bucket_boundaries="<<buckets<<" fractional_mean=1 prospective_only=1 no_double_count=1 immutable_snapshot=1 retarget_and_drop_excluded=1 final_proposal_holder=1 gap_excluded=1 bound_violation_fails=1 real_fresh_matching_ledger=1 real_scheduler_margin=1 fair_and_held_unchanged=1 activation_guards=7\n";
 }
 
 void chain_flow_pricing_regression() {

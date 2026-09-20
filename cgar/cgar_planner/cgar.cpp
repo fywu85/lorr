@@ -1998,10 +1998,10 @@ void Cgar::log_summary() {
             stats_.horizon_impossible_assignments);
     if (horizon_margin_) {
         const auto model = horizon_margins_.snapshot();
-        std::printf("[cgar-horizon-margin] t=%d risky_pairs=%lld risky_assignments=%lld rank_changes=%lld first_rank_change=%lld tracked=%zu invalidated=%lld excluded_completions=%lld n0=%lld n1=%lld n2=%lld n3=%lld n4=%lld sum0=%lld sum1=%lld sum2=%lld sum3=%lld sum4=%lld\n",
+        std::printf("[cgar-horizon-margin] t=%d risky_pairs=%lld risky_assignments=%lld rank_changes=%lld first_rank_change=%lld tracked=%zu invalidated=%lld excluded_completions=%lld bound_violations=%lld n0=%lld n1=%lld n2=%lld n3=%lld n4=%lld sum0=%lld sum1=%lld sum2=%lld sum3=%lld sum4=%lld\n",
             env_->curr_timestep, stats_.horizon_margin_pairs, stats_.horizon_margin_assignments,
             stats_.horizon_margin_rank_changes, stats_.horizon_margin_first_rank_change, horizon_margins_.tracked(),
-            horizon_margins_.invalidated, horizon_margins_.excluded_completions,
+            horizon_margins_.invalidated, horizon_margins_.excluded_completions, horizon_margins_.bound_violations,
             model.count[0], model.count[1], model.count[2], model.count[3], model.count[4],
             model.excess[0], model.excess[1], model.excess[2], model.excess[3], model.excess[4]);
     }

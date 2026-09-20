@@ -342,7 +342,7 @@ public:
         }
     };
     Snapshot snapshot() const { return learned_; }
-    long long invalidated = 0, excluded_completions = 0;
+    long long invalidated = 0, excluded_completions = 0, bound_violations = 0;
     size_t tracked() const { return records_.size(); }
 
     void observe(const SharedEnvironment& env) {
@@ -359,9 +359,13 @@ public:
                 // next scheduling call. Require its free-holder/final-cell state
                 // and a consecutive observation to bind the completion timestamp.
                 const long long duration = static_cast<long long>(now) - record.admitted;
-                if (record.single_holder && consecutive && duration >= record.bound &&
+                if (record.single_holder && consecutive &&
                     env.curr_task_schedule.at(record.robot) == -1 &&
                     env.curr_states.at(record.robot).location == record.final_cell) {
+                    if (duration < record.bound) {
+                        ++bound_violations;
+                        throw std::logic_error("completed horizon holder violated its physical bound");
+                    }
                     const int k = Snapshot::bucket(record.bound);
                     ++learned_.count[k]; learned_.excess[k] += duration - record.bound;
                 } else ++excluded_completions;
