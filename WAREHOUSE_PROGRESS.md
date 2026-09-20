@@ -283,6 +283,24 @@ These are different completed-task cohorts, with unfinished work censored; the
 component differences are not causal savings. They motivate the next motion tests.
 [Audit and limits](experiments/construction-20260918/LOADED_MOTION.md).
 
+## 2026-09-20 completed ablations
+
+**TRICK — short-task preference:** source [f939b3b](https://github.com/fywu85/lorr/commit/f939b3b1ab44368e83617a9f97300f26c4063210), full runs completed 2026-09-20T06:06:25.746237UTC and independently verified 06:08:33UTC.
+Two-seed means: control 144308.5, short preference 135706.5, lanes 146612.5, both 137959.5.
+Disabling age preference/oldest admission loses 5.961% without lanes and 5.902% with
+lanes. Empty work increases 34.31%/32.83%; unpicked tasks aged≥4000 rise from 0 to
+1356–1392. Keep OFF. All eight full runs valid at the shared 5s development budget,
+RSS<11.945GB; both full control trajectories match. No generic-frontier change.
+[Full evidence](experiments/construction-20260918/results/trick-short-tasks-full-v58-r2/summary.md).
+
+**GENERIC — remaining-flow confirmation:** source [4524843](https://github.com/fywu85/lorr/commit/45248431dc38702ebdef9dd1ab2893697c00e00f), confirmation completed 2026-09-20T06:09:51.571680UTC.
+All six paired seed effects: +573/+606/+108/-793/+223/-3. Candidate mean 144060.1667
+versus 143941.1667 (+0.08267%); four wins/two losses. The four confirmation seeds
+average only +8.25 tasks. Keep default OFF and confirmed regional reference unchanged;
+the 145083 single-run record remains visible. All 12 full runs valid at shared 5s;
+this is not strict 1s certification or evidence over independent task streams.
+[Combined evidence](experiments/construction-20260918/results/remaining-flow-six-seed-v56-shared.json).
+
 ## Updating this log
 
 After each completed full evaluation, append any new record with its run-completion timestamp, seed, tested configuration, linked source or source-archive commit, and evidence. Update the confirmation table when additional seeds finish, including regressions and failures. Historical peaks remain visible even when their policy is rejected. Do not use a dirty build’s base HEAD as if it were the exact tested source. Require six seeds before claiming the project’s repeatability goal.

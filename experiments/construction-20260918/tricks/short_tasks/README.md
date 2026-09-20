@@ -47,9 +47,23 @@ control and lanes-only hashes exactly match their historical references.
 Full replacement8899316/analysis8899317 uses32 verified physical cores on research50.
 The original8899310 launch received slots but no binding, so it was cancelled;
 [receipts](allocation-rejected-v58/) preserve this infrastructure failure.
-[Current allocation and request](full-v58-r2/). No full quality result exists yet.
+[Current allocation and request](full-v58-r2/). The full study is now complete and independently verified; see below.
 
 The frozen full-run accounting source also passed an independent GRID fixture
 job8899330 before the live runs finished: five original action-accounting fixtures,
 ownership/pickup/completion/reveal boundary counts, and per-window conservation of
 revealed = completed + outstanding whole-chain distance. [Receipt](accounting-fixture-v58/verified.json).
+
+## Full result: keep short-task preference disabled
+
+On matched full seeds 0/2, the control completes 144510/144107, short-task preference
+136833/134580, lanes 146659/146566, and both 137985/137934. Short preference loses
+5.961% without lanes and 5.902% with lanes. All 40000 complete entries are valid at 5s,
+RSS stays below 11.945GB, and both full control trajectory pairs reproduce exactly.
+
+Completed chains are about 3.13% shorter, but empty robot steps rise 34.31% without
+lanes and 32.83% with lanes. Unpicked tasks aged at least 4000 steps rise from zero to
+1356–1392; unassigned mean age rises from about 100 to about 2700 steps. This policy
+trades away fairness and still loses throughput in CGAR. Keep the component OFF.
+These paired interventions do not determine the fraction of NMS/KK's lead due to
+selection: matching and movement policies differ. [Results and limits](../../results/trick-short-tasks-full-v58-r2/summary.md).

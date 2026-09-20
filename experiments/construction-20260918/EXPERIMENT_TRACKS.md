@@ -32,4 +32,4 @@ it generic is not a performance claim.
 Both tracks retain complete prescribed-work decisions, explicit timeout failures,
 collision/schedule validity, processRSS below32,000,000,000bytes, and reserved/bound GRID physical cores. Shared hosts and5-second development
 deadlines are now user-authorized; later strict1s checks remain separate. No hidden future tasks are used. The existing generic work continues;
-the short-task × lane factorial is running with matched seeds and age/backlog accounting.
+the short-task × lane factorial is complete: short preference loses 5.961%/5.902% without/with lanes, while empty work and waiting ages rise. It remains OFF. [Full paired result](results/trick-short-tasks-full-v58-r2/summary.md).

@@ -7,7 +7,7 @@
 | Lane guidance | 146,659 | 146,566 | 146,612.5 |
 | Both | 137,985 | 137,934 | 137,959.5 |
 
-Removing the age preference and forced-oldest admission loses -5.961% without lanes and -5.902% with lanes. The average interaction is -51 tasks; the individual interactions are -997 and +895, so these two seeds do not support a consistent large interaction.
+Removing the age preference and forced-oldest admission reduces throughput by 5.961% without lanes and 5.902% with lanes. The average interaction is -51 tasks; the individual interactions are -997 and +895, so these two seeds do not support a consistent large interaction.
 
 | Short-task change | No lanes | With lanes |
 |---|---:|---:|
