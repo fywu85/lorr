@@ -12,8 +12,8 @@ horizon, so their scores are not combined-track comparisons.
 
 Read-only source inspected at
 [`Straple/EPIBT@3808e832`](https://github.com/Straple/EPIBT/tree/3808e832593c9fb46b3e119cbb36035cccd830e1),
-MIT license. The local checkout is `/tmp/r05-epibt-reference`; no upstream code
-has been incorporated into our backend.
+MIT license. The local checkout is `/tmp/r05-epibt-reference`; an optional operation policy now adapts its reservation/revisit structure.
+The MIT notice is retained under `licenses/EPIBT-MIT.txt`.
 
 A possible controlled adaptation would add an optional three-step operation
 kernel beneath our existing rollout search and scheduler. It must preserve an
@@ -51,3 +51,14 @@ replicated planner-seed means and from fresh-instance validation.
 Full K1024 tests now reject all listed rotation-penalty, extra-local-search and
 regional-mutation settings on the control seed. Startup length preferences also
 lose. These optional paths remain off; see RANDOM05_PROGRESS.md for exact scores.
+
+## Three-step prototype
+
+`R05_OPERATIONS=3` uses precomputed action sequences grouped by identical vertex
+reservation footprints. It ranks their headings against our exact task-chain
+costs, reserves vertices and opposite-edge exclusions for all three times,
+and allows bounded lower-priority revisits with rollback to inherited plans.
+The remaining valid suffix is carried into the next simulated and real step.
+The existing pipeline remains the default. Unlike the upstream timer-driven
+search, this integration completes a fixed rollout count and reports a timeout
+if the entry deadline is exceeded. Full performance evidence is pending.

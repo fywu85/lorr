@@ -440,3 +440,10 @@ The published NMS score of 3,050 used different instances and hardware.
   costs, pair cost sums and turn costs. It requires flow guidance and therefore
   `--trick RANDOM-05`; count0 preserves the control. Evaluate fullK1024/full
   horizon because lower-work rankings have repeatedly failed to transfer.
+
+- Added an optional three-step operation policy (`R05_OPERATIONS=3`) beneath
+  the existing search and scheduler. It can revise inherited multi-action plans
+  with bounded revisits while retaining a certified fallback. Regressions cover
+  suffix inheritance, half-turns followed by a fully occupied cycle, prohibited
+  edge swaps, dense task replacement and worker-count determinism. Full-map
+  performance is pending; the existing pipeline remains selected by default.

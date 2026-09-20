@@ -68,7 +68,8 @@ def audit():
         digest = result['binary_sha256']
         assert digest == case['binary_sha256'], (utc, 'binary mismatch')
         build = builds[digest]
-        for source in SOURCES:
+        sources = set(SOURCES) | {s for s in build['source_hashes'] if s.startswith('src/') and Path(s).suffix in ('.cpp', '.hpp', '.h')}
+        for source in sorted(sources):
             content = subprocess.check_output(['git', 'show', commit + ':random05/' + source], cwd=ROOT)
             assert hashlib.sha256(content).hexdigest() == build['source_hashes'][source], (utc, commit, source)
         report.append(dict(utc=utc, source_commit=commit, tasks=int(tasks),

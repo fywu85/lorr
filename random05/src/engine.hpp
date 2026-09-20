@@ -26,6 +26,9 @@ struct Config {
     int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
+    int operation_depth=0, operation_revisits=4;
+    bool operation_inherit=true;
+    float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, reverse_penalty=0;
     float triage_scale=0.45;
     bool accept_equal=false;
@@ -56,6 +59,7 @@ struct Frame {
     std::vector<int> loc, dir, pending, stage, age;
     std::vector<Action> last_actions;
     int reverse_turns=0;
+    std::vector<int> operations;
 };
 struct Rollout {
     double score=-1e100;
@@ -65,6 +69,13 @@ struct Rollout {
     int moves=0;
     bool cycle_moves=true;
     uint64_t expansions=0;
+};
+struct OperationModel {
+    static constexpr int horizon=3, count=64, waiting=63;
+    std::vector<std::array<int,horizon>> paths;
+    std::vector<std::vector<std::vector<uint8_t>>> groups;
+    explicit OperationModel(const Graph& graph);
+    const std::array<int,horizon>& path(int state,int code) const {return paths[size_t(state)*count+code];}
 };
 class Engine {
 public:
@@ -83,12 +94,16 @@ private:
     int triaged_=0;
     std::unordered_map<int,std::shared_ptr<Chain>> chains_, score_chains_;
     std::unique_ptr<Graph> score_graph_;
+    std::unique_ptr<OperationModel> operation_model_;
+    std::vector<int> operations_;
     std::vector<const Chain*> assigned_, score_assigned_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
     std::vector<Action> last_actions_;
     std::vector<int> predicted_loc_, predicted_dir_;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
+    void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
+                            uint64_t& expansions) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                  uint64_t& expansions,bool cycle_moves) const;
 };

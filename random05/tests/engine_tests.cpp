@@ -32,8 +32,8 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false) {
-    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;
+uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false,int operations=0,bool operation_inherit=true,int revisits=4) {
+    auto e=environment(5,5,24);Config cfg;cfg.futures=4;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;cfg.operation_depth=operations;cfg.operation_inherit=operation_inherit;cfg.operation_revisits=revisits;
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     for(int a=0;a<24;++a) {Task t;t.task_id=a;t.locations={(a+7)%25,(a+17)%25};e.task_pool[a]=t;}
@@ -168,4 +168,82 @@ void guidance_scale_reference() {
     }
     require(flips==2,"guidance mutation count differs from requested count");
 }
-int main(){initial_task_length_preference();require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");guidance_scale_reference();idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);simulation(2,true,100,3);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");require(simulation(1,true,0,0,3)==simulation(2,true,0,0,3),"multi-generation worker count changed trajectory");require(simulation(1,true)==simulation(1,true,0,0,1,1),"plain evaluation changed an already unit-cost policy");require(simulation(1,true,0,0,1,0.5)==simulation(2,true,0,0,1,0.5),"blended score changed with worker count");require(simulation(1,true,0,0,1,0,1)==simulation(2,true,0,0,1,0,1),"component policy changed with worker count");require(simulation(1,true,0,0,1,0,2)==simulation(2,true,0,0,1,0,2),"pinned component policy changed with worker count");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
+void operation_geometry() {
+    auto e=environment(3,3,1);e.map[4]=1;Config cfg;Graph g(e,cfg);OperationModel model(g);
+    for(int state=0;state<g.states;++state)for(int code=0;code<OperationModel::count;++code) {
+        const auto& path=model.path(state,code);if(path[0]<0)continue;
+        const auto& suffix=model.path(path[0],(code>>2)|(int(W)<<4));
+        require(suffix[0]==path[1] && suffix[1]==path[2] && suffix[2]==path[2],
+                "operation inheritance does not preserve the valid suffix");
+    }
+}
+void operation_dense_cycle() {
+    auto e=environment(2,2,4);int cells[]={0,1,3,2},heading[]={0,1,2,3};
+    for(int a=0;a<4;++a) {
+        e.curr_states[a].location=cells[a];e.curr_states[a].orientation=(heading[a]+2)%4;
+        Task t;t.task_id=a;t.locations={cells[(a+1)%4]};e.task_pool[a]=t;e.curr_task_schedule[a]=a;
+    }
+    Config cfg;cfg.operation_depth=3;cfg.futures=1;cfg.depth=3;cfg.matching=false;
+    Engine engine(cfg);engine.initialize(&e);
+    for(int t=0;t<3;++t) {
+        e.curr_timestep=t;std::vector<Action> plan;std::vector<int> schedule,from(4),to(4);
+        engine.compute(&e,plan,schedule);
+        for(int a=0;a<4;++a) {
+            auto& state=e.curr_states[a];from[a]=state.location;
+            if(plan[a]==FW)state.location=engine.graph->next[state.location][state.orientation];
+            else if(plan[a]==CR)state.orientation=(state.orientation+1)%4;
+            else if(plan[a]==CCR)state.orientation=(state.orientation+3)%4;
+            to[a]=state.location;
+        }
+        Engine::certify(*engine.graph,from,to);
+    }
+    for(int a=0;a<4;++a)require(e.curr_states[a].location==cells[(a+1)%4],
+        "fully occupied cycle did not coordinate half-turns followed by movement");
+}
+void operation_swap_rejection() {
+    auto e=environment(1,2,2);e.curr_states[0].orientation=0;e.curr_states[1].orientation=2;
+    for(int a=0;a<2;++a){Task t;t.task_id=a;t.locations={1-a};e.task_pool[a]=t;e.curr_task_schedule[a]=a;}
+    Config cfg;cfg.operation_depth=3;cfg.futures=2;cfg.depth=5;cfg.matching=false;
+    Engine engine(cfg);engine.initialize(&e);
+    for(int t=0;t<8;++t) {
+        e.curr_timestep=t;std::vector<Action> plan;std::vector<int> schedule;
+        engine.compute(&e,plan,schedule);
+        for(int a=0;a<2;++a) {
+            require(plan[a]!=FW,"operation planner allowed an edge swap in a full two-cell corridor");
+            auto& state=e.curr_states[a];
+            if(plan[a]==CR)state.orientation=(state.orientation+1)%4;
+            else if(plan[a]==CCR)state.orientation=(state.orientation+3)%4;
+        }
+    }
+}
+int main() {
+    operation_geometry();
+    operation_dense_cycle();
+    operation_swap_rejection();
+    require(simulation(1,true,0,0,1,0,0,0,0,true,3)==simulation(2,true,0,0,1,0,0,0,0,true,3),
+            "operation policy changed with worker count");
+    simulation(2,true,0,0,1,0,0,0,0,true,3,false);
+    simulation(2,true,0,0,1,0,0,0,0,true,3,true,1);
+    initial_task_length_preference();
+    require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");
+    require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");
+    require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");
+    guidance_scale_reference();
+    idle_pocket_eviction();
+    validation();
+    scheduling();
+    simulation();
+    simulation(2,true,100,1);
+    simulation(2,true,100,2);
+    simulation(2,true,100,3);
+    require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");
+    require(simulation(1,true,0,0,3)==simulation(2,true,0,0,3),"multi-generation worker count changed trajectory");
+    require(simulation(1,true)==simulation(1,true,0,0,1,1),"plain evaluation changed an already unit-cost policy");
+    require(simulation(1,true,0,0,1,0.5)==simulation(2,true,0,0,1,0.5),"blended score changed with worker count");
+    require(simulation(1,true,0,0,1,0,1)==simulation(2,true,0,0,1,0,1),"component policy changed with worker count");
+    require(simulation(1,true,0,0,1,0,2)==simulation(2,true,0,0,1,0,2),"pinned component policy changed with worker count");
+    triage_task_change();
+    occupied_ring();
+    exact_matching();
+    std::cout<<"All Random05 checks passed\n";
+}

@@ -46,6 +46,12 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.progress_discount<=0 || c.progress_discount>1 || c.flow_turn_load<0)
         throw std::invalid_argument("discount must be in (0,1] and turn-load multiplier nonnegative");
     c.cycle_portfolio=integer("R05_CYCLE_PORTFOLIO",0);
+    c.operation_depth=integer("R05_OPERATIONS",0);
+    c.operation_revisits=integer("R05_OPERATION_REVISITS",4);
+    c.operation_inherit=integer("R05_OPERATION_INHERIT",1);
+    c.operation_cost_weight=real("R05_OPERATION_COST",0);
+    if((c.operation_depth!=0 && c.operation_depth!=3) || c.operation_revisits<1 || c.operation_cost_weight<0)
+        throw std::invalid_argument("operations must be off or length3, with positive revisit limit and nonnegative cost weight");
     c.idle_eviction=real("R05_IDLE_EVICTION",0);
     c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
     c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
@@ -362,10 +368,11 @@ void Engine::initialize(SharedEnvironment* env) {
     if(cfg.plain_score>0) {
         // The policy can prefer traffic lanes while evaluation measures actual
         // unit-cost forward/turn actions, including every remaining task stop.
-        Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
+        Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;metric.flow_flips=0;
         score_graph_=std::make_unique<Graph>(*env,metric);
     }
     const int n=env->num_of_agents;
+    if(cfg.operation_depth) {operation_model_=std::make_unique<OperationModel>(*graph);operations_.assign(n,OperationModel::waiting);}
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
     last_actions_.assign(n,W);
     best_offsets_.resize(n);
@@ -737,7 +744,8 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     double initial=total_cost(frame),previous=initial,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
     for(int t=0;t<cfg.depth;++t) {
-        advance(frame,offsets,actions,r.expansions,cycle_moves);
+        if(cfg.operation_depth)advance_operations(frame,offsets,actions,r.expansions);
+        else advance(frame,offsets,actions,r.expansions,cycle_moves);
         if(t==0){r.first=frame;r.actions=actions;}
         if(cfg.progress_discount<1) {
             double current=total_cost(frame);
@@ -772,6 +780,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     if(pending_.empty())pending_=frame.loc;
     frame.pending=pending_;
+    if(cfg.operation_depth)frame.operations=operations_;
     match(env,schedule);
     for(auto it=chains_.begin();it!=chains_.end();) {
         if(!env->task_pool.count(it->first))it=chains_.erase(it);else ++it;
@@ -878,6 +887,17 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     auto& selected=results[best];
     certify(g,frame.loc,selected.first.loc);
     certify(g,selected.first.loc,selected.first.pending);
+    if(cfg.operation_depth) {
+        // Certify the selected suffix, including its terminal wait, before any
+        // real action is returned. Failed revisions always retain this fallback.
+        std::vector<int> previous=selected.first.loc,next(n);
+        for(int t=0;t<OperationModel::horizon;++t) {
+            for(int a=0;a<n;++a)next[a]=operation_model_->path(
+                selected.first.loc[a]*4+selected.first.dir[a],selected.first.operations[a])[t]/4;
+            certify(g,previous,next);previous=next;
+        }
+        operations_=selected.first.operations;
+    }
     plan=selected.actions;pending_=selected.first.pending;best_offsets_=selected.offsets;
     predicted_loc_=selected.first.loc;predicted_dir_=selected.first.dir;
     if(cfg.reverse_penalty>0)last_actions_=selected.actions;
