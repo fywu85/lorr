@@ -361,3 +361,19 @@ The published NMS score of 3,050 used different instances and hardware.
   scales. Unit tests verify that an equal reference reproduces old weights
   exactly and that stronger counterflow prices leave preferred edges unchanged.
   Full-map fixed-scale contrast validation is pending.
+
+- Prefix audit: among 26 distinct valid K1024 four-core trajectories above2,800
+  tasks, rank correlation with final throughput is0.22 at250 steps,0.75 at500,
+  and0.81 at750. Selecting the top third at500 steps retains only7 of10 runs
+  within2% of the best. This retrospective sample does not justify replacing
+  full2000-step validation. Evidence: `random05/results/prefix-audit-v25.json`.
+- Intent-component policies lose: executing only fully ready spatial components
+  gives1,694 atK1024; pinning ready components before ordinary PIBT gives3,266,
+  versus3,363 for the unchanged policy. Both remain disabled.
+- Fixed-scale guidance separates counterflow price from preferred-edge scale.
+  AtK128, penalties2.4/3.2/4.8/8/16 give3,199/3,213/3,239/3,146/3,027.
+  FullK1024 validation is required; earlier low-K rankings often did not transfer.
+- New diagnostic experiment: a nonnegative score penalty for consecutive
+  opposite turns. The old3,299 trace contains58,071 such reversals. The penalty
+  includes the previous real action at the rollout boundary; the default is0.
+  This is a hypothesis about wasted rotations, not yet a measured improvement.

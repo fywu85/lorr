@@ -24,7 +24,7 @@ struct Config {
     int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
-    float progress_discount=1, flow_turn_load=0, plain_score=0;
+    float progress_discount=1, flow_turn_load=0, plain_score=0, reverse_penalty=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;
@@ -50,7 +50,11 @@ struct Chain {
     Chain(const Graph& g, const Task& t,bool cache=false);
     float cost(const Graph& g,int stage,int cell,int direction) const;
 };
-struct Frame { std::vector<int> loc, dir, pending, stage, age; };
+struct Frame {
+    std::vector<int> loc, dir, pending, stage, age;
+    std::vector<Action> last_actions;
+    int reverse_turns=0;
+};
 struct Rollout {
     double score=-1e100;
     Frame first;
@@ -80,6 +84,7 @@ private:
     std::vector<const Chain*> assigned_, score_assigned_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
+    std::vector<Action> last_actions_;
     std::vector<int> predicted_loc_, predicted_dir_;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,

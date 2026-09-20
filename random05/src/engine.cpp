@@ -31,6 +31,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
     c.plain_score=real("R05_PLAIN_SCORE",0);
+    c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
+    if(c.reverse_penalty<0)throw std::invalid_argument("reverse-turn penalty must be nonnegative");
     if(c.plain_score<0 || c.plain_score>1)
         throw std::invalid_argument("plain score blend must be in [0,1]");
     if(c.progress_discount<=0 || c.progress_discount>1 || c.flow_turn_load<0)
@@ -339,6 +341,7 @@ void Engine::initialize(SharedEnvironment* env) {
     }
     const int n=env->num_of_agents;
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
+    last_actions_.assign(n,W);
     best_offsets_.resize(n);
     for(float& x:best_offsets_)x=std::uniform_real_distribution<float>(0,1)(rng_);
     std::fprintf(stderr,"R05_INIT agents=%d cells=%d K=%d depth=%d threads=%d guidance=%s seed=%d table_mb=%.1f\n",
@@ -673,6 +676,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             f.dir[i]=d;
         }
     }
+    if(cfg.reverse_penalty>0) {
+        for(int i=0;i<n;++i)
+            f.reverse_turns+=(actions[i]==CR && f.last_actions[i]==CCR) ||
+                             (actions[i]==CCR && f.last_actions[i]==CR);
+        f.last_actions=actions;
+    }
     f.loc=std::move(p);f.pending=std::move(chosen);
 }
 
@@ -699,6 +708,7 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     }
     r.score=(initial-total_cost(frame))/2.0;
     if(cfg.progress_discount<1)r.score=discounted*cfg.depth/(2*weight_sum);
+    r.score-=cfg.reverse_penalty*frame.reverse_turns;
     if(cfg.dispersion) {
         std::vector<int> occupancy(g.from_grid.size(),0);
         for(int v:frame.loc)occupancy[g.to_grid[v]]=1;
@@ -759,6 +769,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
     }
     frame.age=age_;
+    if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
     std::vector<std::vector<float>> offsets(cfg.futures);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
@@ -817,6 +828,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     certify(g,selected.first.loc,selected.first.pending);
     plan=selected.actions;pending_=selected.first.pending;best_offsets_=selected.offsets;
     predicted_loc_=selected.first.loc;predicted_dir_=selected.first.dir;
+    if(cfg.reverse_penalty>0)last_actions_=selected.actions;
     total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
     if(env->curr_timestep%100==0) {
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
