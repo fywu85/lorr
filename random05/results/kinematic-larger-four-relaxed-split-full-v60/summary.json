@@ -1,13 +1,13 @@
 [
   {
     "exit": 0,
-    "finished_utc": "2026-09-20T18:15:30.081630+00:00",
-    "name": "k16384-b16-blend0-first0",
+    "finished_utc": "2026-09-20T18:20:26.842651+00:00",
+    "name": "first5120-k6144-elites8-persist8-blend0-relaxed5s",
     "steps": 2000,
     "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
     "environment": {
-      "R05_K": "16384",
-      "R05_THREADS": "32",
+      "R05_K": "6144",
+      "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
@@ -32,7 +32,7 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "16",
+      "R05_CONTINUATIONS": "8",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
@@ -44,51 +44,52 @@
       "R05_CANDIDATE_CACHE": "1",
       "R05_ELITES": "8",
       "R05_PERSIST_ELITES": "8",
+      "R05_FIRST_K": "5120",
       "R05_FUTURE_ELITE_BLEND": "0",
-      "R05_FIRST_K": "0",
       "R05_CACHE_SLOTS": "512",
-      "R05_KINEMATIC_MASK": "1"
+      "R05_KINEMATIC_MASK": "1",
+      "R05_PROFILE": "1"
     },
     "trick": true,
     "result": {
-      "numTaskFinished": 3741,
+      "numTaskFinished": 3576,
       "makespan": 2000,
       "numPlannerErrors": 0,
       "numScheduleErrors": 0,
       "numEntryTimeouts": 0,
       "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.821509853
+      "entryComputeMaxSeconds": 0.904872329
     },
     "errors": 0,
     "scheduleErrors": 0,
     "latency_seconds": {
-      "mean": 0.6062368297844983,
-      "max": 0.821509853
+      "mean": 0.8421328862669993,
+      "max": 0.904872329
     },
     "actual_path_steps": [
       2000,
       2000
     ],
-    "trajectory_sha256": "833327b78b07492ba902e7f4edc5f36b8a61a661dabe753ff5bb0d8c965aff55",
+    "trajectory_sha256": "992772e93609185c52741e0518a0b46a7d0bbb3415e62872e58ca91a02072ba3",
     "valid": true,
     "usage": {
-      "user_seconds": 27667.497135,
-      "system_seconds": 15.817568,
-      "peak_rss_kib": 1760328,
-      "wall_seconds": 1219.6050189267844,
+      "user_seconds": 6708.634713,
+      "system_seconds": 0.731849,
+      "peak_rss_kib": 453492,
+      "wall_seconds": 1686.3523256462067,
       "exit": 0
     },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuation-budget-next-split-full-v60/k16384-b16-blend0-first0/summary.json"
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6144-elites8-persist8-blend0-relaxed5s/summary.json"
   },
   {
     "exit": 0,
-    "finished_utc": "2026-09-20T18:15:30.200216+00:00",
-    "name": "k16384-b16-blend0.5-first0",
+    "finished_utc": "2026-09-20T18:23:08.450520+00:00",
+    "name": "first5120-k6144-elites8-persist8-blend0.5-relaxed5s",
     "steps": 2000,
     "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
     "environment": {
-      "R05_K": "16384",
-      "R05_THREADS": "32",
+      "R05_K": "6144",
+      "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
@@ -113,7 +114,7 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "16",
+      "R05_CONTINUATIONS": "8",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
@@ -125,112 +126,52 @@
       "R05_CANDIDATE_CACHE": "1",
       "R05_ELITES": "8",
       "R05_PERSIST_ELITES": "8",
+      "R05_FIRST_K": "5120",
       "R05_FUTURE_ELITE_BLEND": "0.5",
-      "R05_FIRST_K": "0",
       "R05_CACHE_SLOTS": "512",
-      "R05_KINEMATIC_MASK": "1"
+      "R05_KINEMATIC_MASK": "1",
+      "R05_PROFILE": "1"
     },
     "trick": true,
     "result": {
-      "numTaskFinished": 3659,
+      "numTaskFinished": 3709,
       "makespan": 2000,
       "numPlannerErrors": 0,
       "numScheduleErrors": 0,
       "numEntryTimeouts": 0,
       "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.795927088
+      "entryComputeMaxSeconds": 1.495404057
     },
     "errors": 0,
     "scheduleErrors": 0,
     "latency_seconds": {
-      "mean": 0.605862756832001,
-      "max": 0.795927088
+      "mean": 0.9226848378754987,
+      "max": 1.495404057
     },
     "actual_path_steps": [
       2000,
       2000
     ],
-    "trajectory_sha256": "3126e981a79415f3a357c0b7fbb719d9b5515c6257c2c8efd6ef2613b5c2b591",
+    "trajectory_sha256": "c406f9b2e8da81a5366e59a79455029bfc3f6867f68df1e207d1c03586209014",
     "valid": true,
     "usage": {
-      "user_seconds": 27820.139341,
-      "system_seconds": 16.195558,
-      "peak_rss_kib": 1759584,
-      "wall_seconds": 1219.7238440904766,
+      "user_seconds": 7050.082107,
+      "system_seconds": 1.095717,
+      "peak_rss_kib": 453388,
+      "wall_seconds": 1847.9605669695884,
       "exit": 0
     },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuation-budget-next-split-full-v60/k16384-b16-blend0.5-first0/summary.json"
-  },
-  {
-    "exit": 124,
-    "finished_utc": "2026-09-20T17:55:12.045910+00:00",
-    "name": "k24576-b24-blend0-first0",
-    "steps": 2000,
-    "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
-    "environment": {
-      "R05_K": "24576",
-      "R05_THREADS": "32",
-      "R05_GUIDANCE": "flow",
-      "R05_DISPERSION": "0.8",
-      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
-      "R05_LOCAL": "0",
-      "R05_EQUAL": "1",
-      "R05_HORIZON": "2000",
-      "R05_COST_CACHE": "1",
-      "R05_WAIT_COST": "0.5",
-      "R05_TRIAGE_SCALE": "1.5",
-      "R05_TURN_COST": "0.6",
-      "R05_FLOW_AVERAGE": "1",
-      "R05_FLOW_NORMALIZE": "1",
-      "R05_FLOW_POWER": "3",
-      "R05_FLOW_BETWEENNESS": "0.75",
-      "R05_FLOW_SEED": "15",
-      "R05_NOISE": "200",
-      "R05_KEEP_BONUS": "0.5",
-      "R05_HUNGARIAN": "1000",
-      "R05_SCHED_GUIDE": "1",
-      "R05_FLOW_OUTPUT_PENALTY": "2.4",
-      "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "3",
-      "R05_FLOW_FLIPS": "1",
-      "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "24",
-      "R05_CONTINUATION_START": "2",
-      "R05_SHARE_PREFIX": "1",
-      "R05_PACKED_ORDER": "1",
-      "R05_FAST_DISPERSION": "1",
-      "R05_SCRATCH_REUSE": "1",
-      "R05_GOAL_CACHE": "1",
-      "R05_GENERATIONS": "4",
-      "R05_RADIX_ORDER": "1",
-      "R05_CANDIDATE_CACHE": "1",
-      "R05_ELITES": "8",
-      "R05_PERSIST_ELITES": "8",
-      "R05_FUTURE_ELITE_BLEND": "0",
-      "R05_FIRST_K": "0",
-      "R05_CACHE_SLOTS": "512",
-      "R05_KINEMATIC_MASK": "1"
-    },
-    "trick": true,
-    "valid": false,
-    "usage": {
-      "user_seconds": 30.074505,
-      "system_seconds": 0.31161,
-      "peak_rss_kib": 1462444,
-      "wall_seconds": 1.573025037534535,
-      "exit": 124
-    },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuation-budget-next-split-full-v60/k24576-b24-blend0-first0/summary.json"
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6144-elites8-persist8-blend0.5-relaxed5s/summary.json"
   },
   {
     "exit": 0,
-    "finished_utc": "2026-09-20T18:18:44.138147+00:00",
-    "name": "k24576-b24-blend0.5-first0",
+    "finished_utc": "2026-09-20T18:24:36.969550+00:00",
+    "name": "first5120-k6400-elites8-persist8-blend0-relaxed5s",
     "steps": 2000,
     "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
     "environment": {
-      "R05_K": "24576",
-      "R05_THREADS": "32",
+      "R05_K": "6400",
+      "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
@@ -255,7 +196,7 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "24",
+      "R05_CONTINUATIONS": "8",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
@@ -267,51 +208,52 @@
       "R05_CANDIDATE_CACHE": "1",
       "R05_ELITES": "8",
       "R05_PERSIST_ELITES": "8",
-      "R05_FUTURE_ELITE_BLEND": "0.5",
-      "R05_FIRST_K": "0",
+      "R05_FIRST_K": "5120",
+      "R05_FUTURE_ELITE_BLEND": "0",
       "R05_CACHE_SLOTS": "512",
-      "R05_KINEMATIC_MASK": "1"
+      "R05_KINEMATIC_MASK": "1",
+      "R05_PROFILE": "1"
     },
     "trick": true,
     "result": {
-      "numTaskFinished": 3691,
+      "numTaskFinished": 3648,
       "makespan": 2000,
       "numPlannerErrors": 0,
       "numScheduleErrors": 0,
       "numEntryTimeouts": 0,
       "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.892827161
+      "entryComputeMaxSeconds": 1.993035229
     },
     "errors": 0,
     "scheduleErrors": 0,
     "latency_seconds": {
-      "mean": 0.7045158614160026,
-      "max": 0.892827161
+      "mean": 0.9670475297739992,
+      "max": 1.993035229
     },
     "actual_path_steps": [
       2000,
       2000
     ],
-    "trajectory_sha256": "ad8d295368e510dad520674c5c9d157ea056636a5afc821578973b06191421d8",
+    "trajectory_sha256": "6eb95585e2a0fe83ef969eab7ef4b521eae62de78eaa89af90f0864829a1d7e7",
     "valid": true,
     "usage": {
-      "user_seconds": 38953.139495,
-      "system_seconds": 16.470229,
-      "peak_rss_kib": 1760980,
-      "wall_seconds": 1413.689008936286,
+      "user_seconds": 7426.653542,
+      "system_seconds": 1.279659,
+      "peak_rss_kib": 453604,
+      "wall_seconds": 1936.4767116662115,
       "exit": 0
     },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuation-budget-next-split-full-v60/k24576-b24-blend0.5-first0/summary.json"
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6400-elites8-persist8-blend0-relaxed5s/summary.json"
   },
   {
-    "exit": 124,
-    "finished_utc": "2026-09-20T17:55:13.541815+00:00",
-    "name": "k32768-b32-blend0-first16384",
+    "exit": 0,
+    "finished_utc": "2026-09-20T18:21:34.703358+00:00",
+    "name": "first5120-k6400-elites8-persist8-blend0.5-relaxed5s",
     "steps": 2000,
     "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
     "environment": {
-      "R05_K": "32768",
-      "R05_THREADS": "32",
+      "R05_K": "6400",
+      "R05_THREADS": "4",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
@@ -336,7 +278,7 @@
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "32",
+      "R05_CONTINUATIONS": "8",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
@@ -348,20 +290,41 @@
       "R05_CANDIDATE_CACHE": "1",
       "R05_ELITES": "8",
       "R05_PERSIST_ELITES": "8",
-      "R05_FUTURE_ELITE_BLEND": "0",
-      "R05_FIRST_K": "16384",
+      "R05_FIRST_K": "5120",
+      "R05_FUTURE_ELITE_BLEND": "0.5",
       "R05_CACHE_SLOTS": "512",
-      "R05_KINEMATIC_MASK": "1"
+      "R05_KINEMATIC_MASK": "1",
+      "R05_PROFILE": "1"
     },
     "trick": true,
-    "valid": false,
-    "usage": {
-      "user_seconds": 74.836281,
-      "system_seconds": 0.5033639999999999,
-      "peak_rss_kib": 1468804,
-      "wall_seconds": 3.0915970243513584,
-      "exit": 124
+    "result": {
+      "numTaskFinished": 3611,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.939142614
     },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuation-budget-next-split-full-v60/k32768-b32-blend0-first16384/summary.json"
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.8760624709149993,
+      "max": 0.939142614
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "4e479f00cc973fc2260827c0fda67ecb510bf8a82a6da889b3eac2e4e6596f76",
+    "valid": true,
+    "usage": {
+      "user_seconds": 6977.732822,
+      "system_seconds": 0.851742,
+      "peak_rss_kib": 451704,
+      "wall_seconds": 1754.2120580282062,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6400-elites8-persist8-blend0.5-relaxed5s/summary.json"
   }
 ]

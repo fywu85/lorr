@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research33*,debian.q@research39*",
+    "-pe",
+    "threaded",
+    "8",
+    "-binding",
+    "linear:4",
+    "-l",
+    "h_rt=03:00:00,h_vmem=4G,m_topology_inuse=*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_benchmark",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6400-elites8-persist8-blend0-relaxed5s/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/kinematic-larger-four-relaxed-split-full-v60/first5120-k6400-elites8-persist8-blend0-relaxed5s/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900407\n"
+}

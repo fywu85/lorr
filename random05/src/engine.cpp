@@ -41,6 +41,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.persist_elites=integer("R05_PERSIST_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
+    c.branch_diagnostics=integer("R05_BRANCH_DIAGNOSTICS",0);
+    if(c.branch_diagnostics<0)throw std::invalid_argument("branch diagnostic interval must be nonnegative");
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
     c.future_elite_blend=real("R05_FUTURE_ELITE_BLEND",0);
     if(!std::isfinite(c.future_elite_blend) || c.future_elite_blend<0 || c.future_elite_blend>1 ||
@@ -1213,10 +1215,12 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     return r;
 }
 Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
-                         const std::vector<Continuation>& continuations,bool cycle_moves) const {
+                         const std::vector<Continuation>& continuations,bool cycle_moves,
+                         std::vector<double>* branch_scores) const {
     RolloutPrefix prefix;
     const bool shared=cfg.share_prefix && !continuations.empty();
     Rollout result=rollout(frame,offsets,cycle_moves,nullptr,shared?&prefix:nullptr);
+    if(branch_scores){branch_scores->clear();branch_scores->reserve(continuations.size()+1);branch_scores->push_back(result.score);}
     if(continuations.empty())return result;
     if(shared && prefix.time!=cfg.continuation_start)
         throw std::runtime_error("missing shared rollout prefix");
@@ -1232,6 +1236,7 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
            branch.first.stage!=result.first.stage || branch.first.operations!=result.first.operations)
             throw std::runtime_error("continuation changed the first decision");
         score+=branch.score;result.expansions+=branch.expansions;
+        if(branch_scores)branch_scores->push_back(branch.score);
         if(cfg.continuation_risk!=0) {
             ++count;double delta=branch.score-mean;mean+=delta/count;
             variance_sum+=delta*(branch.score-mean);
@@ -1396,6 +1401,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
     }
     std::vector<Rollout> results(roots);
+    const bool diagnose_branches=cfg.branch_diagnostics>0 && env->curr_timestep%cfg.branch_diagnostics==0;
+    std::vector<std::vector<double>> branch_scores(diagnose_branches?roots:0);
     std::vector<std::exception_ptr> errors(roots);
     int best=0;float generation_mutation=cfg.mutation;
     for(int generation=0;generation<cfg.generations;++generation) {
@@ -1452,12 +1459,22 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         mark(2);
         #pragma omp parallel for num_threads(cfg.threads) schedule(static)
         for(int k=begin;k<end;++k) {
-            try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1); }
+            try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
+                                     diagnose_branches?&branch_scores[k]:nullptr); }
             catch(...) { errors[k]=std::current_exception(); }
         }
         mark(3);
         for(int k=begin;k<end;++k) {
             if(errors[k])std::rethrow_exception(errors[k]);
+            if(diagnose_branches) {
+                // Observe already-completed work only. No extra random draws,
+                // rollouts or selection changes; emit serially after workers.
+                std::fprintf(stderr,"R05_BRANCH_SCORE {\"t\":%d,\"generation\":%d,\"candidate\":%d,\"value\":%.17g,\"scores\":[",
+                             env->curr_timestep,generation,k,results[k].score);
+                for(size_t b=0;b<branch_scores[k].size();++b)
+                    std::fprintf(stderr,"%s%.17g",b?",":"",branch_scores[k][b]);
+                std::fprintf(stderr,"]}\n");
+            }
             if(results[k].score>results[best].score+1e-7 ||
                (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
         }

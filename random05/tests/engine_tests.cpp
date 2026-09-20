@@ -547,7 +547,23 @@ void shared_goal_costs() {
     require(reference==simulate(cfg,12),"shared goal cache changed with worker count");
 }
 
+void branch_diagnostics() {
+    Config cfg;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.share_prefix=true;cfg.rollout_match=true;cfg.cost_cache=true;
+    cfg.scratch_reuse=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    for(float risk:{0.0f,0.5f}) {
+        cfg.continuation_risk=risk;cfg.branch_diagnostics=0;cfg.threads=1;
+        const auto reference=simulate(cfg,12);
+        cfg.branch_diagnostics=100;
+        require(reference==simulate(cfg,12),"branch diagnostics changed decisions or random draws");
+        cfg.threads=2;
+        require(reference==simulate(cfg,12),"branch diagnostics changed with worker count");
+    }
+}
+
 int main() {
+    branch_diagnostics();
     cycle_word_masks();
     cached_kinematic_masks();
     elite_continuations();

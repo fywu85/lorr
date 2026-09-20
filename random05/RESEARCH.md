@@ -537,3 +537,14 @@ with futureblend0/.5, and3648/3611 forK6400. The3709 candidate averages923ms
 and peaks1495ms under a declared5s deadline; it is not a strict1s frontier.
 Try the exact cycle optimization on it as well as the established3655 control.
 Keep explicit first-step5120 work and regular6144; no time-based early return.
+
+
+Before staged continuation allocation, add observational branch diagnostics.
+R05_BRANCH_DIAGNOSTICS=N (default0) records each already-evaluated branch score
+every N steps, in deterministic serial order after the workers finish. It adds
+no rollouts or random draws and changes neither ranking nor selected actions.
+Full controls must retain their complete trajectories. Offline analysis will
+ask whether two/four branches keep the final best and top-eight candidates when
+retaining one-quarter or one-half of each generation, always preserving its
+first anchor. Report survival, top-eight recall and lost best full score; these
+are screening diagnostics, not measured throughput gains from an unbuilt method.
