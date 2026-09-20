@@ -1,0 +1,70 @@
+[
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v4/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "name": "flow1-turn2",
+    "trick": true,
+    "env": {
+      "R05_K": "16",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_TURN_COST": "2",
+      "R05_FLOW_SEED": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v4/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "name": "flow2-turn2",
+    "trick": true,
+    "env": {
+      "R05_K": "16",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_TURN_COST": "2",
+      "R05_FLOW_SEED": "2"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v4/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "name": "flow1-turn06",
+    "trick": true,
+    "env": {
+      "R05_K": "16",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_SEED": "1"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v4/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "name": "lanes-control",
+    "trick": true,
+    "env": {
+      "R05_K": "16",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "lanes",
+      "R05_TURN_COST": "2",
+      "R05_FLOW_SEED": "1"
+    }
+  }
+]
