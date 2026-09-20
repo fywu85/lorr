@@ -186,6 +186,19 @@ private:
     std::unordered_map<int, Entry> tables_;
 };
 
+enum class ChainPriceStatus { Covered, MissingTable, OutsideDomain, Unreachable, Invalid };
+struct ResidentChainPrice {
+    int cost = -1;
+    ChainPriceStatus status = ChainPriceStatus::MissingTable;
+};
+// Relax each known loaded leg's starting heading independently. Consult only
+// complete current-metric resident tables, without admission or LRU mutations.
+ResidentChainPrice resident_chain_price(const Task& task, const TurnDistanceOracle& oracle,
+                                       const Certificate& cert);
+int imputed_chain_price(int native, long long numerator, long long denominator);
+int selected_chain_price(int mode, int native, const ResidentChainPrice& resident,
+                         long long numerator, long long denominator);
+
 // Retain table-derived scalar legs even if their full distance table is evicted.
 // Previously approximated legs are refined only when a complete table is cached.
 class ChainCostCache {
@@ -193,6 +206,7 @@ public:
     int estimate(const Task& task, DistanceOracle& oracle, int& table_budget,
                  std::chrono::steady_clock::time_point deadline, bool peek);
     void retain(const std::unordered_set<int>& task_ids);
+    bool all_table_derived(int task_id) const;
     long long refined_legs = 0, changed_costs = 0, invalidations = 0;
     long long approximate_reads = 0, table_reads = 0;
 private:
@@ -267,6 +281,12 @@ struct Stats {
     long long pickup_full_fields = 0, pickup_full_pops = 0, pickup_full_states = 0;
     long long pickup_full_searches = 0, pickup_full_scans = 0, pickup_full_candidates = 0;
     long long pickup_full_estimates = 0;
+    long long chain_price_calls = 0, chain_price_observations = 0, chain_price_changed = 0;
+    long long chain_price_assigned_covered = 0, chain_price_assigned_imputed = 0;
+    std::array<long long, 5> chain_price_outcomes{};
+    long long chain_price_publication = 0, chain_price_numerator = 0, chain_price_denominator = 0;
+    long long chain_shadow_queries = 0, chain_shadow_changed2 = 0, chain_shadow_changed3 = 0;
+    long long chain_shadow_specific = 0;
     long long skipped_empty_searches = 0;
     long long sample_evaluations = 0, sample_deadlines = 0, improved_fallbacks = 0;
     long long global_evaluations = 0, global_assignments = 0;
@@ -429,6 +449,7 @@ private:
     int global_samples_ = 0;
     int pickup_weight_ = 1;
     bool pickup_flow_ = false;
+    int chain_flow_pricing_ = 0;  // 0 native, 1 resident, 2 imputed, 3 ratio-only, 4 shadow
     int pickup_flow_nodes_ = 8192;
     OrientedPickupSearch pickup_search_;
     int pickup_full_robots_ = 0, pickup_full_threads_ = 4;
@@ -445,6 +466,7 @@ private:
     // scheduler state
     std::unordered_set<int> free_tasks_;
     std::unordered_map<int, int> chain_cost_;
+    std::unordered_map<int, bool> chain_table_basis_;
     ChainCostCache refined_chain_cost_;
     long long regular_admissions_ = 0;
     size_t scheduler_cursor_ = 0, reassign_cursor_ = 0, pool_reassign_cursor_ = 0;

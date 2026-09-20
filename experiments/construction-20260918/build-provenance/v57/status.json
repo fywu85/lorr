@@ -1,0 +1,8 @@
+{
+  "state": "failed",
+  "job_id": 8899294,
+  "recorded_utc": "2026-09-20T04:34:42.011937+00:00",
+  "tests_passed": false,
+  "failure": "chain coverage counters differ from fixture",
+  "diagnosis": "The two-goal cache fixture ignored an offered committed forward move. The primary retained that pending commitment, so the next goal did not cause a new table build. Fix the fixture to execute each offered action before changing goals; preserve the expected two-table coverage assertion. Production source unchanged."
+}

@@ -1,0 +1,8 @@
+{
+  "state": "failed",
+  "job_id": 8899295,
+  "recorded_utc": "2026-09-20T04:36:40.345864+00:00",
+  "tests_passed": false,
+  "failure": "incompatible chain pricing configuration accepted",
+  "diagnosis": "All30 production pricing cases reached the configuration tests. The pickup-flow-disabled negative test left complete-pickup fields enabled, so a preexisting complete-pickup guard rejected it before the new guard could provide the specifically required message. Disable the unrelated full-field option in the negative-test setup; preserve message matching and all30 cases. Production source unchanged."
+}

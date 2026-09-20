@@ -2935,4 +2935,99 @@ void warehouse_trick_regression() {
  std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1\n";
 }
 
-int main(){try{warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+
+void chain_flow_pricing_regression() {
+ auto check=[](bool condition,const char* message){if(!condition)throw std::runtime_error(message);};
+ auto deadline=[](){return std::chrono::steady_clock::now()+std::chrono::seconds(5);};
+ Certificate cert;cert.rows=1;cert.cols=4;cert.free=cert.core=std::vector<char>(4,true);cert.pocket.assign(4,-1);
+ TurnDistanceOracle oracle;oracle.init(&cert,2*4*4*sizeof(int),4,true,4);
+ std::vector<uint8_t> costs(16,4);costs[1*4+2]=12;oracle.set_forward_costs(costs);
+ Task task;task.task_id=17;task.locations={3,0};
+ check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::MissingTable,"chain priced absent table");
+ oracle.table(0,deadline());
+ auto quote=resident_chain_price(task,oracle,cert);
+ check(quote.status==ChainPriceStatus::Covered&&quote.cost==20,"chain toll hand count differs");
+ task.locations={3,0,2};check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::MissingTable,"partial chain treated as complete");
+ oracle.table(2,deadline());quote=resident_chain_price(task,oracle,cert);
+ check(quote.cost==28,"relaxed two-leg chain hand count differs");
+ // A read of goal0 must not rescue it from eviction behind the newer goal2.
+ task.locations={3,0};resident_chain_price(task,oracle,cert);oracle.table(3,deadline());oracle.trim();
+ check(!oracle.peek(0)&&oracle.peek(2)&&oracle.peek(3),"chain pricing changed LRU/admission");
+ oracle.table(0,deadline());costs[1*4+2]=4;check(oracle.set_forward_costs(costs),"chain refresh fixture metric did not change");
+ check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::MissingTable,"stale chain quote survived metric update");
+ oracle.table(0,deadline());check(resident_chain_price(task,oracle,cert).cost==12,"rebuilt chain retained old toll");
+ oracle.clear_tables();task.locations={0,0,0};check(resident_chain_price(task,oracle,cert).cost==0,"repeated stops required a table");
+ for(const auto& stops:std::vector<std::vector<int>>{{},{-1,0},{0,4},{0,0,-1}}){task.locations=stops;check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::Invalid,"malformed chain index did not fall back");}
+ task.locations={0};task.idx_next_loc=-1;check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::Invalid,"negative chain stop accepted");
+ task.idx_next_loc=1;check(resident_chain_price(task,oracle,cert).status==ChainPriceStatus::Invalid,"past-end chain stop accepted");task.idx_next_loc=0;
+ auto outside=cert;outside.core[3]=false;outside.pocket[3]=7;task.locations={3,0};
+ check(resident_chain_price(task,oracle,outside).status==ChainPriceStatus::OutsideDomain,"excluded pocket leg used a chain quote");
+ outside=cert;outside.free[0]=false;check(resident_chain_price(task,oracle,outside).status==ChainPriceStatus::OutsideDomain,"obstacle stop accepted");
+ Certificate split;split.rows=1;split.cols=5;split.free=split.core={1,1,0,1,1};split.pocket.assign(5,-1);
+ TurnDistanceOracle disconnected;disconnected.init(&split,1<<20);disconnected.table(4,deadline());task.locations={0,4};
+ check(resident_chain_price(task,disconnected,split).status==ChainPriceStatus::Unreachable,"disconnected resident leg accepted");
+ ResidentChainPrice covered{42,ChainPriceStatus::Covered},missing;
+ check(selected_chain_price(2,12,covered,3,2)==42&&selected_chain_price(3,12,covered,3,2)==18&&selected_chain_price(4,12,covered,3,2)==12,"ratio control leaked individual price");
+ check(selected_chain_price(1,12,missing,3,2)==12&&selected_chain_price(2,12,missing,3,2)==18&&imputed_chain_price(5,3,2)==8,"whole-chain imputation or ceiling incorrect");
+ check(imputed_chain_price(12,0,0)==12&&imputed_chain_price(kInf-1,9223372036854775807LL,1)==kInf-1,"imputation fallback or saturation incorrect");
+ for(auto bad:std::vector<std::array<long long,3>>{{-1,1,1},{1,-1,1},{1,1,-1}}){bool rejected=false;try{imputed_chain_price(int(bad[0]),bad[1],bad[2]);}catch(const std::invalid_argument&){rejected=true;}check(rejected,"negative ratio accepted");}
+
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);setenv("CGAR_PICKUP_FULL_THREADS","1",1);
+ setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
+ auto blank=[](){SharedEnvironment e;e.rows=5;e.cols=7;e.num_of_agents=1;e.map.assign(35,0);e.curr_states={State(17,0,0)};e.curr_task_schedule={-1};e.goal_locations.resize(1);return e;};
+ long long production_cases=0;
+ for(int scale:{1,4})for(int coverage:{0,1,2})for(int mode:{0,1,2,3,4}){
+  setenv("CGAR_FLOW_COST_SCALE",std::to_string(scale).c_str(),1);setenv("CGAR_FLOW_STRENGTH",std::to_string(scale).c_str(),1);
+  setenv("CGAR_CHAIN_FLOW_PRICING",std::to_string(mode).c_str(),1);auto e=blank();Cgar c;c.initialize(&e,1000);
+  std::vector<Action> offered;const std::array<Action,3> observed{Action::FW,Action::CR,Action::CR};
+  for(int tick=0;tick<3;++tick){e.curr_timestep=tick;c.plan(&e,1000,offered);auto next=step(e,e.curr_states,{observed[tick]});check(!next.empty(),"chain observation fixture collision");e.curr_states=next;}
+  for(int k=0;k<coverage;++k){e.curr_timestep=3+k;e.goal_locations={{{k?11:17,0}}};c.plan(&e,1000,offered);auto next=step(e,e.curr_states,offered);check(!next.empty(),"chain table-preparation action collided");e.curr_states=next;}
+  check(c.stats().flow_publications==1&&c.stats().flow_penalized_edges>0,"chain assignment fixture lacked active toll");
+  e.curr_timestep=5;e.goal_locations={{}};
+  for(int id=0;id<2;++id){Task t;t.task_id=id;t.t_revealed=5;t.locations={18,id?11:17};e.task_pool.emplace(id,t);}
+  const auto builds=c.stats().oriented_builds;std::vector<int> proposed;c.schedule(&e,1000,proposed);
+  const int wanted=(coverage==2&&(mode==1||mode==2))||(coverage==1&&mode==1)?1:0;
+  check(proposed==std::vector<int>{wanted},"chain pricing production choice disagrees with hand costs");
+  check(c.stats().oriented_builds==builds&&e.curr_task_schedule==std::vector<int>{-1}&&e.task_pool.at(0).agent_assigned==-1,"chain pricing changed cache builds or simulator metadata");
+  if(mode){check(c.stats().chain_price_outcomes[0]==coverage&&c.stats().chain_price_outcomes[1]==2-coverage,"chain coverage counters differ from fixture");
+   check(c.stats().chain_price_numerator==(coverage==2?3*scale:coverage==1?2*scale:0)&&c.stats().chain_price_denominator==coverage*scale,"production snapshot ratio differs from hand count");}
+  if(mode==4)check(c.stats().chain_shadow_queries==1&&c.stats().chain_shadow_changed2==(coverage==2)&&c.stats().chain_shadow_changed3==0&&c.stats().chain_shadow_specific==(coverage==2),"shadow shortlist ranking differs from policy hand count");
+  c.schedule(&e,1000,proposed);check(proposed==std::vector<int>{0}&&c.stats().fair_assignments==1,"chain pricing bypassed oldest-task admission");
+  e.curr_task_schedule={0};e.task_pool.at(0).agent_assigned=0;e.task_pool.at(0).idx_next_loc=1;e.goal_locations={{{17,0}}};
+  c.schedule(&e,1000,proposed);check(proposed==std::vector<int>{0}&&e.task_pool.at(0).idx_next_loc==1,"chain pricing changed a started task");++production_cases;
+ }
+ setenv("CGAR_FLOW_COST_SCALE","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_CHAIN_FLOW_PRICING","4",1);setenv("CGAR_PICKUP_FULL_ROBOTS","0",1);
+ for(const auto& bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_CHAIN_FLOW_PRICING","-1"},{"CGAR_CHAIN_FLOW_PRICING","5"},{"CGAR_PICKUP_FLOW","0"},{"CGAR_REASSIGN","1"},{"CGAR_REASSIGN_POOL","1"},{"CGAR_TEMPORAL_REMAINING_FLOW","1"}}){
+  setenv(bad.first,bad.second,1);bool rejected=false;try{auto e=blank();Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument& error){rejected=std::string(error.what()).find("chain flow pricing")!=std::string::npos;}
+  check(rejected,"incompatible chain pricing configuration accepted");unsetenv(bad.first);setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_CHAIN_FLOW_PRICING","4",1);
+ }
+ // Closed-loop shadow and default must execute exactly the same assignments,
+ // actions, table-build work and publications, including repeated refreshes.
+ setenv("CGAR_FLOW_WARMUP","4",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","16",1);setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
+ struct Trace {std::vector<int> values;Stats stats;};
+ auto run=[&](int mode,int refine){
+  setenv("CGAR_CHAIN_FLOW_PRICING",std::to_string(mode).c_str(),1);setenv("CGAR_REFINE_CHAIN_COSTS",std::to_string(refine).c_str(),1);
+  SharedEnvironment e;e.rows=7;e.cols=9;e.map.assign(63,0);e.num_of_agents=12;e.curr_task_schedule.assign(12,-1);e.goal_locations.resize(12);
+  for(int r=0;r<12;++r)e.curr_states.emplace_back(r*5,0,r%4);
+  int next_id=0;auto add_task=[&](){Task t;t.task_id=next_id++;t.t_revealed=e.curr_timestep;t.locations={(t.task_id*11+17)%63,(t.task_id*23+8)%63};e.task_pool.emplace(t.task_id,t);};
+  for(int k=0;k<36;++k)add_task();Cgar c;c.initialize(&e,1000);Trace trace;
+  for(int tick=0;tick<96;++tick){e.curr_timestep=tick;std::vector<int> proposed;c.schedule(&e,1000,proposed);
+   std::set<int> assigned;for(int r=0;r<12;++r){check(proposed[r]>=0&&assigned.insert(proposed[r]).second,"chain shadow omitted or duplicated assignment");const int old=e.curr_task_schedule[r];if(old>=0&&e.task_pool.at(old).idx_next_loc>0)check(proposed[r]==old,"chain shadow redirected started task");}
+   for(auto& item:e.task_pool)item.second.agent_assigned=-1;
+   for(int r=0;r<12;++r){e.curr_task_schedule[r]=proposed[r];auto& task=e.task_pool.at(proposed[r]);task.agent_assigned=r;e.goal_locations[r]={{{task.locations[task.idx_next_loc],0}}};trace.values.push_back(proposed[r]);}
+   std::vector<Action> actions;c.plan(&e,1000,actions);auto next=step(e,e.curr_states,actions);check(!next.empty(),"chain shadow trajectory collided");e.curr_states=next;
+   for(int r=0;r<12;++r){trace.values.push_back(int(actions[r]));auto& task=e.task_pool.at(e.curr_task_schedule[r]);if(e.curr_states[r].location==task.locations[task.idx_next_loc]){
+     ++task.idx_next_loc;if(task.idx_next_loc==int(task.locations.size())){const int id=task.task_id;e.curr_task_schedule[r]=-1;e.goal_locations[r].clear();e.task_pool.erase(id);add_task();}
+     else e.goal_locations[r]={{{task.locations[task.idx_next_loc],0}}};}}
+  }
+  trace.stats=c.stats();return trace;
+ };
+ for(int refine:{0,1}){const auto control=run(0,refine),shadow=run(4,refine);
+  check(control.values==shadow.values&&control.stats.oriented_builds==shadow.stats.oriented_builds&&control.stats.flow_publications==shadow.stats.flow_publications&&control.stats.estimated_chain_cost==shadow.stats.estimated_chain_cost,"chain shadow changed closed-loop trajectory or cache work");
+  check(shadow.stats.chain_shadow_queries>0&&shadow.stats.flow_publications>1&&shadow.stats.flow_penalized_edges>0&&shadow.stats.chain_price_changed==0,"chain shadow closed-loop fixture was vacuous");}
+ for(const char* key:{"CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE","CGAR_PICKUP_FLOW","CGAR_PICKUP_FULL_ROBOTS","CGAR_PICKUP_FULL_THREADS","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES","CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_FLOW_COST_SCALE","CGAR_FLOW_STRENGTH","CGAR_CHAIN_FLOW_PRICING","CGAR_REFINE_CHAIN_COSTS"})unsetenv(key);
+ std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
+}
+
+int main(){try{chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
