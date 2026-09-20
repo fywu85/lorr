@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+from audit_task_waits import audit as audit_task_waits
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = ('src/engine.cpp', 'src/engine.hpp', 'src/Entry.cpp', 'CMakeLists.txt')
@@ -31,6 +32,8 @@ def audit():
             reference_case = next(c for c in specification['cases'] if c['name'] == reference['name'])
             references[reference['result']['numTaskFinished']] = (reference_case, read(directory / 'allocation.json'), name)
     report = []
+    waiting_cache = {}
+    raw_spec_index = None
     text = (ROOT / 'RANDOM05_PROGRESS.md').read_text()
     table = text.split('| Completed UTC', 1)[1].split('## Reference evidence supplied', 1)[0]
     for row in table.splitlines():
@@ -77,9 +80,37 @@ def audit():
         for source in sorted(sources):
             content = subprocess.check_output(['git', 'show', commit + ':random05/' + source], cwd=ROOT)
             assert hashlib.sha256(content).hexdigest() == build['source_hashes'][source], (utc, commit, source)
+        # The archived summary mirrors the raw runner directory. Keep waiting
+        # metrics tied to this exact throughput-selected result, including the
+        # unfinished tail rather than only orders that managed to finish.
+        raw_path = ROOT / 'runs/random05' / Path(evidence).relative_to('random05/results').parent / result['name'] / 'result.json'
+        if not raw_path.exists():
+            # Some early archives shortened the batch name. Resolve through
+            # the frozen specification, not a guess based on the case label.
+            if raw_spec_index is None:
+                raw_spec_index = {}
+                run_root = ROOT / 'runs/random05'
+                for candidate in list(run_root.glob('*/spec.json')) + list(run_root.glob('*/*/spec.json')):
+                    raw_spec = read(candidate)
+                    if raw_spec.get('kind') == 'benchmark':
+                        key = raw_spec['created_utc']
+                        assert key not in raw_spec_index, ('ambiguous frozen specification', key)
+                        raw_spec_index[key] = candidate
+            raw_spec_path = raw_spec_index[spec['created_utc']]
+            assert read(raw_spec_path) == spec, (utc, 'archived/raw specification mismatch')
+            raw_path = raw_spec_path.parent / result['name'] / 'result.json'
+        assert read(raw_path.parent / 'summary.json') == result, (utc, 'archived/raw summary mismatch')
+        if raw_path not in waiting_cache:
+            waiting, raw_data = audit_task_waits(raw_path)
+            trajectory = hashlib.sha256(json.dumps(raw_data['actualPaths'], separators=(',', ':')).encode()).hexdigest()
+            assert trajectory == result['trajectory_sha256'], (utc, 'raw trajectory mismatch')
+            waiting_cache[raw_path] = waiting
+        waiting = waiting_cache[raw_path]
+        assert waiting['tasks_finished'] == int(tasks) and waiting['horizon_steps'] == 2000
         report.append(dict(utc=utc, source_commit=commit, tasks=int(tasks),
                            evidence=evidence, binary_sha256=digest, workers=workers,
                            physical_cores=case['cores'], cpu_model=cpu, nms_tasks=nms_tasks,
+                           waiting_metrics=waiting,
                            nms_evidence='random05/results/' + reference_name + '/summary.json',
                            matched_cpu_model_and_allocation=matched,
                            entry_limit_ms=case.get('limit_ms', 1000),
@@ -90,12 +121,42 @@ def audit():
                 checks=report, all_valid=True)
 
 
+def waiting_markdown(report):
+    lines = [
+        '# RANDOM-05 order latency alongside throughput', '',
+        'Throughput is the primary objective. These secondary metrics use each',
+        'throughput-frontier run from RANDOM05_PROGRESS.md, without selecting a',
+        'different run for latency. All durations are simulation steps.', '',
+        'Completed latency is release to final waypoint; its mean and percentiles',
+        'exclude unfinished orders. Percentiles use the nearest-rank convention.',
+        'The oldest unfinished age and initial-cohort counts expose that censored',
+        'tail. An age of 2,000 is the observation horizon, not a waiting-time bound.',
+        'The initial cohort contains 1,200 orders. Later release times depend on',
+        'throughput because completed orders trigger replacements.', '',
+        'Source, input, allocation and raw-result hashes are checked by',
+        '`tools/audit_progress.py` and recorded in [the audit](results/progress-audit.json).',
+        'See [matched NMS waiting times](results/task-waiting-frontiers-20260920T1612/REPORT.md).', '',
+        '| Completed UTC | Source | Tasks | Workers / physical cores | Completed mean | Completed p95 | Completed max | Oldest unfinished | Initial unfinished / unopened |',
+        '|---|---|---:|---|---:|---:|---:|---:|---|']
+    for row in report['checks']:
+        waiting = row['waiting_metrics']
+        def maximum(key):
+            return waiting[key]['steps'] if waiting[key] else '-'
+        lines.append('| {} | [{}](https://github.com/fywu85/lorr/commit/{}) | {} | {} / {} | {:.1f} | {} | {} | {} | {} / {} |'.format(
+            row['utc'], row['source_commit'], row['source_commit'], row['tasks'],
+            row['workers'], row['physical_cores'], waiting['completed_latency']['mean_steps'],
+            waiting['completed_latency']['p95_steps'], maximum('maximum_release_to_completion'),
+            maximum('oldest_unfinished'), waiting['initial_still_unfinished'], waiting['initial_still_unopened']))
+    return '\n'.join(lines) + '\n'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT / 'random05/results/progress-audit.json')
     args = parser.parse_args()
     report = audit()
     args.output.write_text(json.dumps(report, indent=2) + '\n')
+    (ROOT / 'random05/WAITING_PROGRESS.md').write_text(waiting_markdown(report))
     print('Verified {} frontier rows against full runs and source hashes.'.format(len(report['checks'])))
 
 

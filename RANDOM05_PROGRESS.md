@@ -17,6 +17,8 @@ direct baselines for the archived competition instance.
   CPU use and peak process RAM. Our implementation must fit within 32 GB.
 - Map-specific guidance and known-horizon triage require `--trick RANDOM-05`.
   Reassignment of unopened tasks is a legitimate combined-track scheduling rule.
+- Throughput is the primary objective. Track release-to-completion latency and
+  unfinished-order ages as secondary metrics in [the waiting log](random05/WAITING_PROGRESS.md).
 - Fixed-work screens accelerate development. Full runs determine the frontier.
 - Record every new best, including a seed-specific or trick-enabled result,
   alongside its source commit/hash and UTC timestamp. Distinguish that best from
@@ -24,16 +26,16 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 16:07 UTC.
+Updated: 2026-09-20 16:18 UTC.
 
-**Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
-**+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
-continuations for each of 2,048 candidate priority vectors (16,384 futures total),
-keeping priorities fixed for the first two simulated steps. Source
-[d933023](https://github.com/fywu85/lorr/commit/d933023), planner seed 3, with exact
-prefix reuse, packed sorting, sparse dispersion and reusable policy buffers.
-Mean latency 607 ms, maximum 726 ms, peak RSS 364 MB. All 2,000 steps are valid.
-This is a selected single-run maximum and has not been reproduced on four cores.
+**Best single run on the archived input: 3,689 tasks on 32 workers / 16 physical cores**,
+or **+16.3% versus matched NMS32 = 3,172**. Source
+[8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3), planner seed 3,
+K8192/B8/start2/local0, four search generations with eight distinct elite
+parents. All exact CPU optimizations are enabled. Mean latency 238 ms, maximum
+359 ms, peak RSS 590 MB. All 2,000 steps are valid. This selected maximum has
+not been reproduced on four cores or independent inputs.
+[Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json).
 
 **Best confirmed four-core run: 3,637 tasks**, or **+24.8% versus the strongest
 matched NMS4 repeat = 2,914**. Source
@@ -50,8 +52,9 @@ K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
 complete trajectory repeats across four cores and 32 workers.
 [Equivalence](random05/results/hotpaths-four-split-full-v45/3501-equivalence.json).
 Later development records never replace a candidate inside a frozen validation.
-The larger K4096 configurations have so far exceeded the strict four-core
-first-step deadline; their valid 32-worker scores remain a separate record.
+Earlier K4096 implementations exceeded the strict four-core first-step deadline.
+Exact sorting and candidate-ranking caches subsequently made K4096 and K5120
+feasible on four cores; retain the earlier failures as implementation-specific evidence.
 
 **Repeated improvement on the development input:** across planner seeds 0–4,
 four-continuation search averages 3,392.6 tasks and eight-continuation search
@@ -85,6 +88,16 @@ RSS 287 MB; 32-worker mean 317 ms, maximum 431 ms, RSS 446 MB. Both full runs
 are valid. Known-horizon counterparts score 3,501/3,596; these paired differences
 are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 [Cutoff-free evidence](random05/results/continuation-no-horizon-split-full/summary.json).
+
+**Waiting-time audit of the current throughput records:** the longest completed
+order takes 1,947 steps for our four-core run versus 1,997 for NMS; the 32-worker
+pair is 1,929 versus 1,976. Both solvers still have step-zero orders unfinished at
+step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
+133 versus 219 on four cores, 141 versus 206 on 32 workers, out of 1,200 initially
+revealed. Initial orders never opened: 101 versus 102 and 96 versus 91 respectively.
+Higher throughput does not establish a waiting-time bound.
+[Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
+[latency history for every frontier](random05/WAITING_PROGRESS.md).
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
@@ -154,6 +167,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T15:29:14.931221+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed4; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed4-four/summary.json) |
 | 2026-09-20T15:29:21.178706+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed0; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed0-four/summary.json) |
 | 2026-09-20T15:50:14.795609+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed3; `--trick RANDOM-05` | 3637 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +24.8% | [Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json) |
+| 2026-09-20T16:15:24.583747+00:00 | [8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3) | K8192/B8/start2/local0; four generations / eight elite parents; planner seed3; exact caches/radix; `--trick RANDOM-05` | 3689 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.3% | [Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1044,3 +1058,16 @@ input/binary hashes and allocation are linked in the audits.
   All six predeclared candidate/NMS4 runs are submitted. Additional development
   seeds and later elite-parent changes do not replace this frozen candidate.
   [Protocol](random05/FRESH_VALIDATION_V3.md).
+
+- Eight elite parents at K8192/B8/four generations reach **3,689 tasks** on
+  32 workers, versus 3,596 with one generation and 3,582 with four generations
+  and one parent at the same K. This is a new selected maximum, not a replicated
+  average gain. All 2,000 steps pass; mean238ms/max359ms/RSS590MB.
+- The K2048/four-parent planner-seed check gives
+  3,553/3,610/3,484/3,618/3,394 for seeds0–4, mean **3,531.8**. The single-parent
+  control mean is3,531.4. Two of five pairs improve, so retain the option for its
+  selected maxima without claiming a general mean improvement.
+- Per user steering, throughput remains the primary objective. The progress audit
+  now also records completed-order mean/p95/max, the oldest unfinished age and
+  initial-cohort unfinished/unopened counts for all historical frontier rows.
+  Completed-only latency statistics are explicitly censored by unfinished orders.

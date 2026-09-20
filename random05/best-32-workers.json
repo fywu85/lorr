@@ -1,17 +1,17 @@
 {
-  "source_commit": "d933023",
-  "evidence": "random05/results/continuation-larger-split-full-v46/k16384-b8/summary.json",
+  "source_commit": "8eb59d3",
+  "evidence": "random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v54/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
     "cores": 16,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "k16384-b8",
+    "name": "k8192-elites8-workers32",
     "env": {
-      "R05_K": "16384",
+      "R05_K": "8192",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
@@ -42,9 +42,22 @@
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
       "R05_FAST_DISPERSION": "1",
-      "R05_SCRATCH_REUSE": "1"
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GOAL_CACHE": "1",
+      "R05_GENERATIONS": "4",
+      "R05_RADIX_ORDER": "1",
+      "R05_CANDIDATE_CACHE": "1",
+      "R05_ELITES": "8"
     },
     "smt": 2,
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v46/build/lifelong_random05"
+    "binary_sha256": "daf5d701daa4ca435d99a7ae86ee66324791b87e1e7ad87097762061892facf0",
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v54/build/lifelong_random05",
+    "input_hashes": {
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+      "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+    }
   }
 }

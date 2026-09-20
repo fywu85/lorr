@@ -304,3 +304,18 @@ latest promising general change:3,618 versus3,520 at K2048/B8. Larger elite
 counts are not uniformly better. Full seed and compute-scaling comparisons are
 running. The third fresh-input validation tests the separately frozen3,637
 configuration and must not be relabeled as validation of these newer variants.
+
+
+The completed K2048/four-parent seed check is effectively neutral on average:
+3,531.8 versus3,531.4 across planner seeds0–4, with only two positive pairs.
+At K8192, eight parents give a selected3,689 on seed3, compared with3,582 for
+one parent/four generations and3,596 for one generation. Preserve the maximum,
+but do not call this a replicated average gain.
+
+Next hypothesis: carry several evaluated priority vectors across real steps.
+The current solver carries only the winner, discarding alternative coordination
+patterns after each step. Reuse only vectors as candidate parents; every score
+must be recomputed from current poses, assignments, ages and committed moves.
+Keep the same fixed rollout budget, the selected incumbent as the first anchor,
+and globally randomized candidates. A carry count of one must preserve the
+existing full trajectory. No map-specific rule or fairness objective is added.
