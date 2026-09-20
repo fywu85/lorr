@@ -52,4 +52,5 @@ full competition horizons, and record failure rather than partial throughput.
 Use short runs only for collision, source-equivalence and runtime diagnostics.
 Then prioritize SORTATION, CITY, GAME and RANDOM-01..04 from their measured gaps.
 
-[Evaluation protocol](PROTOCOL.md), [cross-instance progress](../../CGAR_PROGRESS.md).
+[Published per-instance targets](TARGETS.md), [reference transfer review](TRANSFER_REVIEW.md),
+[evaluation protocol](PROTOCOL.md), [cross-instance progress](../../CGAR_PROGRESS.md).

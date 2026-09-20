@@ -1,41 +1,101 @@
-# Continue Warehouse throughput work
+# Continue CGAR across the competition
 
-Updated 2026-09-20 22:21 UTC. User asks to keep improving CGAR Warehouse. No internal subagents, no new formal goal. Shared GRID hosts and 5-second development deadline are authorized, fixed complete work and RSS <32,000,000,000 bytes remain required. Strict 1-second certification is separate. Explicit Warehouse policies require `--trick WAREHOUSE` and `[trick]` commits. Preserve HRRN, forced-oldest admission, held/started/primary/recovery protection, one unopened retarget and 20-step cooldown; short preference OFF. This is a CGAR hybrid with NMS-derived temporal PIBT and explicit native Warehouse guidance, not NMS-free. Finite fairness observations are not a starvation proof.
+Updated2026-09-20 23:15UTC. The latest user redirected work: finish Warehouse's
+strict1s validation, then target all ten instances. Throughput is primary;
+fairness is secondary and regressions must be reported but do not veto a faster
+candidate. NMS is the primary target; KK supplies ideas/comparisons. The160000
+Warehouse aspiration is deferred. Formal goal metadata may still contain that
+superseded target: the latest user scope takes precedence; do not mark it achieved.
 
-All shell calls require `require_escalated` because default bwrap fails. A concurrent random05 fork shares main, the worktree and index: never touch its files/jobs; use explicit staging and `git commit --only`. Never remove a live index.lock. Public fywu85/lorr commits/pushes are authorized. Fable persistent session1ebb1075-3538-49d1-93d1-a00c94fa256a exhausted credits on turn46; no quota change, do not retry until that changes, next47. No active Claude CLI.
+The other agent owns RANDOM-05. Do not touch its code, files, outputs, builds or
+jobs. Read-only RANDOM05_PROGRESS.md and artifacts are allowed. No internal
+subagents. Fable Claude session1ebb1075-3538-49d1-93d1-a00c94fa256a exhausted
+credits at turn46; no change, so no retry. Next would be47. Shell calls require
+require_escalated because bwrap fails. Shared main/index: explicit paths and
+`git commit --only`, never remove index locks or include random05changes.
 
-## Verified best and retained profile
+## Warehouse strict run in progress
 
-Best155173 (seed0), source37f592a48bdb24b936f8d0be8be22ddd405b4ddb, binary3f66eefd2a54589e48965b5b4031cbbe4d67bd8e6423c8cdc1cb3108f24bf641, completion2026-09-20T20:36:47.428452+00:00. Full trajectoryb57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0. Exact configuration in results/match-horizon-native-full-v110/best-record.json and best-variant.json. +378 over targetNMS154795. Native20/200+1bands, turn1, pure50P-op,8GiB logical cache/build128, one global worker4M candidates/1M attempts, prep4, four regions/two rounds25k/temp1000ppm, pickup64/4threads/weight8, matching64/interval10, HRRN1, H5000/p90 margin and whole-cycle matching guardON. Short/neutral-tail/prewarmOFF.
+V123 benchmark8900817 on exclusive research44,16physicalcores, two seeds0/2
+with8cores each. Raw runs/cgar-strict-runtime-full-v123-20260920.
+Full5000steps,10000robots,1000ms complete-entry timeout,32decimalGB RSS.
+Frozen source3e319f175859396b91f97364b320c6794a85cbb7; binary
+e3ec32ecdfdaf06f7db139da3857af8fa0ad43b98bd67479f7b9bd969dc1302c.
+Profile strict_runtime/full-variants.json: old155173guardON best, with8thread
+prefetch/preparation/pickup and25GiB logical unwarmed cache. No all-goal prewarm;
+search work/decisions must exactly reproduce full V110155173/155090 trajectories.
+Start22:46:35UTC; both beyond3600at23:14; no timeout so far. Expectfinish~23:23.
+Verifier8900819, independent outcomes8900820 are held behind benchmark/verifier.
+Results strict-runtime-full-v123 and strict-runtime-full-v123-outcomes.
+Do not claim strict certification until both finish and all verification passes.
 
-Four guarded totals [155173,155056,155090,155008], mean155081.75; changes [53,57,34,-12], mean+33, three wins/one loss. results/match-horizon-four-seeds-v114.json. All first-half tasks complete; no initial never assigned, max one retarget, no after-pickup reassignment. Tails mixed. Best mean448.763ms/max.991801s/RSS11.947GB, mean1.511CPUcores of4,38.36min. Another seed exceeds1s slightly; strict1s not certified.
+V122800step execution screen is verified after r2counter-check correction.
+Allfour exact trajectories match; maxentries base.986230,prefetch8.960702,
+prep/pickup8.984437,combined8+25GiBcache.953731. Shared timing not isolatedspeedup.
+First verifier failure retained; only cache builds differ (intended fewerrebuilds).
+Results strict-runtime-screen-v122 and -r2. Readytoarchive; helpersuncommitted.
 
-## Newly COMPLETE V118/V119
+Current record155173 source37f592a48bdb24b936f8d0be8be22ddd405b4ddb;
+full hashb57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0.
+Seed2hash274d18be1db30d232c3fb50997ea281b5b41b6c60f4e5ec0fcf2f6c09506141b.
+Fourguardtotals[155173,155056,155090,155008], mean155081.75; generic6seedmean144392.17.
+Keep the original record's source/timestamp; add exact strict execution proof as
+separate confirmation, not a fictitious throughput improvement. native_work/
+summarize.py now uses recordeddeadline/exclusivity rather than hardcoded5s.
+After outcomes complete, run work_budget.py then summarize.py. Update Warehouse
+progress, rootREADME and cross-map status with actual timing/memory/CPU evidence.
 
-V118 full seeds1/3 turn1vs4 guardOFF: turn4=155115/154861, effects+116/-159. With V113 seeds0/2, four turn4 totals [155095,155115,155146,154861], differences[-25,116,90,-159], mean+5.5, two wins/two losses. Do not promote. Aggregate results/native-turn-four-seeds-v118.json. V119 turn4 guardON155164/155144 vs guardOFF155095/155146, +69/-2; versus guarded turn1, -9/+54. No new record. Both matrices pass exact control trajectory reproduction, all28source/test hashes, 4cores/case,5s/32GB, fairness and independent200M-action accounting per matrix. Work-budget and summary.md generated in results/native-turn-seeds13-v118 and results/native-turn-guard-full-v119; corresponding -outcomes/accounting.json complete. Same frozen source dac3fc75cb6a149b3e9a6b4770b64170ead87ed9, binary4f194edc5a806ae31198ef5ff29b995372b2e92bf266f490c010dbf0574481a5. Jobs8900725/28/31 and8900726/29/32 all complete.
+## New generic regional candidate budget
 
-## Newly COMPLETE V117 prewarming
+Source eb9938090d7cfb331fdc124ce19b475626356502; binary
+19155f20da9f518cfac5955c4bcc4a3af9926ff4828e552f3bd69026201b5c3f.
+Build runs/cgar-allmaps-region-budget-build-v1-r2-20260920 complete, all28hashes
+and fullregressions passed. Evidence experiments/allmaps-20260920/build-v1-r2.
+New optionalCGAR_TEMPORAL_REGION_CANDIDATE_LIMIT default0; perregion/perround,
+checked between complete attempts so final attempt canovershoot. It does not
+return partial work on a deadline. Global4Mlimit already existed; regionshad
+onlyattemptlimits. PriorRANDOM04step1000had1.187billioncandidates,4.122sregional.
+Zero retains Warehouse/search defaults. Regressionfixturescovercollision-free
+merges, primary/recoveryprotection, matching1/4threaddecisions, nonbindingcap
+equivalence, measuredworkreduction, invalidsettings, timeoutfailure.
+Initialbuild8900850failedan oldauditassertion assumingallattempts; correctedto
+actualattemptcounts, retainingstrictoldassertionwhenuncapped. Failurearchived;
+no benchmarksfromfailedattempt. Retry8900851passed.
 
-Full results/native-prewarm-full-v117 and -outcomes pass all six cases and300M-action accounting. Base8GiB and larger25GiB unwarmed cache exactly reproduce155173/155090 and both V110 trajectory hashes. Full map-only prewarm loses38/323, scoring155135/154767. Keep prewarmingOFF. Peak full RSS19.694/19.692GB for prewarm,15.317/15.313GB for larger cache,11.949/11.968GB base. Prewarm component23.577/23.477s within successful30s initialization. Entry mean431.23/434.00ms,max.7474/.7466s; these changed-trajectory shared-host timings are not isolated speedups or1s certification. Eight physical cores allocated/case for preprocessing, normal entry remains1global/4prep/4region/4pickup. Larger cache preserves quality, may deserve isolated timing; no canonical configuration change. Every first-half task complete, initialnever0, one-retarget/no-afterpickup preserved, tails mixed.
+## Full eight-instance matrix running
 
-Source3e319f175859396b91f97364b320c6794a85cbb7, binarye3ec32ecdfdaf06f7db139da3857af8fa0ad43b98bd67479f7b9bd969dc1302c. Source/tests3e319f1 and source/build/screens/helpers536f545 already pushed. Full jobs8900733/35/36 complete. Source unchanged; no build running. General prewarm_all tests143648oriented states and timeout/capacity/thread/CLI gates. V116 static probes separately verify617376states; 4/8cores29.75/23.66s,11.91GBtables,12.3GBRSS. Four-core probe-source.patch reconstructs original frozen helper from committed parameterized version; preserve patch/note.
+Job8900861 started23:09:47UTC on research57, sharedhost,32physicalcores,
+8simultaneouscases4coreseach. Fullhorizons,5sdevelopmentdeadline,32decimalGB,
+seed0, two profiles: perregion4Mvs8Mcandidates; allothergenericsettingssameas
+priorgeneralization. Raw runs/cgar-allmaps-region-budget-full-v1-20260920.
+AllinstancesexceptWAREHOUSEandRANDOM05. Verifier8900862heldbehindbenchmark;
+results experiments/allmaps-20260920/results/region-budget-full-v1.
+Frozenprofiles/inputhashes/helper/buildproofcommitted1a3de99. Newcode93cb18f,
+regressioncorrectioneb99380. Source/testsmatchbuildexactly; no newbuildneeded.
 
-## Newly COMPLETE V120 cutoff quantiles
+Preliminary completed RANDOM rawtotals4M[588,988,1381,842],8M[588,985,1281,940].
+Allmaxentries<=.254s. Originaluncapped[588,982,1409,997] had R04mean3.07s.
+These are fastcompletepartialmatrixrows, not yetfullverified qualitypromotion.
+Biggerregionalbudget is not uniformlybetter. Largefourmapsstillrunning.
 
-All six cases and300M-action accounting pass. P90 exact controls155173/155090. P95=155077/155036 (−96/−54); p99=154811/154787 (−362/−303). Empty and unfinished work both rise. Exact pre-intervention prefixes verified, all differences in last1000. Retain p90; no record. Results cutoff-quantiles-full-v120 and -outcomes complete, work-budget and summary ready. Frozen V110 source/binary above, no production changes. Jobs8900737/38/39 complete. All20full cases in V117/V118/V119/V120 now independently verified, one billion robot actions. No Warehouse jobs remain active. Do not touch random05jobs.
+## Next work
 
-## Current diagnosis and prior rejects
+Read experiments/allmaps-20260920/{README,PROTOCOL,TRANSFER_REVIEW}.md and
+CGAR_PROGRESS.md. New reference-inventory and reviewsourcehashes uncommitted.
+Oldcompetitorreferences mostly1000stepcaps, mixed7532/9354CPUs andlarge-map
+RSS32GBviolations; do not claim matched SoTA comparisons fromthem. NMS full
+small-RANDOMreferences[638,1226,2350,2532] are16physical/32logicalEPYC7532,
+where newCGARuses4physicalEPYC9354. Properfreshmatchedreferencesstillneeded.
 
-V121 read-only audit results/current-best-work-audit-v121 verifies100Mactions from V110 best pair. Per completion: shortest chain242.465, extra loadedforward3.004, loadedturns5.655, loadedwaits7.271, all emptywork60.104, loadedunfinished3.809. Loaded overhead15.929 vs saved NMSdiagnostic16.755, completed CGAR chains7.671cells longer. Empty18.65%of actions, shortest completedchains75.23%. Different cohorts, not recoverable savings/causal estimates. Saved NMSdiagnostic timedoutonce/exceeded32GB, not qualifying. The old large loaded-motion deficit is stale.
+Afterregionalmatrix, compare existingremaining-chainorder/unequalpower,
+unopenedmatching and directcostHRRNoff as controlledgenericfactors. Preserve
+CGARsafety/ownership; fairnessisnowsecondary. Uniformflowtestmustretain
+schedulercandidatecoverage: justsettingFLOW_STRENGTH0alsoforbidsPICKUP_FLOW,
+so avoidconfoundedon/offcomparison. NMSactiveguidanceisnativegeneratedfor
+SORTATION/CITY/GAME, savedfieldforRANDOM; itsunusedconfigsLNSisnotactive.
+KKactivecodeiswppl_planner, notmy_planner. Anyinstance-specificfieldor
+configurationrequiresnewvalidated --trick INSTANCE gates and[trick]commits.
+Do notpromotestandaloneR05scoresasCGARresults ormodifythatagent'scode.
 
-Duration audit V115: historical40effects and predeclared6new effects do not establish a reliable short ranking run. At4975twoof6new directions still wrong; sampled stability only5000. Keep800-step capability checks and full5000 quality. Five-step matching loses paired mean95.25 across4seeds (V108/V111), retain10. Pickup6/10 both lose vs8 (V106). Turn2 losesboth (V113). Neutral-tail losesboth (V101). Full-depth2/4worker search not promoted (V103); split-total portfolios worse (V100). Old8Msearch mixed -19/+206 and~30%slower (V95). Hard16/16 robot/pickup group mixing losesboth earliergenericseeds(V66), not repeated. Fresh-pickup audit V105 limited conditional remaining savings, current grouping not a globalbound. Initial complete-field pairing V1079.145s for modest physical gain, deferred. Generic six-seed reference144392.17 source0196851, experimental generic peak145083 unchanged.
-
-## Closeout checkpoint
-
-New V118/V119/V117/V120 results, four-seed turn aggregate, WAREHOUSE_PROGRESS.md, TARGET.json, native_turn/README.md and static_prewarm/README.md are archived in this checkpoint. Preserve small failure-provenance files in results/match-horizon-seeds13-v114-outcomes and native-turn-full-v113-outcomes (*.txt/allocation-failure-accounting.json) plus V116probe-source.patch/source-note.md. The two initial outcome analysis jobs failed the combined CPU-resource assertion BEFORE reading trajectories; do not claim which subcondition without evidence. Unchanged frozen retries already passed. Prior536f545/e7fed44 pushed.
-
-Use native_work/work_budget.py --results R --outcomes R-outcomes --output R/work-budget.json then native_work/summarize.py --results R --title ... --assessment ... . Python3.7. Commit only completed results and our explicit files. Push via GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 git -c 'credential.helper=!/user/fw2449/.local/bin/gh auth git-credential' push origin main. No internal agents or running exec sessions.
-
-## Next useful research directions (not submitted)
-
-Avoid another unmotivated parameter sweep. Current best remains155173 and four-seed guard mean155081.75. Consider a prospective, read-only audit of the cutoff prediction: the current model groups duration-minus-physical-bound by five length buckets and excludes retargeted tasks, which may leave structured prediction error by task-chain complexity or approach length. Any audit must train only on previously completed tasks and keep censored tasks separate; lower forecast error is not itself a throughput improvement. Separately, measure the larger cache on repeated same-core brackets before claiming runtime savings. Broader pairing is not ruled out by the bounded32-holder audit, but the earlier hard16/16 mixed grouping and doubled matching cadence lost. No new production change or next benchmark is promised/submitted.
+Pushespublicfywu85/lorr authorized. UseGIT_ASKPASS=/bin/false
+GIT_TERMINAL_PROMPT=0 git -c 'credential.helper=!/user/fw2449/.local/bin/gh auth git-credential' push origin main.

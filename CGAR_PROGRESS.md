@@ -8,6 +8,7 @@ latest user clarification: track and disclose waiting regressions without making
 them a veto on a throughput improvement.
 
 [Campaign and protocol](experiments/allmaps-20260920/README.md).
+[Published NMS targets for all ten instances](experiments/allmaps-20260920/TARGETS.md).
 [Warehouse best history](WAREHOUSE_PROGRESS.md).
 [RANDOM-05 independent campaign, read-only](RANDOM05_PROGRESS.md).
 

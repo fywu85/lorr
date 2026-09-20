@@ -23,9 +23,17 @@ def main():
     core_counts={r['reserved_physical_cores'] for r in v['rows']}
     assert len(core_counts)==1
     cores=next(iter(core_counts))
+    deadline_ms=v['decision_limit_ms']
+    assert deadline_ms in (1000,5000)
+    assert all(r['max_entry_seconds'] <= deadline_ms/1000 for r in v['rows'])
+    if v.get('competition_budget_confirmed'):
+        assert deadline_ms==1000 and v['exclusive_host_requested']
+        timing_scope='The complete runs pass the enforced competition1s entry limit on an exclusive host. This validates these runs, not every seed or machine; timing differences do not isolate individual optimizations.'
+    else:
+        timing_scope='Development timings do not certify the competition1s limit or isolate speedups. Host exclusivity requested: '+str(v.get('exclusive_host_requested'))+'.'
     lines=['# '+a.title,'',a.assessment,'',
            'Verified '+v['checked_utc']+'. Source ['+v['exact_production_source_commit'][:7]+'](https://github.com/fywu85/lorr/commit/'+v['exact_production_source_commit']+'); binary `'+v['binary_sha256']+'`.', '',
-           'Every case completes5000steps with10000robots, zero planner/scheduler errors and timeouts, and independently reconciled50million robot actions. All'+str(v['verified_source_and_test_files'])+'source/test hashes, fixed work, distinct '+str(cores)+'-core bindings,5s entry deadline and32decimalGB RSS checks pass. Exact prior controls reproduce their complete trajectory hashes. Shared-host timings do not certify the competition1s limit or isolate speedups.','',
+           'Every case completes5000steps with10000robots, zero planner/scheduler errors and timeouts, and independently reconciled50million robot actions. All'+str(v['verified_source_and_test_files'])+'source/test hashes, fixed work, distinct '+str(cores)+'-core bindings,'+str(deadline_ms)+'ms entry deadline and32decimalGB RSS checks pass. Exact prior controls reproduce their complete trajectory hashes. '+timing_scope,'',
            '| Variant / seed | Tasks | Paired change | Final1000 | Mean entry ms | Max entry s | Peak RSS GB | Mean CPU cores /'+str(cores)+' | Full minutes |',
            '|---|---:|---:|---:|---:|---:|---:|---:|---:|']
     for r in v['rows']:

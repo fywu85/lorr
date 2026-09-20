@@ -88,12 +88,13 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence', 'match_horizon', 'native_turn', 'prewarm'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence', 'match_horizon', 'native_turn', 'prewarm', 'execution'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
     p.add_argument('--profile', type=Path, help='One frozen base profile; only the mode-specific parameters may vary')
     p.add_argument('--execute', action='store_true')
+    p.add_argument('--decision-limit-ms', type=int, choices=[1000,5000], default=5000)
     a = p.parse_args(); raw = a.raw.resolve(); out = a.output.resolve(); support = raw / 'frontier-analysis-support'
     if not a.execute:
         support.mkdir(exist_ok=False)
@@ -103,15 +104,18 @@ def main():
                      'throughput-20260918-next/analyze_matrix.py', 'throughput-20260918-strict/analyze.py',
                      'construction-20260918/verify_full.py']:
             copies['experiments/' + name] = ROOT / 'experiments' / name
+        if a.mode == 'execution':
+            assert a.reference and a.profile
+            copies['reference-work.json'] = a.reference.parent / 'work-samples.json'
         if a.mode == 'fresh':
             copies['audit_tools.py'] = BASE / 'fresh_pickup/audit_tools.py'
         files = {}
         for name, source in copies.items():
             target = support / name; target.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(source, target)
             files[str(target)] = sha(target)
-        write(raw / 'frontier-analysis-request.json', dict(commit=a.commit, mode=a.mode, control=a.control, files=files))
+        write(raw / 'frontier-analysis-request.json', dict(commit=a.commit, mode=a.mode, control=a.control, decision_limit_ms=a.decision_limit_ms, files=files))
         command = ['/usr/bin/python3', str(support / 'analyze.py'), '--raw', str(raw), '--output', str(out),
-                   '--commit', a.commit, '--mode', a.mode, '--execute']
+                   '--commit', a.commit, '--mode', a.mode, '--decision-limit-ms', str(a.decision_limit_ms), '--execute']
         if a.control:
             command += ['--control', a.control]
         script = raw / 'frontier-analysis.sh'; script.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
@@ -127,17 +131,18 @@ def main():
         print(result.stdout, end='', flush=True); subprocess.run(['qrls', result.stdout.strip()], check=True); return
     request = read(raw / 'frontier-analysis-request.json')
     assert request['commit'] == a.commit and request['mode'] == a.mode and request.get('control') == a.control
+    assert request.get('decision_limit_ms',5000) == a.decision_limit_ms
     for name, value in request['files'].items():
         assert sha(name) == value, name
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10', 'match_horizon':'trick_matchguard0', 'native_turn':'trick_turn1', 'prewarm':'trick_prewarm_base'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10', 'match_horizon':'trick_matchguard0', 'native_turn':'trick_turn1', 'prewarm':'trick_prewarm_base', 'execution':'trick_runtime_combined8'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
     verifier = importlib.import_module('verify_full'); verifier.ROOT = ROOT
-    result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=5000)
+    result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=a.decision_limit_ms)
     spec = read(raw / 'spec.json'); assert spec['trick'] == 'WAREHOUSE' and spec['experiment_track'] == 'TRICK'
     baseline = next(iter(read(support / 'profile.json').values()))
     control_cases = [c for c in spec['cases'] if c['variant'] == control]
@@ -147,11 +152,15 @@ def main():
     control_percentile = next(iter(control_percentiles))
     ref = read(support / 'reference.json')
     assert ref['all_valid_within_deadline_and_memory'] and not ref['failures']
-    control_environment = normalize_environment(control_cases[0]['environment'])
-    assert all(normalize_environment(c['environment']) == control_environment for c in control_cases)
+    execution_keys = {'CGAR_TURN_PREFETCH_THREADS','CGAR_TEMPORAL_PREP_THREADS','CGAR_PICKUP_FULL_THREADS','CGAR_TURN_TABLE_MB'}
+    def comparison_environment(env):
+        normalized = normalize_environment(env)
+        return {k:v for k,v in normalized.items() if k not in execution_keys} if a.mode=='execution' else normalized
+    control_environment = comparison_environment(control_cases[0]['environment'])
+    assert all(comparison_environment(c['environment']) == control_environment for c in control_cases)
     reference = {}
     for row in ref['rows']:
-        if normalize_environment(row['environment']) != control_environment:
+        if comparison_environment(row['environment']) != control_environment:
             continue
         if row['seed'] in reference:
             previous = reference[row['seed']]
@@ -164,7 +173,7 @@ def main():
         sys.path.insert(0, str(support))
         audit_tools = importlib.import_module('audit_tools')
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else {'CGAR_TRICK_MATCH_HORIZON'} if a.mode == 'match_horizon' else {'CGAR_TRICK_NATIVE_TURN_COST'} if a.mode == 'native_turn' else {'CGAR_TRICK_NATIVE_PREWARM_THREADS', 'CGAR_TURN_TABLE_MB'} if a.mode == 'prewarm' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else {'CGAR_TRICK_MATCH_HORIZON'} if a.mode == 'match_horizon' else {'CGAR_TRICK_NATIVE_TURN_COST'} if a.mode == 'native_turn' else {'CGAR_TRICK_NATIVE_PREWARM_THREADS', 'CGAR_TURN_TABLE_MB'} if a.mode == 'prewarm' else execution_keys if a.mode == 'execution' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -234,6 +243,22 @@ def main():
             quoted = [fields(s) for s in lines if s.startswith('[cgar-native-metric] ')]
             assert [int(m['t']) for m in quoted] == list(range(0, 5000, 200))
             assert all(m['turn'] == str(turn) and m['forward_base'] == '20' and m['cost_limit'] == '201' for m in quoted)
+        if a.mode == 'execution':
+            assert spec['cpus_per_instance']==8 and a.decision_limit_ms==1000
+            assert env.get('CGAR_TRICK_NATIVE_PREWARM_THREADS','0')=='0'
+            assert env.get('CGAR_TURN_PREFETCH_THREADS','0') in ('0','8')
+            assert env['CGAR_TEMPORAL_PREP_THREADS'] in ('4','8') and env['CGAR_PICKUP_FULL_THREADS'] in ('4','8')
+            assert env['CGAR_TURN_TABLE_MB'] in ('8192','25600')
+            reference_row=reference[r['seed']]
+            assert (r['tasks'],r['trajectory_sha256']) == (reference_row['tasks'],reference_row['trajectory_sha256'])
+            reference_work=read(support/'reference-work.json')[reference_row['case']]
+            assert global_samples==reference_work['global_work'] and regional==reference_work['regional_work']
+            assert q_samples==reference_work['percentile']
+            allocations=[fields(s) for s in lines if s.startswith('[cgar-temporal-allocation] ')]
+            assert len(allocations)==1 and allocations[0]['allowed_cpus']=='8'
+            assert allocations[0]['workers']==allocations[0]['threads']=='1' and allocations[0]['region_threads']=='4'
+            assert allocations[0]['preparation_threads']==env['CGAR_TEMPORAL_PREP_THREADS']
+            assert allocations[0]['pickup_threads']==env['CGAR_PICKUP_FULL_THREADS']
         if a.mode == 'prewarm':
             prewarm = int(env['CGAR_TRICK_NATIVE_PREWARM_THREADS'])
             assert (r['variant'], int(env['CGAR_TURN_TABLE_MB']), prewarm) in {
@@ -317,6 +342,8 @@ def main():
                           age_p90_difference=r['outstanding_age_p90']-c['outstanding_age_p90']))
     result.update(mode=a.mode, control_variant=control, exact_reference_control_seeds=sorted(set(controls) & set(reference)), pairs=pairs,
                   promoted=False, scope='Full fixed-work Warehouse TRICK with ordinary fairness. Shared5s development,32decimalGB. Finite fairness observations do not prove starvation freedom.')
+    if a.mode == 'execution':
+        result.update(exact_execution_trajectories=True, exact_sampled_search_work=True, strict_one_second_complete_entries=not result['failures'], scope='Execution-only Warehouse TRICK: exact reference trajectories and sampled global/regional work, enforced1000ms complete entries, eight bound physical cores and32decimalGB RSS. Host exclusivity is recorded separately. Finite fairness observations are not a proof.')
     if a.mode == 'fresh':
         result.update(exact_audit_trajectories=True, exact_audit_real_diagnostics=True, real_diagnostic_sha256=fresh_real)
     write(out / 'verification.json', result); write(out / 'work-samples.json', samples); write(out / 'fairness.json', fairness)
