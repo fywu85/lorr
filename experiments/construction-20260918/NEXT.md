@@ -1,50 +1,60 @@
 # Continuing warehouse work
 
-Updated 2026-09-20T07:34:36.544598+00:00. The active target is NMS154,795tasks. **The user now accepts at least one valid full5,000-step seed, generic or explicitly --trick WAREHOUSE, as goal achievement.** Six-seed generic reference promotion is a separate engineering standard. Best overall146,659(TRICK,seed0); best generic145,083; confirmed generic six-seed mean143,941.17. Shared GRID hosts and5s development deadlines are authorized; fixed algorithmic work, timeout is failure,32GB RSS, reserved/bound physical cores. Aim for roughly sub-second exclusive-core execution and validate the best solver later at1s.
+Updated 2026-09-20 08:42 UTC. CGAR remains the framework. Target is NMS154,795;
+any valid full5,000-step seed, generic or explicit --trick WAREHOUSE, can satisfy
+the goal. 32GB RSS, fixed work and explicit timeout failure. Shared hosts and5s
+development deadlines are authorized; later strict1s check remains separate.
 
-## Active overnight continuation (supersedes historical job statuses below)
+## Active overnight continuation (supersedes historical statuses below)
 
-Checkpoint 2026-09-20 08:14 UTC. CGAR remains the framework. Best overall 146,659
-(TRICK, seed 0); best generic 145,083. Target 154,795 remains unmet.
+**New overall best147,328 (TRICK,seed0), source5a8a51a**, completed
+2026-09-20T08:38:32.494327UTC. Static lanes + matching64, short preference OFF.
+Seed2=147,204. Verified full report results/trick-match-full-v65/summary.md and
+best-record.json. Gap7,467 (5.0683% growth). Headline/TARGET/progress table updated.
+Generic peak145,083; confirmed generic six-seed mean143,941.17 unchanged.
 
-- V63 fixes stale-ticket next-primary protection and missing fair-admission
-  registration. Both defects reproduce before repair; the full suite passes after.
-  Source f189cbf. V62 full jobs 8899360/8899361 were cancelled; no partial score.
-- V64 adds a fixed group quota, default 4, maximum 64, matching still default OFF.
-  Exact source 0196851; successful build runs/cgar-match-quota-build-v64-r2-20260920.
-  The six-case 800-step screen is valid: OFF 18,954/18,952; four groups
-  18,999/18,908; 64 groups 18,958/18,967. Both controls reproduce exactly.
-  These tiny prefix differences establish no full-run gain.
-- **Generic full comparison running: 8899381**, held analysis **8899382**.
-  OFF/4/64 groups x seeds 0/2, six simultaneous 5,000-step cases on 24 reserved
-  physical cores, shared host, 5s deadline and 32GB RSS per process.
-  Raw runs/cgar-match-quota-full-v64-20260920; output results/match-quota-full-v64.
-- V65 permits matching in the TRICK track only with `--trick WAREHOUSE` and
-  `CGAR_TRICK_UNOPENED_MATCH=1`; generic selector remains rejected under TRICK.
-  Static lane activation and exact component receipts are tested. Source 5a8a51a;
-  frozen runs/cgar-trick-match-build-v65-20260920. All regressions pass. The four-arm
-  200-step screen is valid and both disabled controls reproduce V58 exactly.
-- **TRICK full factorial submitted: 8899390**, held analysis **8899391**.
-  Lanes are fixed ON; short-task preference OFF/ON x matching OFF/64 groups x
-  seeds 0/2, eight full cases on 32 reserved physical cores, shared 5s/32GB.
-  Raw runs/cgar-trick-match-full-v65-20260920; output results/trick-match-full-v65.
-  Test whether matching can recover the extra empty travel of short-task preference.
-- V66 optional mixed pickup-nearby groups: source 5dc6ae4, all regressions pass.
-  Frozen runs/cgar-pickup-group-build-v66-20260920. Isolated matching64 mode0/1
-  x seeds0/2 screen8899396/analysis8899397 is running, 800steps/16physicalcores.
-  Raw runs/cgar-pickup-group-screen-v66-20260920; results/pickup-group-screen-v66.
-  Uses the same BFS/participants/cycle limits and protections; no extra tables.
-  Full comparison must wait for valid screen and V64 full reference evidence.
-- Persistent Fable turn34 is running via a detached recorded runner in the same
-  session. It reviews the tested grouping delta and chooses between static-lane
-  objective changes, native NMS cost ratios, and explicit trick rematching limits.
-  Raw runs/fable-cgar-session/turn34; prompt followup-33.md.
-- Persistent Fable session 1ebb1075-3538-49d1-93d1-a00c94fa256a: turn33 complete,
-  archived review and qualified assessment in fable-flow-session/turn33. Turn34 is now live.
-  Use the same session for the next useful consultation. Turn32 remains incomplete,
-  with its interruption audit preserved. Continued source sharing is authorized.
-- V60 chain pricing and four global workers lost on paired full seeds; keep OFF.
-- Preserve the concurrent RANDOM-05 fork's files, commits and r05_* GRID jobs.
+Completed:
+- V64 full OFF/4/64 x seeds0/2 all valid and exact controls. Matching64
+  144,967/144,511 vs144,510/144,107 (+457/+404,mean+0.298319%); tails+51/+123,
+  agep90-5/-3, empty work-125,579/-137,209. Four-group gains smaller/mixed tails.
+  Source0196851; results/match-quota-full-v64/summary.md.
+- V65 full explicit lanes x shortOFF/ON x matchingOFF/64: all8 valid,40k complete
+  entries, every control exact. Matching improves lane mean+0.445733%, both tails;
+  short+matching recovers3.6112% but remains below lane-only. Keep short OFF.
+- V66 mixed pickup grouping passes regressions and paired800screen with exact
+  local64 controls; mixed18,845/18,841 vs18,958/18,967. Higher estimated savings
+  are not actual throughput. Source5dc6ae4. Default OFF.
+- V67 tests only, source8152063:192 exhaustive small assignment matrices,
+  forbidden edges, INT_MAX32-group arithmetic, independently accepted cycles.
+  All pass; production and binary exactly V66. build-provenance/v67.
+- Fable turn34 complete in persistent session1ebb1075-3538-49d1-93d1-a00c94fa256a.
+  Archived review/qualified assessment in fable-flow-session/turn34. No live CLI.
+- V68 explicit CGAR_TRICK_REMAINING_FLOW under --trick WAREHOUSE, lanesON,
+  matchingOFF/shortOFF. Generic selector stays rejected under TRICK. Same4/16/4
+  field, cache/scheduler algorithms and prescribed work, only paid-forward-extra
+  score removed. Source0f4183f; full suite passes with101,079 actual-field macro
+  replays,386changed rankings,43,725neutral macros. Screen8899406/8899407 valid,
+  disabled control exact;3709/3805 at200steps is startup evidence only.
+
+Currently running:
+- **Generic matching64 confirmation8899409 / analysis8899410**, seeds1/3/4/5
+  OFF/ON on32reservedphysicalcores. Frozen V64 binary, source0196851.
+  Raw runs/cgar-match-quota-confirm-v64-20260920;
+  output results/match-quota-confirm-v64. Combine with verified0/2 only after
+  full checks; decide generic reference promotion with all seed effects visible.
+- **Mixed pickup grouping full8899402 / analysis8899408**, four paired0/2 cases
+  on16cores. Frozen V66,source5dc6ae4. Raw runs/cgar-pickup-group-full-v66-20260920;
+  output results/pickup-group-full-v66. Held analysis now submitted after freezing
+  verified V64 matching64 reference rows. All protected contracts unchanged.
+- **TRICK remaining-potential full8899413 / analysis8899414**, four paired0/2
+  cases on16cores. Frozen V68,source0f4183f.
+  Raw runs/cgar-trick-potential-full-v68-20260920;
+  output results/trick-potential-full-v68. Exact lane-only full controls required.
+
+All running cases use shared-host5s/32GB with four reserved/bound physical cores
+per simulator. Preserve other fork's random05 files/commits and r05_* jobs.
+Never treat a short prefix or failed entry as a full score. Record any verified
+single-seed best immediately; keep generic and TRICK histories distinct.
 
 ## Current jobs and latest steering
 
