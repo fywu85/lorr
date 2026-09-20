@@ -8,7 +8,8 @@ comparable to the colleague's private synthetic instances.
 [Throughput history](../RANDOM05_PROGRESS.md) records each verified best with a
 UTC timestamp, source commit, settings, and linked benchmark evidence. Published
 scores, local NMS references, single-seed bests, and replicated results are
-identified separately.
+identified separately. Exact frontier cases are saved in `best.json` and
+`best-four-cores.json`.
 
 The solver combines exact oriented task-chain costs, reassignment of unopened
 tasks, a two-step PIBT pipeline, idle pre-rotation, and parallel look-ahead over

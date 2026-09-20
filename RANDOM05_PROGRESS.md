@@ -34,7 +34,7 @@ The four-core best is **3,127** versus NMS **2,903** (**+7.7%**). It additionall
 prepares cycles among robots PIBT already leaves waiting. Its six-seed mean is
 3,021, slightly below3,034 without that change: the maximum improved, the mean
 did not. Best without known-horizon triage is **2,914** on four cores. The
-colleague's roughly27–28% matched advantage remains the campaign objective.
+colleague's roughly 27–28% matched advantage remains the campaign objective.
 All frontier/reference runs have zero planner/scheduler errors and timeouts.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
@@ -169,7 +169,7 @@ The published NMS score of 3,050 used different instances and hardware.
   demonstrated average gain. Keep seed and single-run labels explicit.
 - Traffic-field screen (K8, full horizon): public control2,617; best generated
   field2,666. Full K64 validation: public2,841; generated seed5 with greedy
-  matching2,868 and exact/guided matching2,842; seed2 gives2,771/2,720.
+  matching2,868 and exact/guided matching2,842; seed2 gives 2,771/2,720.
   Low-K rankings do not reliably predict full-search rankings.
 - GRID now reserves both SMT slots for each requested physical core, requests
   enough free cores through the scheduler's m_topology_inuse attribute, and
@@ -186,55 +186,55 @@ The published NMS score of 3,050 used different instances and hardware.
   Its earlier K8 score was lower than seed2, reinforcing the need for full
   production-search validation.
 - Priority search on field5: noise100=2,860; noise200=2,916; age caps50/100/200
-  give2,818/2,859/2,841. Independent per-step random streams give2,839;
-  combining those streams with cap100/noise100 gives2,909. Keep these as
+  give 2,818/2,859/2,841. Independent per-step random streams give 2,839;
+  combining those streams with cap100/noise100 gives 2,909. Keep these as
   separate measured configurations; no claim that capped aging is generally
   better. Regression tests verify identical fixed-work trajectories with one
   and two worker threads under the new random-stream mode.
 
 - Forcing cycle proposals before PIBT lowers throughput substantially:
-  1,920–2,674 versus2,916 control. Keep it off. Follow-up tests restrict
+  1,920–2,674 versus 2,916 control. Keep it off. Follow-up tests restrict
   preparation to robots PIBT already leaves waiting, or include baseline
   policies in the rollout portfolio so search can reject cycle proposals.
 - Goal-less pocket eviction passes the targeted regression but lowers full-run
   throughput (eviction2=2,757; eviction4/8=2,846; with distinct pocket components
   2,855). Keep it off in the frontier. Combining field15 with noise200 gives
-  2,960; triage1.5 gives2,997. Field5 with triage1.5 gives2,926.
+  2,960; triage1.5 gives 2,997. Field5 with triage1.5 gives 2,926.
 
 - Six-seed validation of the 2,997 configuration: seeds0–5 give
-  2,997/3,050/3,093/2,991/3,075/2,999 (mean3,034). Without known horizon,
-  seed0 gives2,796: triage contributes201 tasks (+7.2%) in that pair.
+  2,997/3,050/3,093/2,991/3,075/2,999 (mean 3,034). Without known horizon,
+  seed0 gives 2,796: triage contributes 201 tasks (+7.2%) in that pair.
 - General cycle preparation restricted to already-waiting robots works:
-  extents2/3/4 give3,127/3,109/3,063 versus2,997 control. Baseline/forced-cycle
-  portfolios give2,720–2,954 and remain off. The improvement comes from
+  extents2/3/4 give 3,127/3,109/3,063 versus 2,997 control. Baseline/forced-cycle
+  portfolios give 2,720–2,954 and remain off. The improvement comes from
   preparing blocked groups while preserving PIBT's useful existing moves.
 
 - Larger portfolios on the competition CPU topology: K1024=3,231 and
-  K2048=3,205, versus3,172 NMS. All valid; respective mean latencies134/230ms,
+  K2048=3,205, versus 3,172 NMS. All valid; respective mean latencies134/230ms,
   maxima239/340ms. Save the overall best in `random05/best.json` and the
   four-core best in `random05/best-four-cores.json`.
 - Six-seed blocked-cycle results: 3,127/3,025/2,974/2,974/2,961/3,063;
-  mean3,021 versus3,034 without preparation. This improves the best seed,
+  mean 3,021 versus 3,034 without preparation. This improves the best seed,
   not the six-seed mean. Without horizon triage the blocked-cycle run gives
   2,914, compared with2,796 without preparation.
 - Scheduler settings on the preceding four-core control (2,997): keep bonuses
-  0/0.25/0.5/1/4 give3,042/3,050/3,092/3,010/3,084. Exact/oriented matching
-  with keep0.5 gives3,109; length0.1/0.5 gives3,018/3,067.
+  0/0.25/0.5/1/4 give 3,042/3,050/3,092/3,010/3,084. Exact/oriented matching
+  with keep0.5 gives 3,109; length0.1/0.5 gives 3,018/3,067.
 - Policy settings on that control: dispersion0/0.4/1.6/3.2 gives
-  3,023/3,034/2,995/2,838; local20/50 gives3,007/2,968;
-  noise400/800 gives3,064/3,051. Compound settings require their own validation.
+  3,023/3,034/2,995/2,838; local20/50 gives 3,007/2,968;
+  noise400/800 gives 3,064/3,051. Compound settings require their own validation.
 - Two NMS repeat attempts failed before solver launch because the harness
   requested a 32GB process limit above the smaller inherited GRID limit.
-  The runner now reserves at least32GiB total and never raises an inherited
+  The runner now reserves at least 32GiB total and never raises an inherited
   hard limit. These are harness failures; the repeats are resubmitted.
 
 - Temporal-score and turn-field variants: control3,127; progress discounts
-  0.95/0.85/0.7/0.5 give3,041/3,087/3,006/2,809. Static load-weighted turn
-  costs (mean preserved) give2,973–3,031. Leave both options off.
+  0.95/0.85/0.7/0.5 give 3,041/3,087/3,006/2,809. Static load-weighted turn
+  costs (mean preserved) give 2,973–3,031. Leave both options off.
 - The progress audit checks every frontier row against its exact result
   timestamp, full-run validity, binary hash, and compiled planner sources at
   the linked Git commit. See `random05/results/progress-audit.json`.
 
-- Blocked-cycle preparation with larger portfolios gives3,151 at K1024 and
-  3,217 at K2048, versus3,231/3,205 without it. It is an optional candidate
+- Blocked-cycle preparation with larger portfolios gives 3,151 at K1024 and
+  3,217 at K2048, versus 3,231/3,205 without it. It is an optional candidate
   policy, not a reliable improvement across budgets and seeds.
