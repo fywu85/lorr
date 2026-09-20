@@ -39,6 +39,8 @@ def submit(a):
             binary=Path(c['binary']).resolve();shutil.copy2(binary,work/'lifelong')
             c['binary_sha256']=sha(binary);c['original_binary']=str(binary)
             c['input']=str(Path(c['input']).resolve());c['input_hashes']={c['input']:sha(Path(c['input']))}
+            weights=c.get('env',{}).get('R05_WEIGHTS')
+            if weights:c['input_hashes'][str(Path(weights).resolve())]=sha(Path(weights))
             data=json.loads(Path(c['input']).read_text())
             for key in ['mapFile','agentFile','taskFile']:
                 p=Path(c['input']).parent/data[key];c['input_hashes'][str(p.resolve())]=sha(p)

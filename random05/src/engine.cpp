@@ -28,6 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     if(c.horizon>0 && env.trick_instance!="RANDOM-05")
@@ -290,8 +291,11 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         for(size_t k=1;k<stops.size();++k)length[j]+=g.hop(g.from_grid[stops[k]],g.from_grid[stops[k-1]]);
     }
     struct Pair { float cost;int agent,task; };
-    std::vector<Pair> pairs;pairs.reserve(agents.size()*tasks.size());
-    for(int a:agents) {
+    const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && tasks.size()>=agents.size();
+    std::vector<float> matrix(exact?agents.size()*tasks.size():0);
+    std::vector<Pair> pairs;if(!exact)pairs.reserve(agents.size()*tasks.size());
+    for(int row=0;row<int(agents.size());++row) {
+        int a=agents[row];
         int p=g.from_grid[env->curr_states[a].location];
         if(cfg.predict_matching && !pending_.empty())p=pending_[a];
         for(int j=0;j<int(tasks.size());++j) {
@@ -304,8 +308,34 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 cost=approach/2+cfg.length_weight*length[j];
             }
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
-            pairs.push_back({cost,a,j});
+            if(exact)matrix[size_t(row)*tasks.size()+j]=cost;
+            else pairs.push_back({cost,a,j});
         }
+    }
+    if(exact) {
+        const int nr=int(agents.size()),nc=int(tasks.size());
+        std::vector<double> u(nr+1),v(nc+1);
+        std::vector<int> owner(nc+1),previous(nc+1);
+        for(int row=1;row<=nr;++row) {
+            owner[0]=row;int column=0;
+            std::vector<double> distance(nc+1,1e30);std::vector<bool> visited(nc+1,false);
+            do {
+                visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
+                for(int j=1;j<=nc;++j)if(!visited[j]) {
+                    double reduced=matrix[size_t(active-1)*nc+j-1]-u[active]-v[j];
+                    if(reduced<distance[j]){distance[j]=reduced;previous[j]=column;}
+                    if(distance[j]<delta){delta=distance[j];next_column=j;}
+                }
+                for(int j=0;j<=nc;++j) {
+                    if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
+                    else distance[j]-=delta;
+                }
+                column=next_column;
+            } while(owner[column]);
+            do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
+        }
+        for(int j=1;j<=nc;++j)if(owner[j])schedule[agents[owner[j]-1]]=tasks[j-1];
+        return;
     }
     std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {
         if(a.cost!=b.cost)return a.cost<b.cost;
@@ -388,7 +418,14 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             cand[count++]={v,d,score};
         }
         // A small tie preference preserves useful forward chains.
-        cand[count++]={p[i],idle_heading[i],base_cost[i]+cfg.wait_cost+0.001f};
+        float wait_value=base_cost[i];
+        if(cfg.prospective_wait) {
+            // The future wait is itself an opportunity to rotate. A robot
+            // moving now can turn once then; one idle now can turn twice.
+            for(int d=0;d<4;++d)if(!moving[i] || turn(d,f.dir[i])<=1)
+                wait_value=std::min(wait_value,cost(i,p[i],d));
+        }
+        cand[count++]={p[i],idle_heading[i],wait_value+cfg.wait_cost+0.001f};
         std::stable_sort(cand.begin(),cand.begin()+count,[](const Candidate& a,const Candidate& b){return a.score<b.score;});
         candidate_count[i]=count;
     }

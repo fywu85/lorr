@@ -18,7 +18,8 @@ struct Config {
     float flow_turn=0;
     int loop_extent=2;
     bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
-    int local_trials=0, horizon=0;
+    int local_trials=0, horizon=0, hungarian_limit=0;
+    bool prospective_wait=false;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;

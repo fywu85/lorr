@@ -91,4 +91,11 @@ void occupied_ring() {
     engine.compute(&e,plan,schedule);
     require(std::count(plan.begin(),plan.end(),FW)==8,"occupied 8-cycle failed to move simultaneously");
 }
-int main(){validation();scheduling();simulation();triage_task_change();occupied_ring();std::cout<<"All Random05 checks passed\n";}
+void exact_matching() {
+    auto e=environment(1,5,2);e.curr_states[0].location=2;e.curr_states[1].location=0;
+    Task t;t.task_id=10;t.locations={1};e.task_pool[10]=t;t.task_id=11;t.locations={4};e.task_pool[11]=t;
+    Config cfg;cfg.hungarian_limit=2;Engine engine(cfg);engine.initialize(&e);
+    std::vector<int> schedule;engine.match(&e,schedule);
+    require(schedule[0]==11 && schedule[1]==10,"joint minimum-cost matching failed the greedy trap");
+}
+int main(){validation();scheduling();simulation();triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}

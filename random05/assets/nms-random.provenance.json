@@ -1,0 +1,6 @@
+{
+  "source": "nms/Solution/Data/guidance_map_random.txt",
+  "source_sha256": "ff5afe540c091c75b573796db6ac8a277b560b72bfc77309bc4c55c17ba894b2",
+  "conversion": "First 32x32 bitmap only. Forward 2 in arrow direction, 6 otherwise; all actions 2 on unmarked cells; turns 2, per GraphGuidance(GuidanceMap). File loader globally normalizes valid forward weights to mean 2. Explicit --trick RANDOM-05 required.",
+  "output_sha256": "1fb91ac5563704df0518626895f7643896a990488305ed3f6addb3d352b41c3d"
+}
