@@ -85,3 +85,26 @@ scores do not establish a throughput gain. The generic selector stays OFF.
 The [separate explicitly gated Warehouse factorial](../tricks/unopened_matching/README.md)
 uses V65 source 5a8a51a. Historical V62 full statuses above are superseded by its
 cancellation and the corrected V64/V65 comparisons.
+
+## Optional mixed pickup neighborhoods (V66)
+
+Source [5dc6ae4](https://github.com/fywu85/lorr/commit/5dc6ae4) adds
+`CGAR_REASSIGN_MATCH_PICKUP_GROUPS=1`, default 0 and requiring matching enabled.
+A group contains up to 16 nearby robots and up to 16 other eligible holders whose
+pickup cells are nearby. The same BFS finds both streams, with at most 2,048
+popped cells and 32 total holders per group. Group quota, cadence, exact resident
+quotes, cycle thresholds, primary/fair protection, one retarget and cooldown stay
+unchanged. The two indexes use current positions and already revealed pickups;
+there is no map-specific rule. Sparse groups may leave one side underfilled.
+
+The production regression uses far crossed holders outside either local BFS
+neighborhood: local groups preserve identity, while mixed groups find the useful
+swap. Both respect work bounds and simulator metadata. Invalid modes or activation
+without matching are rejected. The full regression suite passes.
+[Build binding](../build-provenance/v66/exact-source-commit.json).
+
+`pickup-group-variants.json` isolates this grouping switch with matching enabled
+at 64 groups in both arms. `analyze.py --pickup-groups` requires exact local-arm
+trajectories against the V64 quota study and verifies nonzero pickup-index use.
+800-step feasibility screen: jobs 8899396/8899397, paired seeds 0/2 on 16 reserved
+physical cores, shared 5s development limit. No throughput gain claimed yet.

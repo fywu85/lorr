@@ -17,7 +17,7 @@ import sys
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / 'tools/cpu_resources.py').is_file())
 BASE = ROOT / 'experiments/construction-20260918'
 KEY = 'CGAR_REASSIGN_MATCH'
-CHANGED = {KEY, 'CGAR_REASSIGN_MATCH_GROUPS', 'CGAR_TEMPORAL_REMAINING_FLOW'}
+CHANGED = {KEY, 'CGAR_REASSIGN_MATCH_GROUPS', 'CGAR_REASSIGN_MATCH_PICKUP_GROUPS', 'CGAR_TEMPORAL_REMAINING_FLOW'}
 
 
 def read(p):
@@ -43,6 +43,7 @@ def main():
     p.add_argument('--commit', required=True)
     p.add_argument('--hold-job')
     p.add_argument('--execute', action='store_true')
+    p.add_argument('--pickup-groups', action='store_true', help='Compare local versus mixed pickup groups at matching quota64')
     a = p.parse_args()
     raw, out = a.raw.resolve(), a.output.resolve()
     support = raw / 'unopened-match-analysis-support'
@@ -59,14 +60,20 @@ def main():
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / 'experiments' / name, dest)
             files.append(dest)
-        for name, source in [('reference.json', BASE / 'results/pickup-full-regions-six-seed-v44.json'),
+        submitted_spec = read(raw / 'spec.json')
+        submitted_horizon = (submitted_spec['horizons'] or {'WAREHOUSE':5000})['WAREHOUSE']
+        full_reference = BASE / ('results/match-quota-full-v64/verification.json' if a.pickup_groups and submitted_horizon == 5000 else 'results/pickup-full-regions-six-seed-v44.json')
+        screen_reference = BASE / ('results/match-quota-screen-v64/trajectory-fingerprints.json' if a.pickup_groups else 'results/unopened-matching-screen-v61/trajectory-fingerprints.json')
+        for name, source in [('reference.json', full_reference),
                              ('reference-profile.json', BASE / 'warehouse-reference-variants.json'),
-                             ('reference-screen.json', BASE / 'results/unopened-matching-screen-v61/trajectory-fingerprints.json')]:
+                             ('reference-screen.json', screen_reference)]:
             shutil.copy2(source, support / name)
             files.append(support / name)
-        write(raw / 'unopened-match-analysis-request.json', {'root': str(ROOT), 'commit': a.commit,
+        write(raw / 'unopened-match-analysis-request.json', {'root': str(ROOT), 'commit': a.commit, 'pickup_groups': a.pickup_groups,
               'files': {str(f): digest(f) for f in files}, 'raw': str(raw), 'output': str(out)})
         command = ['/usr/bin/python3', str(own), '--execute', '--raw', str(raw), '--output', str(out), '--commit', a.commit]
+        if a.pickup_groups:
+            command.append('--pickup-groups')
         job = raw / 'unopened-match-analysis.sh'
         job.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
         submit = ['qsub', '-h', '-terse', '-w', 'n', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '1',
@@ -88,6 +95,7 @@ def main():
 
     request = read(raw / 'unopened-match-analysis-request.json')
     assert request['commit'] == a.commit and Path(request['root']) == ROOT
+    assert request.get('pickup_groups', False) == a.pickup_groups
     for filename, sha in request['files'].items():
         assert digest(Path(filename)) == sha, filename
     sys.path.insert(0, str(ROOT / 'tools'))
@@ -118,7 +126,13 @@ def main():
         name, env = case['name'], case['environment']
         mode = int(env[KEY])
         quota = int(env.get('CGAR_REASSIGN_MATCH_GROUPS', '4'))
-        arm = quota if mode else 0
+        pickup_grouping = int(env.get('CGAR_REASSIGN_MATCH_PICKUP_GROUPS', '0'))
+        assert pickup_grouping in (0,1)
+        if a.pickup_groups:
+            assert mode == 1 and quota == 64
+        else:
+            assert pickup_grouping == 0
+        arm = pickup_grouping if a.pickup_groups else (quota if mode else 0)
         assert mode in (0, 1) and quota in (4, 64) and arm not in by_seed[case['seed']]
         by_seed[case['seed']][arm] = name
         assert int(env.get('CGAR_TEMPORAL_REMAINING_FLOW', '0')) == 0
@@ -155,9 +169,16 @@ def main():
             assert x['matrix_entries'] <= 32 * x['selected']
             assert x['moved'] <= x['selected'] and x['accepted_cycles'] <= x['cycles']
             assert x['eligible'] >= x['resident'] + x['missing']
+            assert x.get('pickup_selected', 0) <= 16 * x['groups']
+            if not pickup_grouping:
+                assert x.get('pickup_selected', 0) == 0
         if mode:
             assert any('local_pool=all_resident' in line for line in log if line.startswith('[cgar-unopened-match] enabled=1'))
-        receipts[name] = {'matching': mode, 'group_quota': quota, 'generic_track_verified': True, 'sampled_cumulative_matching': matching}
+        if a.pickup_groups:
+            assert any(('pickup_groups=%d' % pickup_grouping) in line for line in log if line.startswith('[cgar-unopened-match] enabled=1'))
+            if pickup_grouping and summary['valid']:
+                assert any(x['pickup_selected'] > 0 for x in matching)
+        receipts[name] = {'matching': mode, 'group_quota': quota, 'pickup_grouping': pickup_grouping, 'generic_track_verified': True, 'sampled_cumulative_matching': matching}
 
         if summary['valid']:
             assert summary['makespan'] == summary['entry_compute_samples'] == horizon
@@ -179,7 +200,10 @@ def main():
                 assert x['repairs'] == (x['kept'] + x['reverted']) * 25000 and x['score_after'] + 1e-6 >= x['score_before']
 
     assert all(0 in arms and set(arms) == set(by_seed[seeds[0]]) for arms in by_seed.values())
-    assert set(by_seed[seeds[0]]).issubset({0, 4, 64})
+    if a.pickup_groups:
+        assert set(by_seed[seeds[0]]) == {0,1}
+    else:
+        assert set(by_seed[seeds[0]]).issubset({0,4,64})
 
     helpers = support / 'experiments/construction-20260918'
     if horizon == 800:
@@ -190,7 +214,8 @@ def main():
             fingerprints = read(out / 'trajectory-fingerprints.json')
             reference_screen = read(support / 'reference-screen.json')
             for seed in seeds:
-                assert fingerprints[by_seed[seed][0]] == reference_screen['flow4_pickupfull64_regions2_match0-s%d-r0' % seed]
+                reference_case = ('match_g64-s%d-r0' if a.pickup_groups else 'flow4_pickupfull64_regions2_match0-s%d-r0') % seed
+                assert fingerprints[by_seed[seed][0]] == reference_screen[reference_case]
         result = dict(all_valid=all_valid, eligible_for_full_comparison=all_valid, full_run=False,
                       exact_control=all_valid, all_sampled_work_bounds_checked=all_valid)
     else:
@@ -201,19 +226,27 @@ def main():
         verifier.ROOT = ROOT
         result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=spec['time_limit_ms'])
         write(out / 'verification.json', result)
-        reference = {r['seed']: r for r in read(support / 'reference.json')['rows'] if r['environment']['CGAR_TEMPORAL_REGIONS'] == '4'}
-        controls = {r['seed']: r for r in result['rows'] if r['environment'][KEY] == '0'}
+        reference_rows = read(support / 'reference.json')['rows']
+        if a.pickup_groups:
+            reference = {r['seed']:r for r in reference_rows if r['environment'].get(KEY) == '1' and r['environment'].get('CGAR_REASSIGN_MATCH_GROUPS') == '64'}
+        else:
+            reference = {r['seed']:r for r in reference_rows if r['environment']['CGAR_TEMPORAL_REGIONS'] == '4'}
+        comparison_key = 'CGAR_REASSIGN_MATCH_PICKUP_GROUPS' if a.pickup_groups else KEY
+        controls = {r['seed']:r for r in result['rows'] if r['environment'][comparison_key] == '0'}
         for seed, row in controls.items():
             assert row['tasks'] == reference[seed]['tasks'] and row['trajectory_sha256'] == reference[seed]['trajectory_sha256']
         metrics = {row['case']: row for row in read(out / 'metrics.json')}
         pairs = []
         for row in result['rows']:
-            if row['environment'][KEY] != '1' or row['seed'] not in controls:
+            if row['environment'][comparison_key] != '1' or row['seed'] not in controls:
                 continue
             control = controls[row['seed']]
             pairs.append(dict(seed=row['seed'], group_quota=int(row['environment'].get('CGAR_REASSIGN_MATCH_GROUPS','4')), tasks=row['tasks'], control_tasks=control['tasks'],
                          task_difference=row['tasks'] - control['tasks'], final1000_difference=row['final1000'] - control['final1000'],
                          age_p90_difference=row['outstanding_age_p90'] - control['outstanding_age_p90'],
+                         empty_robot_step_difference=row['empty_robot_steps'] - control['empty_robot_steps'],
+                         empty_steps_per_completed_task=row['empty_robot_steps'] / row['tasks'],
+                         control_empty_steps_per_completed_task=control['empty_robot_steps'] / control['tasks'],
                          candidate_per1000=metrics[row['case']]['completed_per_1000'],
                          control_per1000=metrics[control['case']]['completed_per_1000']))
         complete = not result['failures'] and len(pairs) == len(cases) - len(seeds)
@@ -223,6 +256,7 @@ def main():
                       all_tested_totals_improve=complete and all(r['task_difference'] > 0 for r in pairs), promoted=False)
     result.update(decision_limit_ms=spec['time_limit_ms'], benchmark_mode=spec.get('benchmark_mode', 'competition_budget'),
                   competition_budget_confirmed=spec['time_limit_ms'] == 1000 and spec.get('exclusive_host', True) and result.get('all_valid', result.get('all_valid_within_deadline_and_memory', False)))
+    result.update(pickup_grouping_comparison=a.pickup_groups)
     result.update(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), source_commit=a.commit,
                   source_files_verified=len(sources), binary_sha256=build['binary_sha256'], receipts=receipts,
                   scope='GENERIC bounded resident unopened matching; all-resident local groups with unchanged planner and ordinary task selection. Short screens establish feasibility and coverage only; failed runs have no partial quality score. Counters are cumulative samples through the last logged scheduling step, not full-horizon totals.')

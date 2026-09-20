@@ -29,8 +29,18 @@ Checkpoint 2026-09-20 08:14 UTC. CGAR remains the framework. Best overall 146,65
   seeds 0/2, eight full cases on 32 reserved physical cores, shared 5s/32GB.
   Raw runs/cgar-trick-match-full-v65-20260920; output results/trick-match-full-v65.
   Test whether matching can recover the extra empty travel of short-task preference.
+- V66 optional mixed pickup-nearby groups: source 5dc6ae4, all regressions pass.
+  Frozen runs/cgar-pickup-group-build-v66-20260920. Isolated matching64 mode0/1
+  x seeds0/2 screen8899396/analysis8899397 is running, 800steps/16physicalcores.
+  Raw runs/cgar-pickup-group-screen-v66-20260920; results/pickup-group-screen-v66.
+  Uses the same BFS/participants/cycle limits and protections; no extra tables.
+  Full comparison must wait for valid screen and V64 full reference evidence.
+- Persistent Fable turn34 is running via a detached recorded runner in the same
+  session. It reviews the tested grouping delta and chooses between static-lane
+  objective changes, native NMS cost ratios, and explicit trick rematching limits.
+  Raw runs/fable-cgar-session/turn34; prompt followup-33.md.
 - Persistent Fable session 1ebb1075-3538-49d1-93d1-a00c94fa256a: turn33 complete,
-  archived review and qualified assessment in fable-flow-session/turn33. No live CLI.
+  archived review and qualified assessment in fable-flow-session/turn33. Turn34 is now live.
   Use the same session for the next useful consultation. Turn32 remains incomplete,
   with its interruption audit preserved. Continued source sharing is authorized.
 - V60 chain pricing and four global workers lost on paired full seeds; keep OFF.
