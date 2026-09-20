@@ -24,62 +24,63 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-The overall best is now **3,492 tasks on32 workers /16 physical cores**,
-**+10.1% versus matched NMS32=3,172**. Source
-[a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) averages four continuations
-for each of512 candidate priority vectors (K2048 total, local refinement0).
-It uses the same explicit guidance/horizon tricks and planner seed3 as before.
-Earlier continuation variants reached3,400,3,422 and3,450. These are selected
-maxima; four-core reproduction and planner-seed checks are running. The fresh
-validation below applies to the preceding3,395 solver, not these new candidates.
+Updated: 2026-09-20 14:00 UTC.
 
-Best verified four-core result: **3,395 tasks / 2,000 steps on four physical
-cores**, versus **2,914** for the strongest of three matched NMS repeats
-(2,902 / 2,903 / 2,914): **+16.5%**. All use EPYC9354 CPUs. Mean latency
-**312ms**, maximum **425ms**, with zero errors or timeouts; peak RSS294MB
-(decimal). Source commit: [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d).
+**Best overall single run: 3,555 tasks on 32 workers / 16 physical cores**, or
+**+12.1% versus matched NMS32 = 3,172**. The planner averages four simulated
+continuations for each of 1,024 candidate priority vectors (4,096 futures total),
+keeping each candidate's priorities fixed for the first two simulated steps.
+Source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284); planner seed 3.
+All 2,000 steps are valid. This larger configuration has not been confirmed on
+four cores or fresh inputs. The preceding 3,501-task variant uses only 2,048
+futures; its four-core and planner-seed checks are underway.
 
-The best uses planner seed3, independent random streams per step, generated
-field15 with one directional cost pair reversed (flip seed5), K1024,
-noise200, dispersion0.8, five local trials with equal-score acceptance,
-wait0.5/turn0.6, exact guided matching with keep0.5, directional penalty2.4,
-and known-horizon triage scale1.5 (`--trick RANDOM-05`).
+**Best confirmed four-core run: 3,422 tasks**, or **+17.4% versus the strongest
+matched NMS4 repeat = 2,914** (other repeats: 2,902 and 2,903). Every action,
+assignment and task event matches its 32-worker counterpart. Mean latency
+322 ms, maximum 435 ms, peak RSS 282 MB; no errors or timeouts.
+Source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284), eight continuations,
+1,024 futures, one fixed initial step, planner seed 3.
+[Worker equivalence](random05/results/continuations8-validation-split-full-v42/worker-equivalence.json).
+The earlier 3,492-task configuration is still undergoing four-core confirmation.
 
-This is a **seed-specific record** selected from24 local guidance mutations.
-Across planner seeds0–4, the new field gives3,356/3,311/3,325/3,395/3,305:
-mean **3,338.4**. The preceding field gives3,374/3,231/3,365/3,379/3,350:
-mean **3,339.8**. Two of five pairs improve; the average has not improved.
-These are planner seeds on one fixed archived instance, not independent task
-instances. Further guidance comparisons use full K1024 and2000 steps because
-small-work rankings have repeatedly failed to transfer.
+**Repeated improvement on the development input:** across planner seeds 0–4,
+four-continuation search averages 3,392.6 tasks and eight-continuation search
+averages 3,417.6, versus 3,338.4 for the previous configuration. All five pairs
+improve in both comparisons (+1.6% and +2.4% on average). These are different
+planner seeds on one fixed input, not independent task/start instances.
+[Four continuations](random05/results/continuations-validation-split-full-v42/summary.json),
+[eight continuations](random05/results/continuations8-validation-split-full-v42/summary.json).
 
-The preceding3,395 actions, assignments and task events also repeat on **32 workers /
-16 physical cores**, versus NMS **3,172**: **+7.0%**. That run averages79ms
-(maximum181ms); peak RSS443MB. The four-core and32-worker comparisons remain
-separate. [Worker equivalence](random05/results/guidance-local-validation-split-full-v31/worker-equivalence.json).
+All these records use explicit `--trick RANDOM-05`: generated directional field
+15 with one direction pair reversed (flip seed 5), plus known-horizon triage
+at 2,000 steps with scale 1.5. Other shared settings are depth 8, noise 200,
+dispersion 0.8, wait cost 0.5, turn cost 0.6, exact guided matching with keep
+bonus 0.5 and length weight 0.25, and directional penalty 2.4. Continuation
+search is a general algorithmic change; its best runs still use these tricks.
+Machine-readable settings are frozen in `random05/best*.json`.
 
-The earlier active-cost-row optimization preserves the complete3,374 control
-trajectory and lowers observed four-core mean latency326→310ms in one shared-host
-pair. Its speed evidence remains separate from the new guidance record.
+**Fresh-input validation currently applies to the preceding 3,395-task solver:**
+on two inputs frozen before evaluation, it beats the stronger NMS repeat by
+14.5% and 9.0% (11.8% in aggregate). See the separate validation table below.
+Those inputs remain excluded from tuning. The new continuation solver still
+needs fresh-input validation.
 
-The current configuration without known-horizon triage scores **3,197 on both
-allocations**, with identical actions, assignments and task events. That is
-**+9.7% versus four-core NMS**, or **+0.8% versus32-worker NMS**. It retains the
-explicit map-guidance trick. Four-core mean316ms/max421ms, peak RSS293MB; all
-2000 steps are valid. The cutoff adds198 tasks (+6.2%) on this seed.
+**Without known-horizon triage**, the preceding configuration completes 3,197
+tasks on both allocations with identical trajectories: +9.7% versus NMS4 and
++0.8% versus NMS32. Four-core mean latency 316 ms, maximum 421 ms, RSS 293 MB.
+It retains the map-guidance trick. No cutoff-free result is yet claimed for
+the new continuation search.
 [Cutoff comparison](random05/results/frontier-triage-split-full-v31/summary.json).
-The colleague's roughly27–28% matched advantage remains the campaign objective.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
 [NMS four-worker repeats](random05/results/nms4-repeats-full-v3/summary.json).
-Historical rows on EPYC7532 or two workers are exploratory comparisons against
-that reference, rather than hardware-matched pairs. The current bests use the
-same EPYC9354 model and allocation as their NMS references. CPU details for every
-row are shown below.
-The four-worker build changes only the existing local reference's worker constant;
-both references retain the earlier constructor-initialization safety fix documented
-in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
+Historical rows on EPYC 7532 or two workers are exploratory comparisons.
+Recent frontier runs and their NMS references use the same EPYC 9354 model and
+allocation. The four-worker NMS build changes only its worker constant; both
+local NMS builds retain the previously documented constructor-initialization
+fix. Neither removes combined-track features.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Workers / physical cores / CPU | NMS reference | Gain vs reference | Evidence |
 |---|---|---|---:|---|---:|---:|---|
@@ -119,12 +120,14 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T12:08:42.946296+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Four-core repeat of the same actions/assignments/events; one pair reversed, flip seed5; field15/planner seed3; `--trick RANDOM-05` | 3395 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.5% | [Full evidence](random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json) |
 | 2026-09-20T12:21:57.244760+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +0.8% | [Full evidence](random05/results/frontier-triage-split-full-v31/no-horizon/summary.json) |
 | 2026-09-20T12:37:00.784376+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +9.7% | [Full evidence](random05/results/no-horizon-four-split-full-v31/no-horizon-four/summary.json) |
-
 | 2026-09-20T13:32:10.140710+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3400 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.2% | [Full evidence](random05/results/continuations-split-full-v42/mean4-k1024/summary.json) |
 | 2026-09-20T13:33:08.542811+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of8 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3422 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.9% | [Full evidence](random05/results/continuations-split-full-v42/mean8-k1024/summary.json) |
-
 | 2026-09-20T13:34:31.273508+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K1024 total/local0; continuation starts after2 steps; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3450 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +8.8% | [Full evidence](random05/results/continuations-split-full-v42/mean4-start2/summary.json) |
 | 2026-09-20T13:36:34.649056+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K2048 total/local0; continuation starts after1 steps; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3492 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +10.1% | [Full evidence](random05/results/continuations-split-full-v42/mean4-k2048/summary.json) |
+| 2026-09-20T13:44:31.351693+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Four-core reproduction, exact actions/schedules/events; mean of4 continuations; K1024/local0/planner seed3; `--trick RANDOM-05` | 3400 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +16.7% | [Full evidence](random05/results/continuations-validation-split-full-v42/mean4-four/summary.json) |
+| 2026-09-20T13:46:39.608755+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Four-core reproduction, exact actions/schedules/events; mean of8 continuations; K1024/local0/planner seed3; `--trick RANDOM-05` | 3422 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +17.4% | [Full evidence](random05/results/continuations8-validation-split-full-v42/mean8-four/summary.json) |
+| 2026-09-20T13:52:47.072835+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of 8 continuations; K2048 total/local0; mutation starts after 2 steps; field15/flip5/planner seed3; `--trick RANDOM-05` | 3501 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +10.4% | [Full evidence](random05/results/continuations-scale-split-full-v42/k2048-b8-start2/summary.json) |
+| 2026-09-20T13:57:09.026640+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of 4 continuations; K4096 total/local0; mutation starts after 2 steps; field15/flip5/planner seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/continuations-scale-split-full-v42/k4096-b4-start2/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -154,8 +157,7 @@ Aggregate: 6,564 versus 5,872 tasks (**+11.8%**), using the stronger NMS repeat
 on each input. This supports a gain on new inputs, while falling short of the
 colleague's reported 27–28%. Two instances on one map do not establish broader
 generalization. These are not the colleague's private inputs, and no 32-worker
-fresh-instance result is implied. The development best remains 3,395 on its
-original input. Keep these inputs out of further configuration selection.
+fresh-instance result is implied. The frozen validation candidate scored 3,395 on its original development input. Keep these inputs out of further configuration selection.
 
 ## Development record
 
@@ -695,3 +697,27 @@ original input. Keep these inputs out of further configuration selection.
   score accounting and worker-count determinism. Full controls will compare
   against the3,492 and3,450 trajectories, plus four-core latency. No timing or
   throughput improvement is claimed from the optimization before those runs.
+
+- Four-core confirmation: B4/K1024 reproduces3,400 and B8/K1024 reproduces3,422,
+  with every action, assignment and event equal to the corresponding32-worker
+  run. Mean317/322ms, maxima431/435ms, peak RSS283/282MB; all valid. The four-core
+  frontier is now3,422 (+17.4% versusNMS4). K2048 confirmation is still running.
+
+- Continuation scaling reaches **3,501** at K2048/B8 with mutation starting after
+  two steps; K2048/B4/start2 gives 3,427 and K2048/B16/start1 gives 3,485.
+  All are valid 32-worker runs. Larger runs remain in progress. The four-core
+  shared-prefix K4096/B8/start2 experiment exits with code 124 at step 0 after
+  1,133 ms, so it is excluded from the frontier. Fixed-work search did not return
+  a partial solution. Its failed-run metadata is preserved.
+
+- The three-step operation-policy comparison is complete: control 1,973,
+  successful-path protection 2,099, terminal-turn exclusion 1,742, both 1,820,
+  and both with moving-only repair 2,008. All five runs are valid, but remain
+  far below the pipelined solver. No operation variant is promoted.
+  [Evidence](random05/results/operation-reference-rules-split-full-v43/summary.json).
+
+- K4096/B4/start2 reaches **3,555 tasks** on 32 workers, a new selected maximum
+  (+12.1% versus matched NMS32). K4096/B4/start1 gives 3,477. The corresponding
+  four-core feasibility remains unverified. Shared-prefix reuse reproduces every
+  action, schedule and event of the 3,492 and 3,450 controls on full runs.
+  [Optimization equivalence](random05/results/shared-prefix-split-full-v44/shared-k2048-b4-equivalence.json).
