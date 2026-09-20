@@ -1,0 +1,7306 @@
+{
+  "trick_control-s0-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_control-s0-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 144510,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 11313,
+        "stationary": 11761
+      },
+      "loaded": {
+        "adjacent": 36468,
+        "stationary": 38052
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 8166115,
+        "cr": 376212,
+        "ccr": 253271,
+        "wait": 473548,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 37363579,
+        "cr": 798545,
+        "ccr": 616682,
+        "wait": 1952048,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 8166115,
+    "empty_turn_actions": 629483,
+    "empty_wait_actions": 473548,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 9269146,
+    "loaded_robot_steps_including_unfinished_tasks": 40730854,
+    "robot_steps_per_completed_task": 345.9968168292852,
+    "revealed_chain_shortest": {
+      "n": 159510,
+      "mean": 248.59845150774245,
+      "p90": 445,
+      "sum": 39653939
+    },
+    "completed_chain_shortest": {
+      "n": 144510,
+      "mean": 241.87493599058888,
+      "p90": 438,
+      "sum": 34953347
+    },
+    "assigned_chain_shortest": {
+      "n": 154484,
+      "mean": 246.72441158954973,
+      "p90": 443,
+      "sum": 38114974
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 154484,
+      "mean": 49.87901012402579,
+      "p90": 94,
+      "sum": 7705509
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 154484,
+      "mean": 49.87901012402579,
+      "p90": 94,
+      "sum": 7705509
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 152811,
+      "mean": 60.253842982507805,
+      "p90": 109,
+      "sum": 9207450
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 152811,
+      "mean": 60.253842982507805,
+      "p90": 109,
+      "sum": 9207450
+    },
+    "completed_loaded_steps": {
+      "n": 144510,
+      "mean": 271.7254376859733,
+      "p90": 479,
+      "sum": 39267043
+    },
+    "completed_loaded_action_totals": {
+      "fw": 36005575,
+      "cr": 774914,
+      "ccr": 596909,
+      "wait": 1889645,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 249.15628676216178,
+      "cr": 5.362355546328974,
+      "ccr": 4.130572278735036,
+      "wait": 13.07622309874749,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 35931,
+      "stationary": 37497
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.24864023250986092,
+      "stationary": 0.25947685281295413
+    },
+    "completed_loaded_forward_excess_over_shortest": 1052228,
+    "observed_pickup_steps_per_shortest_cell": 1.212161465128397,
+    "completed_loaded_steps_per_shortest_cell": 1.1234129595657891,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 1673,
+    "distance_queries": 468478,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 320.4698666666667,
+            "p90": 495,
+            "sum": 4807048
+          },
+          "age": {
+            "n": 15000,
+            "mean": 351.86,
+            "p90": 766,
+            "sum": 5277900
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 305.8178202068417,
+            "p90": 481,
+            "sum": 1537652
+          },
+          "age": {
+            "n": 5028,
+            "mean": 105.39081145584726,
+            "p90": 219,
+            "sum": 529905
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1756,
+            "mean": 308.67255125284737,
+            "p90": 495,
+            "sum": 542029
+          },
+          "age": {
+            "n": 1756,
+            "mean": 259.1002277904328,
+            "p90": 392,
+            "sum": 454980
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8216,
+            "mean": 331.95800876338853,
+            "p90": 502,
+            "sum": 2727367
+          },
+          "age": {
+            "n": 8216,
+            "mean": 522.5188656280428,
+            "p90": 1000,
+            "sum": 4293015
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 305.8178202068417,
+            "p90": 481,
+            "sum": 1537652
+          },
+          "age": {
+            "n": 5028,
+            "mean": 105.39081145584726,
+            "p90": 219,
+            "sum": 529905
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 310.00693333333334,
+            "p90": 483,
+            "sum": 4650104
+          },
+          "age": {
+            "n": 15000,
+            "mean": 304.624,
+            "p90": 634,
+            "sum": 4569360
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 305.32000795544946,
+            "p90": 478,
+            "sum": 1535149
+          },
+          "age": {
+            "n": 5028,
+            "mean": 99.23468575974543,
+            "p90": 200,
+            "sum": 498952
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1755,
+            "mean": 300.17207977207977,
+            "p90": 484,
+            "sum": 526802
+          },
+          "age": {
+            "n": 1755,
+            "mean": 234.205698005698,
+            "p90": 361,
+            "sum": 411031
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8217,
+            "mean": 314.97541681879034,
+            "p90": 485,
+            "sum": 2588153
+          },
+          "age": {
+            "n": 8217,
+            "mean": 445.34221735426553,
+            "p90": 717,
+            "sum": 3659377
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 305.32000795544946,
+            "p90": 478,
+            "sum": 1535149
+          },
+          "age": {
+            "n": 5028,
+            "mean": 99.23468575974543,
+            "p90": 200,
+            "sum": 498952
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 312.9495333333333,
+            "p90": 486,
+            "sum": 4694243
+          },
+          "age": {
+            "n": 15000,
+            "mean": 307.2358,
+            "p90": 635,
+            "sum": 4608537
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5038,
+            "mean": 310.1486701071854,
+            "p90": 485,
+            "sum": 1562529
+          },
+          "age": {
+            "n": 5038,
+            "mean": 99.88467645891227,
+            "p90": 208,
+            "sum": 503219
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1750,
+            "mean": 299.2742857142857,
+            "p90": 486,
+            "sum": 523730
+          },
+          "age": {
+            "n": 1750,
+            "mean": 236.3782857142857,
+            "p90": 368,
+            "sum": 413662
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8212,
+            "mean": 317.5820750121773,
+            "p90": 488,
+            "sum": 2607984
+          },
+          "age": {
+            "n": 8212,
+            "mean": 449.54408183146614,
+            "p90": 730,
+            "sum": 3691656
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5038,
+            "mean": 310.1486701071854,
+            "p90": 485,
+            "sum": 1562529
+          },
+          "age": {
+            "n": 5038,
+            "mean": 99.88467645891227,
+            "p90": 208,
+            "sum": 503219
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 311.3806666666667,
+            "p90": 483,
+            "sum": 4670710
+          },
+          "age": {
+            "n": 15000,
+            "mean": 305.67333333333335,
+            "p90": 633,
+            "sum": 4585100
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 306.0610095389507,
+            "p90": 482,
+            "sum": 1540099
+          },
+          "age": {
+            "n": 5032,
+            "mean": 99.3143879173291,
+            "p90": 200,
+            "sum": 499750
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1701,
+            "mean": 298.67783656672543,
+            "p90": 481,
+            "sum": 508051
+          },
+          "age": {
+            "n": 1701,
+            "mean": 233.0999412110523,
+            "p90": 355,
+            "sum": 396503
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8267,
+            "mean": 317.23236966251363,
+            "p90": 485,
+            "sum": 2622560
+          },
+          "age": {
+            "n": 8267,
+            "mean": 446.2134994556671,
+            "p90": 722,
+            "sum": 3688847
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 306.0610095389507,
+            "p90": 482,
+            "sum": 1540099
+          },
+          "age": {
+            "n": 5032,
+            "mean": 99.3143879173291,
+            "p90": 200,
+            "sum": 499750
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 313.3728,
+            "p90": 485,
+            "sum": 4700592
+          },
+          "age": {
+            "n": 15000,
+            "mean": 311.7054,
+            "p90": 641,
+            "sum": 4675581
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 306.2007560684441,
+            "p90": 484,
+            "sum": 1538965
+          },
+          "age": {
+            "n": 5026,
+            "mean": 100.52148826104258,
+            "p90": 209,
+            "sum": 505221
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1673,
+            "mean": 308.80573819485954,
+            "p90": 489,
+            "sum": 516632
+          },
+          "age": {
+            "n": 1673,
+            "mean": 243.67603108188882,
+            "p90": 376,
+            "sum": 407670
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8301,
+            "mean": 318.63570654138056,
+            "p90": 485,
+            "sum": 2644995
+          },
+          "age": {
+            "n": 8301,
+            "mean": 453.2815323455005,
+            "p90": 729,
+            "sum": 3762690
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 306.2007560684441,
+            "p90": 484,
+            "sum": 1538965
+          },
+          "age": {
+            "n": 5026,
+            "mean": 100.52148826104258,
+            "p90": 209,
+            "sum": 505221
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 9825021,
+        "completed_chain_sum": 5017973,
+        "outstanding_chain_sum": 4807048,
+        "new_completed_chain_sum": 5017973,
+        "completed_window": {
+          "n": 24510,
+          "mean": 204.73166054671563,
+          "p90": 377,
+          "sum": 5017973
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17238019,
+        "completed_chain_sum": 12587915,
+        "outstanding_chain_sum": 4650104,
+        "new_completed_chain_sum": 7569942,
+        "completed_window": {
+          "n": 29882,
+          "mean": 253.32782276956027,
+          "p90": 457,
+          "sum": 7569942
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 24712011,
+        "completed_chain_sum": 20017768,
+        "outstanding_chain_sum": 4694243,
+        "new_completed_chain_sum": 7429853,
+        "completed_window": {
+          "n": 30045,
+          "mean": 247.2908304210351,
+          "p90": 442,
+          "sum": 7429853
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 32184192,
+        "completed_chain_sum": 27513482,
+        "outstanding_chain_sum": 4670710,
+        "new_completed_chain_sum": 7495714,
+        "completed_window": {
+          "n": 30069,
+          "mean": 249.28378063786624,
+          "p90": 447,
+          "sum": 7495714
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 39653939,
+        "completed_chain_sum": 34953347,
+        "outstanding_chain_sum": 4700592,
+        "new_completed_chain_sum": 7439865,
+        "completed_window": {
+          "n": 30004,
+          "mean": 247.96243834155445,
+          "p90": 443,
+          "sum": 7439865
+        }
+      }
+    ]
+  },
+  "trick_short_tasks-s0-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_short_tasks-s0-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 136833,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 13997,
+        "stationary": 14627
+      },
+      "loaded": {
+        "adjacent": 39563,
+        "stationary": 41522
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 11080183,
+        "cr": 406969,
+        "ccr": 283662,
+        "wait": 629353,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 34314033,
+        "cr": 785653,
+        "ccr": 610394,
+        "wait": 1889753,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 11080183,
+    "empty_turn_actions": 690631,
+    "empty_wait_actions": 629353,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 12400167,
+    "loaded_robot_steps_including_unfinished_tasks": 37599833,
+    "robot_steps_per_completed_task": 365.4089291325923,
+    "revealed_chain_shortest": {
+      "n": 151833,
+      "mean": 248.63048217449435,
+      "p90": 445,
+      "sum": 37750312
+    },
+    "completed_chain_shortest": {
+      "n": 136833,
+      "mean": 234.37333099471618,
+      "p90": 419,
+      "sum": 32070006
+    },
+    "assigned_chain_shortest": {
+      "n": 146801,
+      "mean": 239.1638612815989,
+      "p90": 425,
+      "sum": 35109494
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 146801,
+      "mean": 72.68988630867638,
+      "p90": 134,
+      "sum": 10670948
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 146801,
+      "mean": 72.68988630867638,
+      "p90": 134,
+      "sum": 10670948
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 144382,
+      "mean": 84.88890581928496,
+      "p90": 152,
+      "sum": 12256430
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 144382,
+      "mean": 84.88890581928496,
+      "p90": 152,
+      "sum": 12256430
+    },
+    "completed_loaded_steps": {
+      "n": 136833,
+      "mean": 265.37120431474864,
+      "p90": 460,
+      "sum": 36311538
+    },
+    "completed_loaded_action_totals": {
+      "fw": 33122126,
+      "cr": 763259,
+      "ccr": 591961,
+      "wait": 1834192,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 242.06241184509585,
+      "cr": 5.578033076816265,
+      "ccr": 4.32615670196517,
+      "wait": 13.404602690871354,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 38921,
+      "stationary": 40845
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.28444161861539247,
+      "stationary": 0.29850255420841465
+    },
+    "completed_loaded_forward_excess_over_shortest": 1052120,
+    "observed_pickup_steps_per_shortest_cell": 1.1771663480540555,
+    "completed_loaded_steps_per_shortest_cell": 1.1322585346569627,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 2419,
+    "distance_queries": 445435,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 346.95706666666666,
+            "p90": 497,
+            "sum": 5204356
+          },
+          "age": {
+            "n": 15000,
+            "mean": 418.205,
+            "p90": 1000,
+            "sum": 6273075
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 475.4398249452954,
+            "p90": 535,
+            "sum": 2390036
+          },
+          "age": {
+            "n": 5027,
+            "mean": 642.3877063855182,
+            "p90": 1000,
+            "sum": 3229283
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2468,
+            "mean": 264.057131280389,
+            "p90": 419,
+            "sum": 651693
+          },
+          "age": {
+            "n": 2468,
+            "mean": 151.75486223662884,
+            "p90": 546,
+            "sum": 374531
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7505,
+            "mean": 288.1581612258494,
+            "p90": 418,
+            "sum": 2162627
+          },
+          "age": {
+            "n": 7505,
+            "mean": 355.6643570952698,
+            "p90": 1000,
+            "sum": 2669261
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 475.4398249452954,
+            "p90": 535,
+            "sum": 2390036
+          },
+          "age": {
+            "n": 5027,
+            "mean": 642.3877063855182,
+            "p90": 1000,
+            "sum": 3229283
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 1950,
+            "mean": 473.0846153846154,
+            "p90": 535,
+            "sum": 922515
+          },
+          "age": {
+            "n": 1950,
+            "mean": 1000.0,
+            "p90": 1000,
+            "sum": 1950000
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 364.3589333333333,
+            "p90": 516,
+            "sum": 5465384
+          },
+          "age": {
+            "n": 15000,
+            "mean": 629.3571333333333,
+            "p90": 1904,
+            "sum": 9440357
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 497.98011928429423,
+            "p90": 547,
+            "sum": 2504840
+          },
+          "age": {
+            "n": 5030,
+            "mean": 1168.6027833001988,
+            "p90": 2000,
+            "sum": 5878072
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2437,
+            "mean": 265.42183011899874,
+            "p90": 437,
+            "sum": 646833
+          },
+          "age": {
+            "n": 2437,
+            "mean": 140.95075913007796,
+            "p90": 179,
+            "sum": 343497
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7533,
+            "mean": 307.14336917562724,
+            "p90": 452,
+            "sum": 2313711
+          },
+          "age": {
+            "n": 7533,
+            "mean": 427.2916500730121,
+            "p90": 1164,
+            "sum": 3218788
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 497.98011928429423,
+            "p90": 547,
+            "sum": 2504840
+          },
+          "age": {
+            "n": 5030,
+            "mean": 1168.6027833001988,
+            "p90": 2000,
+            "sum": 5878072
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3052,
+            "mean": 499.0940366972477,
+            "p90": 547,
+            "sum": 1523235
+          },
+          "age": {
+            "n": 3052,
+            "mean": 1641.5897771952818,
+            "p90": 2000,
+            "sum": 5010132
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 370.6232,
+            "p90": 527,
+            "sum": 5559348
+          },
+          "age": {
+            "n": 15000,
+            "mean": 800.4251333333333,
+            "p90": 2558,
+            "sum": 12006377
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5039,
+            "mean": 510.43461004167494,
+            "p90": 554,
+            "sum": 2572080
+          },
+          "age": {
+            "n": 5039,
+            "mean": 1661.309188331018,
+            "p90": 3000,
+            "sum": 8371337
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2512,
+            "mean": 270.26671974522293,
+            "p90": 452,
+            "sum": 678910
+          },
+          "age": {
+            "n": 2512,
+            "mean": 167.34713375796179,
+            "p90": 169,
+            "sum": 420376
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7449,
+            "mean": 309.8883071553229,
+            "p90": 466,
+            "sum": 2308358
+          },
+          "age": {
+            "n": 7449,
+            "mean": 431.5564505302725,
+            "p90": 710,
+            "sum": 3214664
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5039,
+            "mean": 510.43461004167494,
+            "p90": 554,
+            "sum": 2572080
+          },
+          "age": {
+            "n": 5039,
+            "mean": 1661.309188331018,
+            "p90": 3000,
+            "sum": 8371337
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3614,
+            "mean": 511.44604316546764,
+            "p90": 553,
+            "sum": 1848366
+          },
+          "age": {
+            "n": 3614,
+            "mean": 2180.060874377421,
+            "p90": 3000,
+            "sum": 7878740
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 374.31893333333335,
+            "p90": 535,
+            "sum": 5614784
+          },
+          "age": {
+            "n": 15000,
+            "mean": 969.6076666666667,
+            "p90": 3258,
+            "sum": 14544115
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 518.7953460620525,
+            "p90": 559,
+            "sum": 2608503
+          },
+          "age": {
+            "n": 5028,
+            "mean": 2186.398170246619,
+            "p90": 4000,
+            "sum": 10993210
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2399,
+            "mean": 270.9516465193831,
+            "p90": 450,
+            "sum": 650013
+          },
+          "age": {
+            "n": 2399,
+            "mean": 150.33347228011672,
+            "p90": 146,
+            "sum": 360650
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7573,
+            "mean": 311.1406311897531,
+            "p90": 472,
+            "sum": 2356268
+          },
+          "age": {
+            "n": 7573,
+            "mean": 421.2670011884326,
+            "p90": 548,
+            "sum": 3190255
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 518.7953460620525,
+            "p90": 559,
+            "sum": 2608503
+          },
+          "age": {
+            "n": 5028,
+            "mean": 2186.398170246619,
+            "p90": 4000,
+            "sum": 10993210
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3972,
+            "mean": 519.9692849949647,
+            "p90": 559,
+            "sum": 2065318
+          },
+          "age": {
+            "n": 3972,
+            "mean": 2676.789778449144,
+            "p90": 4000,
+            "sum": 10632209
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 620,
+            "mean": 520.95,
+            "p90": 556,
+            "sum": 322989
+          },
+          "age": {
+            "n": 620,
+            "mean": 4000.0,
+            "p90": 4000,
+            "sum": 2480000
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 378.6870666666667,
+            "p90": 540,
+            "sum": 5680306
+          },
+          "age": {
+            "n": 15000,
+            "mean": 1148.7266666666667,
+            "p90": 3993,
+            "sum": 17230900
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 524.8048489666137,
+            "p90": 562,
+            "sum": 2640818
+          },
+          "age": {
+            "n": 5032,
+            "mean": 2686.289944356121,
+            "p90": 4975,
+            "sum": 13517411
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2419,
+            "mean": 269.5928069450186,
+            "p90": 454,
+            "sum": 652145
+          },
+          "age": {
+            "n": 2419,
+            "mean": 168.01860272840017,
+            "p90": 147,
+            "sum": 406437
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7549,
+            "mean": 316.24625778248776,
+            "p90": 477,
+            "sum": 2387343
+          },
+          "age": {
+            "n": 7549,
+            "mean": 438.0781560471586,
+            "p90": 547,
+            "sum": 3307052
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 524.8048489666137,
+            "p90": 562,
+            "sum": 2640818
+          },
+          "age": {
+            "n": 5032,
+            "mean": 2686.289944356121,
+            "p90": 4975,
+            "sum": 13517411
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 4146,
+            "mean": 526.0516160154366,
+            "p90": 562,
+            "sum": 2181010
+          },
+          "age": {
+            "n": 4146,
+            "mean": 3210.4937288953206,
+            "p90": 5000,
+            "sum": 13310707
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 1358,
+            "mean": 526.2326951399116,
+            "p90": 561,
+            "sum": 714624
+          },
+          "age": {
+            "n": 1358,
+            "mean": 4653.847569955818,
+            "p90": 5000,
+            "sum": 6319925
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10180178,
+        "completed_chain_sum": 4975822,
+        "outstanding_chain_sum": 5204356,
+        "new_completed_chain_sum": 4975822,
+        "completed_window": {
+          "n": 25913,
+          "mean": 192.02029869177633,
+          "p90": 333,
+          "sum": 4975822
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17093378,
+        "completed_chain_sum": 11627994,
+        "outstanding_chain_sum": 5465384,
+        "new_completed_chain_sum": 6652172,
+        "completed_window": {
+          "n": 27901,
+          "mean": 238.42055840292463,
+          "p90": 412,
+          "sum": 6652172
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 24007937,
+        "completed_chain_sum": 18448589,
+        "outstanding_chain_sum": 5559348,
+        "new_completed_chain_sum": 6820595,
+        "completed_window": {
+          "n": 27828,
+          "mean": 245.09828230559148,
+          "p90": 436,
+          "sum": 6820595
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 30871388,
+        "completed_chain_sum": 25256604,
+        "outstanding_chain_sum": 5614784,
+        "new_completed_chain_sum": 6808015,
+        "completed_window": {
+          "n": 27575,
+          "mean": 246.89084315503172,
+          "p90": 445,
+          "sum": 6808015
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 37750312,
+        "completed_chain_sum": 32070006,
+        "outstanding_chain_sum": 5680306,
+        "new_completed_chain_sum": 6813402,
+        "completed_window": {
+          "n": 27616,
+          "mean": 246.71936558516802,
+          "p90": 444,
+          "sum": 6813402
+        }
+      }
+    ]
+  },
+  "trick_lanes-s0-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes-s0-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 146659,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 7680,
+        "stationary": 8343
+      },
+      "loaded": {
+        "adjacent": 19498,
+        "stationary": 20807
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 8643911,
+        "cr": 373366,
+        "ccr": 295975,
+        "wait": 539281,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 37542231,
+        "cr": 437630,
+        "ccr": 467160,
+        "wait": 1700446,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 8643911,
+    "empty_turn_actions": 669341,
+    "empty_wait_actions": 539281,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 9852533,
+    "loaded_robot_steps_including_unfinished_tasks": 40147467,
+    "robot_steps_per_completed_task": 340.92691208858645,
+    "revealed_chain_shortest": {
+      "n": 161659,
+      "mean": 248.54713934887633,
+      "p90": 445,
+      "sum": 40179882
+    },
+    "completed_chain_shortest": {
+      "n": 146659,
+      "mean": 242.24443095889103,
+      "p90": 438,
+      "sum": 35527326
+    },
+    "assigned_chain_shortest": {
+      "n": 156634,
+      "mean": 246.7614757970811,
+      "p90": 443,
+      "sum": 38651237
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 156634,
+      "mean": 50.19729432945593,
+      "p90": 93,
+      "sum": 7862603
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 156634,
+      "mean": 50.19729432945593,
+      "p90": 93,
+      "sum": 7862603
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 154792,
+      "mean": 63.18434415215257,
+      "p90": 111,
+      "sum": 9780431
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 154792,
+      "mean": 63.18434415215257,
+      "p90": 111,
+      "sum": 9780431
+    },
+    "completed_loaded_steps": {
+      "n": 146659,
+      "mean": 264.16826788673046,
+      "p90": 465,
+      "sum": 38742654
+    },
+    "completed_loaded_action_totals": {
+      "fw": 36232566,
+      "cr": 421946,
+      "ccr": 449608,
+      "wait": 1638534,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 247.05313686851812,
+      "cr": 2.877054936962614,
+      "ccr": 3.0656693418065033,
+      "wait": 11.172406739443199,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 18726,
+      "stationary": 19977
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.1276839471154174,
+      "stationary": 0.13621393845587382
+    },
+    "completed_loaded_forward_excess_over_shortest": 705240,
+    "observed_pickup_steps_per_shortest_cell": 1.2631993673432407,
+    "completed_loaded_steps_per_shortest_cell": 1.090502955387073,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 1842,
+    "distance_queries": 474927,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 319.483,
+            "p90": 495,
+            "sum": 4792245
+          },
+          "age": {
+            "n": 15000,
+            "mean": 337.7642,
+            "p90": 710,
+            "sum": 5066463
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5039,
+            "mean": 310.30760071442745,
+            "p90": 483,
+            "sum": 1563640
+          },
+          "age": {
+            "n": 5039,
+            "mean": 105.06132169081167,
+            "p90": 216,
+            "sum": 529404
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1863,
+            "mean": 289.97906602254426,
+            "p90": 474,
+            "sum": 540231
+          },
+          "age": {
+            "n": 1863,
+            "mean": 245.2313472893183,
+            "p90": 374,
+            "sum": 456866
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8098,
+            "mean": 331.97999506050877,
+            "p90": 504,
+            "sum": 2688374
+          },
+          "age": {
+            "n": 8098,
+            "mean": 503.8519387503087,
+            "p90": 858,
+            "sum": 4080193
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5039,
+            "mean": 310.30760071442745,
+            "p90": 483,
+            "sum": 1563640
+          },
+          "age": {
+            "n": 5039,
+            "mean": 105.06132169081167,
+            "p90": 216,
+            "sum": 529404
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 309.1179333333333,
+            "p90": 483,
+            "sum": 4636769
+          },
+          "age": {
+            "n": 15000,
+            "mean": 302.4959333333333,
+            "p90": 627,
+            "sum": 4537439
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 306.2099403578529,
+            "p90": 480,
+            "sum": 1540236
+          },
+          "age": {
+            "n": 5030,
+            "mean": 100.04234592445329,
+            "p90": 202,
+            "sum": 503213
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1890,
+            "mean": 292.1994708994709,
+            "p90": 475,
+            "sum": 552257
+          },
+          "age": {
+            "n": 1890,
+            "mean": 233.13756613756613,
+            "p90": 353,
+            "sum": 440630
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8080,
+            "mean": 314.8856435643564,
+            "p90": 486,
+            "sum": 2544276
+          },
+          "age": {
+            "n": 8080,
+            "mean": 444.7519801980198,
+            "p90": 713,
+            "sum": 3593596
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 306.2099403578529,
+            "p90": 480,
+            "sum": 1540236
+          },
+          "age": {
+            "n": 5030,
+            "mean": 100.04234592445329,
+            "p90": 202,
+            "sum": 503213
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 312.599,
+            "p90": 486,
+            "sum": 4688985
+          },
+          "age": {
+            "n": 15000,
+            "mean": 305.4008666666667,
+            "p90": 627,
+            "sum": 4581013
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5031,
+            "mean": 310.6004770423375,
+            "p90": 485,
+            "sum": 1562631
+          },
+          "age": {
+            "n": 5031,
+            "mean": 99.3408865036772,
+            "p90": 202,
+            "sum": 499784
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1891,
+            "mean": 298.7895293495505,
+            "p90": 484,
+            "sum": 565011
+          },
+          "age": {
+            "n": 1891,
+            "mean": 236.2083553675304,
+            "p90": 363,
+            "sum": 446670
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8078,
+            "mean": 317.0763802921515,
+            "p90": 487,
+            "sum": 2561343
+          },
+          "age": {
+            "n": 8078,
+            "mean": 449.9330279772221,
+            "p90": 723,
+            "sum": 3634559
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5031,
+            "mean": 310.6004770423375,
+            "p90": 485,
+            "sum": 1562631
+          },
+          "age": {
+            "n": 5031,
+            "mean": 99.3408865036772,
+            "p90": 202,
+            "sum": 499784
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 310.5684,
+            "p90": 483,
+            "sum": 4658526
+          },
+          "age": {
+            "n": 15000,
+            "mean": 303.25213333333335,
+            "p90": 627,
+            "sum": 4548782
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 308.64280031821795,
+            "p90": 482,
+            "sum": 1551856
+          },
+          "age": {
+            "n": 5028,
+            "mean": 98.96459824980111,
+            "p90": 202,
+            "sum": 497594
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1860,
+            "mean": 292.0822580645161,
+            "p90": 477,
+            "sum": 543273
+          },
+          "age": {
+            "n": 1860,
+            "mean": 231.89301075268818,
+            "p90": 358,
+            "sum": 431321
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8112,
+            "mean": 316.0006163708087,
+            "p90": 484,
+            "sum": 2563397
+          },
+          "age": {
+            "n": 8112,
+            "mean": 446.23607001972385,
+            "p90": 719,
+            "sum": 3619867
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 308.64280031821795,
+            "p90": 482,
+            "sum": 1551856
+          },
+          "age": {
+            "n": 5028,
+            "mean": 98.96459824980111,
+            "p90": 202,
+            "sum": 497594
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 310.1704,
+            "p90": 484,
+            "sum": 4652556
+          },
+          "age": {
+            "n": 15000,
+            "mean": 307.6312,
+            "p90": 631,
+            "sum": 4614468
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5025,
+            "mean": 304.20796019900496,
+            "p90": 481,
+            "sum": 1528645
+          },
+          "age": {
+            "n": 5025,
+            "mean": 99.94328358208955,
+            "p90": 204,
+            "sum": 502215
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1842,
+            "mean": 295.57817589576547,
+            "p90": 487,
+            "sum": 544455
+          },
+          "age": {
+            "n": 1842,
+            "mean": 236.93539630836048,
+            "p90": 371,
+            "sum": 436435
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8133,
+            "mean": 317.15922783720646,
+            "p90": 484,
+            "sum": 2579456
+          },
+          "age": {
+            "n": 8133,
+            "mean": 451.9633591540637,
+            "p90": 721,
+            "sum": 3675818
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5025,
+            "mean": 304.20796019900496,
+            "p90": 481,
+            "sum": 1528645
+          },
+          "age": {
+            "n": 5025,
+            "mean": 99.94328358208955,
+            "p90": 204,
+            "sum": 502215
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10329011,
+        "completed_chain_sum": 5536766,
+        "outstanding_chain_sum": 4792245,
+        "new_completed_chain_sum": 5536766,
+        "completed_window": {
+          "n": 26487,
+          "mean": 209.03711254577718,
+          "p90": 385,
+          "sum": 5536766
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17786892,
+        "completed_chain_sum": 13150123,
+        "outstanding_chain_sum": 4636769,
+        "new_completed_chain_sum": 7613357,
+        "completed_window": {
+          "n": 30106,
+          "mean": 252.88503952700458,
+          "p90": 456,
+          "sum": 7613357
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 25289956,
+        "completed_chain_sum": 20600971,
+        "outstanding_chain_sum": 4688985,
+        "new_completed_chain_sum": 7450848,
+        "completed_window": {
+          "n": 30129,
+          "mean": 247.2982176640446,
+          "p90": 443,
+          "sum": 7450848
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 32749417,
+        "completed_chain_sum": 28090891,
+        "outstanding_chain_sum": 4658526,
+        "new_completed_chain_sum": 7489920,
+        "completed_window": {
+          "n": 30026,
+          "mean": 249.44781189635648,
+          "p90": 447,
+          "sum": 7489920
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 40179882,
+        "completed_chain_sum": 35527326,
+        "outstanding_chain_sum": 4652556,
+        "new_completed_chain_sum": 7436435,
+        "completed_window": {
+          "n": 29911,
+          "mean": 248.6187355822273,
+          "p90": 444,
+          "sum": 7436435
+        }
+      }
+    ]
+  },
+  "trick_lanes_short_tasks-s0-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes_short_tasks-s0-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 137985,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 11382,
+        "stationary": 12477
+      },
+      "loaded": {
+        "adjacent": 24967,
+        "stationary": 27162
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 11680917,
+        "cr": 394077,
+        "ccr": 317097,
+        "wait": 690191,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 34356742,
+        "cr": 446254,
+        "ccr": 478592,
+        "wait": 1636130,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 11680917,
+    "empty_turn_actions": 711174,
+    "empty_wait_actions": 690191,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 13082282,
+    "loaded_robot_steps_including_unfinished_tasks": 36917718,
+    "robot_steps_per_completed_task": 362.35822734355185,
+    "revealed_chain_shortest": {
+      "n": 152985,
+      "mean": 248.63743504265125,
+      "p90": 445,
+      "sum": 38037798
+    },
+    "completed_chain_shortest": {
+      "n": 137985,
+      "mean": 234.62422002391565,
+      "p90": 420,
+      "sum": 32374623
+    },
+    "assigned_chain_shortest": {
+      "n": 147961,
+      "mean": 239.24321949702963,
+      "p90": 425,
+      "sum": 35398666
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 147961,
+      "mean": 72.93524645007805,
+      "p90": 134,
+      "sum": 10791572
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 147961,
+      "mean": 72.93524645007805,
+      "p90": 134,
+      "sum": 10791572
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 145471,
+      "mean": 88.80900660612768,
+      "p90": 156,
+      "sum": 12919135
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 145471,
+      "mean": 88.80900660612768,
+      "p90": 156,
+      "sum": 12919135
+    },
+    "completed_loaded_steps": {
+      "n": 137985,
+      "mean": 258.21068956770665,
+      "p90": 448,
+      "sum": 35629202
+    },
+    "completed_loaded_action_totals": {
+      "fw": 33156891,
+      "cr": 430883,
+      "ccr": 461219,
+      "wait": 1580209,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 240.29344493966735,
+      "cr": 3.122680001449433,
+      "ccr": 3.3425299851433126,
+      "wait": 11.452034641446534,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 24128,
+      "stationary": 26232
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.17485958618690436,
+      "stationary": 0.19010762039352103
+    },
+    "completed_loaded_forward_excess_over_shortest": 782268,
+    "observed_pickup_steps_per_shortest_cell": 1.2279114403671738,
+    "completed_loaded_steps_per_shortest_cell": 1.1005287073149856,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 2490,
+    "distance_queries": 448907,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 349.99286666666666,
+            "p90": 499,
+            "sum": 5249893
+          },
+          "age": {
+            "n": 15000,
+            "mean": 420.84006666666664,
+            "p90": 1000,
+            "sum": 6312601
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5031,
+            "mean": 477.43450606241305,
+            "p90": 536,
+            "sum": 2401973
+          },
+          "age": {
+            "n": 5031,
+            "mean": 648.3989266547406,
+            "p90": 1000,
+            "sum": 3262095
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2420,
+            "mean": 252.65,
+            "p90": 417,
+            "sum": 611413
+          },
+          "age": {
+            "n": 2420,
+            "mean": 122.40041322314049,
+            "p90": 215,
+            "sum": 296209
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7549,
+            "mean": 296.2653331567095,
+            "p90": 423,
+            "sum": 2236507
+          },
+          "age": {
+            "n": 7549,
+            "mean": 364.85587495032456,
+            "p90": 1000,
+            "sum": 2754297
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5031,
+            "mean": 477.43450606241305,
+            "p90": 536,
+            "sum": 2401973
+          },
+          "age": {
+            "n": 5031,
+            "mean": 648.3989266547406,
+            "p90": 1000,
+            "sum": 3262095
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 1850,
+            "mean": 476.20864864864865,
+            "p90": 536,
+            "sum": 880986
+          },
+          "age": {
+            "n": 1850,
+            "mean": 1000.0,
+            "p90": 1000,
+            "sum": 1850000
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 363.1440666666667,
+            "p90": 517,
+            "sum": 5447161
+          },
+          "age": {
+            "n": 15000,
+            "mean": 629.2169333333334,
+            "p90": 1881,
+            "sum": 9438254
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5020,
+            "mean": 499.3416334661355,
+            "p90": 547,
+            "sum": 2506695
+          },
+          "age": {
+            "n": 5020,
+            "mean": 1184.5892430278884,
+            "p90": 2000,
+            "sum": 5946638
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2551,
+            "mean": 264.00352802822425,
+            "p90": 438,
+            "sum": 673473
+          },
+          "age": {
+            "n": 2551,
+            "mean": 152.6236769894159,
+            "p90": 186,
+            "sum": 389343
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7429,
+            "mean": 305.1545295463723,
+            "p90": 453,
+            "sum": 2266993
+          },
+          "age": {
+            "n": 7429,
+            "mean": 417.58958137030555,
+            "p90": 1063,
+            "sum": 3102273
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5020,
+            "mean": 499.3416334661355,
+            "p90": 547,
+            "sum": 2506695
+          },
+          "age": {
+            "n": 5020,
+            "mean": 1184.5892430278884,
+            "p90": 2000,
+            "sum": 5946638
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3120,
+            "mean": 499.72115384615387,
+            "p90": 547,
+            "sum": 1559130
+          },
+          "age": {
+            "n": 3120,
+            "mean": 1649.0557692307693,
+            "p90": 2000,
+            "sum": 5145054
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 369.9382,
+            "p90": 528,
+            "sum": 5549073
+          },
+          "age": {
+            "n": 15000,
+            "mean": 800.8047333333334,
+            "p90": 2592,
+            "sum": 12012071
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5020,
+            "mean": 512.0472111553785,
+            "p90": 555,
+            "sum": 2570477
+          },
+          "age": {
+            "n": 5020,
+            "mean": 1688.2687250996016,
+            "p90": 3000,
+            "sum": 8475109
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2587,
+            "mean": 264.4994201778121,
+            "p90": 446,
+            "sum": 684260
+          },
+          "age": {
+            "n": 2587,
+            "mean": 144.67723231542328,
+            "p90": 169,
+            "sum": 374280
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7393,
+            "mean": 310.3389692952793,
+            "p90": 466,
+            "sum": 2294336
+          },
+          "age": {
+            "n": 7393,
+            "mean": 427.79412958203704,
+            "p90": 643,
+            "sum": 3162682
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5020,
+            "mean": 512.0472111553785,
+            "p90": 555,
+            "sum": 2570477
+          },
+          "age": {
+            "n": 5020,
+            "mean": 1688.2687250996016,
+            "p90": 3000,
+            "sum": 8475109
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3625,
+            "mean": 512.239724137931,
+            "p90": 553,
+            "sum": 1856869
+          },
+          "age": {
+            "n": 3625,
+            "mean": 2190.799724137931,
+            "p90": 3000,
+            "sum": 7941649
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 373.2851333333333,
+            "p90": 535,
+            "sum": 5599277
+          },
+          "age": {
+            "n": 15000,
+            "mean": 974.9383333333334,
+            "p90": 3313,
+            "sum": 14624075
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 519.5320334261838,
+            "p90": 559,
+            "sum": 2611168
+          },
+          "age": {
+            "n": 5026,
+            "mean": 2208.306008754477,
+            "p90": 4000,
+            "sum": 11098946
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2667,
+            "mean": 266.3734533183352,
+            "p90": 450,
+            "sum": 710418
+          },
+          "age": {
+            "n": 2667,
+            "mean": 170.6265466816648,
+            "p90": 167,
+            "sum": 455061
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7307,
+            "mean": 311.71356233748463,
+            "p90": 472,
+            "sum": 2277691
+          },
+          "age": {
+            "n": 7307,
+            "mean": 420.15437251950186,
+            "p90": 540,
+            "sum": 3070068
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 519.5320334261838,
+            "p90": 559,
+            "sum": 2611168
+          },
+          "age": {
+            "n": 5026,
+            "mean": 2208.306008754477,
+            "p90": 4000,
+            "sum": 11098946
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 4009,
+            "mean": 520.1167373409828,
+            "p90": 559,
+            "sum": 2085148
+          },
+          "age": {
+            "n": 4009,
+            "mean": 2696.480917934647,
+            "p90": 4000,
+            "sum": 10810192
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 615,
+            "mean": 521.0569105691056,
+            "p90": 556,
+            "sum": 320450
+          },
+          "age": {
+            "n": 615,
+            "mean": 4000.0,
+            "p90": 4000,
+            "sum": 2460000
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 377.545,
+            "p90": 540,
+            "sum": 5663175
+          },
+          "age": {
+            "n": 15000,
+            "mean": 1160.6806,
+            "p90": 4047,
+            "sum": 17410209
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5024,
+            "mean": 525.3049363057324,
+            "p90": 562,
+            "sum": 2639132
+          },
+          "age": {
+            "n": 5024,
+            "mean": 2709.238654458599,
+            "p90": 4954,
+            "sum": 13611215
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2490,
+            "mean": 268.16546184738957,
+            "p90": 452,
+            "sum": 667732
+          },
+          "age": {
+            "n": 2490,
+            "mean": 177.3449799196787,
+            "p90": 171,
+            "sum": 441589
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7486,
+            "mean": 314.76235639861073,
+            "p90": 477,
+            "sum": 2356311
+          },
+          "age": {
+            "n": 7486,
+            "mean": 448.4911835426129,
+            "p90": 548,
+            "sum": 3357405
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5024,
+            "mean": 525.3049363057324,
+            "p90": 562,
+            "sum": 2639132
+          },
+          "age": {
+            "n": 5024,
+            "mean": 2709.238654458599,
+            "p90": 4954,
+            "sum": 13611215
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 4159,
+            "mean": 526.3974513104112,
+            "p90": 562,
+            "sum": 2189287
+          },
+          "age": {
+            "n": 4159,
+            "mean": 3229.4092329886994,
+            "p90": 5000,
+            "sum": 13431113
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 1390,
+            "mean": 526.7273381294964,
+            "p90": 561,
+            "sum": 732151
+          },
+          "age": {
+            "n": 1390,
+            "mean": 4661.288489208633,
+            "p90": 5000,
+            "sum": 6479191
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10625700,
+        "completed_chain_sum": 5375807,
+        "outstanding_chain_sum": 5249893,
+        "new_completed_chain_sum": 5375807,
+        "completed_window": {
+          "n": 27696,
+          "mean": 194.10048382437898,
+          "p90": 338,
+          "sum": 5375807
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17513544,
+        "completed_chain_sum": 12066383,
+        "outstanding_chain_sum": 5447161,
+        "new_completed_chain_sum": 6690576,
+        "completed_window": {
+          "n": 27811,
+          "mean": 240.57301067922765,
+          "p90": 416,
+          "sum": 6690576
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 24425188,
+        "completed_chain_sum": 18876115,
+        "outstanding_chain_sum": 5549073,
+        "new_completed_chain_sum": 6809732,
+        "completed_window": {
+          "n": 27790,
+          "mean": 245.04253328535444,
+          "p90": 437,
+          "sum": 6809732
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 31238350,
+        "completed_chain_sum": 25639073,
+        "outstanding_chain_sum": 5599277,
+        "new_completed_chain_sum": 6762958,
+        "completed_window": {
+          "n": 27393,
+          "mean": 246.88635782864236,
+          "p90": 445,
+          "sum": 6762958
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 38037798,
+        "completed_chain_sum": 32374623,
+        "outstanding_chain_sum": 5663175,
+        "new_completed_chain_sum": 6735550,
+        "completed_window": {
+          "n": 27295,
+          "mean": 246.7686389448617,
+          "p90": 444,
+          "sum": 6735550
+        }
+      }
+    ]
+  },
+  "trick_control-s2-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_control-s2-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 144107,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 12793,
+        "stationary": 13387
+      },
+      "loaded": {
+        "adjacent": 41368,
+        "stationary": 43348
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 8134714,
+        "cr": 376778,
+        "ccr": 263978,
+        "wait": 488197,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 37300695,
+        "cr": 810004,
+        "ccr": 638437,
+        "wait": 1987197,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 8134714,
+    "empty_turn_actions": 640756,
+    "empty_wait_actions": 488197,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 9263667,
+    "loaded_robot_steps_including_unfinished_tasks": 40736333,
+    "robot_steps_per_completed_task": 346.9644083909873,
+    "revealed_chain_shortest": {
+      "n": 159107,
+      "mean": 248.60201625321324,
+      "p90": 445,
+      "sum": 39554321
+    },
+    "completed_chain_shortest": {
+      "n": 144107,
+      "mean": 241.84287369801606,
+      "p90": 438,
+      "sum": 34851251
+    },
+    "assigned_chain_shortest": {
+      "n": 154073,
+      "mean": 246.70215417367092,
+      "p90": 443,
+      "sum": 38010141
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 154073,
+      "mean": 49.81558741635458,
+      "p90": 94,
+      "sum": 7675237
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 154073,
+      "mean": 49.81558741635458,
+      "p90": 94,
+      "sum": 7675237
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 152458,
+      "mean": 60.37806477849637,
+      "p90": 109,
+      "sum": 9205119
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 152458,
+      "mean": 60.37806477849637,
+      "p90": 109,
+      "sum": 9205119
+    },
+    "completed_loaded_steps": {
+      "n": 144107,
+      "mean": 272.4146988001971,
+      "p90": 479,
+      "sum": 39256865
+    },
+    "completed_loaded_action_totals": {
+      "fw": 35930989,
+      "cr": 785640,
+      "ccr": 617495,
+      "wait": 1922741,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 249.33548682576142,
+      "cr": 5.4517823561659045,
+      "ccr": 4.284975747187853,
+      "wait": 13.342453871081904,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 40607,
+      "stationary": 42533
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.2817836746306564,
+      "stationary": 0.2951487436418772
+    },
+    "completed_loaded_forward_excess_over_shortest": 1079738,
+    "observed_pickup_steps_per_shortest_cell": 1.2159981009274623,
+    "completed_loaded_steps_per_shortest_cell": 1.1264119328169884,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 1615,
+    "distance_queries": 467253,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 320.93573333333336,
+            "p90": 495,
+            "sum": 4814036
+          },
+          "age": {
+            "n": 15000,
+            "mean": 354.3208,
+            "p90": 772,
+            "sum": 5314812
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 307.90603225164244,
+            "p90": 482,
+            "sum": 1546612
+          },
+          "age": {
+            "n": 5023,
+            "mean": 109.01652398964762,
+            "p90": 224,
+            "sum": 547590
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1665,
+            "mean": 305.1591591591592,
+            "p90": 494,
+            "sum": 508090
+          },
+          "age": {
+            "n": 1665,
+            "mean": 255.4126126126126,
+            "p90": 390,
+            "sum": 425262
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8312,
+            "mean": 331.9699230028874,
+            "p90": 501,
+            "sum": 2759334
+          },
+          "age": {
+            "n": 8312,
+            "mean": 522.3724735322426,
+            "p90": 1000,
+            "sum": 4341960
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 307.90603225164244,
+            "p90": 482,
+            "sum": 1546612
+          },
+          "age": {
+            "n": 5023,
+            "mean": 109.01652398964762,
+            "p90": 224,
+            "sum": 547590
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 309.5903333333333,
+            "p90": 483,
+            "sum": 4643855
+          },
+          "age": {
+            "n": 15000,
+            "mean": 304.4558,
+            "p90": 631,
+            "sum": 4566837
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 305.3541708142544,
+            "p90": 478,
+            "sum": 1533794
+          },
+          "age": {
+            "n": 5023,
+            "mean": 99.2821023292853,
+            "p90": 201,
+            "sum": 498694
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1728,
+            "mean": 298.6678240740741,
+            "p90": 483,
+            "sum": 516098
+          },
+          "age": {
+            "n": 1728,
+            "mean": 232.94270833333334,
+            "p90": 358,
+            "sum": 402525
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8249,
+            "mean": 314.4578736816584,
+            "p90": 485,
+            "sum": 2593963
+          },
+          "age": {
+            "n": 8249,
+            "mean": 444.3711965086677,
+            "p90": 716,
+            "sum": 3665618
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 305.3541708142544,
+            "p90": 478,
+            "sum": 1533794
+          },
+          "age": {
+            "n": 5023,
+            "mean": 99.2821023292853,
+            "p90": 201,
+            "sum": 498694
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 312.3317333333333,
+            "p90": 486,
+            "sum": 4684976
+          },
+          "age": {
+            "n": 15000,
+            "mean": 308.2309333333333,
+            "p90": 637,
+            "sum": 4623464
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 309.4559028469042,
+            "p90": 484,
+            "sum": 1554397
+          },
+          "age": {
+            "n": 5023,
+            "mean": 100.34262392992235,
+            "p90": 206,
+            "sum": 504021
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1765,
+            "mean": 301.3229461756374,
+            "p90": 490,
+            "sum": 531835
+          },
+          "age": {
+            "n": 1765,
+            "mean": 239.06118980169973,
+            "p90": 377,
+            "sum": 421943
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8212,
+            "mean": 316.4568923526547,
+            "p90": 486,
+            "sum": 2598744
+          },
+          "age": {
+            "n": 8212,
+            "mean": 450.2557233317097,
+            "p90": 729,
+            "sum": 3697500
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 309.4559028469042,
+            "p90": 484,
+            "sum": 1554397
+          },
+          "age": {
+            "n": 5023,
+            "mean": 100.34262392992235,
+            "p90": 206,
+            "sum": 504021
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 311.2912666666667,
+            "p90": 483,
+            "sum": 4669369
+          },
+          "age": {
+            "n": 15000,
+            "mean": 306.69966666666664,
+            "p90": 634,
+            "sum": 4600495
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5038,
+            "mean": 305.81361651448987,
+            "p90": 480,
+            "sum": 1540689
+          },
+          "age": {
+            "n": 5038,
+            "mean": 99.99861055974593,
+            "p90": 202,
+            "sum": 503793
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1705,
+            "mean": 297.40645161290325,
+            "p90": 476,
+            "sum": 507078
+          },
+          "age": {
+            "n": 1705,
+            "mean": 232.88211143695014,
+            "p90": 355,
+            "sum": 397064
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8257,
+            "mean": 317.5005449921279,
+            "p90": 485,
+            "sum": 2621602
+          },
+          "age": {
+            "n": 8257,
+            "mean": 448.06079689960035,
+            "p90": 726,
+            "sum": 3699638
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5038,
+            "mean": 305.81361651448987,
+            "p90": 480,
+            "sum": 1540689
+          },
+          "age": {
+            "n": 5038,
+            "mean": 99.99861055974593,
+            "p90": 202,
+            "sum": 503793
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 313.538,
+            "p90": 485,
+            "sum": 4703070
+          },
+          "age": {
+            "n": 15000,
+            "mean": 313.6967333333333,
+            "p90": 643,
+            "sum": 4705451
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 306.7500993245928,
+            "p90": 483,
+            "sum": 1544180
+          },
+          "age": {
+            "n": 5034,
+            "mean": 102.44815256257449,
+            "p90": 212,
+            "sum": 515724
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1615,
+            "mean": 308.5157894736842,
+            "p90": 489,
+            "sum": 498253
+          },
+          "age": {
+            "n": 1615,
+            "mean": 244.51207430340557,
+            "p90": 375,
+            "sum": 394887
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8351,
+            "mean": 318.6010058675608,
+            "p90": 485,
+            "sum": 2660637
+          },
+          "age": {
+            "n": 8351,
+            "mean": 454.41743503772005,
+            "p90": 733,
+            "sum": 3794840
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 306.7500993245928,
+            "p90": 483,
+            "sum": 1544180
+          },
+          "age": {
+            "n": 5034,
+            "mean": 102.44815256257449,
+            "p90": 212,
+            "sum": 515724
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 9809569,
+        "completed_chain_sum": 4995533,
+        "outstanding_chain_sum": 4814036,
+        "new_completed_chain_sum": 4995533,
+        "completed_window": {
+          "n": 24445,
+          "mean": 204.3580691347924,
+          "p90": 376,
+          "sum": 4995533
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17227785,
+        "completed_chain_sum": 12583930,
+        "outstanding_chain_sum": 4643855,
+        "new_completed_chain_sum": 7588397,
+        "completed_window": {
+          "n": 29905,
+          "mean": 253.7501086774787,
+          "p90": 457,
+          "sum": 7588397
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 24662646,
+        "completed_chain_sum": 19977670,
+        "outstanding_chain_sum": 4684976,
+        "new_completed_chain_sum": 7393740,
+        "completed_window": {
+          "n": 29900,
+          "mean": 247.28227424749164,
+          "p90": 442,
+          "sum": 7393740
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 32117927,
+        "completed_chain_sum": 27448558,
+        "outstanding_chain_sum": 4669369,
+        "new_completed_chain_sum": 7470888,
+        "completed_window": {
+          "n": 30001,
+          "mean": 249.02129929002368,
+          "p90": 447,
+          "sum": 7470888
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 39554321,
+        "completed_chain_sum": 34851251,
+        "outstanding_chain_sum": 4703070,
+        "new_completed_chain_sum": 7402693,
+        "completed_window": {
+          "n": 29856,
+          "mean": 247.94657690246515,
+          "p90": 444,
+          "sum": 7402693
+        }
+      }
+    ]
+  },
+  "trick_short_tasks-s2-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_short_tasks-s2-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 134580,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 21103,
+        "stationary": 22328
+      },
+      "loaded": {
+        "adjacent": 54377,
+        "stationary": 57578
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 11049480,
+        "cr": 437458,
+        "ccr": 306719,
+        "wait": 697531,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 33984748,
+        "cr": 866446,
+        "ccr": 666561,
+        "wait": 1991057,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 11049480,
+    "empty_turn_actions": 744177,
+    "empty_wait_actions": 697531,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 12491188,
+    "loaded_robot_steps_including_unfinished_tasks": 37508812,
+    "robot_steps_per_completed_task": 371.5262297518205,
+    "revealed_chain_shortest": {
+      "n": 149580,
+      "mean": 248.64951865222622,
+      "p90": 445,
+      "sum": 37192995
+    },
+    "completed_chain_shortest": {
+      "n": 134580,
+      "mean": 234.18805914697577,
+      "p90": 419,
+      "sum": 31517029
+    },
+    "assigned_chain_shortest": {
+      "n": 144553,
+      "mean": 239.05736996119072,
+      "p90": 425,
+      "sum": 34556460
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 144553,
+      "mean": 72.89030321058712,
+      "p90": 134,
+      "sum": 10536512
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 144553,
+      "mean": 72.89030321058712,
+      "p90": 134,
+      "sum": 10536512
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 142095,
+      "mean": 86.83019106935501,
+      "p90": 155,
+      "sum": 12338136
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 142095,
+      "mean": 86.83019106935501,
+      "p90": 155,
+      "sum": 12338136
+    },
+    "completed_loaded_steps": {
+      "n": 134580,
+      "mean": 269.0031282508545,
+      "p90": 464,
+      "sum": 36202441
+    },
+    "completed_loaded_action_totals": {
+      "fw": 32783161,
+      "cr": 842491,
+      "ccr": 646324,
+      "wait": 1930465,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 243.5960841135384,
+      "cr": 6.26015009659682,
+      "ccr": 4.802526378362312,
+      "wait": 14.344367662356962,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 53434,
+      "stationary": 56574
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.3970426512111755,
+      "stationary": 0.42037449843958985
+    },
+    "completed_loaded_forward_excess_over_shortest": 1266132,
+    "observed_pickup_steps_per_shortest_cell": 1.2017253695279388,
+    "completed_loaded_steps_per_shortest_cell": 1.1486628704755135,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 2458,
+    "distance_queries": 438686,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 345.8128,
+            "p90": 497,
+            "sum": 5187192
+          },
+          "age": {
+            "n": 15000,
+            "mean": 423.2049333333333,
+            "p90": 1000,
+            "sum": 6348074
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5033,
+            "mean": 474.61017285912976,
+            "p90": 534,
+            "sum": 2388713
+          },
+          "age": {
+            "n": 5033,
+            "mean": 645.5976554738725,
+            "p90": 1000,
+            "sum": 3249293
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2459,
+            "mean": 259.3794225294835,
+            "p90": 417,
+            "sum": 637814
+          },
+          "age": {
+            "n": 2459,
+            "mean": 146.15168767791786,
+            "p90": 437,
+            "sum": 359387
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7508,
+            "mean": 287.78169952051144,
+            "p90": 418,
+            "sum": 2160665
+          },
+          "age": {
+            "n": 7508,
+            "mean": 364.8633457645179,
+            "p90": 1000,
+            "sum": 2739394
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5033,
+            "mean": 474.61017285912976,
+            "p90": 534,
+            "sum": 2388713
+          },
+          "age": {
+            "n": 5033,
+            "mean": 645.5976554738725,
+            "p90": 1000,
+            "sum": 3249293
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 1973,
+            "mean": 472.3613786112519,
+            "p90": 534,
+            "sum": 931969
+          },
+          "age": {
+            "n": 1973,
+            "mean": 1000.0,
+            "p90": 1000,
+            "sum": 1973000
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 363.9495333333333,
+            "p90": 515,
+            "sum": 5459243
+          },
+          "age": {
+            "n": 15000,
+            "mean": 632.365,
+            "p90": 1924,
+            "sum": 9485475
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5024,
+            "mean": 498.0708598726115,
+            "p90": 547,
+            "sum": 2502308
+          },
+          "age": {
+            "n": 5024,
+            "mean": 1171.4349124203823,
+            "p90": 2000,
+            "sum": 5885289
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2481,
+            "mean": 267.79887142281336,
+            "p90": 440,
+            "sum": 664409
+          },
+          "age": {
+            "n": 2481,
+            "mean": 146.5429262394196,
+            "p90": 198,
+            "sum": 363573
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7495,
+            "mean": 305.87404936624415,
+            "p90": 452,
+            "sum": 2292526
+          },
+          "age": {
+            "n": 7495,
+            "mean": 431.83629086057374,
+            "p90": 1173,
+            "sum": 3236613
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5024,
+            "mean": 498.0708598726115,
+            "p90": 547,
+            "sum": 2502308
+          },
+          "age": {
+            "n": 5024,
+            "mean": 1171.4349124203823,
+            "p90": 2000,
+            "sum": 5885289
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3061,
+            "mean": 498.46161385168244,
+            "p90": 547,
+            "sum": 1525791
+          },
+          "age": {
+            "n": 3061,
+            "mean": 1646.59359686377,
+            "p90": 2000,
+            "sum": 5040223
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 370.2938,
+            "p90": 527,
+            "sum": 5554407
+          },
+          "age": {
+            "n": 15000,
+            "mean": 803.1491333333333,
+            "p90": 2559,
+            "sum": 12047237
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 510.36416070007954,
+            "p90": 553,
+            "sum": 2566111
+          },
+          "age": {
+            "n": 5028,
+            "mean": 1669.3609785202864,
+            "p90": 3000,
+            "sum": 8393547
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2509,
+            "mean": 268.5492227979275,
+            "p90": 452,
+            "sum": 673790
+          },
+          "age": {
+            "n": 2509,
+            "mean": 165.77002789956157,
+            "p90": 174,
+            "sum": 415917
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7463,
+            "mean": 310.1307785073027,
+            "p90": 465,
+            "sum": 2314506
+          },
+          "age": {
+            "n": 7463,
+            "mean": 433.8433605788557,
+            "p90": 692,
+            "sum": 3237773
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5028,
+            "mean": 510.36416070007954,
+            "p90": 553,
+            "sum": 2566111
+          },
+          "age": {
+            "n": 5028,
+            "mean": 1669.3609785202864,
+            "p90": 3000,
+            "sum": 8393547
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3626,
+            "mean": 511.0107556536128,
+            "p90": 553,
+            "sum": 1852925
+          },
+          "age": {
+            "n": 3626,
+            "mean": 2180.389134031991,
+            "p90": 3000,
+            "sum": 7906091
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 373.7950666666667,
+            "p90": 534,
+            "sum": 5606926
+          },
+          "age": {
+            "n": 15000,
+            "mean": 970.1066,
+            "p90": 3255,
+            "sum": 14551599
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5029,
+            "mean": 518.4352754026645,
+            "p90": 559,
+            "sum": 2607211
+          },
+          "age": {
+            "n": 5029,
+            "mean": 2178.7068999801154,
+            "p90": 4000,
+            "sum": 10956717
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2447,
+            "mean": 270.71393543114016,
+            "p90": 450,
+            "sum": 662437
+          },
+          "age": {
+            "n": 2447,
+            "mean": 147.74989783408256,
+            "p90": 157,
+            "sum": 361544
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7524,
+            "mean": 310.64300903774586,
+            "p90": 471,
+            "sum": 2337278
+          },
+          "age": {
+            "n": 7524,
+            "mean": 429.73657628920785,
+            "p90": 565,
+            "sum": 3233338
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5029,
+            "mean": 518.4352754026645,
+            "p90": 559,
+            "sum": 2607211
+          },
+          "age": {
+            "n": 5029,
+            "mean": 2178.7068999801154,
+            "p90": 4000,
+            "sum": 10956717
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3952,
+            "mean": 519.6072874493927,
+            "p90": 558,
+            "sum": 2053488
+          },
+          "age": {
+            "n": 3952,
+            "mean": 2676.5055668016194,
+            "p90": 4000,
+            "sum": 10577550
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 621,
+            "mean": 520.9484702093398,
+            "p90": 556,
+            "sum": 323509
+          },
+          "age": {
+            "n": 621,
+            "mean": 4000.0,
+            "p90": 4000,
+            "sum": 2484000
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 378.39773333333335,
+            "p90": 539,
+            "sum": 5675966
+          },
+          "age": {
+            "n": 15000,
+            "mean": 1149.7701333333334,
+            "p90": 3987,
+            "sum": 17246552
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 524.4748358862145,
+            "p90": 561,
+            "sum": 2636535
+          },
+          "age": {
+            "n": 5027,
+            "mean": 2687.5975731052317,
+            "p90": 5000,
+            "sum": 13510553
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2458,
+            "mean": 271.72701383238405,
+            "p90": 454,
+            "sum": 667905
+          },
+          "age": {
+            "n": 2458,
+            "mean": 163.31651749389746,
+            "p90": 159,
+            "sum": 401432
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7515,
+            "mean": 315.57232202262145,
+            "p90": 477,
+            "sum": 2371526
+          },
+          "age": {
+            "n": 7515,
+            "mean": 443.72149035262805,
+            "p90": 557,
+            "sum": 3334567
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 524.4748358862145,
+            "p90": 561,
+            "sum": 2636535
+          },
+          "age": {
+            "n": 5027,
+            "mean": 2687.5975731052317,
+            "p90": 5000,
+            "sum": 13510553
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 4149,
+            "mean": 525.6917329476983,
+            "p90": 562,
+            "sum": 2181095
+          },
+          "age": {
+            "n": 4149,
+            "mean": 3204.9730055435043,
+            "p90": 5000,
+            "sum": 13297433
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 1356,
+            "mean": 525.9992625368732,
+            "p90": 561,
+            "sum": 713255
+          },
+          "age": {
+            "n": 1356,
+            "mean": 4660.0730088495575,
+            "p90": 5000,
+            "sum": 6319059
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10057629,
+        "completed_chain_sum": 4870437,
+        "outstanding_chain_sum": 5187192,
+        "new_completed_chain_sum": 4870437,
+        "completed_window": {
+          "n": 25427,
+          "mean": 191.54587643056593,
+          "p90": 333,
+          "sum": 4870437
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 16843272,
+        "completed_chain_sum": 11384029,
+        "outstanding_chain_sum": 5459243,
+        "new_completed_chain_sum": 6513592,
+        "completed_window": {
+          "n": 27353,
+          "mean": 238.13080832084233,
+          "p90": 411,
+          "sum": 6513592
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 23625210,
+        "completed_chain_sum": 18070803,
+        "outstanding_chain_sum": 5554407,
+        "new_completed_chain_sum": 6686774,
+        "completed_window": {
+          "n": 27287,
+          "mean": 245.05346868472165,
+          "p90": 436,
+          "sum": 6686774
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 30407367,
+        "completed_chain_sum": 24800441,
+        "outstanding_chain_sum": 5606926,
+        "new_completed_chain_sum": 6729638,
+        "completed_window": {
+          "n": 27272,
+          "mean": 246.759973599296,
+          "p90": 444,
+          "sum": 6729638
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 37192995,
+        "completed_chain_sum": 31517029,
+        "outstanding_chain_sum": 5675966,
+        "new_completed_chain_sum": 6716588,
+        "completed_window": {
+          "n": 27241,
+          "mean": 246.5617268088543,
+          "p90": 443,
+          "sum": 6716588
+        }
+      }
+    ]
+  },
+  "trick_lanes-s2-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes-s2-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 146566,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 7836,
+        "stationary": 8565
+      },
+      "loaded": {
+        "adjacent": 19991,
+        "stationary": 21393
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 8648068,
+        "cr": 374408,
+        "ccr": 297352,
+        "wait": 543956,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 37518863,
+        "cr": 438378,
+        "ccr": 468979,
+        "wait": 1709996,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 8648068,
+    "empty_turn_actions": 671760,
+    "empty_wait_actions": 543956,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 9863784,
+    "loaded_robot_steps_including_unfinished_tasks": 40136216,
+    "robot_steps_per_completed_task": 341.1432392232851,
+    "revealed_chain_shortest": {
+      "n": 161566,
+      "mean": 248.5430907492913,
+      "p90": 445,
+      "sum": 40156113
+    },
+    "completed_chain_shortest": {
+      "n": 146566,
+      "mean": 242.18702154660699,
+      "p90": 438,
+      "sum": 35496383
+    },
+    "assigned_chain_shortest": {
+      "n": 156545,
+      "mean": 246.7559615446038,
+      "p90": 443,
+      "sum": 38628412
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 156545,
+      "mean": 50.19518349356415,
+      "p90": 93,
+      "sum": 7857805
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 156545,
+      "mean": 50.19518349356415,
+      "p90": 93,
+      "sum": 7857805
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 154701,
+      "mean": 63.284490727273905,
+      "p90": 111,
+      "sum": 9790174
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 154701,
+      "mean": 63.284490727273905,
+      "p90": 111,
+      "sum": 9790174
+    },
+    "completed_loaded_steps": {
+      "n": 146566,
+      "mean": 264.2217976884134,
+      "p90": 465,
+      "sum": 38725932
+    },
+    "completed_loaded_action_totals": {
+      "fw": 36201797,
+      "cr": 423039,
+      "ccr": 451616,
+      "wait": 1649480,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 246.9999658856761,
+      "cr": 2.886337895555586,
+      "ccr": 3.081314902501262,
+      "wait": 11.254179004680486,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 19295,
+      "stationary": 20641
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.13164717601626572,
+      "stationary": 0.14083075201615655
+    },
+    "completed_loaded_forward_excess_over_shortest": 705414,
+    "observed_pickup_steps_per_shortest_cell": 1.265493488447245,
+    "completed_loaded_steps_per_shortest_cell": 1.0909824812291438,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 1844,
+    "distance_queries": 474656,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 319.3222,
+            "p90": 495,
+            "sum": 4789833
+          },
+          "age": {
+            "n": 15000,
+            "mean": 338.406,
+            "p90": 710,
+            "sum": 5076090
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 310.0882352941176,
+            "p90": 482,
+            "sum": 1560364
+          },
+          "age": {
+            "n": 5032,
+            "mean": 105.36923688394276,
+            "p90": 216,
+            "sum": 530218
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1800,
+            "mean": 287.97333333333336,
+            "p90": 480,
+            "sum": 518352
+          },
+          "age": {
+            "n": 1800,
+            "mean": 242.4661111111111,
+            "p90": 373,
+            "sum": 436439
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8168,
+            "mean": 331.919319294809,
+            "p90": 504,
+            "sum": 2711117
+          },
+          "age": {
+            "n": 8168,
+            "mean": 503.11373653281095,
+            "p90": 860,
+            "sum": 4109433
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5032,
+            "mean": 310.0882352941176,
+            "p90": 482,
+            "sum": 1560364
+          },
+          "age": {
+            "n": 5032,
+            "mean": 105.36923688394276,
+            "p90": 216,
+            "sum": 530218
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 308.995,
+            "p90": 483,
+            "sum": 4634925
+          },
+          "age": {
+            "n": 15000,
+            "mean": 303.20306666666664,
+            "p90": 626,
+            "sum": 4548046
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5033,
+            "mean": 305.94039340353663,
+            "p90": 479,
+            "sum": 1539798
+          },
+          "age": {
+            "n": 5033,
+            "mean": 100.78939002582952,
+            "p90": 204,
+            "sum": 507273
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1849,
+            "mean": 293.01730665224443,
+            "p90": 475,
+            "sum": 541789
+          },
+          "age": {
+            "n": 1849,
+            "mean": 232.7382368848026,
+            "p90": 356,
+            "sum": 430333
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8118,
+            "mean": 314.5279625523528,
+            "p90": 485,
+            "sum": 2553338
+          },
+          "age": {
+            "n": 8118,
+            "mean": 444.7450110864745,
+            "p90": 715,
+            "sum": 3610440
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5033,
+            "mean": 305.94039340353663,
+            "p90": 479,
+            "sum": 1539798
+          },
+          "age": {
+            "n": 5033,
+            "mean": 100.78939002582952,
+            "p90": 204,
+            "sum": 507273
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 312.5176,
+            "p90": 486,
+            "sum": 4687764
+          },
+          "age": {
+            "n": 15000,
+            "mean": 306.88373333333334,
+            "p90": 629,
+            "sum": 4603256
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 311.68703961775833,
+            "p90": 485,
+            "sum": 1565604
+          },
+          "age": {
+            "n": 5023,
+            "mean": 100.95321521003385,
+            "p90": 206,
+            "sum": 507088
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1791,
+            "mean": 297.68676716917923,
+            "p90": 485,
+            "sum": 533157
+          },
+          "age": {
+            "n": 1791,
+            "mean": 234.87437185929647,
+            "p90": 361,
+            "sum": 420660
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8186,
+            "mean": 316.27204984119226,
+            "p90": 487,
+            "sum": 2589003
+          },
+          "age": {
+            "n": 8186,
+            "mean": 448.99926704129,
+            "p90": 721,
+            "sum": 3675508
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 311.68703961775833,
+            "p90": 485,
+            "sum": 1565604
+          },
+          "age": {
+            "n": 5023,
+            "mean": 100.95321521003385,
+            "p90": 206,
+            "sum": 507088
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 310.46926666666667,
+            "p90": 483,
+            "sum": 4657039
+          },
+          "age": {
+            "n": 15000,
+            "mean": 303.31266666666664,
+            "p90": 624,
+            "sum": 4549690
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 308.5981698826338,
+            "p90": 482,
+            "sum": 1551323
+          },
+          "age": {
+            "n": 5027,
+            "mean": 99.20648498110205,
+            "p90": 203,
+            "sum": 498711
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1896,
+            "mean": 292.85179324894517,
+            "p90": 478,
+            "sum": 555247
+          },
+          "age": {
+            "n": 1896,
+            "mean": 234.07489451476792,
+            "p90": 354,
+            "sum": 443806
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8077,
+            "mean": 315.7693450538566,
+            "p90": 484,
+            "sum": 2550469
+          },
+          "age": {
+            "n": 8077,
+            "mean": 446.5981181131608,
+            "p90": 718,
+            "sum": 3607173
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5027,
+            "mean": 308.5981698826338,
+            "p90": 482,
+            "sum": 1551323
+          },
+          "age": {
+            "n": 5027,
+            "mean": 99.20648498110205,
+            "p90": 203,
+            "sum": 498711
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 310.64866666666666,
+            "p90": 484,
+            "sum": 4659730
+          },
+          "age": {
+            "n": 15000,
+            "mean": 308.1933333333333,
+            "p90": 635,
+            "sum": 4622900
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5021,
+            "mean": 304.2622983469428,
+            "p90": 482,
+            "sum": 1527701
+          },
+          "age": {
+            "n": 5021,
+            "mean": 99.84664409480183,
+            "p90": 204,
+            "sum": 501330
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 1844,
+            "mean": 298.88340563991324,
+            "p90": 488,
+            "sum": 551141
+          },
+          "age": {
+            "n": 1844,
+            "mean": 239.32321041214752,
+            "p90": 372,
+            "sum": 441312
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 8135,
+            "mean": 317.2572833435771,
+            "p90": 484,
+            "sum": 2580888
+          },
+          "age": {
+            "n": 8135,
+            "mean": 452.3980331899201,
+            "p90": 724,
+            "sum": 3680258
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5021,
+            "mean": 304.2622983469428,
+            "p90": 482,
+            "sum": 1527701
+          },
+          "age": {
+            "n": 5021,
+            "mean": 99.84664409480183,
+            "p90": 204,
+            "sum": 501330
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10320900,
+        "completed_chain_sum": 5531067,
+        "outstanding_chain_sum": 4789833,
+        "new_completed_chain_sum": 5531067,
+        "completed_window": {
+          "n": 26456,
+          "mean": 209.06663894768673,
+          "p90": 385,
+          "sum": 5531067
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17773611,
+        "completed_chain_sum": 13138686,
+        "outstanding_chain_sum": 4634925,
+        "new_completed_chain_sum": 7607619,
+        "completed_window": {
+          "n": 30087,
+          "mean": 252.85402333233623,
+          "p90": 456,
+          "sum": 7607619
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 25263222,
+        "completed_chain_sum": 20575458,
+        "outstanding_chain_sum": 4687764,
+        "new_completed_chain_sum": 7436772,
+        "completed_window": {
+          "n": 30070,
+          "mean": 247.31533089457932,
+          "p90": 443,
+          "sum": 7436772
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 32728911,
+        "completed_chain_sum": 28071872,
+        "outstanding_chain_sum": 4657039,
+        "new_completed_chain_sum": 7496414,
+        "completed_window": {
+          "n": 30047,
+          "mean": 249.48959962725064,
+          "p90": 447,
+          "sum": 7496414
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 40156113,
+        "completed_chain_sum": 35496383,
+        "outstanding_chain_sum": 4659730,
+        "new_completed_chain_sum": 7424511,
+        "completed_window": {
+          "n": 29906,
+          "mean": 248.26158630375176,
+          "p90": 444,
+          "sum": 7424511
+        }
+      }
+    ]
+  },
+  "trick_lanes_short_tasks-s2-r0": {
+    "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes_short_tasks-s2-r0/WAREHOUSE.json",
+    "team_size": 10000,
+    "steps": 5000,
+    "completed_tasks": 137934,
+    "planner_errors": 0,
+    "schedule_errors": 0,
+    "entry_timeouts": 0,
+    "full_opposite_turn_transitions": {
+      "idle": {
+        "adjacent": 0,
+        "stationary": 0
+      },
+      "empty": {
+        "adjacent": 11106,
+        "stationary": 12150
+      },
+      "loaded": {
+        "adjacent": 25071,
+        "stationary": 27272
+      }
+    },
+    "full_phase_actions": {
+      "idle": {
+        "fw": 0,
+        "cr": 0,
+        "ccr": 0,
+        "wait": 0,
+        "other": 0
+      },
+      "empty": {
+        "fw": 11705182,
+        "cr": 393260,
+        "ccr": 317047,
+        "wait": 691673,
+        "other": 0
+      },
+      "loaded": {
+        "fw": 34334288,
+        "cr": 447232,
+        "ccr": 477732,
+        "wait": 1633586,
+        "other": 0
+      }
+    },
+    "non_motion_action_markers_before_last_assignment": 0,
+    "implicit_initial_idle_steps": 0,
+    "unassigned_robot_steps": 0,
+    "empty_forward_actions": 11705182,
+    "empty_turn_actions": 710307,
+    "empty_wait_actions": 691673,
+    "empty_other_actions": 0,
+    "empty_robot_steps_including_reassignments": 13107162,
+    "loaded_robot_steps_including_unfinished_tasks": 36892838,
+    "robot_steps_per_completed_task": 362.49220641756204,
+    "revealed_chain_shortest": {
+      "n": 152934,
+      "mean": 248.64216590163076,
+      "p90": 445,
+      "sum": 38025841
+    },
+    "completed_chain_shortest": {
+      "n": 137934,
+      "mean": 234.6442501486218,
+      "p90": 420,
+      "sum": 32365420
+    },
+    "assigned_chain_shortest": {
+      "n": 147911,
+      "mean": 239.24145601070913,
+      "p90": 425,
+      "sum": 35386443
+    },
+    "first_assignment_pickup_shortest": {
+      "n": 147911,
+      "mean": 73.10868021986194,
+      "p90": 134,
+      "sum": 10813578
+    },
+    "last_assignment_pickup_shortest": {
+      "n": 147911,
+      "mean": 73.10868021986194,
+      "p90": 134,
+      "sum": 10813578
+    },
+    "observed_first_assignment_pickup_delay": {
+      "n": 145362,
+      "mean": 89.02255059781785,
+      "p90": 156,
+      "sum": 12940496
+    },
+    "observed_last_assignment_pickup_delay": {
+      "n": 145362,
+      "mean": 89.02255059781785,
+      "p90": 156,
+      "sum": 12940496
+    },
+    "completed_loaded_steps": {
+      "n": 137934,
+      "mean": 258.2544912784375,
+      "p90": 448,
+      "sum": 35622075
+    },
+    "completed_loaded_action_totals": {
+      "fw": 33150658,
+      "cr": 432115,
+      "ccr": 460884,
+      "wait": 1578418,
+      "other": 0
+    },
+    "completed_loaded_action_means": {
+      "fw": 240.3371032522801,
+      "cr": 3.1327663955224962,
+      "ccr": 3.341337161251033,
+      "wait": 11.443284469383908,
+      "other": 0.0
+    },
+    "completed_opposite_turn_transitions": {
+      "adjacent": 24239,
+      "stationary": 26366
+    },
+    "completed_opposite_turn_transition_means": {
+      "adjacent": 0.17572897182710573,
+      "stationary": 0.19114939028810882
+    },
+    "completed_loaded_forward_excess_over_shortest": 785238,
+    "observed_pickup_steps_per_shortest_cell": 1.227903191799667,
+    "completed_loaded_steps_per_shortest_cell": 1.1006214348523826,
+    "tasks_with_multiple_assignments": 0,
+    "assignments_after_pickup": 0,
+    "assigned_without_observed_pickup": 2549,
+    "distance_queries": 448756,
+    "complete_bfs_tables": 24768,
+    "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+    "pool_snapshots": [
+      {
+        "step": 0,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 15000,
+            "mean": 248.48273333333333,
+            "p90": 444,
+            "sum": 3727241
+          },
+          "age": {
+            "n": 15000,
+            "mean": 0.0,
+            "p90": 0,
+            "sum": 0
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 349.7732,
+            "p90": 499,
+            "sum": 5246598
+          },
+          "age": {
+            "n": 15000,
+            "mean": 420.21546666666666,
+            "p90": 1000,
+            "sum": 6303232
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 477.2455303933254,
+            "p90": 536,
+            "sum": 2402454
+          },
+          "age": {
+            "n": 5034,
+            "mean": 647.3408820023838,
+            "p90": 1000,
+            "sum": 3258714
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2417,
+            "mean": 254.93669838642947,
+            "p90": 419,
+            "sum": 616182
+          },
+          "age": {
+            "n": 2417,
+            "mean": 125.57219693835333,
+            "p90": 228,
+            "sum": 303508
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7549,
+            "mean": 295.1333951516757,
+            "p90": 423,
+            "sum": 2227962
+          },
+          "age": {
+            "n": 7549,
+            "mean": 363.0957742747384,
+            "p90": 962,
+            "sum": 2741010
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 477.2455303933254,
+            "p90": 536,
+            "sum": 2402454
+          },
+          "age": {
+            "n": 5034,
+            "mean": 647.3408820023838,
+            "p90": 1000,
+            "sum": 3258714
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 1853,
+            "mean": 476.2746896923907,
+            "p90": 536,
+            "sum": 882537
+          },
+          "age": {
+            "n": 1853,
+            "mean": 1000.0,
+            "p90": 1000,
+            "sum": 1853000
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 363.06986666666666,
+            "p90": 517,
+            "sum": 5446048
+          },
+          "age": {
+            "n": 15000,
+            "mean": 629.1250666666666,
+            "p90": 1884,
+            "sum": 9436876
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 499.08707753479126,
+            "p90": 547,
+            "sum": 2510408
+          },
+          "age": {
+            "n": 5030,
+            "mean": 1182.4027833001987,
+            "p90": 2000,
+            "sum": 5947486
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2535,
+            "mean": 261.4990138067061,
+            "p90": 438,
+            "sum": 662900
+          },
+          "age": {
+            "n": 2535,
+            "mean": 158.23589743589744,
+            "p90": 192,
+            "sum": 401128
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7435,
+            "mean": 305.68123739071956,
+            "p90": 452,
+            "sum": 2272740
+          },
+          "age": {
+            "n": 7435,
+            "mean": 415.36812373907196,
+            "p90": 1033,
+            "sum": 3088262
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5030,
+            "mean": 499.08707753479126,
+            "p90": 547,
+            "sum": 2510408
+          },
+          "age": {
+            "n": 5030,
+            "mean": 1182.4027833001987,
+            "p90": 2000,
+            "sum": 5947486
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3125,
+            "mean": 499.71424,
+            "p90": 547,
+            "sum": 1561607
+          },
+          "age": {
+            "n": 3125,
+            "mean": 1649.03584,
+            "p90": 2000,
+            "sum": 5153237
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 369.9497333333333,
+            "p90": 528,
+            "sum": 5549246
+          },
+          "age": {
+            "n": 15000,
+            "mean": 804.8986,
+            "p90": 2595,
+            "sum": 12073479
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 511.20043702820817,
+            "p90": 554,
+            "sum": 2573383
+          },
+          "age": {
+            "n": 5034,
+            "mean": 1685.10329757648,
+            "p90": 3000,
+            "sum": 8482810
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2538,
+            "mean": 269.57643814026795,
+            "p90": 451,
+            "sum": 684185
+          },
+          "age": {
+            "n": 2538,
+            "mean": 165.64263199369583,
+            "p90": 173,
+            "sum": 420401
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7428,
+            "mean": 308.5188476036618,
+            "p90": 466,
+            "sum": 2291678
+          },
+          "age": {
+            "n": 7428,
+            "mean": 426.7996768982229,
+            "p90": 622,
+            "sum": 3170268
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5034,
+            "mean": 511.20043702820817,
+            "p90": 554,
+            "sum": 2573383
+          },
+          "age": {
+            "n": 5034,
+            "mean": 1685.10329757648,
+            "p90": 3000,
+            "sum": 8482810
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3650,
+            "mean": 512.1421917808219,
+            "p90": 553,
+            "sum": 1869319
+          },
+          "age": {
+            "n": 3650,
+            "mean": 2191.609589041096,
+            "p90": 3000,
+            "sum": 7999375
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 373.2737333333333,
+            "p90": 535,
+            "sum": 5599106
+          },
+          "age": {
+            "n": 15000,
+            "mean": 975.5922666666667,
+            "p90": 3310,
+            "sum": 14633884
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 519.1862315957023,
+            "p90": 559,
+            "sum": 2609430
+          },
+          "age": {
+            "n": 5026,
+            "mean": 2214.364902506964,
+            "p90": 4000,
+            "sum": 11129398
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2596,
+            "mean": 264.9818952234206,
+            "p90": 442,
+            "sum": 687893
+          },
+          "age": {
+            "n": 2596,
+            "mean": 143.7931432973806,
+            "p90": 162,
+            "sum": 373287
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7378,
+            "mean": 311.97926267281105,
+            "p90": 473,
+            "sum": 2301783
+          },
+          "age": {
+            "n": 7378,
+            "mean": 424.3967199783139,
+            "p90": 554,
+            "sum": 3131199
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5026,
+            "mean": 519.1862315957023,
+            "p90": 559,
+            "sum": 2609430
+          },
+          "age": {
+            "n": 5026,
+            "mean": 2214.364902506964,
+            "p90": 4000,
+            "sum": 11129398
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 3988,
+            "mean": 520.2505015045135,
+            "p90": 559,
+            "sum": 2074759
+          },
+          "age": {
+            "n": 3988,
+            "mean": 2697.9543630892676,
+            "p90": 4000,
+            "sum": 10759442
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 609,
+            "mean": 521.4269293924466,
+            "p90": 556,
+            "sum": 317549
+          },
+          "age": {
+            "n": 609,
+            "mean": 4000.0,
+            "p90": 4000,
+            "sum": 2436000
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "outstanding": {
+          "chain": {
+            "n": 15000,
+            "mean": 377.3614,
+            "p90": 540,
+            "sum": 5660421
+          },
+          "age": {
+            "n": 15000,
+            "mean": 1158.791,
+            "p90": 4040,
+            "sum": 17381865
+          }
+        },
+        "unassigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 525.4624726259208,
+            "p90": 562,
+            "sum": 2639398
+          },
+          "age": {
+            "n": 5023,
+            "mean": 2715.944057336253,
+            "p90": 4953,
+            "sum": 13642187
+          }
+        },
+        "held_unopened": {
+          "chain": {
+            "n": 2549,
+            "mean": 266.60298156139663,
+            "p90": 454,
+            "sum": 679571
+          },
+          "age": {
+            "n": 2549,
+            "mean": 167.59827383287563,
+            "p90": 162,
+            "sum": 427208
+          }
+        },
+        "started": {
+          "chain": {
+            "n": 7428,
+            "mean": 315.2197092084007,
+            "p90": 476,
+            "sum": 2341452
+          },
+          "age": {
+            "n": 7428,
+            "mean": 445.9437264404954,
+            "p90": 547,
+            "sum": 3312470
+          }
+        },
+        "never_assigned": {
+          "chain": {
+            "n": 5023,
+            "mean": 525.4624726259208,
+            "p90": 562,
+            "sum": 2639398
+          },
+          "age": {
+            "n": 5023,
+            "mean": 2715.944057336253,
+            "p90": 4953,
+            "sum": 13642187
+          }
+        },
+        "unassigned_previously_assigned": {
+          "chain": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          },
+          "age": {
+            "n": 0,
+            "mean": null,
+            "p90": null,
+            "sum": 0
+          }
+        },
+        "unpicked_age_at_least_1000": {
+          "chain": {
+            "n": 4162,
+            "mean": 526.360163382989,
+            "p90": 562,
+            "sum": 2190711
+          },
+          "age": {
+            "n": 4162,
+            "mean": 3230.423594425757,
+            "p90": 5000,
+            "sum": 13445023
+          }
+        },
+        "unpicked_age_at_least_4000": {
+          "chain": {
+            "n": 1392,
+            "mean": 526.6702586206897,
+            "p90": 561,
+            "sum": 733125
+          },
+          "age": {
+            "n": 1392,
+            "mean": 4661.612787356322,
+            "p90": 5000,
+            "sum": 6488965
+          }
+        }
+      }
+    ],
+    "pool_limits": [
+      "End-of-tick snapshots; task reveals on that tick are included.",
+      "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+      "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+      "Pool age includes service time for started tasks; unpicked age is reported separately."
+    ],
+    "chain_windows": [
+      {
+        "step": 0,
+        "revealed_chain_sum": 3727241,
+        "completed_chain_sum": 0,
+        "outstanding_chain_sum": 3727241,
+        "new_completed_chain_sum": 0,
+        "completed_window": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      {
+        "step": 1000,
+        "revealed_chain_sum": 10628708,
+        "completed_chain_sum": 5382110,
+        "outstanding_chain_sum": 5246598,
+        "new_completed_chain_sum": 5382110,
+        "completed_window": {
+          "n": 27710,
+          "mean": 194.229880909419,
+          "p90": 338,
+          "sum": 5382110
+        }
+      },
+      {
+        "step": 2000,
+        "revealed_chain_sum": 17526031,
+        "completed_chain_sum": 12079983,
+        "outstanding_chain_sum": 5446048,
+        "new_completed_chain_sum": 6697873,
+        "completed_window": {
+          "n": 27845,
+          "mean": 240.54131801041478,
+          "p90": 416,
+          "sum": 6697873
+        }
+      },
+      {
+        "step": 3000,
+        "revealed_chain_sum": 24411579,
+        "completed_chain_sum": 18862333,
+        "outstanding_chain_sum": 5549246,
+        "new_completed_chain_sum": 6782350,
+        "completed_window": {
+          "n": 27685,
+          "mean": 244.98284269459995,
+          "p90": 437,
+          "sum": 6782350
+        }
+      },
+      {
+        "step": 4000,
+        "revealed_chain_sum": 31226311,
+        "completed_chain_sum": 25627205,
+        "outstanding_chain_sum": 5599106,
+        "new_completed_chain_sum": 6764872,
+        "completed_window": {
+          "n": 27407,
+          "mean": 246.8300799065932,
+          "p90": 445,
+          "sum": 6764872
+        }
+      },
+      {
+        "step": 5000,
+        "revealed_chain_sum": 38025841,
+        "completed_chain_sum": 32365420,
+        "outstanding_chain_sum": 5660421,
+        "new_completed_chain_sum": 6738215,
+        "completed_window": {
+          "n": 27287,
+          "mean": 246.93865210539818,
+          "p90": 444,
+          "sum": 6738215
+        }
+      }
+    ]
+  }
+}

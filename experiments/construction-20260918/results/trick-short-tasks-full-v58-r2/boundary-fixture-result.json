@@ -1,0 +1,785 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/pool-replay/boundary-fixture.json",
+  "team_size": 2,
+  "steps": 4,
+  "completed_tasks": 1,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "loaded": {
+      "adjacent": 1,
+      "stationary": 1
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 4,
+      "other": 0
+    },
+    "empty": {
+      "fw": 0,
+      "cr": 1,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 1,
+      "cr": 1,
+      "ccr": 1,
+      "wait": 0,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "implicit_initial_idle_steps": 0,
+  "unassigned_robot_steps": 4,
+  "empty_forward_actions": 0,
+  "empty_turn_actions": 1,
+  "empty_wait_actions": 0,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 1,
+  "loaded_robot_steps_including_unfinished_tasks": 3,
+  "robot_steps_per_completed_task": 8.0,
+  "revealed_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "completed_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "assigned_chain_shortest": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 1,
+    "mean": 0.0,
+    "p90": 0,
+    "sum": 0
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 1,
+    "mean": 0.0,
+    "p90": 0,
+    "sum": 0
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 1,
+    "mean": 1.0,
+    "p90": 1,
+    "sum": 1
+  },
+  "completed_loaded_steps": {
+    "n": 1,
+    "mean": 3.0,
+    "p90": 3,
+    "sum": 3
+  },
+  "completed_loaded_action_totals": {
+    "fw": 1,
+    "cr": 1,
+    "ccr": 1,
+    "wait": 0,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 1.0,
+    "cr": 1.0,
+    "ccr": 1.0,
+    "wait": 0.0,
+    "other": 0.0
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 1,
+    "stationary": 1
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 1.0,
+    "stationary": 1.0
+  },
+  "completed_loaded_forward_excess_over_shortest": 0,
+  "observed_pickup_steps_per_shortest_cell": null,
+  "completed_loaded_steps_per_shortest_cell": 3.0,
+  "tasks_with_multiple_assignments": 0,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 0,
+  "distance_queries": 3,
+  "complete_bfs_tables": 2,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+  "pool_snapshots": [
+    {
+      "step": 0,
+      "outstanding": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 0.0,
+          "p90": 0,
+          "sum": 0
+        }
+      },
+      "unassigned": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 0.0,
+          "p90": 0,
+          "sum": 0
+        }
+      },
+      "held_unopened": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "started": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "never_assigned": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 0.0,
+          "p90": 0,
+          "sum": 0
+        }
+      },
+      "unassigned_previously_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_1000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_4000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      }
+    },
+    {
+      "step": 1,
+      "outstanding": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        }
+      },
+      "unassigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "held_unopened": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "started": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        }
+      },
+      "never_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unassigned_previously_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_1000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_4000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      }
+    },
+    {
+      "step": 2,
+      "outstanding": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 2.0,
+          "p90": 2,
+          "sum": 2
+        }
+      },
+      "unassigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "held_unopened": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "started": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 2.0,
+          "p90": 2,
+          "sum": 2
+        }
+      },
+      "never_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unassigned_previously_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_1000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_4000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      }
+    },
+    {
+      "step": 3,
+      "outstanding": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 3.0,
+          "p90": 3,
+          "sum": 3
+        }
+      },
+      "unassigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "held_unopened": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "started": {
+        "chain": {
+          "n": 1,
+          "mean": 1.0,
+          "p90": 1,
+          "sum": 1
+        },
+        "age": {
+          "n": 1,
+          "mean": 3.0,
+          "p90": 3,
+          "sum": 3
+        }
+      },
+      "never_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unassigned_previously_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_1000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_4000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      }
+    },
+    {
+      "step": 4,
+      "outstanding": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unassigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "held_unopened": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "started": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "never_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unassigned_previously_assigned": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_1000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      },
+      "unpicked_age_at_least_4000": {
+        "chain": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        },
+        "age": {
+          "n": 0,
+          "mean": null,
+          "p90": null,
+          "sum": 0
+        }
+      }
+    }
+  ],
+  "pool_limits": [
+    "End-of-tick snapshots; task reveals on that tick are included.",
+    "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
+    "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
+    "Pool age includes service time for started tasks; unpicked age is reported separately."
+  ],
+  "chain_windows": [
+    {
+      "step": 0,
+      "revealed_chain_sum": 1,
+      "completed_chain_sum": 0,
+      "outstanding_chain_sum": 1,
+      "new_completed_chain_sum": 0,
+      "completed_window": {
+        "n": 0,
+        "mean": null,
+        "p90": null,
+        "sum": 0
+      }
+    },
+    {
+      "step": 1,
+      "revealed_chain_sum": 1,
+      "completed_chain_sum": 0,
+      "outstanding_chain_sum": 1,
+      "new_completed_chain_sum": 0,
+      "completed_window": {
+        "n": 0,
+        "mean": null,
+        "p90": null,
+        "sum": 0
+      }
+    },
+    {
+      "step": 2,
+      "revealed_chain_sum": 1,
+      "completed_chain_sum": 0,
+      "outstanding_chain_sum": 1,
+      "new_completed_chain_sum": 0,
+      "completed_window": {
+        "n": 0,
+        "mean": null,
+        "p90": null,
+        "sum": 0
+      }
+    },
+    {
+      "step": 3,
+      "revealed_chain_sum": 1,
+      "completed_chain_sum": 0,
+      "outstanding_chain_sum": 1,
+      "new_completed_chain_sum": 0,
+      "completed_window": {
+        "n": 0,
+        "mean": null,
+        "p90": null,
+        "sum": 0
+      }
+    },
+    {
+      "step": 4,
+      "revealed_chain_sum": 1,
+      "completed_chain_sum": 1,
+      "outstanding_chain_sum": 0,
+      "new_completed_chain_sum": 1,
+      "completed_window": {
+        "n": 1,
+        "mean": 1.0,
+        "p90": 1,
+        "sum": 1
+      }
+    }
+  ]
+}

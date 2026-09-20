@@ -1,0 +1,84 @@
+{
+  "source_sha256": "9c9f8bbded8583ea42c37b9303d4bf57b90fc465f819ca4d5c6ffb6f3cd16285",
+  "script_sha256": "6d0bdc96e98c7bb5905a396449ef789cc5d0b45291ea4d2c805f16caa831b154",
+  "binary_sha256": "36bb7e816202083b7ead03e91de278cd0e9dc0ee3ece3ac7599834e57fcccf64",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/pool-replay/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/pool-replay/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "opposite_turn_fixture_passed": true,
+  "phase_boundary_fixture_passed": true,
+  "initial_gap_fixture_passed": true,
+  "allocation": {
+    "hostname": "research37",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      33
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        33
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      33
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "trick_control-s0-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_control-s0-r0/WAREHOUSE.json",
+      "sha256": "061fd58624e4a11c9e4128c50f909542b1e035735fd1d246129af0c7059973ea"
+    },
+    "trick_short_tasks-s0-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_short_tasks-s0-r0/WAREHOUSE.json",
+      "sha256": "156e408e7f69fc853c98cd81bef242d81000892f3a96e57b379071f94f9ae187"
+    },
+    "trick_lanes-s0-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes-s0-r0/WAREHOUSE.json",
+      "sha256": "93d5da32373de8caf49e25da66fda0464ae6b4a32a98ab626c08cdb7ccbc390f"
+    },
+    "trick_lanes_short_tasks-s0-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes_short_tasks-s0-r0/WAREHOUSE.json",
+      "sha256": "277a741af065f0e9720e04c78f4c5209aad40371e73db39ed88c4ad0b23c223a"
+    },
+    "trick_control-s2-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_control-s2-r0/WAREHOUSE.json",
+      "sha256": "2a6ac784d712c810429063ae14a09ff0c5d0f89057e2e60d352d2f265b42b8a0"
+    },
+    "trick_short_tasks-s2-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_short_tasks-s2-r0/WAREHOUSE.json",
+      "sha256": "9eb7b4b68b6324dbfa84f1d2978229156617a0084807dcac6045fb0ed9711acb"
+    },
+    "trick_lanes-s2-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes-s2-r0/WAREHOUSE.json",
+      "sha256": "3bcdefa6afc8b00d17c54fa10c7c3ede5e8d86393ba27078f4618f4b634f250f"
+    },
+    "trick_lanes_short_tasks-s2-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/trick_lanes_short_tasks-s2-r0/WAREHOUSE.json",
+      "sha256": "f2f37283447eb86eb6cd9d23669d1282c1595929793d683e0daf1582a5295bec"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}
