@@ -24,34 +24,34 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,379 tasks / 2,000 steps on four physical
+Best verified combined result: **3,395 tasks / 2,000 steps on four physical
 cores**, versus **2,914** for the strongest of three matched NMS repeats
-(2,902 / 2,903 / 2,914): **+16.0%**. All use EPYC 9354 CPUs. Mean latency
-**326 ms**, maximum **430 ms**, with zero errors or timeouts.
+(2,902 / 2,903 / 2,914): **+16.5%**. All use EPYC9354 CPUs. Mean latency
+**312ms**, maximum **425ms**, with zero errors or timeouts; peak RSS294MB
+(decimal). Source commit: [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d).
 
-The best uses planner seed 3, independent random streams per simulation step,
-generated field seed 15, K=1024, noise=200, dispersion=0.8, five local trials
-with equal-score acceptance, wait cost=0.5, exact/guided matching with keep
-bonus=0.5, directional penalty=2.4 and known-horizon triage scale=1.5
-(`--trick RANDOM-05`). It is the maximum of five planner seeds.
+The best uses planner seed3, independent random streams per step, generated
+field15 with one directional cost pair reversed (flip seed5), K1024,
+noise200, dispersion0.8, five local trials with equal-score acceptance,
+wait0.5/turn0.6, exact guided matching with keep0.5, directional penalty2.4,
+and known-horizon triage scale1.5 (`--trick RANDOM-05`).
 
-Those five seeds score **3,374 / 3,231 / 3,365 / 3,379 / 3,350**: mean
-**3,339.8**, or **14.6%** above NMS. The preceding random-stream mode averaged
-3,324.8 on the same five seeds; the new mode improves four of five pairs but
-only adds **0.45%** to the mean. These vary planner randomness on one fixed
-instance; they are not five independently generated instances.
+This is a **seed-specific record** selected from24 local guidance mutations.
+Across planner seeds0–4, the new field gives3,356/3,311/3,325/3,395/3,305:
+mean **3,338.4**. The preceding field gives3,374/3,231/3,365/3,379/3,350:
+mean **3,339.8**. Two of five pairs improve; the average has not improved.
+These are planner seeds on one fixed archived instance, not independent task
+instances. Further guidance comparisons use full K1024 and2000 steps because
+small-work rankings have repeatedly failed to transfer.
 
-The best **32-worker / 16-physical-core** run is now **3,395**, versus NMS
-**3,172**: **+7.0%**. It changes one directional cost pair in generated field15
-(flip seed5, planner seed3); mean latency79ms, maximum181ms, zero errors or
-timeouts. This is the best of24 local guidance mutations on one fixed instance;
-four-core confirmation and other planner seeds are pending. It is a
-seed-specific record, not yet a demonstrated average improvement.
+The same3,395 actions, assignments and task events repeat on **32 workers /
+16 physical cores**, versus NMS **3,172**: **+7.0%**. That run averages79ms
+(maximum181ms); peak RSS443MB. The four-core and32-worker comparisons remain
+separate. [Worker equivalence](random05/results/guidance-local-validation-split-full-v31/worker-equivalence.json).
 
-The previous seed-3 trajectory repeats exactly on both allocations at3,379.
-The active-cost-row four-core control also preserves every action, assignment
-and event, with observed mean latency326→310ms (one pair on shared hosts).
-The four-core and32-worker throughput comparisons remain separate.
+The earlier active-cost-row optimization preserves the complete3,374 control
+trajectory and lowers observed four-core mean latency326→310ms in one shared-host
+pair. Its speed evidence remains separate from the new guidance record.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -101,8 +101,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T11:09:45.903706+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Same3,374 trajectory; independent per-step RNG; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.4% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-workers32/summary.json) |
 | 2026-09-20T11:17:50.924764+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step RNG; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3379 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.0% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-seed3/summary.json) |
 | 2026-09-20T11:25:19.439602+00:00 | [32b333a](https://github.com/fywu85/lorr/commit/32b333a) | Same seed3 trajectory on32 workers; active cost rows; K1024, contrast2.4, field15; `--trick RANDOM-05` | 3379 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.5% | [Full evidence](random05/results/active-cost-split-full-v28/seed3-workers32/summary.json) |
-
 | 2026-09-20T11:51:07.120923+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | One directional pair reversed, flip seed5; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3395 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.0% | [Full evidence](random05/results/guidance-local-split-full-v31/flips1-seed5/summary.json) |
+| 2026-09-20T12:08:42.946296+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Four-core repeat of the same actions/assignments/events; one pair reversed, flip seed5; field15/planner seed3; `--trick RANDOM-05` | 3395 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.5% | [Full evidence](random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -478,3 +478,29 @@ The published NMS score of 3,050 used different instances and hardware.
 - Initial operation-policy full runs: K1=152, K8=1,018. Both are valid but far
   below the current pipeline. Larger portfolios and policy ablations are still
   running. The three-step policy remains experimental and disabled by default.
+
+- Guidance replication: seed3 repeats3,395 on four cores, with identical actions,
+  assignments and events to32 workers. Mean312ms/max425ms, peak RSS294MB, valid
+  full2000 steps. Other planner seeds0/1/2/4 give3,356/3,311/3,325/3,305;
+  five-seed mean3,338.4 versus3,339.8 before. The selected best improves by16
+  tasks; this field does not improve the replicated average. The frontier JSONs
+  retain the selected maximum as requested.
+
+- All operation-policy v34 cases are complete and valid. K1/8/32/128 score
+  152/1,018/1,019/1,246. AtK32, travel-cost weight1 gives823, no inheritance624,
+  and revisit limit16 gives1,886. The unchanged pipeline control repeats3,379.
+  Increased revisits help this prototype, but it is still far from the frontier.
+  Source b72a51e; results in `random05/results/operation-policy-split-full-v34/`.
+  v33's added one-visit mobility ablation failed; v34 rejects that ablation and
+  retains the original collision and four-visit/no-inheritance mobility tests.
+
+- v35/source0754ed8 adds optional moving-footprint search, inspired by the
+  reference's exclusion of all-wait from active candidates. The inherited plan
+  remains available as fallback. Dense regressions pass; full comparisons are
+  running. Separately, generated field seeds1–16 are being compared at fullK1024
+  with planner seed3; the original field selection used much less search work.
+
+- Partial v35 results (five of six full runs): moving-footprint K1/8/32 gives
+  343/817/1,118; K32 cost1=743 and no inheritance=577. These do not approach
+  the pipeline. K128 remains queued/running. The generic operation prototype
+  has not reproduced the reference algorithm's reported performance.
