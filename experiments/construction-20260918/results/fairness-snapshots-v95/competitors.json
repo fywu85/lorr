@@ -1,0 +1,68 @@
+{
+  "checked_utc": "2026-09-20T15:17:06.731118+00:00",
+  "definition": "At the final makespan H, maximum H - task reveal tick among revealed tasks with no accepted assignment to any robot at any time through H. Simulation steps, not wall time.",
+  "cases": [
+    {
+      "case": "nms_diagnostic",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/warehouse-leaders-full-20260918/nms-WAREHOUSE/result.json",
+      "input_sha256": "2074b608fac0bb85e89bad99c6939bdd5bd91454ff0cc7ec7ad9beb12d1bb987",
+      "hash_matches_prior_verified_replay": true,
+      "horizon": 5000,
+      "tasks_completed": 154981,
+      "never_assigned_count": 4935,
+      "never_assigned_age_max": 5000,
+      "never_assigned_age_p90": 4873,
+      "never_assigned_age_mean": 2705.3039513677813,
+      "never_assigned_from_step_zero": 442,
+      "never_assigned_age_at_least_4000": 1288,
+      "oldest_examples": [
+        {
+          "id": 24,
+          "revealed": 0,
+          "age": 5000
+        },
+        {
+          "id": 39,
+          "revealed": 0,
+          "age": 5000
+        },
+        {
+          "id": 61,
+          "revealed": 0,
+          "age": 5000
+        }
+      ]
+    },
+    {
+      "case": "kittyknight",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/warehouse-leaders-full-20260918/kk-WAREHOUSE/result.json",
+      "input_sha256": "1b3c1cf93ad9c0e5502e22b4e455d9ee18fb0a94740104bbd92e0e9bb6f2c2d8",
+      "hash_matches_prior_verified_replay": true,
+      "horizon": 5000,
+      "tasks_completed": 152981,
+      "never_assigned_count": 4952,
+      "never_assigned_age_max": 5000,
+      "never_assigned_age_p90": 4877,
+      "never_assigned_age_mean": 2707.251817447496,
+      "never_assigned_from_step_zero": 453,
+      "never_assigned_age_at_least_4000": 1298,
+      "oldest_examples": [
+        {
+          "id": 24,
+          "revealed": 0,
+          "age": 5000
+        },
+        {
+          "id": 39,
+          "revealed": 0,
+          "age": 5000
+        },
+        {
+          "id": 61,
+          "revealed": 0,
+          "age": 5000
+        }
+      ]
+    }
+  ]
+}

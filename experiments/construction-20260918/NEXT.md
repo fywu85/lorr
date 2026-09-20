@@ -14,6 +14,36 @@ resumes the same CLI session to recommend one bounded completion-estimator chang
 Preserve concurrent random05 work. Prior milestone2fb2d5c was already committed,
 pushed, and its goal marked complete; the old closeout checklist below is historical.
 
+## Running V95–V97 experiments (2026-09-20 15:58 UTC)
+
+- V95 native work matrix8900145 on research38,24distinct bound physical cores;
+  six full cases, sourcebdf5e7a. Automatic frozen verifier8900181.
+- V95 unchanged winner seeds1/3 job8900146 on research46,8bound physical cores;
+  verifier8900182. These are seed robustness checks, not an algorithm improvement.
+- V96 percentile source27be6e312fdd79ad310583d33eeb2a4781d75b97, binary
+  37694eacdc5c829c2f77673c4e4cf6070d1fca2cd8512b91cab6672249385752.
+  Build8900173 complete: full suite passes, all28source/test hashes bound to commit.
+  ActiveH200 four-arm screen8900186 complete/allvalid, q0 exact29abe32d... V92;
+  q90 changes actual trajectory. Startup counts are not quality evidence.
+- V96 full mean/median/p75/p90 xseeds0/2 job8900203 on research57,32bound physical
+  cores; automatic source/resource/trajectory/fairness verifier8900204. Raw
+  runs/cgar-horizon-percentile-full-v96-20260920; results/horizon-percentile-full-v96.
+- V96 generic800 job8900187, corrected verifier8900190 COMPLETE, exact generic800 trace. Initial analyzer8900188
+  used an incorrect nonexistent dependency and exited on missing unfinished
+  summary; its receipt/log are preserved. This is an infrastructure invocation
+  mistake, not a solver failure. The replacement waits on the actual benchmark ID.
+- Fable turn45 failed with exhausted usage credits, same persistent CLI session.
+  No research feedback received; local implementation/review continues. Next turn46.
+- No new record yet. Keep154889 and generic references unchanged until full verified
+  results. Do not edit production/test files during a build. random05 remains separate.
+
+- V97 read-only completion-opportunity audit8900235 COMPLETE15:54UTC; only8/7
+  physical and2/0 mean-margin safer-alternative witnesses remain in old winner.
+  See results/horizon-opportunity-audit-v97/summary.md. Not a throughput ceiling.
+- V97 pickup comparison8900240 RUNNING, validator8900241: native_pickup/variants.json
+  weights5/8/12, seeds0/2, exact V93 binary. Complete work and ordinary fairness
+  unchanged.24disjoint bound physical cores; full results pending.
+
 ## Prior target achievement
 
 Updated2026-09-20 14:08UTC. The user's single-seed target criterion is VERIFIED:

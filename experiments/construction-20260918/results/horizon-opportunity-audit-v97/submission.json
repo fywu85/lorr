@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-h",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=false,h_rt=00:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "horizon_bound_audit",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-horizon-opportunity-audit-v97-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-horizon-opportunity-audit-v97-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900235\n"
+}
