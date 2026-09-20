@@ -22,7 +22,7 @@ private synthetic instances and code are unavailable. The goal is not complete.
   with keep0.5/length0.25, horizon2000/triage1.5, independent per-step RNG.
 - Best without horizon triage remains2,914 (older configuration).
 
-## Pending batches
+## Latest batches
 
 Use `tools/split_grid.py collect --output runs/random05/<batch>`. Each child
 has a standard benchmark spec/allocation/summary; copy compact metadata into
@@ -32,6 +32,7 @@ whether a missing summary is still running or an allocation failure.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
+| 8899588–8899594 | startup-length-split-full-v30 | Seed3,32 workers. Control3,379; global length0.5/1/2 =3,342/3,294/3,139; initial1 for250 steps=3,330. Initial2 for250 and initial1 for500 still to collect. |
 | 8899560–8899567 | local-rotation-split-full-v26 | Control3,374; penalties0.1/0.3/1 =3,335/3,252/3,123; local25=3,294; mutation0.1/0.03 =3,310/3,148. Local100=3,294. All complete and valid; every variation loses. |
 | 8899572–8899577 | regional-mutation-split-full-v27 | All complete: control3,374; radius2/4/8 at mutation0.3 =3,195/3,217/3,348; radius2/4 at mutation1 =3,224/3,222. All lose. |
 | 8899579–8899580 | active-cost-split-full-v28 | Four-core seed0 control for task-cost lookup speed; seed3 on32 workers now repeats3,379 exactly; control-four repeats3,374 exactly; mean309.6ms versus325.6ms before. Complete. |
@@ -72,6 +73,8 @@ validation; no unmeasured option has been enabled in the best configuration.
 - v26 `3b80801`: optional opposite-turn score penalty, off.
 - v27 `3e25c56`: optional regional priority mutation, off.
 - v28 `32b333a`: cache active task-cost row pointer per simulated step.
+- v30 `33f358e`: startup task-length preference trick, default off. Regression
+  checks phase expiry and protection of started tasks. Build passed.
 - v29 `5630ba1`: same engine asv28; adds cached/uncached full toy-trajectory
   equivalence regression across task completions and replacements.
 
@@ -96,3 +99,10 @@ Next measured bottleneck: in the first500 steps, ours visits3,393 task stops
 versus NMS4's3,346 but completes779 tasks versus879. It completes fewer two-stop
 chains (407 versus486). Test stronger task-length weighting at startup, guarded
 by --trick RANDOM-05; the new option is off by default and preserves opened tasks.
+
+A second promising structural direction is local mutation of guidance directions
+around field15. Current field search mostly selected entire unrelated layouts at
+lowK, which is not reliable for K1024. With soft costs, flipping a few pairs of
+directional weights preserves graph connectivity and keeps every physical edge
+available. Test at fullK/full horizon, retaining explicit map-trick flags. The
+EPIBT operation kernel in RESEARCH.md remains the larger independent alternative.

@@ -427,3 +427,9 @@ The published NMS score of 3,050 used different instances and hardware.
   This is one fixed-work pair on shared EPYC9354 hosts. The cached/uncached
   regression across task changes also passes. Evidence:
   `random05/results/active-cost-split-full-v28/control-equivalence.json`.
+
+- Startup scheduling screen at fullK1024/32 workers, planner seed3: control3,379;
+  constant length weights0.5/1/2 give3,342/3,294/3,139. Initial weight1 for250
+  steps gives3,330. Thus the early task-count deficit alone does not establish
+  that a stronger length preference improves total throughput. Two remaining
+  phase settings are still running; no setting has been promoted.
