@@ -905,8 +905,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
          chain_flow_pricing_ || temporal_remaining_flow_)))
         throw std::invalid_argument("unopened pickup matching requires generic temporal learned pickup flow, boolean setting and no other rematching, chain pricing, remaining-flow score or guides");
     reassign_match_ = reassign_match != 0;
+    match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
+    if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
+        throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
     if (reassign_match_)
-        std::printf("[cgar-unopened-match] enabled=1 groups=4 group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident\n");
+        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128\n", match_group_limit_);
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
@@ -2245,7 +2248,7 @@ void Cgar::exchange_unopened_with_pool(std::vector<int>& proposed) {
 // touched. Every group is analysed completely before any accepted cycle is
 // committed, so a deadline can only fail the whole entry.
 void Cgar::match_unopened(std::vector<int>& proposed) {
-    constexpr int interval = 10, anchor_limit = 128, group_limit = 4;
+    constexpr int interval = 10, anchor_limit = 128;
     constexpr int group_size = 32, node_limit = 2048;
     const int now = env_->curr_timestep;
     if (!reassign_match_ || now % interval != 0) return;
@@ -2302,7 +2305,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     // Rotate a bounded list of anchors, then collect nearby holders from ALL
     // resident candidates. Prefiltering that spatial pool to the anchor quota
     // scatters it across a large map and leaves local groups mostly empty.
-    // Four groups of at most32 still cap matrix participants at128 per pass.
+    // The configured group quota and32-holder cap bound matrix participants.
     // Rebuild the index from current states, without touching planner occupancy.
     const size_t start = match_cursor_ % resident.size();
     const size_t anchor_count = std::min<size_t>(anchor_limit, resident.size());
@@ -2332,7 +2335,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     };
     std::vector<Planned> planned;
 
-    for (int group_number = 0; group_number < group_limit; ++group_number) {
+    for (int group_number = 0; group_number < match_group_limit_; ++group_number) {
         check_deadline(deadline_, "unopened_match_group_start");
         int anchor = -1;
         for (int robot : anchors) {

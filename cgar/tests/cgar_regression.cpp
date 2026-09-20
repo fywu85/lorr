@@ -622,6 +622,7 @@ void unopened_matching_production() {
   task.agent_assigned=i;task.locations={goal};wide.task_pool.emplace(i,task);
  }
  setenv("CGAR_TURN_BUILD_LIMIT","256",1);
+ const auto wide_initial=wide;
  Cgar local;local.initialize(&wide,10000);
  for(int t=0;t<2;++t){wide.curr_timestep=t;local.plan(&wide,10000,actions);
   auto next=step(wide,wide.curr_states,actions);
@@ -636,6 +637,39 @@ void unopened_matching_production() {
  for(int i=0;i<130;++i)if(wide.curr_task_schedule[i]!=i||wide.task_pool.at(i).agent_assigned!=i||
     wide.task_pool.at(i).t_revealed!=-5||wide.task_pool.at(i).idx_next_loc!=0)
   throw std::runtime_error("all-resident matching changed simulator metadata");
+ // A larger prescribed quota must genuinely reach beyond128participants,
+ // while respecting its own groups/nodes/participants limits and protections.
+ setenv("CGAR_REASSIGN_MATCH_GROUPS","64",1);
+ auto broad=wide_initial;broad.num_of_agents=160;
+ for(int i=130;i<160;++i){
+  const int cell=(100+i/16)*broad.cols+90+2*(i%16),goal=cell-30*broad.cols;
+  broad.curr_states.emplace_back(cell,0,0);broad.curr_task_schedule.push_back(i);
+  broad.goal_locations.push_back({{goal,0}});Task task;task.task_id=i;task.t_revealed=-5;
+  task.agent_assigned=i;task.locations={goal};broad.task_pool.emplace(i,task);
+ }
+ Cgar broad_match;broad_match.initialize(&broad,10000);
+ for(int t=0;t<2;++t){broad.curr_timestep=t;broad_match.plan(&broad,10000,actions);
+  auto next=step(broad,broad.curr_states,actions);
+  if(next.empty())throw std::runtime_error("broad matching fixture collided");broad.curr_states=next;}
+ broad.curr_timestep=10;broad_match.schedule(&broad,10000,proposed);
+ if(proposed[0]!=0||proposed[1]!=129||proposed[129]!=1||
+    broad_match.stats().match_selected<=128||broad_match.stats().match_selected>2048||
+    broad_match.stats().match_groups>64||broad_match.stats().match_nodes>131072||
+    std::set<int>(proposed.begin(),proposed.end()).size()!=160)
+  throw std::runtime_error("broad matching quota: selected="+std::to_string(broad_match.stats().match_selected)+
+    " resident="+std::to_string(broad_match.stats().match_resident)+" groups="+std::to_string(broad_match.stats().match_groups)+
+    " primary="+std::to_string(broad_match.primary())+" proposed="+std::to_string(proposed[0])+","+
+    std::to_string(proposed[1])+","+std::to_string(proposed[129]));
+ unsetenv("CGAR_REASSIGN_MATCH_GROUPS");
+ for(const char* quota:{"0","65"}){
+  setenv("CGAR_REASSIGN_MATCH_GROUPS",quota,1);bool rejected=false;
+  try{Cgar invalid;invalid.initialize(&broad,10000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid matching group quota accepted");
+ }
+ setenv("CGAR_REASSIGN_MATCH_GROUPS","64",1);setenv("CGAR_REASSIGN_MATCH","0",1);bool rejected=false;
+ try{Cgar invalid;invalid.initialize(&broad,10000);}catch(const std::invalid_argument&){rejected=true;}
+ if(!rejected)throw std::runtime_error("active group quota accepted without matching");
+ unsetenv("CGAR_REASSIGN_MATCH_GROUPS");setenv("CGAR_REASSIGN_MATCH","1",1);
  // Same-call new assignments must not borrow stale tickets in next-primary
  // selection, and mandatory fair admissions must retain their protection.
  auto warm=[](Cgar& planner,SharedEnvironment& env){
@@ -694,7 +728,7 @@ void unopened_matching_production() {
                       "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
                       "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
                       "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
- std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1\n";
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1 bounded_broad_quota=1\n";
 }
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);

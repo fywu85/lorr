@@ -470,6 +470,7 @@ private:
     int turn_build_limit_ = 32;
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
+    int match_group_limit_ = 4;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;
