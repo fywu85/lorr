@@ -18,6 +18,8 @@ struct Config {
     int replan_threads=1;
     bool replan_policy=false;
     int score_rank_steps=0;
+    int rescore_roots=0, rescore_branches=64;
+    float rescore_blend=0;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
@@ -130,6 +132,9 @@ struct alignas(64) PolicyTiming {
     uint64_t calls=0,samples=0;
     std::array<uint64_t,7> nanoseconds{};
 };
+struct RescoreStats {
+    int roots=0, branches=0, evaluations=0, selected_rank=0;
+};
 struct ReplanStats {
     int roots=0, futures=0, steps=0, decisions=0, selected_rank=0;
     int pool_before=0, min_pool_after=0, max_completed=0;
@@ -150,10 +155,14 @@ public:
     const std::vector<int>& ages() const { return age_; }
     int triaged() const { return triaged_; }
     const ReplanStats& replan_stats() const { return replan_stats_; }
+    const RescoreStats& rescore_stats() const { return rescore_stats_; }
 private:
     std::mt19937 rng_;
     bool quiet_=false;
     ReplanStats replan_stats_;
+    RescoreStats rescore_stats_;
+    int rescore_candidates(const SharedEnvironment& env,const Frame& frame,
+                           const std::vector<Rollout>& results,int best);
     std::vector<std::unique_ptr<Engine>> replan_engines_;
     int rank_replanned(const SharedEnvironment& env,const std::vector<int>& schedule,
                        const std::vector<Rollout>& results,int best);

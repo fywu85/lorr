@@ -902,3 +902,25 @@ work budget, task locks and RNG streams are unchanged. It inherits the explicit
 --trick RANDOM-05 requirement from positive rank power. This tests whether an
 initial preference for completing short chains can help without retaining that
 bias as the visible pool changes. Full2,000-step results are required.
+
+
+## Independent future samples for finalist selection
+
+The current four-generation search selects thousands of candidate vectors
+against the same14sampled futures. Increasing K alone reduced full throughput
+in two tests. Overfitting those common future samples is one possible cause,
+not an established diagnosis. Extra B18/22/26 tests examine more averaging
+throughout search. A separate generic test instead spends a small extra budget
+only on completed finalists after the ordinary search.
+
+R05_RESCORE_ROOTS (default0) selects the existing best plus the next distinct
+first decisions/promises by original full score. Each gets a complete, common
+set of R05_RESCORE_BRANCHES futures (default64), drawn from an independent
+per-step RNG stream. The constant-offset branch remains the shared reference.
+This uses currently visible state only; it is unrelated to held-out task inputs.
+R05_RESCORE_BLEND is the weight of the original score (default0, pure new
+sample). Full work finishes for every selected finalist before selection.
+One finalist, or blend1, must preserve the original trajectory and all persistent
+state. Parent history keeps its original ordering with the chosen root first.
+Concurrent component/closed-loop reranking is rejected to keep the comparison
+interpretable. No change to default behavior or deadline handling is intended.

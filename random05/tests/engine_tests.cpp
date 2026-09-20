@@ -41,13 +41,19 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     std::unique_ptr<Engine> control;
-    if(replan_control) {auto base=cfg;base.replan_roots=0;control=std::make_unique<Engine>(base);control->initialize(&e);}
+    if(replan_control) {auto base=cfg;base.replan_roots=0;base.rescore_roots=0;control=std::make_unique<Engine>(base);control->initialize(&e);}
     for(int a=0;a<n+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%cells,(a+17)%cells};e.task_pool[a]=t;}
     int next_task=n+spare_tasks,total_moved=0;
     for(int step=0;step<150;++step) {
         e.curr_timestep=step;std::vector<Action> actions;std::vector<int> assignment;
         const auto before=check_restore && step%17==0?engine.checkpoint(e):nlohmann::json();
         engine.compute(&e,actions,assignment);
+        if(cfg.rescore_roots) {
+            const auto stats=engine.rescore_stats();
+            require(stats.roots>0 && stats.roots<=cfg.rescore_roots &&
+                    stats.branches==cfg.rescore_branches && stats.evaluations==stats.roots*stats.branches,
+                    "independent candidate rescoring skipped declared work");
+        }
         if(control) {
             std::vector<Action> base_actions;std::vector<int> base_schedule;
             control->compute(&e,base_actions,base_schedule);
@@ -655,6 +661,22 @@ void ranked_task_progress() {
     require(startup==simulate(cfg,12),"startup rank scoring changed across worker counts");
 }
 
+void independent_candidate_rescoring() {
+    Config cfg;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.share_prefix=true;cfg.cost_cache=true;cfg.candidate_cache=true;
+    const auto ordinary=simulate(cfg,12);
+    cfg.rescore_roots=1;cfg.rescore_branches=8;
+    require(ordinary==simulate(cfg,12,5,5,true,true),"single-finalist rescore changed the trajectory");
+    cfg.rescore_roots=4;cfg.rescore_blend=1;
+    require(ordinary==simulate(cfg,12,5,5,false,true),"original-score rescore control changed the trajectory");
+    cfg.rescore_blend=0;
+    const auto serial=simulate(cfg,12,5,5,true);cfg.threads=2;
+    require(serial==simulate(cfg,12),"independent rescoring changed across worker counts");
+    cfg.rescore_blend=.5;cfg.score_rank_power=.5;cfg.score_rank_steps=51;
+    simulate(cfg,12,5,5,true);
+}
+
 void waypoint_priority_retention() {
     for(float retained:{0.0f,0.5f,1.0f}) {
         auto env=environment(1,3,1);Task task;task.task_id=7;task.locations={0,0};env.task_pool[7]=task;
@@ -781,6 +803,7 @@ void checkpoint_replay() {
 
 int main() {
     ranked_task_progress();
+    independent_candidate_rescoring();
     waypoint_priority_retention();
     replanning_forecast();
     normalized_directional_triage();

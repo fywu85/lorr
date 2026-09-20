@@ -1569,3 +1569,12 @@ input/binary hashes and allocation are linked in the audits.
   identical saved states. Dense assignment locks, checkpoint replay and worker
   determinism pass. Seven full strict cases are declared: two unchanged-policy
   controls and startup powers.25/.5/1, with.5windows100/250/500steps.
+
+- Source75 tests independent future samples for finalist selection. The ordinary
+  search remains unchanged; completed finalists get a separate common set of
+  priority continuations. It completes every declared branch before choosing,
+  and never reads future tasks. One-finalist and original-score controls retain
+  every decision and persistent state. Dense collision/assignment checks, exact
+  work accounting, worker determinism and replay regressions pass20.30s.
+  Seven full strict cases compare off/one-root controls and4/16/32finalists
+  with32/64/128branches, including a half-original-score blend. No gain yet.

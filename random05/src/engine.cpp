@@ -79,6 +79,13 @@ Config Config::environment(const SharedEnvironment& env) {
     c.replan_start=integer("R05_REPLAN_START",0);
     c.replan_threads=integer("R05_REPLAN_THREADS",1);
     c.replan_policy=integer("R05_REPLAN_POLICY",0);
+    c.rescore_roots=integer("R05_RESCORE_ROOTS",0);
+    c.rescore_branches=integer("R05_RESCORE_BRANCHES",64);
+    c.rescore_blend=real("R05_RESCORE_BLEND",0);
+    if(c.rescore_roots<0 || c.rescore_roots>128 || c.rescore_branches<2 || c.rescore_branches>1024 ||
+       !std::isfinite(c.rescore_blend) || c.rescore_blend<0 || c.rescore_blend>1 ||
+       (c.rescore_roots>0 && (c.replan_roots || c.component_trials || c.continuation_start<1 || c.continuation_start>=c.depth)))
+        throw std::invalid_argument("invalid independent-future rescoring settings");
     if(c.replan_roots<0 || c.replan_roots>32 || c.replan_futures<1 || c.replan_futures>8 ||
        c.replan_k<1 || c.replan_k>1024 || c.replan_steps<2 || c.replan_steps>32 ||
        c.replan_continuations<1 || c.replan_k%c.replan_continuations || c.replan_start<0)
@@ -1416,7 +1423,7 @@ static std::vector<int> elite_indices(const std::vector<Rollout>& results,int us
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule,int forced_candidate) {
-    replan_stats_=ReplanStats{};
+    replan_stats_=ReplanStats{};rescore_stats_=RescoreStats{};
     const bool save_snapshot=cfg.snapshot_interval>0 && env->curr_timestep>0 &&
                              env->curr_timestep%cfg.snapshot_interval==0;
     nlohmann::json snapshot;
@@ -1792,6 +1799,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             env->curr_timestep,cfg.component_rounds,cfg.component_trials,component_evaluations,
             donors.size(),available,accepted,(unsigned long long)hybrid_expansions);
     }
+    if(cfg.rescore_roots)best=rescore_candidates(*env,frame,results,best);
     if(cfg.replan_roots && env->curr_timestep>=cfg.replan_start)
         best=rank_replanned(*env,schedule,results,best);
     if(save_snapshot) {
