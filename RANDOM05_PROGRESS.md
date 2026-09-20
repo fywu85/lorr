@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 15:10 UTC.
+Updated: 2026-09-20 15:34 UTC.
 
 **Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
 **+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
@@ -35,14 +35,15 @@ prefix reuse, packed sorting, sparse dispersion and reusable policy buffers.
 Mean latency 607 ms, maximum 726 ms, peak RSS 364 MB. All 2,000 steps are valid.
 This is a selected single-run maximum and has not been reproduced on four cores.
 
-**Best confirmed four-core run: 3,520 tasks**, or **+20.8% versus the strongest
+**Best confirmed four-core run: 3,562 tasks**, or **+22.2% versus the strongest
 matched NMS4 repeat = 2,914**. Source
 [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143), K2048/B8/start2/local0,
-four search generations, planner seed 3. Mean latency 456 ms, maximum 571 ms,
-peak RSS 287 MB; all 2,000 steps are valid. Every action, schedule and event
-matches the 32-worker run. This selected record is 11 tasks above the preceding
-3,509 four-core record; replication across planner seeds remains to be done.
-[Equivalence](random05/results/generation-four-split-full-v47/equivalence.json).
+four search generations. Planner seeds 4 and 0 both reach this score, with their
+complete trajectories reproduced from the 32-worker runs. The first completed
+four-core record (seed4) averages 455 ms, maximum 574 ms, peak RSS 285 MB.
+All 2,000 steps are valid. These are selected maxima on the development input;
+fresh-input validation still applies to the separately frozen candidate below.
+[Equivalence](random05/results/generation-confirm-four-split-full-v47/equivalence.json).
 
 The 3,501 configuration remains the frozen candidate for fresh validation V2:
 K2048/B8/start2, source e896201, mean 459 ms, maximum 579 ms, RSS 285 MB. Its
@@ -150,6 +151,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T14:57:15.935581+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | K16384/B8/start2/local0; exact optimizations; planner seed3; `--trick RANDOM-05` | 3657 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +15.3% | [Full evidence](random05/results/continuation-larger-split-full-v46/k16384-b8/summary.json) |
 | 2026-09-20T14:57:35.059037+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | No known horizon; K8192/B8/start2/local0; planner seed3; guidance still `--trick RANDOM-05` | 3408 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.4% | [Full evidence](random05/results/continuation-no-horizon-split-full/no-horizon-32/summary.json) |
 | 2026-09-20T15:02:34.822809+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | No known horizon; K2048/B8/start2/local0; planner seed3; guidance still `--trick RANDOM-05` | 3285 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +12.7% | [Full evidence](random05/results/continuation-no-horizon-split-full/no-horizon-four/summary.json) |
+| 2026-09-20T15:29:14.931221+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed4; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed4-four/summary.json) |
+| 2026-09-20T15:29:21.178706+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; planner seed0; `--trick RANDOM-05` | 3562 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +22.2% | [Full evidence](random05/results/generation-confirm-four-split-full-v47/generations4-seed0-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -934,3 +937,29 @@ input/binary hashes and allocation are linked in the audits.
   policies, push-cost fallback and worker-count equivalence regressions pass.
   The cache adds approximately 157 MB at 800 robots / 32 workers. Defaults
   remain off pending full timing and trajectory checks; profiles are next.
+
+- All three full goal-cache controls finish with 3,520 tasks and identical
+  actions, assignments and events across cache settings and worker counts.
+  K8192/four generations gives 3,582 and K16384/four generations gives 3,495,
+  below the corresponding one-generation scores 3,596 and 3,657. More search
+  generations help the smaller portfolio but do not scale uniformly.
+
+- The ranking-cache prefix preserves the exact trajectory. With radix sorting
+  enabled in both cases, look-ahead drops from 889 to 712 ms initially and from
+  878 to 677 ms at step100. The three K5120/B8 four-core full runs have passed
+  the first-step deadline; full validity/throughput are still pending. The
+  radix-only 32-worker full control finishes 3,555 with an unchanged trajectory.
+  [Cache timing evidence](random05/results/ranking-cache-profile-split-prefix-v52/timings-equivalence.json).
+
+- **Trick: RANDOM-05 guidance search.** Extend the 32 previously sampled flow
+  layouts with seeds33–48, plus the existing field15 control, at the full
+  K2048/B8/four-generation budget. All 17 runs use explicit `--trick RANDOM-05`
+  and the archived development input. This is map-tuned layout selection,
+  separate from the general exact caching/sorting changes. Fresh-validation
+  inputs remain excluded. No new layout is promoted before full results.
+
+- Both selected four-generation planner seeds (0 and 4) reproduce **3,562
+  tasks on four cores**, matching their complete 32-worker trajectories.
+  The confirmed record rises to **+22.2% versus NMS4**. Both are valid full
+  strict-deadline runs. This does not replace or extend the frozen fresh-input
+  result of +17.1%; the predeclared candidate remains source e896201 / seed3.

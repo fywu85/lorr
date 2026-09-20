@@ -1,0 +1,67 @@
+{
+  "purpose": "120-step profiles; exclude from throughput frontier",
+  "source_commit": "6ce9312",
+  "checked_utc": "2026-09-20T15:23:45.961959+00:00",
+  "exact_fields": {
+    "actualPaths": true,
+    "plannerPaths": true,
+    "actualSchedule": true,
+    "plannerSchedule": true,
+    "events": true,
+    "tasks": true
+  },
+  "raw_result_sha256": [
+    "ce499d77b66f675d1643397096fac4e9609b3ac89d82b947f541ceb6eab29a28",
+    "f0d757532872e3a6848da5ae6b1575299c5c51c365dd946fde20147a63e4abfd"
+  ],
+  "cases": {
+    "ranking-cache1-k4096-b4": {
+      "raw_log": "runs/random05/ranking-cache-profile-split-prefix-v52/ranking-cache1-k4096-b4/ranking-cache1-k4096-b4/native.log",
+      "sha256": "b2d91fa6f3a55fd9a3b7662eda9fac4424ca28bd3d1a2a06d3e60492af3e2205",
+      "timings": [
+        "R05_MATCH_PROFILE t=0 agents=800 tasks=1200 matrix_ms=12.591 solve_ms=62.581",
+        "R05_PROFILE t=0 assignment_ms=75.296 task_cost_ms=7.308 candidates_ms=9.740 lookahead_ms=711.896 final_ms=0.022",
+        "R05_POLICY_PROFILE t=0 calls=26624 samples=416 setup_ns=8583977 candidates_ns=3326972 order_ns=3138268 intent_ns=6875038 kinematic_ns=11139331 cycles_ns=5714458 actions_ns=4409577",
+        "R05_MATCH_PROFILE t=1 agents=342 tasks=742 matrix_ms=7.062 solve_ms=9.330",
+        "R05_PROFILE t=1 assignment_ms=16.421 task_cost_ms=0.153 candidates_ms=8.913 lookahead_ms=701.332 final_ms=0.026",
+        "R05_POLICY_PROFILE t=1 calls=26624 samples=416 setup_ns=8267486 candidates_ns=3048060 order_ns=3200528 intent_ns=6851271 kinematic_ns=10848384 cycles_ns=5370150 actions_ns=4744256",
+        "R05_MATCH_PROFILE t=2 agents=292 tasks=692 matrix_ms=7.136 solve_ms=9.720",
+        "R05_PROFILE t=2 assignment_ms=16.887 task_cost_ms=0.180 candidates_ms=9.382 lookahead_ms=698.111 final_ms=0.025",
+        "R05_POLICY_PROFILE t=2 calls=26624 samples=416 setup_ns=8422168 candidates_ns=3100598 order_ns=3187179 intent_ns=6832103 kinematic_ns=11008170 cycles_ns=5559146 actions_ns=4414433",
+        "R05_MATCH_PROFILE t=3 agents=277 tasks=677 matrix_ms=4.719 solve_ms=9.986",
+        "R05_PROFILE t=3 assignment_ms=14.730 task_cost_ms=0.182 candidates_ms=9.387 lookahead_ms=700.187 final_ms=0.027",
+        "R05_POLICY_PROFILE t=3 calls=26624 samples=416 setup_ns=8270028 candidates_ns=3136842 order_ns=3157145 intent_ns=6810713 kinematic_ns=10691206 cycles_ns=5206616 actions_ns=4805627",
+        "R05_MATCH_PROFILE t=4 agents=249 tasks=649 matrix_ms=5.059 solve_ms=5.239",
+        "R05_PROFILE t=4 assignment_ms=10.324 task_cost_ms=0.180 candidates_ms=8.877 lookahead_ms=693.070 final_ms=0.027",
+        "R05_POLICY_PROFILE t=4 calls=26624 samples=416 setup_ns=8251979 candidates_ns=3108533 order_ns=3286026 intent_ns=6803917 kinematic_ns=11019027 cycles_ns=5602423 actions_ns=4381532",
+        "R05_MATCH_PROFILE t=100 agents=46 tasks=446 matrix_ms=1.085 solve_ms=0.545",
+        "R05_PROFILE t=100 assignment_ms=1.692 task_cost_ms=0.173 candidates_ms=13.007 lookahead_ms=676.954 final_ms=0.026",
+        "R05_POLICY_PROFILE t=100 calls=26624 samples=416 setup_ns=8255271 candidates_ns=2966147 order_ns=2827553 intent_ns=6707134 kinematic_ns=10695971 cycles_ns=5367246 actions_ns=4493496"
+      ]
+    },
+    "ranking-cache0-k4096-b4": {
+      "raw_log": "runs/random05/ranking-cache-profile-split-prefix-v52/ranking-cache0-k4096-b4/ranking-cache0-k4096-b4/native.log",
+      "sha256": "d491d05b642e10f7ad6d471f38d8f803df58751186aab95e2c2725e623fd6aa6",
+      "timings": [
+        "R05_MATCH_PROFILE t=0 agents=800 tasks=1200 matrix_ms=11.443 solve_ms=62.597",
+        "R05_PROFILE t=0 assignment_ms=74.180 task_cost_ms=7.446 candidates_ms=9.773 lookahead_ms=888.740 final_ms=0.042",
+        "R05_POLICY_PROFILE t=0 calls=26624 samples=416 setup_ns=7866603 candidates_ns=14942304 order_ns=2998289 intent_ns=6924175 kinematic_ns=11169477 cycles_ns=5636376 actions_ns=4390534",
+        "R05_MATCH_PROFILE t=1 agents=342 tasks=742 matrix_ms=8.177 solve_ms=9.313",
+        "R05_PROFILE t=1 assignment_ms=17.515 task_cost_ms=0.165 candidates_ms=9.065 lookahead_ms=881.037 final_ms=0.025",
+        "R05_POLICY_PROFILE t=1 calls=26624 samples=416 setup_ns=7856737 candidates_ns=14588459 order_ns=3086525 intent_ns=6932817 kinematic_ns=10835186 cycles_ns=5307657 actions_ns=4765537",
+        "R05_MATCH_PROFILE t=2 agents=292 tasks=692 matrix_ms=4.743 solve_ms=7.039",
+        "R05_PROFILE t=2 assignment_ms=11.810 task_cost_ms=0.176 candidates_ms=8.900 lookahead_ms=883.061 final_ms=0.024",
+        "R05_POLICY_PROFILE t=2 calls=26624 samples=416 setup_ns=7825575 candidates_ns=14997959 order_ns=2997934 intent_ns=6909911 kinematic_ns=11166482 cycles_ns=5530362 actions_ns=4440081",
+        "R05_MATCH_PROFILE t=3 agents=277 tasks=677 matrix_ms=4.495 solve_ms=6.646",
+        "R05_PROFILE t=3 assignment_ms=11.170 task_cost_ms=0.188 candidates_ms=8.928 lookahead_ms=879.330 final_ms=0.026",
+        "R05_POLICY_PROFILE t=3 calls=26624 samples=416 setup_ns=7827249 candidates_ns=14587494 order_ns=2963159 intent_ns=6811949 kinematic_ns=10681656 cycles_ns=5138487 actions_ns=4791472",
+        "R05_MATCH_PROFILE t=4 agents=249 tasks=649 matrix_ms=5.228 solve_ms=5.253",
+        "R05_PROFILE t=4 assignment_ms=10.503 task_cost_ms=0.189 candidates_ms=8.899 lookahead_ms=882.302 final_ms=0.027",
+        "R05_POLICY_PROFILE t=4 calls=26624 samples=416 setup_ns=7762585 candidates_ns=15138821 order_ns=3019421 intent_ns=6852534 kinematic_ns=11079932 cycles_ns=5561743 actions_ns=4429247",
+        "R05_MATCH_PROFILE t=100 agents=46 tasks=446 matrix_ms=1.049 solve_ms=0.311",
+        "R05_PROFILE t=100 assignment_ms=1.405 task_cost_ms=0.154 candidates_ms=8.893 lookahead_ms=878.030 final_ms=0.026",
+        "R05_POLICY_PROFILE t=100 calls=26624 samples=416 setup_ns=7721516 candidates_ns=14881386 order_ns=2912578 intent_ns=6749780 kinematic_ns=10748821 cycles_ns=5342453 actions_ns=4529817"
+      ]
+    }
+  }
+}
