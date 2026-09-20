@@ -35,6 +35,8 @@ def normalize_environment(environment):
     for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT']:
         if result.get(key) == '0':
             result.pop(key)
+    if result.get('CGAR_REASSIGN_MATCH_INTERVAL') == '10':
+        result.pop('CGAR_REASSIGN_MATCH_INTERVAL')
     return result
 
 def fields(line):
@@ -84,7 +86,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -128,7 +130,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -160,7 +162,7 @@ def main():
         sys.path.insert(0, str(support))
         audit_tools = importlib.import_module('audit_tools')
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -217,6 +219,18 @@ def main():
             assert allocations[0]['workers'] == allocations[0]['threads'] == str(workers)
             assert all(int(m['workers']) == int(m['threads']) == workers and 0 <= int(m['selected_worker']) < workers for m in global_samples)
             assert all(int(m['repairs']) == 1000000 or int(m['candidates']) >= 4000000 for m in global_samples)
+        if a.mode == 'cadence':
+            interval = int(env['CGAR_REASSIGN_MATCH_INTERVAL']); assert interval in (5, 10)
+            cadence_receipts = [fields(s) for s in lines if s.startswith('[cgar-match-cadence] ')]
+            expected_cadence = dict(interval=str(interval), default_interval='10', cooldown='20', task_budget='1', same_group_quota='1', fixed_work='1')
+            assert cadence_receipts == ([expected_cadence] if interval != 10 else [])
+            matches = [fields(s) for s in lines if s.startswith('[cgar-unopened-match] t=')]
+            assert [int(m['t']) for m in matches] == list(range(0, 5000, 200))
+            for m in matches:
+                assert int(m['passes']) == int(m['t']) // interval + 1
+                assert int(m['groups']) <= int(m['passes']) * int(env['CGAR_REASSIGN_MATCH_GROUPS'])
+                assert int(m['nodes']) <= int(m['groups']) * 2048
+            print('CADENCE_VERIFIED', r['case'], interval, matches[-1]['passes'], flush=True)
         samples[r['case']] = dict(global_work=global_samples, regional_work=regional, percentile=q_samples, native_service=service_samples)
         if a.mode == 'fresh':
             fresh = int(env.get('CGAR_FRESH_PICKUP_AUDIT', '0')); assert fresh in (0, 1)

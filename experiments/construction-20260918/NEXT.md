@@ -1,6 +1,6 @@
 # Active: improve beyond the achieved Warehouse target
 
-Updated 2026-09-20 18:46 UTC. Continue the user's Warehouse throughput campaign with CGAR, ordinary fairness, explicit `--trick WAREHOUSE`, complete fixed work and 32 decimal GB RSS. Preserve concurrent random05 files/jobs/commits; explicit path staging and `git commit --only -- <ours>`. The earlier formal goal is complete; no new goal absent an explicit request.
+Updated 2026-09-20 19:11 UTC. Continue the user's Warehouse throughput campaign with CGAR, ordinary fairness, explicit `--trick WAREHOUSE`, complete fixed work and 32 decimal GB RSS. Preserve concurrent random05 files/jobs/commits; explicit path staging and `git commit --only -- <ours>`. The earlier formal goal is complete; no new goal absent an explicit request.
 
 ## Current best
 
@@ -13,6 +13,12 @@ Fourseeds0/1/2/3=155120/154999/155056/155020, mean155048.75, allabove NMS154795.
 1. **V105 full read-only fresh-pickup audit** benchmark8900450, verifier8900453, independentoutcomes8900454. Raw `runs/cgar-fresh-pickup-native-full-v105-20260920`, outcomesraw `runs/cgar-fresh-pickup-native-outcomes-v105-20260920`. Results `fresh-pickup-native-full-v105` and `-outcomes`. Fourcases OFF/ON seeds0/2;16disjointphysicalcores,4each,5sdeadline,32decimalGB. Requires exactV99control hashes AND exactON/OFFfullhashes/realdiagnostics;25samples/exclusion/witnessaccounting. Read-only flag, no policy gain expected.
 2. **V106 local pickup refinement** benchmark8900448, verifier8900449, outcomes8900451. Raw `runs/cgar-p90-pickup-refine-v106-20260920`, outcomesraw `runs/cgar-p90-pickup-refine-outcomes-v106-20260920`. Results `p90-pickup-refine-v106` and `-outcomes`. Frozen V96 source27be/binary3769, p90+weights8/6/10 x seeds0/2,24disjointcores. Noaudit,noneutraltail. V97 mean-margin 5/8/12 suggested localweight8peak; this bounded neighborhood is predeclared in native_pickup/P90_REFINEMENT.md. First outcomesprep used alreadyexistingbenchmarkdirectory, failedbeforeqsub; correctedseparatedirectory, no benchmarkrerun.
 3. **Fable turn46 COMPLETE/FAILED (credit exhaustion)**. SamepersistentCLI session1ebb1075-3538-49d1-93d1-a00c94fa256a; no liveCLI/PTY. Raw runs/fable-cgar-session/turn46, archived fable-flow-session/turn46. No technicalfeedback. Next47onlyafterquotaavailable; donotretryrepeatedly. Source-delta payload and followup-45.md asked freshaudit review / nextboundedmechanism / initialdispatchdiagnosis.
+
+## V108 optional matching cadence, build PASS; screens ACTIVE
+
+New general option CGAR_REASSIGN_MATCH_INTERVAL defaults10,valid1..100,nondefaultrequiresmatching. Alloldeligibility/thresholds/groupquota/one-retarget/20stepcooldown unchanged. Shadowstride mustdividebyinterval;freshaudit matchtickclassification usesactualinterval. No defaultdiagnosticchange;nondefaultemitscgar-match-cadence. Source1ac2a4dd31bfe2b2262c4ab496604f71b37742c3,build8900485 COMPLETE, binary741d8e378df5465bf035af92a3b18e0b8f066043c83f0e25560966abbbfd5cf3. Frozen runs/cgar-match-cadence-build-v108-20260920, archivebuild-provenance/v108 exact28files,sourcepatch0. FullsuitePASS: actualgeneric earliercycleatt5vs10; missing/explicit10exact; primaryprotected;single retargetaftercooldown;5configguards includingcompatible/incompatibleshadowcadence;2nativebands serial/parallel128tickpairs withp90,26matchingpasses,12288independentactions andstarted/retargetchecks.
+
+Native800 OFF(default10)/5 screen8900489,heldverifier8900490. Generic800 unchangedreference8900491,heldverifier read actualsubmission receipt. Raw runs/cgar-match-cadence-{native,generic}-screen-v108-20260920; outputs results/match-cadence-{native,generic}-screen-v108. Native10mustmatchV105hash085e97...,5mustbevalidandactive,countersat0/200/400/600followfloor(t/interval)+1;genericmustmatchc0f1c9fb... . Sourcefilesnoteditingduringbuild;nowbuilddone. Full0/2comparison10vs5 onlyAFTERscreenspass,stillbaselinep90weight8evenifV106differentweightwinslater. native_work/analyze.py now modecadence allowsonlyinterval, normalizesexplicit10toabsentdefault. Its currentlyrunningV105/V106helpersarefrozen/unaffected. Profiles/protocol match_cadence/variants.json+README.md. No cadencefulljob orqualityresultyet.
 
 ## V105 validated code and startup
 
@@ -32,7 +38,7 @@ V101neutral-tail154930/154882vs155120/155056(-190/-174);moreloadedwait/turn desp
 
 Next: finishfullV105/V106,logeveryvalidincreasingsingle-runscorewithsource/time/seed/flags/hash; preservepairedmeansandnegativeoutcomes. Considerinitialmassdispatchdiagnosticifongoingfreshresidualremainsnegligible: tick0deliberatelyusesgenericpickup despiteinitializedstaticplannerfield, becauseearlierallrobotweightedsearchesfailed1s. Do not simplyenable10000weightedsearches or hideworkoutsideaccounting. Needmeasureopportunityfirst.
 
-Allshellcalls requireescalated(bwrapbroken). Noactiveproductionbuild; frozenbenchmarksindependent. CurrentrepoHEADmayadvancefromrandom05; sourcehashes authoritative. Pushauthorizedpublicfywu85/lorr via ghcredentialhelper. No internalagents.
+Allshellcalls requireescalated(bwrapbroken). Noactiveproductionbuild; V108buildcomplete, frozenbenchmarksindependent. CurrentrepoHEADmayadvancefromrandom05; sourcehashes authoritative. Pushauthorizedpublicfywu85/lorr via ghcredentialhelper. No internalagents.
 
 Historical notes below are superseded by this status.
 
