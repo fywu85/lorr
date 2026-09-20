@@ -636,3 +636,17 @@ original input. Keep these inputs out of further configuration selection.
   preserving physical edges and direction ordering. Exponent0 preserves the
   old field. Direction/cost invariants and the full engine regression pass in
   build-v41. Full production-budget comparisons are required before promotion.
+
+- The full-budget priority/push recheck also loses: rollout aging3,333,
+  age caps100/200 give3,337/3,352, push prices1/2 give3,117/3,121, and prospective
+  idle-turn costing gives3,331. All6 full runs are valid; keep the options off.
+  [Evidence](random05/results/frontier-policy-split-full-v31/summary.json).
+  The confidence-scaling control at exponent0 reproduces the3,395-task run's
+  actions, schedules and events exactly. The four nonzero exponents are still running.
+
+- Confidence scaling is complete and rejected: exponents0/0.25/0.5/1/2 give
+  3,395/3,295/3,200/3,153/2,899, all valid. Source
+  [ffe75c7](https://github.com/fywu85/lorr/commit/ffe75c7),
+  [full evidence](random05/results/flow-confidence-split-full-v41/summary.json).
+  Exponent0 reproduces the prior actions, schedules and events exactly. Keep0;
+  none of this round's policy or field experiments changes the verified frontier.

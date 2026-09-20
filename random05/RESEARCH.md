@@ -138,3 +138,44 @@ edge, turn costs and physical connectivity; retain global normalization.
 Exponent0 exactly preserves the existing field. This operates on aggregate
 traffic demand, with no map-coordinate rules, but remains a declared guidance
 trick under `--trick RANDOM-05`. Full-run evidence is required before use.
+
+
+## Remaining differences from the public operation policy
+
+Read-only inspection of the pinned EPIBT source confirms two separable differences
+from our experimental three-step kernel. Upstream leaves successful robots marked
+for the remainder of a search pass; ours clears that protection on success. It
+also excludes operations with rotations after the final forward step; ours keeps
+those rotations to improve the terminal oriented cost. Our moving-only ablation
+excluded stationary footprints but still permitted rotations after a forward step.
+
+Neither difference is established as a bottleneck. If returning to that kernel,
+test successful-path protection and terminal-rotation removal separately, preserving
+the full inherited valid fallback and deterministic work budget. Its current best
+2,106 is well below the pipeline, so do not present it as a faithful replication of
+the reference's measured performance. References are the pinned checkout's
+`src/planner/epibt/epibt.cpp` (`build_impl`) and `operations.cpp` (`verify_operation`),
+at the public source commit linked above.
+
+
+The confidence experiment is now complete: exponents0/.25/.5/1/2 score
+3,395/3,295/3,200/3,153/2,899. All are valid, and the default trajectory is
+unchanged. Keep exponent0. This rejects the tested softening rule, not all
+possible changes to guidance.
+
+## Future continuation uncertainty
+
+More global futures have not reliably improved throughput even when computation
+fits the deadline. A possible next test is to keep the first simulated decision
+fixed and evaluate it under several independently perturbed future priorities,
+using their mean score. The current search judges each priority vector by one
+future that keeps those offsets throughout the horizon. Comparing several
+continuations could reduce preference for a good predicted tail that is unlikely
+to survive replanning. This is an untested hypothesis.
+
+A controlled version would keep total simulated futures fixed, require an integer
+number of continuations per root, and preserve exact existing behavior at one
+continuation. All branches must share the root's first actions and pending moves;
+only later decisions may change. Use common deterministic continuation draws for
+comparing roots and preserve worker-count determinism. Benchmark the full horizon;
+short screens and promising model scores have repeatedly misranked candidates.

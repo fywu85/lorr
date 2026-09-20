@@ -27,24 +27,32 @@ and synthetic instances are unavailable. The goal is not complete.
   RSS293MB. Guidance remains an explicit map trick. Cutoff contribution198 tasks
   (+6.2%). New best-no-horizon JSONs preserve both configurations.
 
-## Pending batches
+## Completed batches and next work
 
-Collect using `tools/split_grid.py collect --output runs/random05/<batch>`.
-Check qstat for authoritative running/queued state. Child summary/spec/allocation
-provide complete provenance; copy compact JSON metadata into results/, excluding
-raw traces and binaries. Frontier links should point to the child summary list.
+As of 2026-09-20 13:22 UTC, all Random05 jobs through flow-confidence v41 are
+complete, collected and archived. No Random05 benchmark is intentionally pending.
+Check qstat before any restart; unrelated Warehouse jobs must remain untouched.
+Compact summary/spec/allocation metadata is under results/; raw traces are under
+runs/. Do not restart completed batches.
 
-| Jobs | Batch | Purpose |
-|---|---|---|
-| 8899752–8899757 | frontier-policy-split-full-v31 | Full K1024 recheck: rollout age; age caps100/200; push prices1/2; prospective idle-turn cost. Development input only. |
+- Fresh validation:3386 vs2920/2957 (+14.5%);3178 vs2898/2915 (+9.0%). Aggregate
+  +11.8%. All six valid; audit checks frozen protocol22e7cd1, sourceb824f5d,
+  binaries, generated inputs, four physical EPYC9354 cores, latency and RAM.
+  See results/fresh-validation-v1/audit.json. No tuning on these inputs.
+- Fields17–32: all16 valid and below field15; best3283 at17. Earlier subsets
+  had been screened at smaller K or different settings. Current comparison uses
+  K1024/planner3/contrast2.4, no local flips.
+- Policy recheck: rollout aging3333; age cap100=3337, cap200=3352;
+  push price1=3117, price2=3121; prospective idle-turn costing3331. All lose.
+- Confidence exponents0/.25/.5/1/2:3395/3295/3200/3153/2899. All valid; default
+  actions/schedules/events exactly equal v31. Keep the feature off.
 
-As of 2026-09-20 13:14 UTC, fresh validation and the sixteen-field expansion
-are also complete and archived. Do not restart them. Fresh validation input files live
-under runs/random05/fresh-inputs-v1/; their generator and hashes are committed.
-The policy batch uses the frozen v31 binary. Every new feature remains off.
-Fresh validation gives3386 vs2920/2957 (+14.5%) and3178 vs2898/2915 (+9.0%);
-aggregate+11.8%. All valid; audited frozen protocol22e7cd1/settings/sourceb824f5d.
-No tuning on these inputs. Field seeds17–32 all lose, max3283 at17.
+Next useful structural hypothesis: compare each first pipeline decision under
+several different future priority sequences, using a mean score, at fixed total
+rollout work. Current search evaluates one constant-offset continuation per root;
+more K has not reliably helped. Keep the root's actions and pending moves fixed
+across branches, preserve default behavior at one continuation and deterministic
+worker counts. This is not implemented or a claimed gain. RESEARCH.md records it.
 
 ## Structural experiment
 
@@ -134,8 +142,9 @@ R05_FLOW_CONFIDENCE_POWER (default0) scales opposing-edge penalties by normalize
 forward/reverse traffic imbalance to the specified exponent. Weak directional
 evidence gets a smaller penalty. Preferred edges and direction ordering stay
 fixed before global normalization. Still requires explicit --trick RANDOM-05.
-v41 tests pass; full exponents0/.25/.5/1/2 are prepared in
-experiments/flow-confidence-full.json. No gain claimed or default changed.
+v41/sourceffe75c7 tests pass. Full exponents0/.25/.5/1/2 are complete and lose
+except the unchanged0 control:3395/3295/3200/3153/2899. Default actions/schedules/
+events exactly match v31; equivalence JSON is archived under results/. Keep0.
 
 ## Source versions and tests
 
@@ -159,6 +168,11 @@ experiments/flow-confidence-full.json. No gain claimed or default changed.
 
 Frozen build source hashes and tests are under runs/random05/build-v*/.
 Before promotion/commit run `python3 random05/tools/audit_progress.py`.
+
+Next optional structural test: successful-path protection and exclusion of
+terminal rotations in the weak three-step operation kernel. The pinned public
+EPIBT source has both; ours lacks both. Test separately if revisiting the kernel,
+without inferring performance from this observation. RESEARCH.md has the details.
 
 ## Resources, authorization, shared workspace
 

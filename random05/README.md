@@ -61,3 +61,19 @@ For mixed-duration batches, use `python3 random05/tools/split_grid.py submit`
 with the same output, cases, hosts, and CPU-model arguments. Each case gets an
 independent GRID allocation. Run `split_grid.py collect --output <batch>` to
 assemble completed summaries; each child directory retains its own provenance.
+
+
+Fresh task/start validation is documented separately in
+[FRESH_VALIDATION.md](FRESH_VALIDATION.md), with frozen settings and two NMS
+repetitions per input. Audit the completed comparison with:
+
+```sh
+python3 random05/tools/audit_fresh.py \
+  --batch random05/results/fresh-validation-split-full-v31 \
+  --output random05/results/fresh-validation-v1/audit.json
+```
+
+This checks the predeclared manifest at commit22e7cd1, candidate/reference binary
+hashes, generated input hashes, matched physical cores/CPU model, complete valid
+runs, latency and peak RAM. It needs the original generated inputs (recreatable
+with the documented generator). Do not tune on that validation set.
