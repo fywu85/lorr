@@ -1360,7 +1360,8 @@ void temporal_regions_regression(long long candidate_limit = 0) {
      audit_stats.candidates!=a_stats.candidates||audit_stats.repairs!=a_stats.repairs||audit_stats.accepted!=a_stats.accepted||
      audit_stats.kept_regions!=a_stats.kept_regions||audit_stats.reverted_regions!=a_stats.reverted_regions||
      audit_stats.round_scores!=a_stats.round_scores||!audit_stats.peaks.batches||
-     audit_stats.peaks.attempts!=audit_stats.peaks.batches*options.steps||audit_stats.peaks.max_peak_attempt>options.steps)
+     audit_stats.peaks.attempts!=audit_stats.repairs||
+     (!candidate_limit&&audit_stats.peaks.attempts!=audit_stats.peaks.batches*options.steps)||audit_stats.peaks.max_peak_attempt>options.steps)
    throw std::runtime_error("regional peak audit changed search/RNG or missed complete attempts");
   if(serial->score()+1e-6<initial.score())throw std::runtime_error("regional complete-plan score decreased");
   if(serial->score()>initial.score()+1e-6)++improved_cases;
