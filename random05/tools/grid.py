@@ -69,10 +69,29 @@ def execute(a):
     global ROOT
     out=a.output.resolve();spec=json.loads((out/'spec.json').read_text());ROOT=Path(spec['repo'])
     resources=cpu_resources();write(out/'allocation.json',dict(started_utc=now(),resources=resources,job_id=os.environ.get('JOB_ID')))
-    if spec.get('required_cpu_model'):
-        assert resources['cpu_model']==spec['required_cpu_model'],('Unexpected CPU model',resources['cpu_model'])
-    assert resources['physical_cores_visible']==spec['physical'],('GRID did not honor requested core binding; refusing an unbound benchmark',resources)
-    assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota']>=spec['slots'],resources
+    problem=None
+    if spec.get('required_cpu_model') and resources['cpu_model']!=spec['required_cpu_model']:
+        problem=dict(kind='cpu_model',expected=spec['required_cpu_model'],observed=resources['cpu_model'])
+    elif resources['physical_cores_visible']!=spec['physical']:
+        problem=dict(kind='core_binding',expected=spec['physical'],observed=resources['physical_cores_visible'])
+    elif resources['effective_cpu_quota'] is not None and resources['effective_cpu_quota']<spec['slots']:
+        problem=dict(kind='cpu_quota',minimum=spec['slots'],observed=resources['effective_cpu_quota'])
+    if problem:
+        # Refuse invalid allocations before launching any solver. A terminal
+        # record also prevents collectors from waiting forever for a result
+        # that the allocation guard deliberately never allowed to run.
+        failure=dict(exit=1,valid=False,finished_utc=now(),failure_kind='resource_preflight',
+                     failure=problem,solver_started=False)
+        write(out/'completion.json',failure)
+        if spec['kind']=='benchmark':
+            rows=[]
+            for case in spec['cases']:
+                row=dict(failure,name=case['name'],steps=case.get('steps',2000),
+                         binary_sha256=case['binary_sha256'])
+                write(out/case['name']/'summary.json',row);rows.append(row)
+            write(out/'summary.json',rows)
+        print('R05_RESOURCE_REJECTED '+json.dumps(problem),file=sys.stderr)
+        return 1
     if spec['kind'] in ('build','nms4-build'):
         for rel,digest in spec['source_hashes'].items():assert sha(out/'source'/rel)==digest,rel
         env=dict(os.environ);env['PATH']=str(ROOT/'env/bin')+':'+env['PATH']

@@ -522,3 +522,18 @@ Regression cases decode all masks on an obstacle map spanning three words, and
 compare dense multiword trajectories with task turnover, larger rings, forced
 headings, overlapping proposals and one/two workers. No performance claim before
 full timing and trajectory checks. This is a general implementation change.
+
+
+Resource preflight failures now write a terminal invalid summary before returning.
+A wrong CPU model, missing core binding or insufficient CPU quota still prevents
+any solver launch. The collector can therefore distinguish rejected allocations
+from jobs still running. A focused test covers all three external conditions,
+asserts no child solver starts and checks the batch collector reports completion
+with invalid status. The previously frozen rejected attempt is unchanged.
+
+v61 cycle-mask regressions pass (11.25 seconds). Its full controls are next.
+The separate relaxed-deadline v60 four-core search scores3576/3709 forK6144
+with futureblend0/.5, and3648/3611 forK6400. The3709 candidate averages923ms
+and peaks1495ms under a declared5s deadline; it is not a strict1s frontier.
+Try the exact cycle optimization on it as well as the established3655 control.
+Keep explicit first-step5120 work and regular6144; no time-based early return.
