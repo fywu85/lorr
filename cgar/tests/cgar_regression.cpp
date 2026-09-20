@@ -2931,7 +2931,42 @@ void warehouse_trick_regression() {
  }
  if(trick.stats().flow_publications||trick.stats().flow_cache_resets||generic.stats().flow_publications==0)
   throw std::runtime_error("static trick activation or publication isolation failed");
+ // Distinguish age preference from the independent forced-oldest admission.
+ // Both tasks have the same pickup, so only their chain and age differ.
+ int far=goal;for(int cell=0;cell<int(e.map.size());++cell)
+  if(!e.map[cell]&&std::abs(cell/e.cols-goal/e.cols)+std::abs(cell%e.cols-goal%e.cols)>50){far=cell;break;}
+ if(far==goal)throw std::runtime_error("short-task fixture lacks a long chain");
+ for(int lanes:{0,1})for(int short_tasks:{0,1})for(int age_preference:{0,1}){
+  setenv("CGAR_TRICK_LANES",std::to_string(lanes).c_str(),1);
+  setenv("CGAR_TRICK_SHORT_TASKS",std::to_string(short_tasks).c_str(),1);
+  setenv("CGAR_HRRN",std::to_string(age_preference).c_str(),1);
+  auto test=flagged;test.curr_timestep=100;test.curr_task_schedule={-1};test.goal_locations={{}};test.task_pool.clear();
+  Task old;old.task_id=0;old.t_revealed=0;old.locations={goal,far};test.task_pool.emplace(0,old);
+  Task fresh;fresh.task_id=1;fresh.t_revealed=100;fresh.locations={goal,goal};test.task_pool.emplace(1,fresh);
+  Cgar policy;policy.initialize(&test,30000);
+  policy.schedule(&test,30000,schedule);
+  const int expected=short_tasks||!age_preference?1:0;
+  if(schedule!=std::vector<int>{expected}||policy.stats().fair_assignments)
+   throw std::runtime_error("short-task preference did not isolate the age term");
+  policy.schedule(&test,30000,schedule);
+  if(schedule!=std::vector<int>{short_tasks?1:0}||policy.stats().fair_assignments!=!short_tasks)
+   throw std::runtime_error("short-task preference did not isolate oldest admission");
+  test.curr_task_schedule={0};test.task_pool.at(0).agent_assigned=0;test.task_pool.at(0).idx_next_loc=1;
+  test.goal_locations={{{far,0}}};policy.schedule(&test,30000,schedule);
+  if(schedule!=std::vector<int>{0}||test.task_pool.at(0).idx_next_loc!=1)
+   throw std::runtime_error("short-task trick redirected a started long task");
+ }
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_SHORT_TASKS"}){
+  unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");setenv(key,"0",1);rejected=false;
+  try{options("");}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("trick component activated without CLI");
+  for(const char* bad:{"", "-1", "2", "true"}){setenv(key,bad,1);rejected=false;
+   try{options("WAREHOUSE");}catch(const std::invalid_argument&){rejected=true;}
+   if(!rejected)throw std::runtime_error("malformed trick component accepted");}
+ }
+ unsetenv("CGAR_TRICK_LANES");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_HRRN");
  for(const char* key:{"CGAR_TEMPORAL","CGAR_ORIENTATION_GUIDANCE","CGAR_TEMPORAL_STEPS","CGAR_FLOW_STRENGTH","CGAR_FLOW_COST_SCALE","CGAR_PICKUP_FLOW","CGAR_FLOW_WARMUP","CGAR_FLOW_REFRESH_INTERVAL"})unsetenv(key);
+ std::cout<<"TRICK_SHORT_TASKS passed age_and_oldest_admission_independent=1 lanes_factorial_cases=8 started_long_task_protected=1 explicit_cli_required=1 invalid_components_rejected=1\n";
  std::cout<<"WAREHOUSE_TRICK passed explicit_activation=1 map_identity_rejection=1 independent_oriented_states="<<compared<<" generic_initial_dispatch=1 static_pickup_from_tick1=1 no_flow_publications=1 generic_flow_preserved=1\n";
 }
 

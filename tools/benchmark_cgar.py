@@ -36,14 +36,22 @@ def header(path):
     return result
 
 
-def trick_receipt_valid(log, instance, expected_hash):
+def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
     receipts = [line for line in log.splitlines() if line.startswith('[CGAR_TRICK] ')]
+    components = [line for line in log.splitlines() if line.startswith('[CGAR_TRICK_COMPONENTS] ')]
     if not instance:
-        return not receipts
+        return not receipts and not components
     if len(receipts) != 1:
         return False
     fields = dict(field.split('=', 1) for field in receipts[0].split()[1:] if '=' in field)
-    return fields.get('instance') == instance and fields.get('field_sha256') == expected_hash
+    valid = fields.get('instance') == instance and fields.get('field_sha256') == expected_hash
+    if expected_components is not None:
+        if len(components) != 1:
+            return False
+        actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
+        valid = valid and actual == dict(instance=instance, started_tasks='protected',
+                                       **{k: str(v) for k, v in expected_components.items()})
+    return valid
 
 
 def main():
@@ -109,8 +117,21 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
-    expected_trick_field = None
-    if args.trick:
+    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS']
+    explicit_components = any(k in environment for k in component_keys)
+    if explicit_components and not args.trick:
+        parser.error('CGAR_TRICK component settings require --trick WAREHOUSE')
+    if any(environment.get(k, '0') not in ('0', '1') for k in component_keys):
+        parser.error('CGAR_TRICK component settings must be 0 or 1')
+    expected_components = None
+    if args.trick and explicit_components:
+        short = int(environment.get('CGAR_TRICK_SHORT_TASKS', '0'))
+        expected_components = dict(lanes=int(environment.get('CGAR_TRICK_LANES', '1')),
+                                   short_tasks=short, hrrn=0 if short else int(environment.get('CGAR_HRRN', '1')) != 0,
+                                   oldest_admission=1-short)
+        expected_components['hrrn'] = int(expected_components['hrrn'])
+    expected_trick_field = 'none' if args.trick else None
+    if args.trick and environment.get('CGAR_TRICK_LANES', '1') == '1':
         asset_name = 'cgar/tricks/warehouse_lanes.hpp'
         asset = (ROOT / asset_name).read_bytes()
         if provenance is not None and provenance['sources'].get(asset_name) != hashlib.sha256(asset).hexdigest():
@@ -123,6 +144,7 @@ def main():
                 "experiment_track": "TRICK" if args.trick else "GENERIC",
                 "trick": args.trick, "trick_argv": ["--trick", args.trick] if args.trick else [],
                 "expected_trick_field_sha256": expected_trick_field,
+                "expected_trick_components": expected_components,
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
                 "log_detail_level": args.log_detail_level,
                 "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES,
@@ -187,7 +209,7 @@ def main():
                                                     0 <= entry_time <= args.plan_time_limit_ms / 1000.0)
         peak_bytes = usage.get("peak_rss_kib", 0) * 1024
         memory_valid = 0 < peak_bytes <= MAX_PROCESS_MEMORY_BYTES
-        receipt_valid = trick_receipt_valid((out / (name + ".log")).read_text(), args.trick, expected_trick_field)
+        receipt_valid = trick_receipt_valid((out / (name + ".log")).read_text(), args.trick, expected_trick_field, expected_components)
         # New binaries derive these labels from the CLI value received by BaseSystem.
         # Failed entries have no result; legacy generic binaries may omit the labels.
         track_valid = (not output.exists() or

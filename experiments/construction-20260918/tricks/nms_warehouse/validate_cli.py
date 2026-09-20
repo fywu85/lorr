@@ -35,9 +35,14 @@ def main():
             ('wrong_dimensions', folder / 'tiny.json', 'WAREHOUSE', {}, 'requires the exact MR24 warehouse'),
             ('changed_obstacle', folder / 'mutated.json', 'WAREHOUSE', {}, 'layout mismatch'),
             ('wrong_backend', warehouse, 'WAREHOUSE', {'CGAR_PLANNER': 'default'}, 'native CGAR backend'),
+            ('short_without_flag', warehouse, None, {'CGAR_TRICK_SHORT_TASKS': '1'}, 'require --trick'),
+            ('zero_without_flag', warehouse, None, {'CGAR_TRICK_LANES': '0'}, 'require --trick'),
+            ('bad_lanes', warehouse, 'WAREHOUSE', {'CGAR_TRICK_LANES': '2'}, 'must be 0 or 1'),
+            ('bad_short', warehouse, 'WAREHOUSE', {'CGAR_TRICK_SHORT_TASKS': '-1'}, 'must be 0 or 1'),
         ]
         for label, instance, trick, overrides, message in cases:
-            command = [str(binary), '-i', str(instance), '-o', str(folder / 'unexpected.json'), '--trick', trick]
+            command = [str(binary), '-i', str(instance), '-o', str(folder / 'unexpected.json')]
+            if trick is not None: command += ['--trick', trick]
             result = subprocess.run(command, cwd=str(ROOT), env=dict(env, **overrides),
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=10)
             assert result.returncode == 2 and message in result.stdout, (label, result.returncode, result.stdout)

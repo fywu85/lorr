@@ -441,6 +441,7 @@ private:
     bool enable_txn_ = true;
     bool enable_locks_ = true;
     bool hrrn_ = true;
+    bool short_task_trick_ = false;
     bool repair_fallback_ = true;
     bool refine_chain_costs_ = false;
     bool scheduler_cache_peek_ = false;

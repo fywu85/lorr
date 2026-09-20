@@ -1,0 +1,69 @@
+{
+  "binary_sha256": "adb2ce7362f1c86580516558adff0f352cf2ab4cba7d5df6de9a3473ccd116c2",
+  "cases": [
+    {
+      "case": "unknown_name",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: unknown --trick instance: RANDOM-01; supported: WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "empty_name",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: unknown --trick instance: ; supported: WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "wrong_dimensions",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick WAREHOUSE requires the exact MR24 warehouse layout (140x500)",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "changed_obstacle",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick WAREHOUSE layout mismatch at cell 0",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "wrong_backend",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: --trick requires the native CGAR backend",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "short_without_flag",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: CGAR_TRICK component settings require --trick WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "zero_without_flag",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: CGAR_TRICK component settings require --trick WAREHOUSE",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "bad_lanes",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: CGAR_TRICK component settings must be 0 or 1",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    },
+    {
+      "case": "bad_short",
+      "returncode": 2,
+      "message": "CGAR_TRICK_ERROR: CGAR_TRICK component settings must be 0 or 1",
+      "preinitialization_rejection": true,
+      "no_result_written": true
+    }
+  ],
+  "scope": "Negative CLI checks only; positive and no-flag behavior require the GRID simulations."
+}

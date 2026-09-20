@@ -65,6 +65,12 @@ int main(int argc, char **argv)
     }
 
     po::notify(vm);
+    try {
+        cgar::tricks::options(vm.count("trick") ? vm["trick"].as<std::string>() : std::string());
+    } catch (const std::exception& error) {
+        std::cerr << "CGAR_TRICK_ERROR: " << error.what() << std::endl;
+        return 2;
+    }
     if (vm.count("trick")) {
         try {
             cgar::tricks::validate_name(vm["trick"].as<std::string>());

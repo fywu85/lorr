@@ -708,8 +708,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     env_ = env;
     if (initialized_) return;  // the scheduler and the planner both call this
     n_ = env->num_of_agents;
-    static_trick_metric_ = !env->trick_instance.empty();
-    if (static_trick_metric_)
+    const auto trick_options = tricks::options(env->trick_instance);
+    static_trick_metric_ = trick_options.lanes;
+    short_task_trick_ = trick_options.short_tasks;
+    if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
     stall_limit_ = env_int("CGAR_STALL", 4);
     commit_limit_ = env_int("CGAR_COMMIT_AGE", 3);
@@ -796,7 +798,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const int remaining_flow = env_int("CGAR_TEMPORAL_REMAINING_FLOW", 0);
     if (remaining_flow < 0 || remaining_flow > 1 ||
         (remaining_flow && (!temporal_ || !orientation_guidance_ || !flow_strength_ ||
-         static_trick_metric_ || guide_enabled_ || temporal_next_errand_ ||
+         !env->trick_instance.empty() || guide_enabled_ || temporal_next_errand_ ||
          temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)))
         throw std::invalid_argument("remaining-flow scoring requires generic temporal learned flow; incompatible with trick, guide, next-errand, paid-progress audits or branching");
     temporal_remaining_flow_ = remaining_flow != 0;
@@ -850,7 +852,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     pibt_tickets_ = env_int("CGAR_PIBT_TICKETS", 0) != 0;
     pibt_commitments_ = env_int("CGAR_PIBT_COMMITMENTS", 0) != 0;
     enable_txn_ = env_int("CGAR_TXN", pibt_reference_ ? 0 : 1) != 0;
-    hrrn_ = env_int("CGAR_HRRN", 1) != 0;
+    hrrn_ = !short_task_trick_ && env_int("CGAR_HRRN", 1) != 0;
     pickup_weight_ = std::max(1, std::min(16, env_int("CGAR_PICKUP_WEIGHT", 1)));
     const int pickup_flow = env_int("CGAR_PICKUP_FLOW", 0);
     pickup_flow_nodes_ = env_int("CGAR_PICKUP_FLOW_NODES", 8192);
@@ -892,7 +894,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     chain_flow_pricing_ = env_int("CGAR_CHAIN_FLOW_PRICING", 0);
     if (chain_flow_pricing_ < 0 || chain_flow_pricing_ > 4 ||
         (chain_flow_pricing_ && (!pickup_flow_ || !orientation_guidance_ || !flow_strength_ ||
-         static_trick_metric_ || temporal_remaining_flow_ || guide_enabled_ || reassign_ || reassign_pool_)))
+         !env->trick_instance.empty() || temporal_remaining_flow_ || guide_enabled_ || reassign_ || reassign_pool_)))
         throw std::invalid_argument("chain flow pricing requires generic learned pickup flow and mode0..4; incompatible with tricks, remaining-flow score, guide routes or rematching");
     if (chain_flow_pricing_)
         std::printf("[cgar-chain-pricing] mode=%d shadow=%d resident_only=1 extra_tables=0\n", chain_flow_pricing_, chain_flow_pricing_ == 4);
@@ -902,6 +904,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const size_t table_mb = static_cast<size_t>(env_int("CGAR_TABLE_MB", 2048));
     rng_.seed(static_cast<unsigned>(env_int("CGAR_SEED", 0)));
 
+    if (!env->trick_instance.empty() && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ || reassign_ || reassign_pool_))
+        throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR without guide routes or rematching");
     if (static_trick_metric_ && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ ||
         flow_cost_scale_ != 4 || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
         throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, cost scale4, unit physical turns, no turn surcharge or cache-only refresh");
@@ -933,6 +937,13 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             turn_oracle_.set_forward_costs(tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
             std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
                 env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
+        }
+        if (!env->trick_instance.empty()) {
+            if (!static_trick_metric_)
+                std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
+                    env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
+                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, hrrn_, !short_task_trick_);
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
@@ -2442,7 +2453,9 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         return pair_for(r, t, static_cast<int>(std::min<long long>(kInf - 1, static_cast<long long>(d) * pickup_scale)));
     };
     auto fair_admission = [&]() {
-        if (regular_admissions_ < n_) return;
+        // Explicit competition-objective ablation: long unpicked tasks may wait
+        // indefinitely. Started assignments and motion protection are unchanged.
+        if (short_task_trick_ || regular_admissions_ < n_) return;
         const int t = oldest_task();
         if (t < 0) return;
         Pair best{};
