@@ -35,7 +35,7 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5) {
+uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_restore=false) {
     const int cells=rows*cols,n=cells-1;
     auto e=environment(rows,cols,n);
     uint64_t signature=14695981039346656037ULL;
@@ -44,7 +44,16 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5) {
     int next_task=n+spare_tasks,total_moved=0;
     for(int step=0;step<150;++step) {
         e.curr_timestep=step;std::vector<Action> actions;std::vector<int> assignment;
+        const auto before=check_restore && step%17==0?engine.checkpoint(e):nlohmann::json();
         engine.compute(&e,actions,assignment);
+        if(!before.is_null()) {
+            const auto after=engine.checkpoint(e);
+            engine.restore(before,e);std::vector<Action> replay_actions;std::vector<int> replay_schedule;
+            engine.compute(&e,replay_actions,replay_schedule);
+            require(actions==replay_actions && assignment==replay_schedule,
+                    "checkpoint restore changed the selected decision");
+            require(after==engine.checkpoint(e),"checkpoint restore changed persistent solver state");
+        }
         for(int a=0;a<n;++a) {
             signature=(signature^uint64_t(actions[a]+1))*1099511628211ULL;
             signature=(signature^uint64_t(assignment[a]+1))*1099511628211ULL;
@@ -589,7 +598,20 @@ void staged_continuations() {
     }
 }
 
+void checkpoint_replay() {
+    Config cfg;cfg.futures=128;cfg.continuations=10;cfg.continuation_start=2;
+    cfg.screen_branches=2;cfg.screen_keep=4;cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;
+    cfg.share_prefix=true;cfg.cost_cache=true;cfg.candidate_cache=true;cfg.goal_cache=true;
+    cfg.kinematic_mask=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;cfg.guided_matching=true;
+    for(bool step_rng:{false,true}) {
+        cfg.random_by_step=step_rng;
+        const auto reference=simulate(cfg,12);
+        require(reference==simulate(cfg,12,5,5,true),"restoring changed the dense trajectory");
+    }
+}
+
 int main() {
+    checkpoint_replay();
     staged_continuations();
     branch_diagnostics();
     cycle_word_masks();

@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <filesystem>
+#include <fstream>
 #include <limits>
 #include <numeric>
 #include <queue>
@@ -63,6 +65,12 @@ Config Config::environment(const SharedEnvironment& env) {
     c.screen_branches=integer("R05_SCREEN_BRANCHES",0);
     c.screen_keep=integer("R05_SCREEN_KEEP",4);
     c.branch_diagnostics=integer("R05_BRANCH_DIAGNOSTICS",0);
+    c.snapshot_interval=integer("R05_SNAPSHOT_EVERY",0);
+    c.snapshot_candidates=integer("R05_SNAPSHOT_CANDIDATES",8);
+    if(const char* directory=std::getenv("R05_SNAPSHOT_DIR"))c.snapshot_directory=directory;
+    if(c.snapshot_interval<0 || c.snapshot_candidates<1 || c.snapshot_candidates>64 ||
+       (c.snapshot_interval && c.local_trials))
+        throw std::invalid_argument("invalid decision snapshot settings");
     if(c.branch_diagnostics<0)throw std::invalid_argument("branch diagnostic interval must be nonnegative");
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
     c.future_elite_blend=real("R05_FUTURE_ELITE_BLEND",0);
@@ -146,6 +154,7 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("capped priority aging requires --trick RANDOM-05");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     if(c.horizon>0 && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
@@ -1334,7 +1343,13 @@ static std::vector<int> elite_indices(const std::vector<Rollout>& results,int us
     return parents;
 }
 
-void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
+void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule,int forced_candidate) {
+    const bool save_snapshot=cfg.snapshot_interval>0 && env->curr_timestep>0 &&
+                             env->curr_timestep%cfg.snapshot_interval==0;
+    nlohmann::json snapshot;
+    if(save_snapshot)snapshot=checkpoint(*env);
+    if(forced_candidate>=0 && cfg.local_trials)
+        throw std::invalid_argument("forced diagnostic root requires local search off");
     // Invalidate between real steps, including task swaps/configuration changes.
     ++ranking_epoch_;
     policy_profile_active_=cfg.policy_profile && (env->curr_timestep<5 || env->curr_timestep%100==0);
@@ -1596,6 +1611,42 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
+    }
+    if(save_snapshot) {
+        // Observe only already-completed roots. Powers-of-two ranks cover both
+        // close alternatives and a wider score range; duplicate first decisions
+        // carry no extra causal information. No search draws or scores change.
+        std::vector<int> ranked;
+        for(int k=0;k<roots;++k)if(results[k].fully_evaluated)ranked.push_back(k);
+        std::sort(ranked.begin(),ranked.end(),[&](int a,int b) {
+            if(results[a].score!=results[b].score)return results[a].score>results[b].score;
+            return cfg.accept_equal?a>b:a<b;
+        });
+        std::vector<int> selected{best};
+        int target=0;
+        for(int rank=0;rank<int(ranked.size()) && int(selected.size())<cfg.snapshot_candidates;++rank) {
+            if(rank<target)continue;
+            int k=ranked[rank];bool duplicate=false;
+            for(int old:selected)if(results[k].actions==results[old].actions &&
+                                    results[k].first.pending==results[old].first.pending)duplicate=true;
+            if(duplicate)continue;
+            selected.push_back(k);target=target?target*2:2;
+        }
+        snapshot["selected_candidate"]=best;
+        snapshot["candidates"]=nlohmann::json::array();
+        for(int k:selected)snapshot["candidates"].push_back({
+            {"candidate",k},{"score",results[k].score},{"actions",results[k].actions},
+            {"pending",results[k].first.pending},{"schedule",schedule},
+            {"rank",std::find(ranked.begin(),ranked.end(),k)-ranked.begin()}});
+        std::filesystem::create_directories(cfg.snapshot_directory);
+        std::string path=cfg.snapshot_directory+"/step-"+std::to_string(env->curr_timestep)+".json";
+        std::ofstream output(path);output<<snapshot.dump()<<'\n';output.close();
+        if(!output)throw std::runtime_error("could not write decision snapshot");
+    }
+    if(forced_candidate>=0) {
+        if(forced_candidate>=roots || !results[forced_candidate].fully_evaluated)
+            throw std::invalid_argument("forced root is not a fully evaluated candidate");
+        best=forced_candidate;
     }
     if(cfg.persist_elites>1) {
         past_offsets_.clear();

@@ -13,6 +13,8 @@ struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
     int screen_branches=0, screen_keep=4;
+    int snapshot_interval=0, snapshot_candidates=8;
+    std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
@@ -125,7 +127,10 @@ public:
     std::unique_ptr<Graph> graph;
     explicit Engine(Config config):cfg(std::move(config)){}
     void initialize(SharedEnvironment* env);
-    void compute(SharedEnvironment* env, std::vector<Action>& plan, std::vector<int>& schedule);
+    void compute(SharedEnvironment* env, std::vector<Action>& plan, std::vector<int>& schedule,
+                 int forced_candidate=-1);
+    nlohmann::json checkpoint(const SharedEnvironment& env) const;
+    void restore(const nlohmann::json& snapshot, SharedEnvironment& env);
     static void certify(const Graph& g,const std::vector<int>& from,const std::vector<int>& to);
     void match(SharedEnvironment* env,std::vector<int>& schedule);
     const std::vector<int>& ages() const { return age_; }

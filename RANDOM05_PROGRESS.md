@@ -2,10 +2,12 @@
 
 [Current verified result summary](random05/RESULTS.md).
 
-Goal: approach the colleague's reported roughly 27–28% gain over matched NMS
-combined-track runs, then improve further. Their 3,531 and 3,715 task counts use
-private synthetic instances; those absolute counts are reference targets, not
-direct baselines for the archived competition instance.
+Goal (retargeted 2026-09-20): reach **4,000 completed tasks** on the full archived
+RANDOM-05 combined benchmark, then independently validate the selected improvement.
+Keep separate four-core and 32-worker records under the existing comparison rules.
+The previous target of approaching the colleague's 27–28% matched NMS gain was
+met at +25.42% on fresh inputs. Their private absolute counts are not matched
+baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Comparison rules
 
@@ -1369,3 +1371,11 @@ input/binary hashes and allocation are linked in the audits.
   It does not reproduce the colleague's private experiment exactly.
   [Completion evidence](random05/results/completion-audit.json),
   [concise results](random05/RESULTS.md).
+
+
+- New 4,000-task campaign begins from verified 3,770/four-core and 3,852/32-worker
+  records. First investigate candidate-score quality using saved pre-decision
+  states and fully evaluated alternative roots. Offline continuations will
+  measure completions with repeated replanning; they are diagnostics, not
+  benchmark throughput or an optimality bound. New algorithmic candidates
+  still require complete 2,000-step runs and independent replay.

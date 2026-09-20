@@ -668,3 +668,24 @@ Direct four-corefirst5120 thenK6000/B14 andK6144/B10 finish3664/3654, means818/
 Worker-affinity diagnostics on the running paired jobs verify every observed
 worker mask stays within its individual case's allocated CPUs; close uses
 distinct singleton masks. Early timing is mixed; wait for full results.
+
+## 4,000-task campaign: saved-state decision audit
+
+The next target is4,000 tasks from the verified3,852 record. More work alone
+failed (K28800=3706), so first measure whether the short-horizon score ranks
+useful decisions. `R05_SNAPSHOT_EVERY` is an opt-in observational diagnostic;
+it saves the pre-decision environment and solver state plus selected, fully
+evaluated alternatives at expanding ranks. Cache contents are invalidated on
+restore; immutable distance tables and exact task costs are rebuilt as needed.
+There are no diagnostic random draws or changes to candidate selection.
+
+`random05_decision_probe` is a separate offline executable. It restores a saved
+state, reproduces the first decision exactly, forces one completed alternative,
+and repeatedly replans for a declared number of steps at a declared fixed work
+budget. The task stream is handled by the harness and revealed only upon real
+simulated completions, following the simulator's pool-size rule. The planner
+never receives unrevealed tasks. Record cumulative tasks/waypoints/motion at each
+step under common downstream seeds. Reduced-budget continuations are a proxy,
+not an oracle for the full-budget policy or a competition throughput result.
+Dense ongoing-task regressions require exact action, schedule and persistent
+state equivalence after restore, including both PRNG modes and task replacement.

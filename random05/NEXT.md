@@ -1,10 +1,10 @@
 # RANDOM-05 handoff
 
-Updated: 2026-09-20 20:53 UTC. The performance objective is verified at the
-requested “reasonably close” level. All submitted Random05 benchmarks are
-terminal; no Random05 work remains queued. Final goal status can be completed
-once this report and evidence are committed/pushed. See RESULTS.md and
-results/completion-audit.json for the requirement-by-requirement verification.
+Updated: 2026-09-20: user explicitly authorized a new 4,000-task goal.
+The previous reasonably-close goal is complete and preserved in RESULTS.md and
+results/completion-audit.json. Current work adds exact saved-state diagnostics
+to compare alternative fully evaluated roots under a common downstream policy.
+No new throughput improvement is claimed until full benchmarks complete.
 
 Only edit/stage/commit random05/ and RANDOM05_PROGRESS.md in this fork. Warehouse
 work shares main; leave its files, staged changes and GRID jobs alone. No
