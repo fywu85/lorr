@@ -1,0 +1,7 @@
+# Fable turn43 source-review assessment
+
+Completed2026-09-20 13:07:38UTC. Actual8546afa source and full added tests reviewed read-only in the same Fable5.1/max session. No concrete ledger, time-convention, comparator or zero-flag defect identified. The V91 full suite independently passes and all28source/test hashes match8546afa.
+
+Accepted hardening: detect and fail explicitly when a completed, unchanged holder beats its stored physical lower bound; report a dedicated zero-required violation counter. Add an actual native matching fixture where a fresh admission moves to another holder before acceptance. Its final-holder bound must train; the displaced task must never train. Source92bc748 now passes V92 build8899759 and the complete regression suite, including the actual fresh matching fixture. No policy/ranking change for valid existing inputs. The immutable analyzer already requires the separate exact margin receipt and labels configured horizon/margin; it now checks model counters and zero violations.
+
+The read-only stock audit uses exact BFS while production uses the original cached chain/spatial bound. Calibration selects never-retargeted tasks, so it need not predict the full population. Both are qualifications on efficacy, not a reason to label a heuristic a guarantee. Ledger runtime will be measured in controlled full runs. Pool exchange remains guarded OFF; current native profile also disallows the old pair-swap pass under the explicit trick.

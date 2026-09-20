@@ -42,6 +42,25 @@ def main():
   r=read(dest)['known_horizon_bounds'];assert r['chronological_witnesses']==int(label=='available')
   if label=='available':assert r['examples'][0]['actual_bound']==10 and r['examples'][0]['remaining']==1 and r['examples'][0]['alternative_bound']==1
   fixtures[label]=r
+ # Independent prospective-margin fixture: calibration task needs a turn and
+ # one forward step (duration2, bound1). At admission9, actual repeated pickup
+ # has bound2 with R2 and is demoted; same-cell alternative has bound1+margin1=2.
+ margin_fixtures={}
+ for label in ['observed','same_tick_completion_unobserved','retargeted_excluded']:
+  d=dict(teamSize=3,makespan=10,numTaskFinished=1,numPlannerErrors=0,numScheduleErrors=0,numEntryTimeouts=0,
+   start=[[0,3,'E'],[0,0,'S'],[0,2,'W']],actualPaths=['W,W,W,W,W,W,W,W,R,C','C,F,W,W,W,W,W,W,W,W','W,W,W,W,W,W,W,W,W,W'],
+   actualSchedule=['0:-1,9:1','1:0,3:-1','0:-1'],tasks=[[0,0,[0,1]],[1,0,[0,4,0,4]],[2,0,[0,3]]],events=[[2,1,0,1]])
+  if label=='same_tick_completion_unobserved':
+   d['actualPaths'][1]='C,W,W,W,W,W,W,W,F,W';d['actualSchedule'][1]='1:0,10:-1';d['events']=[[9,1,0,1]]
+  if label=='retargeted_excluded':
+   d['actualPaths'][1]='C,W,W,W,W,W,W,W,W,W';d['actualPaths'][2]='W,F,W,W,W,W,W,W,W,W'
+   d['actualSchedule'][1]='1:0,2:-1';d['actualSchedule'][2]='0:-1,2:0,3:-1';d['events']=[[2,2,0,1]]
+  path=raw/('margin-'+label+'.json');write(path,d);dest=raw/('margin-'+label+'-result.json');subprocess.run([str(binary),str(raw/'bound-fixture.map'),str(path),str(dest)],check=True)
+  r=read(dest)['known_horizon_bounds']['prospective_margin_audit'];assert r['feasible_unfinished_exposed']==1 and r['mean_margin_unsafe']==int(label=='observed') and r['chronological_witnesses']==int(label=='observed')
+  if label=='observed':
+   x=r['examples'][0];assert x['bound']==2 and x['remaining']==2 and x['bucket_count']==1 and x['bucket_excess_sum']==1 and x['alternative_bound']==1
+  margin_fixtures[label]=r
+ fixtures['prospective_margin']=margin_fixtures
  fixtures['completed_single_holder_residual']=residual;fixtures['retargeted_completion_excluded']=True;write(out/'fixtures.json',fixtures);reports={}
  for name,ref in read(raw/'reference.json')['reports'].items():
   path=Path(ref['input_path']);assert digest(path)==ref['input_sha256'];dest=raw/(name+'.json')

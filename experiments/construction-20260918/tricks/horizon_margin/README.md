@@ -50,3 +50,10 @@ cores each,32decimalGB/shared5s. Controls must reproduce153614/153220 and their 
 hashes. Action/schedule/event prefixes before the first comparison changed by the
 margin must match. Report all full outcomes, tails, ages, unfinished work and runtime.
 No throughput claim is made before these checks.
+
+V91source8546afa and V92source92bc748 both pass the complete regression suite.
+V92 adds an explicit failure for a physically impossible calibration observation
+and the actual fresh-task matching integration test requested by Fable43. Exact
+source/binary records are in build-provenance/v91 and v92. No new ranking factor
+is added by this hardening. V92 startup8899761/analysis8899764 and generic800
+8899762/analysis8899765 are running; full comparison waits for their validation.

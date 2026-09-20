@@ -1,0 +1,308 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/cgar-known-horizon-full-v86-20260920/trick_native_horizon5000-s0-r0/WAREHOUSE.json",
+  "team_size": 10000,
+  "steps": 5000,
+  "completed_tasks": 153614,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 0,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 8908,
+      "stationary": 9398
+    },
+    "loaded": {
+      "adjacent": 13560,
+      "stationary": 13975
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "empty": {
+      "fw": 8314748,
+      "cr": 337573,
+      "ccr": 275389,
+      "wait": 354090,
+      "other": 0
+    },
+    "loaded": {
+      "fw": 38680366,
+      "cr": 483472,
+      "ccr": 413082,
+      "wait": 1141280,
+      "other": 0
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 0,
+  "implicit_initial_idle_steps": 0,
+  "unassigned_robot_steps": 0,
+  "empty_forward_actions": 8314748,
+  "empty_turn_actions": 612962,
+  "empty_wait_actions": 354090,
+  "empty_other_actions": 0,
+  "empty_robot_steps_including_reassignments": 9281800,
+  "loaded_robot_steps_including_unfinished_tasks": 40718200,
+  "robot_steps_per_completed_task": 325.49116616975016,
+  "revealed_chain_shortest": {
+    "n": 168614,
+    "mean": 248.51265612582586,
+    "p90": 445,
+    "sum": 41902713
+  },
+  "completed_chain_shortest": {
+    "n": 153614,
+    "mean": 242.1878279323499,
+    "p90": 438,
+    "sum": 37203441
+  },
+  "assigned_chain_shortest": {
+    "n": 163533,
+    "mean": 247.29633774222938,
+    "p90": 444,
+    "sum": 40441112
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 163533,
+    "mean": 49.23131111151878,
+    "p90": 98,
+    "sum": 8050944
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 163533,
+    "mean": 45.42239792580091,
+    "p90": 91,
+    "sum": 7428061
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 160903,
+    "mean": 57.05358507920921,
+    "p90": 108,
+    "sum": 9180093
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 160903,
+    "mean": 52.83847411173191,
+    "p90": 102,
+    "sum": 8501869
+  },
+  "completed_loaded_steps": {
+    "n": 153614,
+    "mean": 258.06932961839414,
+    "p90": 460,
+    "sum": 39643062
+  },
+  "completed_loaded_action_totals": {
+    "fw": 37664235,
+    "cr": 468285,
+    "ccr": 400754,
+    "wait": 1109788,
+    "other": 0
+  },
+  "completed_loaded_action_means": {
+    "fw": 245.18751546083038,
+    "cr": 3.048452614996029,
+    "ccr": 2.608837736143841,
+    "wait": 7.2245238064238935,
+    "other": 0.0
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 13206,
+    "stationary": 13612
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 0.0859687268087544,
+    "stationary": 0.08861171507805278
+  },
+  "completed_loaded_forward_excess_over_shortest": 460794,
+  "observed_pickup_steps_per_shortest_cell": 1.1754417375901332,
+  "completed_loaded_steps_per_shortest_cell": 1.0655751439766015,
+  "tasks_with_multiple_assignments": 17541,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 2630,
+  "distance_queries": 495680,
+  "complete_bfs_tables": 24768,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.",
+  "known_horizon_bounds": {
+    "configured_horizon": 5000,
+    "cohorts": {
+      "4000": {
+        "completed": 22594,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 7145,
+        "uncompleted_lb_feasible": 2774
+      },
+      "4600": {
+        "completed": 4603,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 7145,
+        "uncompleted_lb_feasible": 1959
+      },
+      "4750": {
+        "completed": 1140,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 7144,
+        "uncompleted_lb_feasible": 715
+      },
+      "4900": {
+        "completed": 20,
+        "completed_initial_pair_impossible_but_retargeted": 0,
+        "uncompleted_initial_pair_impossible": 3973,
+        "uncompleted_lb_feasible": 47
+      }
+    },
+    "completed_single_holder_residuals_by_bound": {
+      "1": {
+        "0-49": {
+          "excess": {
+            "n": 1864,
+            "mean": 15.17596566523605,
+            "p90": 25,
+            "sum": 28288
+          },
+          "duration_sum": 100050,
+          "bound_sum": 71762
+        },
+        "50-99": {
+          "excess": {
+            "n": 10545,
+            "mean": 16.408060692271217,
+            "p90": 26,
+            "sum": 173023
+          },
+          "duration_sum": 994425,
+          "bound_sum": 821402
+        },
+        "100-199": {
+          "excess": {
+            "n": 36061,
+            "mean": 19.784864535093313,
+            "p90": 30,
+            "sum": 713462
+          },
+          "duration_sum": 6146954,
+          "bound_sum": 5433492
+        },
+        "200-399": {
+          "excess": {
+            "n": 53677,
+            "mean": 24.876297110494253,
+            "p90": 37,
+            "sum": 1335285
+          },
+          "duration_sum": 17029527,
+          "bound_sum": 15694242
+        },
+        "400+": {
+          "excess": {
+            "n": 35455,
+            "mean": 30.443830207305034,
+            "p90": 43,
+            "sum": 1079386
+          },
+          "duration_sum": 19128267,
+          "bound_sum": 18048881
+        }
+      },
+      "4000": {
+        "0-49": {
+          "excess": {
+            "n": 240,
+            "mean": 13.758333333333333,
+            "p90": 22,
+            "sum": 3302
+          },
+          "duration_sum": 12779,
+          "bound_sum": 9477
+        },
+        "50-99": {
+          "excess": {
+            "n": 1642,
+            "mean": 15.649208282582217,
+            "p90": 25,
+            "sum": 25696
+          },
+          "duration_sum": 154139,
+          "bound_sum": 128443
+        },
+        "100-199": {
+          "excess": {
+            "n": 6005,
+            "mean": 18.375520399666943,
+            "p90": 28,
+            "sum": 110345
+          },
+          "duration_sum": 1017137,
+          "bound_sum": 906792
+        },
+        "200-399": {
+          "excess": {
+            "n": 7974,
+            "mean": 23.057562076749434,
+            "p90": 34,
+            "sum": 183861
+          },
+          "duration_sum": 2468182,
+          "bound_sum": 2284321
+        },
+        "400+": {
+          "excess": {
+            "n": 3748,
+            "mean": 29.291088580576307,
+            "p90": 41,
+            "sum": 109783
+          },
+          "duration_sum": 1964533,
+          "bound_sum": 1854750
+        }
+      }
+    },
+    "chronological_witnesses": 3,
+    "exposed_impossible_unfinished_admissions": 7145,
+    "overlapping_actual_tasks_skipped": 2,
+    "bfs_searches": 6,
+    "manhattan_candidate_exposures": 771,
+    "examples": [
+      {
+        "assignment_step": 4605,
+        "decision_tick": 4604,
+        "robot": 8103,
+        "actual_task": 137376,
+        "actual_bound": 685,
+        "remaining": 396,
+        "alternative_task": 154460,
+        "alternative_bound": 90
+      },
+      {
+        "assignment_step": 4881,
+        "decision_tick": 4880,
+        "robot": 9200,
+        "actual_task": 152526,
+        "actual_bound": 376,
+        "remaining": 120,
+        "alternative_task": 163886,
+        "alternative_bound": 116
+      },
+      {
+        "assignment_step": 4901,
+        "decision_tick": 4900,
+        "robot": 7970,
+        "actual_task": 158802,
+        "actual_bound": 305,
+        "remaining": 100,
+        "alternative_task": 164511,
+        "alternative_bound": 100
+      }
+    ],
+    "limits": "Exact spatial bounds conditional on keeping the holder, stronger than production cache misses. Later matching may rescue an initially impossible pair. Sequential task-disjoint witnesses against the unchanged pool; same-batch assignments conservatively excluded. Not a counterfactual rollout, complete opportunity count, throughput estimate or upper bound. Reveals and later assignments would change under a new policy."
+  }
+}
