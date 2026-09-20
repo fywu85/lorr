@@ -3708,6 +3708,36 @@ void native_metric_regression() {
  unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_HORIZON_MARGIN");
  unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");
  std::cout<<"MATCH_CADENCE_NATIVE_EPISODES passed pairs=2 interval=5 prescribed_passes=26 horizon_p90=1 independent_actions=12288 serial_parallel_exact=1 started_protection=1 one_retarget=1\n";
+ // A whole-cycle horizon veto still executes complete, legal native plans.
+ // Missing and explicit-zero are identical; enabled mode is deterministic
+ // across preparation threads and retains started-task/one-retarget protection.
+ setenv("CGAR_TRICK_KNOWN_HORIZON","128",1);setenv("CGAR_TRICK_HORIZON_MARGIN","1",1);
+ setenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE","90",1);
+ long long guarded_cycles=0,guarded_rejections=0;
+ for(const char* bands:{"0","1"}){
+  unsetenv("CGAR_TRICK_MATCH_HORIZON");const auto baseline=episode(bands,4);
+  setenv("CGAR_TRICK_MATCH_HORIZON","0",1);const auto zero=episode(bands,4);
+  require(baseline.values==zero.values&&!zero.stats.match_horizon_cycles,"disabled matching horizon changed trace or did work");
+  setenv("CGAR_TRICK_MATCH_HORIZON","1",1);
+  const auto serial=episode(bands,1),parallel=episode(bands,4);
+  require(serial.values==parallel.values&&serial.services==parallel.services&&
+   serial.stats.match_horizon_cycles==parallel.stats.match_horizon_cycles&&
+   serial.stats.match_horizon_rejected==parallel.stats.match_horizon_rejected&&
+   serial.stats.match_horizon_worse_rows==parallel.stats.match_horizon_worse_rows&&
+   serial.stats.oriented_builds==parallel.stats.oriented_builds&&serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops,
+   "matching horizon depends on preparation thread order");
+  require(serial.stats.match_horizon_cycles==serial.stats.match_accepted_cycles+serial.stats.match_horizon_rejected&&
+   serial.stats.match_horizon_rows>=2*serial.stats.match_horizon_cycles&&
+   serial.stats.match_horizon_worse_rows>=serial.stats.match_horizon_rejected,
+   "matching horizon accepted/rejected cycle accounting differs");
+  guarded_cycles+=serial.stats.match_horizon_cycles;guarded_rejections+=serial.stats.match_horizon_rejected;
+ }
+ require(guarded_cycles>0,"matching horizon native episode never checked an accepted cycle");
+ setenv("CGAR_HRRN","0",1);rejects([&]{Cgar bad;bad.initialize(&e,30000);},"matching horizon accepted disabled fairness");setenv("CGAR_HRRN","1",1);
+ setenv("CGAR_TRICK_SHORT_TASKS","1",1);rejects([&]{Cgar bad;bad.initialize(&e,30000);},"matching horizon accepted short preference");setenv("CGAR_TRICK_SHORT_TASKS","0",1);
+ unsetenv("CGAR_TRICK_MATCH_HORIZON");unsetenv("CGAR_REASSIGN_MATCH_INTERVAL");
+ unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_HORIZON_MARGIN");unsetenv("CGAR_TRICK_HORIZON_MARGIN_PERCENTILE");
+ std::cout<<"MATCH_HORIZON_NATIVE_EPISODES passed pairs=2 independent_actions=24576 exact_disabled=1 serial_parallel_exact=1 started_protection=1 one_retarget=1 checked_cycles="<<guarded_cycles<<" rejected_cycles="<<guarded_rejections<<"\n";
  // Dedicated closed-loop shadow neutrality with native+short+matching together.
  setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","1",1);
  for(const char* bands:{"0","1"}){auto baseline=episode(bands,4,0),shadow=episode(bands,4,10);
@@ -4204,6 +4234,48 @@ void chain_flow_pricing_regression() {
 }
 
 
+void match_horizon_guard_regression() {
+ auto require=[](bool value,const char* message){if(!value)throw std::runtime_error(message);};
+ const std::vector<int> costs{10,0,1,10};
+ const auto permutation=minimum_pickup_permutation(costs,2,100000,[]{});
+ auto run=[&](const std::vector<int>& tiers){
+  auto cycles=pickup_permutation_cycles(costs,permutation,1,[]{});
+  auto stats=guard_pickup_cycle_tiers(cycles,permutation,[&](int r,int c){return tiers.at(r*2+c);},[]{});
+  return std::make_pair(cycles,stats);
+ };
+ const auto keep=run({0,1,0,2}),veto=run({0,1,1,2});
+ require(keep.first.size()==1&&keep.first[0].accepted&&keep.second.cycles==1&&keep.second.rows==2&&keep.second.rejected==0,
+  "matching horizon compared a new task with the row's old task instead of its old holder");
+ require(!veto.first[0].accepted&&veto.second.rejected==1&&veto.second.worse_rows==1&&
+  veto.first[0].before==20&&veto.first[0].after==1,"matching horizon failed whole-cycle veto or changed cost");
+ AssignmentPermutation two;two.column={1,0,3,2};
+ std::vector<PickupPermutationCycle> cycles{{{0,1},20,1,true},{{2,3},20,1,true}};
+ const auto stats=guard_pickup_cycle_tiers(cycles,two,[](int row,int col){return int(row==1&&col==0);},[]{});
+ require(!cycles[0].accepted&&cycles[1].accepted&&stats.cycles==2&&stats.rows==4&&stats.rejected==1,
+  "matching horizon veto affected an independent valid cycle");
+ cycles={{{0,1},20,19,false}};
+ const auto skipped=guard_pickup_cycle_tiers(cycles,permutation,[](int,int)->int{throw std::runtime_error("unaccepted cycle quoted");},[]{});
+ require(skipped.cycles==0&&skipped.rows==0&&!cycles[0].accepted,"matching horizon quoted a threshold-rejected cycle");
+ bool threw=false;cycles={{{0,1},20,1,true}};
+ try{guard_pickup_cycle_tiers(cycles,permutation,[](int,int){return 0;},[]{throw Timeout("match_horizon_fixture");});}
+ catch(const Timeout&){threw=true;}
+ require(threw&&cycles[0].accepted,"matching horizon swallowed deadline or partially changed the first cycle");
+ threw=false;try{run({0,3,0,2});}catch(const std::invalid_argument&){threw=true;}
+ require(threw,"matching horizon accepted invalid tiers");
+ auto rejects=[&](auto f){bool failed=false;try{f();}catch(const std::invalid_argument&){failed=true;}require(failed,"matching horizon activation guard failed");};
+ const char* key="CGAR_TRICK_MATCH_HORIZON";
+ setenv(key,"0",1);rejects([&]{tricks::options("");});
+ setenv(key,"1",1);rejects([&]{tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_KNOWN_HORIZON","128",1);rejects([&]{tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
+ for(const char* value:{"","-1","2","true"}){setenv(key,value,1);rejects([&]{tricks::options("WAREHOUSE");});}
+ setenv(key,"1",1);require(tricks::options("WAREHOUSE").match_horizon,"matching horizon did not activate");
+ setenv(key,"0",1);require(!tricks::options("WAREHOUSE").match_horizon,"matching horizon zero did not preserve default");
+ unsetenv(key);require(!tricks::options("WAREHOUSE").match_horizon,"matching horizon missing did not preserve default");
+ unsetenv("CGAR_TRICK_KNOWN_HORIZON");unsetenv("CGAR_TRICK_UNOPENED_MATCH");
+ std::cout<<"MATCH_HORIZON_GUARD passed task_column_reference=1 whole_cycle_veto=1 independent_cycle=1 threshold_rejected_skipped=1 deadline=1 invalid_tiers=1 activation_guards=7\n";
+}
+
 void fresh_pickup_audit_regression() {
  auto require=[](bool ok,const char* text){if(!ok)throw std::runtime_error(text);};
  const int inf=1000000;
@@ -4285,4 +4357,4 @@ void fresh_pickup_audit_regression() {
  std::cout<<"FRESH_PICKUP_AUDIT passed actual_forward_field_cycle=1 task_column_tier_guard=1 three_way=1 identity=1 missing_field=1 started_protected=1 task_disjoint=1 deadline=1 real_work_exact=1 config_guards=7\n";
 }
 
-int main(){try{fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

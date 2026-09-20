@@ -733,6 +733,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     short_task_trick_ = trick_options.short_tasks;
     known_horizon_ = trick_options.known_horizon;
     horizon_margin_ = trick_options.horizon_margin;
+    match_horizon_ = trick_options.match_horizon;
     horizon_margins_.configure_percentile(trick_options.horizon_margin_percentile);
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
@@ -998,6 +999,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     // is a lower bound on physical travel. No native lane cost enters this bound.
     if (known_horizon_ && (cert_.core != cert_.free || refine_chain_costs_ || chain_flow_pricing_ || pickup_full_cost_key_))
         throw std::invalid_argument("known horizon requires a full core, original spatial chain estimates and ordinary shortlist ordering");
+    if (match_horizon_ && (!hrrn_ || short_task_trick_))
+        throw std::invalid_argument("matching horizon guard requires ordinary HRRN and short preference off");
+    if (match_horizon_)
+        std::printf("[CGAR_TRICK_MATCH_HORIZON] enabled=1 policy=reject_worse_task_tier cycle=whole fields=resident_spatial fallback=manhattan fair=unchanged budget=one\n");
     if (horizon_margin_ && reassign_pool_)
         throw std::invalid_argument("horizon margin does not support pool exchanges");
     if (horizon_margin_)
@@ -2025,6 +2030,10 @@ void Cgar::log_summary() {
             env_->curr_timestep, known_horizon_, stats_.horizon_pairs, stats_.horizon_impossible_pairs,
             stats_.horizon_rank_changes, stats_.horizon_first_rank_change, stats_.horizon_assignments,
             stats_.horizon_impossible_assignments);
+    if (match_horizon_)
+        std::printf("[cgar-match-horizon] t=%d cycles=%lld rows=%lld rejected=%lld worse_rows=%lld\n",
+            env_->curr_timestep, stats_.match_horizon_cycles, stats_.match_horizon_rows,
+            stats_.match_horizon_rejected, stats_.match_horizon_worse_rows);
     if (horizon_margin_) {
         const auto model = horizon_margins_.snapshot();
         std::printf("[cgar-horizon-margin] t=%d risky_pairs=%lld risky_assignments=%lld rank_changes=%lld first_rank_change=%lld tracked=%zu invalidated=%lld excluded_completions=%lld bound_violations=%lld n0=%lld n1=%lld n2=%lld n3=%lld n4=%lld sum0=%lld sum1=%lld sum2=%lld sum3=%lld sum4=%lld\n",
@@ -2485,6 +2494,13 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
     };
     std::vector<Planned> planned;
 
+    const bool guard_horizon = match_horizon_ && known_horizon_ && now < known_horizon_;
+    const auto guard_model = guard_horizon ? horizon_margins_.snapshot() : HorizonMargins::Snapshot{};
+    auto spatial_bound = [&](int from, int goal) {
+        const auto* table = oracle_.peek(goal);  // no construction or LRU mutation
+        const int value = table ? oracle_.value(*table, from) : kInf;
+        return value < kInf ? value : oracle_.manhattan(from, goal);
+    };
     for (int group_number = 0; group_number < match_group_limit_; ++group_number) {
         check_deadline(deadline_, "unopened_match_group_start");
         int anchor = -1;
@@ -2560,6 +2576,30 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
             [&] { check_deadline(deadline_, "unopened_match_hungarian"); });
         auto cycles = pickup_permutation_cycles(costs, permutation, flow_cost_scale_,
             [&] { check_deadline(deadline_, "unopened_match_cycles"); }, native_trick_metric_ ? 20 : 16);
+        if (guard_horizon) {
+            // A held task's admission-only chain cache may already be pruned.
+            // Quote its current physical chain once, sharing it across both
+            // holder comparisons. Do not alter the scheduler's cached estimates.
+            std::vector<long long> chain(n, -1);
+            auto tier = [&](int row, int column) {
+                const auto& task = env_->task_pool.at(proposed[group[column]]);
+                if (chain[column] < 0) {
+                    chain[column] = 0;
+                    for (size_t k = 1; k < task.locations.size(); ++k) {
+                        check_deadline(deadline_, "unopened_match_horizon_chain");
+                        chain[column] += std::max(1, spatial_bound(task.locations[k-1], task.locations[k]));
+                    }
+                }
+                const long long bound = std::max(1, spatial_bound(env_->curr_states[group[row]].location,
+                    task.locations.front())) + chain[column];
+                const long long left = static_cast<long long>(known_horizon_) - now;
+                return horizon_margin_ ? guard_model.tier(bound, left) : (bound > left ? 2 : 0);
+            };
+            const auto filtered = guard_pickup_cycle_tiers(cycles, permutation, tier,
+                [&] { check_deadline(deadline_, "unopened_match_horizon_cycle"); });
+            observed.match_horizon_cycles += filtered.cycles; observed.match_horizon_rows += filtered.rows;
+            observed.match_horizon_rejected += filtered.rejected; observed.match_horizon_worse_rows += filtered.worse_rows;
+        }
         observed.match_cycles += cycles.size();
         for (const auto& cycle : cycles) observed.match_accepted_cycles += cycle.accepted;
         planned.push_back({std::move(group), permutation, std::move(cycles)});

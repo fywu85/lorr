@@ -105,6 +105,35 @@ std::vector<PickupPermutationCycle> pickup_permutation_cycles(const std::vector<
     check(); return result;
 }
 
+// Optional complete-cycle veto. Column j is the TASK currently held by robot j;
+// its new holder i must be compared with holder j, not with i's previous task.
+// Only already-accepted cycles are inspected. Every rejected cycle stays at its
+// original identity assignment, so independently accepted cycles remain valid.
+struct PickupTierGuardStats {
+    long long cycles = 0, rows = 0, rejected = 0, worse_rows = 0;
+};
+
+template<class Tier, class Check>
+PickupTierGuardStats guard_pickup_cycle_tiers(std::vector<PickupPermutationCycle>& cycles,
+        const AssignmentPermutation& permutation, Tier tier, Check check) {
+    PickupTierGuardStats result;
+    for (auto& cycle : cycles) if (cycle.accepted) {
+        check(); ++result.cycles;
+        bool worse = false;
+        for (int row : cycle.rows) {
+            check();
+            const int column = permutation.column.at(row);
+            const int before = tier(column, column), after = tier(row, column);
+            if (before < 0 || before > 2 || after < 0 || after > 2)
+                throw std::invalid_argument("invalid pickup cycle feasibility tier");
+            ++result.rows;
+            if (after > before) { worse = true; ++result.worse_rows; }
+        }
+        if (worse) { cycle.accepted = false; ++result.rejected; }
+    }
+    check(); return result;
+}
+
 // Read-only diagnostic: compare the same selected task set, optionally forbidding
 // a new holder from worsening that task's original completion-feasibility tier.
 // The task is the column: its reference is the column's diagonal, not the row's.

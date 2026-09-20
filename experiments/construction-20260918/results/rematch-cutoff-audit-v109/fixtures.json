@@ -1,0 +1,674 @@
+{
+  "worse": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 12,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 3,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 3,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "rescue": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": -12,
+        "physical_distance_shorter": 2,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 0,
+        "physical_feasible_to_impossible": 0,
+        "physical_impossible_to_feasible": 2,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 0,
+        "diagnostic_p90_tier_better": 2,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 3,
+        "old_pickup": 7,
+        "new_pickup": 1,
+        "chain_service_bound": 1,
+        "old_bound": 8,
+        "new_bound": 2,
+        "old_diagnostic_tier": 2,
+        "new_diagnostic_tier": 0,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 3,
+        "old_pickup": 7,
+        "new_pickup": 1,
+        "chain_service_bound": 1,
+        "old_bound": 8,
+        "new_bound": 2,
+        "old_diagnostic_tier": 2,
+        "new_diagnostic_tier": 0,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "current_old_holder": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 10,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 1,
+        "new_cell": 8,
+        "remaining": 3,
+        "old_pickup": 1,
+        "new_pickup": 6,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 7,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 3,
+        "decision_tick": 2,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 1,
+        "remaining": 3,
+        "old_pickup": 1,
+        "new_pickup": 6,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 7,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "repeated_stops_inclusive": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 12,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "observed": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 12,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 1,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 1,
+        "new_bucket_count": 1,
+        "old_margin": 2,
+        "new_margin": 2,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 1,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 1,
+        "new_bucket_count": 1,
+        "old_margin": 2,
+        "new_margin": 2,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 1,
+    "calibration_samples": [
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "same_tick_unobserved": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 2,
+        "completed": 0,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 12,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 0,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  },
+  "retargeted_excluded": {
+    "cohorts": {
+      "1": {
+        "observed_retargets": 3,
+        "completed": 1,
+        "picked_unfinished": 0,
+        "unpicked": 2,
+        "physical_pickup_distance_change_sum": 12,
+        "physical_distance_shorter": 0,
+        "physical_distance_equal": 1,
+        "physical_distance_longer": 2,
+        "physical_feasible_to_impossible": 2,
+        "physical_impossible_to_feasible": 0,
+        "physical_feasible_to_impossible_completed": 0,
+        "physical_impossible_to_feasible_completed": 0,
+        "diagnostic_p90_tier_worse": 2,
+        "diagnostic_p90_tier_better": 0,
+        "diagnostic_p90_tier_worse_completed": 0,
+        "diagnostic_p90_tier_better_completed": 0,
+        "diagnostic_p90_transitions": [
+          [
+            1,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "examples": [
+      {
+        "task": 0,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 0,
+        "new_robot": 1,
+        "old_cell": 0,
+        "new_cell": 8,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      },
+      {
+        "task": 1,
+        "step": 4,
+        "decision_tick": 3,
+        "old_robot": 1,
+        "new_robot": 0,
+        "old_cell": 8,
+        "new_cell": 0,
+        "remaining": 2,
+        "old_pickup": 1,
+        "new_pickup": 7,
+        "chain_service_bound": 1,
+        "old_bound": 2,
+        "new_bound": 8,
+        "old_diagnostic_tier": 0,
+        "new_diagnostic_tier": 2,
+        "old_bucket_count": 0,
+        "new_bucket_count": 0,
+        "old_margin": 0,
+        "new_margin": 0,
+        "pickup_step": -1,
+        "finish_step": -1
+      }
+    ],
+    "calibration_completions_observed": 0,
+    "calibration_samples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "limits": "Only visible accepted holder changes, at most one per task. Fresh task permutations within a single scheduling entry are not observable. Physical distances use exact unweighted BFS and compare both holders at the same decision. The prospective p90 uses exact physical first-admission bounds and completed single-holder tasks before the decision, so it is not the production cached/mixed estimator. No counterfactual movement, completion gain, complete matching-cycle account or throughput upper bound."
+  }
+}

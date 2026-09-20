@@ -318,6 +318,8 @@ struct Stats {
     long long match_cycles = 0, match_accepted_cycles = 0, match_moved = 0, match_saving = 0;
     long long match_anchors = 0, match_full_groups = 0;
     long long match_pickup_selected = 0;
+    long long match_horizon_cycles = 0, match_horizon_rows = 0;
+    long long match_horizon_rejected = 0, match_horizon_worse_rows = 0;
     long long match_primary_protected = 0, match_recovery_protected = 0, match_fair_protected = 0, match_budget_protected = 0;
 };
 
@@ -593,6 +595,7 @@ private:
     int known_horizon_ = 0;
     bool known_horizon_passed_ = false;
     bool horizon_margin_ = false;
+    bool match_horizon_ = false;
     HorizonMargins horizon_margins_;
     void record_horizon_proposal(const std::vector<int>& proposed);
     bool repair_fallback_ = true;
