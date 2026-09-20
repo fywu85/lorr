@@ -547,7 +547,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     std::fill(reserve.begin(),reserve.end(),-1);
     if(kinematic && cycle_mode>0 && cycle_mode<3)propose_cycles(false);
     int expansions=0;
-    std::function<bool(int)> pibt=[&](int a)->bool {
+    auto pibt=[&](auto&& self,int a)->bool {
         ++expansions;
         for(int k=0;k<candidate_count[a];++k) {
             int v=candidates[a][k].v;
@@ -557,7 +557,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             int b=owner[v];
             if(b>=0 && b!=a && chosen[b]==p[a])continue;
             chosen[a]=v;reserve[v]=a;
-            if(b>=0 && b!=a && chosen[b]<0 && !pibt(b)) {
+            if(b>=0 && b!=a && chosen[b]<0 && !self(self,b)) {
                 // A failed child commits to staying, overriding our tentative
                 // claim on its cell. Keep that blocker; do not explore it again.
                 if(reserve[v]==a)reserve[v]=-1;
@@ -571,7 +571,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         chosen[a]=p[a];reserve[p[a]]=a;
         return false;
     };
-    for(int a:order)if(chosen[a]<0)pibt(a);
+    for(int a:order)if(chosen[a]<0)pibt(pibt,a);
     expansion_count+=expansions;
     return chosen;
     };

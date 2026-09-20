@@ -26,19 +26,22 @@ direct baselines for the archived competition instance.
 
 Best verified combined result: **3,299 tasks / 2,000 steps on four physical
 cores**. Three NMS four-worker runs give **2,902 / 2,903 / 2,914**: our lead is
-**13.2–13.7%** (13.2% against the strongest repeat). All use EPYC9354 CPUs.
-Mean latency378 ms, maximum486 ms; zero errors or timeouts. The exact trajectory
-also repeats on32 workers, where NMS scores3,172 and our lead is4.0%.
+**13.2–13.7%** (13.2% against the strongest repeat). All use EPYC 9354 CPUs.
+The latest implementation repeats the exact trajectory at mean latency **335 ms**,
+maximum **438 ms**, with zero errors or timeouts. That trajectory also repeats
+on 32 workers, where NMS scores 3,172 and our lead is 4.0%.
 
-The configuration uses planner seed0, generated field seed15, K1024, noise200,
-dispersion0.8, local5/equal, wait0.5, exact matching with oriented guidance,
-keep bonus0.5 and known-horizon triage scale1.5 (`--trick RANDOM-05`). This is
-one planner seed, replicated across worker counts; it is not a multi-seed mean.
+The configuration uses planner seed 0, generated field seed 15, K=1024,
+noise=200, dispersion=0.8, five local trials with equal-score acceptance,
+wait cost=0.5, exact matching with oriented guidance, keep bonus=0.5 and
+known-horizon triage scale=1.5 (`--trick RANDOM-05`). Five planner seeds give
+3,299 / 3,185 / 3,284 / 3,214 / 3,061: mean **3,209**, or **10.1%** above the
+strongest NMS repeat. The 13.2% margin describes the best seed, not the mean.
 
-The earlier four-core best3,127 used blocked-cycle preparation. Its six-seed
-mean was3,021 versus3,034 without preparation. Best without known-horizon triage
-remains2,914 on four cores. The colleague's roughly27–28% matched advantage
-remains the campaign objective.
+The earlier four-core best of 3,127 used blocked-cycle preparation. Its six-seed
+mean was 3,021 versus 3,034 without preparation. Best without known-horizon
+triage remains 2,914 on four cores. The colleague's roughly 27–28% matched
+advantage remains the campaign objective.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
@@ -78,6 +81,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T09:21:46.636885+00:00 | [134faa8](https://github.com/fywu85/lorr/commit/134faa8) | K1024, 32 workers, field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3231 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +1.9% | [Full evidence](random05/results/frontier-compute-full-v15/summary.json) |
 | 2026-09-20T09:40:30.891971+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | Exact/oriented matching, keep0.5; K1024/32 workers; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +4.0% | [Full evidence](random05/results/compound-search-full-v16/summary.json) |
 | 2026-09-20T10:03:44.348412+00:00 | [79d0e79](https://github.com/fywu85/lorr/commit/79d0e79) | Shared candidate sorting; exact/oriented keep0.5; K1024; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/shared-sort-full-v18/summary.json) |
+| 2026-09-20T10:19:47.676357+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | Same score; stable insertion sorting lowers mean latency to335ms; K1024, field15/seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/candidate-sort-full-v20/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -291,3 +295,16 @@ The published NMS score of 3,050 used different instances and hardware.
   generations that mutate the current best priorities. One generation preserves
   the original algorithm. It remains disabled until measured; dense regression
   checks worker-count determinism for multiple generations.
+
+- Stable insertion sorting repeats the exact 3,299 trajectory at mean 334.5 ms,
+  maximum 437.8 ms. The preceding shared-sort implementation took 377.8 ms
+  (11.5% reduction). Planner seeds 0–4 score 3,299/3,185/3,284/3,214/3,061,
+  mean 3,208.6. K3072 exceeds the strict deadline at step 0 (1,084.8 ms) and
+  is excluded from valid throughput results; K2048 remains in progress.
+- Alternative fields at K1024: seeds17/22/31/47 give3,187/3,180/3,052/3,084.
+  Keep field15. Two generations at total K128 give3,182 versus3,073 control
+  (+3.5%); four/eight/sixteen generations give3,076/3,074/3,065. Larger-K
+  generation tests are still running, so there is no promotion yet.
+- Added one-job-per-case submission (`tools/split_grid.py`) for mixed-duration
+  batches. Each solver retains its full physical-core allocation; completed
+  cases release their resources immediately instead of waiting for the batch.

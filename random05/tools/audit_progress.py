@@ -22,6 +22,14 @@ def audit():
         completion = read(path)
         if completion.get('exit') == 0 and 'binary_sha256' in completion:
             builds[completion['binary_sha256']] = read(path.parent / 'spec.json')
+    references = {}
+    for name in ('nms4-full-v1', 'nms-original-full-v1', 'nms4-repeats-full-v3'):
+        directory = ROOT / 'random05/results' / name
+        specification = read(directory / 'spec.json')
+        for reference in read(directory / 'summary.json'):
+            assert reference['valid'] and reference['result']['makespan'] == 2000
+            reference_case = next(c for c in specification['cases'] if c['name'] == reference['name'])
+            references[reference['result']['numTaskFinished']] = (reference_case, read(directory / 'allocation.json'), name)
     report = []
     text = (ROOT / 'RANDOM05_PROGRESS.md').read_text()
     table = text.split('| Completed UTC', 1)[1].split('## Reference evidence supplied', 1)[0]
@@ -29,7 +37,7 @@ def audit():
         if not row.startswith('| 20'):
             continue
         fields = [x.strip() for x in row.split('|')[1:-1]]
-        utc, commit_link, _, tasks, compute, _, _, evidence_link = fields
+        utc, commit_link, _, tasks, compute, nms_reference, gain, evidence_link = fields
         commit = re.search(r'/commit/([0-9a-f]+)', commit_link).group(1)
         evidence = re.search(r'\]\(([^)]+)\)', evidence_link).group(1)
         summaries = read(ROOT / evidence)
@@ -48,6 +56,15 @@ def audit():
         workers = int(case['env']['R05_THREADS'])
         expected = '{} / {} / {}'.format(workers, case['cores'], cpu.split(' 32-Core')[0].replace('AMD ', ''))
         assert compute == expected, (utc, 'compute metadata mismatch')
+        nms_tasks = int(nms_reference.split()[0].replace(',', ''))
+        reference_case, reference_allocation, reference_name = references[nms_tasks]
+        for path, value in reference_case['input_hashes'].items():
+            assert case['input_hashes'][path] == value, (utc, 'NMS input mismatch', path)
+        expected_gain = (int(tasks) / nms_tasks - 1) * 100
+        assert abs(float(gain.rstrip('%')) - expected_gain) <= 0.051, (utc, 'incorrect gain')
+        matched = (cpu == reference_allocation['resources']['cpu_model']
+                   and case['cores'] == reference_case['cores']
+                   and case.get('smt', 1) == reference_case.get('smt', 1))
         digest = result['binary_sha256']
         assert digest == case['binary_sha256'], (utc, 'binary mismatch')
         build = builds[digest]
@@ -56,7 +73,9 @@ def audit():
             assert hashlib.sha256(content).hexdigest() == build['source_hashes'][source], (utc, commit, source)
         report.append(dict(utc=utc, source_commit=commit, tasks=int(tasks),
                            evidence=evidence, binary_sha256=digest, workers=workers,
-                           physical_cores=case['cores'], cpu_model=cpu))
+                           physical_cores=case['cores'], cpu_model=cpu, nms_tasks=nms_tasks,
+                           nms_evidence='random05/results/' + reference_name + '/summary.json',
+                           matched_cpu_model_and_allocation=matched))
     assert report, 'no frontier rows found'
     return dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 checks=report, all_valid=True)
