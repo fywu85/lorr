@@ -26,7 +26,7 @@ struct PolicyScratch {
     std::vector<const Chain*> active_chain;
     std::vector<const float*> cost_table;
     std::vector<std::array<MoveCandidate,5>> candidates;
-    std::vector<uint64_t> priority_keys;
+    std::vector<uint64_t> priority_keys, radix_buffer;
 };
 }
 Config Config::environment(const SharedEnvironment& env) {
@@ -44,6 +44,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);c.profile=integer("R05_PROFILE",0);
     c.goal_cache=integer("R05_GOAL_CACHE",0);
     c.policy_profile=integer("R05_POLICY_PROFILE",0);
+    c.radix_order=integer("R05_RADIX_ORDER",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -131,11 +132,12 @@ Config Config::environment(const SharedEnvironment& env) {
     return c;
 }
 
-static void order_priorities(const std::vector<float>& priorities,bool packed,
-                             std::vector<int>& order,std::vector<uint64_t>& keys) {
+static void order_priorities(const std::vector<float>& priorities,bool packed,bool radix,
+                             std::vector<int>& order,std::vector<uint64_t>& keys,
+                             std::vector<uint64_t>& buffer) {
     order.resize(priorities.size());
     std::iota(order.begin(),order.end(),0);
-    if(!packed || !std::all_of(priorities.begin(),priorities.end(),[](float p){return std::isfinite(p);})) {
+    if((!packed && !radix) || !std::all_of(priorities.begin(),priorities.end(),[](float p){return std::isfinite(p);})) {
         std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
         return;
     }
@@ -151,12 +153,29 @@ static void order_priorities(const std::vector<float>& priorities,bool packed,
         uint32_t ascending=(bits&0x80000000u)?~bits:(bits^0x80000000u);
         keys[a]=(uint64_t(~ascending)<<32)|uint32_t(a);
     }
-    std::sort(keys.begin(),keys.end());
+    if(radix) {
+        // Input is already in ascending agent-ID order. Four stable byte
+        // passes on the high (float-priority) word therefore produce exactly
+        // the packed 64-bit order, including equal priorities and signed zero.
+        std::array<std::array<uint32_t,256>,4> counts{};
+        for(uint64_t key:keys)for(int pass=0;pass<4;++pass)
+            ++counts[pass][(key>>(32+pass*8))&255];
+        buffer.resize(keys.size());
+        for(int pass=0;pass<4;++pass) {
+            uint32_t sum=0;int occupied=0;
+            for(auto& count:counts[pass]) {
+                occupied+=count>0;uint32_t next=sum+count;count=sum;sum=next;
+            }
+            if(occupied<=1)continue;
+            for(uint64_t key:keys)buffer[counts[pass][(key>>(32+pass*8))&255]++]=key;
+            keys.swap(buffer);
+        }
+    } else std::sort(keys.begin(),keys.end());
     for(size_t k=0;k<keys.size();++k)order[k]=int(uint32_t(keys[k]));
 }
-std::vector<int> priority_order(const std::vector<float>& priorities,bool packed) {
-    std::vector<int> order;std::vector<uint64_t> keys;
-    order_priorities(priorities,packed,order,keys);
+std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix) {
+    std::vector<int> order;std::vector<uint64_t> keys,buffer;
+    order_priorities(priorities,packed,radix,order,keys,buffer);
     return order;
 }
 
@@ -828,7 +847,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     }
     mark_policy(1);
     auto& order=scratch.order;
-    order_priorities(priorities,cfg.packed_order,order,scratch.priority_keys);
+    order_priorities(priorities,cfg.packed_order,cfg.radix_order,order,scratch.priority_keys,scratch.radix_buffer);
     mark_policy(2);
     auto& prepared=scratch.prepared;prepared.clear();
     auto choose=[&](bool kinematic) {

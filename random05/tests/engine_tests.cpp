@@ -283,7 +283,7 @@ void operation_swap_rejection() {
 }
 void exact_hot_paths() {
     std::mt19937 random(9354);
-    for(int n:{0,1,2,24,800})for(int trial=0;trial<30;++trial) {
+    for(int n:{0,1,2,24,800,8193})for(int trial=0;trial<30;++trial) {
         std::vector<float> priorities(n);
         for(float& p:priorities) {
             p=std::uniform_real_distribution<float>(-200,200)(random);
@@ -293,12 +293,19 @@ void exact_hot_paths() {
         if(n>=2){priorities[0]=-0.0f;priorities[1]=0.0f;}
         require(priority_order(priorities,false)==priority_order(priorities,true),
                 "packed priorities changed descending value/agent-ID order");
+        require(priority_order(priorities,false)==priority_order(priorities,false,true),
+                "radix priorities changed descending value/agent-ID order");
     }
     std::vector<float> limits={0,-0.0f,std::numeric_limits<float>::denorm_min(),
         -std::numeric_limits<float>::denorm_min(),1e20f,-1e20f,
         std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity()};
     require(priority_order(limits,false)==priority_order(limits,true),
             "packed priorities changed nonfinite fallback ordering");
+    require(priority_order(limits,false)==priority_order(limits,true,true),
+            "radix priorities changed nonfinite fallback ordering");
+    limits.resize(limits.size()-2); // subnormal/extreme finite values take the radix path
+    require(priority_order(limits,false)==priority_order(limits,true,true),
+            "radix priorities changed extreme finite ordering");
     auto e=environment(7,9,0);
     for(int p:{0,4,8,12,21,32,37,46,60})e.map[p]=1;
     Config cfg;Graph graph(e,cfg);
@@ -323,6 +330,8 @@ void exact_hot_paths() {
         cfg.packed_order=flags&1;cfg.fast_dispersion=flags&2;cfg.scratch_reuse=flags&4;
         require(control==simulate(cfg,12),"hot-path optimization changed dense task-turnover decisions");
     }
+    cfg.radix_order=true;
+    require(control==simulate(cfg,12),"radix sorting changed dense task-turnover decisions");
     cfg.threads=2;
     require(control==simulate(cfg,12),"hot-path optimization changed with worker count");
     for(int mode:{0,1,2})for(int cycles:{0,3}) {

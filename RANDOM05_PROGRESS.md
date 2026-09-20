@@ -900,3 +900,21 @@ input/binary hashes and allocation are linked in the audits.
   semantic/timing controls are running. Build-v50 adds sampled internal policy
   timing so the next CPU change targets a measured cost; regressions pass.
   [Cache profile](random05/results/goal-cache-profile-split-prefix-v49/timings-equivalence.json).
+
+- K2048/B8 with four generations across planner seeds 0–4 gives
+  3,562/3,499/3,514/3,520/3,562, mean **3,531.4**, versus 3,483.2 with one
+  generation (+1.4%; four of five pairs improve). All are full 32-worker runs
+  on the development input. The two 3,562 trajectories and K3584/generation2
+  (3,552 tasks) are now undergoing strict four-core confirmation.
+  [Evidence](random05/results/generation-scaling-split-full-v47/summary.json).
+
+- The shared-goal cache controls both complete 3,520 tasks on 32 workers;
+  every action, schedule and event matches the preceding implementation.
+  Four-core validation remains in progress. Sampled policy timing locates
+  approximately 24% of elapsed policy work in candidate ranking and 17% in
+  priority sorting; these samples guide optimization, not causal CPU estimates.
+  Build-v51 adds optional stable radix ordering with exact signed-zero/tie
+  preservation and finite-value fallback. Ordering and dense task-turnover
+  regressions pass; controlled timing profiles are next.
+  [Full cache equivalence](random05/results/goal-cache-split-full-v49/equivalence.json),
+  [policy profile](random05/results/policy-profile-split-prefix-v50/timings.json).
