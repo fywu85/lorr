@@ -20,12 +20,15 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **2,658 tasks / 2,000 steps**, planner seed 0,
+Best verified combined result: **2,677 tasks / 2,000 steps**, planner seed 0,
 public guidance, dispersion 0.8, K=64, five local refinements, equal-score
-acceptance, and explicitly enabled known-horizon triage. Mean entry latency
-58.4 ms, max 157.4 ms on four physical cores. Best without horizon triage:
+acceptance, larger perimeter cycles up to 4x4, and explicitly enabled known-horizon
+triage. Mean entry latency 125 ms, max 279 ms on four physical cores. Best without horizon triage:
 **2,594 tasks**. All recorded frontier runs have zero planner errors, scheduler
-errors and timeouts. Both NMS resource configurations are being evaluated.
+errors and timeouts. NMS with 32 logical CPUs completed **3,172 tasks**, zero errors/timeouts,
+0.951 s maximum entry time, and 1.61 GiB peak RAM. Our best is currently 15.6%
+below that reference while using four physical cores. The four-worker NMS
+comparison is still running. [NMS evidence](random05/results/nms-original-full-v1/summary.json).
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
@@ -38,6 +41,8 @@ errors and timeouts. Both NMS resource configurations are being evaluated.
 | 2026-09-20T08:05:44.745252+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched1; seed 0; `--trick RANDOM-05` | 2562 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
 | 2026-09-20T08:05:50.770563+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b7604) | file-k256-disp0.8-sched0; seed 0; `--trick RANDOM-05` | 2594 | Pending | Pending | [Full evidence](random05/results/scale-full-v5/summary.json) |
 | 2026-09-20T08:10:24.936747+00:00 | [8993a43](https://github.com/fywu85/lorr/commit/8993a43) | K=64; local5; equal; dispersion 0.8; horizon 2000; seed 0; `--trick RANDOM-05` | 2658 | Pending | Pending | [Full evidence](random05/results/refinements-full-v6/summary.json) |
+| 2026-09-20T08:18:53.857208+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | predict-match; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2669 | Four-worker pending | Pending | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
+| 2026-09-20T08:19:08.147723+00:00 | [ca80563](https://github.com/fywu85/lorr/commit/ca80563) | loop4; K=64; local5/equal/horizon2000; seed 0; `--trick RANDOM-05` | 2677 | Four-worker pending | Pending | [Full evidence](random05/results/motion-guidance-full-v8/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -81,3 +86,9 @@ The published NMS score of 3,050 used different instances and hardware.
   acceptance 2,574; horizon triage alone 2,581; combined 2,658. Equal-score
   acceptance alone gives 2,485. Triage is recomputed after every task change
   and never illegally reassigns an opened task.
+
+- v8: control repeats exactly at 2,658. Larger cycles: extent3=2,634,
+  extent4=2,677. Predicted-position matching=2,669. Push price2=2,452.
+  Turn-aware generated fields=2,287–2,461, below the public-field control.
+  Keep the public field while investigating cost-cache efficiency and priority
+  age consistency in simulated futures.
