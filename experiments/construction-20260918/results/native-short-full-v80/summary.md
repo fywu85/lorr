@@ -22,3 +22,8 @@ Keep short preference OFF. V85 saved motion audit verifies400Mrobotsteps and all
 input/field/phase fixtures. The separate budget shadow remains read-only. The next
 policy test is new-admission configured-horizon preference under ordinary fairness.
 No strict1s certification is claimed.
+
+The reproduced best-profile controls on source85faca5 take444.713/441.612ms mean,
+987.472/971.894ms maximum,1.504/1.511averageCPUcores of4reserved and11.879/11.918GB
+RSS. These observed times are below1s in this shared5s run, but this is not formal
+exclusive-host/one-second certification or a controlled runtime-speedup claim.

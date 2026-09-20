@@ -57,3 +57,11 @@ remaining time. The still-feasible-but-unfinished counts are669/737. The sample
 is large enough to justify the declared full OFF/ON matrix; it is not a predicted
 gain. Exactly one completed late task per seed was rescued from an initially
 impossible pair by retargeting; all completed FINAL-holder bounds pass.
+
+V87 review hardening: reject cost-key1 with nonzero known horizon, because its
+retention baseline differs from ordinary HRRN and would invalidate the first-
+change diagnostic. The full V86 matrix already fixes cost-key0; its source and
+results remain unchanged. New independent shelf fixture has Manhattan4 but BFS6
+plus one repeated service: cached versus absent spatial tables change the tier.
+A forced empty-shortlist fixture exercises sampled fallback at exact feasibility.
+Both and the full suite pass; no additional policy factor is introduced.

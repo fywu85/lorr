@@ -1,6 +1,6 @@
 # Continuing Warehouse work
 
-Updated2026-09-20 12:11UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
+Updated2026-09-20 12:20UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
 5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
 complete fixed work, timeout failure. Shared GRID/5s development authorized;
 strict1s certification separate. Preserve other fork's random05 files/jobs/commits.
@@ -38,11 +38,16 @@ Genericreference0196851 mean144392.1667 (all six totalwins,+451):
   exclusions exceptbudget. WholecyclededupALLtaskIDs, no commits. Whollyprotected
   subsetseparatefrommixedcycles. Boundedchronologicalguidancewitnesssample, not
   fullopportunitycount/causalphysicalgain/upperbound. Budget2NOTimplemented.
-- Fable41RUNNING, rawruns/fable-cgar-session/turn41,pid21074,samepersistent
+- Fable41COMPLETE12:12:03UTC,review/assessmentarchived. No liveCLI. Samepersistent
   session1ebb1075-3538-49d1-93d1-a00c94fa256a. Promptfollowup-40.md,payload28946bytes,
   fourchangedsourcesincludingfullhorizonregression. ReviewactualV86code+corrected
   audit; possiblecalibratedmiddle-tier designONLYifminimalhorizonleavesgap.
-  No calibratedpolicyimplemented. Nextturn42afterfinish.
+  No calibratedpolicyimplemented. Nextturn42whennewresultsorharddiagnosiswarrants.
+
+- V87 source158c93bd3256c7dbf6765706d2ebf033b8fc7fb1 guards knownH+costkey1 (wrongbaselineforreversallog),
+  which isNOTusedbyactiveV86matrix. Addsindependentshelfdetour(BFS6vsManhattan4)
+  andforcedemptyshortlistsampledfallbacktests. Fullsuite8899685PASS. Binary1658c993c33a4eef0d0d246cb163d80048d9ada0958e3b43ed2617fa2e82e18e.
+  No extra policyfactor/qualitybenchmark;activeV86sourceunchanged.
 
 ## Newly completed evidence
 
@@ -82,7 +87,7 @@ Genericreference0196851 mean144392.1667 (all six totalwins,+451):
 
 ## Next actions
 
-1. CheckFable41/assessactualsourceclaims. Do notaddfeatureswithout reason whilefull
+1. Fable41reviewassessed;guard/testgapsfixedinV87. Do notaddfeatureswithout reason whilefull
    minimalhorizontrialruns. No source/testeditsduringnewbuilds (nonecurrentlyactive).
 2. VerifyV84shadowfullafterfinish; reportcycle/subsets/cadencewithallqualifications.
 3. VerifyV86full, thenupdateANYnewvalidbestwithsource/hash/seed/flags/time. If>=154795
