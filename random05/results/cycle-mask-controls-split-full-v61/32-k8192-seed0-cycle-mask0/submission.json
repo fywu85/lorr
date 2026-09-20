@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research33*,debian.q@research39*,debian.q@research48*,debian.q@research54*",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:16",
+    "-l",
+    "h_rt=03:00:00,h_vmem=1G,m_topology_inuse=*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_benchmark",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/cycle-mask-controls-split-full-v61/32-k8192-seed0-cycle-mask0/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/cycle-mask-controls-split-full-v61/32-k8192-seed0-cycle-mask0/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900436\n"
+}

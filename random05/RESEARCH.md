@@ -575,3 +575,11 @@ and equal root streams, including explicit first-step budgets and shared-prefix
 on/off. Nonzero-noise/risk cases check worker determinism, task turnover and
 collision certificates. Full diagnostic results must justify screening before
 choosing new throughput experiments; this draft has no throughput claim yet.
+
+v64's exact-screening regression fails because its tiny first-step fixture
+allowed only one finalist per generation: forcing the anchor then removed the
+actual best. Tighten the work contract to require at least two finalists per
+generation, so both anchor and best survive. Add explicit rejection coverage
+and enlarge the matched-root fixture while preserving its smaller first step.
+This is a failed test caught before any throughput experiment, retained in
+build-v64; use a new frozen build for the correction.

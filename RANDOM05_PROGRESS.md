@@ -26,7 +26,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 17:56 UTC.
+Updated: 2026-09-20 18:47 UTC.
 
 **Best single run on the archived input: 3,743 tasks on 32 workers / 16 physical cores**,
 or **+18.0% versus matched NMS32 = 3,172**. Source
@@ -45,7 +45,9 @@ The mean difference is small relative to variation between seeds.
 
 A separate K16384/B16 run scored3,741 on planner seed3 (mean452ms, maximum563ms).
 It tests more continuations per root at the same1,024 root candidates asK8192/B8.
-Its independent planner-seed checks remain underway.
+Its five planner-seed scores are3,705/3,617/3,715/3,741/3,567, mean3,669.0,
+versus3,636.6 forK8192/B8 (+0.89%, three of five positive pairs). These are
+planner seeds on one input; its highest score remains below3,743.
 [Budget comparison](random05/results/persistent-budget-split-full-v55/summary.json).
 
 **Best confirmed four-core run: 3,655 tasks**, or **+25.4% versus the strongest
@@ -76,6 +78,18 @@ Later development records never replace a candidate inside a frozen validation.
 Earlier K4096 implementations exceeded the strict four-core first-step deadline.
 Exact sorting and candidate-ranking caches subsequently made K4096 and K5120
 feasible on four cores; retain the earlier failures as implementation-specific evidence.
+
+**Four-core development candidate under a relaxed deadline: 3,709 tasks.**
+Source[60c5f9b](https://github.com/fywu85/lorr/commit/60c5f9b), plannerseed3,
+first-stepK5120 thenK6144/B8, fourgenerations/E8/P8, futureeliteblend0.5,
+cache512/kinematicmask1. Completed2026-09-20T18:23:08.450520+00:00,
+mean923ms, maximum1,495ms, peak RSS464MB, declared5s deadline. All2,000 steps
+complete without errors. This is a promising throughput candidate, separately
+tracked from the strict1s frontier; no direct gain against1s NMS is claimed.
+The corresponding earlier strict attempt failed at its first step. A new
+implementation is undergoing strict confirmation; neither failure is discarded.
+[Relaxed evidence](random05/results/kinematic-larger-four-relaxed-split-full-v60/first5120-k6144-elites8-persist8-blend0.5-relaxed5s/summary.json),
+[secondary waiting metrics](random05/results/kinematic-larger-four-relaxed-split-full-v60/3709-waiting.json).
 
 **Repeated improvement on the development input:** across planner seeds 0–4,
 four-continuation search averages 3,392.6 tasks and eight-continuation search

@@ -35,6 +35,8 @@ int search_roots(const Config& cfg,int futures) {
     const int64_t group=int64_t(cfg.screen_keep)*cfg.screen_branches+cfg.continuations-cfg.screen_branches;
     if(futures%cfg.generations || (futures/cfg.generations)%group)
         throw std::invalid_argument("each generation's K must divide into complete screening groups");
+    if((futures/cfg.generations)/group<2)
+        throw std::invalid_argument("screening needs at least two finalists per generation for anchor and best");
     return int((futures/group)*cfg.screen_keep);
 }
 struct PolicyScratch {
