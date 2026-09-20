@@ -1,15 +1,14 @@
 # Continuing warehouse work
 
-Updated 2026-09-20 06:18 UTC. USER TARGET CORRECTION supersedes the old goal-tool text
-and historical notes below: reach154,795 tasks repeatably across six full
-5,000-step/10,000-robot warehouse seeds. The active, unbudgeted goal remains unmet. USER RESOURCE CORRECTION: development runs may use shared GRID hosts and a5000ms
-complete-entry timeout; algorithmic work remains fixed and timeout means failure.
-Record CPU/wall time and aim for roughly sub-second exclusive-core performance.
-Strict one-second validation/optimization of the best solver is deferred. Process
-RSS stays below32,000,000,000bytes. Reserve and bind physical cores; use generic
-policies with no map identity/templates, hidden future tasks or fleet caps.
-KittyKnight used38.858GB, so this is not an official equal-resource SoTA comparison.
-The user hopes for progress by midnight but explicitly says to take the time needed.
+Updated 2026-09-20T07:34:36.544598+00:00. The active target is NMS154,795tasks. **The user now accepts at least one valid full5,000-step seed, generic or explicitly --trick WAREHOUSE, as goal achievement.** Six-seed generic reference promotion is a separate engineering standard. Best overall146,659(TRICK,seed0); best generic145,083; confirmed generic six-seed mean143,941.17. Shared GRID hosts and5s development deadlines are authorized; fixed algorithmic work, timeout is failure,32GB RSS, reserved/bound physical cores. Aim for roughly sub-second exclusive-core execution and validate the best solver later at1s.
+
+## Active overnight continuation (supersedes historical job statuses below)
+
+- V61 bounded unopened matching screen is complete: 800steps, seeds0/2; OFF18954/18952, ON18921/18942. All valid, max929.471ms/RSS8.169GB. Only feasibility evidence. Sparse preselected IDs caused tiny spatial groups; do not launch this version as the main full candidate.
+- V62 fixes local coverage: index all eligible resident holders, rotate a bounded anchor list, still at most4groups x32holders and2048BFS nodes/group. New regression catches a useful holder outside the128anchor IDs and checks bijection/work/metadata. Full suite passed job8899357. Source1d78892; binary/provenance runs/cgar-local-match-build-v62-20260920. V62 screen8899358 and analysis8899359 pass: OFF18954/18952, ON18919/18944, max927.438ms/RSS8.074GB, both OFF fingerprints exact.111/112groups full at t400. Full0/2 OFF/ON now queued8899360 with held analysis8899361;16cores,5s/32GB. Raw runs/cgar-local-match-full-v62-20260920. Record full result before any quality claim.
+- V60 chain pricing complete: resident-imputed144237/144023, ratio-only144604/143946 against144510/144107. Paired means−0.1237%/−0.0232%. Keep OFF. V60 four global searches plus regions:143312/144336, mean−0.3357%; retain one global search. All10full cases valid at5s/32GB, controls exact. Compact evidence directories are archived with this update.
+- Persistent Fable session1ebb1075-3538-49d1-93d1-a00c94fa256a is reused. Turn32 is orphaned/incomplete (no live process or final result); preserve its original artifacts and interruption audit. Turn33 is active with current matching code and new evidence; raw runs/fable-cgar-session/turn33, prompt followup-32.md. No source-sharing approval needed: user explicitly authorized continued CLI consultation.
+- Ignore the accidentally pasted WPPL development log as a task change. CGAR remains the framework.
 
 ## Current jobs and latest steering
 

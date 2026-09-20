@@ -6,8 +6,7 @@ map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
 The generic single-run frontier is145,083 under the shared-host5s development policy; the confirmed six-seed reference remains143,941.2.
-The lane-only TRICK reaches146,659/146,566 on full seeds0/2, pending six-seed confirmation. A trick-assisted score must not replace
-the generic frontier or be reported as a generic algorithm improvement.
+The lane-only TRICK reaches146,659/146,566 on full seeds0/2, and is the best overall recorded single run. Per the user's latest instruction, any valid full seed reaching154,795 may achieve the NMS target, including an explicitly flagged trick. It must remain labelled TRICK and must not be reported as a generic algorithm improvement.
 
 For a map-specific implementation or experiment:
 
@@ -22,7 +21,7 @@ For a map-specific implementation or experiment:
 - State its map/layout/data assumptions and origin: for example NMS's warehouse
   lane mask and coordinate bands, or KK's supplied warehouse edge-weight file.
 - Compare full runs against that baseline; report all tested seeds, failures,
-  task-age tradeoffs and resource usage. Keep the existing strict promotion criteria.
+  task-age tradeoffs and resource usage. Use the single-seed criterion for overall goal achievement and best-run logging; retain multiseed confirmation as the separate generic-reference promotion standard.
 
 Generic mechanisms can use obstacle connectivity, heading, revealed tasks and
 observed traffic without depending on a particular map identity or coordinate

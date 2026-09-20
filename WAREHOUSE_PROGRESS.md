@@ -1,12 +1,20 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 05:33 UTC.
+Updated: 2026-09-20 07:34 UTC.
 
-**Best single run: 145,083 tasks**, up573 from144,510 in the new remaining-flow scoring trial. It is a shared-host,5-second development result; observed maximum entry time907.656ms. Six-seed confirmation is pending. **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). The confirmed reference is still the earlier regional-repair policy; the new scoring candidate has only two full paired seeds so far. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
+**Best overall validated single run: 146,659 tasks (TRICK, seed0)**, using NMS-derived static lanes with explicit `--trick WAREHOUSE`. This leaves **8,136 tasks** to the NMS target of154,795 (**5.55% growth** needed). The user now accepts any valid full seed, with or without explicitly flagged tricks, as achieving the target. That criterion is separate from promoting the generic benchmark reference.
+
+**Best generic single run:145,083**, from remaining-flow scoring, source4524843. Its six-seed check is complete: mean144,060.17 versus143,941.17, four wins and two losses; the additional four seeds average only+8.25tasks. Keep this candidate OFF. **Confirmed six-seed generic reference:143,941.17** remains graded-flow pickup plus two regional repair rounds. [Remaining-flow confirmation](experiments/construction-20260918/results/remaining-flow-six-seed-v56-shared.json).
+
+| Best overall record completed (UTC) | Full tasks | Seed / policy | Source and evidence |
+|---|---:|---|---|
+|2026-09-20 03:21:38.087713|**146,659**|0 / **TRICK** static NMS warehouse lanes, `--trick WAREHOUSE`|[abbe36b](https://github.com/fywu85/lorr/commit/abbe36b723bb43de2478c07bcb88621d5238a23a); [full verification](experiments/construction-20260918/results/trick-nms-warehouse-full-v54/verification.json).5,000steps,10,000robots, zero failures, max984.533ms, RSS11.914GB. Reproduced exactly in the [later factorial](experiments/construction-20260918/results/trick-short-tasks-full-v58-r2/factorial-verification.json).|
+
+The earlier increasing-record table below remains the **generic** history. A future valid single-seed best updates the appropriate history immediately, with its source, timestamp and flags; it does not imply repeatability across seeds.
 
 The six totals are **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
 
-The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The current six-seed mean needs **7.54% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The generic target remains unmet; TRICK results do not satisfy it. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
+The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The current six-seed mean needs **7.54% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The NMS target remains unmet. A valid full generic or explicitly enabled TRICK seed may satisfy it under the user's revised criterion; six-seed generic reference promotion remains separate. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
 
 The previously highest six-seed mean,143,111.2 from sixteen global workers, had three total regressions and was not promoted. Regional repair now exceeds that mean and improves all six paired full totals. The larger pickup quotas128/256 produce exactly the same full trajectories as64 on both tested seeds; they provide no observed quality gain. [Regional configuration and checks](experiments/construction-20260918/PICKUP_FULL_REGIONS.md) · [Quota comparison](experiments/construction-20260918/results/pickup-full-quota-full-v46.json).
 
@@ -45,7 +53,7 @@ tricks require `--trick <map-instance-name>`, `[trick]` commit titles and **TRIC
 log entries. No environment variable or automatic map detection enables them.
 [Policy](experiments/construction-20260918/EXPERIMENT_TRACKS.md).
 
-**TRICK full results, not promoted:** NMS-derived directions at CGAR4/16forward
+**TRICK full results, eligible for the overall best history:** NMS-derived directions at CGAR4/16forward
 costs require `--trick WAREHOUSE`. Seeds0/2 reach146,659/146,566, versus exact
 no-flag144,510/144,107. All20,000entries across the four runs pass1s; peakRSS11.914GB.
 The final1000differences are−93/+50, so a sustained-rate gain is not established.
@@ -193,6 +201,22 @@ Each row uses all six full warehouse seeds. Completion is the last candidate run
 | More regional rounds / less global work | 3M:143,056 /143,421; 2M:seed0 timeout, seed2 143,046 | **Rejected.** 3M mean−0.741%, both final windows lose. 2M fails at step36; no two-seed mean. Both controls exact, all25k completed entries valid. [Evidence](experiments/construction-20260918/results/regional-work-balance-full-v48/comparison.json). |
 
 [Six-seed refresh evidence](experiments/construction-20260918/results/flow-refresh-six-seed-v30.json), [matched three-seed comparison](experiments/construction-20260918/results/flow-margin-matched-controls-v20.json), [complete refresh results](experiments/construction-20260918/results/flow-refresh-full-v30/), [warm-reuse results](experiments/construction-20260918/results/flow-warm-full-v31/), [record provenance](experiments/construction-20260918/results/throughput-progress-provenance.json).
+
+## Latest full experiments and matching coverage
+
+Task-chain pricing V60 changes neither best: resident/imputed144,237/144,023 and
+ratio-only144,604/143,946, versus exact144,510/144,107 controls. Paired means
+−0.124%/−0.023%; both remain OFF. [Full evidence](experiments/construction-20260918/results/chain-pricing-full-v60/comparison.json).
+Four independent global searches before regional repair reaches143,312/144,336,
+paired mean−0.336%; retain one global search. [Full evidence](experiments/construction-20260918/results/global-region-workers-full-v60/comparison.json).
+
+The new generic unopened matching layer initially sampled a geographically sparse
+holder pool. [1d78892](https://github.com/fywu85/lorr/commit/1d788929db09f8f6a0aeb091548ff8c3ff7aba87)
+corrects this with all-resident local searches, retaining4groups x32holders and
+2048BFS-node limits. Full regressions pass. The800-step control/matching scores
+are18,954/18,919 and18,952/18,944; all valid, exact disabled controls, max927.438ms
+and peak8.074GB. These are feasibility results, not records. The full paired
+comparison is running. [Design and evidence](experiments/construction-20260918/unopened_matching/README.md).
 
 ## Resource cost of the current benchmark reference
 

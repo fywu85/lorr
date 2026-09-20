@@ -20,7 +20,7 @@ def main():
     spec = json.loads((raw / 'spec.json').read_text())
     assert isinstance(spec['horizons'], dict) and set(spec['horizons']) == {'WAREHOUSE'}
     horizon = spec['horizons']['WAREHOUSE']
-    assert horizon in (50, 200), horizon
+    assert horizon in (50, 200, 800), horizon
     assert (raw / 'completion.json').exists(), 'screen is still running'
     out.mkdir(parents=True, exist_ok=False)
     for name in ['spec.json', 'allocation.json', 'completion.json', 'submission.json']:
@@ -37,7 +37,7 @@ def main():
         shutil.copy2(source / 'metadata.json', dest / 'metadata.json')
         row = rows[0]
         diagnostics = [line for log in sorted(source.glob('*.log')) for line in log.read_text(errors='replace').splitlines()
-                       if line.startswith(('[cgar-temporal', '[cgar-orientation]', '[cgar-flow]', '[cgar-turn-prefetch]', '[cgar-regional-peaks]'))]
+                       if line.startswith(('[cgar-temporal', '[cgar-orientation]', '[cgar-flow]', '[cgar-turn-prefetch]', '[cgar-regional-peaks]', '[cgar-unopened-match]'))]
         write(dest / 'diagnostics.json', diagnostics)
         if row['valid']:
             assert row['makespan'] == row['entry_compute_samples'] == horizon
@@ -55,7 +55,7 @@ def main():
             fingerprints[name] = None
             (dest / 'failure.txt').write_text('\n'.join(
                 p.name + '\n' + p.read_text(errors='replace') for p in sorted(source.glob('*.log'))))
-    write(out / 'purpose.json', {'purpose': 'Cold-start deadline screen only; prefix throughput is not a performance ranking.',
+    write(out / 'purpose.json', {'purpose': 'Feasibility screen only; prefix throughput is not a full-horizon performance ranking.',
                                'horizon_steps': horizon, 'full_run_validation_required': True})
     write(out / 'run-summaries.json', summaries)
     write(out / 'trajectory-fingerprints.json', fingerprints)
