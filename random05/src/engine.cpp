@@ -43,6 +43,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
     c.scratch_reuse=integer("R05_SCRATCH_REUSE",0);c.profile=integer("R05_PROFILE",0);
     c.goal_cache=integer("R05_GOAL_CACHE",0);
+    c.policy_profile=integer("R05_POLICY_PROFILE",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -682,6 +683,16 @@ void Engine::fill_ready_moves(const Frame& f,const std::vector<float>& offsets,s
 
 void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Action>& actions,
                      uint64_t& expansion_count,bool cycle_moves) const {
+    PolicyTiming* timing=policy_profile_active_?&policy_timings_[omp_get_thread_num()]:nullptr;
+    const bool sampled=timing && ++timing->calls%64==0;
+    std::chrono::steady_clock::time_point measured;
+    if(sampled){++timing->samples;measured=std::chrono::steady_clock::now();}
+    auto mark_policy=[&](int phase) {
+        if(!sampled)return;
+        const auto now=std::chrono::steady_clock::now();
+        timing->nanoseconds[phase]+=std::chrono::duration_cast<std::chrono::nanoseconds>(now-measured).count();
+        measured=now;
+    };
     const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
     const int cycle_mode=cycle_moves?cfg.pre_cycles:0;
     const auto& g=*graph;const int n=int(f.loc.size());
@@ -745,6 +756,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
            (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
     }
+    mark_policy(0);
     auto propose_cycles=[&](bool blocked_only) {
         struct Proposal { float gain;const std::vector<int>* ring;int sign;bool ready; };
         std::vector<Proposal> proposals;
@@ -814,8 +826,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
         candidate_count[i]=count;
     }
+    mark_policy(1);
     auto& order=scratch.order;
     order_priorities(priorities,cfg.packed_order,order,scratch.priority_keys);
+    mark_policy(2);
     auto& prepared=scratch.prepared;prepared.clear();
     auto choose=[&](bool kinematic) {
     std::fill(chosen.begin(),chosen.end(),-1);
@@ -873,9 +887,11 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         prepared=p;
         for(int i=0;i<n;++i)if(ready[root(i)])prepared[i]=intent[i];
     }
+    mark_policy(3);
     // Mode 1 executes only complete ready components. Mode 2 pins those moves
     // and fills the remaining space with the usual kinematic PIBT policy.
     if(cfg.intent_mode==1)chosen=prepared;else choose(true);
+    mark_policy(4);
     if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {
         // Geometry is precomputed; evaluate only obstacle-free perimeters.
@@ -900,6 +916,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             if(sign)for(int k=0;k<count;++k)chosen[a[k]]=v[(k+sign)%count];
         }
     }
+    mark_policy(5);
     actions.assign(n,W);
     for(int i=0;i<n;++i) {
         if(moving[i])actions[i]=FW;
@@ -930,6 +947,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         f.last_actions=actions;
     }
     f.loc.swap(p);f.pending.swap(chosen);
+    mark_policy(6);
 }
 
 void Engine::match_future(Frame& frame) const {
@@ -1084,6 +1102,8 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule) {
+    policy_profile_active_=cfg.policy_profile && (env->curr_timestep<5 || env->curr_timestep%100==0);
+    if(policy_profile_active_)policy_timings_.assign(cfg.threads,PolicyTiming{});
     std::chrono::steady_clock::time_point measured;
     if(cfg.profile)measured=std::chrono::steady_clock::now();
     std::array<double,5> phase_ms{};
@@ -1268,6 +1288,21 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0))
         std::fprintf(stderr,"R05_PROFILE t=%d assignment_ms=%.3f task_cost_ms=%.3f candidates_ms=%.3f lookahead_ms=%.3f final_ms=%.3f\n",
                      env->curr_timestep,phase_ms[0],phase_ms[1],phase_ms[2],phase_ms[3],phase_ms[4]);
+    if(policy_profile_active_) {
+        PolicyTiming total;
+        for(const auto& timing:policy_timings_) {
+            total.calls+=timing.calls;total.samples+=timing.samples;
+            for(int k=0;k<7;++k)total.nanoseconds[k]+=timing.nanoseconds[k];
+        }
+        // Sampled elapsed worker time, not isolated CPU utilization. Separate
+        // columns identify expensive policy phases without timing every call.
+        std::fprintf(stderr,"R05_POLICY_PROFILE t=%d calls=%llu samples=%llu setup_ns=%llu candidates_ns=%llu order_ns=%llu intent_ns=%llu kinematic_ns=%llu cycles_ns=%llu actions_ns=%llu\n",
+            env->curr_timestep,(unsigned long long)total.calls,(unsigned long long)total.samples,
+            (unsigned long long)total.nanoseconds[0],(unsigned long long)total.nanoseconds[1],
+            (unsigned long long)total.nanoseconds[2],(unsigned long long)total.nanoseconds[3],
+            (unsigned long long)total.nanoseconds[4],(unsigned long long)total.nanoseconds[5],
+            (unsigned long long)total.nanoseconds[6]);
+    }
     if(env->curr_timestep%100==0) {
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;

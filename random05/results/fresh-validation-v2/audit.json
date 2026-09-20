@@ -1,0 +1,134 @@
+{
+  "checked_utc": "2026-09-20T15:09:01.333567+00:00",
+  "protocol_commit": "e6b2dbe",
+  "candidate_source_commit": "e896201",
+  "all_valid": true,
+  "comparisons": [
+    {
+      "seed": 50003,
+      "ours": 3494,
+      "nms_repeats": [
+        2946,
+        2984
+      ],
+      "stronger_nms": 2984,
+      "gain_percent": 17.09115281501341
+    },
+    {
+      "seed": 50004,
+      "ours": 3387,
+      "nms_repeats": [
+        2892,
+        2875
+      ],
+      "stronger_nms": 2892,
+      "gain_percent": 17.116182572614115
+    }
+  ],
+  "aggregate_gain_percent": 17.10347174948945,
+  "runs": {
+    "seed50003-ours": {
+      "tasks": 3494,
+      "finished_utc": "2026-09-20T14:50:00.584389+00:00",
+      "binary_sha256": "d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775",
+      "latency_seconds": {
+        "mean": 0.4596077162909989,
+        "max": 0.577688749
+      },
+      "usage": {
+        "user_seconds": 3646.660027,
+        "system_seconds": 0.651766,
+        "peak_rss_kib": 279580,
+        "wall_seconds": 921.2196218874305,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50003-ours/summary.json"
+    },
+    "seed50003-nms-repeat1": {
+      "tasks": 2946,
+      "finished_utc": "2026-09-20T15:06:32.004658+00:00",
+      "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+      "latency_seconds": {
+        "mean": 0.9503308859994989,
+        "max": 0.951017453
+      },
+      "usage": {
+        "user_seconds": 7589.700878,
+        "system_seconds": 1.015482,
+        "peak_rss_kib": 1646864,
+        "wall_seconds": 1902.5776295308024,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50003-nms-repeat1/summary.json"
+    },
+    "seed50003-nms-repeat2": {
+      "tasks": 2984,
+      "finished_utc": "2026-09-20T15:06:31.893867+00:00",
+      "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+      "latency_seconds": {
+        "mean": 0.9503261211815012,
+        "max": 0.951284269
+      },
+      "usage": {
+        "user_seconds": 7595.197759,
+        "system_seconds": 1.05165,
+        "peak_rss_kib": 1647704,
+        "wall_seconds": 1902.4790987018496,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50003-nms-repeat2/summary.json"
+    },
+    "seed50004-ours": {
+      "tasks": 3387,
+      "finished_utc": "2026-09-20T14:50:17.990772+00:00",
+      "binary_sha256": "d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775",
+      "latency_seconds": {
+        "mean": 0.4632357645889995,
+        "max": 0.57847988
+      },
+      "usage": {
+        "user_seconds": 3675.904038,
+        "system_seconds": 0.6878569999999999,
+        "peak_rss_kib": 279868,
+        "wall_seconds": 928.5589682366699,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50004-ours/summary.json"
+    },
+    "seed50004-nms-repeat1": {
+      "tasks": 2892,
+      "finished_utc": "2026-09-20T15:06:32.105807+00:00",
+      "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+      "latency_seconds": {
+        "mean": 0.9503368294230009,
+        "max": 0.950470452
+      },
+      "usage": {
+        "user_seconds": 7595.215146,
+        "system_seconds": 1.127672,
+        "peak_rss_kib": 1646784,
+        "wall_seconds": 1902.677066847682,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50004-nms-repeat1/summary.json"
+    },
+    "seed50004-nms-repeat2": {
+      "tasks": 2875,
+      "finished_utc": "2026-09-20T15:06:41.755062+00:00",
+      "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+      "latency_seconds": {
+        "mean": 0.9503186614439977,
+        "max": 0.95093677
+      },
+      "usage": {
+        "user_seconds": 7595.966862,
+        "system_seconds": 0.9157839999999999,
+        "peak_rss_kib": 1647132,
+        "wall_seconds": 1902.416618136689,
+        "exit": 0
+      },
+      "evidence": "random05/results/fresh-validation-v2-split-full-v45/seed50004-nms-repeat2/summary.json"
+    }
+  },
+  "caveat": "Two held-out task/start instances on the same map. These are not the colleague's private inputs; no 32-worker validation is implied."
+}

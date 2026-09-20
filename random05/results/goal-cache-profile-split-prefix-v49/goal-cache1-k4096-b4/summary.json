@@ -1,0 +1,74 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:06:03.610328+00:00",
+    "name": "goal-cache1-k4096-b4",
+    "steps": 120,
+    "binary_sha256": "eb827eb828ac0f3c7beda47df9dec2b2267b726d62b01ed0f03692bddd0568fd",
+    "environment": {
+      "R05_K": "4096",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "4",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1",
+      "R05_PROFILE": "1",
+      "R05_GOAL_CACHE": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 143,
+      "makespan": 120,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 120,
+      "entryComputeMaxSeconds": 1.081475218
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9799653253083332,
+      "max": 1.081475218
+    },
+    "actual_path_steps": [
+      120,
+      120
+    ],
+    "trajectory_sha256": "e9bc238ba4a917c8c9a66139857b672af29cda8b0d09390bec724282d4af42f8",
+    "valid": true,
+    "usage": {
+      "user_seconds": 466.858236,
+      "system_seconds": 0.295917,
+      "peak_rss_kib": 140460,
+      "wall_seconds": 118.20362344384193,
+      "exit": 0
+    }
+  }
+]

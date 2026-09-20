@@ -12,7 +12,7 @@ struct Config {
     int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1;
     int continuations=1, continuation_start=1;
     float future_mutation=0.3, continuation_risk=0;
-    bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false;
+    bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false;
     float noise=50, mutation=0.3, dispersion=0, push_price=0, loop_threshold=1;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
     float initial_length_weight=-1;
@@ -96,6 +96,10 @@ struct OperationModel {
     explicit OperationModel(const Graph& graph);
     const std::array<int,horizon>& path(int state,int code) const {return paths[size_t(state)*count+code];}
 };
+struct alignas(64) PolicyTiming {
+    uint64_t calls=0,samples=0;
+    std::array<uint64_t,7> nanoseconds{};
+};
 class Engine {
 public:
     Config cfg;
@@ -109,6 +113,8 @@ public:
     int triaged() const { return triaged_; }
 private:
     std::mt19937 rng_;
+    bool policy_profile_active_=false;
+    mutable std::vector<PolicyTiming> policy_timings_;
     uint64_t total_forward_=0,total_agent_steps_=0;
     int triaged_=0;
     std::unordered_map<int,std::shared_ptr<Chain>> chains_, score_chains_;

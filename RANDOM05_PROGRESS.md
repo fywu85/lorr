@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 15:04 UTC.
+Updated: 2026-09-20 15:10 UTC.
 
 **Best single run on the archived input: 3,657 tasks on 32 workers / 16 physical cores**, or
 **+15.3% versus matched NMS32 = 3,172**. The planner averages eight simulated
@@ -68,18 +68,22 @@ bonus 0.5 and length weight 0.25, and directional penalty 2.4. Continuation
 search is a general algorithmic change; its best runs still use these tricks.
 Machine-readable settings are frozen in `random05/best*.json`.
 
-**Fresh-input validation currently applies to the preceding 3,395-task solver:**
-on two inputs frozen before evaluation, it beats the stronger NMS repeat by
-14.5% and 9.0% (11.8% in aggregate). See the separate validation table below.
-Those inputs remain excluded from tuning. The new continuation solver still
-needs fresh-input validation.
+**Fresh-input validation of the frozen 3,501 configuration is complete:**
+it scores 3,494 versus NMS 2,984 and 3,387 versus NMS 2,892, using the stronger
+of two NMS repeats on each input: **+17.1% on both inputs, +17.1% in aggregate**.
+All six full runs pass the four-core / strict 1s / 32GB checks. The candidate and
+settings were frozen before input generation; later 3,520/3,657 records were
+not substituted. These two inputs remain excluded from tuning.
+[Matched audit](random05/results/fresh-validation-v2/audit.json).
 
-**Without known-horizon triage**, the preceding configuration completes 3,197
-tasks on both allocations with identical trajectories: +9.7% versus NMS4 and
-+0.8% versus NMS32. Four-core mean latency 316 ms, maximum 421 ms, RSS 293 MB.
-It retains the map-guidance trick. No cutoff-free result is yet claimed for
-the new continuation search.
-[Cutoff comparison](random05/results/frontier-triage-split-full-v31/summary.json).
+**Without known-horizon triage**, continuation search completes **3,285 tasks
+on four cores** (+12.7% versus NMS4, K2048/B8) and **3,408 on 32 workers**
+(+7.4% versus NMS32, K8192/B8). Both use one generation and planner seed 3,
+with the same guidance trick. Four-core mean latency 467 ms, maximum 578 ms,
+RSS 287 MB; 32-worker mean 317 ms, maximum 431 ms, RSS 446 MB. Both full runs
+are valid. Known-horizon counterparts score 3,501/3,596; these paired differences
+are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
+[Cutoff-free evidence](random05/results/continuation-no-horizon-split-full/summary.json).
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
@@ -144,6 +148,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T14:45:45.463667+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | B8/K3584/start2/local0/planner seed3 with exact implementation optimizations; `--trick RANDOM-05` | 3509 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +20.4% | [Full evidence](random05/results/scratch-four-split-full-v46/k3584-b8-four/summary.json) |
 | 2026-09-20T14:52:24.059199+00:00 | [f9b1143](https://github.com/fywu85/lorr/commit/f9b1143) | Four generations; K2048/B8/start2/local0; exact optimizations; planner seed3; `--trick RANDOM-05` | 3520 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +20.8% | [Full evidence](random05/results/generation-four-split-full-v47/generations4-four/summary.json) |
 | 2026-09-20T14:57:15.935581+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | K16384/B8/start2/local0; exact optimizations; planner seed3; `--trick RANDOM-05` | 3657 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +15.3% | [Full evidence](random05/results/continuation-larger-split-full-v46/k16384-b8/summary.json) |
+| 2026-09-20T14:57:35.059037+00:00 | [d933023](https://github.com/fywu85/lorr/commit/d933023) | No known horizon; K8192/B8/start2/local0; planner seed3; guidance still `--trick RANDOM-05` | 3408 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.4% | [Full evidence](random05/results/continuation-no-horizon-split-full/no-horizon-32/summary.json) |
+| 2026-09-20T15:02:34.822809+00:00 | [e896201](https://github.com/fywu85/lorr/commit/e896201) | No known horizon; K2048/B8/start2/local0; planner seed3; guidance still `--trick RANDOM-05` | 3285 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +12.7% | [Full evidence](random05/results/continuation-no-horizon-split-full/no-horizon-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -174,6 +180,24 @@ on each input. This supports a gain on new inputs, while falling short of the
 colleague's reported 27–28%. Two instances on one map do not establish broader
 generalization. These are not the colleague's private inputs, and no 32-worker
 fresh-instance result is implied. The frozen validation candidate scored 3,395 on its original development input. Keep these inputs out of further configuration selection.
+
+
+The second validation freezes source [e896201](https://github.com/fywu85/lorr/commit/e896201)
+at protocol [e6b2dbe](https://github.com/fywu85/lorr/commit/e6b2dbe), before generating
+seeds 50003/50004. It tests the 3,501 development configuration with the same
+four-core / 1s / 32GB rules. All six runs are valid; both NMS repeats are retained.
+
+| Instance seed | Candidate completed UTC | Candidate tasks | NMS repeats | Gain over stronger NMS | Evidence |
+|---|---|---:|---|---:|---|
+| 50003 | 2026-09-20T14:50:00.584389+00:00 | 3494 | 2946 / 2984 | +17.1% | [Matched audit](random05/results/fresh-validation-v2/audit.json) |
+| 50004 | 2026-09-20T14:50:17.990772+00:00 | 3387 | 2892 / 2875 | +17.1% | [Matched audit](random05/results/fresh-validation-v2/audit.json) |
+
+Aggregate: **6,881 versus 5,876 tasks (+17.1%)**. This supports an improvement
+on two new task/start inputs on the same map. It remains below the colleague's
+reported 27–28%; the two validation versions use different inputs, so their
+11.8% and 17.1% figures are not a paired effect estimate. Keep all four validation
+inputs out of configuration selection. Full per-run latency, CPU time, RSS,
+input/binary hashes and allocation are linked in the audits.
 
 ## Development record
 
@@ -863,3 +887,16 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   but the provider returned an out-of-usage-credits error (zero billed usage).
   No review was produced. Keep the approved payload/session for a later retry;
   local development and benchmark evidence do not depend on that review.
+
+- Fresh validation V2 completes: 3,494 versus NMS 2,946/2,984 on seed50003;
+  3,387 versus NMS 2,892/2,875 on seed50004. Both matched gains are 17.1%.
+  All six full runs pass source, input, CPU allocation, latency and RAM audits.
+  No later candidate was substituted into the predeclared comparison.
+
+- Shared goal-distance caching preserves every action, assignment and event
+  in the controlled 120-step profiles. First-step matching matrix construction
+  falls from 28.6 to 11.6 ms; assignment solve time remains 62.8 ms, and the
+  approximately 970 ms look-ahead dominates K4096/B4 on four cores. Full
+  semantic/timing controls are running. Build-v50 adds sampled internal policy
+  timing so the next CPU change targets a measured cost; regressions pass.
+  [Cache profile](random05/results/goal-cache-profile-split-prefix-v49/timings-equivalence.json).

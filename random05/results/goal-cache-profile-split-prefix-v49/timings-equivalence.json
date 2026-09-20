@@ -1,0 +1,55 @@
+{
+  "purpose": "120-step timing diagnosis, not throughput frontier",
+  "checked_utc": "2026-09-20T15:08:23.605900+00:00",
+  "source_commit": "bd01f97",
+  "exact_fields": {
+    "actualPaths": true,
+    "plannerPaths": true,
+    "actualSchedule": true,
+    "plannerSchedule": true,
+    "events": true,
+    "tasks": true
+  },
+  "raw_sha256": [
+    "97663affbcec2fcc9af2427a74ed034e9e03773468def22fcb2dd400900c25d5",
+    "dc92c4dc210118a1c6917205b5d96c51b2ce1f081ca9e08bf21829f3ae08c416"
+  ],
+  "cases": {
+    "goal-cache1-k4096-b4": {
+      "raw_log": "runs/random05/goal-cache-profile-split-prefix-v49/goal-cache1-k4096-b4/goal-cache1-k4096-b4/native.log",
+      "sha256": "4a485ac739330a25f14531899de649b1b7645fcf1d6384d3953b5960ceed27bb",
+      "timings": [
+        "R05_MATCH_PROFILE t=0 agents=800 tasks=1200 matrix_ms=11.609 solve_ms=62.750",
+        "R05_PROFILE t=0 assignment_ms=74.478 task_cost_ms=7.082 candidates_ms=10.234 lookahead_ms=986.617 final_ms=0.065",
+        "R05_MATCH_PROFILE t=1 agents=342 tasks=742 matrix_ms=7.368 solve_ms=9.315",
+        "R05_PROFILE t=1 assignment_ms=16.709 task_cost_ms=0.170 candidates_ms=9.417 lookahead_ms=976.456 final_ms=0.024",
+        "R05_MATCH_PROFILE t=2 agents=292 tasks=692 matrix_ms=6.069 solve_ms=7.017",
+        "R05_PROFILE t=2 assignment_ms=13.116 task_cost_ms=0.211 candidates_ms=9.280 lookahead_ms=976.957 final_ms=0.026",
+        "R05_MATCH_PROFILE t=3 agents=277 tasks=677 matrix_ms=5.686 solve_ms=6.633",
+        "R05_PROFILE t=3 assignment_ms=12.343 task_cost_ms=0.217 candidates_ms=9.417 lookahead_ms=981.178 final_ms=0.027",
+        "R05_MATCH_PROFILE t=4 agents=249 tasks=649 matrix_ms=5.014 solve_ms=5.244",
+        "R05_PROFILE t=4 assignment_ms=10.288 task_cost_ms=0.196 candidates_ms=9.263 lookahead_ms=978.643 final_ms=0.028",
+        "R05_MATCH_PROFILE t=100 agents=46 tasks=446 matrix_ms=1.038 solve_ms=0.311",
+        "R05_PROFILE t=100 assignment_ms=1.392 task_cost_ms=0.148 candidates_ms=9.459 lookahead_ms=966.899 final_ms=0.027"
+      ]
+    },
+    "goal-cache0-k4096-b4": {
+      "raw_log": "runs/random05/goal-cache-profile-split-prefix-v49/goal-cache0-k4096-b4/goal-cache0-k4096-b4/native.log",
+      "sha256": "b7aa0a179134714c93def829d488b62f925ac0a76b0a3c12bf3a1c6881ae126e",
+      "timings": [
+        "R05_MATCH_PROFILE t=0 agents=800 tasks=1200 matrix_ms=28.581 solve_ms=62.756",
+        "R05_PROFILE t=0 assignment_ms=91.465 task_cost_ms=10.357 candidates_ms=10.123 lookahead_ms=978.853 final_ms=0.071",
+        "R05_MATCH_PROFILE t=1 agents=342 tasks=742 matrix_ms=10.225 solve_ms=9.310",
+        "R05_PROFILE t=1 assignment_ms=19.563 task_cost_ms=0.181 candidates_ms=9.315 lookahead_ms=969.196 final_ms=0.024",
+        "R05_MATCH_PROFILE t=2 agents=292 tasks=692 matrix_ms=8.441 solve_ms=7.023",
+        "R05_PROFILE t=2 assignment_ms=15.493 task_cost_ms=0.194 candidates_ms=9.442 lookahead_ms=969.774 final_ms=0.025",
+        "R05_MATCH_PROFILE t=3 agents=277 tasks=677 matrix_ms=7.983 solve_ms=6.627",
+        "R05_PROFILE t=3 assignment_ms=14.640 task_cost_ms=0.199 candidates_ms=9.281 lookahead_ms=972.478 final_ms=0.026",
+        "R05_MATCH_PROFILE t=4 agents=249 tasks=649 matrix_ms=6.910 solve_ms=5.244",
+        "R05_PROFILE t=4 assignment_ms=12.185 task_cost_ms=0.193 candidates_ms=9.279 lookahead_ms=977.233 final_ms=0.027",
+        "R05_MATCH_PROFILE t=100 agents=46 tasks=446 matrix_ms=1.185 solve_ms=0.316",
+        "R05_PROFILE t=100 assignment_ms=1.553 task_cost_ms=0.160 candidates_ms=9.405 lookahead_ms=961.309 final_ms=0.027"
+      ]
+    }
+  }
+}

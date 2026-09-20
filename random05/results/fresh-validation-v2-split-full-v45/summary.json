@@ -1,0 +1,294 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:50:00.584389+00:00",
+    "name": "seed50003-ours",
+    "steps": 2000,
+    "binary_sha256": "d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775",
+    "environment": {
+      "R05_K": "2048",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3494,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.577688749
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.4596077162909989,
+      "max": 0.577688749
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "74da43d1aea76899bd6bb5e01bcfdd39deea353985a5e15d83f6f218686c6fa5",
+    "valid": true,
+    "usage": {
+      "user_seconds": 3646.660027,
+      "system_seconds": 0.651766,
+      "peak_rss_kib": 279580,
+      "wall_seconds": 921.2196218874305,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50003-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:06:32.004658+00:00",
+    "name": "seed50003-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2946,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503308859994989,
+      "max": 0.951017453
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "844b59cb32324953c7f37cc35060979615b753a9e580581e805fa9ab43e282a2",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7589.700878,
+      "system_seconds": 1.015482,
+      "peak_rss_kib": 1646864,
+      "wall_seconds": 1902.5776295308024,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50003-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:06:31.893867+00:00",
+    "name": "seed50003-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2984,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503261211815012,
+      "max": 0.951284269
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "960701815b7463f4a737d38842570fd59c080c807a6aee3ff2954ab91b99a3ec",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.197759,
+      "system_seconds": 1.05165,
+      "peak_rss_kib": 1647704,
+      "wall_seconds": 1902.4790987018496,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50003-nms-repeat2/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:50:17.990772+00:00",
+    "name": "seed50004-ours",
+    "steps": 2000,
+    "binary_sha256": "d2d7b43c2566403df40c7ba12316d446bb8a67feebb90db3fa38b66a8b7d2775",
+    "environment": {
+      "R05_K": "2048",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3387,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.57847988
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.4632357645889995,
+      "max": 0.57847988
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "baa53b0d74eb4a737e0bf592f47cb13da7c90e513827511fbb619b5d2a681aba",
+    "valid": true,
+    "usage": {
+      "user_seconds": 3675.904038,
+      "system_seconds": 0.6878569999999999,
+      "peak_rss_kib": 279868,
+      "wall_seconds": 928.5589682366699,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50004-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:06:32.105807+00:00",
+    "name": "seed50004-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2892,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503368294230009,
+      "max": 0.950470452
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "6e087e81f4dc3fe2f80a2ea7aeb48d944ef59feac19c751a12aa1dc47390085b",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.215146,
+      "system_seconds": 1.127672,
+      "peak_rss_kib": 1646784,
+      "wall_seconds": 1902.677066847682,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50004-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T15:06:41.755062+00:00",
+    "name": "seed50004-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2875,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503186614439977,
+      "max": 0.95093677
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "042280a2b0169812a9d21b8f1a5127c9c7004492ead22d2943f512fb75b11ced",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.966862,
+      "system_seconds": 0.9157839999999999,
+      "peak_rss_kib": 1647132,
+      "wall_seconds": 1902.416618136689,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v2-split-full-v45/seed50004-nms-repeat2/summary.json"
+  }
+]

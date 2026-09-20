@@ -372,7 +372,7 @@ void shared_goal_costs() {
 int main() {
     shared_goal_costs();
     Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
-    const auto unmeasured=simulate(measured,12);measured.profile=true;
+    const auto unmeasured=simulate(measured,12);measured.profile=true;measured.policy_profile=true;
     require(unmeasured==simulate(measured,12),"phase profiling changed the trajectory");
     continuation_risk();
     exact_hot_paths();
