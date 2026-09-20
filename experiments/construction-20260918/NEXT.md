@@ -1,138 +1,86 @@
-# Continuing Warehouse work
+# Warehouse target achieved
 
-Updated2026-09-20 13:47UTC. Goal ACTIVE: CGAR reaches NMS154795 on ANY valid full
-5000-step/10000-robot seed, including explicit --trick WAREHOUSE.32decimalGB RSS,
-complete fixed work; timeout failure. Shared GRID/5s development authorized;
-strict1s certification separate. Preserve the concurrent random05 fork's files/jobs/commits.
+Updated2026-09-20 14:08UTC. The user's single-seed target criterion is VERIFIED:
+154889 >= NMS154795, surplus94. Full5000steps/10000robots, complete fixed work,
+zero failures,32decimalGB RSS. Shared GRID/5s development allowed; strict1s
+certification remains separate. No new solver experiment is needed to meet this
+criterion. Preserve the concurrent random05 fork's files/jobs/commits.
 
-## Verified frontier
+## Winning record
 
-153614 TRICK seed0, source4e1a8fe5e995e275faa6ddfaa0e8f8ae61fc5352,
-completed2026-09-20T12:43:02.857282+00:00. Native20/200(+1bands),turn1,rawpotential,
-matching64,pickupweight5,ordinaryfairness,globalshortOFF,configuredH=5000.
-Horizon is an explicit assumption, not supplied by SharedEnvironment. Exact
-results/known-horizon-full-v86/best-record.json. Gap1181 (0.76881% growth).
-Mean445.669ms,max989.051ms,RSS11911778304,CPU1.504cores/4,wall2286.316s.
-Observed<1s in shared5s run, NOTstrict1s certification. Genericreference unchanged:
-0196851 mean144392.1667, totals144967/144869/144511/143340/144446/144220.
-Generic single145083 remains experimental.
+TRICK seed0, source92bc748e81416de9d66edaec0e83a833ae3bac18,
+completed2026-09-20T13:59:35.054025UTC; verified14:00:08.321810UTC.
+Binaryd3f464a8c6fed95a53f54b6a623eb6492a1b7830f5c3602122914c93711910e8.
+Trajectory68fbb514dfab11a80ccbf8b1f4b8af98a4fd2bdd572a6963a4ee865a4ebd0aca.
+Exactenvironment/results:results/horizon-margin-full-v92/best-record.json and
+best-variant.json. Native20/200(+1bands),turn1,rawremainingpotential,matching64,
+pickupweight5,ordinaryfairness,globalshortOFF,configuredH5000,marginON. Requires
+--trick WAREHOUSE. Known horizon is configured, not supplied by SharedEnvironment.
+Margin uses already-observed unchanged-holder completions in5bound buckets;
+new admission only, originalfairness/held/started protection, no partialtimeout.
 
-## Active work
+Mean446.648ms,max1.011548497s,RSS13329551360bytes,CPU1.507cores/4,wall2290.514s.
+Shared research38 with16distinctboundphysicalcores/four percase. NOTstrict1s
+certification. Secondseed2=154556,239belowtarget; two-seedmean154722.5 remains
+72.5belowtarget. Do not claimgeneric ormulti-seed-average SoTA.
+Genericreference unchanged0196851 mean144392.1667; genericpeak145083experimental.
 
-- Full margin comparison8899779/analyzer8899780 is RUNNING since13:21:24UTC,
-  research38,16 bound physical cores/four per case. Seeds0/2 xmarginOFF/ON,H5000,
-  shared5s/32decimalGB. Expected finish about14:00UTC, then frozen verification.
-  Raw runs/cgar-horizon-margin-full-v92-20260920;
-  results/horizon-margin-full-v92. No partial quality score.
-  Exact source92bc748e81416de9d66edaec0e83a833ae3bac18; binary
-  d3f464a8c6fed95a53f54b6a623eb6492a1b7830f5c3602122914c93711910e8.
-  OFF controls MUST reproduce153614/153220 and V86 trajectory hashes; ON prefixes
-  must be exact before the first margin comparator reversal. Require zero bound
-  violations, complete fixed work, exact receipts and valid resource allocations.
-- V92 startup8899761/8899764 PASS13:16:35UTC, allfour200-step cases; OFF controls
-  exact, H5000ON exact too. H200ON first margin reversal88, preceding prefixexact.
-  results/horizon-margin-screen-v92/comparison.json.
-- Generic8008899762/8899765 PASS13:20:45UTC: exact18958tasks and trajectory
-  c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
-  results/horizon-margin-generic-v92/comparison.json. These are controls, no new
-  full-run quality score. Both passed before the full matrix was submitted.
-- V92build8899759/fullsuitePASS;build-provenance/v92. V91source8546afa/build8899758
-  alsoPASS. V92 adds physical-bound failure and real fresh matching ledger fixture,
-  no ranking change. No production build or Fable review running.
-- General deferred-selection optimization sourcebdf5e7a145626f87d0321eb8df8ab08b9ec3cb4f
-  is committed. V93build8899814/fullsuitePASS,28exactsource/test hashes; binary
-  c49f8ccef14674ff718b0e94fa0f4c94ddf16c404fe37112eb20a449a6a21c6b.
-  build-provenance/v93;rawruns/cgar-deferred-selection-build-v93-20260920.
-  Component128observations EXACTplans/score/work; medianpairedCPU0.71–1.55%lower
-  in8settings. results/deferred-selection-probe-v93. This is NOTwholeentryspeedup.
-  Generic800control8899816/analyzer8899817, research50, PASS13:44:29UTC exact18958/hash.
-  Same-core nativeA/B/A200timing8899832, research57, PASS13:44:29UTC exactall600entries/work. Wall+0.190%/CPU+0.117% vsmeanbrackets; NOsolver-speedupclaim.
-  Explicit test-only constructionancestorcoverage8899833, research52, PASS13:42:05UTC;9–9933actualancestorcalls inall8settings, exactoutputs/work.
-  Raw/archives names cgar-deferred-selection-{generic,timing,ancestor}-v93-20260920
-  and results/deferred-selection-{generic,timing,ancestor}-v93 respectively.
-  NO productionbuildnow. Fable44COMPLETE13:37:14UTC, no concreteequivalencebug;
-  assessmentqualifies invariant atqueries, not between remove(other)/add(r).
-  NextFableturn45/followup-44.md whenuseful. No liveFablecall.
-- Saved-work audit now supports --horizon-margin0/1 and rejects ambiguous4rows;
-  legacy and newselectors plusaccountingfixturePASS. No new solver policy there.
-- Larger cache redesign deprioritized: static native table rebuild kernel
-  extrapolation only~115CPU seconds across~3300processCPU seconds/full run.
+## Final full comparison and completed explanation
 
-## Margin policy now implemented (not yet a throughput claim)
+- Full8899779/analyzer8899780 COMPLETE, all4full/20kentriesvalid. OFF controls
+  EXACT153614/153220/V86hashes. MarginON154889/154556 gains1275/1336, allfinal1000.
+  Outstandingagep90-37/-39; emptywork+40192/+33813. Exact action/schedule/event
+  prefixesbeforefirstmarginreversal3804 onbothseeds. All28source/testfiles/binary,
+  exactreceipts, nonoverlappingphysicalcores, zero calibrationboundviolations checked.
+- Motion8899864 COMPLETE14:02:25UTC: all200Mrobotstepsreplayed/fixtures/hashPASS.
+  Work8899867 COMPLETE14:05:33UTC: both50MstepcandidateaccountsPASS; controls
+  reusedonlyafterexactfulltrajectoryandcurrentphase-countchecks. Unfinishedwork
+  1632309→1155533 /1655252→1164023, down476776/491229 (~29%). Completedchainmeans
+  242.188→242.327/242.306, slightlylonger. Cohortschange; no causalpartitionclaim.
+- Latency8899868 COMPLETE14:05:32UTC, all20kentrymeasurementschecked. Candidate
+  last1000means446.222/442.780ms,max529.786/517.115ms. No late spike observed;
+  shared walltime isnotcontrolledspeedup. results/horizon-margin-{motion-audit,
+  work-audit,latency}-v94 containfinalevidence.
+- NO CGAR build, benchmark, diagnostic, orFablejobactive. Other r05_* jobs belong
+  to the independent fork; do not stop or modify them.
 
-CGAR_TRICK_HORIZON_MARGIN=1 requirespositiveconfiguredH andCLI;default0.
-Atentrybegin observeonlyalreadycompleted tasks, duration=now-admissiondecisiontick.
-Train5boundbuckets<50/<100/<200/<400/>=400 usingcumulative duration-minusbound.
-Onlyfirstaccepted singleholders train. Retarget/drop-readmission remainexcluded;
-repeatedsame-tickobservationscannotdoublecount; skippedobservationsinvalidate;
-completionrequiresmissingtask,consecutivetick,holderfreeatfinalcell. TaskManager
-removalcontract suppliesobservation. Anyduration<bound throwslogicerror, never
-silentlyignored. RecordFINALproposalafterallmatching, withconstspatialpeekplus
-cachedoriginalchainandservicebound; intermediateunacceptedholdersnotretargets.
-Pool-exchange explicitlyrejected; currentprofilealreadyOFF. Otherfullcore/original-
-chain/costkeyguardsremain. No newtablebuild/LRUpromotion/hiddenfuturedata.
+## General implementation improvement completed alongside the full run
 
-Immutablemeansnapshotperentry; tiers marginfits/physicalfits/impossible, oldHRRN
-insideeach. Exactinclusivecrossproducts,emptybucketzero. Endpointbucket/fairpass,
-held/started/primary/recovery/matchingunchanged. No drops/parking,allat/pastHordinary.
-Margin is HEURISTIC; neversaycompletionguarantee. Separateexactreceipt and first
-comparisonreversalversus MINIMAL horizon for prefixproof. GenericflagOFF staysordinary.
-Fullsuite includes5buckets,fractionalmean,future/no-doublecount,snapshot,retarget/drop,
-finalholder,gap,boundfailure,actualCgarnewadmission/fair/held,realfreshmatchingledger.
+Sourcebdf5e7a145626f87d0321eb8df8ab08b9ec3cb4f defers rejectedcandidate stores.
+V93build8899814/fullsuitePASS,28exacthashes; binary
+c49f8ccef14674ff718b0e94fa0f4c94ddf16c404fe37112eb20a449a6a21c6b.
+Component128observations EXACTplans/score/work,0.71–1.55%lowerpairedCPU in8settings.
+Test-only ancestorprobe8899833PASS actual9–9933ancestorcalls/all8settings.
+Generic8008899816/8899817PASSexact18958/hashc0f1c9fb...; nativeA/B/A2008899832PASS
+all600entries/exacttrajectories/sampledcounters. Wholeprefixwall+0.190% andCPU+0.117%
+vsmeanoriginalbrackets, soNOsolver-speedupclaim. Winning154889score usesV92,
+not this later source. A future full experiment must retainexactfrozencontrols.
+Fable44COMPLETE13:37:14UTC, samepersistent1ebb1075-3538-49d1-93d1-a00c94fa256a;
+no concretesemanticdefect. Nextreviewturn45/followup-44.md onlyifhelpful.
 
-## Completed evidence
+## Closeout / optional next work
 
-- V86 full8899651/8899652 VERIFIED12:43:45UTC all4full20kvalid. EXACTcontrols
-  152383/152048; ON153614/153220, gains1231/1172entirelyfinal1000. Agep90+5/+7;
-  emptywork+86961/+90917. Prefixesexactbeforefirstcomparatorreversal3843/3828.
-  Source4e1a8fe,binary3471426137021ea7b39a62cf24c8c57dd0189e1009a1c02a910c555cf8470714.
-- V89savedmotion8899717 COMPLETE200Msteps;work8899720 COMPLETE100Mstepaccounting;
-  bounds8899725 COMPLETEallcompletedfinalholderbounds/fixtures. ONunfinishedwork
-  1632309/1655252 vsbaseline1997613/1998338;down365304/343086. Late>=4000:
-  completed22594/22462,LBimpossibleunfinished7145/7109,LBfeasibleunfinished2774/2823.
-  Exactfeasiblealternativewitnessesforimpossibleadmissionsonly3/6,baseline4024/3980.
-  Laterpooldepletion/trajectorieschange; NOTcompleteopportunitycount/upperbound.
-  Completedlateboundresidualmeans~14/16/18-19/23-24/29-31 by5bins,censoredcohort.
-- V90prospectivemarginaudit8899728PASS;previousV89metrics EXACT/equivalence.json.
-  Of2774/2823 feasibleunfinished,2528/2589 failprospectivemeanslack. Saferalternative
-  taskdisjointwitnesses1946/1982,reserveBOTHIDs,excludeunrevealed/previouslyassigned/
-  samebatchactuals. Newfixturesobserved-only/equality/samebatchcompletionunobserved/
-  retargetexclusionPASS. ExactofflineBFS differsproductionmixedbound; notforecast,
-  rollout,causalgain,completecount orupperbound. Evidencejustifiesoptionaltest.
-- V89latency8899726PASSexactinputhashes/all20kentrytimes. ONlast1000means443.104/
-  441.836ms,max535.509/529.084; controls451.102/447.356. No latenciespike; shared
-  timing isNOTcontrolledspeedup. Newledgercoststillrequiresmeasurement.
-- Fable42COMPLETE12:50:53UTC; recommendsmarginfirst, shortestorderingnotimplemented.
-  Packingargumentonlysimplifiedone-taskmodel; triggercoincidenceunmeasured. Fable43
-  COMPLETE13:07:38UTC actual8546afa reviewfoundnoconcretedefect; requestedbound
-  counter+realnewholdermatchingfixture nowV92PASS. Bothreviews/assessmentsarchived.
-  Samepersistent1ebb1075-3538-49d1-93d1-a00c94fa256a;nextturn44whenuseful. No internalagents.
+1. Commit/push final record, TARGET, README, progress and full/audit evidence using
+   explicit paths. Last successful pushc4eaf9f; finalcloseoutpending at this writing.
+2. Mark the active goal complete after this required documentation is published.
+   The objective is achieved; do not start speculative solver changes or seed sweeps.
+3. On the user's return, report154889 vs154795(+94), secondseed154556, explicit
+   Warehouse/known-horizon tricks,446.6msmean/13.33GBRSS andstrict1scaveat.
+4. Optional future priorities: reproducibility on moreseeds andcompetition1s
+   certification, thenmargin-ablation/generalization. These are not needed for the
+   user's now-achievedsingle-seed criterion. Generic6seedreference staysseparate.
 
-## Preserve earlier negative evidence
+## Earlier lessons preserved
 
-- V80shortfull8cases40kvalid/fourexactcontrols:weight1deltas-3645/-3669;
-  weight5-513/-244. Everyfirst1000improves,butalllaterwindowslose. KeepglobalshortOFF.
-- V84fullbudgetshadow20kexacttrajectoriesANDrealwork. FairS2/assignment0.014563/
-  0.014911cost/20forwardunits;fullyprotectedpart0.000341/0.000102;S2/S1~4.47/4.69%.
-  Deprioritizebudget2. SampleNOTcomplete/upperbound,mixedgainnotsolelyprotectedrows.
-- BaselineV86firstauditfailedoneassumption: exactlyONEcompletedlateinitialpair/seed
-  wasphysicallyimpossiblethenretargetrescued. CorrectedauditchecksFINALholderbounds.
-  Keepfailurearchive; productionboundsconditionalonholder,notglobaltaskimpossibility.
-- Genericremaining-flow staysOFFaftermixed6seed. Nativecachefallbackstopsbyt200;
-  largerstaticcachealoneunlikelyqualitylever. V77/V81kernelCPUimprovements9-23%
-  arekernelonly,notwholeentryspeedupclaims. No shortest/affine/extra-retargetimplemented.
-
-## Next actions
-
-1. Check full8899779/8899780 and frozen verifier. Do not duplicate the submission.
-   Update any valid new peak immediately; goal complete only>=154795 with proof/log.
-2. If below target, diagnose actual ON residuals. horizon_audit/analyze.py now
-   supports explicit --configured-horizon5000 --horizon-margin1; use these on
-   the new matrix, whose four cases all haveH5000. Avoid selecting allfour as two.
-3. Archive startup/generic evidence and commit/push only our explicit paths.
-   Preserve random05 fork files/jobs/commits. No production/test edits duringbuilds.
-4. Last successful push7b29df5 at13:32UTC; commit/push current V93source/evidence next. Rootprogress/TARGET153614. Keep user
-   updated~60s; no blockingwait>60s. Use require_escalated due broken bwrap.
+- V80globalshortpreference losesbothfullseeds atbothpickupweights; staysOFF.
+- V86minimalhorizon added1231/1172tasks; V92margin adds1275/1336more. Boundestimate
+  remainsconditionalonholder; retarget can rescueaninitiallyimpossiblepair.
+- V84read-only matching-budget2 sampledextraopportunity small, notanupperbound;
+  do not implement asifpromisedqualitygain. Genericremainingflow mixed6seed,OFF.
+- Largerstaticcache redesign deprioritized: native tablekernel~115CPUseconds out
+  of~3300processCPU seconds/fullrun. General kernel speedups are notsolver speedups.
+- Workspaceexec needsrequire_escalated duebrokenbwrap. No production/test edits
+  duringbuilds. Explicit staging only; preserve independent random05fork.
 
 ## Historical notes below (current status above supersedes old running labels)
 

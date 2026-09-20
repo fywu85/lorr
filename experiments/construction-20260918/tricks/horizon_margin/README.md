@@ -59,4 +59,4 @@ is added by this hardening. V92 startup8899761/analysis8899764 passed at13:16:35
 including the exact88-step pre-margin prefix in the activeH200 case. The generic800
 control8899762/analysis8899765 passed at13:20:45UTC with the exact18958-task trajectory.
 Full comparison8899779/analysis8899780 started13:21:24UTC on16 bound physical cores
-of shared research38. It uses frozen V92 source/binary; no full margin result yet.
+of shared research38. It uses frozen V92 source/binary. The full comparison is now verified:154889/154556, gains1275/1336, exact controls and3804-step pre-intervention prefixes. Seed0 exceeds the NMS target by94; shared5s development, max1.011548497s/RSS13.330GB. See [full result](../../results/horizon-margin-full-v92/summary.md).

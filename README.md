@@ -39,6 +39,15 @@ for obstacles, duplicate destinations, and edge swaps.
 
 [WAREHOUSE throughput progress](WAREHOUSE_PROGRESS.md) tracks every new full-run best with UTC completion time, linked commits and benchmark evidence, alongside confirmation across seeds.
 
+On20September2026, an explicitly enabled Warehouse TRICK reached **154,889tasks**
+against the user-specified NMS target154,795: a valid full5,000-step/10,000-robot
+run, seed0, source[92bc748](https://github.com/fywu85/lorr/commit/92bc748e81416de9d66edaec0e83a833ae3bac18).
+It assumes the known5,000-step horizon and requires `--trick WAREHOUSE`.
+Seed2 scores154,556; the generic six-seed reference remains144,392.17. These are
+shared-host5s development results, with a1.012s maximum entry; strict1s certification
+remains separate. [Verified result and exact configuration](experiments/construction-20260918/results/horizon-margin-full-v92/summary.md).
+
+
 [Full sequential MR24 results](benchmarks/mr24-20260917/summary.md) include all ten instances and per-instance comparisons with the draft. The [ten-way parallel evaluation](benchmarks/mr24-parallel-20260918/summary.md) uses the same production executable and records the effect of sharing the one-CPU quota across concurrent jobs.
 
 [Throughput diagnosis and proposed improvements](experiments/throughput-20260917/README.md) isolate the large-fleet scheduling regression with controlled prototypes and holdout checks. Those diagnostic prototypes were separate from the production planner. A [follow-up Fable 5.1 Max review](experiments/throughput-20260918-fable/README.md) was completed through Claude Code CLI.

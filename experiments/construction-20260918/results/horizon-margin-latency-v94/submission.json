@@ -1,0 +1,31 @@
+{
+  "command": [
+    "qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=false,h_rt=00:20:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "cgar_margin_latency",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-horizon-margin-latency-v94-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-horizon-margin-latency-v94-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899868\n"
+}
