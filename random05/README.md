@@ -56,3 +56,8 @@ For matched-hardware validation, add `--hosts 'research33*|research39*'` and
 runner selects queue instances on those known hosts and verifies the CPU model
 before starting. Exploratory runs may use other CPU models; record that
 explicitly and validate promising results on the reference hardware.
+
+For mixed-duration batches, use `python3 random05/tools/split_grid.py submit`
+with the same output, cases, hosts, and CPU-model arguments. Each case gets an
+independent GRID allocation. Run `split_grid.py collect --output <batch>` to
+assemble completed summaries; each child directory retains its own provenance.

@@ -1,6 +1,6 @@
 {
   "source_commit": "2ead4f4",
-  "evidence": "random05/results/candidate-sort-full-v20/summary.json",
+  "evidence": "random05/results/contrast-validation-full-v20/summary.json",
   "case": {
     "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v20/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
@@ -9,7 +9,7 @@
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "k1024-control",
+    "name": "contrast2.4",
     "env": {
       "R05_K": "1024",
       "R05_THREADS": "4",
@@ -32,7 +32,7 @@
       "R05_KEEP_BONUS": "0.5",
       "R05_HUNGARIAN": "1000",
       "R05_SCHED_GUIDE": "1",
-      "R05_SEED": "0"
+      "R05_FLOW_OUTPUT_PENALTY": "2.4"
     },
     "smt": 1
   }

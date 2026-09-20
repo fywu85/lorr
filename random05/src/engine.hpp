@@ -24,7 +24,7 @@ struct Config {
     int age_cap=0, pre_cycles=0;
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
-    float progress_discount=1, flow_turn_load=0;
+    float progress_discount=1, flow_turn_load=0, plain_score=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;
@@ -75,8 +75,9 @@ private:
     std::mt19937 rng_;
     uint64_t total_forward_=0,total_agent_steps_=0;
     int triaged_=0;
-    std::unordered_map<int,std::shared_ptr<Chain>> chains_;
-    std::vector<const Chain*> assigned_;
+    std::unordered_map<int,std::shared_ptr<Chain>> chains_, score_chains_;
+    std::unique_ptr<Graph> score_graph_;
+    std::vector<const Chain*> assigned_, score_assigned_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
     std::vector<int> predicted_loc_, predicted_dir_;

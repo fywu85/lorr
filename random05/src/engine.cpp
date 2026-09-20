@@ -30,6 +30,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
+    c.plain_score=real("R05_PLAIN_SCORE",0);
+    if(c.plain_score<0 || c.plain_score>1)
+        throw std::invalid_argument("plain score blend must be in [0,1]");
     if(c.progress_discount<=0 || c.progress_discount>1 || c.flow_turn_load<0)
         throw std::invalid_argument("discount must be in (0,1] and turn-load multiplier nonnegative");
     c.cycle_portfolio=integer("R05_CYCLE_PORTFOLIO",0);
@@ -314,6 +317,12 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
 }
 void Engine::initialize(SharedEnvironment* env) {
     rng_.seed(cfg.seed);graph=std::make_unique<Graph>(*env,cfg);
+    if(cfg.plain_score>0) {
+        // The policy can prefer traffic lanes while evaluation measures actual
+        // unit-cost forward/turn actions, including every remaining task stop.
+        Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
+        score_graph_=std::make_unique<Graph>(*env,metric);
+    }
     const int n=env->num_of_agents;
     age_.assign(n,0);previous_task_.assign(n,-1);previous_stage_.assign(n,0);
     best_offsets_.resize(n);
@@ -631,9 +640,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
 Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves) const {
     const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;
     auto total_cost=[&](const Frame& f) {
-        double s=0;
-        for(int i=0;i<int(f.loc.size());++i)if(assigned_[i])s+=assigned_[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
-        return s;
+        double guided=0,plain=0;
+        for(int i=0;i<int(f.loc.size());++i)if(assigned_[i]) {
+            guided+=assigned_[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
+            if(score_graph_)plain+=score_assigned_[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
+        }
+        return score_graph_?guided*(1-cfg.plain_score)+plain*cfg.plain_score:guided;
     };
     double initial=total_cost(frame),previous=initial,discounted=0,weight=1,weight_sum=0;
     std::vector<Action> actions;
@@ -676,7 +688,10 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     for(auto it=chains_.begin();it!=chains_.end();) {
         if(!env->task_pool.count(it->first))it=chains_.erase(it);else ++it;
     }
-    assigned_.assign(n,nullptr);triaged_=0;
+    for(auto it=score_chains_.begin();it!=score_chains_.end();) {
+        if(!env->task_pool.count(it->first))it=score_chains_.erase(it);else ++it;
+    }
+    assigned_.assign(n,nullptr);score_assigned_.assign(n,nullptr);triaged_=0;
     for(int a=0;a<n;++a) {
         int id=schedule[a];++age_[a];
         if(previous_task_[a]>=0 && !env->task_pool.count(previous_task_[a]))age_[a]=0;
@@ -686,6 +701,11 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             if(id==previous_task_[a] && task.idx_next_loc>previous_stage_[a])age_[a]=0;
             auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task,cfg.cost_cache);
             assigned_[a]=chain.get();
+            if(score_graph_) {
+                auto& score_chain=score_chains_[id];
+                if(!score_chain)score_chain=std::make_shared<Chain>(*score_graph_,task,cfg.cost_cache);
+                score_assigned_[a]=score_chain.get();
+            }
             if(cfg.horizon>0) {
                 double remaining=0;int p=frame.loc[a];
                 for(int k=task.idx_next_loc;k<int(chain->goals.size());++k) {

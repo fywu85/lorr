@@ -24,24 +24,25 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,299 tasks / 2,000 steps on four physical
+Best verified combined result: **3,363 tasks / 2,000 steps on four physical
 cores**. Three NMS four-worker runs give **2,902 / 2,903 / 2,914**: our lead is
-**13.2–13.7%** (13.2% against the strongest repeat). All use EPYC 9354 CPUs.
-The latest implementation repeats the exact trajectory at mean latency **335 ms**,
-maximum **438 ms**, with zero errors or timeouts. That trajectory also repeats
-on 32 workers, where NMS scores 3,172 and our lead is 4.0%.
+**15.4% against the strongest repeat**. All use EPYC 9354 CPUs. Mean latency
+**333 ms**, maximum **435 ms**, with zero errors or timeouts.
 
 The configuration uses planner seed 0, generated field seed 15, K=1024,
 noise=200, dispersion=0.8, five local trials with equal-score acceptance,
-wait cost=0.5, exact matching with oriented guidance, keep bonus=0.5 and
-known-horizon triage scale=1.5 (`--trick RANDOM-05`). Five planner seeds give
-3,299 / 3,185 / 3,284 / 3,214 / 3,061: mean **3,209**, or **10.1%** above the
-strongest NMS repeat. The 13.2% margin describes the best seed, not the mean.
+wait cost=0.5, exact matching with oriented guidance, keep bonus=0.5,
+final directional penalty=2.4 and known-horizon triage scale=1.5
+(`--trick RANDOM-05`). This new best has been measured on one planner seed.
 
-The earlier four-core best of 3,127 used blocked-cycle preparation. Its six-seed
-mean was 3,021 versus 3,034 without preparation. Best without known-horizon
-triage remains 2,914 on four cores. The colleague's roughly 27–28% matched
-advantage remains the campaign objective.
+The preceding directional penalty of 1.6 scored 3,299 / 3,185 / 3,284 / 3,214 /
+3,061 over five planner seeds: mean **3,209**, or **10.1%** above the strongest
+NMS repeat. Its best trajectory repeated exactly on 32 workers, where NMS
+scores 3,172 and the matched lead was 4.0%. Do not transfer those replication
+claims to the new 3,363 configuration before testing it.
+
+Best without known-horizon triage remains 2,914 on four cores. The colleague's
+roughly 27–28% matched advantage remains the campaign objective.
 
 [NMS four-worker evidence](random05/results/nms4-full-v1/summary.json),
 [NMS 32-worker evidence](random05/results/nms-original-full-v1/summary.json),
@@ -82,6 +83,8 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T09:40:30.891971+00:00 | [6aed8ba](https://github.com/fywu85/lorr/commit/6aed8ba) | Exact/oriented matching, keep0.5; K1024/32 workers; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +4.0% | [Full evidence](random05/results/compound-search-full-v16/summary.json) |
 | 2026-09-20T10:03:44.348412+00:00 | [79d0e79](https://github.com/fywu85/lorr/commit/79d0e79) | Shared candidate sorting; exact/oriented keep0.5; K1024; field15/noise200/triage1.5; seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/shared-sort-full-v18/summary.json) |
 | 2026-09-20T10:19:47.676357+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | Same score; stable insertion sorting lowers mean latency to335ms; K1024, field15/seed0; `--trick RANDOM-05` | 3299 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +13.2% | [Full evidence](random05/results/candidate-sort-full-v20/summary.json) |
+| 2026-09-20T10:23:12.419038+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast3.2; K1024, field15/seed0; `--trick RANDOM-05` | 3351 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.0% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
+| 2026-09-20T10:23:13.900548+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast2.4; K1024, field15/seed0; `--trick RANDOM-05` | 3363 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.4% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -308,3 +311,23 @@ The published NMS score of 3,050 used different instances and hardware.
 - Added one-job-per-case submission (`tools/split_grid.py`) for mixed-duration
   batches. Each solver retains its full physical-core allocation; completed
   cases release their resources immediately instead of waiting for the batch.
+
+- Production-budget contrast validation: K1024 with final penalty2.4 scores
+  **3,363**, versus3,299 control (+1.9%), a15.4% lead over the strongest NMS4
+  repeat. Penalty3.2 gives3,351; turn0.3 gives3,330; penalty2.4 plus turn0.3
+  gives3,315. All valid. Keep the single stronger-contrast change; combining
+  separately promising changes was worse than either alone.
+
+- The larger K2048 portfolio gives 3,262 with contrast1.6 and 3,343 with
+  contrast2.4, below each corresponding K1024 best. Multi-generation search
+  also loses at K1024: G2=3,181 and G4=3,234 versus3,299 control. Keep it off;
+  the promising smaller-budget result did not transfer.
+- With contrast2.4 at K128, static load multipliers0/0.25/0.5/0.75/1/1.5 give
+  3,013/3,101/3,190/3,199/3,217/3,221. The last two need production-budget
+  validation; no frontier promotion from this small gain.
+- Next objective test separates policy guidance from evaluation: retain lane
+  preferences for selecting moves, but blend the rollout score with exact
+  unit-action distances over all remaining task stops. Extra cost tables fit
+  comfortably in the32GB allowance. Regression tests check that identical
+  metrics reproduce the same trajectory and that blends are worker-invariant.
+  Runtime and throughput validation are pending; the feature defaults to off.
