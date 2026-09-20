@@ -24,24 +24,26 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,374 tasks / 2,000 steps on four physical
+Best verified combined result: **3,379 tasks / 2,000 steps on four physical
 cores**, versus **2,914** for the strongest of three matched NMS repeats
-(2,902 / 2,903 / 2,914): **+15.8%**. All use EPYC 9354 CPUs. Mean latency
-**327 ms**, maximum **436 ms**, with zero errors or timeouts.
+(2,902 / 2,903 / 2,914): **+16.0%**. All use EPYC 9354 CPUs. Mean latency
+**326 ms**, maximum **430 ms**, with zero errors or timeouts.
 
-The new best enables independent random streams per simulation step. Its other
-settings are planner seed 0, generated field seed 15, K=1024, noise=200,
-dispersion=0.8, five local trials with equal-score acceptance, wait cost=0.5,
-exact/guided matching with keep bonus=0.5, directional penalty=2.4 and
-known-horizon triage scale=1.5 (`--trick RANDOM-05`). The 11-task increase over
-the previous best is a single-seed observation, not a replicated average gain.
+The best uses planner seed 3, independent random streams per simulation step,
+generated field seed 15, K=1024, noise=200, dispersion=0.8, five local trials
+with equal-score acceptance, wait cost=0.5, exact/guided matching with keep
+bonus=0.5, directional penalty=2.4 and known-horizon triage scale=1.5
+(`--trick RANDOM-05`). It is the maximum of five planner seeds.
 
-With the preceding random-stream mode, five seeds at directional penalty2.4
-score 3,363 / 3,276 / 3,344 / 3,329 / 3,312: mean **3,325**, or **14.1%** above
-NMS. All five improve over the same seeds with penalty1.6 (mean3,209), a3.6%
-mean gain. The new3,374 trajectory also repeats exactly on32 workers (16physical cores),
-versus NMS3,172 on the same allocation: **+6.4%**. That run averages84ms per
-step (maximum190ms). The four-core and32-worker comparisons remain separate.
+Those five seeds score **3,374 / 3,231 / 3,365 / 3,379 / 3,350**: mean
+**3,339.8**, or **14.6%** above NMS. The preceding random-stream mode averaged
+3,324.8 on the same five seeds; the new mode improves four of five pairs but
+only adds **0.45%** to the mean. These vary planner randomness on one fixed
+instance; they are not five independently generated instances.
+
+The seed-0 trajectory also repeats exactly on **32 workers / 16 physical
+cores**, scoring **3,374** against NMS **3,172**: **+6.4%**. Mean latency is
+84 ms, maximum 190 ms. The four-core and 32-worker comparisons remain separate.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -89,6 +91,7 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T10:23:13.900548+00:00 | [2ead4f4](https://github.com/fywu85/lorr/commit/2ead4f4) | contrast2.4; K1024, field15/seed0; `--trick RANDOM-05` | 3363 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.4% | [Full evidence](random05/results/contrast-validation-full-v20/summary.json) |
 | 2026-09-20T10:57:32.632101+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step random streams; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +15.8% | [Full evidence](random05/results/load-depth-split-full-v22/step-rng-k1024/summary.json) |
 | 2026-09-20T11:09:45.903706+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Same3,374 trajectory; independent per-step RNG; K1024, contrast2.4, field15/seed0; `--trick RANDOM-05` | 3374 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +6.4% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-workers32/summary.json) |
+| 2026-09-20T11:17:50.924764+00:00 | [3228b9c](https://github.com/fywu85/lorr/commit/3228b9c) | Independent per-step RNG; K1024, contrast2.4, field15; planner seed3; `--trick RANDOM-05` | 3379 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.0% | [Full evidence](random05/results/step-rng-validation-split-full-v22/step-rng-seed3/summary.json) |
 
 ## Reference evidence supplied by the user
 

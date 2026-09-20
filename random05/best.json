@@ -1,6 +1,6 @@
 {
   "source_commit": "3228b9c",
-  "evidence": "random05/results/load-depth-split-full-v22/step-rng-k1024/summary.json",
+  "evidence": "random05/results/step-rng-validation-split-full-v22/step-rng-seed3/summary.json",
   "case": {
     "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v22/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
@@ -9,7 +9,7 @@
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "step-rng-k1024",
+    "name": "step-rng-seed3",
     "env": {
       "R05_K": "1024",
       "R05_THREADS": "4",
@@ -33,7 +33,8 @@
       "R05_HUNGARIAN": "1000",
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
-      "R05_RANDOM_BY_STEP": "1"
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3"
     },
     "smt": 1
   }
