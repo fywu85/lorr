@@ -981,8 +981,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     // These spatial tables can exclude non-goal pockets. The configured-horizon
     // experiment is restricted to an unrestricted core so every cached distance
     // is a lower bound on physical travel. No native lane cost enters this bound.
-    if (known_horizon_ && (cert_.core != cert_.free || refine_chain_costs_ || chain_flow_pricing_))
-        throw std::invalid_argument("known horizon requires a full core and original spatial chain estimates");
+    if (known_horizon_ && (cert_.core != cert_.free || refine_chain_costs_ || chain_flow_pricing_ || pickup_full_cost_key_))
+        throw std::invalid_argument("known horizon requires a full core, original spatial chain estimates and ordinary shortlist ordering");
     if (known_horizon_)
         std::printf("[CGAR_TRICK_HORIZON] known_horizon=%d assumption=configured lower_bound=spatial_plus_service core=full assignments=new_only fair=unchanged held=unchanged all_impossible=assign after_horizon=ordinary\n", known_horizon_);
     oracle_.init(&cert_, table_mb << 20);

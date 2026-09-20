@@ -3733,10 +3733,38 @@ void known_horizon_regression() {
   Cgar policy;policy.initialize(&test,30000);std::vector<int> schedule;policy.schedule(&test,30000,schedule);
   require(schedule==std::vector<int>{horizon==102?1:0},"horizon ignored first same-cell service tick");
  }
+ // A real shelf blocks the four-step Manhattan route. The six-step route
+ // above it is free; grid parity proves the spatial shortest distance is six.
+ for(int cell:{10008,10009,10010})require(base.map[cell],"horizon detour obstacle fixture changed");
+ for(int cell:{10007,9507,9508,9509,9510,9511,10011})require(!base.map[cell],"horizon detour route fixture changed");
+ setenv("CGAR_TRICK_KNOWN_HORIZON","105",1);
+ for(int tables:{0,128}){
+  setenv("CGAR_SCHED_TABLES",std::to_string(tables).c_str(),1);auto test=base;test.curr_states[0].location=10007;
+  Task old;old.task_id=0;old.t_revealed=0;old.locations={10011,10011};test.task_pool.emplace(0,old);
+  Task fresh;fresh.task_id=1;fresh.t_revealed=100;fresh.locations={10007};test.task_pool.emplace(1,fresh);
+  Cgar policy;policy.initialize(&test,30000);std::vector<int> schedule;policy.schedule(&test,30000,schedule);
+  require(schedule==std::vector<int>{tables?1:0},"resident BFS did not change horizon tier across a shelf detour");
+  require((policy.stats().horizon_first_rank_change==100)==bool(tables),"detour tier did not use the available spatial bound");
+ }
+ // Both pickups lie beyond the fixed2048-node discovery radius. The oldest
+ // fallback is impossible; sampled replenishment must retain the feasible pair.
+ setenv("CGAR_SCHED_TABLES","128",1);setenv("CGAR_PICKUP_FLOW","0",1);setenv("CGAR_PICKUP_FULL_ROBOTS","0",1);
+ setenv("CGAR_TRICK_KNOWN_HORIZON","547",1);
+ {
+  auto test=base;for(int cell=1504;cell<=1950;++cell)require(!test.map[cell],"horizon fallback corridor fixture changed");
+  Task old;old.task_id=0;old.t_revealed=0;old.locations={1950,1504};test.task_pool.emplace(0,old);
+  Task fresh;fresh.task_id=1;fresh.t_revealed=100;fresh.locations={1950,1950};test.task_pool.emplace(1,fresh);
+  Cgar policy;policy.initialize(&test,30000);std::vector<int> schedule;policy.schedule(&test,30000,schedule);
+  require(schedule==std::vector<int>{1}&&policy.stats().empty_searches>0&&policy.stats().fallback_assignments==1&&
+   policy.stats().sample_evaluations==2&&policy.stats().improved_fallbacks==1&&policy.stats().horizon_first_rank_change==100,
+   "empty-shortlist fallback sampling bypassed active horizon tier");
+ }
+ setenv("CGAR_PICKUP_FLOW","1",1);setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
+ setenv("CGAR_PICKUP_FULL_COST_KEY","1",1);rejects([&]{auto test=base;Cgar policy;policy.initialize(&test,30000);},"horizon accepted a different retention baseline");unsetenv("CGAR_PICKUP_FULL_COST_KEY");
  setenv("CGAR_REFINE_CHAIN_COSTS","1",1);rejects([&]{auto test=base;Cgar policy;policy.initialize(&test,30000);},"horizon accepted unreviewed refined chain basis");unsetenv("CGAR_REFINE_CHAIN_COSTS");
  for(auto setting:settings)unsetenv(setting.first);
  for(const char* key:{"CGAR_TRICK_KNOWN_HORIZON","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_NATIVE_BANDS","CGAR_FLOW_COST_SCALE","CGAR_SCHED_TABLES"})unsetenv(key);
- std::cout<<"KNOWN_HORIZON passed metric_table_boundary_cases="<<cases<<" repeated_service_cases=5 first_rank_change=1 at_and_past_horizon_ordinary=1 oldest_admission_unchanged=1 held_started_protected=1 task_metadata_unchanged=1 explicit_cli=1 malformed_and_basis_guards=10\n";
+ std::cout<<"KNOWN_HORIZON passed metric_table_boundary_cases="<<cases<<" repeated_service_cases=5 active_shelf_detour_cases=2 empty_shortlist_sampled_fallback=1 first_rank_change=1 at_and_past_horizon_ordinary=1 oldest_admission_unchanged=1 held_started_protected=1 task_metadata_unchanged=1 explicit_cli=1 malformed_and_basis_guards=11\n";
 }
 
 void chain_flow_pricing_regression() {
