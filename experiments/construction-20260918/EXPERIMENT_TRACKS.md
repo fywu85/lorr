@@ -6,7 +6,7 @@ map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
 The generic frontier remains144,510single-run tasks and143,941.2over six seeds.
-There is no completed full-horizon CGAR trick-track result yet. A trick-assisted score must not replace
+The lane-only TRICK reaches146,659/146,566 on full seeds0/2, pending six-seed confirmation. A trick-assisted score must not replace
 the generic frontier or be reported as a generic algorithm improvement.
 
 For a map-specific implementation or experiment:
@@ -18,7 +18,7 @@ For a map-specific implementation or experiment:
   activation. Use a separate `trick_...` benchmark profile, record that exact
   flag in commands/logs, and identify the generic baseline and source commit.
   The first experimental implementation is [NMS-derived warehouse lane directions](tricks/nms_warehouse/README.md).
-  It is undergoing validation and has no promoted throughput result.
+  The user also requested [short-task preference](tricks/short_tasks/README.md) as an explicit TRICK, despite that preference itself being generic. Component environment settings only select behavior after the CLI flag; they cannot activate it alone.
 - State its map/layout/data assumptions and origin: for example NMS's warehouse
   lane mask and coordinate bands, or KK's supplied warehouse edge-weight file.
 - Compare full runs against that baseline; report all tested seeds, failures,
@@ -30,7 +30,6 @@ template. A topology-derived estimator still needs a measured benefit; calling
 it generic is not a performance claim.
 
 Both tracks retain complete prescribed-work decisions, explicit timeout failures,
-collision/schedule validity, processRSS below32,000,000,000bytes, and isolated GRID
-allocations. No hidden future tasks are used. The existing generic work continues;
-the first NMS-derived lane experiment has passed startup checks and is undergoing
-full-run evaluation.
+collision/schedule validity, processRSS below32,000,000,000bytes, and reserved/bound GRID physical cores. Shared hosts and5-second development
+deadlines are now user-authorized; later strict1s checks remain separate. No hidden future tasks are used. The existing generic work continues;
+the short-task × lane factorial is running with matched seeds and age/backlog accounting.

@@ -35,13 +35,18 @@ fixture changed decisions on116 steps. All26 frozen source/test hashes match.
 Original build8899283 was cancelled before execution to strengthen coverage.
 The build used four bound physical cores; the archived allocation-change receipt
 records a request that raced job start. This build makes no performance claim.
-The warehouse benchmarks continue to require exclusive hosts.
+The user subsequently authorized shared GRID hosts and a5-second complete-entry
+deadline for development, with fixed work and the32-billion-byte process limit.
+The best candidate will receive a later exact one-second validation.
 
-After a valid200-step feasibility screen, compare full seeds0/2 against unchanged
-controls on isolated EPYC9354 allocations, four physical cores per process,
-one second per complete entry and32-billion-byte process RSS. Record full totals,
-per1000windows, task age, empty work and loaded turns/waits. Only full valid gains
-can justify six-seed confirmation. No new result or promotion is claimed.
+The shared200-step screen passed on both arms, with maxima898.487/893.222ms;
+the unchanged control reproduces its exact reference trajectory and all first128
+steps match before publication. Full seeds0/2 × OFF/ON are running in parallel
+under job8899305, held verification8899306. Both baseline and candidate use the
+same frozen binary/source4524843 and sixteen distinct physical cores. Record full
+totals, per1000windows, task age, empty work and loaded turns/waits. The screen is
+feasibility evidence only; no new quality result or promotion is claimed.
+[Screen verification](results/remaining-flow-screen-v56-shared/comparison.json).
 
 The preceding traffic replay rejects simple short-chain pooling as the next
 candidate. Full static-lane TRICK results have little late-rate gain, weakening

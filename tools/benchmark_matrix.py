@@ -20,6 +20,16 @@ def execute(out):
     spec = json.loads((out / 'spec.json').read_text())
     resources = cpu_resources()
     count = spec['parallel_suites'] * spec['jobs_per_suite'] * spec.get('cpus_per_instance', 1)
+    # GRID may grant slots yet silently decline a best-effort binding request.
+    # Do not turn an unbound host-wide mask into apparently reserved cores.
+    if resources['physical_cores_visible'] != count:
+        write(out / 'allocation-rejected.json', {
+            'checked_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'requested_physical_cores': count, 'resources': resources,
+            'job_id': os.environ.get('JOB_ID'),
+            'reason': 'GRID binding was not applied exactly; no benchmark process started'})
+        raise RuntimeError('GRID binding unavailable: requested %d physical cores, affinity exposes %d' %
+                           (count, resources['physical_cores_visible']))
     cpus = resources['representative_cpus'][:count]
     assert len(cpus) == count and int(os.environ['NSLOTS']) >= count, resources
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota'] >= count, resources
@@ -86,6 +96,7 @@ def main():
     parser.add_argument('--runtime', default='01:00:00', help='Grid Engine wall-time limit; distinct from the per-decision limit')
     parser.add_argument('--hosts', nargs='+', help='Optional scheduler host allowlist for hardware-controlled comparisons')
     parser.add_argument('--expected-cpu-model', help='Fail before benchmarking if the allocated CPU model differs')
+    parser.add_argument('--shared-host', action='store_true', help='Development only: permit other jobs on the GRID host while retaining physical-core bindings')
     parser.add_argument('--hold-job', help='Wait for these Grid Engine job IDs before starting')
     parser.add_argument('--execute', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -132,7 +143,7 @@ def main():
     write(out / 'build.json', build)
     if horizons:
         write(out / 'horizons.json', horizons)
-    spec = {'trick': args.trick, 'experiment_track': 'TRICK' if args.trick else 'GENERIC', 'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
+    spec = {'exclusive_host': not args.shared_host, 'benchmark_mode': 'relaxed_development' if args.shared_host or args.time_limit_ms != 1000 else 'competition_budget', 'trick': args.trick, 'experiment_track': 'TRICK' if args.trick else 'GENERIC', 'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
             'parallel_suites': min(args.parallel_suites, len(cases)), 'jobs_per_suite': min(args.jobs_per_suite, len(instances)),
             'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'runtime': args.runtime,
             'hosts': args.hosts, 'expected_cpu_model': args.expected_cpu_model, 'hold_job': args.hold_job}
@@ -142,7 +153,7 @@ def main():
     cores = spec['parallel_suites'] * spec['jobs_per_suite'] * spec['cpus_per_instance']
     queue_selector = ','.join('debian.q@' + host for host in args.hosts) if args.hosts else 'debian.q'
     submit = ['/opt/n1ge/bin/lx24-amd64/qsub', '-terse', '-w', 'e', '-cwd', '-q', queue_selector, '-pe', 'threaded', str(cores),
-              '-binding', 'linear:' + str(cores), '-l', 'exclusive=true,h_rt=' + args.runtime + ',h_vmem=' + str(args.memory_gib_per_slot) + 'G', '-m', 'n', '-N', 'lorr_matrix',
+              '-binding', 'linear:' + str(cores), '-l', 'exclusive=' + ('false' if args.shared_host else 'true') + ',h_rt=' + args.runtime + ',h_vmem=' + str(args.memory_gib_per_slot) + 'G', '-m', 'n', '-N', 'lorr_matrix',
               '-j', 'y', '-o', str(out / 'scheduler.log'), '-S', '/bin/bash', str(out / 'job.sh')]
     if args.hold_job:
         submit[-1:-1] = ['-hold_jid', args.hold_job]

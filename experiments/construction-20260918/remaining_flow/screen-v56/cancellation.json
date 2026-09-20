@@ -1,0 +1,26 @@
+{
+  "reason": "User explicitly relaxed exclusive-host and one-second requirements for development. Supersede these not-yet-started jobs with shared-host, fixed-work,5000ms runs; keep32GB memory and physical bindings.",
+  "cancelled_utc": "2026-09-20T04:45:04.362219+00:00",
+  "jobs": [
+    8899287,
+    8899288,
+    8899290,
+    8899291
+  ],
+  "held_states": {
+    "8899287": "hqw",
+    "8899290": "hqw",
+    "8899288": "hqw",
+    "8899291": "hqw"
+  },
+  "hold_response": "modified hold of job 8899287\nmodified hold of job 8899288\nmodified hold of job 8899290\nmodified hold of job 8899291\n",
+  "command": [
+    "qdel",
+    "8899287",
+    "8899288",
+    "8899290",
+    "8899291"
+  ],
+  "returncode": 0,
+  "response": "fw2449 has deleted job 8899287\nfw2449 has deleted job 8899288\nfw2449 has deleted job 8899290\nfw2449 has deleted job 8899291\n"
+}

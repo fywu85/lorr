@@ -3,7 +3,7 @@
     "/opt/n1ge/bin/lx24-amd64/qsub",
     "-terse",
     "-w",
-    "n",
+    "e",
     "-cwd",
     "-q",
     "debian.q@research31.grid.gsb,debian.q@research38.grid.gsb,debian.q@research44.grid.gsb,debian.q@research46.grid.gsb,debian.q@research50.grid.gsb,debian.q@research52.grid.gsb,debian.q@research57.grid.gsb",
@@ -13,7 +13,7 @@
     "-binding",
     "linear:36",
     "-l",
-    "exclusive=true,h_rt=02:00:00,h_vmem=8G",
+    "exclusive=false,h_rt=02:00:00,h_vmem=8G",
     "-m",
     "n",
     "-N",
@@ -21,12 +21,11 @@
     "-j",
     "y",
     "-o",
-    "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-20260920/scheduler.log",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-shared-20260920/scheduler.log",
     "-S",
     "/bin/bash",
-    "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-20260920/job.sh"
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-shared-20260920/job.sh"
   ],
   "returncode": 0,
-  "response": "8899287\n",
-  "retry_reason": "Queue the same 36 physical cores and exclusive host until resources are available"
+  "response": "8899301\n"
 }

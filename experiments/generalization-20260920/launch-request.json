@@ -29,7 +29,7 @@
     "--memory-gib-per-slot",
     "8",
     "--time-limit-ms",
-    "1000",
+    "5000",
     "--log-detail-level",
     "2",
     "--runtime",
@@ -45,7 +45,10 @@
     "--expected-cpu-model",
     "AMD EPYC 9354 32-Core Processor",
     "--output",
-    "runs/cgar-generalization-other9-v54-20260920"
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-shared-20260920",
+    "--shared-host"
   ],
-  "requested_utc": "2026-09-20T03:58:08.206236+00:00"
+  "requested_utc": "2026-09-20T04:47:20.133092+00:00",
+  "supersedes": "/shared/share_mala/fw2449/lorr2024/runs/cgar-generalization-other9-v54-20260920",
+  "reason": "Explicit user authorization to relax exclusive-host and one-second limits for development; fixed algorithm work and32GB memory retained."
 }

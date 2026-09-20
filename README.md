@@ -101,7 +101,7 @@ CGAR's protection rules. The optional equal-weight 50k profile averages 107,413
 warehouse tasks over three seeds, versus 43,407 for the paired cache control.
 Serial and parallel portfolios produce identical full trajectories. A precise
 timing repeat stays below 0.506 seconds per entry and about 15.2 GiB total memory;
-six-seed confirmation and the 152,981-task local leader target remain outstanding.
+six-seed confirmation and the user-revised 154,795-task target remain outstanding.
 The study also records initialization-failure fixes, a further Fable CLI review,
 and an exact travel audit that identifies the remaining loaded-motion gap.
 

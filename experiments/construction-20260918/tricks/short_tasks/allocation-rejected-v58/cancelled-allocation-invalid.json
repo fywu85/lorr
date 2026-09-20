@@ -1,0 +1,23 @@
+{
+  "checked_utc": "2026-09-20T05:17:55.250335+00:00",
+  "reason": "GRID accepted32 slots but binding linear32 was not applied: job affinity exposes64 physical cores. Selected0..31 overlaps21 physical representatives reserved by generalization job8899301. Invalid allocation; no throughput result accepted.",
+  "actions": [
+    {
+      "command": [
+        "qhold",
+        "8899311"
+      ],
+      "returncode": 0,
+      "output": "modified hold of job 8899311\n"
+    },
+    {
+      "command": [
+        "qdel",
+        "8899310",
+        "8899311"
+      ],
+      "returncode": 0,
+      "output": "fw2449 has registered the job 8899310 for deletion\nfw2449 has deleted job 8899311\n"
+    }
+  ]
+}

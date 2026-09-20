@@ -14,7 +14,7 @@ def read(path):
     return json.loads(path.read_text())
 
 
-def verify(raw, archive, commit, allow_failed=False):
+def verify(raw, archive, commit, allow_failed=False, decision_limit_ms=1000):
     raw, archive = Path(raw).resolve(), Path(archive).resolve()
     build = read(raw / 'build.json')
     sources = dict(build['sources'])
@@ -25,7 +25,11 @@ def verify(raw, archive, commit, allow_failed=False):
     binary = hashlib.sha256((raw / 'lifelong').read_bytes()).hexdigest()
     assert binary == build['binary_sha256'], 'binary differs from frozen build'
     spec = read(archive / 'spec.json')
-    assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] == 1000
+    assert decision_limit_ms in (1000, 5000)
+    assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] == decision_limit_ms
+    if decision_limit_ms != 1000:
+        assert spec['benchmark_mode'] == 'relaxed_development'
+    deadline_seconds = decision_limit_ms / 1000.0
     count = len(spec['cases'])
     completion = read(raw / 'completion.json')
     assert len(completion['case_returncodes']) == count
@@ -45,7 +49,7 @@ def verify(raw, archive, commit, allow_failed=False):
         s = summaries[name][0]
         assert completion['case_returncodes'][spec['cases'].index(case)] == int(not s['valid']), name
         assert meta['build_provenance'] == build and meta['binary_sha256'] == binary, name
-        assert meta['plan_time_limit_ms'] == 1000 and meta['max_process_memory_bytes'] == 32000000000
+        assert meta['plan_time_limit_ms'] == decision_limit_ms and meta['max_process_memory_bytes'] == 32000000000
         resources = meta['cpu_resources']
         assert resources['effective_cpu_quota'] is None
         assert resources['cpu_model'] == 'AMD EPYC 9354 32-Core Processor'
@@ -70,7 +74,7 @@ def verify(raw, archive, commit, allow_failed=False):
             matches = re.findall(r'CGAR_TIMEOUT timestep=(\d+) elapsed_ms=([\d.]+) stage=(\S+)', log)
             assert len(matches) == 1, ('missing explicit timeout', name)
             step, elapsed, stage = matches[0]
-            assert float(elapsed) >= 1000
+            assert float(elapsed) >= decision_limit_ms
             failures.append({'case': name, 'seed': case['seed'], 'variant': case['variant'],
                              'environment': case['environment'], 'outcome': s['outcome'],
                              'failed_timestep': int(step), 'elapsed_ms': float(elapsed), 'stage': stage,
@@ -82,7 +86,7 @@ def verify(raw, archive, commit, allow_failed=False):
         assert s['makespan'] == s['entry_compute_samples'] == m['steps'] == 5000, name
         assert meta['instances']['WAREHOUSE']['steps'] == 5000
         assert all(s[k] == 0 for k in ['planner_errors', 'schedule_errors', 'timeouts', 'internal_timeouts', 'exit']), name
-        assert s['entry_timing_valid'] and s['entry_compute_max_seconds'] <= 1, name
+        assert s['entry_timing_valid'] and s['entry_compute_max_seconds'] <= deadline_seconds, name
         assert s['memory_valid'] and s['peak_process_rss_bytes'] < 32000000000, name
         assert s['after'] == m['tasks'] and s['entry_compute_max_seconds'] == m['max_decision_seconds'], name
         assert m['movement_diagnostics']['complete'], name
@@ -105,7 +109,10 @@ def verify(raw, archive, commit, allow_failed=False):
                      'evidence': str(archive.relative_to(ROOT))})
     for name in ['submission.json', 'motion-analysis-submission.json', 'completion.json']:
         shutil.copy2(raw / name, archive / name)
-    return {'checked_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    return {'decision_limit_ms': decision_limit_ms, 'benchmark_mode': spec.get('benchmark_mode', 'competition_budget'),
+            'exclusive_host_requested': spec.get('exclusive_host', True),
+            'competition_budget_confirmed': decision_limit_ms == 1000 and spec.get('exclusive_host', True) and not failures,
+            'checked_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'exact_production_source_commit': commit, 'verified_source_and_test_files': len(sources),
             'binary_sha256': binary, 'full_cases': count, 'complete_entry_samples': len(rows) * 5000,
             'failed_cases': len(failures), 'failures': failures,

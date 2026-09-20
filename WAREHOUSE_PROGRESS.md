@@ -1,12 +1,12 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 03:37:46 UTC.
+Updated: 2026-09-20 05:21 UTC.
 
 **Best single run: 144,510 tasks, unchanged.** **Current six-seed reference: 143,941.2 mean tasks**, up from142,474.8 (**+1.029%**). This confirms the earlier regional-repair result across all six seeds; it is not a new single-run record. The configuration combines graded strength4/scale4, margin25/refresh512, turn-build128, heading/traffic-aware pickup selection,64 complete pickup fields and two regional repair rounds. One global4M worker; four regions/repair threads,25,000 fixed attempts per region per round.
 
 The six totals are **144,510 /143,933 /144,107 /143,134 /143,934 /144,029**. Every full total improves over its matched control. Five final1,000-step windows and five outstanding-age p90 values improve; seed1 loses108 final-window tasks and agep90 rises1 step. Those secondary regressions remain documented. All60,000 candidate/control entries meet one second, all process RSS values stay below32decimalGB, and every control exactly reproduces its preceding full trajectory. [Six-seed evidence](experiments/construction-20260918/results/pickup-full-regions-six-seed-v44.json).
 
-The local KittyKnight reference is **152,981**. The confirmed mean is **5.91% below** it. That reference used38.858GB RSS; our limit is32,000,000,000bytes per planner. This is a local comparison, not an official or equal-resource SoTA claim. The target remains unmet.
+The active target is **154,795 completed tasks**, as corrected by the user on2026-09-20. The current six-seed mean needs **7.54% more throughput** to reach it. The earlier local KittyKnight measurement remains152,981 and used38.858GB RSS; our limit remains32,000,000,000bytes per planner. The new target is a user-specified objective, not a newly measured competitor result. The generic target remains unmet; TRICK results do not satisfy it. Development runs now allow shared hosts and a5-second timeout at the user's request. Fixed search work and the32GB limit remain; these results must be labelled separately from competition-budget confirmation. The best solver will receive a later one-second check.
 
 The previously highest six-seed mean,143,111.2 from sixteen global workers, had three total regressions and was not promoted. Regional repair now exceeds that mean and improves all six paired full totals. The larger pickup quotas128/256 produce exactly the same full trajectories as64 on both tested seeds; they provide no observed quality gain. [Regional configuration and checks](experiments/construction-20260918/PICKUP_FULL_REGIONS.md) · [Quota comparison](experiments/construction-20260918/results/pickup-full-quota-full-v46.json).
 
@@ -68,6 +68,8 @@ The [generic traffic replay](experiments/construction-20260918/bottleneck_review
 validates400million actions and60published fields. No short corridor has mixed
 toll signs; simple corridor pooling is dropped as the next policy candidate.
 This is diagnostic progress, not a new generic score.
+
+**TRICK experiment started (2026-09-20 05:21 UTC), no new record:** [f939b3b](https://github.com/fywu85/lorr/commit/f939b3b1ab44368e83617a9f97300f26c4063210) adds independently selected short-task preference and lanes, requiring `--trick WAREHOUSE`. The short-task component removes the age bonus and forced-oldest admission; started work stays protected. All four startup runs pass and reproduce both existing control trajectories. Eight full runs (seeds0/2 × four arms) now use32 verified physical cores on a shared host, job8899316. The first full launch was cancelled for unapplied GRID binding; it has no accepted score. [Design and evidence](experiments/construction-20260918/tricks/short_tasks/README.md). Fable reviewed the patch in the same session. The full comparison includes waiting ages and empty travel; it estimates a CGAR policy effect rather than a fraction of the competitor lead.
 
 ## New best scores over time
 

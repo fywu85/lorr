@@ -68,7 +68,7 @@ def main():
         job = raw / 'remaining-analysis.sh'
         job.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
         submit = ['qsub', '-h', '-terse', '-w', 'n', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '1',
-                  '-binding', 'linear:1', '-l', 'exclusive=true,h_rt=00:30:00,h_vmem=8G', '-m', 'n',
+                  '-binding', 'linear:1', '-l', 'exclusive=false,h_rt=00:30:00,h_vmem=8G', '-m', 'n',
                   '-N', 'remaining_analysis', '-j', 'y', '-o', str(raw / 'remaining-analysis.log'), '-S', '/bin/bash']
         if a.hold_job:
             submit += ['-hold_jid', a.hold_job]
@@ -95,7 +95,9 @@ def main():
     os.sched_setaffinity(0, cpu['representative_cpus'][:1])
     spec, build = read(raw / 'spec.json'), read(raw / 'build.json')
     assert spec['trick'] is None and spec['experiment_track'] == 'GENERIC'
-    assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] == 1000 and spec['cpus_per_instance'] == 4
+    assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] in (1000, 5000) and spec['cpus_per_instance'] == 4
+    if spec['time_limit_ms'] != 1000:
+        assert spec['benchmark_mode'] == 'relaxed_development'
     sources = dict(build['sources'], **build['test_sources'])
     for name, sha in sources.items():
         assert hashlib.sha256(subprocess.check_output(['git', 'show', a.commit + ':' + name], cwd=ROOT)).hexdigest() == sha, name
@@ -137,7 +139,7 @@ def main():
         receipts[name] = {'mode': mode, 'unique_expected_receipt': True, 'generic_track_verified': True}
         if summary['valid']:
             assert summary['makespan'] == summary['entry_compute_samples'] == horizon
-            assert summary['entry_compute_max_seconds'] <= 1 and summary['peak_process_rss_bytes'] < 32000000000
+            assert summary['entry_compute_max_seconds'] <= spec['time_limit_ms'] / 1000 and summary['peak_process_rss_bytes'] < 32000000000
             global_rows = [fields(line) for line in log if line.startswith('[cgar-temporal]')]
             regions = [fields(line) for line in log if line.startswith('[cgar-temporal-regions]')]
             expected_steps = list(range(200, horizon + 1, 200))
@@ -174,7 +176,7 @@ def main():
         sys.path.insert(0, str(helpers))
         verifier = importlib.import_module('verify_full')
         verifier.ROOT = ROOT
-        result = verifier.verify(raw, out, a.commit, allow_failed=True)
+        result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=spec['time_limit_ms'])
         write(out / 'verification.json', result)
         reference = {r['seed']: r for r in read(support / 'reference.json')['rows'] if r['environment']['CGAR_TEMPORAL_REGIONS'] == '4'}
         controls = {r['seed']: r for r in result['rows'] if r['environment'][KEY] == '0'}
@@ -195,6 +197,8 @@ def main():
         result.update(full_run=True, exact_control_seeds=sorted(controls), pairs=pairs,
                       mean_effect_percent=(statistics.mean(r['tasks'] for r in pairs) / statistics.mean(r['control_tasks'] for r in pairs) - 1) * 100 if complete else None,
                       all_tested_totals_improve=complete and all(r['task_difference'] > 0 for r in pairs), promoted=False)
+    result.update(decision_limit_ms=spec['time_limit_ms'], benchmark_mode=spec.get('benchmark_mode', 'competition_budget'),
+                  competition_budget_confirmed=spec['time_limit_ms'] == 1000 and spec.get('exclusive_host', True) and result.get('all_valid', result.get('all_valid_within_deadline_and_memory', False)))
     result.update(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), source_commit=a.commit,
                   source_files_verified=len(sources), binary_sha256=build['binary_sha256'], receipts=receipts,
                   scope='GENERIC remaining-flow score only; short screens establish feasibility, not throughput. Failed runs have no partial quality score.')

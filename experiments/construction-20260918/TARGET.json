@@ -1,0 +1,30 @@
+{
+  "updated_utc": "2026-09-20T04:49:27.798363+00:00",
+  "source": "Explicit user correction: the target should be154795. This supersedes152981 in the older active-goal metadata and historical planning notes.",
+  "experiment_track": "GENERIC",
+  "target_completed_tasks": 154795,
+  "required_planner_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "simulation_steps": 5000,
+  "robots": 10000,
+  "process_rss_limit_bytes": 32000000000,
+  "timeout_policy": "Explicit failure, never a partial quality result.",
+  "allocation": "Development: reserved, bound GRID physical cores on shared hosts are allowed.",
+  "map_specific_policies_allowed_for_this_goal": false,
+  "promotion_rule": "Meet or exceed154795 repeatably across six full generic seeds, with complete fixed-work decisions and32GB memory. Shared-host5000ms development runs are allowed and must be labelled. TRICK results remain separate.",
+  "current_best_single": 144510,
+  "current_six_seed_mean": 143941.16666666666,
+  "required_mean_growth_percent": 7.540465027957022,
+  "earlier_local_kittyknight_reference": 152981,
+  "competition_entry_deadline_seconds": 1.0,
+  "development_entry_deadline_seconds": 5.0,
+  "competition_budget_required_for_development_promotion": false,
+  "timing_expectation": "Aim for roughly sub-second latency on exclusive cores, using prior exclusive controls and CPU-work evidence. Exact one-second validation and optimization of the best solver are deferred.",
+  "resource_policy_source": "Explicit user instruction on2026-09-20: relax exclusive hosts and one-second budget for now; validate/optimize best solver later."
+}

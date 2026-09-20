@@ -39,3 +39,12 @@ The old HRRN-off test kept forced-oldest admission and is not this factorial.
 The earlier inference that starvation is only map-specific is unnecessary: the
 preference itself is generic. It is classified as TRICK here at the user's
 explicit request because it trades fairness for the competition objective.
+
+V58 source [f939b3b](https://github.com/fywu85/lorr/commit/f939b3b1ab44368e83617a9f97300f26c4063210) passed
+all regressions and nine CLI rejection cases. The four startup runs are valid;
+control and lanes-only hashes exactly match their historical references.
+[Screen](../../results/trick-short-tasks-screen-v58/factorial-verification.json).
+Full replacement8899316/analysis8899317 uses32 verified physical cores on research50.
+The original8899310 launch received slots but no binding, so it was cancelled;
+[receipts](allocation-rejected-v58/) preserve this infrastructure failure.
+[Current allocation and request](full-v58-r2/). No full quality result exists yet.

@@ -1,12 +1,43 @@
 # Continuing warehouse work
 
-Updated 2026-09-20 01:29:21 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
-reference of152,981 tasks repeatably across six full5,000-step/10,000-robot warehouse
-seeds. Every complete scheduler+planner entry must finish within1s or fail explicitly;
-process RSS must stay below32,000,000,000bytes. Use isolated GRID physical cores and
-generic policies, with no map identity/templates, hidden future tasks or fleet caps.
+Updated 2026-09-20 05:21 UTC. USER TARGET CORRECTION supersedes the old goal-tool text
+and historical notes below: reach154,795 tasks repeatably across six full
+5,000-step/10,000-robot warehouse seeds. The active, unbudgeted goal remains unmet. USER RESOURCE CORRECTION: development runs may use shared GRID hosts and a5000ms
+complete-entry timeout; algorithmic work remains fixed and timeout means failure.
+Record CPU/wall time and aim for roughly sub-second exclusive-core performance.
+Strict one-second validation/optimization of the best solver is deferred. Process
+RSS stays below32,000,000,000bytes. Reserve and bind physical cores; use generic
+policies with no map identity/templates, hidden future tasks or fleet caps.
 KittyKnight used38.858GB, so this is not an official equal-resource SoTA comparison.
 The user hopes for progress by midnight but explicitly says to take the time needed.
+
+## Current jobs and latest steering
+
+User requested cost preference/long-task deferral as an explicit TRICK. Source
+f939b3b, buildV58/8899307, full regression plus nine CLI checks pass. Selector
+CGAR_TRICK_SHORT_TASKS removes HRRN and forced-oldest admission only after
+--trick WAREHOUSE; independent CGAR_TRICK_LANES selects static lanes. Default flag
+preserves earlier lane behavior. No started task is dropped. All four200-step
+screens verified; both generic-control and lane-only hashes exactly reproduce.
+
+Full factorial job8899316 runs all eight cases (seeds0/2 × four arms),32 bound
+physical cores on shared research50,5s deadline/32GB RSS. Analysis8899317 is held;
+raw runs/cgar-short-task-trick-full-v58-r2-20260920. The first full launch8899310
+was cancelled for failed GRID binding (64-core mask for32 requested, overlapping
+other-map cores), analysis8899311 cancelled too. This is an infrastructure failure,
+not an algorithm score. Launcher rejects unapplied binding before any simulator.
+
+Generic remaining-flow full0/2 OFF/ON8899305 and analysis8899306 continue on
+research52. Other-nine generalization8899301/analysis8899303 continue on research38;
+GAME and RANDOM-05 exceeded5s and have no accepted score. Preserve their CPU
+contention note from the cancelled overlapping trial. No new generic record.
+
+Fable turn30 completed in the same session. Read the local assessment before
+adopting claims. The task-pricingV57-r3 source96d9bc4 passes all regressions;
+turn29 diagnostic improvements and shadow benchmarks remain pending after the
+explicitly requested short-task factorial. Existing chain_pricing/analyze_shadow.py
+is prepared but has not been executed. The active target is154795, not stale goal
+metadata152981; shared5s runs are allowed but cannot claim strict1s certification.
 
 ## Confirmed reference and frontier
 
@@ -14,7 +45,9 @@ Best single run remains144,510. No new single-run record was set this turn.
 The newly confirmed six-seed mean is143,941.1667, versus142,474.8333 (+1.02919%).
 Seeds0..5:144510/143933/144107/143134/143934/144029. All six full totals improve;
 five tails and ages improve, with seed1tail−108 and agep90+1. The mean is5.909% below
-KittyKnight. The user questioned comparing143941 against the144k frontier; clarified
+the earlier local KittyKnight measurement. Reaching the revised154795 target
+requires7.5405% growth from the current mean (see TARGET.json). The user questioned
+comparing143941 against the144k frontier; clarified
 that this is six-seed confirmation of the prior regional gain, not a new peak.
 
 warehouse-reference-variants.json now enables4regions/4threads,2rounds and25,000

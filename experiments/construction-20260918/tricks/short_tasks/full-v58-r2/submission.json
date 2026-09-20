@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research50",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:32",
+    "-l",
+    "exclusive=false,h_rt=02:00:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-short-task-trick-full-v58-r2-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899316\n"
+}

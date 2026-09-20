@@ -56,7 +56,7 @@ def main():
         job = raw / 'analysis.sh'
         job.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
         submit = ['qsub', '-h', '-terse', '-w', 'n', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '1',
-                  '-binding', 'linear:1', '-l', 'exclusive=true,h_rt=00:45:00,h_vmem=8G', '-m', 'n',
+                  '-binding', 'linear:1', '-l', 'exclusive=false,h_rt=00:45:00,h_vmem=8G', '-m', 'n',
                   '-N', 'generalization_analysis', '-j', 'y', '-o', str(raw / 'analysis.log'), '-S', '/bin/bash']
         if a.hold_job:
             submit += ['-hold_jid', a.hold_job]
@@ -86,7 +86,8 @@ def main():
         assert hashlib.sha256(subprocess.check_output(['git', 'show', source['exact_source_commit'] + ':' + name], cwd=ROOT)).hexdigest() == sha
     assert spec['trick'] is None and spec['experiment_track'] == 'GENERIC' and spec['horizons'] is None
     assert len(spec['cases']) == 1 and spec['cases'][0]['seed'] == 0
-    assert spec['time_limit_ms'] == 1000 and spec['cpus_per_instance'] == 4
+    assert spec['time_limit_ms'] == 5000 and spec['cpus_per_instance'] == 4
+    assert spec['benchmark_mode'] == 'relaxed_development' and spec['exclusive_host'] is False
     case = spec['cases'][0]
     assert case['environment'] == next(iter(read(support / 'variants.json').values()))
     times = read(ROOT / 'mr24/simulation_time.json')
@@ -124,7 +125,7 @@ def main():
         if summary['valid']:
             m = metrics[name]
             assert summary['makespan'] == summary['entry_compute_samples'] == m['steps'] == times[name]
-            assert summary['entry_compute_max_seconds'] <= 1 and summary['peak_process_rss_bytes'] <= 32000000000
+            assert summary['entry_compute_max_seconds'] <= spec['time_limit_ms'] / 1000 and summary['peak_process_rss_bytes'] <= 32000000000
             assert all(summary[k] == 0 for k in ['planner_errors', 'schedule_errors', 'timeouts', 'internal_timeouts', 'exit'])
             assert m['movement_diagnostics']['complete'] and m['tasks'] == summary['after']
             header = read(raw / case['name'] / (name + '.json'))
@@ -142,11 +143,13 @@ def main():
                   binary_sha256=source['binary_sha256'], track='GENERIC', trick_argv=[], unchanged_warehouse_configuration=True,
                   seed=0, rows=rows, valid_instances=sum(r['valid'] for r in rows), invalid_instances=sum(not r['valid'] for r in rows),
                   all_physical_core_groups_disjoint=True, no_cpu_quota=True,
-                  scope='One full planner seed on each of nine fixed competition instances. No map-specific settings, independent workload draws, six-seed confirmation or new SoTA claim.')
+                  decision_limit_ms=spec['time_limit_ms'], benchmark_mode=spec['benchmark_mode'], competition_budget_confirmed=False,
+                  scope='Relaxed-budget development on shared hosts; competition timing remains unverified. One full planner seed on each of nine fixed competition instances. No map-specific settings, independent workload draws, six-seed confirmation or new SoTA claim.')
     for name in ['submission.json', 'analysis-request.json', 'analysis-submission.json', 'completion.json']:
         shutil.copy2(raw / name, out / name)
     write(out / 'verification.json', report)
     lines = ['# Generic transfer results', '', 'One planner seed0; unchanged warehouse-selected configuration; full competition horizons.', '',
+             'Development runs on shared hosts with a5000ms timeout; competition timing is not confirmed.', '',
              '| Instance | Outcome | Tasks | Mean step ms | Max step ms | Peak GB | Wall min |', '|---|---|---:|---:|---:|---:|---:|']
     for r in rows:
         lines.append('| {} | {} | {} | {} | {} | {:.3f} | {:.2f} |'.format(r['instance'], r['outcome'], r['tasks'] if r['valid'] else 'n/a',

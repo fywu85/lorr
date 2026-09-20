@@ -1,7 +1,7 @@
 # Generic solver transfer to the other nine instances
 
-Requested by the user while warehouse optimization continues. GRID job8899287
-is queued for all nine other MR24 instances concurrently, with one planner seed0.
+Requested by the user while warehouse optimization continues. GRID job8899301
+is running for all nine other MR24 instances concurrently, with one planner seed0.
 This is an initial transfer check, not multi-seed repeatability evidence.
 
 The same verified generic warehouse configuration is used unchanged. No trick
@@ -23,18 +23,25 @@ submission. The build manifest's older dirty base is not used as the exact sourc
 | RANDOM-04 |700|1000|
 | RANDOM-05 |800|2000|
 
-Each process receives four distinct physical cores,36total, on an exclusive
-EPYC9354 host. The complete scheduler+planner entry limit remains1second,
+Each process receives four distinct physical cores,36total, on a shared
+EPYC9354 host. The development scheduler+planner entry limit is5seconds,
 preprocessing30seconds, process RSS32,000,000,000bytes. The scheduler requests
 288GiB aggregate virtual-memory allowance so its limit does not preempt the
 per-process32GB check. Full job wall limit is2hours. No partial score is accepted
 after a timeout or memory failure.
 
-Initial submission found no immediately available exclusive host. The accepted
-retry queues the identical resource request with immediate-availability checking
-disabled; isolation/binding/deadlines remain. [Submission](submission.json),
-[status](status.json). Raw output stays under
-`runs/cgar-generalization-other9-v54-20260920` and is excluded from Git.
+The original exclusive-host jobs8899287/8899288 were cancelled before execution
+when the user relaxed the resource policy; their receipts remain in
+[exclusive-request](exclusive-request/). The replacement uses the same binary,
+settings and full horizons. [Submission](submission.json), [status](status.json).
+Raw output stays under `runs/cgar-generalization-other9-v54-shared-20260920` and is
+excluded from Git. Shared-host results do not certify the competition1s budget.
+
+A later32-slot warehouse trial failed to receive its requested binding and briefly
+overlapped some reserved cores on this host. That trial was cancelled and the
+launcher now rejects such allocations before simulation. The transfer runs retain
+this CPU-contention note under the user's shared-host authorization; fixed work
+and explicit failures are preserved.
 
 Seeds change planner tie-breaking, search exploration and annealing. Maps, starts
 and task-file order stay fixed. Task reveal times and learned fields can change
@@ -42,7 +49,7 @@ indirectly through different executed decisions. The comparison therefore tests
 the existing warehouse-selected parameters on new instances; it does not establish
 that the parameters were selected independently of warehouse performance.
 
-Analysis job8899288 is held behind the benchmark. It will verify source/binary
+Analysis job8899303 is held behind the benchmark. It will verify source/binary
 hashes, unchanged settings, generic activation, physical core allocation, all
 complete-entry limits and action accounting before producing the per-instance
 report. Invalid runs retain their failure status and no accepted task score.
