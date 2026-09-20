@@ -51,3 +51,37 @@ V61. At t400,111/112groups reach32holders in each matching case. This fixes
 coverage but does not establish a throughput gain. Full0/2 OFF/ON is queued as
 8899360, four cases in parallel on16cores,5s/32GB; held analysis8899361.
 [Independent screen checks](../results/local-match-screen-v62/comparison.json).
+
+## Protection correction and exposure study
+
+Fable turn33 identified stale-ticket selection of the next primary; local follow-up
+found missing registration of mandatory fair-admitted tasks when only matching was
+enabled. V62 full8899360/8899361 was cancelled. No partial quality result is accepted.
+[Cancellation](../results/local-match-full-v62-cancelled/cancellation.json).
+
+[f189cbf](https://github.com/fywu85/lorr/commit/f189cbf) fixes both: only existing-held
+episodes nominate next-primary protection; fair admissions register under matching.
+Fresh ordinary tasks remain eligible. The new production fixtures fail against the
+old code and pass after the repair; the full suite passes.
+[Exact build evidence](../build-provenance/v63/exact-source-commit.json),
+[regression result](../build-provenance/v63/regression-result.txt).
+
+The next exposure experiment adds `CGAR_REASSIGN_MATCH_GROUPS` in1..64, default4.
+A nondefault quota requires enabled matching. The other constants stay fixed:
+interval10,128anchor candidates,32holders/group,2048BFS nodes/group, one retarget
+per task and20-step robot cooldown. The64-group arm has at most2048participants
+and131072BFS pops per pass. It may visit fewer due to eligibility, prior group use,
+anchor coverage and geography. No elapsed-time decision changes the quota.
+`quota-variants.json` contains OFF/4/64 with otherwise identical reference settings.
+The larger-quota production fixture verifies participation beyond the old128 cap,
+bijection and primary protection. The larger quota is a hypothesis, not a gain.
+
+## Repaired quota and explicit trick trials
+
+V64 source [0196851](https://github.com/fywu85/lorr/commit/0196851) passes the full
+suite. The [six-case quota screen](../results/match-quota-screen-v64/comparison.json)
+is valid with exact controls. OFF/4/64 are now in a paired full comparison; prefix
+scores do not establish a throughput gain. The generic selector stays OFF.
+The [separate explicitly gated Warehouse factorial](../tricks/unopened_matching/README.md)
+uses V65 source 5a8a51a. Historical V62 full statuses above are superseded by its
+cancellation and the corrected V64/V65 comparisons.

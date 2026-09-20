@@ -1,6 +1,6 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 07:34 UTC.
+Updated: 2026-09-20 08:14 UTC.
 
 **Best overall validated single run: 146,659 tasks (TRICK, seed0)**, using NMS-derived static lanes with explicit `--trick WAREHOUSE`. This leaves **8,136 tasks** to the NMS target of154,795 (**5.55% growth** needed). The user now accepts any valid full seed, with or without explicitly flagged tricks, as achieving the target. That criterion is separate from promoting the generic benchmark reference.
 
@@ -48,7 +48,7 @@ pass regressions and both full reference trajectory/deadline checks. The complet
 small-group probe finds44/2,368sampled groups improving both scalar and aggregate
 guidance potential; this is diagnostic evidence, not a new throughput score.
 
-**Track policy:** the scores above remain the **generic frontier**. Map-specific
+**Track policy:** generic and explicitly labelled **TRICK** records are tracked separately. Map-specific
 tricks require `--trick <map-instance-name>`, `[trick]` commit titles and **TRICK**
 log entries. No environment variable or automatic map detection enables them.
 [Policy](experiments/construction-20260918/EXPERIMENT_TRACKS.md).
@@ -127,7 +127,7 @@ This log backfills every increasing single-run record from the full warehouse ca
 | 2026-09-19 19:05:34 | 143,767 | Complete fields64 + four 4M workers / 1 | [1661176](https://github.com/fywu85/lorr/commit/1661176ca3dd6854a7ba8d1a8a0ec8e33a2cffa9) | [data](experiments/construction-20260918/results/pickup-full-workers-confirm-v43/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v43/) · not promoted: seed5 regresses |
 | 2026-09-19 20:30:36 | 144,107 | Complete fields64 + two regional rounds / 2 | [f6d0ae4](https://github.com/fywu85/lorr/commit/f6d0ae448504762136c4f5d85f25d7d207207965) | [data](experiments/construction-20260918/results/pickup-full-regions-full-v44/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v44/) · six-seed improvement confirmed |
 | 2026-09-19 20:32:02 | 144,510 | Complete fields64 + two regional rounds / 0 | [f6d0ae4](https://github.com/fywu85/lorr/commit/f6d0ae448504762136c4f5d85f25d7d207207965) | [data](experiments/construction-20260918/results/pickup-full-regions-full-v44/run-summaries.json) · [source](experiments/construction-20260918/build-provenance/v44/) · six-seed improvement confirmed |
-| 2026-09-20 05:28:00 | 145,083 | Remaining-flow temporal score / 0 | [4524843](https://github.com/fywu85/lorr/commit/45248431dc38702ebdef9dd1ab2893697c00e00f) | [verified full pair](experiments/construction-20260918/results/remaining-flow-full-v56-shared/comparison.json) · shared-host5s development; six-seed confirmation pending |
+| 2026-09-20 05:28:00 | 145,083 | Remaining-flow temporal score / 0 | [4524843](https://github.com/fywu85/lorr/commit/45248431dc38702ebdef9dd1ab2893697c00e00f) | [verified full pair](experiments/construction-20260918/results/remaining-flow-full-v56-shared/comparison.json) · shared-host5s development; six-seed result +0.08267%, not promoted |
 
 † Some early binaries were built between commits. These links identify the commit containing their **frozen source snapshot/patch**, not a claim that the commit’s working tree exactly matches the binary. Unmarked commits were checked against **every recorded production-source SHA-256**. The source link and binary hash in the evidence distinguish experiments archived in the same commit.
 
@@ -137,8 +137,8 @@ The latest generic trial improves both full seeds0/2:145,083/144,215 versus exac
 144,510/144,107 controls, a paired mean gain0.235953%. Final1000windows rise72/112;
 outstanding-age p90 falls2/4. All20,000entries are valid under the authorized5s
 budget and peakRSS11.340GB. One candidate entry reached1004.262ms; these shared-host
-runs do not certify strict1s performance. Remaining seeds1/3/4/5 × OFF/ON are queued
-under8899325 with held analysis8899327. The reference configuration remains unchanged.
+runs do not certify strict1s performance. The remaining seeds1/3/4/5 completed:
+all six paired effects are +573/+606/+108/-793/+223/-3. The reference remains unchanged.
 
 ## Confirmed reference milestones
 
@@ -215,8 +215,12 @@ holder pool. [1d78892](https://github.com/fywu85/lorr/commit/1d788929db09f8f6a0a
 corrects this with all-resident local searches, retaining4groups x32holders and
 2048BFS-node limits. Full regressions pass. The800-step control/matching scores
 are18,954/18,919 and18,952/18,944; all valid, exact disabled controls, max927.438ms
-and peak8.074GB. These are feasibility results, not records. The full paired
-comparison is running. [Design and evidence](experiments/construction-20260918/unopened_matching/README.md).
+and peak8.074GB. These are feasibility results, not records. Its full trial was
+cancelled after source review found two new-mode protection defects.
+[f189cbf](https://github.com/fywu85/lorr/commit/f189cbf) fixes stale next-primary
+tickets and mandatory fair-task registration; new production cases reproduce
+the defects and the full suite passes after repair. A fixed matching-quota
+comparison is now being prepared. [Design and evidence](experiments/construction-20260918/unopened_matching/README.md).
 
 ## Resource cost of the current benchmark reference
 
@@ -324,6 +328,23 @@ average only +8.25 tasks. Keep default OFF and confirmed regional reference unch
 the 145083 single-run record remains visible. All 12 full runs valid at shared 5s;
 this is not strict 1s certification or evidence over independent task streams.
 [Combined evidence](experiments/construction-20260918/results/remaining-flow-six-seed-v56-shared.json).
+
+## Overnight matching checkpoint, 2026-09-20 08:14 UTC
+
+The bounded matching candidate now protects the actual next primary and registers
+mandatory fair admissions. Both fixes have reproducing production regressions.
+The earlier V62 full run was cancelled; it supplies no quality score. V64 compares
+fixed group quotas 4 and 64 with OFF. Its six 800-step cases are valid and the OFF
+trajectories exact, but the differences are too small and early to rank policies.
+[Quota screen](experiments/construction-20260918/results/match-quota-screen-v64/comparison.json).
+
+The full general comparison (six cases, jobs 8899381/8899382) and explicitly gated
+Warehouse lanes/short-preference/matching factorial (eight cases, jobs
+8899390/8899391) are running or queued in parallel. Each case reserves four
+physical cores, with the authorized shared-host 5s development deadline and
+32GB RSS cap. The trick startup screen reproduces both controls exactly.
+[Trick design and evidence](experiments/construction-20260918/tricks/unopened_matching/README.md).
+No new full-run record or reference promotion is claimed.
 
 ## Updating this log
 

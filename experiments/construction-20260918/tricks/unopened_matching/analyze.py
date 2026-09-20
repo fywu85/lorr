@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify bounded unopened matching against the unchanged CGAR reference."""
+"""Verify explicitly gated Warehouse lanes/short-preference/matching factorial."""
 import argparse
 import datetime
 import hashlib
@@ -16,8 +16,8 @@ import sys
 
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / 'tools/cpu_resources.py').is_file())
 BASE = ROOT / 'experiments/construction-20260918'
-KEY = 'CGAR_REASSIGN_MATCH'
-CHANGED = {KEY, 'CGAR_REASSIGN_MATCH_GROUPS', 'CGAR_TEMPORAL_REMAINING_FLOW'}
+KEY = 'CGAR_TRICK_UNOPENED_MATCH'
+CHANGED = {KEY, 'CGAR_REASSIGN_MATCH_GROUPS', 'CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS'}
 
 
 def read(p):
@@ -45,7 +45,7 @@ def main():
     p.add_argument('--execute', action='store_true')
     a = p.parse_args()
     raw, out = a.raw.resolve(), a.output.resolve()
-    support = raw / 'unopened-match-analysis-support'
+    support = raw / 'trick-match-analysis-support'
     if not a.execute:
         support.mkdir(exist_ok=False)
         own = support / 'analyze.py'
@@ -59,25 +59,25 @@ def main():
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / 'experiments' / name, dest)
             files.append(dest)
-        for name, source in [('reference.json', BASE / 'results/pickup-full-regions-six-seed-v44.json'),
+        for name, source in [('reference.json', BASE / 'results/trick-short-tasks-full-v58-r2/factorial-verification.json'),
                              ('reference-profile.json', BASE / 'warehouse-reference-variants.json'),
-                             ('reference-screen.json', BASE / 'results/unopened-matching-screen-v61/trajectory-fingerprints.json')]:
+                             ('reference-screen.json', BASE / 'results/trick-short-tasks-screen-v58/trajectory-fingerprints.json')]:
             shutil.copy2(source, support / name)
             files.append(support / name)
-        write(raw / 'unopened-match-analysis-request.json', {'root': str(ROOT), 'commit': a.commit,
+        write(raw / 'trick-match-analysis-request.json', {'root': str(ROOT), 'commit': a.commit,
               'files': {str(f): digest(f) for f in files}, 'raw': str(raw), 'output': str(out)})
         command = ['/usr/bin/python3', str(own), '--execute', '--raw', str(raw), '--output', str(out), '--commit', a.commit]
-        job = raw / 'unopened-match-analysis.sh'
+        job = raw / 'trick-match-analysis.sh'
         job.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
         submit = ['qsub', '-h', '-terse', '-w', 'n', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '1',
                   '-binding', 'linear:1', '-l', 'exclusive=false,h_rt=00:30:00,h_vmem=8G', '-m', 'n',
-                  '-N', 'unopened_match_analysis', '-j', 'y', '-o', str(raw / 'unopened-match-analysis.log'), '-S', '/bin/bash']
+                  '-N', 'trick_match_analysis', '-j', 'y', '-o', str(raw / 'trick-match-analysis.log'), '-S', '/bin/bash']
         if a.hold_job:
             submit += ['-hold_jid', a.hold_job]
         submit.append(str(job))
         result = subprocess.run(submit, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         receipt = dict(command=submit, returncode=result.returncode, response=result.stdout)
-        write(raw / 'unopened-match-analysis-submission.json', receipt)
+        write(raw / 'trick-match-analysis-submission.json', receipt)
         write(raw / 'motion-analysis-submission.json', receipt)
         print(result.stdout, end='')
         if result.returncode:
@@ -86,7 +86,7 @@ def main():
         subprocess.run(['qrls', result.stdout.strip()], check=True)
         return 0
 
-    request = read(raw / 'unopened-match-analysis-request.json')
+    request = read(raw / 'trick-match-analysis-request.json')
     assert request['commit'] == a.commit and Path(request['root']) == ROOT
     for filename, sha in request['files'].items():
         assert digest(Path(filename)) == sha, filename
@@ -96,7 +96,7 @@ def main():
     assert cpu['effective_cpu_quota'] is None and cpu['representative_cpus']
     os.sched_setaffinity(0, cpu['representative_cpus'][:1])
     spec, build = read(raw / 'spec.json'), read(raw / 'build.json')
-    assert spec['trick'] is None and spec['experiment_track'] == 'GENERIC'
+    assert spec['trick'] == 'WAREHOUSE' and spec['experiment_track'] == 'TRICK'
     assert spec['instances'] == ['WAREHOUSE'] and spec['time_limit_ms'] in (1000, 5000) and spec['cpus_per_instance'] == 4
     if spec['time_limit_ms'] != 1000:
         assert spec['benchmark_mode'] == 'relaxed_development'
@@ -105,12 +105,12 @@ def main():
         assert hashlib.sha256(subprocess.check_output(['git', 'show', a.commit + ':' + name], cwd=ROOT)).hexdigest() == sha, name
     assert digest(raw / 'lifelong') == build['binary_sha256']
     horizon = (spec['horizons'] or {'WAREHOUSE': 5000})['WAREHOUSE']
-    assert horizon in (800, 5000)
+    assert horizon in (200, 5000)
     profile = next(iter(read(support / 'reference-profile.json').values()))
     cases = spec['cases']
     seeds = sorted({c['seed'] for c in cases})
-    assert (seeds == [0, 2] if horizon == 800 else seeds in ([0, 2], [1, 3, 4, 5], [0, 1, 2, 3, 4, 5]))
-    assert len(cases) in (2 * len(seeds), 3 * len(seeds))
+    assert (seeds == [0] if horizon == 200 else seeds in ([0, 2], [1, 3, 4, 5], [0, 1, 2, 3, 4, 5]))
+    assert len(cases) == 4 * len(seeds)
     by_seed = {seed: {} for seed in seeds}
     receipts, intervals = {}, []
     allocation = read(raw / 'allocation.json')
@@ -118,13 +118,15 @@ def main():
         name, env = case['name'], case['environment']
         mode = int(env[KEY])
         quota = int(env.get('CGAR_REASSIGN_MATCH_GROUPS', '4'))
-        arm = quota if mode else 0
-        assert mode in (0, 1) and quota in (4, 64) and arm not in by_seed[case['seed']]
+        short = int(env['CGAR_TRICK_SHORT_TASKS'])
+        arm = (short, mode)
+        assert env['CGAR_TRICK_LANES'] == '1' and short in (0, 1)
+        assert mode in (0, 1) and quota == (64 if mode else 4) and arm not in by_seed[case['seed']]
         by_seed[case['seed']][arm] = name
         assert int(env.get('CGAR_TEMPORAL_REMAINING_FLOW', '0')) == 0
         assert {k: v for k, v in env.items() if k not in CHANGED} == {k: v for k, v in profile.items() if k not in CHANGED}
         meta, summary = read(raw / name / 'metadata.json'), read(raw / name / 'summary.json')[0]
-        assert meta['trick'] is None and meta['trick_argv'] == [] and meta['experiment_track'] == 'GENERIC'
+        assert meta['trick'] == 'WAREHOUSE' and meta['trick_argv'] == ['--trick','WAREHOUSE'] and meta['experiment_track'] == 'TRICK'
         assert meta['build_provenance'] == build and meta['max_process_memory_bytes'] == 32000000000
         assert summary['trick_receipt_valid'] and summary['experiment_track_valid']
         resources = meta['cpu_resources']
@@ -139,7 +141,19 @@ def main():
             assert not (begin < other_end and other_begin < end and cores.intersection(other_cores))
         intervals.append((begin, end, cores))
         log = (raw / name / 'WAREHOUSE.log').read_text().splitlines()
-        assert not any(line.startswith(('[CGAR_TRICK]', '[cgar-temporal-score]', '[cgar-chain-pricing]')) for line in log)
+        assert not any(line.startswith(('[cgar-temporal-score]', '[cgar-chain-pricing]', '[cgar-flow]')) for line in log)
+        components = [line for line in log if line.startswith('[CGAR_TRICK_COMPONENTS] ')]
+        assert len(components) == 1
+        actual = dict(token.split('=',1) for token in components[0].split()[1:])
+        expected = dict(instance='WAREHOUSE',lanes='1',short_tasks=str(short),matching=str(mode),hrrn=str(1-short),oldest_admission=str(1-short),started_tasks='protected')
+        assert actual == expected
+        assert meta['expected_trick_components'] == {k:int(v) for k,v in expected.items() if k not in ('instance','started_tasks')}
+        field_receipts = [line for line in log if line.startswith('[CGAR_TRICK] ')]
+        assert len(field_receipts) == 1
+        field = dict(token.split('=',1) for token in field_receipts[0].split()[1:])
+        assert field['instance']=='WAREHOUSE' and field['field_sha256']==meta['expected_trick_field_sha256']
+        assert field['forward_base']=='4' and field['opposing']=='16' and field['turn']=='4' and field['learned_publications']=='disabled'
+
         matching = [fields(line) for line in log if line.startswith('[cgar-unopened-match] t=')]
         assert matching and [x['t'] for x in matching] == list(range(0, horizon, 200)) if summary['valid'] else True
         for x in matching:
@@ -157,7 +171,7 @@ def main():
             assert x['eligible'] >= x['resident'] + x['missing']
         if mode:
             assert any('local_pool=all_resident' in line for line in log if line.startswith('[cgar-unopened-match] enabled=1'))
-        receipts[name] = {'matching': mode, 'group_quota': quota, 'generic_track_verified': True, 'sampled_cumulative_matching': matching}
+        receipts[name] = {'matching': mode, 'group_quota': quota, 'short_tasks': short, 'explicit_trick_track_verified': True, 'sampled_cumulative_matching': matching}
 
         if summary['valid']:
             assert summary['makespan'] == summary['entry_compute_samples'] == horizon
@@ -178,11 +192,10 @@ def main():
                 assert x['regions'] == x['threads'] == 4 and x['rounds'] == 2 and x['temperature_ppm'] == 1000
                 assert x['repairs'] == (x['kept'] + x['reverted']) * 25000 and x['score_after'] + 1e-6 >= x['score_before']
 
-    assert all(0 in arms and set(arms) == set(by_seed[seeds[0]]) for arms in by_seed.values())
-    assert set(by_seed[seeds[0]]).issubset({0, 4, 64})
+    assert all(set(arms) == {(0,0),(0,1),(1,0),(1,1)} for arms in by_seed.values())
 
     helpers = support / 'experiments/construction-20260918'
-    if horizon == 800:
+    if horizon == 200:
         subprocess.run(['/usr/bin/python3', str(helpers / 'collect_cold.py'), '--input', str(raw), '--output', str(out)], check=True)
         summaries = read(out / 'run-summaries.json')
         all_valid = all(v[0]['valid'] for v in summaries.values())
@@ -190,7 +203,9 @@ def main():
             fingerprints = read(out / 'trajectory-fingerprints.json')
             reference_screen = read(support / 'reference-screen.json')
             for seed in seeds:
-                assert fingerprints[by_seed[seed][0]] == reference_screen['flow4_pickupfull64_regions2_match0-s%d-r0' % seed]
+                for short in (0,1):
+                    name = 'trick_lanes' + ('_short_tasks' if short else '') + '-s%d-r0' % seed
+                    assert fingerprints[by_seed[seed][short,0]] == reference_screen[name]
         result = dict(all_valid=all_valid, eligible_for_full_comparison=all_valid, full_run=False,
                       exact_control=all_valid, all_sampled_work_bounds_checked=all_valid)
     else:
@@ -201,35 +216,38 @@ def main():
         verifier.ROOT = ROOT
         result = verifier.verify(raw, out, a.commit, allow_failed=True, decision_limit_ms=spec['time_limit_ms'])
         write(out / 'verification.json', result)
-        reference = {r['seed']: r for r in read(support / 'reference.json')['rows'] if r['environment']['CGAR_TEMPORAL_REGIONS'] == '4'}
-        controls = {r['seed']: r for r in result['rows'] if r['environment'][KEY] == '0'}
-        for seed, row in controls.items():
-            assert row['tasks'] == reference[seed]['tasks'] and row['trajectory_sha256'] == reference[seed]['trajectory_sha256']
-        metrics = {row['case']: row for row in read(out / 'metrics.json')}
-        pairs = []
+        reference = {(r['seed'],int(r['environment']['CGAR_TRICK_SHORT_TASKS'])):r
+                     for r in read(support / 'reference.json')['rows'] if r['environment']['CGAR_TRICK_LANES']=='1'}
+        controls = {(r['seed'],int(r['environment']['CGAR_TRICK_SHORT_TASKS'])):r
+                    for r in result['rows'] if r['environment'][KEY]=='0'}
+        for key,row in controls.items():
+            assert row['tasks']==reference[key]['tasks'] and row['trajectory_sha256']==reference[key]['trajectory_sha256']
+        metrics={row['case']:row for row in read(out/'metrics.json')}
+        pairs=[]
         for row in result['rows']:
-            if row['environment'][KEY] != '1' or row['seed'] not in controls:
-                continue
-            control = controls[row['seed']]
-            pairs.append(dict(seed=row['seed'], group_quota=int(row['environment'].get('CGAR_REASSIGN_MATCH_GROUPS','4')), tasks=row['tasks'], control_tasks=control['tasks'],
-                         task_difference=row['tasks'] - control['tasks'], final1000_difference=row['final1000'] - control['final1000'],
-                         age_p90_difference=row['outstanding_age_p90'] - control['outstanding_age_p90'],
-                         candidate_per1000=metrics[row['case']]['completed_per_1000'],
-                         control_per1000=metrics[control['case']]['completed_per_1000']))
-        complete = not result['failures'] and len(pairs) == len(cases) - len(seeds)
-        result.update(full_run=True, exact_control_seeds=sorted(controls), pairs=pairs,
-                      mean_effect_percent={str(quota): (statistics.mean(r['tasks'] for r in pairs if r['group_quota'] == quota) / statistics.mean(r['control_tasks'] for r in pairs if r['group_quota'] == quota) - 1) * 100 for quota in sorted({r['group_quota'] for r in pairs})} if complete else None,
-                      complete_all_pairs=complete,
-                      all_tested_totals_improve=complete and all(r['task_difference'] > 0 for r in pairs), promoted=False)
+            short=int(row['environment']['CGAR_TRICK_SHORT_TASKS']);key=(row['seed'],short)
+            if row['environment'][KEY]!='1' or key not in controls:continue
+            control=controls[key]
+            pairs.append(dict(seed=row['seed'],short_tasks=short,tasks=row['tasks'],control_tasks=control['tasks'],
+                 task_difference=row['tasks']-control['tasks'],final1000_difference=row['final1000']-control['final1000'],
+                 age_p90_difference=row['outstanding_age_p90']-control['outstanding_age_p90'],
+                 empty_robot_step_difference=row['empty_robot_steps']-control['empty_robot_steps'],
+                 empty_steps_per_completed_task=row['empty_robot_steps']/row['tasks'],
+                 control_empty_steps_per_completed_task=control['empty_robot_steps']/control['tasks'],
+                 candidate_per1000=metrics[row['case']]['completed_per_1000'],control_per1000=metrics[control['case']]['completed_per_1000']))
+        complete=not result['failures'] and len(pairs)==2*len(seeds)
+        result.update(full_run=True,exact_control_arms=[list(k) for k in sorted(controls)],pairs=pairs,
+             mean_effect_percent={str(short):(statistics.mean(r['tasks'] for r in pairs if r['short_tasks']==short)/statistics.mean(r['control_tasks'] for r in pairs if r['short_tasks']==short)-1)*100 for short in (0,1)} if complete else None,
+             complete_all_pairs=complete,promoted=False)
     result.update(decision_limit_ms=spec['time_limit_ms'], benchmark_mode=spec.get('benchmark_mode', 'competition_budget'),
                   competition_budget_confirmed=spec['time_limit_ms'] == 1000 and spec.get('exclusive_host', True) and result.get('all_valid', result.get('all_valid_within_deadline_and_memory', False)))
     result.update(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), source_commit=a.commit,
                   source_files_verified=len(sources), binary_sha256=build['binary_sha256'], receipts=receipts,
-                  scope='GENERIC bounded resident unopened matching; all-resident local groups with unchanged planner and ordinary task selection. Short screens establish feasibility and coverage only; failed runs have no partial quality score. Counters are cumulative samples through the last logged scheduling step, not full-horizon totals.')
-    for name in ['unopened-match-analysis-request.json', 'unopened-match-analysis-submission.json']:
+                  scope='TRICK: explicit --trick WAREHOUSE lanes/short-preference/matching factorial. No generic claim. Short-task preference can defer long unpicked tasks indefinitely. Full controls must exactly match the verified earlier lane and lane+short trajectories. Prefixes are feasibility only, failures have no partial quality score, and sampled counters are not complete totals.')
+    for name in ['trick-match-analysis-request.json', 'trick-match-analysis-submission.json']:
         shutil.copy2(raw / name, out / name)
     write(out / 'comparison.json', result)
-    print('UNOPENED_MATCH_ANALYSIS_COMPLETE', json.dumps({k: result.get(k) for k in ['full_run', 'all_valid', 'pairs', 'mean_effect_percent', 'eligible_for_full_comparison']}))
+    print('TRICK_MATCH_ANALYSIS_COMPLETE', json.dumps({k: result.get(k) for k in ['full_run', 'all_valid', 'pairs', 'mean_effect_percent', 'eligible_for_full_comparison']}))
     return 0
 
 
