@@ -340,3 +340,14 @@ candidates for exploration. `R05_MUTATION_DECAY` defaults to1; generationg uses
 `mutation * decay^g`. It changes neither the total rollout budget nor global
 restart amplitude/frequency. Values0.25/0.5/0.75 are experimental, with unchanged
 controls. No performance gain is claimed before full runs and seed checks.
+
+
+The first-step deadline constrains the current four-core fixed budget: across
+all five K5120 development planner seeds, the maximum924–928ms is always step0.
+After the first five steps, maxima are839–855ms. Initial matching and task-cost
+setup account for this extra work. `R05_FIRST_K` optionally declares a smaller
+rollout budget only at timestep0; zero disables it. Regular K applies thereafter.
+Both counts are fixed before execution, divisible by the continuation count,
+and must supply enough roots for generations/elites. No elapsed-time cutoff or
+partial search is introduced. This general startup-work allowance may let more
+search fit in later steps; strict full-run timing checks are still required.

@@ -10,7 +10,7 @@
 namespace r05 {
 struct MoveCandidate { int v,d;float score; };
 struct Config {
-    int futures=16, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
+    int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1;
     float future_mutation=0.3, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false;

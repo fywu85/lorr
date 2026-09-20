@@ -365,6 +365,19 @@ void elite_parents() {
 
 
 
+
+void initial_search_budget() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=4;cfg.elites=4;cfg.persist_elites=4;cfg.share_prefix=true;
+    cfg.random_by_step=true;cfg.cost_cache=true;cfg.candidate_cache=true;
+    cfg.radix_order=true;cfg.scratch_reuse=true;cfg.rollout_match=true;
+    const auto baseline=simulate(cfg,12);cfg.first_futures=cfg.futures;
+    require(baseline==simulate(cfg,12),"equal first-step budget changed the trajectory");
+    cfg.first_futures=32;cfg.threads=1;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"changing declared work after startup broke determinism");
+}
+
 void annealed_mutation() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.share_prefix=true;cfg.random_by_step=true;cfg.cost_cache=true;
@@ -458,6 +471,7 @@ void shared_goal_costs() {
 }
 
 int main() {
+    initial_search_budget();
     annealed_mutation();
     persistent_elites();
     elite_parents();

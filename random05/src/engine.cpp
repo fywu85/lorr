@@ -34,6 +34,7 @@ struct PolicyScratch {
 Config Config::environment(const SharedEnvironment& env) {
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
+    c.first_futures=integer("R05_FIRST_K",0);
     c.generations=integer("R05_GENERATIONS",1);c.elites=integer("R05_ELITES",1);
     c.persist_elites=integer("R05_PERSIST_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
@@ -56,6 +57,10 @@ Config Config::environment(const SharedEnvironment& env) {
        (c.continuations>1 && c.continuation_start>=c.depth) ||
        !std::isfinite(c.future_mutation) || c.future_mutation<0 || c.future_mutation>1)
         throw std::invalid_argument("continuations must divide K and preserve at least the first decision");
+    if(c.first_futures<0 || (c.first_futures>0 &&
+       (c.first_futures>c.futures || c.first_futures%c.continuations ||
+        c.first_futures/c.continuations<std::max(c.generations,std::max(c.elites,c.persist_elites)))))
+        throw std::invalid_argument("first-step K must divide into enough roots and not exceed regular K");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.mutation_decay=real("R05_MUTATION_DECAY",1);
@@ -1275,7 +1280,11 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     mark(1);
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
-    const int roots=cfg.futures/cfg.continuations;
+    // Initialization of the first task pool has extra matching/cost work.
+    // A declared first-step budget can reserve room for that work. Every
+    // configured rollout is still completed; elapsed time never changes K.
+    const int futures=env->curr_timestep==0 && cfg.first_futures>0?cfg.first_futures:cfg.futures;
+    const int roots=futures/cfg.continuations;
     std::vector<std::vector<float>> offsets(roots);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
@@ -1429,7 +1438,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;
         std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d\n",
-                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,cfg.futures,triaged_);
+                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,futures,triaged_);
     }
 }
 }
