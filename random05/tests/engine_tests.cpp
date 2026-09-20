@@ -104,4 +104,21 @@ void exact_matching() {
     std::vector<int> schedule;engine.match(&e,schedule);
     require(schedule[0]==11 && schedule[1]==10,"joint minimum-cost matching failed the greedy trap");
 }
-int main(){validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}
+void idle_pocket_eviction() {
+    auto e=environment(3,4,1);e.map[3]=e.map[11]=1;
+    e.curr_states[0].location=7;e.curr_states[0].orientation=0;
+    Config cfg;cfg.futures=1;cfg.wait_cost=0.5;cfg.idle_eviction=4;
+    Engine engine(cfg);engine.initialize(&e);
+    require(engine.graph->pocket_depth[engine.graph->from_grid[7]]==1,"tree pocket exit was not identified");
+    for(int step=0;step<5;++step) {
+        e.curr_timestep=step;std::vector<Action> actions;std::vector<int> schedule;
+        engine.compute(&e,actions,schedule);e.curr_task_schedule=schedule;
+        auto& state=e.curr_states[0];
+        if(actions[0]==CR)state.orientation=(state.orientation+1)%4;
+        else if(actions[0]==CCR)state.orientation=(state.orientation+3)%4;
+        else if(actions[0]==FW)state.location=engine.graph->to_grid[
+            engine.graph->next[engine.graph->from_grid[state.location]][state.orientation]];
+    }
+    require(e.curr_states[0].location!=7,"goal-less robot kept reserving the dead-end doorway");
+}
+int main(){idle_pocket_eviction();validation();scheduling();simulation();simulation(2,true,100,1);simulation(2,true,100,2);require(simulation(1,true,100)==simulation(2,true,100),"worker count changed fixed-work trajectory");triage_task_change();occupied_ring();exact_matching();std::cout<<"All Random05 checks passed\n";}

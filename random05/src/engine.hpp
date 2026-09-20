@@ -22,7 +22,7 @@ struct Config {
     int local_trials=0, horizon=0, hungarian_limit=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0;
-    float pre_cycle_gain=0;
+    float pre_cycle_gain=0, idle_eviction=0;
     float triage_scale=0.45;
     bool accept_equal=false;
     std::string guidance="none", weights;
@@ -30,7 +30,7 @@ struct Config {
 };
 struct Graph {
     int cells=0, states=0, rows=0, cols=0;
-    std::vector<int> from_grid, to_grid, degree, pocket;
+    std::vector<int> from_grid, to_grid, degree, pocket, pocket_depth;
     std::vector<std::array<int,4>> next;
     std::vector<std::array<float,5>> weight;
     std::vector<std::vector<int>> cycles;

@@ -28,6 +28,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
+    c.idle_eviction=real("R05_IDLE_EVICTION",0);
     c.pre_cycles=integer("R05_PRE_CYCLES",0);c.pre_cycle_gain=real("R05_PRE_CYCLE_GAIN",0);
     c.random_by_step=integer("R05_RANDOM_BY_STEP",0);c.age_cap=integer("R05_AGE_CAP",0);
     if(c.age_cap>0 && env.trick_instance!="RANDOM-05")
@@ -227,6 +228,15 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
                 if(u>=0 && peeled[u] && !pocket[u]){pocket[u]=component;q.push_back(u);}
         }
     }
+    // A goal-less robot in a peeled tree pocket must prefer leaving it over
+    // waiting. Otherwise its exit priority reserves the doorway indefinitely.
+    pocket_depth.assign(cells,0);
+    std::vector<int> exits;
+    for(int v=0;v<cells;++v)if(!pocket[v])exits.push_back(v);
+    for(size_t k=0;k<exits.size();++k)for(int u:next[exits[k]])
+        if(u>=0 && pocket[u] && pocket_depth[u]==0) {
+            pocket_depth[u]=pocket_depth[exits[k]]+1;exits.push_back(u);
+        }
     hops.assign(size_t(cells)*cells,65535);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int target=0;target<cells;++target) {
@@ -419,7 +429,11 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(arrived)++f.stage[i];
         if(cfg.rollout_age)f.age[i]=arrived?0:f.age[i]+1;
     }
-    auto cost=[&](int a,int v,int d) {return assigned_[a]?assigned_[a]->cost(g,f.stage[a],v,d):0.0f;};
+    auto cost=[&](int a,int v,int d) {
+        if(assigned_[a] && f.stage[a]<int(assigned_[a]->goals.size()))
+            return assigned_[a]->cost(g,f.stage[a],v,d);
+        return cfg.idle_eviction*g.pocket_depth[v];
+    };
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
     std::vector<int> idle_heading(n),forced_heading(n,-1);
     std::vector<float> base_cost(n),priorities(n);
