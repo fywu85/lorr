@@ -50,7 +50,7 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
             return False
         actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
         # Legacy binaries predate these explicit components; absent means OFF.
-        for key in ('matching', 'remaining_flow'):
+        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands'):
             if key in expected_components:
                 actual.setdefault(key, '0')
         valid = valid and actual == dict(instance=instance, started_tasks='protected',
@@ -121,7 +121,7 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
-    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW']
+    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS']
     explicit_components = any(k in environment for k in component_keys)
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick WAREHOUSE')
@@ -136,13 +136,18 @@ def main():
         expected_components['hrrn'] = int(expected_components['hrrn'])
         expected_components['matching'] = int(environment.get('CGAR_TRICK_UNOPENED_MATCH', '0'))
         expected_components['remaining_flow'] = int(environment.get('CGAR_TRICK_REMAINING_FLOW', '0'))
+        expected_components['native_metric'] = int(environment.get('CGAR_TRICK_NATIVE_METRIC', '0'))
+        expected_components['native_bands'] = int(environment.get('CGAR_TRICK_NATIVE_BANDS', '0'))
     expected_trick_field = 'none' if args.trick else None
     if args.trick and environment.get('CGAR_TRICK_LANES', '1') == '1':
-        asset_name = 'cgar/tricks/warehouse_lanes.hpp'
+        native = environment.get('CGAR_TRICK_NATIVE_METRIC', '0') == '1'
+        bands = environment.get('CGAR_TRICK_NATIVE_BANDS', '0') == '1'
+        asset_name = 'cgar/tricks/warehouse_native.hpp' if native else 'cgar/tricks/warehouse_lanes.hpp'
         asset = (ROOT / asset_name).read_bytes()
         if provenance is not None and provenance['sources'].get(asset_name) != hashlib.sha256(asset).hexdigest():
             parser.error('trick receipt asset does not match the frozen binary source manifest')
-        match = re.search(r'warehouse_field_sha256\[\] = "([0-9a-f]{64})"', asset.decode())
+        declaration = ('warehouse_native_' + ('bands' if bands else 'nobands') + '_field_sha256') if native else 'warehouse_field_sha256'
+        match = re.search(declaration + r'\[\] = "([0-9a-f]{64})"', asset.decode())
         if not match:
             parser.error('trick asset does not declare its field hash')
         expected_trick_field = match.group(1)

@@ -107,6 +107,23 @@ public:
                int64_t(extra) * distance_scale;
     }
 
+    // Explicit native NMS scalar convention. Distances may price forward20,
+    // opposed200 and turn1, but service slots and operation ties remain raw.
+    // No paid turn/forward extras: trailing waits expose reachable headings.
+    template<class Distance>
+    static int64_t pure_potential_cost(const TemporalPath& path, int op, int goal, Distance distance) {
+        if (goal < 0) return op;
+        const auto& actions = operations()[op];
+        int d = distance(path.cells[4], path.orientation);
+        if (actions[4] == 3) {
+            d = std::min({d, distance(path.cells[4], (path.orientation + 1) % 4),
+                         distance(path.cells[4], (path.orientation + 3) % 4)});
+            if (actions[3] == 3) d = std::min(d, distance(path.cells[4], (path.orientation + 2) % 4));
+        }
+        for (int slot = 0; slot < 5; ++slot) if (path.cells[slot] == goal) d = -slot;
+        return int64_t(d) * 50 - op;
+    }
+
     static int first_goal_hit(const TemporalPath& path, int goal) {
         if (goal < 0) return -1;
         for (int t = 0; t < 5; ++t) if (path.cells[t] == goal) return t;

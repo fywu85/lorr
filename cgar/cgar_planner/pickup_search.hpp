@@ -20,11 +20,11 @@ public:
     template<class Neighbor, class Allowed, class ForwardCost, class Visit, class Check>
     PickupSearchStats run(int cells, int start, int heading, int max_pops, int turn_cost,
                           Neighbor neighbor, Allowed allowed, ForwardCost forward_cost,
-                          Visit visit, Check check) {
+                          Visit visit, Check check, int cost_limit = 16) {
         check();
-        if (cells < 1 || cells > std::numeric_limits<int>::max() / 4 || start < 0 ||
+        if (cost_limit < 1 || cost_limit > 255 || cells < 1 || cells > std::numeric_limits<int>::max() / 4 || start < 0 ||
             start >= cells || heading < 0 || heading > 3 || max_pops < 1 || max_pops > 65536 ||
-            turn_cost < 1 || turn_cost > 16 || !allowed(start))
+            turn_cost < 1 || turn_cost > cost_limit || !allowed(start))
             throw std::invalid_argument("invalid oriented pickup search");
         if (cell_seen_.size() != size_t(cells)) {
             distance_.resize(size_t(cells) * 4);
@@ -61,7 +61,7 @@ public:
             const int next = neighbor(cell, direction);
             if (next >= 0 && next < cells && allowed(next)) {
                 const int edge = forward_cost(cell, direction);
-                if (edge < 1 || edge > 16) throw std::invalid_argument("invalid pickup edge cost");
+                if (edge < 1 || edge > cost_limit) throw std::invalid_argument("invalid pickup edge cost");
                 offer(next * 4 + direction, cost + edge);
             }
         }

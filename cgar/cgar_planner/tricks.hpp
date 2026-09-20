@@ -2,6 +2,7 @@
 // Map-specific policies have a separate, explicit CLI activation path.
 // Generic callers leave SharedEnvironment::trick_instance empty.
 #include "../tricks/warehouse_lanes.hpp"
+#include "../tricks/warehouse_native.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -15,7 +16,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -24,8 +25,10 @@ inline Options options(const std::string& instance) {
     const char* short_tasks = std::getenv("CGAR_TRICK_SHORT_TASKS");
     const char* matching = std::getenv("CGAR_TRICK_UNOPENED_MATCH");
     const char* remaining_flow = std::getenv("CGAR_TRICK_REMAINING_FLOW");
+    const char* native_metric = std::getenv("CGAR_TRICK_NATIVE_METRIC");
+    const char* native_bands = std::getenv("CGAR_TRICK_NATIVE_BANDS");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick WAREHOUSE");
         return {};
     }
@@ -36,7 +39,8 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
-    return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false)};
+    return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
+            boolean(native_metric, false), boolean(native_bands, false)};
 }
 
 inline void validate_map(const std::string& name, const std::vector<int>& map, int rows, int cols) {
@@ -63,6 +67,24 @@ inline std::vector<uint8_t> forward_costs(const std::string& name, const std::ve
         for (int d = 0; d < 4; ++d) if (mask & (1 << d)) result[cell * 4 + d] = 16;
     }
     return result;
+}
+
+inline std::vector<uint8_t> native_forward_costs(const std::string& name, const std::vector<int>& map,
+                                                 int rows, int cols, bool bands) {
+    validate_map(name, map, rows, cols);
+    std::vector<uint8_t> result(map.size() * 4, 20);
+    auto hex = [](char ch) { return ch <= '9' ? ch - '0' : ch - 'a' + 10; };
+    for (size_t cell = 0; cell < map.size(); ++cell) {
+        if (warehouse_masks[cell] == 'x') continue;
+        const int mask = hex(warehouse_masks[cell]);
+        const int extra = bands ? (hex(warehouse_native_band_hex[cell / 4]) >> (cell % 4)) & 1 : 0;
+        for (int d = 0; d < 4; ++d) result[cell * 4 + d] = (mask & (1 << d) ? 200 : 20) + extra;
+    }
+    return result;
+}
+
+inline const char* native_field_hash(bool bands) {
+    return bands ? warehouse_native_bands_field_sha256 : warehouse_native_nobands_field_sha256;
 }
 
 }}  // namespace cgar::tricks

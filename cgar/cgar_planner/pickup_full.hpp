@@ -18,28 +18,30 @@ public:
     template<class Neighbor, class Allowed, class ForwardCost, class Check>
     void run(int cells, int start, int heading, int turn_cost, int infinity,
              Neighbor neighbor, Allowed allowed, ForwardCost forward_cost,
-             Check check, FullPickupField& output) {
+             Check check, FullPickupField& output, int cost_limit = 16) {
         check();
-        if (cells < 1 || infinity <= 16 || cells > (infinity - 16) / 64 ||
+        if (cost_limit < 1 || cost_limit > 255 || cells < 1 || infinity <= cost_limit ||
+            cells > (infinity - cost_limit) / (4 * cost_limit) ||
             cells > std::numeric_limits<int>::max() / 4 || start < 0 || start >= cells ||
-            heading < 0 || heading > 3 || turn_cost < 1 || turn_cost > 16 || !allowed(start))
+            heading < 0 || heading > 3 || turn_cost < 1 || turn_cost > cost_limit || !allowed(start))
             throw std::invalid_argument("invalid complete pickup search");
         distance_.assign(size_t(cells) * 4, infinity);
         settled_.assign(size_t(cells) * 4, 0);
+        if (buckets_.size() != size_t(cost_limit + 1)) buckets_.assign(cost_limit + 1, {});
         for (auto& bucket : buckets_) bucket.clear();
         output.distance.assign(cells, infinity); output.pops = output.states = 0;
         int pending = 0;
         auto offer = [&](int state, int cost) {
             if (cost >= distance_[state]) return;
             distance_[state] = cost;
-            buckets_[cost % 17].push_back(state); ++pending;
+            buckets_[cost % buckets_.size()].push_back(state); ++pending;
         };
         offer(start * 4 + heading, 0);
         int current = 0;
         while (pending) {
             if ((output.pops & 1023) == 0) check();
-            while (buckets_[current % 17].empty()) ++current;
-            auto& bucket = buckets_[current % 17];
+            while (buckets_[current % buckets_.size()].empty()) ++current;
+            auto& bucket = buckets_[current % buckets_.size()];
             const int state = bucket.back(); bucket.pop_back(); --pending; ++output.pops;
             if (settled_[state] || distance_[state] != current) continue;
             settled_[state] = 1; ++output.states;
@@ -50,7 +52,7 @@ public:
             const int next = neighbor(cell, direction);
             if (next >= 0 && next < cells && allowed(next)) {
                 const int edge = forward_cost(cell, direction);
-                if (edge < 1 || edge > 16) throw std::invalid_argument("invalid complete pickup edge cost");
+                if (edge < 1 || edge > cost_limit) throw std::invalid_argument("invalid complete pickup edge cost");
                 offer(next * 4 + direction, current + edge);
             }
         }
@@ -59,6 +61,6 @@ public:
 private:
     std::vector<int> distance_;
     std::vector<char> settled_;
-    std::array<std::vector<int>, 17> buckets_;
+    std::vector<std::vector<int>> buckets_;
 };
 } // namespace cgar

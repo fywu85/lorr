@@ -399,9 +399,11 @@ void DistanceOracle::trim() {
     }
 }
 
-void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost, bool compact, int forward_base) {
-    if (turn_cost < 1 || turn_cost > 16 || forward_base < 1 || forward_base > 16)
-        throw std::invalid_argument("turn and base-forward guidance costs must be in [1,16]");
+void TurnDistanceOracle::init(const Certificate* cert, size_t max_bytes, int turn_cost, bool compact, int forward_base, int cost_limit) {
+    if (!cert || cost_limit < 1 || cost_limit > 255 || turn_cost < 1 || turn_cost > cost_limit ||
+        forward_base < 1 || forward_base > cost_limit || cert->free.size() > size_t((kInf - cost_limit) / (4 * cost_limit)))
+        throw std::invalid_argument("turn/base guidance costs or graph exceed the explicit positive integer cost bound");
+    cost_limit_ = cost_limit; wide_fallback_tables = 0;
     cert_ = cert; max_bytes_ = max_bytes; turn_cost_ = turn_cost; compact_ = compact; forward_base_ = forward_base;
     max_edge_cost_ = std::max(turn_cost_, forward_base_); forward_costs_.clear();
     buckets_.assign(max_edge_cost_ + 1, {});
@@ -431,7 +433,7 @@ bool TurnDistanceOracle::set_forward_costs(std::vector<uint8_t> costs) {
         throw std::invalid_argument("invalid forward guidance dimensions");
     int maximum = forward_base_;
     for (int cost : costs) {
-        if (cost < forward_base_ || cost > 16) throw std::invalid_argument("forward guidance costs must be between the base cost and 16");
+        if (cost < forward_base_ || cost > cost_limit_) throw std::invalid_argument("forward guidance cost exceeds the explicit base/cost bound");
         maximum = std::max(maximum, cost);
     }
     if (maximum == forward_base_) costs.clear();
@@ -508,6 +510,7 @@ const TurnTable* TurnDistanceOracle::table(int goal, std::chrono::steady_clock::
     } else dist = compute(goal, deadline, queue_, buckets_);
     TurnTable stored(std::move(dist), compact_);
     check_deadline(deadline, "turn_distance_table_complete");
+    if (compact_ && !stored.is_compact()) ++wide_fallback_tables;
     lru_.push_front(goal);
     auto added = tables_.emplace(goal, Entry{std::move(stored), lru_.begin()});
     return &added.first->second.dist;
@@ -710,6 +713,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     n_ = env->num_of_agents;
     const auto trick_options = tricks::options(env->trick_instance);
     static_trick_metric_ = trick_options.lanes;
+    native_trick_metric_ = trick_options.native_metric;
+    guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : 16;
+    if ((trick_options.native_bands && !native_trick_metric_) ||
+        (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow ||
+         trick_options.short_tasks || trick_options.matching)))
+        throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow, without short preference or matching; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
@@ -763,7 +772,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (turn_cost_ < 1 || turn_cost_ > 16) throw std::invalid_argument("CGAR_TURN_COST must be in [1,16]");
     if (turn_cost_ != 1 && !orientation_guidance_) throw std::invalid_argument("weighted turns require orientation guidance");
     flow_cost_scale_ = env_int("CGAR_FLOW_COST_SCALE", 1);
-    if (flow_cost_scale_ != 1 && flow_cost_scale_ != 2 && flow_cost_scale_ != 4 && flow_cost_scale_ != 8)
+    if (flow_cost_scale_ != 1 && flow_cost_scale_ != 2 && flow_cost_scale_ != 4 && flow_cost_scale_ != 8 &&
+        !(native_trick_metric_ && flow_cost_scale_ == 20))
         throw std::invalid_argument("flow cost scale must be one of 1,2,4,8");
     if (flow_cost_scale_ != 1 && ((!flow_strength_ && !static_trick_metric_) || !temporal_ || turn_cost_ != 1))
         throw std::invalid_argument("scaled flow costs require temporal planning, enabled flow and unit physical turns");
@@ -774,7 +784,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (turn_surcharge_ < 0 || turn_surcharge_ > 15 ||
         (turn_surcharge_ && (!flow_strength_ || !temporal_ || turn_cost_ != 1)))
         throw std::invalid_argument("turn surcharge requires temporal flow, unit physical turns and a value in [0,15]");
-    guidance_turn_cost_ = turn_cost_ * flow_cost_scale_ + turn_surcharge_;
+    guidance_turn_cost_ = native_trick_metric_ ? 1 : turn_cost_ * flow_cost_scale_ + turn_surcharge_;
     if (guidance_turn_cost_ > 16)
         throw std::invalid_argument("scaled turn cost plus surcharge must not exceed 16");
     guide_enabled_ = env_int("CGAR_GUIDE_ROUTES", 0) != 0;
@@ -809,6 +819,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_distance_scale_ = env_int("CGAR_TEMPORAL_DISTANCE_SCALE", 50);
     if (temporal_distance_scale_ < 1 || temporal_distance_scale_ > 4096)
         throw std::invalid_argument("temporal distance scale must be in [1,4096]");
+    if (native_trick_metric_ && (flow_cost_scale_ != 20 || turn_cost_ != 1 || turn_surcharge_ || temporal_distance_scale_ != 50))
+        throw std::invalid_argument("native metric requires forward base20, physical turn1, no surcharge and raw distance scale50");
     temporal_transaction_options_.distance_scale = temporal_distance_scale_;
     temporal_transaction_options_.unit_cost = flow_cost_scale_;
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
@@ -927,7 +939,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (!env->trick_instance.empty() && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ || reassign_ || reassign_pool_))
         throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR without guide routes or rematching");
     if (static_trick_metric_ && (!temporal_ || !orientation_guidance_ || pibt_reference_ || guide_enabled_ ||
-        flow_cost_scale_ != 4 || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
+        flow_cost_scale_ != (native_trick_metric_ ? 20 : 4) || turn_cost_ != 1 || turn_surcharge_ != 0 || cache_only_refresh))
         throw std::invalid_argument("--trick WAREHOUSE requires temporal/oriented CGAR, cost scale4, unit physical turns, no turn surcharge or cache-only refresh");
 
     const auto t0 = Clock::now();
@@ -952,20 +964,27 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     oracle_.init(&cert_, table_mb << 20);
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
-        turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_);
+        turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_, guidance_cost_limit_);
         if (static_trick_metric_) {
-            turn_oracle_.set_forward_costs(tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
+            turn_oracle_.set_forward_costs(native_trick_metric_ ?
+                tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands) :
+                tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols));
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
-            std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
-                env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
+            if (native_trick_metric_) {
+                std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=1 score=pure_potential tie=raw field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), trick_options.native_bands, tricks::native_field_hash(trick_options.native_bands), tricks::warehouse_occupancy_sha256);
+            } else {
+                std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), tricks::warehouse_field_sha256, tricks::warehouse_occupancy_sha256);
+            }
         }
         if (!env->trick_instance.empty()) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
-                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, hrrn_, !short_task_trick_);
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
+                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_);
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
@@ -1873,6 +1892,8 @@ void Cgar::log_movement() const {
 }
 
 void Cgar::log_summary() {
+    if (native_trick_metric_) std::printf("[cgar-native-metric] t=%d forward_base=20 turn=1 cost_limit=%d wide_fallback_tables=%lld\n",
+        env_->curr_timestep, guidance_cost_limit_, turn_oracle_.wide_fallback_tables);
     int in_txn = 0, locks = 0, idle = 0;
     for (const Agent& a : agents_) { in_txn += a.in_txn; idle += a.goal < 0; }
     for (int h : pocket_lock_) locks += h >= 0;
@@ -2600,7 +2621,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                         [&](int cell, int dir) { return neighbor(cell, dir); },
                         [&](int cell) { return cert_.free[cell] && (!capacity_mode_ || cert_.core[cell]); },
                         [&](int cell, int dir) { return turn_oracle_.forward_cost(cell, dir); },
-                        [&] { check_deadline(deadline_, "pickup_full_distance"); }, pickup_full_fields_[k]);
+                        [&] { check_deadline(deadline_, "pickup_full_distance"); }, pickup_full_fields_[k], guidance_cost_limit_);
                 }
             });
             check_deadline(deadline_, "pickup_full_fields_complete");
@@ -2771,7 +2792,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
                     if (Clock::now() >= candidate_deadline) {
                         ++stats_.candidate_deadlines; throw Timeout("pickup_flow_candidates");
                     }
-                });
+                }, guidance_cost_limit_);
             ++stats_.pickup_flow_searches; stats_.pickup_flow_pops += work.pops;
             stats_.pickup_flow_states += work.states; stats_.pickup_flow_cells += work.cells;
             stats_.pickup_flow_candidates += result.size(); stats_.pickup_flow_limits += work.limited;

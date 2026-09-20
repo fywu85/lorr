@@ -150,7 +150,7 @@ private:
 // DistanceOracle. Every cached reverse traversal is complete.
 class TurnDistanceOracle {
 public:
-    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false, int forward_base = 1);
+    void init(const Certificate* cert, size_t max_bytes, int turn_cost = 1, bool compact = false, int forward_base = 1, int cost_limit = 16);
     void prefetch(const std::vector<int>& goals, int threads, std::chrono::steady_clock::time_point deadline);
     void discard_prefetch();
     void clear_tables();  // discard cached results while preserving the metric
@@ -159,7 +159,7 @@ public:
         return forward_costs_.empty() ? forward_base_ : forward_costs_.at(size_t(cell) * 4 + orientation);
     }
     bool weighted_forward() const { return !forward_costs_.empty(); }
-    long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0;
+    long long prefetched_builds = 0, prefetched_hits = 0, prefetched_discarded = 0, wide_fallback_tables = 0;
     const TurnTable* find(int goal);
     const TurnTable* peek(int goal) const {
         const auto found = tables_.find(goal);
@@ -176,7 +176,7 @@ private:
     const Certificate* cert_ = nullptr;
     size_t max_bytes_ = 0, table_bytes_ = 1;
     std::vector<int> cells_, index_, queue_, backward_;
-    int turn_cost_ = 1, max_edge_cost_ = 1, forward_base_ = 1;
+    int turn_cost_ = 1, max_edge_cost_ = 1, forward_base_ = 1, cost_limit_ = 16;
     bool compact_ = false;
     std::vector<uint8_t> forward_costs_;
     std::vector<std::vector<int>> buckets_;
@@ -392,7 +392,8 @@ private:
     DistanceOracle oracle_;
     TurnDistanceOracle turn_oracle_;
     FlowGuidance flow_guidance_;
-    bool static_trick_metric_ = false;
+    bool static_trick_metric_ = false, native_trick_metric_ = false;
+    int guidance_cost_limit_ = 16;
     int flow_strength_ = 0, flow_cost_scale_ = 1;
     GuideRoutes guide_routes_;
     GuideRouteOptions guide_options_;
