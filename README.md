@@ -43,8 +43,9 @@ On 20 September 2026, an explicitly enabled Warehouse TRICK reached **155,173 ta
 378 above the user-specified NMS target of 154,795. It completes 5,000 steps with
 10,000 robots, zero errors/timeouts, seed 0, source
 [37f592a](https://github.com/fywu85/lorr/commit/37f592a48bdb24b936f8d0be8be22ddd405b4ddb).
-The new late matching-cycle guard improves full seeds 0/2 by 53/34; paired seeds
-1/3 are running. It assumes a configured 5,000-step horizon and requires
+The late matching-cycle guard scores 155,173 / 155,056 / 155,090 / 155,008 on
+seeds 0–3, mean 155,081.75: three paired wins, one loss, mean gain 33 tasks.
+It assumes a configured 5,000-step horizon and requires
 `--trick WAREHOUSE`. Ordinary fairness remains enabled; every first-half task
 finishes, with no formal starvation-freedom claim. The preceding guard-OFF profile
 scores 155,120 / 154,999 / 155,056 / 155,020 on seeds 0–3, mean 155,048.75.

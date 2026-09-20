@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-pe",
+    "threaded",
+    "4",
+    "-binding",
+    "linear:4",
+    "-l",
+    "exclusive=false,h_rt=00:20:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_build",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-build-v117-20260920/build.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-prewarm-build-v117-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900716\n"
+}

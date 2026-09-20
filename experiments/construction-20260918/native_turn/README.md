@@ -38,3 +38,11 @@ Retain all work, task-age, never-assigned, latency and memory evidence.
 Build8900665 passes the complete suite on source dac3fc75cb6a149b3e9a6b4770b64170ead87ed9. All28source/test hashes match. The new turn-price episodes check24576physical actions, preserve serial/parallel equality and change two of four episode traces. Independent reverse/prefetch comparisons cover1852128/3704256oriented states;125022macros are independently replayed. Frozen binary4f194edc5a806ae31198ef5ff29b995372b2e92bf266f490c010dbf0574481a5. Native800screen8900675/verifier8900678 and generic800screen8900676/verifier8900679 are running; no quality conclusion yet.
 
 Both screens pass: native verified20:41:37UTC, generic20:41:10UTC. Implicit/explicit turn1 reproduces21489 and the known800-step hash085e97f9...; generic reproduces18958/hashc0f1c9fb.... Turn2/4 activation and changed traces are verified, but no prefix quality ranking. Full benchmark8900690 and verifier8900695, followed by independent work accounting8900698, compare all six full seeds0/2cases. The new155173guard record belongs to a separate frozenV110solver; these turn trials deliberately keep the guard OFF.
+
+Full V113 passes all six cases and independent action/task accounting. Turn2
+loses95/37 and is rejected. Turn4 changes0/2 by−25/+90, scoring155095/155146;
+physical turns decrease8772/10596, but waits rise19473 onseed0 and fall3587
+onseed2. No new peak. V118 full seeds1/3 compares1vs4 on the frozen V113 binary
+and exact V102 controls. V119 separately compares turn4 guardOFFvsON on seeds0/2,
+with exact V113 turn4 controls. Full validation and independent accounting are
+queued after each benchmark; no prefix selection or assumed additive gains.

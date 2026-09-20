@@ -63,7 +63,7 @@ def main():
         command = ['/usr/bin/python3', str(raw / 'outcomes.py'), '--verification', str(a.verification.resolve()),
                    '--raw', str(raw), '--output', str(out), '--execute']
         job = raw / 'job.sh'; job.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
-        submit = ['qsub', '-h', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '1',
+        submit = ['qsub', '-h', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q@research44.grid.gsb,debian.q@research57.grid.gsb', '-pe', 'threaded', '1',
                   '-binding', 'linear:1', '-l', 'exclusive=false,h_rt=00:30:00,h_vmem=8G', '-m', 'n',
                   '-N', 'frontier_outcomes', '-j', 'y', '-o', str(raw / 'job.log'), '-S', '/bin/bash']
         if a.hold_job:

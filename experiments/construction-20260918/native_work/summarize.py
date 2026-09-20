@@ -20,10 +20,13 @@ def main():
     assert v['all_valid_within_deadline_and_memory'] and not v['failures'] and w['all_valid']
     assert w['inputs']['verification']['sha256']==hashlib.sha256((root/'verification.json').read_bytes()).hexdigest()
     work={r['case']:r for r in w['rows']};controls={r['seed']:r for r in v['rows'] if r['variant']==v['control_variant']}
+    core_counts={r['reserved_physical_cores'] for r in v['rows']}
+    assert len(core_counts)==1
+    cores=next(iter(core_counts))
     lines=['# '+a.title,'',a.assessment,'',
            'Verified '+v['checked_utc']+'. Source ['+v['exact_production_source_commit'][:7]+'](https://github.com/fywu85/lorr/commit/'+v['exact_production_source_commit']+'); binary `'+v['binary_sha256']+'`.', '',
-           'Every case completes5000steps with10000robots, zero planner/scheduler errors and timeouts, and independently reconciled50million robot actions. All'+str(v['verified_source_and_test_files'])+'source/test hashes, fixed work, distinct four-core bindings,5s entry deadline and32decimalGB RSS checks pass. Exact prior controls reproduce their complete trajectory hashes. Shared-host timings do not certify the competition1s limit or isolate speedups.','',
-           '| Variant / seed | Tasks | Paired change | Final1000 | Mean entry ms | Max entry s | Peak RSS GB | Mean CPU cores /4 | Full minutes |',
+           'Every case completes5000steps with10000robots, zero planner/scheduler errors and timeouts, and independently reconciled50million robot actions. All'+str(v['verified_source_and_test_files'])+'source/test hashes, fixed work, distinct '+str(cores)+'-core bindings,5s entry deadline and32decimalGB RSS checks pass. Exact prior controls reproduce their complete trajectory hashes. Shared-host timings do not certify the competition1s limit or isolate speedups.','',
+           '| Variant / seed | Tasks | Paired change | Final1000 | Mean entry ms | Max entry s | Peak RSS GB | Mean CPU cores /'+str(cores)+' | Full minutes |',
            '|---|---:|---:|---:|---:|---:|---:|---:|---:|']
     for r in v['rows']:
         assert r['tasks']==f[r['case']]['tasks_completed']==work[r['case']]['tasks']

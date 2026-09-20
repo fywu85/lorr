@@ -1,0 +1,48 @@
+{
+  "checked_utc": "2026-09-20T21:23:55.956648+00:00",
+  "all_valid": true,
+  "source_commit": "37f592a48bdb24b936f8d0be8be22ddd405b4ddb",
+  "binary_sha256": "3f66eefd2a54589e48965b5b4031cbbe4d67bd8e6423c8cdc1cb3108f24bf641",
+  "inputs": [
+    {
+      "path": "experiments/construction-20260918/results/match-horizon-native-full-v110/verification.json",
+      "sha256": "fe2e5fcc46b731311f77f989dceb99463a26821476c69ac5d6e152c757689083"
+    },
+    {
+      "path": "experiments/construction-20260918/results/match-horizon-seeds13-v114/verification.json",
+      "sha256": "c039dccdf88d6a147adf49103303446d848b9fe70c0cca71d692e1d5c8286def"
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "control_totals": [
+    155120,
+    154999,
+    155056,
+    155020
+  ],
+  "candidate_totals": [
+    155173,
+    155056,
+    155090,
+    155008
+  ],
+  "differences": [
+    53,
+    57,
+    34,
+    -12
+  ],
+  "control_mean": 155048.75,
+  "candidate_mean": 155081.75,
+  "mean_difference": 33.0,
+  "wins": 3,
+  "losses": 1,
+  "candidate_promoted": true,
+  "decision": "Retain the matching cutoff guard as a modest measured improvement: three paired wins, one loss, mean +33 tasks. Single-seed record remains 155173.",
+  "limits": "One fixed input and four solver seeds. Ordinary fairness retained; finite evidence does not establish starvation freedom. Shared-host 5s development; strict 1s not certified."
+}

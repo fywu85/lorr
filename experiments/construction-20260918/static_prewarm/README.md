@@ -40,3 +40,18 @@ screen, with exact default trajectory and unchanged initial assignments. Then
 compare complete 5,000-step runs at seeds 0 and 2, a 5-second development entry
 deadline and RSS below 32,000,000,000 bytes. Rank only full valid runs, including
 independent task/action/waiting accounting. No improvement is claimed yet.
+
+V117 build8900716 passes the complete regression suite on exact source
+3e319f175859396b91f97364b320c6794a85cbb7, frozen binary
+e3ec32ecdfdaf06f7db139da3857af8fa0ad43b98bd67479f7b9bd969dc1302c.
+The new oracle tests compare143648oriented states against independent heap
+search across serial/parallel, packed/wide and weighted-turn cases, including
+multiple batches, resident tables, exact capacity, retry after timeout and
+CLI/native selector checks. All28source/test hashes match.
+
+Native800screen8900721/verifier8900722 passes at21:28:52UTC. The base and larger
+unwarmed cache exactly reproduce the known trajectory; all10000initial task
+assignments agree across all three arms. Complete prewarming changes the trace,
+prepares38586tables in23.114s during real initialization, peaks at15.957GB RSS,
+and has maximum entry0.760948s in this screen. The startup task counts are not
+ranked. Generic800screen8900723/verifier8900724 passes at21:29:31UTC, exact18958/hashc0f1c9fb... . Full benchmark8900733 now compares all six full cases; no prefix quality ranking.

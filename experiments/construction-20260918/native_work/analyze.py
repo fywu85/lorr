@@ -32,7 +32,7 @@ def sha(p):
 def normalize_environment(environment):
     result = dict(environment)
     # These absent selectors have exactly the same semantics as explicit 0.
-    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT', 'CGAR_TRICK_MATCH_HORIZON']:
+    for key in ['CGAR_TRICK_HORIZON_MARGIN_PERCENTILE', 'CGAR_TRICK_NATIVE_NEUTRAL_TAIL', 'CGAR_FRESH_PICKUP_AUDIT', 'CGAR_TRICK_MATCH_HORIZON', 'CGAR_TRICK_NATIVE_PREWARM_THREADS']:
         if result.get(key) == '0':
             result.pop(key)
     if result.get('CGAR_TRICK_NATIVE_TURN_COST') == '1':
@@ -88,7 +88,7 @@ def main():
     p.add_argument('--raw', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--commit', required=True)
-    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence', 'match_horizon', 'native_turn'], required=True)
+    p.add_argument('--mode', choices=['work', 'seeds', 'percentile', 'pickup', 'portfolio', 'neutral', 'workers', 'fresh', 'cadence', 'match_horizon', 'native_turn', 'prewarm'], required=True)
     p.add_argument('--hold-job')
     p.add_argument('--control', help='Optional existing profile to use as the exact control')
     p.add_argument('--reference', type=Path, help='Verified full reference containing that control profile')
@@ -115,7 +115,7 @@ def main():
         if a.control:
             command += ['--control', a.control]
         script = raw / 'frontier-analysis.sh'; script.write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(map(shlex.quote, command)) + '\n')
-        submit = ['qsub', '-h', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q', '-pe', 'threaded', '2', '-binding', 'linear:2',
+        submit = ['qsub', '-h', '-terse', '-w', 'e', '-cwd', '-q', 'debian.q@research44.grid.gsb,debian.q@research57.grid.gsb', '-pe', 'threaded', '2', '-binding', 'linear:2',
                   '-l', 'exclusive=false,h_rt=00:30:00,h_vmem=8G', '-m', 'n', '-N', 'frontier_analysis', '-j', 'y',
                   '-o', str(raw / 'frontier-analysis.log'), '-S', '/bin/bash']
         if a.hold_job:
@@ -132,7 +132,7 @@ def main():
     sys.path.insert(0, str(ROOT / 'tools')); from cpu_resources import cpu_resources
     resources = cpu_resources(); assert resources['effective_cpu_quota'] is None
     assert resources['physical_cores_visible'] == 2; os.sched_setaffinity(0, resources['representative_cpus'])
-    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10', 'match_horizon':'trick_matchguard0', 'native_turn':'trick_turn1'}[a.mode]
+    control = a.control or {'work':'trick_native_work4m_regions2', 'seeds':'trick_native_horizon5000_margin1', 'percentile':'trick_native_percentile0', 'pickup':'trick_native_pickup5', 'portfolio':'trick_p90_workers1', 'neutral':'trick_p90_neutral0', 'workers':'trick_pickup8_workers1', 'fresh':'trick_fresh0', 'cadence':'trick_match10', 'match_horizon':'trick_matchguard0', 'native_turn':'trick_turn1', 'prewarm':'trick_prewarm_base'}[a.mode]
     subprocess.run(['/usr/bin/python3', str(support / 'experiments/sequences-20260918/analyze.py'), '--input', str(raw),
                     '--output', str(out), '--control', control, '--workers', '2'], check=True)
     sys.path.insert(0, str(support / 'experiments/construction-20260918'))
@@ -164,7 +164,7 @@ def main():
         sys.path.insert(0, str(support))
         audit_tools = importlib.import_module('audit_tools')
     for r in result['rows']:
-        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else {'CGAR_TRICK_MATCH_HORIZON'} if a.mode == 'match_horizon' else {'CGAR_TRICK_NATIVE_TURN_COST'} if a.mode == 'native_turn' else set()
+        env = r['environment']; allowed = {'CGAR_TEMPORAL_CANDIDATE_LIMIT', 'CGAR_TEMPORAL_REGION_ROUNDS'} if a.mode == 'work' else {'CGAR_TRICK_HORIZON_MARGIN_PERCENTILE'} if a.mode == 'percentile' else {'CGAR_PICKUP_WEIGHT'} if a.mode == 'pickup' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS', 'CGAR_TEMPORAL_STEPS', 'CGAR_TEMPORAL_CANDIDATE_LIMIT'} if a.mode == 'portfolio' else {'CGAR_TRICK_NATIVE_NEUTRAL_TAIL'} if a.mode == 'neutral' else {'CGAR_TEMPORAL_WORKERS', 'CGAR_TEMPORAL_THREADS'} if a.mode == 'workers' else {'CGAR_FRESH_PICKUP_AUDIT'} if a.mode == 'fresh' else {'CGAR_REASSIGN_MATCH_INTERVAL'} if a.mode == 'cadence' else {'CGAR_TRICK_MATCH_HORIZON'} if a.mode == 'match_horizon' else {'CGAR_TRICK_NATIVE_TURN_COST'} if a.mode == 'native_turn' else {'CGAR_TRICK_NATIVE_PREWARM_THREADS', 'CGAR_TURN_TABLE_MB'} if a.mode == 'prewarm' else set()
         assert {k:v for k,v in env.items() if k not in allowed} == {k:v for k,v in baseline.items() if k not in allowed}
         lines = (Path(r['raw_case']) / 'WAREHOUSE.log').read_text().splitlines()
         receipt = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_COMPONENTS] ')]
@@ -234,6 +234,27 @@ def main():
             quoted = [fields(s) for s in lines if s.startswith('[cgar-native-metric] ')]
             assert [int(m['t']) for m in quoted] == list(range(0, 5000, 200))
             assert all(m['turn'] == str(turn) and m['forward_base'] == '20' and m['cost_limit'] == '201' for m in quoted)
+        if a.mode == 'prewarm':
+            prewarm = int(env['CGAR_TRICK_NATIVE_PREWARM_THREADS'])
+            assert (r['variant'], int(env['CGAR_TURN_TABLE_MB']), prewarm) in {
+                ('trick_prewarm_base', 8192, 0), ('trick_prewarm_cache', 25600, 0), ('trick_prewarm_all', 25600, 8)}
+            assert spec['cpus_per_instance'] == 8
+            receipts = [fields(s) for s in lines if s.startswith('[CGAR_TRICK_NATIVE_PREWARM] ')]
+            if prewarm:
+                assert len(receipts) == 1
+                receipt = dict(receipts[0]); elapsed = int(receipt.pop('wall_us'))
+                assert 0 < elapsed < 30000000
+                assert receipt == dict(complete='1', goals='38586', threads='8', stored_bytes='11911035168',
+                                       input='map_only', initial_dispatch='unchanged')
+            else:
+                assert not receipts
+            allocations = [fields(s) for s in lines if s.startswith('[cgar-temporal-allocation] ')]
+            assert len(allocations) == 1 and allocations[0]['allowed_cpus'] == '8'
+            assert allocations[0]['workers'] == allocations[0]['threads'] == '1'
+            assert allocations[0]['preparation_threads'] == allocations[0]['region_threads'] == allocations[0]['pickup_threads'] == '4'
+            assert env['CGAR_TRICK_MATCH_HORIZON'] == '1'
+            guarded = [fields(s) for s in lines if s.startswith('[cgar-match-horizon] ')]
+            assert [int(m['t']) for m in guarded] == list(range(0, 5000, 200))
         if a.mode == 'cadence':
             interval = int(env['CGAR_REASSIGN_MATCH_INTERVAL']); assert interval in (5, 10)
             cadence_receipts = [fields(s) for s in lines if s.startswith('[cgar-match-cadence] ')]

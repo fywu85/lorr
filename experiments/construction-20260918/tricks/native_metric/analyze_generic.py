@@ -15,7 +15,7 @@ def main():
    dest=support/name;shutil.copy2(src,dest);files.append(dest)
   write(raw/'generic-control-request.json',dict(commit=a.commit,files={str(f):sha(f) for f in files}))
   cmd=['/usr/bin/python3',str(support/'analyze_generic.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--execute'];job=raw/'generic-control.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,cmd))+'\n')
-  submit=['qsub','-h','-terse','-w','n','-cwd','-q','debian.q','-pe','threaded','1','-binding','linear:1','-l','exclusive=false,h_rt=00:20:00,h_vmem=8G','-m','n','-N','native_generic_check','-j','y','-o',str(raw/'generic-control.log'),'-S','/bin/bash']
+  submit=['qsub','-h','-terse','-w','n','-cwd','-q','debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','1','-binding','linear:1','-l','exclusive=false,h_rt=00:20:00,h_vmem=8G','-m','n','-N','native_generic_check','-j','y','-o',str(raw/'generic-control.log'),'-S','/bin/bash']
   if a.hold_job:submit+=['-hold_jid',a.hold_job]
   submit.append(str(job));r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);write(raw/'generic-control-submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout));print(r.stdout,end='')
   if r.returncode:return r.returncode

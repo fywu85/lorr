@@ -1,0 +1,33 @@
+{
+  "command": [
+    "qsub",
+    "-h",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=false,h_rt=00:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "frontier_outcomes",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-match-horizon-seeds13-outcomes-v114-20260920/job-retry1.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-match-horizon-seeds13-outcomes-v114-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900719\n",
+  "reason": "Original job failed CPU-affinity assertion before reading trajectories. Same frozen analysis and benchmarks; retry on binding-capable hosts."
+}

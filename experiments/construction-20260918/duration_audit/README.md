@@ -30,3 +30,9 @@ cases, not new generated inputs. All currently running full cases finish regardl
 of their prefixes; no early stopping or prefix-only promotion is introduced.
 
 [Observed directions and exact curves](../results/duration-audit-v115/summary.md).
+
+The predeclared new cases have now completed. Six held-out paired effects again
+need the full horizon for all sampled directions to agree: the800-step prefix
+rejects the eventual turn4 seed2 winner; both cutoff pairs remain tied through
+4250; two directions are wrong even at4975. This does not validate a shorter
+stopping rule. See `../results/duration-audit-held-out-v115/summary.md`.
