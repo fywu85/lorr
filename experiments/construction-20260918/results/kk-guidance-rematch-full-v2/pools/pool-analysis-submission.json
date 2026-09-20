@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q",
+    "-hold_jid",
+    "8899246",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=true,h_rt=00:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "kk_pool_analysis",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/pool-analysis.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/pool-analysis.sh"
+  ],
+  "returncode": 0,
+  "response": "8899251\n"
+}

@@ -382,3 +382,18 @@ The user now permits map-specific tricks as a separate track when generic
 improvement proves difficult, gated solely by `--trick <map-instance-name>`,
 marked `[trick]` in commits and `TRICK` in logs. [Required track policy](../EXPERIMENT_TRACKS.md).
 No trick implementation or new CGAR throughput record exists yet.
+
+
+### Full KK diagnostic complete (2026-09-20 02:19 UTC)
+
+[All five full cases and accounting](../kk_ablation/RESULTS.md) are now complete.
+Supplied/rematch controls152,872/152,786, supplied/keep142,510, uniform/rematch24,574,
+uniform/keep23,620. Everycase has1timeout andRSS>32GB; none replaces the historical
+valid target. Uniform-weight collapse occurs with shorter completed chains and
+similar reported remaining LNS time but much larger loaded waits and unfinished
+work. This strongly prioritizes guidance quality for the configured system,
+without isolating motion-only effects from assignment/cohorts/clock-selectedwork.
+With supplied guidance, keeping unopened assignments mainly raises empty work
+65.73->88.85steps/completion; CGAR's existing64.29means that delta is not its
+recoverable gain. Poolreplay preserves every fullaccountingfield. Fableturn23
+is reviewing this evidence and the new explicit-flag trick authorization.

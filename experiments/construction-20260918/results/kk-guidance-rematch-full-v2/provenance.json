@@ -1,0 +1,71 @@
+{
+  "source_sha256": "06d709614211c4a77dc0b9c5e8419b9d001ad0b56c70669c1bed706d260c70c2",
+  "script_sha256": "8a82e79dbad261b0d981b43db94e71f8b5c61c69ba1aabd957827ee3a3886f11",
+  "binary_sha256": "c03bf5a2222c4148fa2a1198f8eee3bee4c42a562bda21a0c6c160d529cbbcc4",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/decomposition/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/decomposition/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "opposite_turn_fixture_passed": true,
+  "phase_boundary_fixture_passed": true,
+  "allocation": {
+    "hostname": "research25",
+    "cpu_model": "AMD EPYC 7532 32-Core Processor",
+    "logical_cpu_affinity": [
+      0
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "supplied_rematch-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/supplied_rematch-r0/result.json",
+      "sha256": "565d8efcf35bfffa33e4f57dfa0914e990b1be48f6ef837edb309a3fc6e12821"
+    },
+    "supplied_keep-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/supplied_keep-r0/result.json",
+      "sha256": "4c4582578424ea3ec82dd89ec2558931ccefe139096da69c2f128ef08f5840e0"
+    },
+    "uniform_rematch-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/uniform_rematch-r0/result.json",
+      "sha256": "54f672b2eecab36763e7e10e46750da805fb63a2ed2f0184818a49811340bcd8"
+    },
+    "uniform_keep-r0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/uniform_keep-r0/result.json",
+      "sha256": "87821071c60af7339f7a6afab898b75e738e617f8a4ea81d5cd67129268b8ab7"
+    },
+    "supplied_rematch-r1": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/supplied_rematch-r1/result.json",
+      "sha256": "160726009af485a531aee24a20f92f01a2490ceb4bcb35c4106dd020700e45a1"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}

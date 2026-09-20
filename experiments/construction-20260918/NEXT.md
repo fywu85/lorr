@@ -480,3 +480,25 @@ pools8899251held. Initial suppliedrematch decomposition succeeds with frozen
 pre-initial-gap-fix analyzer; do not assume NMS's missing-initial-schedule bug
 also affects KK or prematurely rerun/modify frozen jobs. Needfullaction/cohort/
 budget analysis before interpreting the strong supplied/uniformcontrast.
+
+
+KK accounting8899246 COMPLETE02:16:52.653965UTC, pools8899251 COMPLETE02:18:56.106192UTC.
+All5rawhashes/frozenconfigs/source/binary/allocations,4actionfixtures,50M-step
+identities and pool-original-field equality pass. kk_ablation/RESULTS.md fulltable.
+Suppliedrematch loadedoverhead18.830/18.987,empty65.734/65.794; suppliedkeep18.183,
+empty88.852. Uniformrematch loadedoverhead408.202,empty546.639,unfinished890.299;
+uniformkeep479.220/687.006. Uniform+rematch has similarmeanremainingLNSbudget
+.877vs.874s and MORE mergediterationrecords40.9kvs21.1k; countsnotallattempts.
+Guidancewholepolicyinterventionstrong, motion-onlycausalitynotidentified. Shorter
+uniformcompletedchains189.35 doNOTpreventcollapse. All5one-timeout/RSS>32GB remain
+nonqualifying; originalvalidKK152981targetunchanged. Poolunpicked>=4000:
+suppliedrematch1632/1643,keep1377,uniformrematch5360,uniformkeep4268.
+
+Fableturn23 RUNNING same5.1maxsession, rawruns/fable-cgar-session/turn23,
+PTY62925, promptfollowup-22.md,0sourceupdates. Promptincludesexactnewusertrick
+permissionandmandatory --trick WAREHOUSE gate, fullKKaction/accounting/budget
+results,poolsstillpendingatprompttime. RequestsONEgenericnextchange andONEfirst
+trick design, notesforwarduint8cost<=16,turn/base<=16,Dialbuckets,auto16/32bitcache,
+NMS20/200forward1turn vs CGARpaidforwardextra/scale4/op*4,staticfieldpublication
+andpickupcouplingconfounds. No trickimplemented. Awaitreview,archiveassessment.
+Nextturn24/followup-23.md onlyafterturn23complete. No otherliveCLI.

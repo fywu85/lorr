@@ -1,0 +1,134 @@
+{
+  "input": "/shared/share_mala/fw2449/lorr2024/runs/kk-guidance-rematch-full-v2-20260920/uniform_keep-r0/result.json",
+  "team_size": 10000,
+  "steps": 5000,
+  "completed_tasks": 23620,
+  "planner_errors": 0,
+  "schedule_errors": 0,
+  "entry_timeouts": 1,
+  "full_opposite_turn_transitions": {
+    "idle": {
+      "adjacent": 0,
+      "stationary": 0
+    },
+    "empty": {
+      "adjacent": 159829,
+      "stationary": 428368
+    },
+    "loaded": {
+      "adjacent": 355849,
+      "stationary": 955981
+    }
+  },
+  "full_phase_actions": {
+    "idle": {
+      "fw": 0,
+      "cr": 0,
+      "ccr": 0,
+      "wait": 0,
+      "other": 0
+    },
+    "empty": {
+      "fw": 3220595,
+      "cr": 1700334,
+      "ccr": 591767,
+      "wait": 10711146,
+      "other": 3248
+    },
+    "loaded": {
+      "fw": 7857078,
+      "cr": 3522052,
+      "ccr": 1432361,
+      "wait": 20954667,
+      "other": 6752
+    }
+  },
+  "non_motion_action_markers_before_last_assignment": 6436,
+  "unassigned_robot_steps": 0,
+  "empty_forward_actions": 3220595,
+  "empty_turn_actions": 2292101,
+  "empty_wait_actions": 10711146,
+  "empty_other_actions": 3248,
+  "empty_robot_steps_including_reassignments": 16227090,
+  "loaded_robot_steps_including_unfinished_tasks": 33772910,
+  "robot_steps_per_completed_task": 2116.8501270110078,
+  "revealed_chain_shortest": {
+    "n": 38620,
+    "mean": 248.61302433972034,
+    "p90": 444,
+    "sum": 9601435
+  },
+  "completed_chain_shortest": {
+    "n": 23620,
+    "mean": 197.6570702794242,
+    "p90": 345,
+    "sum": 4668660
+  },
+  "assigned_chain_shortest": {
+    "n": 33618,
+    "mean": 215.08894044856922,
+    "p90": 372,
+    "sum": 7230860
+  },
+  "first_assignment_pickup_shortest": {
+    "n": 33618,
+    "mean": 71.42593253614135,
+    "p90": 144,
+    "sum": 2401197
+  },
+  "last_assignment_pickup_shortest": {
+    "n": 33618,
+    "mean": 71.42593253614135,
+    "p90": 144,
+    "sum": 2401197
+  },
+  "observed_first_assignment_pickup_delay": {
+    "n": 30316,
+    "mean": 293.77417865153717,
+    "p90": 829,
+    "sum": 8906058
+  },
+  "observed_last_assignment_pickup_delay": {
+    "n": 30316,
+    "mean": 293.77417865153717,
+    "p90": 829,
+    "sum": 8906058
+  },
+  "completed_loaded_steps": {
+    "n": 23620,
+    "mean": 677.0788314987299,
+    "p90": 1967,
+    "sum": 15992602
+  },
+  "completed_loaded_action_totals": {
+    "fw": 5751072,
+    "cr": 1490930,
+    "ccr": 690813,
+    "wait": 8055010,
+    "other": 4777
+  },
+  "completed_loaded_action_means": {
+    "fw": 243.483149872989,
+    "cr": 63.121507197290434,
+    "ccr": 29.246951735817103,
+    "wait": 341.02497883149874,
+    "other": 0.20224386113463166
+  },
+  "completed_opposite_turn_transitions": {
+    "adjacent": 153707,
+    "stationary": 393998
+  },
+  "completed_opposite_turn_transition_means": {
+    "adjacent": 6.507493649449619,
+    "stationary": 16.68069432684166
+  },
+  "completed_loaded_forward_excess_over_shortest": 1082412,
+  "observed_pickup_steps_per_shortest_cell": 4.446974444294094,
+  "completed_loaded_steps_per_shortest_cell": 3.4255229551948525,
+  "tasks_with_multiple_assignments": 0,
+  "assignments_after_pickup": 0,
+  "assigned_without_observed_pickup": 3302,
+  "distance_queries": 105856,
+  "complete_bfs_tables": 19571,
+  "distance_basis": "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic."
+}
