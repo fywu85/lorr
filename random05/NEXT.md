@@ -1,76 +1,94 @@
-# RANDOM-05 next experiments
+# RANDOM-05 continuation
 
-The campaign targets the colleague's reported roughly 27–28% advantage over
-matched NMS combined-track runs. Their private synthetic inputs and code are
-unavailable. We use archived RANDOM-05: 800 robots and 2,000 steps.
+The active campaign targets the colleague's roughly27–28% advantage over matched
+NMS in the combined track. Their private instances/code are unavailable. We use
+archived RANDOM-05,800 robots,2,000 steps. The goal is not complete.
 
-Read [RANDOM05_PROGRESS.md](../RANDOM05_PROGRESS.md) for the current frontier and
-all measured successes and failures. Exact configurations are in `best.json`
-(overall) and `best-four-cores.json`. These include explicit guidance and
-known-horizon tricks; bare defaults do not reproduce the frontier.
+## Current evidence
+
+- Best: **3,363**, source `2ead4f4`, four physical EPYC9354 cores, strict1s limit.
+  Mean333ms/max435ms. Configuration is `best.json` and `best-four-cores.json`.
+- NMS4 repeats:2,902/2,903/2,914. Use the strongest2,914 as the conservative
+  matched reference: current best **+15.4%**. NMS32 reference remains3,172.
+- The best uses generated field15, final directional penalty2.4, K1024,
+  exact/guided matching with keep0.5, and known-horizon triage1.5. All map tricks
+  require `--trick RANDOM-05`. It is currently a single planner seed.
+- Preceding contrast1.6 scored3,299/3,185/3,284/3,214/3,061 over seeds0–4,
+  mean3,208.6. Do not transfer that mean to the new contrast2.4 configuration.
+- Best32-worker record is still3,299 (`best-32-workers.json`). Its trajectory
+  reproduced exactly on four cores. Best without horizon triage is2,914.
+- `RANDOM05_PROGRESS.md` records the complete frontier and negative results.
+  `tools/audit_progress.py` verifies source/binary hashes, result timestamps,
+  validity, CPU metadata, matching NMS input hashes and every reported gain.
 
 ## Runs to collect
 
-Directories below are under `runs/random05/`.
+All directories are under `runs/random05/`.
 
-| GRID job | Directory | Question |
+| Jobs | Directory | Purpose |
 |---|---|---|
-| 8899475 | field-search-validation-full-v18 | Validate four alternative fields at K1024. |
-| 8899485 | candidate-sort-full-v20 | Check stable insertion sorting, K2048/3072, and four new planner seeds. |
+| 8899503–8899505 | direct-recursion-split-full-v22 | Exact trajectory/latency after replacing std::function recursion; K2560. K3072 already failed its deadline. |
+| 8899508–8899512 | contrast-seeds-split-full-v22 | Replicate contrast2.4 across five planner seeds using the equivalent direct-recursion implementation. |
+| 8899518–8899524 | plain-score-split-full-v23 | Separate lane guidance from evaluation using exact unit-action distances; K128 blends0/0.25/0.5/0.75/1 and K1024 blends0.25/0.5. |
 
-Collect each final `summary.json`, validate all2,000 steps, and retain exact
-source, binary and input hashes. Promote valid maxima while keeping them separate
-from averages. The first two hardware-restricted jobs have an explicit allocation
-request amendment: queue instances replace the ineffective HOST expression.
-The CPU-model guard remains active. Copy that amendment into compact evidence.
+These are one-job-per-case batches. Use `tools/split_grid.py collect --output
+<batch>` to collect completed cases. Child directories each contain a standard
+single-case benchmark spec/allocation/summary. Copy those into compact `results/`
+when recording evidence; use a child's summary for a new frontier link so the
+audit finds its matching spec/allocation. Raw traces/binaries remain ignored.
 
-NMS four-core repeats completed:2,902 and2,914 versus2,903 initially. Our3,299
-trajectory is identical on four cores and32 workers; its four-core mean/max
-latency is378/486ms. Compare conservatively against2,914, the strongest repeat.
+The earlier monolithic batches are all collected: `candidate-sort-full-v20`,
+`contrast-validation-full-v20`, `generations-full-v21`, and field searches. The
+first has one invalid K3072 timeout, which must never count as a score.
 
-The additional32-field K128 screen did not beat existing field15. Higher-K
-validation remains useful because field rankings have changed with the search
-budget. Avoid interpreting a selected best seed as a demonstrated mean gain.
+## Findings guiding the next step
 
-## Reproducible source versions
+1. More compute alone is weak: K2048 gives3,262 at contrast1.6 and3,343 at2.4,
+   below corresponding K1024 bests3,299/3,363.
+2. Multi-generation search helps K128 (G2=3,182 vs3,073), but loses at K1024
+   (G2=3,181,G4=3,234 vs3,299). It remains off. More optimization may be exposing
+   a mismatch between the rollout objective and completed tasks; this is a
+   hypothesis, not an established cause.
+3. The new plain-score test preserves the traffic field for policy decisions
+   but blends its evaluation with exact movement/turn distances over the full
+   remaining task chain. It adds a second graph and task-cost cache. Defaults
+   preserve the old behavior. Unit tests verify equivalence when metrics agree
+   and deterministic worker counts; full performance tests are pending.
+4. At K128/contrast2.4, static load multipliers0/0.25/0.5/0.75/1/1.5 give
+   3,013/3,101/3,190/3,199/3,217/3,221. Values1 and1.5 merit K1024 validation,
+   but their small screen gain is not a new frontier.
+5. Source-level efficiency: shared sorting reduced K1024 mean500→378ms;
+   five-element insertion sorting reduced it further to335ms, with exact full
+   trajectory identity. Direct recursion is under validation. A possible next
+   low-risk optimization is caching the active task-cost table pointer per
+   robot at each simulated step, avoiding repeated stage/chain checks in every
+   candidate cost lookup. Require exact trajectory identity.
 
-- Build v15: commit `134faa8`, preceding32-worker best3,231 tasks.
-- Build v16: commit `6aed8ba`, best overall 3,299 tasks and four-core best 3,127; adds cycle portfolios.
-- Build v17: commit `e55f951`, tests discounted progress and load-weighted turn
-  costs. Tested settings did not improve throughput; both default to off.
+## Source versions
 
-- Build v18: commit `79d0e79`, shared sorting;3,299 on four cores and exact trajectory reproduction.
-- Build v19: commit `b3bf5d3`, independent final guidance contrast.
-- Build v20: commit `2ead4f4`, stable insertion sort for five-element candidates.
-- Build v21: pending commit, optional multi-generation priority search.
+- v18 `79d0e79`: shared candidate/priority sorting.
+- v19 `b3bf5d3`: independent final guidance contrast.
+- v20 `2ead4f4`: stable insertion sorting; current3,363 frontier.
+- v21 `9090996`: optional fixed-budget generations, off in the frontier.
+- v22 `3228b9c`: direct recursive lambda for PIBT, same policy.
+- v23 `b3329d1`: optional unit-action evaluation blend, off in the frontier.
 
-Completed builds passed regression tests. Compact evidence is in `results/`;
-frozen sources, binaries and full traces are under ignored `runs/random05/`.
-The progress audit checks frontier timestamps, scores, validity, binary hashes,
-and the exact planner sources at the linked commits.
+All builds passed their regression tests. Frozen source and binary hashes are
+in each `runs/random05/build-v*/spec.json` and `completion.json`.
 
-## Allocation notes
+## Resources and shared workspace
 
-Use `tools/grid.py` to freeze and submit builds or benchmarks. A 32-worker case
-uses 16 physical cores with two SMT threads, matching the archived competition
-CPU topology. Four-worker cases use four physical cores, one thread each.
+Use GRID. Four-worker validation gets four physical cores, one thread each.
+Competition32-worker topology is16 physical cores with two SMT threads each.
+The user permits shared hosts; reserve disjoint physical cores and report load.
 
-The runner reserves both SMT slots per physical core, requests available cores
-through GRID's `m_topology_inuse`, and verifies the resulting affinity. This
-dynamic resource requires `qsub -w n`; static verification incorrectly rejects it.
-Memory reservation is at least 32 GiB total. The per-process address-space cap is
-32 GB or the inherited hard limit, whichever is lower. Earlier NMS repeat attempts
-failed before solver startup because the wrapper attempted to raise that limit;
-`nms4-repeats-full-v3` is the corrected submission.
+For matching reference hardware use `--hosts 'research33*|research39*'` and
+`--cpu-model 'AMD EPYC 9354 32-Core Processor'`. The runner selects matching queue
+instances, checks CPU model/affinity, reserves both SMT slots per physical core,
+and retains a32GB address-space ceiling (or the lower inherited hard limit).
+Mixed-duration batches should use `split_grid.py` so finished cases release cores.
 
-The shared-sort full comparison is still awaiting the slower original K1024
-case. Its completed K64 pair is exactly equal in trajectory and25.8% faster.
-
-New follow-ups: job8899489 (`contrast-validation-full-v20`) validates contrast
-2.4/3.2 and turn0.3 at K1024, their combination, and contrast2.4 at K2048. The
-K128 control3073 improves to3199 with contrast2.4. `generations-full-v21` tests
-G2/4/8/16 at fixed total K128 and G2/4 at K1024. Each generation refines the
-current step's best priority offsets; this feature stays off by default.
-
-Completed original/shared-sort K1024 pair: exactly3299, mean500.4/377.8ms,
-maximum605.7/486.3ms on matching four-core EPYC9354 allocations.
+A separate Warehouse session edits `cgar/` and `experiments/construction-20260918/`.
+Only stage/commit RANDOM05_PROGRESS.md and random05/. The shared main branch can
+advance with its commits. The public fywu85/lorr remote is authorized for push.
+Use the existing GitHub credential helper if the stale VSCode askpass socket fails.
