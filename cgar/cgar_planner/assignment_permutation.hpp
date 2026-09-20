@@ -1,0 +1,107 @@
+#pragma once
+// Exact bounded pickup permutation: integer distance first, fewer moved tasks
+// second. Identity must be feasible. No planner state, RNG or cache is touched.
+#include <algorithm>
+#include <cstdint>
+#include <stdexcept>
+#include <vector>
+
+namespace cgar {
+struct AssignmentPermutation {
+    std::vector<int> column;
+    long long before = 0, after = 0;
+    int changed = 0;
+};
+
+template<class Check>
+AssignmentPermutation minimum_pickup_permutation(const std::vector<int>& costs, int n,
+                                                int unreachable, Check check) {
+    check();
+    if (n < 0 || n > 32 || costs.size() != size_t(n) * n || unreachable < 1)
+        throw std::invalid_argument("invalid bounded pickup matrix");
+    int maximum = 0;
+    for (int value : costs) {
+        if (value < 0 || value > unreachable) throw std::invalid_argument("invalid pickup matrix entry");
+        if (value < unreachable) maximum = std::max(maximum, value);
+    }
+    AssignmentPermutation result; result.column.resize(n);
+    for (int i = 0; i < n; ++i) {
+        if (costs[i*n+i] >= unreachable) throw std::invalid_argument("pickup identity must be feasible");
+        result.before += costs[i*n+i];
+    }
+    // A forbidden edge costs more than every feasible complete identity. All
+    // arithmetic is int64 even when valid input costs approach INT_MAX.
+    const long long forbidden = (static_cast<long long>(maximum) * (n + 1) + 1) * (n + 1) + 1;
+    const long long infinity = 1LL << 60;
+    std::vector<long long> u(n+1), v(n+1), minimum(n+1);
+    std::vector<int> owner(n+1), previous(n+1);
+    std::vector<char> used(n+1);
+    for (int row = 1; row <= n; ++row) {
+        check(); owner[0] = row; int column = 0;
+        std::fill(minimum.begin(), minimum.end(), infinity);
+        std::fill(used.begin(), used.end(), false);
+        do {
+            check(); used[column] = true;
+            const int current_row = owner[column];
+            long long delta = infinity; int next_column = -1;
+            for (int j = 1; j <= n; ++j) if (!used[j]) {
+                const int value = costs[(current_row-1)*n+j-1];
+                const long long encoded = value == unreachable ? forbidden :
+                    static_cast<long long>(value) * (n + 1) + (current_row != j);
+                const long long reduced = encoded - u[current_row] - v[j];
+                if (reduced < minimum[j]) { minimum[j] = reduced; previous[j] = column; }
+                if (minimum[j] < delta) { delta = minimum[j]; next_column = j; }
+            }
+            if (next_column < 0 || delta == infinity) throw std::logic_error("pickup augmentation failed");
+            for (int j = 0; j <= n; ++j) {
+                if (used[j]) { u[owner[j]] += delta; v[j] -= delta; }
+                else minimum[j] -= delta;
+            }
+            column = next_column;
+        } while (owner[column]);
+        do {
+            const int last = previous[column]; owner[column] = owner[last]; column = last;
+        } while (column);
+    }
+    for (int j = 1; j <= n; ++j) result.column[owner[j]-1] = j-1;
+    for (int i = 0; i < n; ++i) {
+        const int value = costs[i*n+result.column[i]];
+        if (value >= unreachable) throw std::logic_error("pickup permutation selected a forbidden edge");
+        result.after += value; result.changed += result.column[i] != i;
+    }
+    if (result.after > result.before) throw std::logic_error("pickup permutation lost feasible identity");
+    check(); return result;
+}
+
+struct PickupPermutationCycle {
+    std::vector<int> rows;
+    long long before = 0, after = 0;
+    bool accepted = false;
+};
+
+template<class Check>
+std::vector<PickupPermutationCycle> pickup_permutation_cycles(const std::vector<int>& costs,
+        const AssignmentPermutation& permutation, int unit_cost, Check check) {
+    const int n = permutation.column.size();
+    if (n > 32 || costs.size() != size_t(n)*n || unit_cost < 1 || unit_cost > 16)
+        throw std::invalid_argument("invalid pickup cycle input");
+    std::vector<char> used(n), targets(n);
+    for (int column : permutation.column) {
+        if (column < 0 || column >= n || targets[column]) throw std::invalid_argument("pickup mapping is not a permutation");
+        targets[column] = true;
+    }
+    std::vector<PickupPermutationCycle> result;
+    for (int root = 0; root < n; ++root) if (!used[root]) {
+        check(); PickupPermutationCycle cycle;
+        for (int i = root; !used[i]; i = permutation.column[i]) {
+            used[i] = true; cycle.rows.push_back(i);
+            cycle.before += costs[i*n+i]; cycle.after += costs[i*n+permutation.column[i]];
+        }
+        if (cycle.rows.size() < 2) continue;
+        const long long saving = cycle.before - cycle.after;
+        cycle.accepted = saving >= 4LL * unit_cost && saving * 100 >= cycle.before * 10;
+        result.push_back(std::move(cycle));
+    }
+    check(); return result;
+}
+}  // namespace cgar

@@ -534,6 +534,81 @@ SharedEnvironment swap_fixture() {
  for(int i=0;i<2;++i){Task t;t.task_id=i;t.t_revealed=-5;t.agent_assigned=i;t.locations={i?1:10,i?13:22};e.task_pool.emplace(i,t);}
  return e;
 }
+void assignment_permutation_regression() {
+ auto check=[](bool ok,const char* message){if(!ok)throw std::runtime_error(message);};
+ int callbacks=0;
+ const int inf=kInf;
+ std::vector<int> cycle_costs={10,1,4, 4,10,1, 1,4,10};
+ auto cycle=minimum_pickup_permutation(cycle_costs,3,inf,[&]{++callbacks;});
+ check(cycle.column==std::vector<int>({1,2,0})&&cycle.before==30&&cycle.after==3&&cycle.changed==3,
+       "Hungarian cycle objective differs from hand optimum");
+ auto cycles=pickup_permutation_cycles(cycle_costs,cycle,4,[&]{++callbacks;});
+ check(cycles.size()==1&&cycles[0].rows==std::vector<int>({0,1,2})&&cycles[0].accepted&&
+       cycles[0].before==30&&cycles[0].after==3,"three-cycle threshold or decomposition failed");
+ check(callbacks>0,"Hungarian deadline callback was not exercised");
+
+ std::vector<int> tied(16,4);
+ auto identity=minimum_pickup_permutation(tied,4,inf,[]{});
+ check(identity.column==std::vector<int>({0,1,2,3})&&identity.changed==0,
+       "Hungarian tie objective did not minimize moved tasks");
+ std::vector<int> blocked={0,inf,inf,inf,  inf,0,inf,inf, inf,inf,0,inf, inf,inf,inf,0};
+ auto fixed=minimum_pickup_permutation(blocked,4,inf,[]{});
+ check(fixed.column==std::vector<int>({0,1,2,3})&&pickup_permutation_cycles(blocked,fixed,1,[]{}).empty(),
+       "forbidden edges allowed a non-identity permutation");
+
+ for(int n=1;n<=6;++n){
+  std::vector<int> costs(size_t(n)*n);
+  for(int i=0;i<n;++i)for(int j=0;j<n;++j)
+   costs[i*n+j]=(i==j?0:1+((i*17+j*7+n*5)%19));
+  auto answer=minimum_pickup_permutation(costs,n,inf,[]{});
+  std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
+  long long best_cost=std::numeric_limits<long long>::max();int best_changed=n+1;
+  do{
+   long long total=0;int changed=0;
+   for(int i=0;i<n;++i){total+=costs[i*n+order[i]];changed+=order[i]!=i;}
+   if(total<best_cost||(total==best_cost&&changed<best_changed)){best_cost=total;best_changed=changed;}
+  }while(std::next_permutation(order.begin(),order.end()));
+  check(answer.after==best_cost&&answer.changed==best_changed,
+        "Hungarian result disagrees with brute-force lexicographic optimum");
+ }
+ bool rejected=false;
+ try { minimum_pickup_permutation(std::vector<int>{inf,1,1,inf},2,inf,[]{ }); }
+ catch(const std::invalid_argument&) { rejected=true; }
+ check(rejected,"non-finite identity was accepted");
+ bool timeout=false;
+ try {
+  minimum_pickup_permutation(cycle_costs,3,inf,[]{throw Timeout("assignment_regression");});
+ } catch(const Timeout&) { timeout=true; }
+ check(timeout,"Hungarian callback exception was swallowed");
+ std::cout<<"ASSIGNMENT_PERMUTATION passed brute_force_n<=6 three_cycle=1 forbidden_edges=1 tie_break=1 explicit_callback=1\n";
+}
+void unopened_matching_production() {
+ auto e=swap_fixture();e.num_of_agents=3;e.curr_states={State(0,0,0),State(11,0,2),State(1,0,0)};
+ e.curr_task_schedule={0,1,2};e.goal_locations={{{10,0}},{{1,0}},{{11,0}}};e.task_pool.clear();
+ for(int i=0;i<3;++i){Task t;t.task_id=i;t.t_revealed=-5;t.agent_assigned=i;
+  t.locations={i==0?10:(i==1?1:11)};e.task_pool.emplace(i,t);}
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);
+ setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);
+ setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
+ setenv("CGAR_FLOW_MIN_MARGIN_PERCENT","0",1);setenv("CGAR_FLOW_REFRESH_INTERVAL","0",1);
+ setenv("CGAR_PICKUP_FLOW","1",1);
+ setenv("CGAR_GUIDE_ROUTES","0",1);setenv("CGAR_REASSIGN","0",1);setenv("CGAR_REASSIGN_POOL","0",1);
+ setenv("CGAR_CHAIN_FLOW_PRICING","0",1);setenv("CGAR_TEMPORAL_REMAINING_FLOW","0",1);
+ setenv("CGAR_REASSIGN_MATCH","1",1);
+ Cgar c;c.initialize(&e,5000);std::vector<Action>actions;
+ for(int t=0;t<2;++t){e.curr_timestep=t;c.plan(&e,5000,actions);auto next=step(e,e.curr_states,actions);
+  if(next.empty())throw std::runtime_error("unopened matching fixture planner collided");e.curr_states=next;}
+ if(c.stats().flow_publications!=1)throw std::runtime_error("unopened matching fixture did not publish learned flow");
+ e.curr_timestep=10;std::vector<int>proposed;c.schedule(&e,5000,proposed);
+ if(proposed!=std::vector<int>({0,2,1})||c.stats().match_passes!=1||c.stats().match_groups!=1||
+    c.stats().match_accepted_cycles!=1||c.stats().match_moved!=2||c.stats().match_saving<8)
+  throw std::runtime_error("resident unopened matching did not commit the bounded beneficial cycle");
+ for(const char* key:{"CGAR_REASSIGN_MATCH","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE",
+                      "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
+                      "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
+                      "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1\n";
+}
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);
  auto e=swap_fixture();Cgar c;c.initialize(&e,1000);std::vector<int> proposed;c.schedule(&e,100,proposed);
@@ -3116,4 +3191,4 @@ void chain_flow_pricing_regression() {
  std::cout<<"CHAIN_FLOW_PRICING passed production_cases="<<production_cases<<" production_refresh_cases="<<refresh_cases<<" hand_tolls=1 partial_fallback=1 ratio_only_purity=1 cache_lru_unchanged=1 refresh_invalidation=1 fairness_started_protected=1 shadow_exact_robot_steps=2304 shadow_collision_checks=4608 refined_and_legacy_native=1\n";
 }
 
-int main(){try{chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

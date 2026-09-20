@@ -898,6 +898,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("chain flow pricing requires generic learned pickup flow and mode0..4; incompatible with tricks, remaining-flow score, guide routes or rematching");
     if (chain_flow_pricing_)
         std::printf("[cgar-chain-pricing] mode=%d shadow=%d resident_only=1 extra_tables=0\n", chain_flow_pricing_, chain_flow_pricing_ == 4);
+    const int reassign_match = env_int("CGAR_REASSIGN_MATCH", 0);
+    if (reassign_match < 0 || reassign_match > 1 || (reassign_match &&
+        (!temporal_ || !orientation_guidance_ || !pickup_flow_ || !flow_strength_ ||
+         !env->trick_instance.empty() || guide_enabled_ || reassign_ || reassign_pool_ ||
+         chain_flow_pricing_ || temporal_remaining_flow_)))
+        throw std::invalid_argument("unopened pickup matching requires generic temporal learned pickup flow, boolean setting and no other rematching, chain pricing, remaining-flow score or guides");
+    reassign_match_ = reassign_match != 0;
+    if (reassign_match_)
+        std::printf("[cgar-unopened-match] enabled=1 groups=4 group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0\n");
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
     global_samples_ = std::max(0, std::min(512, env_int("CGAR_GLOBAL_SAMPLES", 0)));
     enable_locks_ = env_int("CGAR_CERT", pibt_reference_ ? 0 : 1) != 0;
@@ -973,6 +982,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     chain_table_basis_.clear();
     last_reassignment_.assign(n_, -20);
     pool_reassign_cursor_ = 0;
+    match_cursor_ = 0;
     if (pibt_reference_) {
         pibt_elapsed_.assign(n_, 0); pibt_initial_distance_.assign(n_, 0);
         pibt_previous_goal_.assign(n_, -1); pibt_tie_.resize(n_);
@@ -1909,6 +1919,12 @@ void Cgar::log_summary() {
         stats_.pool_nodes, stats_.pool_pairs, stats_.pool_exchanges, stats_.pool_pickup_saving,
         stats_.pool_chain_delta, stats_.pool_total_saving, stats_.pool_missing_pickup, stats_.pool_missing_chain,
         stats_.pool_short_pickup, stats_.pool_primary_protected, stats_.pool_recovery_protected, stats_.pool_fair_protected);
+    std::printf("[cgar-unopened-match] t=%d enabled=%d passes=%lld eligible=%lld resident=%lld missing=%lld unreachable=%lld groups=%lld selected=%lld nodes=%lld matrix_entries=%lld cycles=%lld accepted_cycles=%lld moved=%lld saving=%lld primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld\n",
+        env_->curr_timestep, reassign_match_, stats_.match_passes, stats_.match_eligible, stats_.match_resident,
+        stats_.match_missing, stats_.match_unreachable, stats_.match_groups, stats_.match_selected,
+        stats_.match_nodes, stats_.match_matrix_entries, stats_.match_cycles, stats_.match_accepted_cycles,
+        stats_.match_moved, stats_.match_saving, stats_.match_primary_protected,
+        stats_.match_recovery_protected, stats_.match_fair_protected, stats_.match_budget_protected);
     std::fflush(stdout);
 }
 
@@ -1952,7 +1968,8 @@ void Cgar::prune_reassignment_records() {
     prune(fair_tasks_);
 }
 
-Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only) const {
+Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only,
+                                                  bool include_fresh) const {
     constexpr int cooldown = 20;
     const int now = env_->curr_timestep;
     // Also preserve the next pending primary if the previous one just finished.
@@ -1961,7 +1978,8 @@ Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& propo
         const Agent& agent = agents_[i];
         const auto task = env_->task_pool.find(proposed[i]);
         if (parked_[i] || task == env_->task_pool.end() || task->second.idx_next_loc != 0 ||
-            agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket ||
+            (!include_fresh && agent.task != proposed[i]) ||
+            (agent.task == proposed[i] && (agent.stop != 0 || agent.ticket == kIdleTicket)) ||
             env_->curr_states[i].location == task->second.locations.front()) continue;
         if (oldest < 0 || agent.ticket < agents_[oldest].ticket) oldest = i;
     }
@@ -1982,7 +2000,7 @@ Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& propo
         if (task.idx_next_loc != 0 || task.locations.empty() || !cert_.core[task.locations.front()] ||
             cell == task.locations.front() || !eligible_task(task)) continue;
         if (fair_tasks_.count(proposed[i])) { ++result.fair; continue; }
-        if (reassigned_tasks_.count(proposed[i])) continue;
+        if (reassigned_tasks_.count(proposed[i])) { ++result.budget; continue; }
         if (existing_only && (agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket)) continue;
         result.robots.push_back(i);
     }
@@ -2221,6 +2239,186 @@ void Cgar::exchange_unopened_with_pool(std::vector<int>& proposed) {
     check_deadline(deadline_, "pool_exchange_complete");
 }
 
+// A fixed-work, resident-only permutation pass over unopened assignments. It
+// changes only the current proposal: task metadata and the free pool are never
+// touched. Every group is analysed completely before any accepted cycle is
+// committed, so a deadline can only fail the whole entry.
+void Cgar::match_unopened(std::vector<int>& proposed) {
+    constexpr int interval = 10, holder_limit = 128, group_limit = 4;
+    constexpr int group_size = 32, node_limit = 2048;
+    const int now = env_->curr_timestep;
+    if (!reassign_match_ || now % interval != 0) return;
+    ++stats_.match_passes;
+    prune_reassignment_records();
+    if (flow_guidance_.publications() <= 0) {
+        check_deadline(deadline_, "unopened_match_waiting_for_publication");
+        return;
+    }
+
+    const auto candidates = unopened_candidates(proposed, false, true);
+    stats_.match_primary_protected += candidates.primary;
+    stats_.match_recovery_protected += candidates.recovery;
+    stats_.match_fair_protected += candidates.fair;
+    stats_.match_budget_protected += candidates.budget;
+    stats_.match_eligible += candidates.robots.size();
+    if (candidates.robots.size() < 2) {
+        check_deadline(deadline_, "unopened_match_empty");
+        return;
+    }
+
+    // Read only complete resident tables. The diagonal check excludes a holder
+    // whose own current pickup is unreachable under this immutable metric.
+    std::vector<int> resident;
+    resident.reserve(candidates.robots.size());
+    std::vector<const TurnTable*> tables(n_, nullptr);
+    std::unordered_set<int> task_ids;
+    for (int robot : candidates.robots) {
+        check_deadline(deadline_, "unopened_match_resident_index");
+        const auto found = env_->task_pool.find(proposed[robot]);
+        if (found == env_->task_pool.end() || found->second.locations.empty()) continue;
+        if (!task_ids.insert(found->first).second) continue;
+        const int goal = found->second.locations.front();
+        const auto* table = turn_oracle_.peek(goal);
+        if (!table) {
+            ++stats_.match_missing;
+            continue;
+        }
+        const int own = turn_oracle_.value(*table, env_->curr_states[robot].location,
+                                           env_->curr_states[robot].orientation);
+        if (own >= kInf) {
+            ++stats_.match_unreachable;
+            continue;
+        }
+        tables[robot] = table;
+        resident.push_back(robot);
+        ++stats_.match_resident;
+    }
+    if (resident.size() < 2) {
+        check_deadline(deadline_, "unopened_match_no_resident_group");
+        return;
+    }
+
+    // Rotate a fixed quota, then group holders by current physical location.
+    // The index is rebuilt from env_->curr_states every pass; no planner
+    // occupancy or map-specific coordinate partition is used.
+    const size_t start = match_cursor_ % resident.size();
+    const size_t quota_count = std::min<size_t>(holder_limit, resident.size());
+    match_cursor_ += quota_count;
+    std::vector<int> quota;
+    quota.reserve(quota_count);
+    for (size_t k = 0; k < quota_count; ++k)
+        quota.push_back(resident[(start + k) % resident.size()]);
+    stats_.match_selected += quota.size();
+
+    std::vector<int> head(cert_.free.size(), -1), link(n_, -1);
+    for (auto it = quota.rbegin(); it != quota.rend(); ++it) {
+        const int robot = *it;
+        const int cell = env_->curr_states[robot].location;
+        if (cell >= 0 && cell < static_cast<int>(head.size())) {
+            link[robot] = head[cell];
+            head[cell] = robot;
+        }
+    }
+
+    std::vector<char> used(n_, 0), anchor_seen(n_, 0);
+    std::vector<int> seen(cert_.free.size(), 0), queue;
+    int generation = 0;
+    struct Planned {
+        std::vector<int> robots;
+        AssignmentPermutation permutation;
+        std::vector<PickupPermutationCycle> cycles;
+    };
+    std::vector<Planned> planned;
+
+    for (int group_number = 0; group_number < group_limit; ++group_number) {
+        check_deadline(deadline_, "unopened_match_group_start");
+        int anchor = -1;
+        for (int robot : quota) {
+            if (!anchor_seen[robot] && !used[robot]) {
+                anchor = robot;
+                anchor_seen[robot] = 1;
+                break;
+            }
+        }
+        if (anchor < 0) break;
+
+        queue.clear();
+        const int start_cell = env_->curr_states[anchor].location;
+        if (start_cell < 0 || start_cell >= static_cast<int>(cert_.free.size()) ||
+            !cert_.free[start_cell]) continue;
+        queue.push_back(start_cell);
+        seen[start_cell] = ++generation;
+        std::vector<int> group;
+        for (size_t pos = 0; pos < queue.size() && pos < node_limit && group.size() < group_size; ++pos) {
+            if ((pos & 63) == 0) check_deadline(deadline_, "unopened_match_group_search");
+            const int cell = queue[pos];
+            ++stats_.match_nodes;
+            for (int robot = head[cell]; robot >= 0 && group.size() < group_size; robot = link[robot]) {
+                if (!used[robot]) {
+                    used[robot] = 1;
+                    group.push_back(robot);
+                }
+            }
+            for (int direction = 0; direction < 4; ++direction) {
+                const int next = neighbor(cell, direction);
+                if (next < 0 || !cert_.core[next] || seen[next] == generation) continue;
+                seen[next] = generation;
+                queue.push_back(next);
+            }
+        }
+        if (group.size() < 2) {
+            for (int robot : group) used[robot] = 0;
+            continue;
+        }
+
+        ++stats_.match_groups;
+        const int n = static_cast<int>(group.size());
+        std::vector<int> costs(static_cast<size_t>(n) * n, kInf);
+        for (int row = 0; row < n; ++row) {
+            const int robot = group[row];
+            for (int column = 0; column < n; ++column) {
+                check_deadline(deadline_, "unopened_match_matrix");
+                const int value = turn_oracle_.value(*tables[group[column]],
+                    env_->curr_states[robot].location, env_->curr_states[robot].orientation);
+                costs[static_cast<size_t>(row) * n + column] = value;
+                ++stats_.match_matrix_entries;
+                if (value >= kInf) ++stats_.match_unreachable;
+            }
+        }
+        const auto permutation = minimum_pickup_permutation(costs, n, kInf,
+            [&] { check_deadline(deadline_, "unopened_match_hungarian"); });
+        auto cycles = pickup_permutation_cycles(costs, permutation, flow_cost_scale_,
+            [&] { check_deadline(deadline_, "unopened_match_cycles"); });
+        stats_.match_cycles += cycles.size();
+        for (const auto& cycle : cycles) stats_.match_accepted_cycles += cycle.accepted;
+        planned.push_back({std::move(group), permutation, std::move(cycles)});
+    }
+
+    // Commit only after every selected group has a complete finite solution.
+    check_deadline(deadline_, "unopened_match_commit_start");
+    for (const Planned& item : planned) {
+        std::vector<int> replacement(item.robots.size());
+        for (size_t i = 0; i < item.robots.size(); ++i)
+            replacement[i] = proposed[item.robots[i]];
+        for (const auto& cycle : item.cycles) if (cycle.accepted) {
+            const long long saving = cycle.before - cycle.after;
+            stats_.match_moved += cycle.rows.size();
+            stats_.match_saving += saving;
+            for (int row : cycle.rows) {
+                const int robot = item.robots[row];
+                reassigned_tasks_.insert(proposed[robot]);
+                replacement[row] = proposed[item.robots[item.permutation.column[row]]];
+                last_reassignment_[robot] = now;
+                agents_[robot].committed = -1;
+                agents_[robot].commit_age = 0;
+            }
+        }
+        for (size_t i = 0; i < item.robots.size(); ++i)
+            proposed[item.robots[i]] = replacement[i];
+    }
+    check_deadline(deadline_, "unopened_match_complete");
+}
+
 // Sparse whole-chain HRRN: nearby task candidates for every idle robot, plus an
 // unpruned oldest-task admission. A bounded pair store never truncates the task
 // pool by ID; unmatched robots get a fresh search over the remaining tasks.
@@ -2252,6 +2450,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     if (robots.empty() || free_tasks_.empty()) {
         reassign_unopened(proposed);
         exchange_unopened_with_pool(proposed);
+        match_unopened(proposed);
         check_deadline(deadline_, "empty_schedule"); return;
     }
     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
@@ -2684,6 +2883,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     }
     reassign_unopened(proposed);
     exchange_unopened_with_pool(proposed);
+    match_unopened(proposed);
     check_deadline(deadline_, "scheduling_complete");
 }
 

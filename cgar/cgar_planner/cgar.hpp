@@ -25,6 +25,7 @@
 #include "pibt_kernel.hpp"
 #include "pickup_search.hpp"
 #include "pickup_full.hpp"
+#include "assignment_permutation.hpp"
 #include "temporal_geometry.hpp"
 #include "temporal_prepare.hpp"
 #include "temporal_regions.hpp"
@@ -304,6 +305,10 @@ struct Stats {
     long long pool_exchanges = 0, pool_pickup_saving = 0, pool_chain_delta = 0, pool_total_saving = 0;
     long long pool_missing_pickup = 0, pool_missing_chain = 0, pool_short_pickup = 0;
     long long pool_primary_protected = 0, pool_recovery_protected = 0, pool_fair_protected = 0;
+    long long match_passes = 0, match_eligible = 0, match_resident = 0, match_missing = 0, match_unreachable = 0;
+    long long match_groups = 0, match_selected = 0, match_nodes = 0, match_matrix_entries = 0;
+    long long match_cycles = 0, match_accepted_cycles = 0, match_moved = 0, match_saving = 0;
+    long long match_primary_protected = 0, match_recovery_protected = 0, match_fair_protected = 0, match_budget_protected = 0;
 };
 
 class Cgar {
@@ -367,12 +372,14 @@ private:
     int task_chain_cost(int task_id);
     struct UnopenedCandidates {
         std::vector<int> robots;
-        long long primary = 0, recovery = 0, fair = 0;
+        long long primary = 0, recovery = 0, fair = 0, budget = 0;
     };
     void prune_reassignment_records();
-    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only) const;
+    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only,
+                                           bool include_fresh = false) const;
     void reassign_unopened(std::vector<int>& proposed);
     void exchange_unopened_with_pool(std::vector<int>& proposed);
+    void match_unopened(std::vector<int>& proposed);
     void log_summary();
     void record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
                          const std::vector<char>& commitments);
@@ -462,7 +469,7 @@ private:
     std::vector<FullPickupField> pickup_full_fields_;
     int turn_build_limit_ = 32;
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
-    bool reassign_ = false, reassign_pool_ = false;
+    bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;
@@ -473,7 +480,7 @@ private:
     std::unordered_map<int, bool> chain_table_basis_;
     ChainCostCache refined_chain_cost_;
     long long regular_admissions_ = 0;
-    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0, pool_reassign_cursor_ = 0;
+    size_t scheduler_cursor_ = 0, reassign_cursor_ = 0, pool_reassign_cursor_ = 0, match_cursor_ = 0;
     std::unordered_set<int> reassigned_tasks_, fair_tasks_;
     std::vector<int> last_reassignment_;
 };
