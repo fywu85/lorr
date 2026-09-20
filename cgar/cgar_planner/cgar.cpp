@@ -1968,18 +1968,19 @@ void Cgar::prune_reassignment_records() {
     prune(fair_tasks_);
 }
 
-Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only,
-                                                  bool include_fresh) const {
+Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only) const {
     constexpr int cooldown = 20;
     const int now = env_->curr_timestep;
     // Also preserve the next pending primary if the previous one just finished.
+    // A fresh assignment still has its old episode ticket until sync_agents;
+    // it cannot nominate the oldest holder, but can join the candidate scan below.
     int oldest = -1;
     for (int i = 0; i < n_; ++i) {
         const Agent& agent = agents_[i];
         const auto task = env_->task_pool.find(proposed[i]);
         if (parked_[i] || task == env_->task_pool.end() || task->second.idx_next_loc != 0 ||
-            (!include_fresh && agent.task != proposed[i]) ||
-            (agent.task == proposed[i] && (agent.stop != 0 || agent.ticket == kIdleTicket)) ||
+            agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket ||
+            task->second.locations.empty() ||
             env_->curr_states[i].location == task->second.locations.front()) continue;
         if (oldest < 0 || agent.ticket < agents_[oldest].ticket) oldest = i;
     }
@@ -2255,7 +2256,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         return;
     }
 
-    const auto candidates = unopened_candidates(proposed, false, true);
+    const auto candidates = unopened_candidates(proposed, false);
     stats_.match_primary_protected += candidates.primary;
     stats_.match_recovery_protected += candidates.recovery;
     stats_.match_fair_protected += candidates.fair;
@@ -2299,7 +2300,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     }
 
     // Rotate a bounded list of anchors, then collect nearby holders from ALL
-    // resident candidates. Prefiltering that spatial pool to the anchor anchors
+    // resident candidates. Prefiltering that spatial pool to the anchor quota
     // scatters it across a large map and leaves local groups mostly empty.
     // Four groups of at most32 still cap matrix participants at128 per pass.
     // Rebuild the index from current states, without touching planner occupancy.
@@ -2674,7 +2675,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         }
         if (found) {
             assign(best);
-            if (reassign_ || reassign_pool_) fair_tasks_.insert(tasks[best.task].id);
+            if (reassign_ || reassign_pool_ || reassign_match_) fair_tasks_.insert(tasks[best.task].id);
             ++stats_.fair_assignments;
             regular_admissions_ = 0;
         }

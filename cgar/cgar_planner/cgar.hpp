@@ -376,8 +376,7 @@ private:
         long long primary = 0, recovery = 0, fair = 0, budget = 0;
     };
     void prune_reassignment_records();
-    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only,
-                                           bool include_fresh = false) const;
+    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only) const;
     void reassign_unopened(std::vector<int>& proposed);
     void exchange_unopened_with_pool(std::vector<int>& proposed);
     void match_unopened(std::vector<int>& proposed);

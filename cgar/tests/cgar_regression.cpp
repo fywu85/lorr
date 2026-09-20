@@ -587,6 +587,7 @@ void unopened_matching_production() {
  e.curr_task_schedule={0,1,2};e.goal_locations={{{10,0}},{{1,0}},{{11,0}}};e.task_pool.clear();
  for(int i=0;i<3;++i){Task t;t.task_id=i;t.t_revealed=-5;t.agent_assigned=i;
   t.locations={i==0?10:(i==1?1:11)};e.task_pool.emplace(i,t);}
+ const auto matching_initial=e;
  setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_TEMPORAL_STEPS","128",1);
  setenv("CGAR_ORIENTATION_GUIDANCE","1",1);setenv("CGAR_FLOW_STRENGTH","1",1);
  setenv("CGAR_FLOW_WARMUP","1",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
@@ -635,12 +636,65 @@ void unopened_matching_production() {
  for(int i=0;i<130;++i)if(wide.curr_task_schedule[i]!=i||wide.task_pool.at(i).agent_assigned!=i||
     wide.task_pool.at(i).t_revealed!=-5||wide.task_pool.at(i).idx_next_loc!=0)
   throw std::runtime_error("all-resident matching changed simulator metadata");
+ // Same-call new assignments must not borrow stale tickets in next-primary
+ // selection, and mandatory fair admissions must retain their protection.
+ auto warm=[](Cgar& planner,SharedEnvironment& env){
+  planner.initialize(&env,5000);std::vector<Action> offered;
+  for(int t=0;t<2;++t){env.curr_timestep=t;planner.plan(&env,5000,offered);
+   auto next=step(env,env.curr_states,offered);
+   if(next.empty())throw std::runtime_error("fresh matching setup collided");env.curr_states=next;}
+  if(planner.stats().flow_publications!=1)throw std::runtime_error("fresh matching setup lacks published flow");
+ };
+ std::string protection_failures;
+ {
+  auto fresh=matching_initial;Cgar guarded;warm(guarded,fresh);
+  fresh.curr_timestep=10;fresh.curr_states[0].location=10;
+  fresh.curr_task_schedule[0]=-1;fresh.goal_locations[0].clear();fresh.task_pool.erase(0);
+  Task task;task.task_id=3;task.t_revealed=10;task.locations={1};fresh.task_pool.emplace(3,task);
+  guarded.schedule(&fresh,5000,proposed);
+  if(proposed!=std::vector<int>({3,1,2})||guarded.stats().match_primary_protected!=2)
+   protection_failures+=" fresh stale ticket masked next primary;";
+  if(fresh.curr_task_schedule!=std::vector<int>({-1,1,2})||fresh.task_pool.at(3).agent_assigned!=-1)
+   throw std::runtime_error("fresh matching next-primary fixture changed simulator metadata");
+ }
+ {
+  auto fresh=matching_initial;fresh.curr_states[0]=State(24,0,0);
+  fresh.task_pool.at(2).locations={1};fresh.goal_locations[2]={{{1,0}}};
+  Cgar eligible;warm(eligible,fresh);fresh.curr_timestep=10;fresh.curr_states[2].location=1;
+  fresh.curr_task_schedule[2]=-1;fresh.goal_locations[2].clear();fresh.task_pool.erase(2);
+  Task task;task.task_id=3;task.t_revealed=10;task.locations={10};fresh.task_pool.emplace(3,task);
+  eligible.schedule(&fresh,5000,proposed);
+  if(proposed!=std::vector<int>({0,3,1})||eligible.stats().match_moved!=2)
+   protection_failures+=" fresh unprotected task cannot join matching;";
+  if(fresh.curr_task_schedule!=std::vector<int>({0,1,-1})||fresh.task_pool.at(3).agent_assigned!=-1)
+   throw std::runtime_error("fresh matching participation fixture changed simulator metadata");
+ }
+ {
+  SharedEnvironment fair;fair.rows=2;fair.cols=12;fair.map.assign(24,0);fair.num_of_agents=2;
+  fair.curr_states={State(0,0,0),State(11,0,2)};fair.curr_task_schedule={-1,-1};fair.goal_locations.resize(2);
+  for(int i=0;i<2;++i){Task task;task.task_id=i;task.t_revealed=0;task.locations={i==0?2:9};fair.task_pool.emplace(i,task);}
+  Cgar guarded;guarded.initialize(&fair,5000);guarded.schedule(&fair,5000,proposed);
+  if(proposed!=std::vector<int>({0,1})||guarded.stats().fair_assignments)
+   throw std::runtime_error("fresh fair matching setup failed initial regular assignments");
+  fair.curr_task_schedule=proposed;
+  for(int i=0;i<2;++i){fair.task_pool.at(i).agent_assigned=i;fair.goal_locations[i]={{{fair.task_pool.at(i).locations[0],0}}};}
+  for(int t=0;t<2;++t){fair.curr_timestep=t;guarded.plan(&fair,5000,actions);auto next=step(fair,fair.curr_states,actions);
+   if(next.empty())throw std::runtime_error("fresh fair matching setup collided");fair.curr_states=next;}
+  fair.curr_timestep=10;fair.curr_task_schedule[1]=-1;fair.goal_locations[1].clear();fair.task_pool.erase(1);
+  Task task;task.task_id=3;task.t_revealed=-100;task.locations={2};fair.task_pool.emplace(3,task);
+  guarded.schedule(&fair,5000,proposed);
+  if(proposed!=std::vector<int>({0,3})||guarded.stats().fair_assignments!=1||guarded.stats().match_fair_protected!=1)
+   protection_failures+=" fair-admitted fresh task lacks rematching protection;";
+  if(fair.curr_task_schedule!=std::vector<int>({0,-1})||fair.task_pool.at(3).agent_assigned!=-1)
+   throw std::runtime_error("fresh fair matching fixture changed simulator metadata");
+ }
+ if(!protection_failures.empty())throw std::runtime_error("UNOPENED_MATCHING_PROTECTION:"+protection_failures);
  unsetenv("CGAR_TURN_BUILD_LIMIT");
  for(const char* key:{"CGAR_REASSIGN_MATCH","CGAR_TEMPORAL","CGAR_TEMPORAL_STEPS","CGAR_ORIENTATION_GUIDANCE",
                       "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
                       "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
                       "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
- std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1\n";
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1\n";
 }
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);
