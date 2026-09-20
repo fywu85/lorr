@@ -129,3 +129,26 @@ Push succeeds with per-command GitHub CLI credential helper (stale VSCode socket
 `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper=
 -c 'credential.helper=!gh auth git-credential' push origin main`.
 No global auth changes or credentials in output. Only commit our owned paths.
+
+
+## Latest continuation (source73; update older running labels above)
+
+- Source72 rank-weighted progress is the new optional trick, power0default.
+  Powers0/.25/.5/1/2 full runs in rank-progress-split-full-v72, jobs8900865..69.
+  .25 original failed binding before launch; repeat in
+  rank-progress-allocation-repeat-split-full-v72. Other4running. Sourcef76c88e,
+  regression27.92s, SHA18b3fd752a588bbd6423bc6e0400fd27c054c9dfe3b25894f58cddd8faf383a3.
+  Real binary refuses positive power without --trick RANDOM-05. Weights rank
+  remaining chain cost, tied ranks shared, normalizedmean1; prioritiesunchanged.
+- Source73 current: nested worker allocation and optionally preserve liveG/E/P
+  inside forecasts. Defaults threads1/policy0 preserve source70 behavior.
+  Regressions28.72s cover worker-split equivalence. Five cases in
+  faithful-replan-full-v73.json; new strict legacy-policy control must reproduce
+ 3752. Two K128 strict candidates and two5s diagnostic heavier candidates.
+  OMP_WAIT_POLICY=PASSIVE,OMP_THREAD_LIMIT=32. Active workers bounded by32.
+- Initial replan strict batch complete: R0/R1 controls3872exact allsixfields;
+  R4F2K32=3752; valid allocation repeatR8F2K32=3790. Leave defaultoff.
+  RelaxedR8F1K32 andR4F2K64 stillrunning; originalstrictfailuresretained.
+- Guidance retune all8complete andalllose:3746/3827/3707/3714/3714/3780/3740/3663.
+- Age retention0control3872; .25=3790,.5=3711,.75=3785;1stillrunning.
+- Best remains3872 source69. No new frontier. Updated waiting/audits remainvalid.

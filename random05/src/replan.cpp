@@ -30,8 +30,9 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
     target.pending_=pending_;target.best_offsets_=best_offsets_;target.past_offsets_=past_offsets_;
     target.last_actions_=last_actions_;target.predicted_loc_=predicted_loc_;target.predicted_dir_=predicted_dir_;
     if(config.candidate_cache && config.push_price==0) {
-        target.candidate_rankings_.resize(1);
-        target.candidate_rankings_[0].resize(size_t(age_.size())*config.cache_slots);
+        target.candidate_rankings_.resize(config.threads);
+        for(auto& ranking:target.candidate_rankings_)
+            ranking.resize(size_t(age_.size())*config.cache_slots);
     }
 }
 
@@ -70,15 +71,24 @@ int Engine::rank_replanned(const SharedEnvironment& env,const std::vector<int>& 
     Config inner=cfg;inner.replan_roots=0;inner.component_trials=0;inner.first_futures=0;
     inner.futures=cfg.replan_k;inner.continuations=cfg.replan_continuations;
     inner.generations=1;inner.elites=1;inner.persist_elites=1;inner.screen_branches=0;
+    if(cfg.replan_policy) {
+        const int inner_roots=inner.futures/inner.continuations;
+        inner.generations=std::min(cfg.generations,inner_roots);
+        inner.elites=std::min(cfg.elites,std::max(1,inner_roots/inner.generations));
+        inner.persist_elites=std::min(cfg.persist_elites,inner_roots);
+    }
     inner.continuation_start=std::min(cfg.continuation_start,cfg.depth-1);
     if(inner.continuation_start<1)throw std::invalid_argument("forecast needs inner depth at least2");
     inner.local_trials=0;inner.branch_diagnostics=0;inner.snapshot_interval=0;
-    inner.profile=false;inner.policy_profile=false;inner.threads=1;inner.random_by_step=true;
-    // Parallelism is across complete forecasts. Inner OpenMP regions each use
-    // one thread, avoiding oversubscription and shared mutable worker caches.
+    inner.profile=false;inner.policy_profile=false;inner.threads=cfg.replan_threads;inner.random_by_step=true;
+    if(inner.threads<1 || inner.threads>cfg.threads)
+        throw std::invalid_argument("forecast worker allocation exceeds declared total");
+    // Whole futures and their candidate evaluations share one fixed allocation.
+    // Each shadow still owns a separate ranking cache for each inner worker.
+    const int outer_workers=std::min(count,cfg.threads/inner.threads);
     const uint64_t key=(uint64_t(uint32_t(cfg.seed))<<32)|uint32_t(env.curr_timestep);
     std::vector<Forecast> forecasts(count);std::vector<std::exception_ptr> errors(count);
-    #pragma omp parallel for num_threads(std::min(cfg.threads,count)) schedule(static)
+    #pragma omp parallel for num_threads(outer_workers) schedule(static)
     for(int trial=0;trial<count;++trial) {
         try {
             const int r=trial/cfg.replan_futures,future=trial%cfg.replan_futures;
@@ -162,10 +172,10 @@ int Engine::rank_replanned(const SharedEnvironment& env,const std::vector<int>& 
     for(int r=1;r<int(roots.size());++r)if(scores[r]>scores[selected]+1e-7)selected=r;
     stats.selected_rank=int(std::find(ranking.begin(),ranking.end(),roots[selected])-ranking.begin());
     if(!quiet_ && env.curr_timestep%100==0)std::fprintf(stderr,
-        "R05_REPLAN t=%d roots=%d futures=%d steps=%d inner_K=%d decisions=%d branches=%llu rank=%d score=%.3f old_score=%.3f pool=%d min_pool=%d\n",
+        "R05_REPLAN t=%d roots=%d futures=%d steps=%d inner_K=%d decisions=%d branches=%llu rank=%d score=%.3f old_score=%.3f pool=%d min_pool=%d outer_workers=%d inner_workers=%d policy=%d\n",
         env.curr_timestep,stats.roots,stats.futures,stats.steps,cfg.replan_k,stats.decisions,
         (unsigned long long)stats.branch_evaluations,stats.selected_rank,scores[selected],scores[0],
-        stats.pool_before,stats.min_pool_after);
+        stats.pool_before,stats.min_pool_after,outer_workers,inner.threads,int(cfg.replan_policy));
     return roots[selected];
 }
 }

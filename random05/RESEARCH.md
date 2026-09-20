@@ -846,3 +846,24 @@ completion choices, dense task locks and turnover, worker determinism and
 checkpoint replay. The actual entry was also checked to reject positive power
 without the trick flag. Full2000-step powers0/.25/.5/1/2 are declared on the
 3,872 preset, with retention/reranking disabled.
+
+
+## Allocate workers inside more faithful forecasts
+
+The first closed-loop forecast variants lose120/82tasks. Their downstream
+policy is much cheaper than the real one:K32, one generation, one retained
+vector. The live solver usesK16320/four generations/eight retained vectors.
+The earlier counterfactual diagnostic usedK1280. Policy mismatch is a possible
+explanation, not an established cause of the failed full runs.
+
+`R05_REPLAN_THREADS` (default1) splits the declared total worker allocation
+between whole forecasts and their internal candidate evaluations. Outer workers
+are min(number_of_forecasts, total_workers/inner_workers); therefore simultaneously
+active workers never exceed the declared total. Caches remain private per shadow
+and per inner worker. `R05_REPLAN_POLICY=1` retains the live generation/elite/
+persistence settings, clamped to the smaller inner portfolio; default0 preserves
+the first prototype. No search work is skipped or time-limited partway through.
+This makes it possible to test more faithful future search without assigning
+most of the32workers no forecast work. PASSIVE OpenMP waiting and thread limit32
+will be declared in the experiments to park idle teams. Full timing and throughput
+comparisons are still required.

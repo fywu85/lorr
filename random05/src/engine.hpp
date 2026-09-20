@@ -15,6 +15,8 @@ struct Config {
     int screen_branches=0, screen_keep=4;
     int component_trials=0, component_rounds=2, component_parents=8, component_min_agents=1;
     int replan_roots=0, replan_futures=1, replan_k=32, replan_steps=8, replan_continuations=4, replan_start=0;
+    int replan_threads=1;
+    bool replan_policy=false;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;

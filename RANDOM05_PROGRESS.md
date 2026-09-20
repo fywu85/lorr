@@ -1523,3 +1523,13 @@ input/binary hashes and allocation are linked in the audits.
   the new preference without --trick RANDOM-05 (exit125), as required. Five
   strict full cases test powers0/.25/.5/1/2 with3,872 settings; power0 is the
   unchanged-behavior control. Age retention and reranking are off in these cases.
+
+- Source73 regression passes28.72s. It splits the same worker allowance between
+  whole forecasts and their internal searches, and optionally retains live
+  generations/elites/history within each smaller forecast. Nested worker tests
+  preserve decisions. The full batch includes the earlier3,752-rule control
+  with a new worker split, two strictK128 candidates, and two explicitly
+  relaxed5s diagnostics (more futures orK256). No gain is assumed.
+- The rank-score power.25 original never launched because GRID exposed64cores
+  instead of binding16. Repeat the same solver settings with a valid allocation;
+  keep the original preflight failure. Other power cases continue.

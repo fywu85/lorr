@@ -683,6 +683,11 @@ void replanning_forecast() {
     const auto serial=simulate(cfg,12);cfg.threads=2;
     require(serial==simulate(cfg,12),"replanning forecast changed across worker counts");
     require(serial==simulate(cfg,12,5,5,true),"replanning forecast changed after checkpoint restoration");
+    cfg.threads=4;cfg.replan_threads=2;
+    require(serial==simulate(cfg,12),"nested forecast workers changed fixed-work decisions");
+    cfg.replan_policy=true;
+    const auto faithful=simulate(cfg,12);cfg.replan_threads=1;
+    require(faithful==simulate(cfg,12),"multi-generation forecast changed with nested worker count");
     // Finish the only visible task in a forecast. Do not invent a replacement,
     // and do not mutate the live task or advance the actual environment.
     auto env=environment(1,3,1);Task task;task.task_id=7;task.locations={0};env.task_pool[7]=task;

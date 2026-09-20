@@ -77,6 +77,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.replan_steps=integer("R05_REPLAN_STEPS",8);
     c.replan_continuations=integer("R05_REPLAN_CONTINUATIONS",4);
     c.replan_start=integer("R05_REPLAN_START",0);
+    c.replan_threads=integer("R05_REPLAN_THREADS",1);
+    c.replan_policy=integer("R05_REPLAN_POLICY",0);
     if(c.replan_roots<0 || c.replan_roots>32 || c.replan_futures<1 || c.replan_futures>8 ||
        c.replan_k<1 || c.replan_k>1024 || c.replan_steps<2 || c.replan_steps>32 ||
        c.replan_continuations<1 || c.replan_k%c.replan_continuations || c.replan_start<0)
@@ -222,6 +224,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("rank-weighted scoring currently requires fixed-chain futures without reranking or completion bonus");
     if(c.replan_roots && (c.operation_depth || c.plain_score || c.reverse_penalty || c.progress_discount!=1))
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
+    if(c.replan_threads<1 || c.replan_threads>c.threads)
+        throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
@@ -648,6 +652,9 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
+    // Nested teams are bounded below by outer_workers*inner_workers<=threads.
+    // They permit a few more faithful forecasts to use the existing allocation.
+    if(cfg.replan_roots && cfg.replan_threads>1)omp_set_max_active_levels(2);
     rng_.seed(cfg.seed);graph=std::make_shared<Graph>(*env,cfg);
     if(cfg.plain_score>0) {
         // The policy can prefer traffic lanes while evaluation measures actual
