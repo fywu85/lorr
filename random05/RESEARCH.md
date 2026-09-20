@@ -689,3 +689,30 @@ step under common downstream seeds. Reduced-budget continuations are a proxy,
 not an oracle for the full-budget policy or a competition throughput result.
 Dense ongoing-task regressions require exact action, schedule and persistent
 state equivalence after restore, including both PRNG modes and task replacement.
+
+## Motion-component recombination (new general experiment)
+
+Saved alternatives often differ in10–80 separate groups of robots, including
+small cycles and individual pre-rotations. This motivates combining whole motion
+components rather than fixed spatial regions. At the first future time all roots
+have the same positions because they execute the previous step's promises.
+Connect robots whenever either parent's next promise enters an occupied source
+or shares a destination with the other parent, including currently empty cells.
+Choosing either complete parent within each connected component preserves both
+vertex and edge-swap legality; certify every constructed hybrid anyway.
+
+`R05_COMPONENT_TRIALS` (default0) and `R05_COMPONENT_ROUNDS` spend a declared extra
+number of complete B-branch evaluations after the ordinary search. Donors are
+fully evaluated distinct first decisions at expanding ranks. Shuffle the eligible
+components using the independent local stream, test one donor component per
+candidate, keep the best, and repeat. `R05_COMPONENT_MIN_AGENTS` can restrict
+proposals to multi-robot motion. Force the proposed first decision in every
+continuation, then simulate all later interactions normally. Reuse the original
+common future draws; no unseen tasks, new map rules or elapsed-time stopping.
+The baseline remains in the portfolio, and fixed extra work is checked exactly.
+
+This differs from naive regional crossover by preserving the actual dependency
+groups, including two parents competing for the same hole. Full-run improvement
+is still a hypothesis. Regression checks cover that collision trap, independent
+rotations, dense ongoing tasks, shared-prefix equivalence, worker determinism,
+and saved-state replay. Forced first decisions must not change under averaging.

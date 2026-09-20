@@ -1379,3 +1379,19 @@ input/binary hashes and allocation are linked in the audits.
   measure completions with repeated replanning; they are diagnostics, not
   benchmark throughput or an optimality bound. New algorithmic candidates
   still require complete 2,000-step runs and independent replay.
+
+- Saved-state build9c7a78b passes regression tests in15.05s. Three completed
+  counterfactual states (250/500/750), eight decisions each, three shared
+  downstream seeds, do not establish systematic scoring failure. The selected
+  decision has the best mean at250; alternatives can do better at500/750.
+  A full-budget continuation control matches original cumulative completions,
+  waypoint visits, forwards, turns and waits at all128 subsequent steps.
+- New optional motion-component recombination passes25.69s regressions. Unlike
+  fixed geometric regions, groups include every robot linked by either plan's
+  moves and every shared destination, including holes. Each proposed hybrid
+  completes all continuations and is collision-certified. Full32-worker
+  control and three variants are declared in components-full-v68.json; no
+  throughput gain is assumed.
+- Fable was resumed in the same session with a6,664-byte research summary
+  and no new source payload. Provider returned out-of-usage-credits again,
+  zero usage/cost, so no review or recommendations were received.

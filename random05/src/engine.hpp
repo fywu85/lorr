@@ -13,6 +13,7 @@ struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
     int screen_branches=0, screen_keep=4;
+    int component_trials=0, component_rounds=2, component_parents=8, component_min_agents=1;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
@@ -90,6 +91,9 @@ struct Rollout {
     int evaluated_branches=1;
     uint64_t expansions=0;
 };
+// Connected by either proposed motion or a shared destination, including holes.
+std::vector<std::vector<int>> decision_components(const Graph& graph,
+                                                  const Rollout& left,const Rollout& right);
 struct RolloutPrefix {
     Frame frame, first;
     std::vector<Action> actions;
@@ -157,10 +161,10 @@ private:
     void match_future(Frame& frame) const;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true,
                     const Continuation* continuation=nullptr,RolloutPrefix* save=nullptr,
-                    const RolloutPrefix* resume=nullptr) const;
+                    const RolloutPrefix* resume=nullptr,const Rollout* forced_first=nullptr) const;
     Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
                      const std::vector<Continuation>& continuations,bool cycle_moves,
-                     std::vector<double>* branch_scores=nullptr) const;
+                     std::vector<double>* branch_scores=nullptr,const Rollout* forced_first=nullptr) const;
     void evaluate_until(const Frame& frame,const std::vector<float>& offsets,
                         const std::vector<Continuation>& continuations,bool cycle_moves,
                         int branches,ScreenedRollout& state) const;

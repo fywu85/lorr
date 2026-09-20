@@ -598,6 +598,32 @@ void staged_continuations() {
     }
 }
 
+void motion_component_search() {
+    // Two legal parents compete for the same hole. A partial substitution
+    // would collide; the dependency decomposition must join both robots.
+    auto env=environment(1,3,2);Config plain;Graph graph(env,plain);
+    Rollout a,b;a.first.loc=b.first.loc={0,2};a.first.pending={1,2};b.first.pending={0,1};
+    a.actions={FW,W};b.actions={W,FW};
+    auto groups=decision_components(graph,a,b);
+    require(groups.size()==1 && groups[0]==std::vector<int>({0,1}),"shared empty destination split between components");
+    // Independent rotations have no spatial dependency.
+    a.first.pending=b.first.pending={0,2};a.actions={CR,W};b.actions={W,CCR};
+    groups=decision_components(graph,a,b);
+    require(groups.size()==2 && groups[0].size()==1 && groups[1].size()==1,"independent turns were coupled");
+    Config cfg;cfg.futures=128;cfg.continuations=10;cfg.continuation_start=2;cfg.depth=6;
+    cfg.screen_branches=2;cfg.screen_keep=4;cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;
+    cfg.component_trials=8;cfg.component_rounds=2;cfg.component_parents=4;
+    cfg.cost_cache=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.scratch_reuse=true;
+    cfg.rollout_match=true;cfg.reverse_penalty=.1;cfg.completion_bonus=4;cfg.progress_discount=.9;
+    cfg.random_by_step=true;cfg.share_prefix=false;
+    const auto reference=simulate(cfg,12);
+    cfg.share_prefix=true;
+    require(reference==simulate(cfg,12),"component forced decisions changed under shared prefixes");
+    cfg.threads=2;
+    require(reference==simulate(cfg,12),"component search changed across worker counts");
+    require(reference==simulate(cfg,12,5,5,true),"component search changed after checkpoint restoration");
+}
+
 void checkpoint_replay() {
     Config cfg;cfg.futures=128;cfg.continuations=10;cfg.continuation_start=2;
     cfg.screen_branches=2;cfg.screen_keep=4;cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;
@@ -611,6 +637,7 @@ void checkpoint_replay() {
 }
 
 int main() {
+    motion_component_search();
     checkpoint_replay();
     staged_continuations();
     branch_diagnostics();
