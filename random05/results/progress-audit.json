@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-20T16:29:37.838274+00:00",
+  "checked_utc": "2026-09-20T16:44:14.803123+00:00",
   "checks": [
     {
       "utc": "2026-09-20T07:55:37.615086+00:00",
@@ -3658,6 +3658,68 @@
       "entry_limit_ms": 1000,
       "maximum_entry_seconds": 0.927197011,
       "peak_rss_bytes": 307453952
+    },
+    {
+      "utc": "2026-09-20T16:34:48.526472+00:00",
+      "source_commit": "05559b7",
+      "tasks": 3705,
+      "evidence": "random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json",
+      "binary_sha256": "695c6c37a57c90d63fb935a9dc276b84556f106b60d300a92598c9b25c36b6d3",
+      "workers": 32,
+      "physical_cores": 16,
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "nms_tasks": 3172,
+      "waiting_metrics": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/persistent-elites-32-split-full-v55/k8192-elites8-persist8/k8192-elites8-persist8/result.json",
+        "result_sha256": "bca7d2105baff6803404997093dd3a0665efaa612e2303f866de8d2b2922a676",
+        "horizon_steps": 2000,
+        "tasks_finished": 3705,
+        "tasks_revealed": 4905,
+        "completed_latency": {
+          "count": 3705,
+          "mean_steps": 426.2952766531714,
+          "p50_steps": 351,
+          "p95_steps": 1066,
+          "p99_steps": 1602
+        },
+        "maximum_release_to_completion": {
+          "steps": 1922,
+          "task_id": 768,
+          "released_at": 0,
+          "observed_at": 1922
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1954,
+          "task_id": 942,
+          "released_at": 0,
+          "observed_at": 1954
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 490,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 654.2966666666666,
+        "initial_still_unfinished": 135,
+        "initial_still_unopened": 94,
+        "initial_started_unfinished": 41,
+        "event_accounting_valid": true
+      },
+      "nms_evidence": "random05/results/nms-original-full-v1/summary.json",
+      "matched_cpu_model_and_allocation": true,
+      "entry_limit_ms": 1000,
+      "maximum_entry_seconds": 0.361040605,
+      "peak_rss_bytes": 590831616
     }
   ],
   "all_valid": true

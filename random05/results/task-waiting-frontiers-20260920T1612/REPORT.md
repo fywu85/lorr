@@ -13,6 +13,7 @@ runs, not runs selected for fairness.
 | 32 workers / NMS | 3,172 | 1,976 | 2,000 | 206 | 91 |
 | 32 workers / new best, source `8eb59d3` | 3,689 | 1,929 | 2,000 | 141 | 96 |
 | Four cores / new best seed 2, source `6ce9312` | 3,648 | 1,890 | 2,000 | 135 | 98 |
+| 32 workers / new best, source `05559b7` | 3,705 | 1,922 | 2,000 | 135 | 94 |
 
 The 3,689-task run finished at 16:15:24 UTC after the initial answer. Its
 longest completed order is task 921 (0 to 1,929); 45 initial orders had started
@@ -21,6 +22,9 @@ but remained unfinished. Higher throughput did not reduce every tail metric.
 The subsequent four-core seed2 record completes3,648 tasks. Its longest
 completed order is task1,086 (0 to1,890);135 initial orders remain unfinished,
 including98 never opened and37 already started.
+
+The 3,705-task persistent-candidate record has maximum completed latency1,922
+(task768, released0),135 initial orders unfinished and94 still unopened.
 
 Each run starts with the same 1,200 revealed orders. “Never opened” means no
 first-waypoint event; the order may have been assigned or reassigned. The

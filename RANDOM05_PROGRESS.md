@@ -26,16 +26,17 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 16:36 UTC.
+Updated: 2026-09-20 16:57 UTC.
 
-**Best single run on the archived input: 3,689 tasks on 32 workers / 16 physical cores**,
-or **+16.3% versus matched NMS32 = 3,172**. Source
-[8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3), planner seed 3,
+**Best single run on the archived input: 3,705 tasks on 32 workers / 16 physical cores**,
+or **+16.8% versus matched NMS32 = 3,172**. Source
+[05559b7](https://github.com/fywu85/lorr/commit/05559b7), planner seed 3,
 K8192/B8/start2/local0, four search generations with eight distinct elite
-parents. All exact CPU optimizations are enabled. Mean latency 238 ms, maximum
-359 ms, peak RSS 590 MB. All 2,000 steps are valid. This selected maximum has
-not been reproduced on four cores or independent inputs.
-[Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json).
+parents and eight priority vectors retained between real steps. All exact CPU
+optimizations are enabled. Mean latency 240 ms, maximum 361 ms, peak RSS 591 MB.
+All 2,000 steps are valid. This selected maximum has not been reproduced on four
+cores or independent inputs. Persistent candidates did not help every budget.
+[Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json).
 
 **Best confirmed four-core run: 3,648 tasks**, or **+25.2% versus the strongest
 matched NMS4 repeat = 2,914**. Source
@@ -99,10 +100,10 @@ are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 
 **Waiting-time audit of the current throughput records:** the longest completed
 order takes 1,890 steps for our four-core run versus 1,997 for NMS; the 32-worker
-pair is 1,929 versus 1,976. Both solvers still have step-zero orders unfinished at
+pair is 1,922 versus 1,976. Both solvers still have step-zero orders unfinished at
 step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-135 versus 219 on four cores, 141 versus 206 on 32 workers, out of 1,200 initially
-revealed. Initial orders never opened: 98 versus 102 and 96 versus 91 respectively.
+135 versus 219 on four cores, 135 versus 206 on 32 workers, out of 1,200 initially
+revealed. Initial orders never opened: 98 versus 102 and 94 versus 91 respectively.
 Higher throughput does not establish a waiting-time bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [latency history for every frontier](random05/WAITING_PROGRESS.md).
@@ -177,6 +178,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T15:50:14.795609+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed3; `--trick RANDOM-05` | 3637 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +24.8% | [Full evidence](random05/results/ranking-cache-split-full-v52/ranking-k5120-b8-generations4/summary.json) |
 | 2026-09-20T16:15:24.583747+00:00 | [8eb59d3](https://github.com/fywu85/lorr/commit/8eb59d3) | K8192/B8/start2/local0; four generations / eight elite parents; planner seed3; exact caches/radix; `--trick RANDOM-05` | 3689 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.3% | [Full evidence](random05/results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json) |
 | 2026-09-20T16:25:39.768782+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed2; `--trick RANDOM-05` | 3648 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.2% | [Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json) |
+| 2026-09-20T16:34:48.526472+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K8192/B8/start2/local0; four generations; eight parents / eight persistent vectors; planner seed3; `--trick RANDOM-05` | 3705 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.8% | [Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1104,3 +1106,33 @@ input/binary hashes and allocation are linked in the audits.
 - Extra parents at four-core K4096/K5120 give3604/3565 (four parents) and
   K5120/eight parents3610. The selected four-core record remains3648 with one
   parent, although32-worker K8192 benefits on seed3. Allcasesvalid.
+
+- Persistent candidates, source05559b7/build-v55: K2048/E1 with carry2/4/8
+  gives3508/3540/3540 versus3520 control; E4/carry4 gives3562 versus3618.
+  K5120/E1 carry2/4/8 gives3560/3596/3613 versus3637. K8192/E8 carry4/8 gives
+  3671/**3705** versus3689. All full runs are valid. Retain the selected new
+  32-worker maximum; persistence has no universal benefit and its default stays1.
+- Default-carry controls reproduce every action, assignment, event and task of
+  the original3637 and3689 runs. The elite-selection refactor preserves behavior.
+- Build-v56/source0bd0a41 adds optional mutation decay between generations.
+  Defaults preserve existing search; regressions pass6.80s. Full controls and
+  decay0.25/0.5/0.75 comparisons are underway. No throughput gain claimed yet.
+
+- Four-core latency headroom is concentrated after startup: all five K5120
+  planner seeds peak at step0 (924–928ms), whereas maxima after step4 are839–855ms.
+  Build-v57/source0295ae9 declares a separate first-step rollout count, leaving
+  regular fixed work unchanged thereafter. No time-based cutoff or partial result
+  is introduced. Full strict timing/throughput checks are pending.
+
+- Mutation decay results: atK2048/E1, rates0.25/0.5/0.75 give3503/3557/3513
+  versus3520. AtK5120/E1 they give3462/3526/3530 versus3637; atK8192/E8/carry8,
+  3628/3627/3702 versus3705. All valid. The smaller-budget0.5 gain is not
+  replicated and no configuration improves the main frontiers. Leave decay1.
+  Both full default controls preserve all actions, assignments, events and tasks.
+- Startup-budget testing: the equal-K5120 control is fully identical to3637.
+  FirstK5120/regularK6144 exits124 at timestep2,1000.533ms; this failed strict
+  attempt is preserved and excluded. FirstK5120 with regular5632/5888 is pending.
+- Build-v58/sourcebdc051f adds configurable bounded ranking-cache capacity,
+  powers of two8–1024/default64. Exact dense tests with frequent eviction and
+  larger128/256 tables pass in7.35s. Full64/128/256/512 comparisons and larger-K
+  timing checks are underway. Memory capacity changes must preserve trajectories.

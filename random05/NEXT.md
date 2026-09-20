@@ -1,6 +1,6 @@
 # RANDOM-05 continuation
 
-Updated: 2026-09-20 16:31 UTC.
+Updated: 2026-09-20 17:03 UTC.
 
 Goal ACTIVE and not yet complete: approach the colleague's roughly 27–28%
 matched gain over NMS on four cores in the combined track. Their code/inputs
@@ -11,10 +11,10 @@ or throughput-sacrificing requirement was imposed.
 
 ## Current verified records
 
-- Archived-input overall /32 workers: **3,689**, source **8eb59d3**, build-v54,
-  K8192/B8/start2/local0, generations4, elites8, planner seed3. Mean238ms,
-  max359ms, RSS590MB. **+16.3% vs NMS32=3172**. Evidence:
-  results/elite-scaling-32-split-full-v54/k8192-elites8-workers32/summary.json.
+- Archived-input overall /32 workers: **3,705**, source **05559b7**, build-v55,
+  K8192/B8/start2/local0, generations4, elites8, persist8, planner seed3. Mean240ms,
+  max361ms, RSS591MB. **+16.8% vs NMS32=3172**. Evidence:
+  results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json.
 - Four physical cores: **3,648**, source **6ce9312**, build-v52,
   K5120/B8/start2/local0, generations4, elites1, planner seed2. Mean791ms,
   max927ms, RSS about309MB. **+25.2% vs strongest NMS4=2914** (other repeats
@@ -55,6 +55,7 @@ initial unopened101/102. Old3657 vsNMS3172: maxima1954/1976, unfinished134/206,
 unopened96/91. New3689: max1929, unfinished141, unopened96. Both solvers leave
 some step-zero orders unfinished after2000, so eventual maximum wait is UNKNOWN.
 New3648: maxcompleted1890, initialunfinished135, unopened98, startedunfinished37.
+New3705: maxcompleted1922, initialunfinished135, unopened94, startedunfinished41.
 
 random05/tools/audit_task_waits.py checks events/releases/completion counts and
 hashes raw results. audit_progress.py now checks waiting metrics on every
@@ -123,27 +124,53 @@ Refactored elite selection is shared with intrastep parents; full default contro
 must reproduce3637(K5120/E1) and3689(K8192/E8). Regression tests pass5.99s,
 including task replacement, virtual task matches, duplicates and worker counts.
 BinarySHA695c6c37a57c90d63fb935a9dc276b84556f106b60d300a92598c9b25c36b6d3.
-Full comparisons queued; do not claim gain yet. Manifestprefixpersistent-elites-.
+Full comparisons COMPLETE. K2048/E1 carry2/4/8=3508/3540/3540 vs3520;
+K2048/E4/carry4=3562 vs3618. K5120/E1 carry2/4/8=3560/3596/3613 vs3637.
+K8192/E8 carry4/8=3671/3705 vs3689. Default controls3637/3689 have EXACT full
+trajectories. Selected3705 is a new record; no uniform or replicated mean gain.
+Four-core K5120/E8 withcarry4/8 is a separate pending follow-up.
+
+v56 **0bd0a41**, mutation decay across generations (R05_MUTATION_DECAY,
+default1). Dense tests pass6.80s. All11fullrunsvalid. Decay.25/.5/.75:
+K2048/E1=3503/3557/3513 vs3520; K5120/E1=3462/3526/3530 vs3637;
+K8192/E8/carry8=3628/3627/3702 vs3705. No main-frontier gain; leave1.
+Full default controls3637/3705exact. Binary
+81d3b88b335c15ccfb143c93c9b6fa3957ba9210d7e3f1cd704a6a8dfcd8ef19.
+
+v57 **0295ae9**, R05_FIRST_K default0 declares only timestep0's fixed work.
+RegularR05_K thereafter; neither count depends on elapsedtime. Motivation:
+allfiveK5120four planner seedspeak924–928ms atstep0, while maxafterstep4 is
+839–855ms. Startupmatching/costsetup needs extra room. Testspass7.39s;
+equalfirst5120/regular5120 fullcontrol EXACT3637. First5120/regular6144 fails
+at timestep2 (1000.533ms), exit124, no partial score; retainfailedattempt.
+Regular5632/5888stillrunning. Binary
+ de663ce1e7fc3b50ea003dff6d349f0ec232528be2a8ed6707b624590d6c3517.
+
+v58 **bdc051f**, R05_CACHE_SLOTS poweroftwo8–1024/default64, boundedper-agent/
+worker ranking cache. Sameepoch/chain/stage/pose/movingkey; pushcostbypass stays.
+Tinycacheeviction and128/256 capacity equivalence tests pass7.35s. Fullcontrols
+must preserve3637; comparisons64/128/256/512 onfourcores and128/512 on32workers.
+FirstK5120/regular6144 is also attempted withlargercaches; this is a new declared
+implementation experiment, not a hidden retry of the failed64-slot configuration.
+All cases enableR05_PROFILE=1 for phase timing. No speedup/throughputclaim yet.
+Binaryb3692d914d9ef0c95074008c9cd37a75e08230289fb521afd4d75310ae7423ff.
 
 ## Work still running
 
-- `fresh-validation-v3-split-full-v52` / `seed50005-nms-repeat1`: job8900247.
-- `fresh-validation-v3-split-full-v52` / `seed50005-nms-repeat2`: job8900248.
-- `fresh-validation-v3-split-full-v52` / `seed50006-nms-repeat1`: job8900250.
-- `fresh-validation-v3-split-full-v52` / `seed50006-nms-repeat2`: job8900253.
-- `elite-scaling-four-split-full-v54` / `k5120-elites4`: job8900270.
-- `elite-scaling-four-split-full-v54` / `k5120-elites8`: job8900271.
-- `persistent-elites-four-split-full-v55` / `k2048-elites1-persist2`: job8900281.
-- `persistent-elites-four-split-full-v55` / `k2048-elites1-persist4`: job8900282.
-- `persistent-elites-four-split-full-v55` / `k2048-elites1-persist8`: job8900283.
-- `persistent-elites-four-split-full-v55` / `k2048-elites4-persist4`: job8900284.
-- `persistent-elites-32-split-full-v55` / `k5120-elites1-persist1`: job8900285.
-- `persistent-elites-32-split-full-v55` / `k5120-elites1-persist2`: job8900286.
-- `persistent-elites-32-split-full-v55` / `k5120-elites1-persist4`: job8900287.
-- `persistent-elites-32-split-full-v55` / `k5120-elites1-persist8`: job8900288.
-- `persistent-elites-32-split-full-v55` / `k8192-elites8-persist1`: job8900289.
-- `persistent-elites-32-split-full-v55` / `k8192-elites8-persist4`: job8900290.
-- `persistent-elites-32-split-full-v55` / `k8192-elites8-persist8`: job8900291.
+- `persistent-parents-four-split-full-v55` / `k5120-elites8-persist4`: job8900309.
+- `persistent-parents-four-split-full-v55` / `k5120-elites8-persist8`: job8900310.
+- `startup-budget-four-split-full-v57` / `first5120-regular5632`: job8900312.
+- `startup-budget-four-split-full-v57` / `first5120-regular5888`: job8900313.
+- `startup-budget-fast-split-full-v57` / `first5120-regular5632-workers32`: job8900329.
+- `startup-budget-fast-split-full-v57` / `first5120-regular5888-workers32`: job8900330.
+- `startup-budget-fast-split-full-v57` / `first5120-regular6144-workers32`: job8900331.
+- `ranking-capacity-four-split-full-v58` / `k5120-slots64`: job8900320.
+- `ranking-capacity-four-split-full-v58` / `k5120-slots128`: job8900321.
+- `ranking-capacity-four-split-full-v58` / `k5120-slots256`: job8900322.
+- `ranking-capacity-four-split-full-v58` / `k5120-slots512`: job8900323.
+- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots128`: job8900324.
+- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots256`: job8900325.
+- `ranking-capacity-four-split-full-v58` / `first5120-regular6144-slots512`: job8900326.
 
 Collect using split_grid.py; only compact JSON should be archived. Use direct
 one-/two-level globbing for batch/spec/allocation/summary/completion JSON rather
@@ -171,7 +198,7 @@ Shared main with Warehouse agent. Only edit/stage/commit random05/ and
 RANDOM05_PROGRESS.md. Leave cgar/,WAREHOUSE_PROGRESS.md,experiments/construction-
 20260918/ and their jobs/stagedchanges alone. Commit using --only forourscope.
 Publicfywu85/lorr; push authorized, no visibilitychange. Lastourscommits:
-ca6e4ca waitingtracking/3689,05559b7 v55source. More recent sharedcommits mayexist.
+611e824 verified fresh25.5%/four3648,05559b7 v55,0bd0a41 v56,0295ae9 v57,bdc051f v58. More recent sharedcommits mayexist.
 Use require_escalated for shell (bwrap namespace failure); routine work allowed.
 Python3.7; env/bin/python for NumPy generator. apply_patch broken; use Python.
 GRID scripts:grid.py submit build; split_grid.py submit/collect. Four-core hosts
@@ -180,3 +207,28 @@ host list is inexisting submissions. Never changefrozen case/specs after submiss
 
 Push:
 GIT_TERMINAL_PROMPT=0 GIT_ASKPASS= git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
+
+
+## Next useful actions
+
+1. Collect pending fullruns without restarting failures. Read sampledR05_PROFILE
+   lines from native.log only for latency diagnosis, not prefixthroughputranking.
+2. Verify capacity controls against every full action/schedule/event/task field
+   of reference3637; larger cache must be an exact implementation optimization.
+3. For any valid full newbest, updatebest*.json, mainprogress source/time/seed/
+   flags/allocation/evidence, audit_task_waits manifest/report and audit_progress
+   (currently60rows). ArchiveonlycompactJSON. UpdateWAITING_PROGRESS viaaudit.
+4. Keepallfreshvalidationinputs50001–50006 OUT of tuning. V3 is complete;
+   a different candidate needs a NEW protocol and NEW inputs if revalidating.
+5. Currentprimarygoalstillactive; fresh25.46% is close tocolleague27–28%, but
+   user explicitlyasked tokeep pushingthroughput until evening. Do not stop
+   merely because a smaller optimization failed. Seek measured bottlenecks or
+   distinct hypotheses; several prior tuning ideas are already rejected inlog.
+
+
+Startup5632/5888/6144 also run on32workers as fast full-horizon score checks
+(startup-budget-fast-split-full-v57). Fixed-work trajectories must agree with
+fourcores, but a32worker success alone does NOT prove fourcore1sfeasibility.
+At t100/200 the larger ranking caches showed only modest lookahead savings;
+all6144 variants had passed the oldtimestep2failurepoint. This is NOT a full
+validity or speedup claim. Await fullsummaries and compare exact trajectories.

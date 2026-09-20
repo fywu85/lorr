@@ -10,7 +10,9 @@ UTC timestamp, source commit, settings, and linked benchmark evidence. Published
 scores, local NMS references, single-seed bests, and replicated results are
 identified separately. Exact frontier cases are saved in `best.json`,
 `best-four-cores.json`, and `best-32-workers.json`. The history audit is run with
-`python3 random05/tools/audit_progress.py`; it requires the frozen local builds.
+`python3 random05/tools/audit_progress.py`; it requires the frozen local builds
+and traces. It also generates [order-latency history](WAITING_PROGRESS.md),
+including unfinished-order ages. Throughput remains the primary objective.
 
 The solver combines exact oriented task-chain costs, reassignment of unopened
 tasks, a two-step PIBT pipeline, idle pre-rotation, and parallel look-ahead over
@@ -24,7 +26,8 @@ it does not illegally unassign its started task. These throughput-oriented choic
 are explicit experiments and carry no fairness claim.
 
 Development uses a fixed number of complete futures (`R05_K`) of depth
-`R05_DEPTH`. `R05_THREADS` controls parallel workers. A deadline overrun raises an
+`R05_DEPTH`. An optional `R05_FIRST_K` declares a smaller fixed count for
+timestep 0 to leave room for startup work. `R05_THREADS` controls parallel workers. A deadline overrun raises an
 error; a partial portfolio is not silently returned. Actual and promised spatial
 transitions are collision-certified, and the simulator independently validates
 complete 2,000-step runs. Regression tests cover chained costs, task locks,
@@ -77,3 +80,19 @@ This checks the predeclared manifest at commit22e7cd1, candidate/reference binar
 hashes, generated input hashes, matched physical cores/CPU model, complete valid
 runs, latency and peak RAM. It needs the original generated inputs (recreatable
 with the documented generator). Do not tune on that validation set.
+
+
+The latest completed fresh-input comparison is [validation V3](FRESH_VALIDATION_V3.md):
+a frozen four-core configuration beats the stronger of two NMS repetitions by
+26.38% and24.54% on two newly generated task/start inputs,25.46% combined.
+All six runs pass the full2,000-step, strict1s and32GB checks. These inputs remain
+excluded from tuning. The original protocol is pinned at81bdfbd; later selected
+records must not replace its candidate.
+
+```sh
+python3 random05/tools/audit_fresh.py \
+  --batch random05/results/fresh-validation-v3-split-full-v52 \
+  --output random05/results/fresh-validation-v3/audit.json \
+  --protocol-commit 81bdfbd \
+  --protocol-json random05/experiments/fresh-validation-v3-protocol.json
+```
