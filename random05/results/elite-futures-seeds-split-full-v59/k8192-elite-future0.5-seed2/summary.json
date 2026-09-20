@@ -1,0 +1,79 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T17:52:16.593099+00:00",
+    "name": "k8192-elite-future0.5-seed2",
+    "steps": 2000,
+    "binary_sha256": "7ab2ed25fa8795ae367c58a9104e95b59a3648b03f21cdbbb023a8721b5d40c4",
+    "environment": {
+      "R05_K": "8192",
+      "R05_THREADS": "32",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "2",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2",
+      "R05_SHARE_PREFIX": "1",
+      "R05_PACKED_ORDER": "1",
+      "R05_FAST_DISPERSION": "1",
+      "R05_SCRATCH_REUSE": "1",
+      "R05_GOAL_CACHE": "1",
+      "R05_GENERATIONS": "4",
+      "R05_RADIX_ORDER": "1",
+      "R05_CANDIDATE_CACHE": "1",
+      "R05_ELITES": "8",
+      "R05_PERSIST_ELITES": "8",
+      "R05_FUTURE_ELITE_BLEND": "0.5"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3693,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.382443582
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.25182589793550003,
+      "max": 0.382443582
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "511c895f57145df6fb7d13ce1e8319ba7c0cc7f46e4635d0217202d04cd365b1",
+    "valid": true,
+    "usage": {
+      "user_seconds": 15774.486754,
+      "system_seconds": 17.650909,
+      "peak_rss_kib": 578368,
+      "wall_seconds": 506.00698821246624,
+      "exit": 0
+    }
+  }
+]

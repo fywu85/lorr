@@ -423,3 +423,90 @@ check, failure fallback and expansion-limit rule. Separate compile-time pass
 modes also remove the optimistic pass's dynamic kinematic branch. The behavior
 must remain exact, including configurations with dynamic push costs or pinned
 components. Full trajectory and timing controls are required before adopting it.
+
+Full continuation-blend results: K5120 blend0/.5/1=3655/3528/3506;
+K8192=3705/3724/3594. Both default controls exactly reproduce prior full
+trajectories. The3724 selected record is a19-task gain; pairedseeds are running.
+Do not infer uniform improvement from this budget-specific result.
+Kinematic-mask build-v60 (60c5f9b) passes regressions9.44s; fullcontrols running.
+Firstfew four-core samples show roughly7% lower lookahead time and26% less
+time in executable PIBT. These are early CPU samples, not a full-run timing
+or throughput claim. Full strict1s confirmations remain necessary.
+
+Use the measured mask savings to attempt larger declared four-core budgets:
+firstK5120, then6144or6400, each with futureeliteblend0or0.5, E8/P8/gen4 and
+cache512. These are new fixed configurations, not retries of a failed setup.
+No count depends on elapsedtime. Both the full deadline and throughput must
+pass; larger K alone has repeatedly failed to improve throughput.
+
+Three larger-four strict cases fail: K6144/blend0 atstep0=1036.945ms,
+K6144/blend0.5 atstep0=1839.045ms, K6400/blend0 atstep1=1088.306ms.
+Both step0 failures execute the same first5120 work that took about821ms in
+the mask control. They do not establish that the larger later budget caused
+the failure. Host/cache/frequency/scheduling interference is possible but not
+isolated. Preserve all original failures. The user previously authorized a
+relaxed development budget; separate declared5s copies of allfour cases will
+measure full throughput and phase timings. Do not compare their score directly
+to NMS's1s baseline or promote them into the strict1s frontier. Subsequent strict
+confirmation or implementation improvement is required. Work counts stayfixed;
+no time-based partial search or selection among incomplete runs.
+
+At K16384, B16 scores3741 whereas B8 scores3643; K8192/B16 is3568.
+The selected result favors using more work to evaluate each root's future,
+while preserving1024 root candidates, over simply doubling roots at B8.
+Test1024 roots with24 continuations and the retained-futureblend0.5 variant.
+Also attempt32768/B32 with an explicitly smaller first-step16384 budget.
+Use the exact kinematic-mask optimization, with a3741 full control atK16384/B16.
+The32-worker mask on/off controls both reproduce the complete3724 trajectory;
+mean latency231.5->221.9ms in that pair. Four-core controls are still running.
+These higher-budget runs remain strict1s; no partial solution is permitted.
+
+The K8192 future-blend five-seed check is complete. Blend0:3743/3492/3730/3705/3513,
+mean3636.6; blend0.5:3577/3610/3693/3724/3660,mean3652.8 (+0.45%,3/5positive).
+The highest single score3743 uses blend0/seed0. Preserve the small positive
+mean and large seed variation; this is not independent-input validation.
+Source d6a3e0f produced that record, full2000/strict1s/32workers, max401ms.
+
+The fourth strict larger-four case (job8900399) never launched its solver:
+GRID exposed64 physicalcores instead of4, and the preflight guard rejected it.
+Qacct records exit1,0 wallseconds,0.074 CPUseconds; no native log or usage file.
+A separate preflight-rejection record hashes the allocation/spec/scheduler log.
+Allfour original attempts are terminal: three deadlines and one infrastructure
+failure. Do not report the missing summary as an unfinished benchmark.
+The high-budget32worker attempts also preserve two strict failures: K24576/B24
+atstep0=1101.406ms; K32768/B32/first16384 atstep2=1148.664ms.
+
+A potential next general search idea is staged allocation of continuations.
+Karnin, Koren and Somekh's [Sequential Halving, ICML2013, section4](https://proceedings.mlr.press/v28/karnin13.pdf) allocates a fixed sampling budget
+in rounds, eliminating poorer alternatives between rounds. Our possible
+adaptation would screen candidate priority vectors with a few continuations,
+then spend the remaining declared work on survivors. This is an inference,
+not a MAPF result or a transfer of the paper's statistical guarantees.
+Before implementing, measure whether2or4-branch estimates retain the eventual
+best candidates under8or16 branches. Correlated continuation controls, the
+constant branch and changing generated candidates make premature elimination
+a real concern. Keep an incumbent anchor and compare finalists at equal sample
+counts. All predeclared stages must finish; no clock-based early return.
+A possible two-stageK5120 design per generation:256 candidates x2 branches,
+then64 survivors x12 additional branches =1280 evaluations, fourgenerations.
+This uses14 branches per finalist. It is only a proposal, not implemented.
+
+Another exact CPU idea, also not implemented: represent stationary, eligible
+cycle vertices as a bitset and precompute sparse word masks for each geometric
+ring. Check rings in the existing order; clear their bits after an accepted
+cycle. This could reduce the roughly13% of sampled policy time in cycle scans
+without changing scores or collision behavior. It needs equivalence checks on
+maps spanning multiple64-bit words, holes and overlapping accepted cycles.
+
+The full v60 four-core mask off/on controls both reproduce every field of the
+3655 trajectory. Means748.8/702.3ms, maxima881.7/825.7ms. Enabling the mask
+saves6.2% in that pair; relative to the original v55/cache64 implementation
+(790.7ms), the new cache512/specialized-pass/mask configuration saves11.2%.
+Source60c5f9b is now the faster verified four-core manifest at the same score.
+This does not erase the separate larger-budget deadline or allocation failures.
+
+The K16384/B16/E8/P8 seed check is complete:3705/3617/3715/3741/3567,
+mean3669.0, versus3636.6 forK8192/B8. This is+0.89%,3/5 positive pairs.
+Its best3741 is slightly below the smaller-budget selected3743. More
+continuations improve the five-seed mean modestly but have not improved the
+maximum further. These remain planner seeds on one development input.

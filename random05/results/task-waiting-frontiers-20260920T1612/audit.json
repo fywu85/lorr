@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-20T17:24:41.244745+00:00",
+  "created_utc": "2026-09-20T18:14:24.045284+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "c573ce75f70dc6ce3e8016aa3ce4218c8bdf94ae2e48581d42422266447271e4",
+  "manifest_sha256": "c654e11483f2d3f7f7a929faacdfa7e0c8dea14a6e3c94fb043c3e15d5e70804",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -335,6 +335,190 @@
     "ours-four-cores-3655": {
       "result": "runs/random05/persistent-parents-four-split-full-v55/k5120-elites8-persist8/k5120-elites8-persist8/result.json",
       "result_sha256": "2a5aa72b9507f04f10350018567580e3f4313f59ca9a8310d379cf7de48604d2",
+      "horizon_steps": 2000,
+      "tasks_finished": 3655,
+      "tasks_revealed": 4855,
+      "completed_latency": {
+        "count": 3655,
+        "mean_steps": 431.9343365253078,
+        "p50_steps": 354,
+        "p95_steps": 1089,
+        "p99_steps": 1564
+      },
+      "maximum_release_to_completion": {
+        "steps": 1916,
+        "task_id": 419,
+        "released_at": 0,
+        "observed_at": 1916
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1968,
+        "task_id": 603,
+        "released_at": 0,
+        "observed_at": 1968
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1187,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 494,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 670.4025,
+      "initial_still_unfinished": 141,
+      "initial_still_unopened": 98,
+      "initial_started_unfinished": 43,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3724": {
+      "result": "runs/random05/elite-futures-split-full-v59/k8192-elite-future0.5/k8192-elite-future0.5/result.json",
+      "result_sha256": "2cec328f606f2d1b0773516d8b6bc146631d0c97d4e34d86ca86547294363877",
+      "horizon_steps": 2000,
+      "tasks_finished": 3724,
+      "tasks_revealed": 4924,
+      "completed_latency": {
+        "count": 3724,
+        "mean_steps": 428.7363050483351,
+        "p50_steps": 360,
+        "p95_steps": 1078,
+        "p99_steps": 1624
+      },
+      "maximum_release_to_completion": {
+        "steps": 1941,
+        "task_id": 1020,
+        "released_at": 0,
+        "observed_at": 1941
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1943,
+        "task_id": 257,
+        "released_at": 0,
+        "observed_at": 1943
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 487,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 655.1508333333334,
+      "initial_still_unfinished": 130,
+      "initial_still_unopened": 96,
+      "initial_started_unfinished": 34,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3741": {
+      "result": "runs/random05/persistent-budget-split-full-v55/k16384-b16-elites8-persist8/k16384-b16-elites8-persist8/result.json",
+      "result_sha256": "1c82e64fdf38beebfc072210c163714a80a8c58bd1793853ea29d4044cf5e191",
+      "horizon_steps": 2000,
+      "tasks_finished": 3741,
+      "tasks_revealed": 4941,
+      "completed_latency": {
+        "count": 3741,
+        "mean_steps": 426.68938786420745,
+        "p50_steps": 352,
+        "p95_steps": 1091,
+        "p99_steps": 1602
+      },
+      "maximum_release_to_completion": {
+        "steps": 1927,
+        "task_id": 1020,
+        "released_at": 0,
+        "observed_at": 1927
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1972,
+        "task_id": 223,
+        "released_at": 0,
+        "observed_at": 1972
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 485,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 656.1783333333333,
+      "initial_still_unfinished": 135,
+      "initial_still_unopened": 94,
+      "initial_started_unfinished": 41,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3743": {
+      "result": "runs/random05/elite-futures-seeds-split-full-v59/k8192-elite-future0-seed0/k8192-elite-future0-seed0/result.json",
+      "result_sha256": "ec86ab09bedb3b43c5c70d15bd3ddd7439bd2a2ece03b9f45ef942b281bca9f5",
+      "horizon_steps": 2000,
+      "tasks_finished": 3743,
+      "tasks_revealed": 4943,
+      "completed_latency": {
+        "count": 3743,
+        "mean_steps": 422.7664974619289,
+        "p50_steps": 350,
+        "p95_steps": 1032,
+        "p99_steps": 1572
+      },
+      "maximum_release_to_completion": {
+        "steps": 1939,
+        "task_id": 654,
+        "released_at": 0,
+        "observed_at": 1939
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1908,
+        "task_id": 933,
+        "released_at": 0,
+        "observed_at": 1908
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 494,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 654.7533333333333,
+      "initial_still_unfinished": 142,
+      "initial_still_unopened": 95,
+      "initial_started_unfinished": 47,
+      "event_accounting_valid": true
+    },
+    "ours-four-cores-3655-optimized": {
+      "result": "runs/random05/kinematic-mask-split-full-v60/k5120-persist8-kinematic-mask1/k5120-persist8-kinematic-mask1/result.json",
+      "result_sha256": "6b3139158587c283da594fc89bb8da3d555cc9ed337c55b9021e34c7f08d73b9",
       "horizon_steps": 2000,
       "tasks_finished": 3655,
       "tasks_revealed": 4855,

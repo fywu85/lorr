@@ -1,15 +1,15 @@
 {
-  "source_commit": "05559b7",
-  "evidence": "random05/results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/summary.json",
+  "source_commit": "60c5f9b",
+  "evidence": "random05/results/kinematic-mask-split-full-v60/k5120-persist8-kinematic-mask1/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v55/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v60/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
     "cores": 4,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "k5120-elites8-persist8",
+    "name": "k5120-persist8-kinematic-mask1",
     "env": {
       "R05_K": "5120",
       "R05_THREADS": "4",
@@ -48,11 +48,15 @@
       "R05_RADIX_ORDER": "1",
       "R05_CANDIDATE_CACHE": "1",
       "R05_ELITES": "8",
-      "R05_PERSIST_ELITES": "8"
+      "R05_PERSIST_ELITES": "8",
+      "R05_CACHE_SLOTS": "512",
+      "R05_KINEMATIC_MASK": "1",
+      "R05_PROFILE": "1",
+      "R05_POLICY_PROFILE": "1"
     },
     "smt": 1,
-    "binary_sha256": "695c6c37a57c90d63fb935a9dc276b84556f106b60d300a92598c9b25c36b6d3",
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v55/build/lifelong_random05",
+    "binary_sha256": "cbc99ea0d2326a3dc2298ef18580e4872aa3ddd22be06fe1e68b68d306ab662a",
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v60/build/lifelong_random05",
     "input_hashes": {
       "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
       "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",

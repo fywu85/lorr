@@ -26,25 +26,38 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 17:27 UTC.
+Updated: 2026-09-20 17:56 UTC.
 
-**Best single run on the archived input: 3,705 tasks on 32 workers / 16 physical cores**,
-or **+16.8% versus matched NMS32 = 3,172**. Source
-[05559b7](https://github.com/fywu85/lorr/commit/05559b7), planner seed 3,
-K8192/B8/start2/local0, four search generations with eight distinct elite
-parents and eight priority vectors retained between real steps. All exact CPU
-optimizations are enabled. Mean latency 240 ms, maximum 361 ms, peak RSS 591 MB.
-All 2,000 steps are valid. This selected maximum has not been reproduced on four
-cores or independent inputs. Persistent candidates did not help every budget.
-[Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json).
+**Best single run on the archived input: 3,743 tasks on 32 workers / 16 physical cores**,
+or **+18.0% versus matched NMS32 = 3,172**. Source
+[d6a3e0f](https://github.com/fywu85/lorr/commit/d6a3e0f), planner seed0,
+K8192/B8/start2/local0, four generations, eight elite parents and eight retained
+priority vectors. Future elite blending is disabled. All exact CPU optimizations
+enabled. Mean latency255ms, maximum401ms, peak RSS591MB. All2,000 steps are valid.
+[Full evidence](random05/results/elite-futures-seeds-split-full-v59/k8192-elite-future0-seed0/summary.json).
+
+This is a selected seed result. The five-seed mean for this configuration is
+3,636.6; blending future offsets with retained vectors at weight0.5 averages
+3,652.8 (+0.45%, three of five positive pairs), but its best is3,724. These are
+planner seeds on one development input, not five independent task/start inputs.
+The mean difference is small relative to variation between seeds.
+[Paired seed evidence](random05/results/elite-futures-seeds-split-full-v59/summary.json).
+
+A separate K16384/B16 run scored3,741 on planner seed3 (mean452ms, maximum563ms).
+It tests more continuations per root at the same1,024 root candidates asK8192/B8.
+Its independent planner-seed checks remain underway.
+[Budget comparison](random05/results/persistent-budget-split-full-v55/summary.json).
 
 **Best confirmed four-core run: 3,655 tasks**, or **+25.4% versus the strongest
-matched NMS4 repeat = 2,914**. Source
-[05559b7](https://github.com/fywu85/lorr/commit/05559b7), K5120/B8/start2/local0,
-four search generations, eight elite parents and eight retained priority vectors,
-planner seed 3. All exact CPU optimizations enabled. Mean latency 791 ms,
-maximum 931 ms, peak RSS 309 MB. All 2,000 steps are valid.
-[Full evidence](random05/results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/summary.json).
+matched NMS4 repeat = 2,914**. The faster exact implementation is source
+[60c5f9b](https://github.com/fywu85/lorr/commit/60c5f9b), K5120/B8/start2/local0,
+four generations, eight elite parents and eight retained priority vectors,
+planner seed3. All exact CPU optimizations enabled, including512 ranking-cache
+slots and cached kinematic eligibility. Mean latency702ms, maximum826ms,
+peak RSS460MB. Every action, assignment, event and task matches the original
+3,655 run, whose mean was791ms. All2,000 steps are valid.
+[Full evidence](random05/results/kinematic-mask-split-full-v60/k5120-persist8-kinematic-mask1/summary.json),
+[trajectory equivalence](random05/results/kinematic-mask-split-full-v60/equivalence-four-cores.json).
 
 This is a selected best, not a replicated mean improvement. Planner seeds 0–4
 score 3,583 / 3,495 / 3,614 / 3,655 / 3,602, mean **3,589.8**, versus **3,606.0**
@@ -105,10 +118,10 @@ are 216/188 tasks, or 6.6%/5.5% over the corresponding cutoff-free score.
 
 **Waiting-time audit of the current throughput records:** the longest completed
 order takes 1,916 steps for our four-core run versus 1,997 for NMS; the 32-worker
-pair is 1,922 versus 1,976. Both solvers still have step-zero orders unfinished at
+pair is 1,939 versus 1,976. Both solvers still have step-zero orders unfinished at
 step 2,000, so the eventual maximum wait is unknown. Initial orders unfinished:
-141 versus 219 on four cores, 135 versus 206 on 32 workers, out of 1,200 initially
-revealed. Initial orders never opened: 98 versus 102 and 94 versus 91 respectively.
+141 versus 219 on four cores, 142 versus 206 on 32 workers, out of 1,200 initially
+revealed. Initial orders never opened: 98 versus 102 and 95 versus 91 respectively.
 Higher throughput does not establish a waiting-time bound.
 [Matched audit](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [latency history for every frontier](random05/WAITING_PROGRESS.md).
@@ -185,6 +198,10 @@ fix. Neither removes combined-track features.
 | 2026-09-20T16:25:39.768782+00:00 | [6ce9312](https://github.com/fywu85/lorr/commit/6ce9312) | K5120/B8/start2/local0; four generations; exact CPU optimizations; planner seed2; `--trick RANDOM-05` | 3648 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.2% | [Full evidence](random05/results/k5120-seeds-four-split-full-v52/k5120-generations4-seed2/summary.json) |
 | 2026-09-20T16:34:48.526472+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K8192/B8/start2/local0; four generations; eight parents / eight persistent vectors; planner seed3; `--trick RANDOM-05` | 3705 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +16.8% | [Full evidence](random05/results/persistent-elites-32-split-full-v55/k8192-elites8-persist8/summary.json) |
 | 2026-09-20T17:09:29.991140+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K5120/B8/start2/local0, generations4/elites8/persist8; exact CPU optimizations; seed3; `--trick RANDOM-05` | 3655 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.4% | [Full evidence](random05/results/persistent-parents-four-split-full-v55/k5120-elites8-persist8/summary.json) |
+| 2026-09-20T17:38:53.567749+00:00 | [d6a3e0f](https://github.com/fywu85/lorr/commit/d6a3e0f) | K8192/B8/start2/local0, generations4/elites8/persist8; future elite blend0.5; exact CPU optimizations; seed3; `--trick RANDOM-05` | 3724 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +17.4% | [Full evidence](random05/results/elite-futures-split-full-v59/k8192-elite-future0.5/summary.json) |
+| 2026-09-20T17:45:06.759124+00:00 | [05559b7](https://github.com/fywu85/lorr/commit/05559b7) | K16384/B16/start2/local0, generations4/elites8/persist8; exact CPU optimizations; seed3; `--trick RANDOM-05` | 3741 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +17.9% | [Full evidence](random05/results/persistent-budget-split-full-v55/k16384-b16-elites8-persist8/summary.json) |
+| 2026-09-20T17:52:23.244327+00:00 | [d6a3e0f](https://github.com/fywu85/lorr/commit/d6a3e0f) | K8192/B8/start2/local0, generations4/elites8/persist8; future elite blend0; exact CPU optimizations; seed0; `--trick RANDOM-05` | 3743 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +18.0% | [Full evidence](random05/results/elite-futures-seeds-split-full-v59/k8192-elite-future0-seed0/summary.json) |
+| 2026-09-20T18:07:16.977439+00:00 | [60c5f9b](https://github.com/fywu85/lorr/commit/60c5f9b) | Same3655 trajectory; cache512/kinematic mask; K5120/B8/start2/local0, generations4/elites8/persist8; seed3; `--trick RANDOM-05` | 3655 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +25.4% | [Full evidence](random05/results/kinematic-mask-split-full-v60/k5120-persist8-kinematic-mask1/summary.json) |
 
 ## Reference evidence supplied by the user
 

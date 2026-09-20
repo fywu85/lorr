@@ -1,0 +1,45 @@
+{
+  "created_utc": "2026-09-20T18:15:54.008439+00:00",
+  "pairs": [
+    {
+      "planner_seed": 0,
+      "k8192_b8": 3743,
+      "k16384_b16": 3705,
+      "difference": -38
+    },
+    {
+      "planner_seed": 1,
+      "k8192_b8": 3492,
+      "k16384_b16": 3617,
+      "difference": 125
+    },
+    {
+      "planner_seed": 2,
+      "k8192_b8": 3730,
+      "k16384_b16": 3715,
+      "difference": -15
+    },
+    {
+      "planner_seed": 3,
+      "k8192_b8": 3705,
+      "k16384_b16": 3741,
+      "difference": 36
+    },
+    {
+      "planner_seed": 4,
+      "k8192_b8": 3513,
+      "k16384_b16": 3567,
+      "difference": 54
+    }
+  ],
+  "k8192_b8_mean": 3636.6,
+  "k16384_b16_mean": 3669.0,
+  "positive_pairs": 3,
+  "relative_mean_gain_percent": 0.890942088764235,
+  "seed3_evidence": "random05/results/persistent-budget-split-full-v55/summary.json",
+  "control_evidence": [
+    "random05/results/elite-futures-seeds-split-full-v59/summary.json",
+    "random05/results/elite-futures-split-full-v59/summary.json"
+  ],
+  "caveat": "Five planner seeds on one input. v59 disabled-blend controls reproduce v55 trajectories; neither build uses elapsed time to vary work."
+}

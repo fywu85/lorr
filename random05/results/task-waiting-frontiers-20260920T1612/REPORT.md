@@ -15,6 +15,9 @@ runs, not runs selected for fairness.
 | Four cores / new best seed 2, source `6ce9312` | 3,648 | 1,890 | 2,000 | 135 | 98 |
 | 32 workers / new best, source `05559b7` | 3,705 | 1,922 | 2,000 | 135 | 94 |
 | Four cores / new best, source `05559b7` | 3,655 | 1,916 | 2,000 | 141 | 98 |
+| 32 workers / new best, source `d6a3e0f` | 3,724 | 1,941 | 2,000 | 130 | 96 |
+| 32 workers / new best, source `05559b7` | 3,741 | 1,927 | 2,000 | 135 | 94 |
+| 32 workers / new best seed0, source `d6a3e0f` | 3,743 | 1,939 | 2,000 | 142 | 95 |
 
 The 3,689-task run finished at 16:15:24 UTC after the initial answer. Its
 longest completed order is task 921 (0 to 1,929); 45 initial orders had started
@@ -30,6 +33,13 @@ The 3,705-task persistent-candidate record has maximum completed latency1,922
 The latest 3,655-task four-core record has maximum completed latency 1,916
 (task 419, released 0). Of the initial orders, 141 remain unfinished: 98 unopened
 and 43 already started. Throughput remains the selection criterion.
+
+The3,724-task record has maximum completed latency1,941 (task1020, released0),
+130 initial orders unfinished:96 unopened and34 already started.
+
+The3,741-task run has maximum completed latency1,927, with135 initial orders
+unfinished (94 unopened). The3,743-task seed0 record has maximum1,939 (task654,
+released0), with142 initial orders unfinished:95 unopened and47 started.
 
 Each run starts with the same 1,200 revealed orders. “Never opened” means no
 first-waypoint event; the order may have been assigned or reassigned. The
@@ -70,3 +80,8 @@ first-stop delays and event-accounting checks. The audit verifies consecutive
 waypoint events, release times, horizon, valid completion counts, identical starts
 and consistent task definitions. Raw results remain under the ignored `runs/`
 directory; the compact report and manifest are committed.
+
+The faster four-core implementation, source60c5f9b with cached kinematic
+eligibility, reproduces the entire3,655 trajectory. Its waiting-time metrics
+therefore equal the original3,655 row. The manifest includes this exact new
+raw result as `ours-four-cores-3655-optimized`; throughput still selects the run.
