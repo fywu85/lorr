@@ -24,7 +24,16 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Best verified combined result: **3,395 tasks / 2,000 steps on four physical
+The overall best is now **3,422 tasks on32 workers /16 physical cores**,
+**+7.9% versus matched NMS32=3,172**. Source
+[a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) averages eight continuations
+for each of128 candidate priority vectors (K1024 total, local refinement0).
+It uses the same explicit guidance/horizon tricks and planner seed3 as before.
+A four-continuation variant first reached3,400. These are selected maxima;
+four-core reproduction and planner-seed checks are running. The fresh-instance
+validation below applies to the preceding3,395 solver, not these new candidates.
+
+Best verified four-core result: **3,395 tasks / 2,000 steps on four physical
 cores**, versus **2,914** for the strongest of three matched NMS repeats
 (2,902 / 2,903 / 2,914): **+16.5%**. All use EPYC9354 CPUs. Mean latency
 **312ms**, maximum **425ms**, with zero errors or timeouts; peak RSS294MB
@@ -44,7 +53,7 @@ These are planner seeds on one fixed archived instance, not independent task
 instances. Further guidance comparisons use full K1024 and2000 steps because
 small-work rankings have repeatedly failed to transfer.
 
-The same3,395 actions, assignments and task events repeat on **32 workers /
+The preceding3,395 actions, assignments and task events also repeat on **32 workers /
 16 physical cores**, versus NMS **3,172**: **+7.0%**. That run averages79ms
 (maximum181ms); peak RSS443MB. The four-core and32-worker comparisons remain
 separate. [Worker equivalence](random05/results/guidance-local-validation-split-full-v31/worker-equivalence.json).
@@ -110,6 +119,9 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 | 2026-09-20T12:08:42.946296+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Four-core repeat of the same actions/assignments/events; one pair reversed, flip seed5; field15/planner seed3; `--trick RANDOM-05` | 3395 | 4 / 4 / EPYC 9354 | 2914 (4 workers, strongest repeat) | +16.5% | [Full evidence](random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json) |
 | 2026-09-20T12:21:57.244760+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +0.8% | [Full evidence](random05/results/frontier-triage-split-full-v31/no-horizon/summary.json) |
 | 2026-09-20T12:37:00.784376+00:00 | [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d) | Separate record without horizon cutoff; K1024, field15/one flip seed5, planner seed3; `--trick RANDOM-05` | 3197 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +9.7% | [Full evidence](random05/results/no-horizon-four-split-full-v31/no-horizon-four/summary.json) |
+
+| 2026-09-20T13:32:10.140710+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of4 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3400 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.2% | [Full evidence](random05/results/continuations-split-full-v42/mean4-k1024/summary.json) |
+| 2026-09-20T13:33:08.542811+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of8 continuations; K1024 total/local0; field15/one flip seed5/planner seed3; `--trick RANDOM-05` | 3422 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +7.9% | [Full evidence](random05/results/continuations-split-full-v42/mean8-k1024/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -650,3 +662,11 @@ original input. Keep these inputs out of further configuration selection.
   [full evidence](random05/results/flow-confidence-split-full-v41/summary.json).
   Exponent0 reproduces the prior actions, schedules and events exactly. Keep0;
   none of this round's policy or field experiments changes the verified frontier.
+
+- Sourcea6ad284/v42 tests repeated continuation evaluation: each first decision
+  is held fixed while later priorities vary; scores are averaged. Default1
+  preserves the earlier method. Dense turnover, common-root equivalence and
+  worker-count checks pass. At K1024/local0, one/two/four/eight continuations
+  give3,254/3,271/3,400/3,422. The full frontier control repeats3,395. Larger
+  budgets and delayed/milder mutations remain in progress. Four-core and seed
+  checks are queued; no replicated improvement is claimed yet.

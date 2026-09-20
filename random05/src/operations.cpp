@@ -87,6 +87,18 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
                     [&](int v){return v/4==f.loc[a];}))continue;
             Candidate best{1e30f,0,-1};
             for(int code:group) {
+                // The reference's active operation set has no rotations after
+                // its final forward action. Keep the inherited fallback valid;
+                // this optional restriction applies only to new candidates.
+                if(cfg.operation_finish_move) {
+                    bool terminal_turn=false;
+                    for(int t=H-1;t>=0;--t) {
+                        Action action=Action((code>>(2*t))&3);
+                        if(action==FW)break;
+                        if(action==CR || action==CCR){terminal_turn=true;break;}
+                    }
+                    if(terminal_turn)continue;
+                }
                 const auto& path=model.path(state[a],code);
                 int stage=f.stage[a],previous=state[a],bias=0;float travel=0;
                 for(int t=0;t<H;++t) {
@@ -102,7 +114,7 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
                 Candidate item{remaining+(active?cfg.operation_cost_weight:1)*travel,bias,code};
                 if(best.code<0 || less(item,best))best=item;
             }
-            candidates[a].push_back(best);
+            if(best.code>=0)candidates[a].push_back(best);
         }
         std::sort(candidates[a].begin(),candidates[a].end(),less);
     }
@@ -145,11 +157,13 @@ void Engine::advance_operations(Frame& f,const std::vector<float>& offsets,
         for(const auto& candidate:candidates[a]) {
             int b=blocker(a,candidate.code);
             if(b==-1) {
-                chosen[a]=candidate.code;install(a,true);stack[a]=0;return true;
+                chosen[a]=candidate.code;install(a,true);stack[a]=cfg.operation_protect;return true;
             }
             if(b<0 || stack[b] || visits[b]>=cfg.operation_revisits || priority[b]>=inherited_priority)continue;
             install(b,false);chosen[a]=candidate.code;install(a,true);
-            if(self(self,b,inherited_priority)){stack[a]=0;return true;}
+            // Protect successful inherited chains from later roots when the
+            // option is enabled, matching the reference's success marker.
+            if(self(self,b,inherited_priority)){stack[a]=cfg.operation_protect;return true;}
             install(a,false);install(b,true);chosen[a]=old;
         }
         chosen[a]=old;stack[a]=0;return false;

@@ -1,22 +1,22 @@
 {
-  "source_commit": "b824f5d",
-  "evidence": "random05/results/guidance-local-split-full-v31/flips1-seed5/summary.json",
+  "source_commit": "a6ad284",
+  "evidence": "random05/results/continuations-split-full-v42/mean8-k1024/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v31/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v42/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
     "cores": 16,
     "steps": 2000,
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "flips1-seed5",
+    "name": "mean8-k1024",
     "env": {
       "R05_K": "1024",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
       "R05_DISPERSION": "0.8",
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
-      "R05_LOCAL": "5",
+      "R05_LOCAL": "0",
       "R05_EQUAL": "1",
       "R05_HORIZON": "2000",
       "R05_COST_CACHE": "1",
@@ -36,7 +36,8 @@
       "R05_RANDOM_BY_STEP": "1",
       "R05_SEED": "3",
       "R05_FLOW_FLIPS": "1",
-      "R05_FLOW_FLIP_SEED": "5"
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8"
     },
     "smt": 2
   }

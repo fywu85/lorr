@@ -30,7 +30,7 @@ struct Config {
     bool cycle_portfolio=false, early_fill=false;
     float early_fill_gain=0;
     int operation_depth=0, operation_revisits=4;
-    bool operation_inherit=true, operation_moving=false;
+    bool operation_inherit=true, operation_moving=false, operation_protect=false, operation_finish_move=false;
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, reverse_penalty=0, completion_bonus=0;
     float triage_scale=0.45;

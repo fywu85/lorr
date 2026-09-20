@@ -197,3 +197,13 @@ Separate controls retain the full frontier and match the smaller root portfolio.
 Dense task-turnover regressions check worker-count determinism and that duplicate
 unchanged continuations preserve root selection. Full validation is pending;
 no time-based early return or partial search result is introduced.
+
+
+`R05_OPERATION_PROTECT=1` now retains successful recursion markers for the
+remainder of the operation search pass. `R05_OPERATION_FINISH_MOVE=1` excludes
+new candidate sequences containing a turn after their last forward action;
+the inherited valid plan remains available. Both default to0 and are separate
+from the earlier moving-footprint filter. Dense regressions cover each rule,
+the combination, and worker determinism. A five-case full run compares them
+against the existing K32/revisit64 prototype (1,973 tasks), with the rest of
+its configuration fixed. These changes do not alter the default pipeline.

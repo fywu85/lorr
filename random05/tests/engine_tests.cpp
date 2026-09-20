@@ -33,8 +33,8 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false,int operations=0,bool operation_inherit=true,int revisits=4,bool operation_moving=false,bool rollout_match=false,int spare_tasks=0,bool early_fill=false,int continuations=1,float future_mutation=0.3,int futures=4) {
-    auto e=environment(5,5,24);Config cfg;cfg.futures=futures;cfg.continuations=continuations;cfg.future_mutation=future_mutation;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;cfg.operation_depth=operations;cfg.operation_inherit=operation_inherit;cfg.operation_revisits=revisits;cfg.operation_moving=operation_moving;cfg.rollout_match=rollout_match;cfg.early_fill=early_fill;
+uint64_t simulate(Config cfg,int spare_tasks=0) {
+    auto e=environment(5,5,24);
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     for(int a=0;a<24+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%25,(a+17)%25};e.task_pool[a]=t;}
@@ -74,6 +74,11 @@ uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycl
     std::cout<<"dense simulation moves="<<total_moved<<"\n";
     return signature;
 }
+uint64_t simulation(int threads=2,bool step_rng=false,int age_cap=0,int pre_cycles=0,int generations=1,float plain_score=0,int intent_mode=0,float reverse_penalty=0,int mutation_radius=0,bool cost_cache=false,int operations=0,bool operation_inherit=true,int revisits=4,bool operation_moving=false,bool rollout_match=false,int spare_tasks=0,bool early_fill=false,int continuations=1,float future_mutation=0.3,int futures=4) {
+    Config cfg;cfg.futures=futures;cfg.continuations=continuations;cfg.future_mutation=future_mutation;cfg.depth=6;cfg.threads=threads;cfg.random_by_step=step_rng;cfg.age_cap=age_cap;cfg.pre_cycles=pre_cycles;cfg.generations=generations;cfg.plain_score=plain_score;cfg.intent_mode=intent_mode;cfg.reverse_penalty=reverse_penalty;cfg.mutation_radius=mutation_radius;cfg.cost_cache=cost_cache;cfg.operation_depth=operations;cfg.operation_inherit=operation_inherit;cfg.operation_revisits=revisits;cfg.operation_moving=operation_moving;cfg.rollout_match=rollout_match;cfg.early_fill=early_fill;
+    return simulate(cfg,spare_tasks);
+}
+
 void triage_task_change() {
     auto e=environment(3,3,1);e.curr_states[0].location=4;
     Config cfg;cfg.futures=1;cfg.horizon=3;Engine engine(cfg);engine.initialize(&e);
@@ -275,6 +280,16 @@ void operation_swap_rejection() {
     }
 }
 int main() {
+    for(int flags=1;flags<=3;++flags) {
+        Config cfg;cfg.futures=4;cfg.depth=6;cfg.random_by_step=true;cfg.cost_cache=true;
+        cfg.operation_depth=3;cfg.operation_protect=flags&1;cfg.operation_finish_move=flags&2;
+        cfg.threads=1;const auto reference=simulate(cfg,12);
+        cfg.threads=2;require(reference==simulate(cfg,12),
+                             "operation protection/terminal-turn policy changed with worker count");
+    }
+    Config moving;moving.futures=4;moving.depth=6;moving.operation_depth=3;
+    moving.operation_protect=true;moving.operation_finish_move=true;moving.operation_moving=true;
+    simulate(moving,12);
     // Four repeated identical branches must preserve the trajectory of the
     // same root portfolio; only their work count changes.
     require(simulation(1,true,0,0,1,0,0,0,0,true,0,true,4,false,false,12,false,4,0,16)==
