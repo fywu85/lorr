@@ -135,6 +135,16 @@ above is the appropriate comparison; reassignment count alone is not a benefit.
 The competitor source differences are hypotheses about causes, not ablations of
 the recorded performance gap.
 
+A [new task-pool replay](TASK_POOL.md) now measures that cohort difference over
+time as well as at the horizon. At step5,000, KK's unassigned tasks average527.64
+cells and2,706.9 steps since reveal, versus306.20–307.31 cells and100.5–104.0
+steps across the six CGAR seeds. KK still has1,642 unpicked tasks aged at least
+4,000 steps; CGAR has none aged1,000 at any sampled checkpoint. This supports
+persistent deferral of long tasks, while leaving the causal contribution to
+throughput unknown. The KK target remains valid; its assignment waiting-time
+tradeoff must be visible in any transfer. All seven original accounting reports
+and prior raw hashes reproduce, with a hand-counted task-lifecycle snapshot test.
+
 ## 3. Broad primary-source literature review
 
 Search date: 2026-09-19/20. This is a targeted broad survey across construction,
@@ -304,3 +314,48 @@ remove, changed clock-selected work. Current CGAR full seeds0/2 are also running
 with the existing read-only blocker audit, jobs8899240/8899241; source remainsV50
 and the audit must reproduce the confirmed reference trajectories exactly.
 No new throughput record has been established.
+
+
+### Current diagnostic results (2026-09-20 01:18 UTC)
+
+The [full current-reference blocker audit](CURRENT_BLOCKERS.md) is complete and
+strictly verified. Both exact reference trajectories and sampled search counters
+reproduce; all10,000 complete entries meet1s and32GB. In the final window, only
+2.8/3.3 stationary roots per snapshot have an unblocked first-forward candidate
+with a full heuristic travel/turn improvement. Approximately323/332 instead meet
+one movable owner,140/141 two owners,23/28 three or more. Stationary includes
+useful rotations; owner movability is not proof of a feasible joint replacement.
+Most conflict-free scalar-only improvements were operation preferences, so a
+simple cheap-forward pass is weakly supported. Region-boundary effects and
+complete same-state joint alternatives still require a separate probe.
+
+The [task-pool age replay](TASK_POOL.md) is also complete. It supports persistent
+long-task deferral in KK, including1,642 tasks still unpicked after at least4,000
+steps, while preserving the distinction between observation and causal savings.
+The five full KK factorial cases remain pending; their analysis will now include
+these same pool snapshots (held job8899251 after accounting8899246). Fable turn21
+is reviewing both new findings in the existing session. No new CGAR score.
+
+
+### Consolidated decision after Fable turn21 (2026-09-20 01:24 UTC)
+
+[The same-session review and local assessment](../fable-flow-session/turn21/assessment.md)
+now cover the fresh blocker and task-pool evidence. Fable proposes task-centered
+late binding: newly revealed free tasks attract nearby eligible unopened holders
+when pickup-plus-chain cost improves. This differs from the old pickup-only,
+robot-centered exchange pass. It remains conditional on the pending factorial.
+For an interpretable first CGAR test, run ordinary scheduling first, preserve
+finite-retarget and primary/recovery/fair/started-task protection, and compare
+baseline/additive-only/retarget-only/both. Use consistent complete published cost
+quotes, fixed work, coverage counters, whole-run empty accounting and age tails.
+A local cost decrease across changing robot positions and metric publications
+is not a proof that unlimited repeated retargeting preserves progress.
+
+The alternative motion experiment is a complete same-state small-group
+counterfactual, initially root plus one/two obstructing owners, with outsiders
+fixed. A new read-only snapshot facility is needed: current artifacts do not
+contain full candidate/reservation dumps. A complete witness identifies an
+opportunity; a null within three robots does not rule out larger-group repair
+or another horizon. Demonstrating production reachability requires faithful
+replay of its ordering, power and rollback rules. These are concrete next
+experiments, not a predicted6.28% gain. The five full KK cases are still running.

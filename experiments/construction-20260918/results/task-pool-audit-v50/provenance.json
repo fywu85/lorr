@@ -1,0 +1,79 @@
+{
+  "source_sha256": "3746030a13c97fb15da3fad80093347561c5d9a92d38bd1bb99444b80677c0ab",
+  "script_sha256": "8a82e79dbad261b0d981b43db94e71f8b5c61c69ba1aabd957827ee3a3886f11",
+  "binary_sha256": "0bffe5d24c4482cf37e8eec4f43cf67d1322fd81ee0316c2c6e3c6bca177996f",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-I/shared/share_mala/fw2449/lorr2024/cgar/inc",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-kk-task-pool-audit-v50-20260920/replay/decompose.cpp",
+    "-Wl,-rpath,/shared/share_mala/fw2449/lorr2024/env/lib",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-kk-task-pool-audit-v50-20260920/replay/decompose"
+  ],
+  "fixture_passed": true,
+  "loaded_action_fixture_passed": true,
+  "opposite_turn_fixture_passed": true,
+  "phase_boundary_fixture_passed": true,
+  "allocation": {
+    "hostname": "research40",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      0
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        0
+      ]
+    ],
+    "address_space_limit_bytes": [
+      8589934592,
+      8589934592
+    ],
+    "physical_cores_visible": 1,
+    "representative_cpus": [
+      0
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "inputs": {
+    "kittyknight": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/warehouse-leaders-full-20260918/kk-WAREHOUSE/result.json",
+      "sha256": "1b3c1cf93ad9c0e5502e22b4e455d9ee18fb0a94740104bbd92e0e9bb6f2c2d8"
+    },
+    "cgar_seed0": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-full-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s0-r0/WAREHOUSE.json",
+      "sha256": "65c72f1a341e95979dfa2ed078e44de647eb579adfead7888309317513f5dbf1"
+    },
+    "cgar_seed1": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-confirm-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s1-r0/WAREHOUSE.json",
+      "sha256": "13f804061cf3125486126605f3d4aafaeac11296cbaee16ad352c8b3de9c73db"
+    },
+    "cgar_seed2": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-full-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s2-r0/WAREHOUSE.json",
+      "sha256": "4a25cad24db18d839336b0a4a41268bf598267b03c43e53fa5aae79a2d856ce6"
+    },
+    "cgar_seed3": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-confirm-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s3-r0/WAREHOUSE.json",
+      "sha256": "d7040936101acfcb2abbeb9bf0ed07a04effc3ddaa6f84733411ad03f1dd4a0f"
+    },
+    "cgar_seed4": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-confirm-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s4-r0/WAREHOUSE.json",
+      "sha256": "d6a99c1bf292d75ddfe061410b33e5c32a3dd557fce3b3b84e3cde47a064fc98"
+    },
+    "cgar_seed5": {
+      "path": "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-full-regions-confirm-v44-20260919/flow4_pickupfull64_work4m_regions4_rounds2_steps25k-s5-r0/WAREHOUSE.json",
+      "sha256": "c48490169e37e1992ca8efa379211c5020f6aba98bc211fa49d2528f3b8b81c2"
+    }
+  },
+  "map": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map",
+  "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+}

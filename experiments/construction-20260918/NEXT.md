@@ -1,6 +1,6 @@
 # Continuing warehouse work
 
-Updated 2026-09-20 01:04:06 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
+Updated 2026-09-20 01:29:21 UTC. The active, unbudgeted goal remains unmet: reach the local KittyKnight
 reference of152,981 tasks repeatably across six full5,000-step/10,000-robot warehouse
 seeds. Every complete scheduler+planner entry must finish within1s or fail explicitly;
 process RSS must stay below32,000,000,000bytes. Use isolated GRID physical cores and
@@ -364,3 +364,60 @@ Currentturn21/followup-20.md NEXT ifneeded; no liveCLI. Avoidreloadingcodebase.
 Keepadditive×rematchinghypothesisconditionalonfullresults; no blindparameter
 sweep or repeatofoldpersistentrouteguidance. Continuecurrentaudit andfullKK
 analysis, thenimplementselectedgenericchange withstrictdeadline/fixedwork.
+
+
+Task-pool audit8899247 COMPLETE01:11:04.641026UTC, raw
+runs/cgar-kk-task-pool-audit-v50-20260920. results/task-pool-audit-v50 and
+bottleneck_review/TASK_POOL.md verified all7original accountingreports identical,
+allrawhashes vs earlierreplay, 4basefixtures+newownership/reveal/pickup/endfixture.
+Atstep5000KKunassigned5025,chain527.639,age2706.898,p904877; CGAR6ranges5021–5044,
+chain306.201–307.313,age100.5–104.0,p90209–214. KKunpicked>=1000:5130,>=4000:1642;
+CGARnoneaged>=1000atanysample(0,1000,...5000). Supports persistent long-task
+deferral, not a causal recovery estimate. Historical KK held1959unopened at5000,
+mean427.74chain/1761.7age. Neverassigned4952vsunassigned5025:73released tasks.
+Newofflinepool_audit.py generates augmented decompose.cpp inraw, keeps production
+and original analyzer unchanged. Fable should see this before designing new
+additive/rematching fairness/age controls. Stillwait fullKKfactorial, no newscore.
+
+
+Current-blocker full8899240/analysis8899241 COMPLETE,strict auditchecked01:18:14.835419UTC.
+results/current-conflict-audit-full-v50/audit.json all22files/exactV50binary,
+10kcompleteentries,max928.438ms,RSS11.334GB,noquota/disjoint4physicalcores,
+exact144510/144107trajectories+all25searchframes/50regionalroundframes.
+74samples/seed. Last1000easiestphysical counts seed0/2:stationary808.67/827.07,
+noqualifying319.93/322.27,unblocked2.80/3.33,oneowner322.93/332.20,
+twoowner140.33/141.00,many22.60/28.27,protected0.067/0. Stationaryincludesrotations;
+heuristicgain!=actualsavings,movable!=feasibledisplacement. Scalarunblocked39.1/40.1
+mostlyoppreference. No regionboundaryprobe yet. CURRENT_BLOCKERS.md documents limits.
+
+KKfull8899243 stillactive; analysis8899246andpoolanalysis8899251held. New
+kk_ablation/analyze_pools.py usesvalidated historicalpool binary, checksalloriginal
+accountingfields againstfirstanalysis,andwillwrite results/kk-guidance-rematch-full-v2/pools.
+Bothanalysesfrozenwithhashes. Fableturn21RUNNING,samepersistentFable5.1/maxsession,
+rawruns/fable-cgar-session/turn21,PTY84098,promptfollowup-20.md;sourcecacheV50unchanged.
+Promptconsolidatesnewpoolagesandfullblockersandasksconditionalassignment/motiondesign,
+retainedprogressguaranteesvsage-statistics,notnewmaptemplates. Wait/review/archiveit.
+
+
+Fableturn21 COMPLETE01:23:46.685504UTC; PTY84098closed, no liveCLI. Archivedvisible
+answer/metadata/status/assessment. SameFable5.1max/session,0sourcechanges,no tools
+orpermissiondenials,cumulativeUSD83.4075485. Nextturn22/followup-21.md ifneeded.
+Usefuldesign: task-centeredfresh-free-task retargeting, heading/traffic pickup +
+nativechain, separateordinaryadditivefactor. Requiredcorrections: doNOTremovefinite
+retargetlimit based on a local cost-decrease claim (positions/metricchange); don't
+letprepassfree-agentassignmentsconfoundrematch-onlyarm; preserveprimary/recovery/
+fair/startedprotects, proposed-scheduleavailability, completecommonmetricquotes,
+cachecoverage/fixedwork/fullageandemptyaccounting. 256BFS×2048proposedworknotvalidated.
+
+Fablemotionprobe: completejointcounterfactualroot+1/2owners, outsidefixed,same5slot
+candidates/objective. Its assumedfrozendecisiondump DOESNOTexistyet; currentartifacts
+aretrajectories/aggregateaudits. Needreadonlycapture andunchanged-decisionverification.
+Null<=3robotsdoesNOTrejectlargergroup/horizon/MDPIBT; witnessdoesnotproveproduction
+reachabilitywithoutfaithfulDFSpower/ordering/rollbackreplay. Readassessmentbefore
+implementing. CanbuildthisboundeddiagnosticwhileKKfullrunsfinish; no blindpolicyport.
+
+CurrentlivejobsONLY KK8899243.1–5, heldaccounting8899246, heldpools8899251.
+BothCGARfullauditsandhistoricalpoolreplayCOMPLETEandvalidated. Best144510 and
+sixmean143941.1667unchanged. NextcompletefullKKanalysis (~02:15UTCifhistoricalruntime),
+interpretallcomponent/pool/budget/resourceoutcomes,thenchoosegenericCGARfactorial
+ornewmotionmechanism. Usergoalactiveandunmet; no productioncodechangeinthisdiagnosticpass.

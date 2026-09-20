@@ -18,7 +18,8 @@ limit. A large reservation is not a claim that KK meets that limit.
 Full array **8899243.1–5** started 2026-09-20 00:50:42UTC. Raw directory:
 `runs/kk-guidance-rematch-full-v2-20260920`. Held analysis **8899246** replays every
 completed trajectory with the existing four hand-checked travel-accounting
-fixtures. It retains failures, all-empty work, unfinished loaded work, reassignment
+fixtures. A second held job **8899251** applies the validated task-pool replay
+after accounting, preserving the original fields and adding cohort/age snapshots. It retains failures, all-empty work, unfinished loaded work, reassignment
 counts and the observed difference between the two controls. Pending full results
 must not be inferred from the screens below.
 

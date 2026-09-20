@@ -1,0 +1,74 @@
+--- a/experiments/construction-20260918/decompose.cpp
++++ b/task-pool-audit/decompose.cpp
+@@ -12,7 +12,7 @@
+ #include <vector>
+ using json = nlohmann::ordered_json;
+ 
+-struct Assignment { int step, robot, cell; };
++struct Assignment { int step, robot, cell, end; };
+ struct TaskInfo {
+     int id, revealed, pickup = -1, finished = -1;
+     std::vector<int> stops;
+@@ -148,7 +148,8 @@
+                     else if (action != 'W') ++non_motion_actions;
+                     if (cell < 0 || !free[cell]) throw std::runtime_error("invalid replay position");
+                 }
+-                if (task_id >= 0) tasks.at(index.at(task_id)).assignments.push_back({step, int(robot), cell});
++                if (task_id >= 0) tasks.at(index.at(task_id)).assignments.push_back({step, int(robot), cell,
++                    slot + 1 < entries.size() ? entries[slot + 1].first - 1 : data.at("makespan").get<int>()});
+             }
+         }
+         long long classified = 0;
+@@ -277,6 +278,52 @@
+     report["assigned_without_observed_pickup"] = assigned_unpicked;
+     report["distance_queries"] = queries.size(); report["complete_bfs_tables"] = builds;
+     report["distance_basis"] = "Exact unweighted shortest paths on the supplied free-cell graph; ignores turns and traffic.";
++
++    // End-of-tick snapshots: just-revealed tasks are present, finished tasks gone,
++    // and assignments applied on this tick persist until their recorded replacement.
++    // This is descriptive replay, with no hidden future use in a planner.
++    report["pool_snapshots"] = json::array();
++    const int horizon = report.at("steps");
++    const int stride = std::max(1, horizon / 5);
++    for (int at = 0; ; at = std::min(horizon, at + stride)) {
++        std::array<std::vector<long long>, 8> chains, ages;
++        const std::array<std::string, 8> names{
++            "outstanding", "unassigned", "held_unopened", "started",
++            "never_assigned", "unassigned_previously_assigned", "unpicked_age_at_least_1000", "unpicked_age_at_least_4000"};
++        for (const auto& task : tasks) {
++            if (task.revealed > at || (task.finished >= 0 && task.finished <= at)) continue;
++            int owners = 0; bool ever = false;
++            for (const auto& assignment : task.assignments) {
++                ever |= assignment.step <= at;
++                owners += assignment.step <= at && at <= assignment.end;
++            }
++            if (owners > 1) throw std::runtime_error("task has overlapping assignment intervals");
++            const bool opened = task.pickup >= 0 && task.pickup <= at;
++            if (opened && !owners) throw std::runtime_error("started outstanding task lost its owner");
++            const long long age = at - task.revealed;
++            auto add = [&](int group) { chains[group].push_back(task.chain); ages[group].push_back(age); };
++            add(0);
++            if (opened) add(3);
++            else if (owners) add(2);
++            else add(1);
++            if (!ever) add(4);
++            if (!owners && ever) add(5);
++            if (!opened && age >= 1000) add(6);
++            if (!opened && age >= 4000) add(7);
++        }
++        if (chains[0].size() != chains[1].size() + chains[2].size() + chains[3].size() ||
++            chains[1].size() != chains[4].size() + chains[5].size())
++            throw std::runtime_error("task-pool partitions do not conserve task count");
++        json snapshot = {{"step", at}};
++        for (size_t k = 0; k < names.size(); ++k)
++            snapshot[names[k]] = {{"chain", distribution(chains[k])}, {"age", distribution(ages[k])}};
++        report["pool_snapshots"].push_back(snapshot);
++        if (at == horizon) break;
++    }
++    report["pool_limits"] = {"End-of-tick snapshots; task reveals on that tick are included.",
++        "Chain distance ignores turns and traffic; task progress does not shorten this original whole chain.",
++        "Long unfinished chains alone do not prove deliberate stranding; horizon censoring and task-prefix differences remain.",
++        "Pool age includes service time for started tasks; unpicked age is reported separately."};
+     std::ofstream(argv[3]) << report.dump(2) << '\n';
+     std::cout << "DECOMPOSITION_COMPLETE " << argv[3] << '\n';
+ }
