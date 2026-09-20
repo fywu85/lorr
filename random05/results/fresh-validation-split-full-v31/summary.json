@@ -1,0 +1,284 @@
+[
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T12:47:36.996239+00:00",
+    "name": "seed50001-ours",
+    "steps": 2000,
+    "binary_sha256": "d07ca4386175385572a1a322a8dc7520e6f8f7bfd5f465c9c76bbac79fbb2640",
+    "environment": {
+      "R05_K": "1024",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3386,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.417968581
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.31424631044150025,
+      "max": 0.417968581
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "c0e47111592b9376af5e9b0918a1107fa06f0abf3c0c4b4cec98963d81030e92",
+    "valid": true,
+    "usage": {
+      "user_seconds": 2429.15787,
+      "system_seconds": 4.24285,
+      "peak_rss_kib": 291784,
+      "wall_seconds": 630.6129012349993,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50001-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T13:08:48.774699+00:00",
+    "name": "seed50001-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2920,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503206234689997,
+      "max": 0.950373123
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "3c9cb312d3523f61b094ebdb0e2c0714af3b2ce7cff8ae9ac6604bbc5798a7c9",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.936856,
+      "system_seconds": 0.835796,
+      "peak_rss_kib": 1647528,
+      "wall_seconds": 1902.3894263859838,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50001-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T13:08:58.914513+00:00",
+    "name": "seed50001-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2957,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503293398999979,
+      "max": 0.950766106
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "430aeb4bbe4e5c6d4cda8b0e0c05b6903687801342416a2a6e80a92d775b6685",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.590446,
+      "system_seconds": 0.9917189999999999,
+      "peak_rss_kib": 1646592,
+      "wall_seconds": 1902.5463047605008,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50001-nms-repeat2/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T12:50:09.079437+00:00",
+    "name": "seed50002-ours",
+    "steps": 2000,
+    "binary_sha256": "d07ca4386175385572a1a322a8dc7520e6f8f7bfd5f465c9c76bbac79fbb2640",
+    "environment": {
+      "R05_K": "1024",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "5",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3178,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.42963159
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.3102588699430006,
+      "max": 0.42963159
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "e5cb9755e5bf015cf44ec4bceac77d0c26ef4f801185a7853dd84dbfb2eac280",
+    "valid": true,
+    "usage": {
+      "user_seconds": 2395.909552,
+      "system_seconds": 4.295257,
+      "peak_rss_kib": 298972,
+      "wall_seconds": 622.6756655145437,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50002-ours/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T13:11:29.074606+00:00",
+    "name": "seed50002-nms-repeat1",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2898,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9503377224770012,
+      "max": 0.950730589
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "a13f7b7f5027e09c644da04b9368bc64573a4e9cadce948299fd46aab84319c3",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7594.840894,
+      "system_seconds": 1.295583,
+      "peak_rss_kib": 1646884,
+      "wall_seconds": 1902.6789665352553,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50002-nms-repeat1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T13:11:28.919884+00:00",
+    "name": "seed50002-nms-repeat2",
+    "steps": 2000,
+    "binary_sha256": "66b2e0039d2a3b2d967731e84b59cb413df5c85c96f3addab9ab89f3a1750b99",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 2915,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": null,
+      "entryComputeMaxSeconds": null
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.950336225391499,
+      "max": 0.950612362
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "21d3504b418e4449ae348330e0a8ef36b04fe236a556fd1db6bb8c27aae5d737",
+    "valid": true,
+    "usage": {
+      "user_seconds": 7595.024735,
+      "system_seconds": 1.05164,
+      "peak_rss_kib": 1646452,
+      "wall_seconds": 1902.5284728836268,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-split-full-v31/seed50002-nms-repeat2/summary.json"
+  }
+]

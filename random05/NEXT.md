@@ -36,14 +36,15 @@ raw traces and binaries. Frontier links should point to the child summary list.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
-| 8899709–8899714 | fresh-validation-split-full-v31 | Frozen candidate on new inputs 50001/50002 finishes at 3386/3178. Four NMS4 repeats remain running. Full 2000, strict 1s, four physical EPYC9354 cores. Read FRESH_VALIDATION.md. |
-| 8899736–8899751 | field-expansion-split-full-v31 | New generated fields 17–32, no local flips, full K1024/32 workers/planner seed3. Development input only. |
 | 8899752–8899757 | frontier-policy-split-full-v31 | Full K1024 recheck: rollout age; age caps100/200; push prices1/2; prospective idle-turn cost. Development input only. |
 
-As of 2026-09-20 13:02 UTC, all previous batches through early-fill v40 are
-complete and archived. Do not restart them. Fresh validation input files live
+As of 2026-09-20 13:14 UTC, fresh validation and the sixteen-field expansion
+are also complete and archived. Do not restart them. Fresh validation input files live
 under runs/random05/fresh-inputs-v1/; their generator and hashes are committed.
-The field/policy batches use the frozen v31 binary. Every new feature remains off.
+The policy batch uses the frozen v31 binary. Every new feature remains off.
+Fresh validation gives3386 vs2920/2957 (+14.5%) and3178 vs2898/2915 (+9.0%);
+aggregate+11.8%. All valid; audited frozen protocol22e7cd1/settings/sourceb824f5d.
+No tuning on these inputs. Field seeds17–32 all lose, max3283 at17.
 
 ## Structural experiment
 
@@ -126,6 +127,15 @@ its settings were frozen before generating inputs. Do not tune on50001/50002
 and continue calling them held out. Report every candidate result and both NMS
 repetitions, using the stronger valid NMS run per input. No matching colleague
 private instances or exact regeneration protocol is available.
+
+## New guidance hypothesis
+
+R05_FLOW_CONFIDENCE_POWER (default0) scales opposing-edge penalties by normalized
+forward/reverse traffic imbalance to the specified exponent. Weak directional
+evidence gets a smaller penalty. Preferred edges and direction ordering stay
+fixed before global normalization. Still requires explicit --trick RANDOM-05.
+v41 tests pass; full exponents0/.25/.5/1/2 are prepared in
+experiments/flow-confidence-full.json. No gain claimed or default changed.
 
 ## Source versions and tests
 

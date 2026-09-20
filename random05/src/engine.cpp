@@ -76,6 +76,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
     c.flow_turn=real("R05_FLOW_TURN",0);
     c.flow_power=real("R05_FLOW_POWER",1);c.flow_alpha=real("R05_FLOW_ALPHA",1);
+    c.flow_confidence_power=real("R05_FLOW_CONFIDENCE_POWER",0);
+    if(!std::isfinite(c.flow_confidence_power) || c.flow_confidence_power<0)
+        throw std::invalid_argument("flow confidence exponent must be finite and nonnegative");
     c.flow_betweenness=real("R05_FLOW_BETWEENNESS",0);
     c.flow_average=integer("R05_FLOW_AVERAGE",0);c.flow_normalize=integer("R05_FLOW_NORMALIZE",0);c.loop_extent=integer("R05_LOOP_EXTENT",2);
     c.predict_matching=integer("R05_SCHED_PREDICT",0);
@@ -238,14 +241,20 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         double weight_sum=0;int weight_count=0;
         for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
             int u=next[v][d];if(u<0)continue;
-            weight[v][d]=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+output_penalty);
+            // Near-balanced aggregate demand provides weak evidence for a
+            // preferred direction. Optionally soften only those opposing-edge
+            // penalties while preserving the constructed direction ordering.
+            const double forward=flow[v][d],reverse=flow[u][(d+2)%4];
+            const float confidence=cfg.flow_confidence_power>0
+                ?std::pow(float(std::abs(forward-reverse)/std::max(1.0,forward+reverse)),cfg.flow_confidence_power):1;
+            weight[v][d]=2*(forward>=reverse?1:1+output_penalty*confidence);
             const float load_factor=1+cfg.flow_betweenness*float((load[v]+load[u])/(2*mean_load));
             weight[v][d]*=load_factor;
             if(cfg.flow_normalize_ref>=0) {
                 // Hold the preferred-direction scale fixed while changing the
                 // price of opposing traffic. Otherwise global normalization
                 // also changes the relative prices of turns, waits and matching.
-                float reference=2*(flow[v][d]>=flow[u][(d+2)%4]?1:1+cfg.flow_normalize_ref);
+                float reference=2*(forward>=reverse?1:1+cfg.flow_normalize_ref*confidence);
                 reference*=load_factor;weight_sum+=reference;
             } else weight_sum+=weight[v][d];
             ++weight_count;

@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 using namespace r05;
@@ -167,6 +168,25 @@ void guidance_scale_reference() {
         }
     }
     require(flips==2,"guidance mutation count differs from requested count");
+    cfg.flow_flips=0;cfg.flow_normalize=false;cfg.flow_confidence_power=0;
+    Graph hard(e,cfg);cfg.flow_confidence_power=1;Graph soft(e,cfg);
+    bool softened=false;
+    for(int v=0;v<hard.cells;++v) {
+        require(soft.weight[v][4]==hard.weight[v][4],"flow confidence changed turn costs");
+        for(int d=0;d<4;++d) {
+            int u=hard.next[v][d];if(u<0)continue;
+            const float before=hard.weight[v][d],after=soft.weight[v][d];
+            require(std::isfinite(after) && after>0,"flow confidence created an invalid edge cost");
+            if(before<=hard.weight[u][(d+2)%4])
+                require(after==before,"flow confidence changed a preferred edge");
+            else {
+                require(after>=soft.weight[u][(d+2)%4] && after<=before,
+                        "flow confidence reversed a direction or increased its penalty");
+                softened=softened || after<before;
+            }
+        }
+    }
+    require(softened,"confidence test did not soften any opposing edges");
 }
 void early_forward_fill() {
     auto e=environment(2,2,4);int cells[]={0,1,3,2},heading[]={0,1,2,3};

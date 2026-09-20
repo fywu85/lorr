@@ -121,6 +121,27 @@ in the NMS snapshot. Neither benchmark removes NMS's combined-track features.
 Both are reported 4-core / one-second runs with a known 2,000-step horizon.
 The published NMS score of 3,050 used different instances and hardware.
 
+## Fresh input validation
+
+The configuration was frozen at [b824f5d](https://github.com/fywu85/lorr/commit/b824f5d)
+before generating these task/start instances; see the
+[predeclared protocol](random05/FRESH_VALIDATION.md). Same map, four physical
+EPYC9354 cores, 2,000 steps, strict 1s entry budget. All six runs are valid,
+with zero errors/timeouts and measured RAM below 32 decimal GB. The candidate
+retains its explicit guidance and known-horizon tricks.
+
+| Instance seed | Candidate completed UTC | Candidate tasks | NMS repeats | Gain over stronger NMS | Evidence |
+|---|---|---:|---|---:|---|
+| 50001 | 2026-09-20T12:47:36.996239+00:00 | 3386 | 2920 / 2957 | +14.5% | [Matched audit](random05/results/fresh-validation-v1/audit.json) |
+| 50002 | 2026-09-20T12:50:09.079437+00:00 | 3178 | 2898 / 2915 | +9.0% | [Matched audit](random05/results/fresh-validation-v1/audit.json) |
+
+Aggregate: 6,564 versus 5,872 tasks (**+11.8%**), using the stronger NMS repeat
+on each input. This supports a gain on new inputs, while falling short of the
+colleague's reported 27–28%. Two instances on one map do not establish broader
+generalization. These are not the colleague's private inputs, and no 32-worker
+fresh-instance result is implied. The development best remains 3,395 on its
+original input. Keep these inputs out of further configuration selection.
+
 ## Development record
 
 - 2026-09-20: started an isolated `random05/` backend from the supplied log.
@@ -596,3 +617,22 @@ The published NMS score of 3,050 used different instances and hardware.
   full K1024, and recheck six priority/push policies previously screened only
   at K64. These jobs use the archived development input; the fresh candidate
   and its validation inputs remain frozen.
+
+- Fresh validation is complete: candidate 3,386/3,178 on seeds50001/50002;
+  NMS repeats 2,920/2,957 and 2,898/2,915. Gains versus each stronger reference
+  are14.5%/9.0%; aggregate11.8%. The audit checks frozen settings, binary hashes,
+  generated input hashes, physical cores, CPU model, deadline validity and RAM.
+  See the separate validation table above. The development frontier is unchanged.
+
+- Full-budget field seeds17–32 give
+  3,283/3,139/2,677/2,825/3,222/3,244/3,225/3,098/
+  3,137/3,107/3,082/3,068/2,987/3,080/3,176/2,875.
+  All16 are valid; none improves field15. Some fields were previously screened
+  at smaller budgets or with older settings; these are the current seed3/K1024
+  comparisons. Evidence: `random05/results/field-expansion-split-full-v31/`.
+
+- A new declared guidance trick tests confidence-weighted opposing-edge costs:
+  soften a preferred direction when aggregate demand is nearly balanced, while
+  preserving physical edges and direction ordering. Exponent0 preserves the
+  old field. Direction/cost invariants and the full engine regression pass in
+  build-v41. Full production-budget comparisons are required before promotion.

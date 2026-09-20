@@ -121,3 +121,20 @@ score 3,369/3,355/3,381 versus 3,395. Without the horizon cutoff, it scores
 3,101 versus 3,197. Every run is valid; the unchanged control reproduces its
 complete trajectory. Safe additional moves do not automatically improve the
 sequence of future decisions. Leave the feature off.
+
+
+## Confidence in generated traffic directions
+
+The generated field gives every opposing direction the same contrast, even
+when aggregate forward and reverse demand are almost equal. NMS's Random05
+field instead contains many unmarked cells with equal directional costs.
+Its imported field previously lost at K64 (2,446 versus 2,729); that does not
+establish that a softer field helps our current solver.
+
+`R05_FLOW_CONFIDENCE_POWER` tests a narrower hypothesis on our existing field.
+At exponent p>0, multiply the opposing-direction penalty by
+`(|forward - reverse| / max(1, forward + reverse))^p`. Preserve the preferred
+edge, turn costs and physical connectivity; retain global normalization.
+Exponent0 exactly preserves the existing field. This operates on aggregate
+traffic demand, with no map-coordinate rules, but remains a declared guidance
+trick under `--trick RANDOM-05`. Full-run evidence is required before use.
