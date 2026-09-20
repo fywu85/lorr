@@ -313,6 +313,14 @@ struct Stats {
     long long match_primary_protected = 0, match_recovery_protected = 0, match_fair_protected = 0, match_budget_protected = 0;
 };
 
+// Diagnostic-only ledger. Accepted witnesses have disjoint task IDs across the
+// entire run; these cost savings are not realized motion or throughput gains.
+struct MatchBudgetShadowStats {
+    Stats work;
+    long long budget_cycles = 0, unprotected_cycles = 0, duplicate_cycles = 0;
+    long long witness_cycles = 0, witness_rows = 0, witness_budget_rows = 0, witness_saving = 0;
+};
+
 class Cgar {
 public:
     static Cgar& instance();
@@ -327,6 +335,7 @@ public:
     int parked_count() const;
     bool active_certified() const { return active_certified_; }
     const Stats& stats() const { return stats_; }
+    const MatchBudgetShadowStats& match_budget_shadow() const { return match_budget_shadow_; }
     // Destination proposals before the LoRR turn adapter; native-grid conformance only.
     const std::vector<int>& proposed_cells() const { return next_; }
 
@@ -377,10 +386,11 @@ private:
         long long primary = 0, recovery = 0, fair = 0, budget = 0;
     };
     void prune_reassignment_records();
-    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only) const;
+    UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only, bool include_budget = false) const;
     void reassign_unopened(std::vector<int>& proposed);
     void exchange_unopened_with_pool(std::vector<int>& proposed);
     void match_unopened(std::vector<int>& proposed);
+    void match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& observed);
     void log_summary();
     void record_movement(const std::vector<Action>& offered, const std::vector<Action>& actions,
                          const std::vector<char>& commitments);
@@ -474,6 +484,10 @@ private:
     bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
     int match_group_limit_ = 4;
     bool match_pickup_groups_ = false;
+    int match_budget_audit_stride_ = 0;
+    size_t match_budget_audit_cursor_ = 0;
+    MatchBudgetShadowStats match_budget_shadow_;
+    std::unordered_set<int> match_budget_audit_seen_tasks_;
     int primary_ = -1;
     bool capacity_mode_ = false, parking_ready_ = false, active_certified_ = false;
     Clock::time_point deadline_, distance_deadline_;

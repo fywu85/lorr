@@ -1,3 +1,4 @@
+#include <map>
 #include "cgar.hpp"
 #include <algorithm>
 #include <atomic>
@@ -3488,8 +3489,10 @@ void native_metric_regression() {
  int base=-1;for(int cell=0;cell+12<int(e.map.size());++cell)if(cell/e.cols==(cell+11)/e.cols){
   bool free=true;for(int k=0;k<12;++k)free=free&&!e.map[cell+k];if(free){base=cell;break;}}
  require(base>=0,"native matching fixture lacks free segment");
- setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);
- for(const char* bands:{"0","1"})for(const char* short_tasks:{"0","1"}){
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_DIAGNOSTICS","1",1);
+ std::map<std::string,std::vector<long long>> matching_traces;
+ for(const char* bands:{"0","1"})for(const char* short_tasks:{"0","1"})for(int audit:{0,10}){
+  setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",std::to_string(audit).c_str(),1);
   setenv("CGAR_TRICK_SHORT_TASKS",short_tasks,1);
   setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);auto test=e;test.curr_timestep=0;test.num_of_agents=3;
   test.curr_states={State(base,0,0),State(base+11,0,2),State(base+1,0,0)};
@@ -3509,14 +3512,44 @@ void native_metric_regression() {
   policy.plan(&test,30000,actions);require(!step(test,test.curr_states,actions).empty(),"native matching post-swap collided");
   test.curr_timestep=20;policy.schedule(&test,30000,schedule);
   require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"native matching bypassed retarget protection");
+  // Controlled later state: the two once-moved tasks again admit a profitable
+  // cycle, but the real one-retarget limit must still prohibit that cycle.
+  test.curr_states[1]=State(base+1,29,0);test.curr_states[2]=State(base+11,29,2);
+  test.curr_timestep=29;policy.plan(&test,30000,actions);
+  require(!step(test,test.curr_states,actions).empty(),"budget shadow setup produced conflicting actions");
+  test.curr_timestep=30;policy.schedule(&test,30000,schedule);
+  require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"budget shadow committed a second retarget");
+  if(audit){const auto& a=policy.match_budget_shadow();
+   require(a.witness_cycles==1&&a.witness_rows==2&&a.witness_budget_rows==2&&a.witness_saving>=80&&
+    a.work.match_budget_protected>=2&&a.work.match_primary_protected>0,"budget shadow failed to find a protected beneficial cycle");}
+  const auto saving=policy.match_budget_shadow().witness_saving;
+  test.curr_timestep=40;policy.schedule(&test,30000,schedule);
+  require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"repeated budget shadow changed assignments");
+  if(audit)require(policy.match_budget_shadow().witness_cycles==1&&policy.match_budget_shadow().duplicate_cycles>=1&&
+   policy.match_budget_shadow().witness_saving==saving,"budget shadow double-counted a task witness");
+  auto& started=test.task_pool.at(test.curr_task_schedule[1]);started.locations.push_back(base+8);started.idx_next_loc=1;
+  const auto eligible=policy.match_budget_shadow().work.match_eligible;
+  test.curr_timestep=50;policy.schedule(&test,30000,schedule);
+  require(schedule==test.curr_task_schedule&&started.idx_next_loc==1&&policy.stats().match_moved==2,"budget shadow redirected a started task");
+  if(audit)require(policy.match_budget_shadow().work.match_eligible==eligible+1&&policy.match_budget_shadow().witness_saving==saving,
+   "budget shadow included a started holder");
+  else require(policy.match_budget_shadow().work.match_passes==0,"disabled budget shadow performed work");
+  std::vector<long long> trace{policy.stats().match_moved,policy.stats().match_saving,policy.stats().match_groups,
+   policy.stats().match_selected,policy.stats().match_matrix_entries,policy.stats().match_primary_protected,
+   policy.stats().oriented_builds,policy.stats().temporal_cold_worker_runs,policy.primary()};
+  for(int value:schedule)trace.push_back(value);for(auto value:actions)trace.push_back(int(value));
+  const std::string key=std::string(bands)+short_tasks;
+  if(!audit)matching_traces[key]=trace;else require(matching_traces.at(key)==trace,"budget shadow changed real matching/planner work or actions");
  }
+ unsetenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE");
  unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_SHORT_TASKS");
  // Native closed-loop service semantics, including repeated locations. Serial
  // and parallel preparation must yield identical schedules/actions/cache work.
  setenv("CGAR_TURN_PREFETCH_THREADS","4",1);setenv("CGAR_TURN_TABLE_MB","64",1);setenv("CGAR_TURN_COMPACT","1",1);
  setenv("CGAR_PICKUP_FULL_ROBOTS","4",1);setenv("CGAR_PICKUP_FULL_THREADS","4",1);
- struct NativeTrace{std::vector<int> values;Stats stats;int services=0,repeated=0,completed=0;};
- auto episode=[&](const char* bands,int preparation){
+ struct NativeTrace{std::vector<int> values;Stats stats;MatchBudgetShadowStats shadow;int services=0,repeated=0,completed=0;};
+ auto episode=[&](const char* bands,int preparation,int audit=0){
+  setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",std::to_string(audit).c_str(),1);
   setenv("CGAR_TRICK_NATIVE_BANDS",bands,1);setenv("CGAR_TEMPORAL_PREP_THREADS",std::to_string(preparation).c_str(),1);
   auto test=e;test.curr_timestep=0;test.num_of_agents=24;test.curr_states.clear();test.task_pool.clear();
   test.curr_task_schedule.assign(24,-1);test.goal_locations.assign(24,{});
@@ -3545,7 +3578,7 @@ void native_metric_regression() {
     }
    }
   }
-  trace.stats=policy.stats();
+  trace.stats=policy.stats();trace.shadow=policy.match_budget_shadow();
   require(trace.services>0&&trace.repeated>0&&trace.completed>0,"native service episode was vacuous");
   require(!trace.stats.flow_publications&&!trace.stats.flow_cache_resets&&trace.stats.temporal_prepared_robots==24*128&&
    trace.stats.temporal_cold_worker_runs==128&&trace.stats.temporal_seed_rotations>0,"native episode changed work, published flow or missed wait-seed rotation");
@@ -3557,6 +3590,22 @@ void native_metric_regression() {
    serial.stats.pickup_full_pops==parallel.stats.pickup_full_pops&&serial.services==parallel.services,"native serial/parallel closed-loop behavior differs");
   episode_services+=serial.services;episode_repeated+=serial.repeated;episode_rotations+=serial.stats.temporal_seed_rotations;
  }
+ // Dedicated closed-loop shadow neutrality with native+short+matching together.
+ setenv("CGAR_TRICK_UNOPENED_MATCH","1",1);setenv("CGAR_TRICK_SHORT_TASKS","1",1);
+ for(const char* bands:{"0","1"}){auto baseline=episode(bands,4,0),shadow=episode(bands,4,10);
+  require(baseline.values==shadow.values&&baseline.services==shadow.services&&baseline.stats.oriented_builds==shadow.stats.oriented_builds&&
+   baseline.stats.pickup_full_pops==shadow.stats.pickup_full_pops&&baseline.stats.temporal_cold_worker_runs==shadow.stats.temporal_cold_worker_runs&&
+   baseline.stats.match_moved==shadow.stats.match_moved&&baseline.stats.match_saving==shadow.stats.match_saving&&
+   baseline.shadow.work.match_passes==0&&shadow.shadow.work.match_passes==13,"native matching budget shadow changed a closed-loop trace/work");
+ }
+ for(const char* bad:{"-1","1","15","5010"}){setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE",bad,1);
+  rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"matching budget audit accepted invalid stride");}
+ setenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE","10",1);setenv("CGAR_DIAGNOSTICS","0",1);
+ rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"matching budget audit accepted disabled diagnostics");
+ setenv("CGAR_DIAGNOSTICS","1",1);setenv("CGAR_TRICK_UNOPENED_MATCH","0",1);
+ rejects([&]{Cgar invalid;invalid.initialize(&e,30000);},"matching budget audit accepted disabled matching");
+ unsetenv("CGAR_MATCH_BUDGET_AUDIT_STRIDE");unsetenv("CGAR_TRICK_UNOPENED_MATCH");unsetenv("CGAR_TRICK_SHORT_TASKS");unsetenv("CGAR_DIAGNOSTICS");
+ std::cout<<"MATCH_BUDGET_SHADOW passed protected_beneficial_cycles=4 task_disjoint_dedup=1 no_commit=1 started_primary_cooldown_protected=1 real_work_exact=1 closed_loop_pairs=2 independent_action_checks=12288 guards=6\n";
  unsetenv("CGAR_TURN_PREFETCH_THREADS");unsetenv("CGAR_TURN_TABLE_MB");unsetenv("CGAR_TURN_COMPACT");
  unsetenv("CGAR_TEMPORAL_PREP_THREADS");unsetenv("CGAR_PICKUP_FULL_THREADS");setenv("CGAR_PICKUP_FULL_ROBOTS","1",1);
  std::cout<<"NATIVE_EPISODES passed robots=24 ticks_per_episode=128 profiles=4 services="<<episode_services<<" repeated="<<episode_repeated
@@ -3578,7 +3627,7 @@ void native_metric_regression() {
  }
  require(service_macros>0&&checked_macros>1000,"native score fixtures did not cover service");
  std::cout<<"NATIVE_METRIC passed independent_states="<<checked_states<<" macro_scores="<<checked_macros<<" service_macros="<<service_macros
-  <<" prefetched_states="<<prefetched_states<<" seed_macros="<<seed_macros<<" native_asset_hashes=2 corrupted_field_rejected=1 pickup_oracles=3 positive_bounds=1 default_bounds=1 wide_fallback=1 eviction=1 raw_score_units=1 integrated_profiles=2 native_matching_cycles=4 short_on_off_cycles=1 matching_scale_invariance=8 explicit_cli=1 incompatible_gates=1\n";
+  <<" prefetched_states="<<prefetched_states<<" seed_macros="<<seed_macros<<" native_asset_hashes=2 corrupted_field_rejected=1 pickup_oracles=3 positive_bounds=1 default_bounds=1 wide_fallback=1 eviction=1 raw_score_units=1 integrated_profiles=2 native_matching_cycles=8 short_on_off_cycles=1 matching_scale_invariance=8 explicit_cli=1 incompatible_gates=1\n";
 }
 
 // Explicit short preference changes only the two admission/age mechanisms.

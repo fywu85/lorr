@@ -938,6 +938,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (match_pickup_groups < 0 || match_pickup_groups > 1 || (match_pickup_groups && !reassign_match_))
         throw std::invalid_argument("pickup-neighborhood grouping requires enabled matching and a boolean selector");
     match_pickup_groups_ = match_pickup_groups != 0;
+    match_budget_audit_stride_ = env_int("CGAR_MATCH_BUDGET_AUDIT_STRIDE", 0);
+    if (match_budget_audit_stride_ < 0 || match_budget_audit_stride_ > 5000 ||
+        (match_budget_audit_stride_ && (!reassign_match_ || !diagnostics_ || match_budget_audit_stride_ % 10)))
+        throw std::invalid_argument("matching budget audit requires diagnostics, enabled matching and a stride divisible by10 in10..5000");
+    if (match_budget_audit_stride_)
+        std::printf("[cgar-match-budget-shadow-config] stride=%d read_only=1 after_real_match=1 resident_only=1 include_budget=1 cooldown=20 task_disjoint_witnesses=1\n", match_budget_audit_stride_);
     if (reassign_match_)
         std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_pickup_groups_);
     fallback_samples_ = std::max(0, std::min(4096, env_int("CGAR_FALLBACK_SAMPLES", 64)));
@@ -2015,7 +2021,7 @@ void Cgar::prune_reassignment_records() {
     prune(fair_tasks_);
 }
 
-Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only) const {
+Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only, bool include_budget) const {
     constexpr int cooldown = 20;
     const int now = env_->curr_timestep;
     // Also preserve the next pending primary if the previous one just finished.
@@ -2048,7 +2054,7 @@ Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& propo
         if (task.idx_next_loc != 0 || task.locations.empty() || !cert_.core[task.locations.front()] ||
             cell == task.locations.front() || !eligible_task(task)) continue;
         if (fair_tasks_.count(proposed[i])) { ++result.fair; continue; }
-        if (reassigned_tasks_.count(proposed[i])) { ++result.budget; continue; }
+        if (reassigned_tasks_.count(proposed[i])) { ++result.budget; if (!include_budget) continue; }
         if (existing_only && (agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket)) continue;
         result.robots.push_back(i);
     }
@@ -2292,12 +2298,32 @@ void Cgar::exchange_unopened_with_pool(std::vector<int>& proposed) {
 // touched. Every group is analysed completely before any accepted cycle is
 // committed, so a deadline can only fail the whole entry.
 void Cgar::match_unopened(std::vector<int>& proposed) {
+    match_unopened_impl(proposed, false, stats_);
+    const int now = env_->curr_timestep;
+    if (!match_budget_audit_stride_ || now % match_budget_audit_stride_) return;
+    // The real pass always runs first. The shadow owns its cursor, counters and
+    // witness ledger, and uses only const table peeks and a copied proposal.
+    auto unchanged = proposed;
+    match_unopened_impl(unchanged, true, match_budget_shadow_.work);
+    if (unchanged != proposed) throw std::logic_error("matching budget shadow changed a proposal");
+    const auto& a = match_budget_shadow_; const auto& w = a.work;
+    std::printf("[cgar-match-budget-shadow] t=%d passes=%lld eligible=%lld resident=%lld missing=%lld groups=%lld selected=%lld nodes=%lld matrix_entries=%lld accepted_cycles=%lld budget_cycles=%lld unprotected_cycles=%lld duplicate_cycles=%lld witness_cycles=%lld witness_rows=%lld witness_budget_rows=%lld witness_saving=%lld unit=%d unique_tasks=%zu primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld real_moved=%lld real_saving=%lld assignments=%lld read_only=1\n",
+        now, w.match_passes, w.match_eligible, w.match_resident, w.match_missing,
+        w.match_groups, w.match_selected, w.match_nodes, w.match_matrix_entries, w.match_accepted_cycles,
+        a.budget_cycles, a.unprotected_cycles, a.duplicate_cycles, a.witness_cycles, a.witness_rows,
+        a.witness_budget_rows, a.witness_saving, flow_cost_scale_, match_budget_audit_seen_tasks_.size(),
+        w.match_primary_protected, w.match_recovery_protected, w.match_fair_protected,
+        w.match_budget_protected, stats_.match_moved, stats_.match_saving, stats_.assignments);
+    check_deadline(deadline_, "unopened_match_shadow_report_complete");
+}
+
+void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& observed) {
     constexpr int interval = 10, anchor_limit = 128;
     constexpr int group_size = 32, node_limit = 2048;
     const int now = env_->curr_timestep;
     if (!reassign_match_ || now % interval != 0) return;
-    ++stats_.match_passes;
-    prune_reassignment_records();
+    ++observed.match_passes;
+    if (!shadow) prune_reassignment_records();
     // Match the scheduler's metric lifecycle: static trick quotes are ready
     // after tick0 even though learned-flow publication is disabled for them.
     if (!((static_trick_metric_ && now > 0) || flow_guidance_.publications() > 0)) {
@@ -2305,12 +2331,12 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         return;
     }
 
-    const auto candidates = unopened_candidates(proposed, false);
-    stats_.match_primary_protected += candidates.primary;
-    stats_.match_recovery_protected += candidates.recovery;
-    stats_.match_fair_protected += candidates.fair;
-    stats_.match_budget_protected += candidates.budget;
-    stats_.match_eligible += candidates.robots.size();
+    const auto candidates = unopened_candidates(proposed, false, shadow);
+    observed.match_primary_protected += candidates.primary;
+    observed.match_recovery_protected += candidates.recovery;
+    observed.match_fair_protected += candidates.fair;
+    observed.match_budget_protected += candidates.budget;
+    observed.match_eligible += candidates.robots.size();
     if (candidates.robots.size() < 2) {
         check_deadline(deadline_, "unopened_match_empty");
         return;
@@ -2330,18 +2356,18 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         const int goal = found->second.locations.front();
         const auto* table = turn_oracle_.peek(goal);
         if (!table) {
-            ++stats_.match_missing;
+            ++observed.match_missing;
             continue;
         }
         const int own = turn_oracle_.value(*table, env_->curr_states[robot].location,
                                            env_->curr_states[robot].orientation);
         if (own >= kInf) {
-            ++stats_.match_unreachable;
+            ++observed.match_unreachable;
             continue;
         }
         tables[robot] = table;
         resident.push_back(robot);
-        ++stats_.match_resident;
+        ++observed.match_resident;
     }
     if (resident.size() < 2) {
         check_deadline(deadline_, "unopened_match_no_resident_group");
@@ -2353,9 +2379,10 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     // scatters it across a large map and leaves local groups mostly empty.
     // The configured group quota and32-holder cap bound matrix participants.
     // Rebuild the index from current states, without touching planner occupancy.
-    const size_t start = match_cursor_ % resident.size();
+    auto& cursor = shadow ? match_budget_audit_cursor_ : match_cursor_;
+    const size_t start = cursor % resident.size();
     const size_t anchor_count = std::min<size_t>(anchor_limit, resident.size());
-    match_cursor_ += anchor_count;
+    cursor += anchor_count;
     std::vector<int> anchors;
     anchors.reserve(anchor_count);
     for (size_t k = 0; k < anchor_count; ++k)
@@ -2409,7 +2436,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
             }
         }
         if (anchor < 0) break;
-        ++stats_.match_anchors;
+        ++observed.match_anchors;
 
         queue.clear();
         const int start_cell = env_->curr_states[anchor].location;
@@ -2423,7 +2450,7 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
         for (size_t pos = 0; pos < queue.size() && pos < node_limit && group.size() < group_size; ++pos) {
             if ((pos & 63) == 0) check_deadline(deadline_, "unopened_match_group_search");
             const int cell = queue[pos];
-            ++stats_.match_nodes;
+            ++observed.match_nodes;
             for (int robot = head[cell]; robot >= 0 && location_count < location_limit; robot = link[robot]) {
                 if (!used[robot]) {
                     used[robot] = 1;
@@ -2452,10 +2479,10 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
             continue;
         }
 
-        ++stats_.match_groups;
-        stats_.match_pickup_selected += pickup_count;
-        stats_.match_selected += group.size();
-        stats_.match_full_groups += group.size() == group_size;
+        ++observed.match_groups;
+        observed.match_pickup_selected += pickup_count;
+        observed.match_selected += group.size();
+        observed.match_full_groups += group.size() == group_size;
         const int n = static_cast<int>(group.size());
         std::vector<int> costs(static_cast<size_t>(n) * n, kInf);
         for (int row = 0; row < n; ++row) {
@@ -2465,17 +2492,41 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
                 const int value = turn_oracle_.value(*tables[group[column]],
                     env_->curr_states[robot].location, env_->curr_states[robot].orientation);
                 costs[static_cast<size_t>(row) * n + column] = value;
-                ++stats_.match_matrix_entries;
-                if (value >= kInf) ++stats_.match_unreachable;
+                ++observed.match_matrix_entries;
+                if (value >= kInf) ++observed.match_unreachable;
             }
         }
         const auto permutation = minimum_pickup_permutation(costs, n, kInf,
             [&] { check_deadline(deadline_, "unopened_match_hungarian"); });
         auto cycles = pickup_permutation_cycles(costs, permutation, flow_cost_scale_,
             [&] { check_deadline(deadline_, "unopened_match_cycles"); }, native_trick_metric_ ? 20 : 16);
-        stats_.match_cycles += cycles.size();
-        for (const auto& cycle : cycles) stats_.match_accepted_cycles += cycle.accepted;
+        observed.match_cycles += cycles.size();
+        for (const auto& cycle : cycles) observed.match_accepted_cycles += cycle.accepted;
         planned.push_back({std::move(group), permutation, std::move(cycles)});
+    }
+
+    if (shadow) {
+        for (const Planned& item : planned) for (const auto& cycle : item.cycles) if (cycle.accepted) {
+            check_deadline(deadline_, "unopened_match_shadow_witness");
+            int budget_rows = 0; bool repeated = false;
+            for (int row : cycle.rows) {
+                const int task = proposed[item.robots[row]];
+                budget_rows += reassigned_tasks_.count(task) != 0;
+                repeated |= match_budget_audit_seen_tasks_.count(task) != 0;
+            }
+            if (!budget_rows) { ++match_budget_shadow_.unprotected_cycles; continue; }
+            ++match_budget_shadow_.budget_cycles;
+            // Reject the whole overlapping witness, then mark EVERY participating
+            // task (budget-protected or not). No task contributes twice to S2.
+            if (repeated) { ++match_budget_shadow_.duplicate_cycles; continue; }
+            ++match_budget_shadow_.witness_cycles;
+            match_budget_shadow_.witness_rows += cycle.rows.size();
+            match_budget_shadow_.witness_budget_rows += budget_rows;
+            match_budget_shadow_.witness_saving += cycle.before - cycle.after;
+            for (int row : cycle.rows) match_budget_audit_seen_tasks_.insert(proposed[item.robots[row]]);
+        }
+        check_deadline(deadline_, "unopened_match_shadow_complete");
+        return;  // Never reach assignment, cooldown, commitment or real-budget writes.
     }
 
     // Commit only after every selected group has a complete finite solution.
@@ -2486,8 +2537,8 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
             replacement[i] = proposed[item.robots[i]];
         for (const auto& cycle : item.cycles) if (cycle.accepted) {
             const long long saving = cycle.before - cycle.after;
-            stats_.match_moved += cycle.rows.size();
-            stats_.match_saving += saving;
+            observed.match_moved += cycle.rows.size();
+            observed.match_saving += saving;
             for (int row : cycle.rows) {
                 const int robot = item.robots[row];
                 reassigned_tasks_.insert(proposed[robot]);
