@@ -21,7 +21,7 @@ struct Config {
     bool predict_matching=false, rollout_age=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
-    int age_cap=0, pre_cycles=0;
+    int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
     bool cycle_portfolio=false;
     float progress_discount=1, flow_turn_load=0, plain_score=0;

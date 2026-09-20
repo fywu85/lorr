@@ -33,13 +33,15 @@ The configuration uses planner seed 0, generated field seed 15, K=1024,
 noise=200, dispersion=0.8, five local trials with equal-score acceptance,
 wait cost=0.5, exact matching with oriented guidance, keep bonus=0.5,
 final directional penalty=2.4 and known-horizon triage scale=1.5
-(`--trick RANDOM-05`). This new best has been measured on one planner seed.
+(`--trick RANDOM-05`). Five planner seeds now give 3,363 / 3,276 / 3,344 / 3,329 / 3,312: mean
+**3,325**, or **14.1%** above the strongest NMS repeat. All five improve over
+the corresponding preceding configuration; the best remains 15.4% ahead.
 
 The preceding directional penalty of 1.6 scored 3,299 / 3,185 / 3,284 / 3,214 /
 3,061 over five planner seeds: mean **3,209**, or **10.1%** above the strongest
 NMS repeat. Its best trajectory repeated exactly on 32 workers, where NMS
-scores 3,172 and the matched lead was 4.0%. Do not transfer those replication
-claims to the new 3,363 configuration before testing it.
+scores 3,172 and the matched lead was 4.0%. The newer 3,363 configuration has
+only been validated on four-core allocations so far.
 
 Best without known-horizon triage remains 2,914 on four cores. The colleague's
 roughly 27–28% matched advantage remains the campaign objective.
@@ -331,3 +333,17 @@ The published NMS score of 3,050 used different instances and hardware.
   comfortably in the32GB allowance. Regression tests check that identical
   metrics reproduce the same trajectory and that blends are worker-invariant.
   Runtime and throughput validation are pending; the feature defaults to off.
+
+- Contrast2.4 across five planner seeds: 3,363/3,276/3,344/3,329/3,312, mean
+  3,324.8 versus3,208.6 for contrast1.6 (+3.6%, all five pairs positive).
+  Against the strongest NMS4 repeat, the best is+15.4% and the mean is+14.1%.
+  The direct-recursion build reproduces the seed0 trajectory at mean322.5ms,
+  maximum431.3ms. Keep the original producing commit linked to the frontier.
+- The plain-action evaluation blend loses at K128 and K1024. At K128, blends
+  0/0.25/0.5/0.75/1 give3,199/3,161/3,123/3,111/3,156. At K1024, blends0.25/0.5
+  give3,326/3,296 versus3,363 control. Keep the weighted evaluation unchanged.
+- New optional coordination policies decompose the spatial intent into complete
+  movement chains and cycles. Mode1 executes only fully ready components;
+  mode2 preserves ready components and fills the rest with kinematic PIBT.
+  Dense turnover and worker-determinism regressions pass. Full-map throughput
+  validation is pending; mode0 retains the current solver.

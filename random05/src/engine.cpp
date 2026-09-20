@@ -47,6 +47,9 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.horizon>0 && env.trick_instance!="RANDOM-05")
         throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
+    c.intent_mode=integer("R05_INTENT_MODE",0);
+    if(c.intent_mode<0 || c.intent_mode>2 || (c.intent_mode && !c.intent_rotation))
+        throw std::invalid_argument("intent mode must be 0..2 and requires intent rotation");
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
     c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.cost_cache=integer("R05_COST_CACHE",0);
     c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
@@ -551,9 +554,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     }
     std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
     std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
+    std::vector<int> prepared;
     auto choose=[&](bool kinematic) {
     std::fill(chosen.begin(),chosen.end(),-1);
     std::fill(reserve.begin(),reserve.end(),-1);
+    if(kinematic && cfg.intent_mode==2)for(int i=0;i<n;++i)if(prepared[i]!=p[i]) {
+        chosen[i]=prepared[i];reserve[chosen[i]]=i;
+    }
     if(kinematic && cycle_mode>0 && cycle_mode<3)propose_cycles(false);
     int expansions=0;
     auto pibt=[&](auto&& self,int a)->bool {
@@ -586,7 +593,28 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     };
     std::vector<int> intent;
     if(cfg.intent_rotation)intent=choose(false);
-    chosen=choose(true);
+    if(cfg.intent_mode) {
+        // The collision-free spatial assignment decomposes into disjoint chains
+        // ending at holes and cycles. Commit a component only when every member
+        // can execute its intended heading after the current action.
+        std::vector<int> parent(n);std::iota(parent.begin(),parent.end(),0);
+        auto root=[&](int a) {
+            while(parent[a]!=a){parent[a]=parent[parent[a]];a=parent[a];}
+            return a;
+        };
+        for(int i=0;i<n;++i)if(intent[i]!=p[i]) {
+            int b=owner[intent[i]];
+            if(b>=0)parent[root(i)]=root(b);
+        }
+        std::vector<unsigned char> ready(n,1);
+        for(int i=0;i<n;++i)if(intent[i]!=p[i] && !allowed(i,g.direction(p[i],intent[i])))
+            ready[root(i)]=0;
+        prepared=p;
+        for(int i=0;i<n;++i)if(ready[root(i)])prepared[i]=intent[i];
+    }
+    // Mode 1 executes only complete ready components. Mode 2 pins those moves
+    // and fills the remaining space with the usual kinematic PIBT policy.
+    chosen=cfg.intent_mode==1?prepared:choose(true);
     if(cycle_mode==3)propose_cycles(true);
     if(cfg.loops) {
         // Geometry is precomputed; evaluate only obstacle-free perimeters.
