@@ -716,9 +716,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     native_trick_metric_ = trick_options.native_metric;
     guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : 16;
     if ((trick_options.native_bands && !native_trick_metric_) ||
-        (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow ||
-         trick_options.short_tasks)))
-        throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow, without short preference; native bands require native metric");
+        (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow)))
+        throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
     if (!env->trick_instance.empty())
         tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
@@ -811,7 +810,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         ((remaining_flow || trick_options.remaining_flow) &&
          (!temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
           temporal_service_audit_stride_ || temporal_conflict_audit_stride_ || temporal_transaction_options_.work)) ||
-        (trick_options.remaining_flow && (!static_trick_metric_ || short_task_trick_)))
+        (trick_options.remaining_flow && !static_trick_metric_))
         throw std::invalid_argument("remaining-flow scoring requires generic learned flow or explicit CGAR_TRICK_REMAINING_FLOW with static lanes only; incompatible with guide, next-errand, paid-progress audits or branching");
     temporal_remaining_flow_ = remaining_flow != 0 || trick_options.remaining_flow;
     if (temporal_remaining_flow_)
