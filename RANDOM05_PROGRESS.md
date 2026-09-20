@@ -227,3 +227,14 @@ The published NMS score of 3,050 used different instances and hardware.
   requested a 32GB process limit above the smaller inherited GRID limit.
   The runner now reserves at least32GiB total and never raises an inherited
   hard limit. These are harness failures; the repeats are resubmitted.
+
+- Temporal-score and turn-field variants: control3,127; progress discounts
+  0.95/0.85/0.7/0.5 give3,041/3,087/3,006/2,809. Static load-weighted turn
+  costs (mean preserved) give2,973–3,031. Leave both options off.
+- The progress audit checks every frontier row against its exact result
+  timestamp, full-run validity, binary hash, and compiled planner sources at
+  the linked Git commit. See `random05/results/progress-audit.json`.
+
+- Blocked-cycle preparation with larger portfolios gives3,151 at K1024 and
+  3,217 at K2048, versus3,231/3,205 without it. It is an optional candidate
+  policy, not a reliable improvement across budgets and seeds.
