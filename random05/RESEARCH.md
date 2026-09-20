@@ -548,3 +548,10 @@ ask whether two/four branches keep the final best and top-eight candidates when
 retaining one-quarter or one-half of each generation, always preserving its
 first anchor. Report survival, top-eight recall and lost best full score; these
 are screening diagnostics, not measured throughput gains from an unbuilt method.
+
+The first diagnostic build passes regressions11.65s, but one strict32-worker
+run fails at step0=1035ms. Individual score numbers were printed to unbuffered
+stderr, causing thousands of writes per observed step. Buffer each generation
+into one write before using the diagnostic for new measurements. Preserve the
+failed original; this logging-only correction changes neither computed work nor
+selection. Full trajectories still need verification.

@@ -9,6 +9,7 @@
 #include <limits>
 #include <numeric>
 #include <queue>
+#include <sstream>
 #include <stdexcept>
 #include <type_traits>
 #include <unordered_set>
@@ -1466,17 +1467,26 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         mark(3);
         for(int k=begin;k<end;++k) {
             if(errors[k])std::rethrow_exception(errors[k]);
-            if(diagnose_branches) {
-                // Observe already-completed work only. No extra random draws,
-                // rollouts or selection changes; emit serially after workers.
-                std::fprintf(stderr,"R05_BRANCH_SCORE {\"t\":%d,\"generation\":%d,\"candidate\":%d,\"value\":%.17g,\"scores\":[",
-                             env->curr_timestep,generation,k,results[k].score);
-                for(size_t b=0;b<branch_scores[k].size();++b)
-                    std::fprintf(stderr,"%s%.17g",b?",":"",branch_scores[k][b]);
-                std::fprintf(stderr,"]}\n");
-            }
             if(results[k].score>results[best].score+1e-7 ||
                (cfg.accept_equal && results[k].score>=results[best].score-1e-7))best=k;
+        }
+        if(diagnose_branches) {
+            // Buffer one generation: stderr is unbuffered, and one write per
+            // number would make this observational diagnostic dominate a step.
+            // There are still no extra draws, rollouts or selection changes.
+            std::ostringstream diagnostic;diagnostic.precision(17);
+            for(int k=begin;k<end;++k) {
+                diagnostic<<"R05_BRANCH_SCORE {\"t\":"<<env->curr_timestep
+                          <<",\"generation\":"<<generation<<",\"candidate\":"<<k
+                          <<",\"value\":"<<results[k].score<<",\"scores\":[";
+                for(size_t b=0;b<branch_scores[k].size();++b) {
+                    if(b)diagnostic<<',';
+                    diagnostic<<branch_scores[k][b];
+                }
+                diagnostic<<"]}\n";
+            }
+            const auto text=diagnostic.str();
+            std::fwrite(text.data(),1,text.size(),stderr);
         }
     }
     // Local refinement also spends complete continuation groups, without
