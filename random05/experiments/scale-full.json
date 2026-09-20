@@ -1,0 +1,118 @@
+[
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "file-k64-disp0-sched0",
+    "env": {
+      "R05_K": "64",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0",
+      "R05_SCHED_GUIDE": "0",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "file-k256-disp0-sched0",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0",
+      "R05_SCHED_GUIDE": "0",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "file-k256-disp0.8-sched0",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0.8",
+      "R05_SCHED_GUIDE": "0",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "file-k256-disp0.8-sched1",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "file",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0.8",
+      "R05_SCHED_GUIDE": "1",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "flow-k256-disp0.8-sched0",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0.8",
+      "R05_SCHED_GUIDE": "0",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_TURN_COST": "0.6"
+    }
+  },
+  {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v5/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/mr24/random.domain/RANDOM-05.json",
+    "cores": 4,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": true,
+    "name": "flow-k256-disp0.8-sched1",
+    "env": {
+      "R05_K": "256",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_FLOW_SEED": "1",
+      "R05_DISPERSION": "0.8",
+      "R05_SCHED_GUIDE": "1",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_TURN_COST": "0.6"
+    }
+  }
+]

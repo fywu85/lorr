@@ -20,12 +20,19 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Initial valid prototype best: **54 tasks**, followed by gridlock. This is a
-starting point, far below the target. The full NMS reference is running.
+Best verified combined result: **2,431 tasks / 2,000 steps**, planner seed 0,
+public guidance field enabled. Generic configuration: **1,774 tasks**.
+All six v5 runs have zero planner errors, scheduler errors, and entry timeouts.
+The best run used 35.8 s wall time, 16.95 ms mean / 144.14 ms max entry latency,
+and 204.7 MiB peak process RAM on four physical cores. NMS reference pending.
 
 | Completed UTC | Source commit | Configuration / seed | Tasks / 2,000 | Matched NMS | Gain | Evidence |
 |---|---|---|---:|---:|---:|---|
 | 2026-09-20T07:55:37.615086+00:00 | [215fd6d](https://github.com/fywu85/lorr/commit/215fd6d167c96695e9ac6db6f8517791f2dab077) | Generated flow seed 1; turn cost 0.6; K=16; planner seed 0; `--trick RANDOM-05` | 54 | Pending | Pending | [Full evidence](random05/results/flow-first-v4/summary.json) |
+| 2026-09-20T07:58:41.020438+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | lanes-intent; K=16; seed 0; `--trick RANDOM-05` | 2113 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:41.152623+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow-intent; K=16; seed 0; `--trick RANDOM-05` | 2230 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:41.330442+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | flow06-disp08; K=16; seed 0; `--trick RANDOM-05` | 2346 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
+| 2026-09-20T07:58:42.118225+00:00 | [93b7604](https://github.com/fywu85/lorr/commit/93b760412a3d346b0b9b7896f400cff43b3733be) | upstream-intent; K=16; seed 0; `--trick RANDOM-05` | 2431 | Pending | Pending | [Full evidence](random05/results/intent-full-v5/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -54,3 +61,8 @@ The published NMS score of 3,050 used different instances and hardware.
   full-size gridlock persists despite changing guidance. Idle-turn preparation
   is the next diagnosed mechanism to investigate. All four v4 runs complete
   2,000 steps without planner errors, schedule errors, or entry timeouts.
+
+- v5: spatial-intention pre-rotation removes the persistent dense-map gridlock.
+  The selected current move and following promised move are independently
+  certified. Full runs now take about 35 seconds with K=16. Next: more futures,
+  guidance-aware matching and dispersion ablations, followed by seed repeats.
