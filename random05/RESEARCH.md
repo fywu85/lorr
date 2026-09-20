@@ -47,3 +47,7 @@ justify a new field or hard one-way restrictions.
 
 Promote only full valid runs. Record a single-seed maximum separately from
 replicated planner-seed means and from fresh-instance validation.
+
+Full K1024 tests now reject all listed rotation-penalty, extra-local-search and
+regional-mutation settings on the control seed. Startup length preferences also
+lose. These optional paths remain off; see RANDOM05_PROGRESS.md for exact scores.

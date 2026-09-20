@@ -32,7 +32,7 @@ whether a missing summary is still running or an allocation failure.
 
 | Jobs | Batch | Purpose |
 |---|---|---|
-| 8899588–8899594 | startup-length-split-full-v30 | Seed3,32 workers. Control3,379; global length0.5/1/2 =3,342/3,294/3,139; initial1 for250 steps=3,330. Initial2 for250 and initial1 for500 still to collect. |
+| 8899588–8899594 | startup-length-split-full-v30 | Seed3,32 workers. Control3,379; global length0.5/1/2 =3,342/3,294/3,139; initial1 for250 steps=3,330. Initial2 for250=3316, initial1 for500=3367. All complete and valid; all variants lose. |
 | 8899560–8899567 | local-rotation-split-full-v26 | Control3,374; penalties0.1/0.3/1 =3,335/3,252/3,123; local25=3,294; mutation0.1/0.03 =3,310/3,148. Local100=3,294. All complete and valid; every variation loses. |
 | 8899572–8899577 | regional-mutation-split-full-v27 | All complete: control3,374; radius2/4/8 at mutation0.3 =3,195/3,217/3,348; radius2/4 at mutation1 =3,224/3,222. All lose. |
 | 8899579–8899580 | active-cost-split-full-v28 | Four-core seed0 control for task-cost lookup speed; seed3 on32 workers now repeats3,379 exactly; control-four repeats3,374 exactly; mean309.6ms versus325.6ms before. Complete. |
@@ -106,3 +106,7 @@ lowK, which is not reliable for K1024. With soft costs, flipping a few pairs of
 directional weights preserves graph connectivity and keeps every physical edge
 available. Test at fullK/full horizon, retaining explicit map-trick flags. The
 EPIBT operation kernel in RESEARCH.md remains the larger independent alternative.
+
+All RANDOM-05 GRID jobs through v30 are now terminal and collected. No operation
+kernel or guidance-mutation prototype has been implemented yet. Those remain
+the next structural directions; do not restart completed parameter batches.
