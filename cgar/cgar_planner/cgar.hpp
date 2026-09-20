@@ -319,6 +319,7 @@ struct MatchBudgetShadowStats {
     Stats work;
     long long budget_cycles = 0, unprotected_cycles = 0, duplicate_cycles = 0;
     long long witness_cycles = 0, witness_rows = 0, witness_budget_rows = 0, witness_saving = 0;
+    long long fully_protected_cycles = 0, fully_protected_rows = 0, fully_protected_saving = 0;
 };
 
 class Cgar {

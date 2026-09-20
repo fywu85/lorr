@@ -3521,12 +3521,13 @@ void native_metric_regression() {
   require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"budget shadow committed a second retarget");
   if(audit){const auto& a=policy.match_budget_shadow();
    require(a.witness_cycles==1&&a.witness_rows==2&&a.witness_budget_rows==2&&a.witness_saving>=80&&
+    a.fully_protected_cycles==1&&a.fully_protected_rows==2&&a.fully_protected_saving==a.witness_saving&&
     a.work.match_budget_protected>=2&&a.work.match_primary_protected>0,"budget shadow failed to find a protected beneficial cycle");}
   const auto saving=policy.match_budget_shadow().witness_saving;
   test.curr_timestep=40;policy.schedule(&test,30000,schedule);
   require(schedule==test.curr_task_schedule&&policy.stats().match_moved==2,"repeated budget shadow changed assignments");
   if(audit)require(policy.match_budget_shadow().witness_cycles==1&&policy.match_budget_shadow().duplicate_cycles>=1&&
-   policy.match_budget_shadow().witness_saving==saving,"budget shadow double-counted a task witness");
+   policy.match_budget_shadow().witness_saving==saving&&policy.match_budget_shadow().fully_protected_saving==saving,"budget shadow double-counted a task witness");
   auto& started=test.task_pool.at(test.curr_task_schedule[1]);started.locations.push_back(base+8);started.idx_next_loc=1;
   const auto eligible=policy.match_budget_shadow().work.match_eligible;
   test.curr_timestep=50;policy.schedule(&test,30000,schedule);

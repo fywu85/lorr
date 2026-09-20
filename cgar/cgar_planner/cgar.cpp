@@ -2307,11 +2307,12 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
     match_unopened_impl(unchanged, true, match_budget_shadow_.work);
     if (unchanged != proposed) throw std::logic_error("matching budget shadow changed a proposal");
     const auto& a = match_budget_shadow_; const auto& w = a.work;
-    std::printf("[cgar-match-budget-shadow] t=%d passes=%lld eligible=%lld resident=%lld missing=%lld groups=%lld selected=%lld nodes=%lld matrix_entries=%lld accepted_cycles=%lld budget_cycles=%lld unprotected_cycles=%lld duplicate_cycles=%lld witness_cycles=%lld witness_rows=%lld witness_budget_rows=%lld witness_saving=%lld unit=%d unique_tasks=%zu primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld real_moved=%lld real_saving=%lld assignments=%lld read_only=1\n",
+    std::printf("[cgar-match-budget-shadow] t=%d passes=%lld eligible=%lld resident=%lld missing=%lld groups=%lld selected=%lld nodes=%lld matrix_entries=%lld accepted_cycles=%lld budget_cycles=%lld unprotected_cycles=%lld duplicate_cycles=%lld witness_cycles=%lld witness_rows=%lld witness_budget_rows=%lld witness_saving=%lld fully_protected_cycles=%lld fully_protected_rows=%lld fully_protected_saving=%lld unit=%d unique_tasks=%zu primary_protected=%lld recovery_protected=%lld fair_protected=%lld budget_protected=%lld real_moved=%lld real_saving=%lld assignments=%lld read_only=1\n",
         now, w.match_passes, w.match_eligible, w.match_resident, w.match_missing,
         w.match_groups, w.match_selected, w.match_nodes, w.match_matrix_entries, w.match_accepted_cycles,
         a.budget_cycles, a.unprotected_cycles, a.duplicate_cycles, a.witness_cycles, a.witness_rows,
-        a.witness_budget_rows, a.witness_saving, flow_cost_scale_, match_budget_audit_seen_tasks_.size(),
+        a.witness_budget_rows, a.witness_saving, a.fully_protected_cycles, a.fully_protected_rows,
+        a.fully_protected_saving, flow_cost_scale_, match_budget_audit_seen_tasks_.size(),
         w.match_primary_protected, w.match_recovery_protected, w.match_fair_protected,
         w.match_budget_protected, stats_.match_moved, stats_.match_saving, stats_.assignments);
     check_deadline(deadline_, "unopened_match_shadow_report_complete");
@@ -2523,6 +2524,13 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
             match_budget_shadow_.witness_rows += cycle.rows.size();
             match_budget_shadow_.witness_budget_rows += budget_rows;
             match_budget_shadow_.witness_saving += cycle.before - cycle.after;
+            // A mixed cycle's complete saving is not attributable solely to the
+            // protected rows. Report the fully protected subset separately.
+            if (budget_rows == int(cycle.rows.size())) {
+                ++match_budget_shadow_.fully_protected_cycles;
+                match_budget_shadow_.fully_protected_rows += cycle.rows.size();
+                match_budget_shadow_.fully_protected_saving += cycle.before - cycle.after;
+            }
             for (int row : cycle.rows) match_budget_audit_seen_tasks_.insert(proposed[item.robots[row]]);
         }
         check_deadline(deadline_, "unopened_match_shadow_complete");
