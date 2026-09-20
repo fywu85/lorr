@@ -40,11 +40,12 @@ struct Config {
     bool operation_inherit=true, operation_moving=false, operation_protect=false, operation_finish_move=false;
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, reverse_penalty=0, completion_bonus=0;
-    float triage_scale=0.45, triage_guided_mix=0, waypoint_age_retain=0;
+    float triage_scale=0.45, triage_guided_mix=0, waypoint_age_retain=0, score_rank_power=0;
     bool accept_equal=false;
     std::string guidance="none", weights;
     static Config environment(const SharedEnvironment& env);
 };
+std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power);
 std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix=false);
 struct CycleWordMask { size_t word;uint64_t bits; };
 struct Graph {
@@ -166,6 +167,7 @@ private:
     std::vector<int> operations_;
     std::vector<const Chain*> assigned_, score_assigned_, future_tasks_, future_plain_;
     std::vector<float> future_lengths_;
+    std::vector<double> score_weights_;
     std::vector<int> age_, previous_task_, previous_stage_, pending_;
     std::vector<float> best_offsets_;
     std::vector<std::vector<float>> past_offsets_;

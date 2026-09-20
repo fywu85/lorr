@@ -1,0 +1,23 @@
+{
+  "created_utc": "2026-09-20T23:20:28.446583+00:00",
+  "command": [
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v72/build/lifelong_random05",
+    "-i",
+    "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+    "-o",
+    "/tmp/random05-rank-gate-invalid.json",
+    "-s",
+    "1",
+    "-t",
+    "1000",
+    "-p",
+    "30000"
+  ],
+  "env": {
+    "R05_SCORE_RANK_POWER": "1"
+  },
+  "exit": 125,
+  "expected_exit": 125,
+  "rejected_without_trick": true,
+  "output": "R05_ERROR phase=initialize message=short-remaining-task score preference requires --trick RANDOM-05\n"
+}

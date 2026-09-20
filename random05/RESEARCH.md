@@ -819,3 +819,30 @@ waypoints versus whole-task reset, dense turnover and assignment locks, worker
 determinism, snapshot restoration, and optional simulated aging. Five full
 strict cases test retain0/.25/.5/.75/1 on the3,872 seed4 preset; retain0 is
 the unchanged-behavior control.
+
+
+## Trick: weight progress toward short remaining chains
+
+NMS's local `PIBTS::update_score` weights distance gain by a robot weight derived
+from remaining-task rank. Random05 squares that rank fraction. Our score instead
+sums equal per-agent cost decreases. The phase audit motivates a separate test
+of this evaluator difference, without replacing PIBT's age/offset priorities.
+The colleague reported no gain from urgency/closeness weighting, so this is a
+bounded recheck grounded in our measured completion/waypoint gap, not an assumed
+new solution. Plain terminal completion bonuses already failed here.
+
+`R05_SCORE_RANK_POWER` defaults0. At power>0, rank currently active agents by
+their exact remaining oriented task-chain cost, give tied costs equal average
+ranks, then raise the reverse-rank fraction to the power. Normalize active
+weights to mean1 so dispersion retains its overall cost scale. The weights stay
+fixed within all futures for this real step and are rebuilt after real matching.
+This gives more value to movement on shorter remaining chains and may increase
+long-order delays. Require --trick RANDOM-05 explicitly. The implementation
+currently rejects turnover forecasts, closed-loop reranking or a completion
+bonus together with these weights; those combinations need separate semantics.
+
+Source72 regressions passed27.92s: tied-rank/order/scale invariants, competing
+completion choices, dense task locks and turnover, worker determinism and
+checkpoint replay. The actual entry was also checked to reject positive power
+without the trick flag. Full2000-step powers0/.25/.5/1/2 are declared on the
+3,872 preset, with retention/reranking disabled.

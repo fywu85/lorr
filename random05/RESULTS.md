@@ -18,7 +18,8 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 
 The current goal is4,000 tasks. The latest32-worker record improves3,857 by
 15tasks using a0.5 normalized directional-cost blend in the horizon cutoff,
-at scale1.25. This selected seed4 gain has not yet been replicated.
+at scale1.25. Across planner seeds0/3/4, the change yields-2/+60/+15tasks (+0.64% aggregate).
+This small development sample is not independent-input validation.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and

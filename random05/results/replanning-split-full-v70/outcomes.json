@@ -1,0 +1,73 @@
+{
+  "control_tasks": 3872,
+  "cases": [
+    {
+      "name": "32-replan-r0-f1-k32-start50-seed4",
+      "valid": true,
+      "exit": 0,
+      "failure": null,
+      "tasks": 3872,
+      "latency_seconds": {
+        "mean": 0.5008915110089994,
+        "max": 0.54913052
+      },
+      "delta_from_3872": 0
+    },
+    {
+      "name": "32-replan-r1-f1-k32-start50-seed4",
+      "valid": true,
+      "exit": 0,
+      "failure": null,
+      "tasks": 3872,
+      "latency_seconds": {
+        "mean": 0.6324493698585004,
+        "max": 0.691404445
+      },
+      "delta_from_3872": 0
+    },
+    {
+      "name": "32-replan-r4-f2-k32-start50-seed4",
+      "valid": true,
+      "exit": 0,
+      "failure": null,
+      "tasks": 3752,
+      "latency_seconds": {
+        "mean": 0.6715677819764999,
+        "max": 0.759753324
+      },
+      "delta_from_3872": -120
+    },
+    {
+      "name": "32-replan-r8-f1-k32-start50-seed4",
+      "valid": false,
+      "exit": 124,
+      "failure": null,
+      "tasks": null,
+      "latency_seconds": null,
+      "delta_from_3872": null
+    },
+    {
+      "name": "32-replan-r8-f2-k32-start50-seed4",
+      "valid": false,
+      "exit": 1,
+      "failure": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "tasks": null,
+      "latency_seconds": null,
+      "delta_from_3872": null
+    },
+    {
+      "name": "32-replan-r4-f2-k64-start50-seed4",
+      "valid": false,
+      "exit": 124,
+      "failure": null,
+      "tasks": null,
+      "latency_seconds": null,
+      "delta_from_3872": null
+    }
+  ],
+  "decision": "No improved strict result; preserve disabled defaults and all failures."
+}

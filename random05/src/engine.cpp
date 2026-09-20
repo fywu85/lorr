@@ -146,6 +146,11 @@ Config Config::environment(const SharedEnvironment& env) {
     c.plain_score=real("R05_PLAIN_SCORE",0);
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
     c.completion_bonus=real("R05_COMPLETE_BONUS",0);
+    c.score_rank_power=real("R05_SCORE_RANK_POWER",0);
+    if(!std::isfinite(c.score_rank_power) || c.score_rank_power<0 || c.score_rank_power>4)
+        throw std::invalid_argument("task progress rank power must be in [0,4]");
+    if(c.score_rank_power>0 && env.trick_instance!="RANDOM-05")
+        throw std::invalid_argument("short-remaining-task score preference requires --trick RANDOM-05");
     if(c.completion_bonus<0)throw std::invalid_argument("completion bonus must be nonnegative");
     if(c.reverse_penalty<0)throw std::invalid_argument("reverse-turn penalty must be nonnegative");
     if(c.plain_score<0 || c.plain_score>1)
@@ -213,12 +218,38 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
     if(c.component_trials && (c.early_fill || c.operation_depth))
         throw std::invalid_argument("motion-component search requires the ordinary fixed first-position pipeline");
+    if(c.score_rank_power>0 && (c.rollout_match || c.replan_roots || c.completion_bonus>0))
+        throw std::invalid_argument("rank-weighted scoring currently requires fixed-chain futures without reranking or completion bonus");
     if(c.replan_roots && (c.operation_depth || c.plain_score || c.reverse_penalty || c.progress_discount!=1))
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
     return c;
+}
+
+// Negative entries are inactive goals. Equal remaining costs share a rank;
+// normalize active weights to mean1 to preserve the dispersion/cost scale.
+std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power) {
+    if(power==0)return std::vector<double>(remaining.size(),1);
+    std::vector<int> order;
+    for(int a=0;a<int(remaining.size());++a)if(remaining[a]>=0)order.push_back(a);
+    std::sort(order.begin(),order.end(),[&](int a,int b) {
+        if(remaining[a]!=remaining[b])return remaining[a]<remaining[b];
+        return a<b;
+    });
+    std::vector<double> weights(remaining.size(),0);double sum=0;
+    const int count=int(order.size());
+    for(int begin=0;begin<count;) {
+        int end=begin+1;
+        while(end<count && remaining[order[end]]==remaining[order[begin]])++end;
+        const double rank=(begin+end-1)*.5;
+        const double weight=std::pow((count-rank)/count,power);
+        for(int k=begin;k<end;++k){weights[order[k]]=weight;sum+=weight;}
+        begin=end;
+    }
+    if(sum>0)for(double& weight:weights)weight*=count/sum;
+    return weights;
 }
 
 static void order_priorities(const std::vector<float>& priorities,bool packed,bool radix,
@@ -1203,8 +1234,9 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
         const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
         const auto& plain_assigned=cfg.rollout_match?f.plain_chains:score_assigned_;
         for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
-            guided+=assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
-            if(score_graph_)plain+=plain_assigned[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
+            const double weight=score_weights_.empty()?1:score_weights_[i];
+            guided+=weight*assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
+            if(score_graph_)plain+=weight*plain_assigned[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
         }
         return score_graph_?guided*(1-cfg.plain_score)+plain*cfg.plain_score:guided;
     };
@@ -1464,6 +1496,13 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 assigned_[a]=nullptr;++triaged_;
             }
         }
+    }
+    score_weights_.clear();
+    if(cfg.score_rank_power>0) {
+        std::vector<float> remaining(n,-1);
+        for(int a=0;a<n;++a)if(assigned_[a])
+            remaining[a]=assigned_[a]->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
+        score_weights_=rank_progress_weights(remaining,cfg.score_rank_power);
     }
     if(cfg.rollout_match) {
         frame.active_chains=assigned_;if(score_graph_)frame.plain_chains=score_assigned_;

@@ -1,131 +1,131 @@
-# RANDOM-05 handoff: 4,000-task goal
+# RANDOM-05: active 4,000-task goal
 
-Updated2026-09-20. The user explicitly authorized a new goal: reach4,000tasks
-on the full archived RANDOM-05 combined benchmark, then independently validate
-the selected improvement. The previous reasonably-close-to-colleague goal is
-complete; its evidence remains in RESULTS.md and results/completion-audit.json.
+Updated2026-09-20 23:12UTC. Continue toward at least4,000tasks on full2000-step
+Random05 combined runs and independently validate the selected improvement.
+The persistent goal is ACTIVE;3872 does not complete it. Previous goal (close to
+colleague's matched gain) was achieved on frozen fresh inputs; retain that audit.
 
 Only edit/stage/commit random05/ and RANDOM05_PROGRESS.md. Warehouse shares main;
-leave its files, staged work and GRID jobs alone. No subagent delegation.
-Pushing fywu85/lorr is authorized; preserve public visibility. All map-specific
-techniques require --trick RANDOM-05. Throughput is primary, waiting secondary.
+leave its changes/staging/jobs alone. No subagent delegation. Public fywu85/lorr;
+pushing is authorized, preserve visibility. User prioritizes throughput over
+waiting, accepts selected seeds/tricks, and allows shared hosts and relaxed
+timing diagnostics. Strict frontier remains full2000,1s/30s,32decimalGB cap.
+No partial search portfolio: finish fixed work or timeout. Map-specific tricks
+require --trick RANDOM-05 and explicit labels in commits/logs.
 
 ## Verified frontiers
 
-- Overall32workers/16physical EPYC9354cores: **3857**, source5f81613/build-v65,
-  seed4, first8000/K16320/B14/s2/q4/G4/E8/P8, horizon2000/triage1.25.
-  Mean490.729ms/max551.626ms/RSS564632KiB. Strict1s/32decimalGB/full2000,
-  zeroerrors/timeouts; independent full replay passed. Evidence:
-  results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json.
-  Onlyfive tasks above3852(scale1.5); no robust seed gain claimed. Scale1.75=3798.
-  Matched NMS32=3172, gain21.6%. Record source remains65, not the new prototypes.
-- Four physical cores/four workers: **3770**, same source65, seed3,
-  first4608/K5760/B12/s2/q4/G4/E8/P8/triage1.5/cache512.
-  Mean787.573ms/max845.398ms/RSS473328KiB, +29.4%vsNMS4=2914.
-  Evidenceworker-affinity-four-full-v65/summary.json (UNSPLIT).
-- All75frontier rows audited. best.json/best-32-workers.json select3857;
-  other best manifests unchanged. Current completed max1941/1937vsNMS1997/1976;
-  initial unfinished137/135vs219/206. Every solver still has initial orders
-  unfinished at2000, so eventual max is unknown and >=2000.
-- Frozen freshV4 candidate3770config:3680vsNMS2907/2870 and3641vs2930/2918,
-  **+25.42% aggregate** over stronger repeats. Allsix original strict runs valid,
-  full independent replay and29compiled source/header hash checks. Protocol
-  a7bad0c precedes generation50007/50008. ALL50001–50008 are excluded from tuning.
-  Previous freshV3=25.46% on different inputs/config; not a paired causal estimate.
-- Historical no-horizon ablations atscale1.5:3503/four and3632/32 vs3770/3852,
-  cutoff+7.6%/+6.1%; guidance remains a trick. Do not claim no-tricks performance.
+- Overall: **3872**, source233f5bf/build-v69, seed4, first8000/K16320/B14,
+  screen2/keep4/G4/E8/P8, cutoffscale1.25/directional mix.5, all other settings
+  in best-32-workers.json.32workers/16physical EPYC9354cores, mean499.963ms,
+  max535.477ms,RSS565672KiB. Finished2026-09-20T22:49:18.963497+00:00.
+  +22.1% vs matched NMS32=3172;128tasks from4000. Selected maximum.
+  Evidence results/directed-triage-split-full-v69/...mix0.5-scale1.25-seed4/.
+  Independent full action/task replay passed, controlmix0 reproduces3857.
+- All76 timestamped frontier rows audited. best.json/best-32-workers.json,
+  RESULTS.md, progress log and waiting reports updated. Current max completed
+  order1944steps, initial unfinished138/unopened96; eventual max censored>=2000.
+- Prior3857 source65 differs from3852 only in cutoffscale1.5->1.25.
+  Replication of that scale alone failed: seed0 3780vs3785, seed3 3785vs3794.
+  Newmix.5 seed3=3845(+60vs3785); seed0=3778(-2). Across0/3/4,total+0.64%,
+ 2of3positive; see paired-outcomes.json.
+  mix.75seed4=3858. mix.25strict failed at1575 (1985ms), diagnostic queued.
+- Four-core best remains3770, source5f81613/build-v65,seed3,first4608/K5760/B12,
+  screen2/q4/G4/E8/P8/triage1.5/cache512; mean788/max845ms,RSS485MB.
+  +29.4% vs strongest NMS4=2914. Evidence worker-affinity-four-full-v65 is UNSPLIT.
+- Frozen freshV4 (a7bad0c) candidate3770config gives3680vs2907/2870 on50007,
+  and3641vs2930/2918 on50008,+25.42% aggregate over stronger repeats. Allsix
+  original attempts strict valid, independent replay/source audit passed.
+  ALL task/start seeds50001–50008 excluded from tuning. Later records do not
+  replace this frozen result. Generate fresh inputs only after freezing the next
+  selected candidate; private colleague absolute counts are not matched inputs.
+- Earlier no-horizon ablation source65:3503/four,3632/32 vs3770/3852(scale1.5).
+  Cutoff+7.6%/+6.1%. Guidance remains enabled; do not call them no-tricks.
 
-## Current source and diagnostics
+## Current source
 
-- Best source65 binarySHA5c012a610f8ccae75a515ae281f3099822f76a629725af3ebc30b34b7e1bfcf3.
-- Source9c7a78b/build-v67 adds exact saved-state diagnostics; regressions15.05s.
-  Full snapshot capture reproduces ALLsix fields of the3852 trajectory.
-  Saves states250..1750 and8distinct fully evaluated alternatives at expanding
-  ranks. No extra random draws or selection changes. No snapshot atstep0.
-- Separate random05_decision_probe restores state, forces one completed root,
-  then128steps of closed-loop replanning atK1280 under common seeds0/1/2.
-  Simulator harness reveals actual task stream only as tasks finish; planner
-  never sees future tasks. Allseven snapshot states match original pools,
-  stages, positions, headings and assignments. Full-budget continuation control
-  matches5cumulative task/motion metrics at every one of128steps.
-- results/decision-probes-v67/REPORT.md: chosen mean is best at250; lower-scored
-  alternatives do better atother sampled states. Spearman at128steps mostly
-  negative later; leave-one-seed-out gains mixed, positive in last3states.
-  Tiny correlated sample and cheaper downstream policy: no causal scoring-defect
-  or throughput-gain claim. These are diagnostics, never frontier scores.
-- Source332ccdb/build-v68 adds general optional motion-component recombination.
-  Default R05_COMPONENT_TRIALS=0. Extra fixed root trials*rounds*B fully finish.
-  Couple agents through either parent's promises, including shared empty targets.
-  Swap complete dependency groups, force same first decision in every branch,
-  reevaluate later interactions normally, keep incumbent. No wall-clock stopping.
-  Dense regression25.69s covers empty-hole collision trap, independent turns,
-  shared-prefix exactness, worker determinism, task locks and checkpoint replay.
-  Components incompatible with operation planner or early-fill, which change
-  first positions. Build-v68 SHA91f28662893f1abaff2806e8ecc8dda6f2b6e338e27a01b85e178dba6033fdfa.
+- 0eb4781/build-v70: optional closed-loop forecast reranking. Default
+  R05_REPLAN_ROOTS=0. Share immutable graph/chain tables, separate runtime/caches.
+  Pick fully evaluated distinct first actions/promises at expanding ranks;
+  execute first then7 repeated compute calls atinnerK32/B4 (or64), common
+  future seeds, one generation/one worker per forecast, parallel across futures.
+  Only current visible pool: no replacement stream or invented tasks. Rebase
+  progress when tasks change; certify every action, task lock and pool count.
+  All declared work completes before choosing. One-root dense control preserves
+  actions, schedules and all persistent state; worker/checkpoint/depletion tests
+  pass27.78s. SHA2f2349293485bbc12b2bb1c5cc1dac37e98102549f41f8e41759d7322d82327b.
+- 2fe4937/build-v71 CURRENT, pushed: optional R05_WAYPOINT_AGE_RETAIN in[0,1],
+  default0 exactly resets as before. Retain partial/full age at intermediate
+  waypoint; whole-task completion still resets. Dense regression17.89s covers
+  age lifecycle, locks, worker/checkpoint determinism and simulated aging.
+  SHA72a72860a73b397f4612a55bf40c50ac5908787bfae589fdff64ceed282ffc48.
+  No performance benefit established yet. Best manifest stays source69.
+- source69 directional cutoff mix defaults0. Normalize oriented remaining costs
+  to preserve total hop estimate, blend and apply existing cutoff. Explicit trick.
+- source68 motion-component recombination defaultsOFF, REJECTED:3702/3721/3740
+  vs3852 exact control; all valid. Don't reactivate these presets.
+- source67 checkpoint/counterfactual diagnostics preserve3852 full trajectory.
+  Seven states250..1750,8alternatives*3seeds*128steps atK1280,168valid traces.
+  Original-budget replay control exact every step; all snapshots match true
+  simulator pools/positions/headings/stages. REPORT results/decision-probes-v67:
+  late score rankings weak/negative; tiny correlated cheap-policy sample, not
+  proof of scoring failure or an achievable throughput increase.
 
-## Active experiments
+## Active GRID batches (collect before archiving)
 
-- runs/random05/components-split-full-v68, jobs8900771--8900774:
-  source68 controloff; trials32/rounds4/min1; trials32/rounds4/min2;
-  trials128/rounds2/min2. Allsource65record settings, seed4/triage1.5,
-  strict1s on matched hosts. All terminal: exactcontrol3852; variants3702/3721/3740. Reject all, keep feature disabled.
-- runs/random05/record-triage-seeds-split-full-v65, jobs8900778/8900779:
-  scale1.25 seeds0/3, compare historical3785/3794 atscale1.5.
-- runs/random05/averaged-completion-split-full-v65, jobs8900781--8900783:
-  bonus2/4/8 atbase3852settings. Earlier single-future bonuses failed; the
- 14-future averaged score is a specific reason to recheck reward noise. Same
-  fixed budget and strict deadline, no source change. Do not assume a win.
-- All other Random05 work from this turn completed. Warehouse jobs unrelated.
+Use python3 random05/tools/split_grid.py collect --output runs/random05/<batch>.
+- directed-triage-followup-split-full-v69:8900825..28;mix.5 seeds0/3 and
+  mix.25/.75 seed4,scale1.25. seed3=3845, .75=3858; .25strict failed1575;
+  seed0=3778; batch complete. First strict failure retained.
+- directed-triage-quarter-diagnostic-split-full-v69: same .25case at5s, job8900863; read batch.json for details. Diagnostic only, no strict promotion.
+- replanning-split-full-v70:8900832..37; baseline3872 settings, rerank starts50.
+  CasesR0F1K32control;R1F1K32control;R4F2K32;R8F1K32;R8F2K32;R4F2K64.
+  R8F2 preflight binding failure(expected16cores,observed64),solver neverstarted.
+  R4F2K64strict timeout62 (1051ms);R8F1K32timeout459 (1020ms). R0control=3872exact allsix fields; other2running.
+- replanning-allocation-repeat-split-full-v70:8900839,R8F2K32same solver,
+  new valid binding on research39; original failure retained. Strict.
+- replanning-relaxed-diagnostic-split-full-v70:8900854/55,R8F1K32 andR4F2K64
+  with5s cap. Assess throughput despite strict failures; not strict records.
+- guidance-retune-split-full-v69:8900840/41/43..48. **Trick** eight single-factor
+  changes at3872preset/seed4: noflip;2/4prefixflips(seed5);contrast2/2.8/3.2;
+  turn.4/.8. Full strict runs, not short screens. No held-out inputs.
+- waypoint-age-split-full-v71:8900856..60,retain0/.25/.5/.75/1,3872preset/seed4,
+  fullstrict. Retain0 control must reproduce3872 in all trajectory fields.
+- Warehouse jobs are unrelated. Never alter their jobs/files/staging.
 
-## Fable
+## Diagnostic finding for next decisions
 
-Persistent session27a4316e-b79d-46cf-86b4-41b0f558938a. At21:55UTC a6664byte
-summary-only follow-up (no new source payload) again failed: provider usage credits,
-zero cost/usage, no review. Evidence results/fable-4k-diagnosis-01.
-Do not claim feedback. Earlier exact approved79KB payload remains preserved in
-runs/random05/fable-review-01/payload.txt; never silently replace approved bytes.
+results/4k-gap-audit-v69 (reproduce tools/audit_phase_gap.py): ours3872 vs NMS32
+first250steps:413vs521 tasks,2196vs2181waypoints,64590vs65286forwards. Initial
+assignments both314two-stop chains; ours slightly less internal hopwork.
+Ours wins every later250-step block. This is observational concentration of
+progress, not108recoverable tasks. NMS priority is remaining-task distance and
+Random05 rank weights squared (read-only nms robot_handler.cpp/pibts.cpp).
+Age retention tests chain continuity without replacing stable inheritance with
+shortest-remaining-work priority. It may also hurt by favoring long chains.
+Completion bonus2/4/8 with14-future averaging already failed:3746/3811/3781
+vs3852. First250only401/436/428vs413; not an obvious108-task fix.
 
-## Prior failures and cautions
+## Resources, records and consultation
 
-More work is not monotonic:K24000seed3=3702vs3794,K28800seed4=3706vs3852.
-K16320 completed five-seed mean3771.4 vsK8192/B10 mean3690.6(+2.19%,5/5), but
-one original seed2 attempt timed out; declared strict repeat and5s diagnostic
-both exact3705. Original failure retained. Cannot assert proven contention cause.
-FourK7056 attempts fail atstep1; no score. Setup-loop fusion was slower despite
-exact output, reverted. Most guidance variants, simplecompletion rewards,
-longer horizons, greedy future task turnover, predictive matching, variance
-optimism, mutation decay, local cycle tweaks and early-fill failed. See RESEARCH.
+23 verified EPYC9354 hosts are in results/reference-host-expansion-20260920/hosts.txt.
+Use --hosts with that pipe-separated list and exact --cpu-model check, avoiding
+needless33/39queue restriction. Runtime guards exact physical binding, logical
+quota and32GB. One research34binding failure above was refused before solver
+launch; retry excludes34. No cause asserted for occasional strict runtime spikes.
 
-## Recording and reproduction
+Archive only direct *.json and */*.json metadata named summary/completion/spec/
+allocation/submission/batch. No recursive copying raw traces or NMS cwd. For each
+new strict frontier: independent action_audit replay; best manifests; timestamped
+source/evidence row; waiting manifest; audit_progress; audit_task_waits; render.
+Keep selected maximum separate from replicated means and fresh-input validation.
 
-Full2000steps decide frontiers. No partial portfolio on timeout: exit124.
-Use GRID frozen builds/cases, disjoint physical bindings,32GB process guard.
-Shared hosts are allowed. Reference CPU9354 differs from historical7R32, so
-published competition scores are indirect. Collect split_grid.py batches before
-archiving only direct *.json and */*.json metadata namedsummary/completion/spec/
-allocation/submission/batch; never recursively copy raw traces or NMS cwd.
-For new frontiers update best manifests, timestamp/source/evidence table, waiting
-manifest, audit_progress.py, audit_task_waits.py and render_waiting_report.py;
-independently replay actions/tasks. Capture exact6trajectory fields for controls.
-Commit/push only the Random05 scope, preserving others' staged files.
+Fable persistent session27a4316e-b79d-46cf-86b4-41b0f558938a:21:55UTC summary-only
+review attempt failed due provider credits, no review received. Original exact
+approved79KB payload stays runs/random05/fable-review-01/payload.txt. Do not claim
+feedback or keep retrying unchanged quota. User authorized consultation through CLI.
 
-- New build-v69 directional deadline experiment (see RESEARCH):
-  R05_TRIAGE_GUIDED_MIX=0/.5/1 normalizes oriented chain costs to the same total
-  hop estimate. Requires declared horizon/trick, keeps started assignments.
-  Regressions16.81s passed, SHA
-  b2d044351e254b40e6dddab7828f2de32defd60470edaa3fcaa6f8b7f9335746.
-  Five strict full cases in directed-triage-full-v69.json: mix0scale1.25control,
-  .5/1 atscales1.25/1.5, seed4. Pending results; current source69 defaults mix0.
-- Plain git push failed through a stale VSCode socket. The successful per-command
-  override uses `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git
-  -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
-  No credential was printed and repository authentication settings unchanged.
-
-- Components batch is now fully archived: control3852exact, min1=3702,
-  min2/t32=3721, min2/t128=3740. Allstrict/valid. No component frontier.
-- Host restriction33/39 was unnecessarily narrow:23previous build/allocation
-  logs confirm EPYC9354hosts. Four pending directional jobs8900790--8900793
-  received a documented qalter hard-queue expansion;8900789 had already started
-  and was left alone. See results/reference-host-expansion-20260920/queue-change.json
-  and hosts.txt; use that host list for future matched-model batches. No case
-  parameter, budget or executable changed; retain original spec plus amendment.
+Push succeeds with per-command GitHub CLI credential helper (stale VSCode socket):
+`env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper=
+-c 'credential.helper=!gh auth git-credential' push origin main`.
+No global auth changes or credentials in output. Only commit our owned paths.

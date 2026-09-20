@@ -606,6 +606,37 @@ void staged_continuations() {
     }
 }
 
+void ranked_task_progress() {
+    const auto weights=rank_progress_weights({10,10,50,-1},2);
+    require(weights[0]==weights[1] && weights[0]>weights[2] && weights[2]>0 && weights[3]==0,
+            "task progress weights break tied ranks or active ordering");
+    require(std::abs(std::accumulate(weights.begin(),weights.end(),0.0)-3)<1e-12,
+            "task progress weights changed the mean cost scale");
+    require(rank_progress_weights({10,10,50,-1},0)==std::vector<double>({1,1,1,1}),
+            "zero rank power changed baseline weights");
+    require(rank_progress_weights({-1,-1},2)==std::vector<double>({0,0}),"inactive score weights are not zero");
+    // Equal physical progress, but only one agent can complete its task.
+    auto env=environment(1,3,2);env.curr_states[1].location=2;env.curr_states[1].orientation=2;
+    Task a;a.task_id=0;a.locations={1};env.task_pool[0]=a;
+    Task b;b.task_id=1;b.locations={1,0};env.task_pool[1]=b;env.curr_task_schedule={0,1};
+    Config cfg;cfg.futures=64;cfg.depth=2;cfg.matching=false;cfg.score_rank_power=2;
+    Engine engine(cfg);engine.initialize(&env);std::vector<Action> plan;std::vector<int> schedule;
+    engine.compute(&env,plan,schedule);
+    for(int i=0;i<2;++i) {
+        require(plan[i]!=FW,"ranked score moved before its first promise");
+        if(plan[i]==CR)env.curr_states[i].orientation=(env.curr_states[i].orientation+1)%4;
+        if(plan[i]==CCR)env.curr_states[i].orientation=(env.curr_states[i].orientation+3)%4;
+    }
+    env.curr_timestep=1;engine.compute(&env,plan,schedule);
+    require(plan[0]==FW && plan[1]!=FW,"ranked progress did not select the completing task");
+    cfg=Config{};cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.score_rank_power=.5;cfg.share_prefix=true;cfg.cost_cache=true;cfg.hungarian_limit=1000;
+    const auto serial=simulate(cfg,12);cfg.threads=2;
+    require(serial==simulate(cfg,12),"rank-weighted scoring changed across worker counts");
+    require(serial==simulate(cfg,12,5,5,true),"rank-weighted scoring failed checkpoint replay");
+}
+
 void waypoint_priority_retention() {
     for(float retained:{0.0f,0.5f,1.0f}) {
         auto env=environment(1,3,1);Task task;task.task_id=7;task.locations={0,0};env.task_pool[7]=task;
@@ -726,6 +757,7 @@ void checkpoint_replay() {
 }
 
 int main() {
+    ranked_task_progress();
     waypoint_priority_retention();
     replanning_forecast();
     normalized_directional_triage();

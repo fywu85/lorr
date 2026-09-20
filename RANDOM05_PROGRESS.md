@@ -1495,3 +1495,31 @@ input/binary hashes and allocation are linked in the audits.
   despite the strict failures; they cannot enter the strict frontier. This
   follows the user's allowance for relaxed timing during development while
   retaining the one-second reference and fixed-work/no-partial-output rule.
+
+- Directional cutoff mix.5 now has three paired planner seeds atscale1.25:
+  seed0 3,778vs3,780; seed3 3,845vs3,785; seed4 3,872vs3,857. Two positive
+  pairs, aggregate+0.64%; this is a small development sample, not fresh-input
+  validation. Mix.75seed4=3,858. Mix.25 failed atstep1575 (1,985ms); a separately
+  declared5s diagnostic is queued and cannot enter the strict frontier.
+  [Paired outcomes](random05/results/directed-triage-followup-split-full-v69/paired-outcomes.json).
+- Source70 with replanning disabled reproduces all six trajectory fields of
+ 3,872 exactly. The one-root control and remaining forecast comparisons continue.
+
+- All eight current-search guidance retunes lose: noflip3,746; two/four flips
+ 3,827/3,707; contrast2/2.8/3.2 gives3,714/3,714/3,780; turn.4/.8 gives
+ 3,740/3,663. Every run is valid. Keep the3,872 field unchanged.
+- New **trick** hypothesis from the NMS/phase audit: weight score progress by
+  rank of remaining whole-chain cost, while preserving PIBT priority aging.
+  Equal costs share a rank and weights have mean1 to hold the cost scale.
+  It requires --trick RANDOM-05 and may increase long-order delays. The
+  colleague's failed urgency-weighting tests are a caution; full runs decide.
+
+- Replanning full strict results: disabled andone-root controls both reproduce
+ 3,872 in all six trajectory fields.4roots/2futures/K32 scores3,752;
+ 8roots/2futures/K32 allocation repeat scores3,790. Both valid but worse.
+  The8roots/1future/K32 and4roots/2futures/K64 relaxed diagnostics continue;
+  their original strict failures remain recorded. Leave reranking disabled.
+- Source72 rank-weighted score regression passes27.92s. The real entry rejects
+  the new preference without --trick RANDOM-05 (exit125), as required. Five
+  strict full cases test powers0/.25/.5/1/2 with3,872 settings; power0 is the
+  unchanged-behavior control. Age retention and reranking are off in these cases.

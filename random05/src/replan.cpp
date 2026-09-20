@@ -25,7 +25,7 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
     target.total_forward_=total_forward_;target.total_agent_steps_=total_agent_steps_;
     target.triaged_=triaged_;target.chains_=chains_;target.assigned_=assigned_;
     target.score_chains_.clear();target.score_assigned_.clear();
-    target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();
+    target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();target.score_weights_.clear();
     target.age_=age_;target.previous_task_=previous_task_;target.previous_stage_=previous_stage_;
     target.pending_=pending_;target.best_offsets_=best_offsets_;target.past_offsets_=past_offsets_;
     target.last_actions_=last_actions_;target.predicted_loc_=predicted_loc_;target.predicted_dir_=predicted_dir_;
@@ -37,7 +37,7 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
 
 int Engine::rank_replanned(const SharedEnvironment& env,const std::vector<int>& schedule,
                           const std::vector<Rollout>& results,int best) {
-    if(cfg.operation_depth || cfg.plain_score || cfg.reverse_penalty || cfg.progress_discount!=1)
+    if(cfg.operation_depth || cfg.plain_score || cfg.reverse_penalty || cfg.progress_discount!=1 || cfg.score_rank_power)
         throw std::invalid_argument("unsupported closed-loop forecast score or motion model");
     const auto& g=*graph;const int n=env.num_of_agents;
     std::vector<int> ranking;
