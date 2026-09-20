@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research31,debian.q@research38,debian.q@research44,debian.q@research46,debian.q@research50,debian.q@research57",
+    "-pe",
+    "threaded",
+    "16",
+    "-binding",
+    "linear:16",
+    "-l",
+    "exclusive=false,h_rt=01:30:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-combined-pickup-full-v74-20260920/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-combined-pickup-full-v74-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8899466\n"
+}

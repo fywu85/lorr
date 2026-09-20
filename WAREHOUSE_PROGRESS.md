@@ -1,8 +1,8 @@
 # WAREHOUSE throughput progress
 
-Updated: 2026-09-20 09:50 UTC.
+Updated: 2026-09-20 10:30 UTC.
 
-**Best overall validated single run: 148,132 tasks (TRICK, seed 0)**, using NMS-derived static lanes, remaining-potential scoring and bounded matching64 with explicit `--trick WAREHOUSE`. Short preference is OFF. This leaves **6,663 tasks** to the NMS target of **154,795** (**4.50% growth** needed). Any valid full seed may achieve the target; promotion of the generic benchmark reference remains separate.
+**Best overall validated single run: 151,630 tasks (TRICK, seed 2)**, using the NMS-derived native Warehouse cost field with bands and raw remaining-potential scoring, explicitly enabled by `--trick WAREHOUSE`. Matching and short preference are OFF; pickupweight1. This leaves **3,165 tasks** to the NMS target of **154,795** (**2.09% growth** needed). Any valid full seed may achieve the target; promotion of the generic benchmark reference remains separate.
 
 **Best generic single run: 145,083**, from remaining-flow scoring; that candidate stays OFF after its mixed six-seed result. **Confirmed six-seed generic reference: 144,392.17**, using graded-flow pickup, two regional repair rounds and bounded matching64. All six full totals improve over the prior 143,941.17 reference. [Six-seed matching confirmation](experiments/construction-20260918/results/match-quota-confirm-v64/summary.md).
 
@@ -15,6 +15,13 @@ Updated: 2026-09-20 09:50 UTC.
 |2026-09-20 09:07:01.739904|**147,502**|2 / **TRICK** static lanes + remaining potential, `--trick WAREHOUSE`|[0f4183f](https://github.com/fywu85/lorr/commit/0f4183fcdafcaab391ace632f70a0c513caba14b); [full verification](experiments/construction-20260918/results/trick-potential-full-v68/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-potential-full-v68/best-record.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max 979.072ms, RSS 11.839GB.|
 |2026-09-20 09:45:34.314669|**148,101**|2 / **TRICK** static lanes + remaining potential + matching64, `--trick WAREHOUSE`|[c696d5f](https://github.com/fywu85/lorr/commit/c696d5f9d5b9b5bc6557830e6e43680913b3e7b7); [full verification](experiments/construction-20260918/results/trick-score-match-full-v72/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-score-match-full-v72/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max 991.422ms, RSS 11.837GB.|
 |2026-09-20 09:45:49.302966|**148,132**|0 / **TRICK** static lanes + remaining potential + matching64, `--trick WAREHOUSE`|[c696d5f](https://github.com/fywu85/lorr/commit/c696d5f9d5b9b5bc6557830e6e43680913b3e7b7); [full verification](experiments/construction-20260918/results/trick-score-match-full-v72/verification.json), [configuration/hash](experiments/construction-20260918/results/trick-score-match-full-v72/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max 976.717ms, RSS 11.939GB.|
+|2026-09-20 10:17:07.927721|**148,440**|2 / **TRICK** static lanes + remaining potential + matching64 + pickupweight5, `--trick WAREHOUSE`|[c696d5f](https://github.com/fywu85/lorr/commit/c696d5f9d5b9b5bc6557830e6e43680913b3e7b7); [full verification](experiments/construction-20260918/results/combined-pickup-full-v74/verification.json), [configuration/hash](experiments/construction-20260918/results/combined-pickup-full-v74/best-record.json). 5,000 steps, 10,000 robots, zero failures; shared-host 5s development, max1014.990ms, RSS11.836GB.|
+|2026-09-20 10:16:33.754893|**149,871**|2 / **TRICK** native field without bands, raw remaining potential, matching/short OFF, `--trick WAREHOUSE`|[06a8258](https://github.com/fywu85/lorr/commit/06a825855718513c3e965a22aac227ad13fd5595); [full verification](experiments/construction-20260918/results/native-metric-full-v73/verification.json), [configuration/hash](experiments/construction-20260918/results/native-metric-full-v73/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host5s development, max1004.828ms, RSS11.928GB.|
+|2026-09-20 10:16:35.538762|**149,915**|0 / **TRICK** native field without bands, raw remaining potential, matching/short OFF, `--trick WAREHOUSE`|[06a8258](https://github.com/fywu85/lorr/commit/06a825855718513c3e965a22aac227ad13fd5595); [full verification](experiments/construction-20260918/results/native-metric-full-v73/verification.json), [configuration/hash](experiments/construction-20260918/results/native-metric-full-v73/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host5s development, max1004.124ms, RSS11.933GB.|
+|2026-09-20 10:24:54.744615|**151,443**|0 / **TRICK** native field with bands, raw remaining potential, matching/short OFF, `--trick WAREHOUSE`|[06a8258](https://github.com/fywu85/lorr/commit/06a825855718513c3e965a22aac227ad13fd5595); [full verification](experiments/construction-20260918/results/native-metric-full-v73/verification.json), [configuration/hash](experiments/construction-20260918/results/native-metric-full-v73/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host5s development, max1031.268ms, RSS11.918GB.|
+|2026-09-20 10:25:07.422058|**151,630**|2 / **TRICK** native field with bands, raw remaining potential, matching/short OFF, `--trick WAREHOUSE`|[06a8258](https://github.com/fywu85/lorr/commit/06a825855718513c3e965a22aac227ad13fd5595); [full verification](experiments/construction-20260918/results/native-metric-full-v73/verification.json), [configuration/hash](experiments/construction-20260918/results/native-metric-full-v73/comparison.json). 5,000 steps, 10,000 robots, zero failures; shared-host5s development, max1016.591ms, RSS11.937GB.|
+
+Records above follow validation order. Parallel comparisons can finish their checks later even when their run-completion timestamp is earlier; 148,440 was an interim verified best before the full native comparison was checked.
 
 The earlier increasing-record table below remains the **generic** history. A future valid single-seed best updates the appropriate history immediately, with its source, timestamp and flags; it does not imply repeatability across seeds.
 
@@ -418,6 +425,41 @@ Its four-arm full comparison (seeds0/2, 32 bound physical cores) is running unde
 8899463/8899464. This compound field/scalar/scheduler experiment requires the
 explicit Warehouse flag and has no performance claim yet. Fable turn36 reviews
 the source in the same persistent session.
+
+## 2026-09-20 10:20 UTC: TRICK best148,440 and a general compute improvement
+
+Pickupweight5 adds241/339tasks to the combined lanes/potential/matching policy,
+with both late windows and outstanding-age p90 improving. All four full runs
+are valid and controls exact. Short preference stays OFF; generic reference stays
+144392.17. [Full result](experiments/construction-20260918/results/combined-pickup-full-v74/summary.md).
+
+The V72 movement replay accounts for300million physical robot steps. Completed
+chain lengths are nearly unchanged; the combined policy reduces empty travel and
+loaded overhead versus both single components. These are associations across
+changing cohorts. [Audit](experiments/construction-20260918/results/combined-motion-audit-v76/summary.md).
+
+A general complete-pickup implementation change removes runtime modulo while
+preserving every distance and pop/state count. A controlled one-core kernel test
+measures9–23% lower CPU time, not a whole-entry or throughput gain. All regressions
+pass and all four native200-step trajectories remain exact. The generic800-step
+control continues. [Kernel comparison](experiments/construction-20260918/results/pickup-ring-kernel-v77/summary.md).
+Native full cost comparisons continue; their final validated report is pending.
+
+## 2026-09-20 10:30 UTC: native TRICK field reaches151,630
+
+Native20/200forward costs, turn1 and raw remaining-potential scoring improve both
+full seeds. Without bands149915/149871; with bands151443/151630. Both totals and
+late windows improve substantially over exact147422/147502 controls. All eight
+full cases and40,000entries valid, all four controls exact, no failures. Best-run
+mean449.312ms/max1.016591s/RSS11.937GB, shared5s; no strict1s certification.
+[Full result and best record](experiments/construction-20260918/results/native-metric-full-v73/summary.md).
+
+The best still has matching and short preference OFF. The next predeclared
+comparison measures native routing, then matching64, then pickupweight5 for both
+fields. Its six-arm startup screen8899506/8899507 is underway; no combined native
+quality gain is claimed yet. Fable37 supports this bounded comparison and ranks
+explicit short preference on the best native/matched/weighted policy next if a gap
+remains. That hypothesis still needs tests and paired full measurement.
 
 ## Updating this log
 

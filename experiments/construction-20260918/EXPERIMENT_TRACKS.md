@@ -6,10 +6,11 @@ map-specific techniques from NMS, KittyKnight or elsewhere may be considered,
 provided they are marked as tricks in both commits and the experiment log.
 
 The generic single-run frontier is145,083 under the shared-host5s development policy;
-the confirmed six-seed reference is144,392.17. Static lanes plus remaining-potential
-scoring and matching64 reaches **148,132/148,101** on full seeds0/2; **148,132** is
-the best overall validated run. Short preference is OFF. Both full totals and final
-windows beat both exact single-component controls. [Verified comparison](results/trick-score-match-full-v72/summary.md).
+the confirmed six-seed reference is144,392.17. The native20/200Warehouse field with
++1bands, turn1 and raw remaining potential reaches **151,443/151,630** on full
+seeds0/2. **151,630** is the best overall validated run. Matching and short preference
+are OFF, pickupweight1. All eight native/legacy cases valid; controls exact.
+[Verified comparison](results/native-metric-full-v73/summary.md).
 Any valid full seed reaching154,795 may achieve the user target, including an
 explicitly flagged trick; it must remain labelled TRICK.
 

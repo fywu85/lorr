@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-20T09:48:35.195359+00:00",
+  "updated_utc": "2026-09-20T10:30:38.449821+00:00",
   "source": "User correction: target is NMS154795; success may be any valid full seed, with or without explicitly enabled tricks. Preserve a separate multiseed generic reference.",
   "experiment_track": "GENERIC_OR_EXPLICIT_TRICK",
   "target_completed_tasks": 154795,
@@ -11,7 +11,7 @@
   "allocation": "Development: reserved, bound GRID physical cores on shared hosts are allowed.",
   "map_specific_policies_allowed_for_this_goal": true,
   "promotion_rule": "Goal achieved by at least one valid full5000-step seed with completed_tasks>=154795, complete fixed-work decisions and32GB RSS. Generic or explicitly --trick WAREHOUSE-gated policy may qualify. Record all tested results, seed, commit and timestamp. Shared-host5000ms development runs are allowed and labelled.",
-  "current_best_single": 148132,
+  "current_best_single": 151630,
   "current_six_seed_mean": 144392.16666666666,
   "required_mean_growth_percent": 7.20456903825577,
   "earlier_local_kittyknight_reference": 152981,
@@ -20,9 +20,9 @@
   "competition_budget_required_for_development_promotion": false,
   "timing_expectation": "Aim for roughly sub-second latency on exclusive cores, using prior exclusive controls and CPU-work evidence. Exact one-second validation and optimization of the best solver are deferred.",
   "resource_policy_source": "Explicit user instruction on2026-09-20: relax exclusive hosts and one-second budget for now; validate/optimize best solver later.",
-  "current_best_single_source": "c696d5f9d5b9b5bc6557830e6e43680913b3e7b7",
-  "current_best_single_completed_utc": "2026-09-20T09:45:49.302966+00:00",
-  "current_best_single_budget": "Shared-host 5s development; max0.976716623s, RSS11938656256 bytes. Not strict1s certified.",
+  "current_best_single_source": "06a825855718513c3e965a22aac227ad13fd5595",
+  "current_best_single_completed_utc": "2026-09-20T10:25:07.422058+00:00",
+  "current_best_single_budget": "Shared-host 5s development; max1.016591022s, RSS11937234944 bytes. Not strict1s certified.",
   "pending_confirmation": null,
   "best_candidate_six_seed_mean": 144392.16666666666,
   "candidate_assessment": "Matching64 promoted: all six totals improve, mean+451 (+0.31332%), five tails improve; seed5 tail\u221249 and seed3 agep90+2 remain documented. Source0196851. Generic remaining-flow stays OFF.",
@@ -37,12 +37,12 @@
     5
   ],
   "current_best_single_track": "TRICK",
-  "current_best_single_seed": 0,
+  "current_best_single_seed": 2,
   "current_best_single_required_flag": "--trick WAREHOUSE",
   "current_best_generic_single": 145083,
   "current_best_generic_single_source": "45248431dc38702ebdef9dd1ab2893697c00e00f",
   "current_best_generic_single_completed_utc": "2026-09-20T05:28:00.961539+00:00",
-  "target_gap_from_best_single": 6663,
-  "required_best_single_growth_percent": 4.498015283665913,
-  "current_best_single_evidence": "experiments/construction-20260918/results/trick-score-match-full-v72/best-record.json"
+  "target_gap_from_best_single": 3165,
+  "required_best_single_growth_percent": 2.0873178130976777,
+  "current_best_single_evidence": "experiments/construction-20260918/results/native-metric-full-v73/best-record.json"
 }

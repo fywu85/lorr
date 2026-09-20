@@ -2,7 +2,7 @@
 
 This is one bounded fidelity experiment inside CGAR. It requires `--trick WAREHOUSE`,
 `CGAR_TRICK_NATIVE_METRIC=1`, `CGAR_TRICK_REMAINING_FLOW=1`, lanes ON and cost scale20.
-Short preference and matching are OFF. `CGAR_TRICK_NATIVE_BANDS=1` independently adds
+The initial V73 comparison holds short preference and matching OFF. `CGAR_TRICK_NATIVE_BANDS=1` independently adds
 the native band surcharge; it requires the native metric. No flag means no trick.
 
 The field uses preferred forward20, opposed200 and turn1. The band arm adds1 to
@@ -53,3 +53,39 @@ Separate generic800-step check8899461/8899462 reproduces the promoted matching
 reference exactly. Full native comparison8899463/8899464 is running: both native
 arms versus exact legacy paid and remaining-potential controls, seeds0/2,32 bound
 physical cores. The startup results establish feasibility, not full performance.
+
+## Native matching compatibility (V75)
+
+Source [1c936a0](https://github.com/fywu85/lorr/commit/1c936a018d61debabaae4bcd5bf38db2c8143e6e)
+allows `CGAR_TRICK_UNOPENED_MATCH=1` with the native metric. The matching cycle helper
+retains its default unit ceiling16; only the native call explicitly supplies20.
+The acceptance threshold stays four base-forward units and10% of the old pickup
+cost. Tests cover scale invariance through255, default rejection of20, both actual
+native beneficial cycles, primary protection, immutable simulator metadata and
+finite retarget protection. Short preference remains rejected.
+
+The actual installed native field is now FNV-checked against the generated golden
+constant and reported as `installed_fnv1a64`. Corrupt and wrong-sized vectors fail.
+The full regression suite also checks1,234,752 prefetched states at1/4threads,
+2,372 real op0 seeds, and four128-tick/24-robot service episodes. Serial and
+parallel preparation agree exactly. The two distinct serial traces contribute
+276service events,111repeated-location events and125wait-seed rotations; each is
+repeated exactly in parallel. Those counts make the fixtures nonvacuous. All12,288 physical
+robot actions pass an independent collision check. [Build binding](../../build-provenance/v75/exact-source-commit.json).
+
+The raw129-operation ordering also exactly matches the local NMS44950d1 snapshot.
+That narrow check establishes neither search nor scheduler equivalence.
+[Fable review and qualified assessment](../../fable-flow-session/turn36/assessment.md).
+
+V75 startup factorial8899480/8899482 passes for both native fields with matchingOFF/64;
+both controls exactly reproduce the V73 native prefixes. Generic800-step control
+8899483/8899484 must reproduce the promoted matching reference. No new throughput
+claim follows from these startup checks. Full native matching comparisons require
+completed V73 controls. The first screen invocation used an invalid horizon option,
+was rejected before submission and was corrected; it is not a solver failure.
+
+The counter `wide_fallback_tables` counts cumulative admissions stored as wide
+integers, including rebuilds after eviction; it is neither live tables nor distinct
+goals. Temporal timing diagnostics already report exact-table/fallback robot counts
+at each sampled preparation. Shared-host timing comparisons are not controlled
+claims about the cost of runtime modulo in the complete pickup Dial search.

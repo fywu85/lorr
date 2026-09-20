@@ -1,77 +1,86 @@
 # Continuing Warehouse work
 
-Updated 2026-09-20 09:53 UTC. Preserve CGAR. Target NMS154,795: any valid full
+Updated 2026-09-20 10:45 UTC. Preserve CGAR. Target NMS154,795: any valid full
 5,000-step / 10,000-robot seed may qualify, including explicit `--trick WAREHOUSE`.
-Keep 32GB process RSS, complete fixed work, and timeout failure without partial
+Keep32GB process RSS, complete fixed work, and timeout failure without partial
 quality scores. Shared GRID hosts and5s development deadlines are authorized;
 strict1s checks remain separate. Preserve the other fork's random05 changes/jobs.
 
-## Current best and validated reference
+## Current best and generic reference
 
-- Overall best **148,132 TRICK seed0**, static lanes + remaining potential +
-  matching64, short preference OFF. Seed2=148,101. Exact source c696d5f, completed
-  09:45:49.302966UTC, hash28d8a706680eedc892b0b12e7211a825756e3ae74856676f75baa72af4ffdd56.
-  V72 all six full cases valid, four exact controls. Gains over score-only+710/+599,
-  tails+140/+157; over matching-only+804/+897. Mean314.964ms/max976.717ms,
-  RSS11.939GB,1.833CPU cores averaged of4reserved. Shared5s, not strict1s certified.
-  `results/trick-score-match-full-v72/best-record.json`. Gap6,663, growth4.4980%.
-- Prior overall147,502 potential-only seed2, source0f4183f, V68. Seed0=147,422.
-  Keep both increasing records in the root log, plus V72's earlier148,101.
-- Generic reference matching64 mean144,392.17, source0196851. Seeds0..5:
+- Overall best **151,630 TRICK seed2**, native20/200(+1bands), turn1, raw remaining
+  potential. Matching OFF, short preference OFF, pickupweight1. Source06a8258,
+  completed10:25:07.422058UTC, fullhash40b2d2817695858a057da54b7b5cb6e13c407f60e368f16d45bad89cab036382.
+  Mean449.312ms, max1.016591s, RSS11.937GB,1.563CPU cores averaged of4reserved.
+  Shared5s, not strict1s certified. Gap3,165 tasks;2.0873% growth needed.
+- V73 all eight full cases pass40kentries/four exact controls. Native without bands
+  149915/149871; with bands151443/151630. Band gains over remaining controls+4021/
+  +4128, tails+937/+1035, mean+2.7631%. Results/native-metric-full-v73, exactsource06a8258.
+- V74 legacy lanes+remaining+matching64+weight5 also valid148373/148440, +241/+339
+  over exactweight1controls148132/148101. Sourcec696d5f. Results/combined-pickup-full-v74.
+  The148440row was an interim verified record before V73 analysis completed.
+- Generic reference matching64 mean144392.1667, source0196851. Seeds0..5:
   144967/144869/144511/143340/144446/144220. All totals improve, mean+451,
-  five tails improve; seed5tail−49 and seed3agep90+2 remain documented.
-  `warehouse-reference-variants.json` selects this. Prior regional profile is
-  `warehouse-regional-reference-variants.json`; old trick controls bind that file.
-- Generic best single145,083 remaining-flow remains experimental OFF after six
-  seed gains+573/+606/+108/−793/+223/−3. No reference promotion for that candidate.
-- V66 mixed pickup grouping loses both full seeds144632/144398 versus144967/144511.
-  Keep groups0. V65 short preference loses; keep OFF. V70 pickupweight5 with paid
-  lanes+matching improves+129/+291 (147457/147495), both tails positive, no record.
-  Short+weight5 recovers146873/146820 but is still worse than ordinary fairness.
-- V69/V71 saved trajectory audits complete. Potential scoring reduces detours/waits
-  and empty work, increases turns; completed shortest-chain means almost unchanged.
-  Endogenous cohorts: do not claim causal savings or planner equivalence to NMS.
+  five tails improve; seed5tail-49 and seed3agep90+2 remain documented.
+  warehouse-reference-variants.json selects this. Generic best single145083
+  remaining-flow stays experimental OFF after mixed six-seed results.
 
-## Running comparisons and review
+## Active experiment and completed implementation
 
-- Native V73 full8899463/analysis8899464 on research52: four arms x seeds0/2,
-  32 bound physical cores. Paid/potential legacy controls, native with/without bands.
-  Raw `runs/cgar-native-metric-full-v73-20260920`; results/native-metric-full-v73.
-  Source06a8258, frozen build runs/cgar-native-metric-build-v73-20260920.
-  Expected legacy controls146659/146566 and147422/147502. Matching/short OFF.
-- V73 source implements explicit native20/200(+1bands), turn1 and raw potential
-  scalar, schedule base20. All28 source/test hashes bound. Full regression passes
-  617376 states,39302 macro scores,1416 service cases, independent pickup oracles,
-  wide-distance fallback/eviction, integer/default bounds and CLI isolation.
-  Four200-step screens valid with both exact legacy prefixes. Separate800-step
-  generic matching control exactly reproduces c0f1c9fb... with no trick activation.
-  See build-provenance/v73 and results/native-{metric-screen,generic-control}-v73.
-- Combined pickupweight V74 full8899466/analysis8899467: unchanged V72 binary/source
-  c696d5f, four cases weight1/5 x seeds0/2. Lanes/potential/matching64 ON, short OFF.
-  Raw `runs/cgar-combined-pickup-full-v74-20260920`; results/combined-pickup-full-v74.
-  Analyzer `tricks/pickup_weight/analyze.py --combined-score` checks exact V72
-  control hashes. Older inactive native receipt fields normalize to OFF only.
-- Persistent Fable review turn36 RUNNING, PID1049, session
-  1ebb1075-3538-49d1-93d1-a00c94fa256a. Started09:46:06UTC. Source payload is authorized;
-  review focus native metric units, bounds and isolation. Prompt followup-35.md.
-  Read finished response.json/response.txt and qualify claims before adopting.
-  Previous turn35 archived, recommends this bounded native fidelity comparison.
+- V78 native assignment full8899514/analysis8899515 onresearch57 from10:31:46UTC:
+  two native fields x {matchingOFF/weight1, matching64/weight1, matching64/weight5}
+  xseeds0/2,12parallelcases/48boundphysicalcores. Short preference OFF.
+  Raw runs/cgar-native-assignment-full-v78-20260920, results/native-assignment-full-v78.
+  Sourcec6d9755, binaryacfb4f113824faca286e864b524ac26b682c79009dd16554fcfa51b06d3d449a.
+  Four exactnativeOFF controls must reproduceV73. Frozenanalyzer flags--matching-study
+  --pickup-study. Startup6cases allvalid/fourpriorprefixesexact; no fullqualityclaimyet.
+- V75 source1c936a0 native matching capability20(default16), installed-fieldFNV,
+  fullserial/paralleloracles, macroop0, scaleinvariance, closed-loop repeated service
+  tests allpass. Native/genericstartupcontrols exact. Build-provenance/v75.
+- V77 sourcec6d9755 removes runtime modulo from complete pickup Dial indexing;
+  exactdistances/pops/states and candidate/controlprefixes. Controlledkernel CPU
+  improvements9.4-23.3% versusV75,8.8-12.3% versusoriginallegacyconstexpr variants.
+  Notwholeentryspeedup or throughputclaim. Allregressionspass; generic800exact18958/
+  c0f1c9fb1cbdbab170dfdb7f2aec41d32f8fd3a4369d95a718bb997715d022f7.
+  Build-provenance/v77, pickup_ring/, results/pickup-ring-*.
+- V80 sourcefd2d23b native/remaining short-preference compatibility PASSED fullsuite.
+  Onlytwo productionguards relaxed; allothergates/defaults unchanged. Testscover
+  24metric/age/weight/admissioncases,4realmatchingcycles, startedlongtaskprotection.
+  Build-provenance/v80; raw runs/cgar-native-short-build-v80-20260920,
+  binary74fb3313aa6b1c90aefcc735ce08fd7fa501039070432ecde013f4080bd056ea.
+  Preparingnativebands+matching64 shortOFF/ON atweights1/5 with exactV78controls.
+  No short full experiment queued yet; originalpreference losesunderlegacymetric.
+  Startup8899525/analysis8899526 runningresearch46; generic8008899527/analysis8899528
+  runningresearch38. ExactV78shortOFFprefixes andgenericreference required.
+
+## Diagnosis and review
+
+- V79 native motion replay checks400Mphysicalsteps/eightfullruns. Nativebandloaded
+  overhead16.370/16.113 andempty62.498/62.430 percompletedtask; completedshortestchain
+  remains242.283/242.340. Originalremaining controls21.624/21.528overhead,
+ 65.781/65.678empty. Accountingassociations, notcausalpartition. Lanealignmentonly
+  uses4/16directionmask; notnativeweightedcost/bandvisitation. Results/native-motion-audit-v79.
+- ArchivedNMSdiagnostic chain234.794/empty62.021/loadedoverhead16.755 hadone timeout
+  andunmatchedresources/cohort. Suggeststaskselectiontest; notguaranteedsavings.
+- Persistent Fable turn37complete10:27:16UTC, session1ebb1075-3538-49d1-93d1-a00c94fa256a,
+  no live CLI. Review/assessment archived. AgreesV78; recommends conditional short
+  atopbestnative+matching+weight5. Secondfinite retarget onlywithpositivechain/empty
+  evidenceandshadowdiagnosis. Do notrevivemultiworkerswithoutnewreason.
+  Nextcallturn38/followup-37.md. Source-spec testsliceneedsendexpandedforV80ifshared.
 
 ## Next actions
 
-1. Review completed Fable36; fix actual defects with reproducing tests if any.
-2. Verify both full comparisons, record ALL failures/results. Any increasing full
-   best updates root WAREHOUSE_PROGRESS.md with exact source/time/hash/flags.
-3. If native wins, consider its interaction with validated matching and pickup
-   weighting after isolation checks. Current native selector deliberately rejects
-   matching for this first experiment; adding compatibility requires tests/build.
-4. Keep paired controls and separate generic confirmation. Do not mark goal
-   complete below154795. Commit/push our work only; never stage random05 changes.
+1. Verify V80short200screen andgeneric800isolationcheck. Both bindsourcefd2d23b.
+2. VerifyV78full afterfinish(~11:10UTCestimate, notpromised). Updateanyfullnewbestonly
+   aftercompletevalidity/source/resource/work/trajectorychecks. Recordfailures too.
+3. Ifgapremains, fullshortOFF/ON xweights1/5 atopnativebands+matching64, seeds0/2,
+   afterprefixvalidity andV78controlavailable. All32boundcores/nooverlapwithours.
+4. Commit/push source/evidence/history usingexplicitpaths; neverstageotherforkwork.
+5. Goalstillactive; donotmarkcompletebelow154795. Sixseedgenericpromotionisseparate.
 
 All evidence lives under experiments/construction-20260918/results. Build and
-benchmark snapshots are immutable in ignored runs/. No partial prefixes are full
-quality scores. Legacy analyzers may need explicit native-OFF receipt normalization
-when used with newer benchmark tools; active jobs use frozen analyzer snapshots.
+benchmark snapshots are immutable in ignored runs/. Prefixes neverfullquality.
+Legacyanalyzersmayneedinactive-native-receiptnormalization. Activejobs usefrozenhelpers.
 
 ## Historical notes below (current status above supersedes old running labels)
 

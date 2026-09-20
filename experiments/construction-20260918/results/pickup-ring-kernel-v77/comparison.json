@@ -1,0 +1,73 @@
+{
+  "profiles": [
+    {
+      "profile": "uniform1",
+      "pairs": 24,
+      "identical_distances_pops_states": true,
+      "total_pops": 3704256,
+      "total_states": 3704256,
+      "checksum": 404766511088367,
+      "before_cpu_median_ms": 1.806495,
+      "after_cpu_median_ms": 1.38505,
+      "cpu_ratio": 0.7667056925,
+      "before_wall_median_ms": 1.812008,
+      "after_wall_median_ms": 1.3895575,
+      "original_constant_cpu_median_ms": 1.57973,
+      "ratio_to_original": 0.8767637508
+    },
+    {
+      "profile": "legacy4_16_turn4",
+      "pairs": 24,
+      "identical_distances_pops_states": true,
+      "total_pops": 3797730,
+      "total_states": 3704256,
+      "checksum": 404767139255864,
+      "before_cpu_median_ms": 1.751335,
+      "after_cpu_median_ms": 1.524085,
+      "cpu_ratio": 0.8702418441,
+      "before_wall_median_ms": 1.751022,
+      "after_wall_median_ms": 1.5237545,
+      "original_constant_cpu_median_ms": 1.67128,
+      "ratio_to_original": 0.9119267867
+    },
+    {
+      "profile": "native20_200_turn1",
+      "pairs": 24,
+      "identical_distances_pops_states": true,
+      "total_pops": 3940116,
+      "total_states": 3704256,
+      "checksum": 404770425972182,
+      "before_cpu_median_ms": 1.90567,
+      "after_cpu_median_ms": 1.703545,
+      "cpu_ratio": 0.8939349415,
+      "before_wall_median_ms": 1.906579,
+      "after_wall_median_ms": 1.703321
+    },
+    {
+      "profile": "native20_200_bands_turn1",
+      "pairs": 24,
+      "identical_distances_pops_states": true,
+      "total_pops": 3955816,
+      "total_states": 3704256,
+      "checksum": 404770431199415,
+      "before_cpu_median_ms": 1.93422,
+      "after_cpu_median_ms": 1.751795,
+      "cpu_ratio": 0.905685496,
+      "before_wall_median_ms": 1.935609,
+      "after_wall_median_ms": 1.753002
+    }
+  ],
+  "scope": "One bound core; alternating order; two warmup pairs then24pairs per profile. Thread CPU time and wall time. Exact distance/pops/state equality. Kernel timings only, no throughput or whole-entry speed claim.",
+  "completed_utc": "2026-09-20T10:13:37.517284+00:00",
+  "compiler_command": [
+    "/usr/bin/g++",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++17",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-ring-bench-v77-20260920/benchmark.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-pickup-ring-bench-v77-20260920/benchmark"
+  ],
+  "binary_sha256": "6f108fb144dbec829e6e514d9cc11a7d0e8a83c1c287bbc1f0b21573bee12b83",
+  "returncode": 0
+}

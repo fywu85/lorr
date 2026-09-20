@@ -1,0 +1,1476 @@
+{
+  "decision_limit_ms": 5000,
+  "benchmark_mode": "relaxed_development",
+  "exclusive_host_requested": false,
+  "competition_budget_confirmed": false,
+  "checked_utc": "2026-09-20T10:26:10.483482+00:00",
+  "exact_production_source_commit": "06a825855718513c3e965a22aac227ad13fd5595",
+  "verified_source_and_test_files": 28,
+  "binary_sha256": "37277f20b5ef75af33ebdb14a6e124483890db9138a0e01fbbc7efc1547ddafc",
+  "full_cases": 8,
+  "complete_entry_samples": 40000,
+  "failed_cases": 0,
+  "failures": [],
+  "all_valid_within_deadline_and_memory": true,
+  "all_completed_runs_valid_within_deadline_and_memory": true,
+  "disjoint_physical_bindings_during_concurrent_execution": true,
+  "no_cpu_quota": true,
+  "rows": [
+    {
+      "case": "trick_native_control_paid-s0-r0",
+      "seed": 0,
+      "variant": "trick_native_control_paid",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "0",
+        "CGAR_TRICK_NATIVE_METRIC": "0",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 146659,
+      "final1000": 29911,
+      "outstanding_age_p90": 631,
+      "empty_robot_steps": 9852533,
+      "loaded_turns": 904790,
+      "loaded_waits": 1700446,
+      "trajectory_sha256": "24d88edcb457d74b0b82e35b9562227c11a906cfbc2d70393835d64013c1d853",
+      "mean_entry_ms": 310.52734308399954,
+      "max_entry_seconds": 0.994601546,
+      "peak_rss_bytes": 11918917632,
+      "average_cpu_cores": 1.8490693139425334,
+      "wall_seconds": 1623.827,
+      "finished_utc": "2026-09-20T10:13:40.365112+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_control_paid-s0-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_control_potential-s0-r0",
+      "seed": 0,
+      "variant": "trick_native_control_potential",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "0",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 147422,
+      "final1000": 30112,
+      "outstanding_age_p90": 631,
+      "empty_robot_steps": 9697633,
+      "loaded_turns": 1015317,
+      "loaded_waits": 1666005,
+      "trajectory_sha256": "03e655a03fc254e2dd50e2a160ffb1d08c6ba8b0edd0ab557ab771561215ef49",
+      "mean_entry_ms": 314.404330263,
+      "max_entry_seconds": 0.986195197,
+      "peak_rss_bytes": 11900461056,
+      "average_cpu_cores": 1.8776813283833362,
+      "wall_seconds": 1643.695,
+      "finished_utc": "2026-09-20T10:14:00.259580+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_control_potential-s0-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_no_bands-s0-r0",
+      "seed": 0,
+      "variant": "trick_native_no_bands",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "20",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "1",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 149915,
+      "final1000": 30741,
+      "outstanding_age_p90": 620,
+      "empty_robot_steps": 9563228,
+      "loaded_turns": 956079,
+      "loaded_waits": 1369960,
+      "trajectory_sha256": "71053b55f1ac7e4cfc4d2ac99d3828e56257ae3dc2dca1a63e59fafd740004b1",
+      "mean_entry_ms": 346.373532061001,
+      "max_entry_seconds": 1.004124321,
+      "peak_rss_bytes": 11932991488,
+      "average_cpu_cores": 1.752984455874456,
+      "wall_seconds": 1799.003,
+      "finished_utc": "2026-09-20T10:16:35.538762+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_no_bands-s0-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_bands-s0-r0",
+      "seed": 0,
+      "variant": "trick_native_bands",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "20",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "1",
+        "CGAR_TRICK_NATIVE_BANDS": "1"
+      },
+      "tasks": 151443,
+      "final1000": 31049,
+      "outstanding_age_p90": 616,
+      "empty_robot_steps": 9464915,
+      "loaded_turns": 893551,
+      "loaded_waits": 1197270,
+      "trajectory_sha256": "ec798b0ac2ad4519705d530c4f1e20ab9516eb649e8f249fa3073642d6501553",
+      "mean_entry_ms": 446.82117219799954,
+      "max_entry_seconds": 1.031268236,
+      "peak_rss_bytes": 11918483456,
+      "average_cpu_cores": 1.5529956050612133,
+      "wall_seconds": 2298.206,
+      "finished_utc": "2026-09-20T10:24:54.744615+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_bands-s0-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_control_paid-s2-r0",
+      "seed": 2,
+      "variant": "trick_native_control_paid",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "0",
+        "CGAR_TRICK_NATIVE_METRIC": "0",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 146566,
+      "final1000": 29906,
+      "outstanding_age_p90": 635,
+      "empty_robot_steps": 9863784,
+      "loaded_turns": 907357,
+      "loaded_waits": 1709996,
+      "trajectory_sha256": "4efe2be9ab9fb538da0b9d4de3037d1279ff3d381e620a30be05af1d9ea9cf9a",
+      "mean_entry_ms": 306.5826935631999,
+      "max_entry_seconds": 0.992755107,
+      "peak_rss_bytes": 11936980992,
+      "average_cpu_cores": 1.8587815629757072,
+      "wall_seconds": 1602.749,
+      "finished_utc": "2026-09-20T10:13:19.292326+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_control_paid-s2-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_control_potential-s2-r0",
+      "seed": 2,
+      "variant": "trick_native_control_potential",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "4",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "0",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 147502,
+      "final1000": 30101,
+      "outstanding_age_p90": 633,
+      "empty_robot_steps": 9687565,
+      "loaded_turns": 1012339,
+      "loaded_waits": 1663406,
+      "trajectory_sha256": "14af230267909d4b3b12fe50c5413627fb512d59e3a3fb39c6e2b585d8d79508",
+      "mean_entry_ms": 314.1396761196012,
+      "max_entry_seconds": 0.971534693,
+      "peak_rss_bytes": 11838128128,
+      "average_cpu_cores": 1.8738820977839357,
+      "wall_seconds": 1643.275,
+      "finished_utc": "2026-09-20T10:13:59.866316+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_control_potential-s2-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_no_bands-s2-r0",
+      "seed": 2,
+      "variant": "trick_native_no_bands",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "20",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "1",
+        "CGAR_TRICK_NATIVE_BANDS": "0"
+      },
+      "tasks": 149871,
+      "final1000": 30670,
+      "outstanding_age_p90": 617,
+      "empty_robot_steps": 9568435,
+      "loaded_turns": 954278,
+      "loaded_waits": 1376310,
+      "trajectory_sha256": "62ebec6bbb545f133b4db53bbd6fc8e12d88736aaa19466534a7b7e3fe62bdd7",
+      "mean_entry_ms": 346.34400252719973,
+      "max_entry_seconds": 1.004827693,
+      "peak_rss_bytes": 11928301568,
+      "average_cpu_cores": 1.74936736407359,
+      "wall_seconds": 1797.208,
+      "finished_utc": "2026-09-20T10:16:33.754893+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_no_bands-s2-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    },
+    {
+      "case": "trick_native_bands-s2-r0",
+      "seed": 2,
+      "variant": "trick_native_bands",
+      "environment": {
+        "CGAR_DIAGNOSTICS": "1",
+        "CGAR_ORIENTATION_GUIDANCE": "1",
+        "CGAR_TURN_FIRST": "1",
+        "CGAR_TURN_TABLE_MB": "8192",
+        "CGAR_TEMPORAL": "1",
+        "CGAR_TEMPORAL_STEPS": "1000000",
+        "CGAR_TEMPORAL_ORDER": "1",
+        "CGAR_TEMPORAL_EQUAL_WEIGHT": "1",
+        "CGAR_TURN_COMPACT": "1",
+        "CGAR_TEMPORAL_CANDIDATE_LIMIT": "4000000",
+        "CGAR_FLOW_STRENGTH": "4",
+        "CGAR_FLOW_WARMUP": "128",
+        "CGAR_FLOW_MIN_SAMPLES": "8",
+        "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+        "CGAR_TEMPORAL_PREP_THREADS": "4",
+        "CGAR_FLOW_REFRESH_INTERVAL": "512",
+        "CGAR_TEMPORAL_WORKERS": "1",
+        "CGAR_TEMPORAL_THREADS": "1",
+        "CGAR_TEMPORAL_BRANCH_WORK": "0",
+        "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+        "CGAR_TURN_BUILD_LIMIT": "128",
+        "CGAR_FLOW_COST_SCALE": "20",
+        "CGAR_HRRN": "1",
+        "CGAR_PICKUP_WEIGHT": "1",
+        "CGAR_PICKUP_FLOW": "1",
+        "CGAR_PICKUP_FLOW_NODES": "8192",
+        "CGAR_PICKUP_FULL_ROBOTS": "64",
+        "CGAR_PICKUP_FULL_THREADS": "4",
+        "CGAR_PICKUP_FULL_COST_KEY": "0",
+        "CGAR_TURN_SURCHARGE": "0",
+        "CGAR_TEMPORAL_WARM_START": "0",
+        "CGAR_TEMPORAL_MIXED_START": "0",
+        "CGAR_TEMPORAL_REGIONS": "4",
+        "CGAR_TEMPORAL_REGION_THREADS": "4",
+        "CGAR_TEMPORAL_REGION_STEPS": "25000",
+        "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+        "CGAR_TEMPORAL_REGION_ROUNDS": "2",
+        "CGAR_TRICK_LANES": "1",
+        "CGAR_TRICK_SHORT_TASKS": "0",
+        "CGAR_TRICK_UNOPENED_MATCH": "0",
+        "CGAR_TRICK_REMAINING_FLOW": "1",
+        "CGAR_TRICK_NATIVE_METRIC": "1",
+        "CGAR_TRICK_NATIVE_BANDS": "1"
+      },
+      "tasks": 151630,
+      "final1000": 31136,
+      "outstanding_age_p90": 612,
+      "empty_robot_steps": 9466328,
+      "loaded_turns": 892137,
+      "loaded_waits": 1160395,
+      "trajectory_sha256": "40b2d2817695858a057da54b7b5cb6e13c407f60e368f16d45bad89cab036382",
+      "mean_entry_ms": 449.3116900909992,
+      "max_entry_seconds": 1.016591022,
+      "peak_rss_bytes": 11937234944,
+      "average_cpu_cores": 1.562779673014731,
+      "wall_seconds": 2310.876,
+      "finished_utc": "2026-09-20T10:25:07.422058+00:00",
+      "reserved_physical_cores": 4,
+      "raw_case": "/shared/share_mala/fw2449/lorr2024/runs/cgar-native-metric-full-v73-20260920/trick_native_bands-s2-r0",
+      "evidence": "experiments/construction-20260918/results/native-metric-full-v73"
+    }
+  ],
+  "full_run": true,
+  "exact_control_arms": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "pairs": [
+    {
+      "seed": 0,
+      "bands": 0,
+      "tasks": 149915,
+      "control_tasks": 147422,
+      "task_difference": 2493,
+      "final1000_difference": 629,
+      "age_p90_difference": -11,
+      "empty_robot_step_difference": -134405,
+      "empty_steps_per_completed_task": 63.79100156755495,
+      "control_empty_steps_per_completed_task": 65.78145052977167,
+      "loaded_turn_difference": -59238,
+      "loaded_wait_difference": -296045,
+      "candidate_per1000": [
+        27168,
+        30722,
+        30751,
+        30533,
+        30741
+      ],
+      "control_per1000": [
+        26718,
+        30237,
+        30216,
+        30139,
+        30112
+      ]
+    },
+    {
+      "seed": 0,
+      "bands": 1,
+      "tasks": 151443,
+      "control_tasks": 147422,
+      "task_difference": 4021,
+      "final1000_difference": 937,
+      "age_p90_difference": -15,
+      "empty_robot_step_difference": -232718,
+      "empty_steps_per_completed_task": 62.49820064314627,
+      "control_empty_steps_per_completed_task": 65.78145052977167,
+      "loaded_turn_difference": -121766,
+      "loaded_wait_difference": -468735,
+      "candidate_per1000": [
+        27455,
+        31063,
+        31014,
+        30862,
+        31049
+      ],
+      "control_per1000": [
+        26718,
+        30237,
+        30216,
+        30139,
+        30112
+      ]
+    },
+    {
+      "seed": 2,
+      "bands": 0,
+      "tasks": 149871,
+      "control_tasks": 147502,
+      "task_difference": 2369,
+      "final1000_difference": 569,
+      "age_p90_difference": -16,
+      "empty_robot_step_difference": -119130,
+      "empty_steps_per_completed_task": 63.844472913372165,
+      "control_empty_steps_per_completed_task": 65.67751623706798,
+      "loaded_turn_difference": -58061,
+      "loaded_wait_difference": -287096,
+      "candidate_per1000": [
+        27148,
+        30715,
+        30748,
+        30590,
+        30670
+      ],
+      "control_per1000": [
+        26742,
+        30254,
+        30295,
+        30110,
+        30101
+      ]
+    },
+    {
+      "seed": 2,
+      "bands": 1,
+      "tasks": 151630,
+      "control_tasks": 147502,
+      "task_difference": 4128,
+      "final1000_difference": 1035,
+      "age_p90_difference": -21,
+      "empty_robot_step_difference": -221237,
+      "empty_steps_per_completed_task": 62.43044252456638,
+      "control_empty_steps_per_completed_task": 65.67751623706798,
+      "loaded_turn_difference": -120202,
+      "loaded_wait_difference": -503011,
+      "candidate_per1000": [
+        27431,
+        31060,
+        31036,
+        30967,
+        31136
+      ],
+      "control_per1000": [
+        26742,
+        30254,
+        30295,
+        30110,
+        30101
+      ]
+    }
+  ],
+  "mean_effect_percent": {
+    "0": 1.6485603070621524,
+    "1": 2.76308472691269
+  },
+  "complete_all_pairs": true,
+  "promoted": false,
+  "source_commit": "06a825855718513c3e965a22aac227ad13fd5595",
+  "source_files_verified": 28,
+  "receipts": {
+    "trick_native_control_paid-s0-r0": {
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 0,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_control_potential-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 1,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_no_bands-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 0,
+      "mode": 2,
+      "field_sha256": "adcf168b0c0863ae378adf275ccc7a20e10f0fcd9bb1a75f4d3df3d4942b9946",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_bands-s0-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 1,
+      "mode": 3,
+      "field_sha256": "d56b2bf3cf0094391443127feb343f42d49f5624678e8d8f922d94e2aa52a5a3",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_control_paid-s2-r0": {
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 0,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_control_potential-s2-r0": {
+      "remaining_flow": 1,
+      "native_metric": 0,
+      "native_bands": 0,
+      "mode": 1,
+      "field_sha256": "4d2176d93d91d3412095805a6584ae064134fe834af54b45333550e8179598e3",
+      "native_diagnostics": [],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_no_bands-s2-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 0,
+      "mode": 2,
+      "field_sha256": "adcf168b0c0863ae378adf275ccc7a20e10f0fcd9bb1a75f4d3df3d4942b9946",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 200,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    },
+    "trick_native_bands-s2-r0": {
+      "remaining_flow": 1,
+      "native_metric": 1,
+      "native_bands": 1,
+      "mode": 3,
+      "field_sha256": "d56b2bf3cf0094391443127feb343f42d49f5624678e8d8f922d94e2aa52a5a3",
+      "native_diagnostics": [
+        {
+          "t": 0,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 1800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 2800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 3800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4000,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4200,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4400,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4600,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        },
+        {
+          "t": 4800,
+          "forward_base": 20,
+          "turn": 1,
+          "cost_limit": 201,
+          "wide_fallback_tables": 0
+        }
+      ],
+      "matching_disabled": true,
+      "explicit_trick_track_verified": true
+    }
+  },
+  "scope": "TRICK: explicit --trick WAREHOUSE native metric20/200(+1bands),turn1,raw scalar units against exact4/16/4 paid/remaining controls. Scheduler pickup/chain prices are coherently repriced with base20. Matching/short preference OFF. This is a compound fidelity experiment, not a causal cheap-turn effect or an NMS reproduction. Prefixes only establish feasibility; failures have no partial score."
+}
