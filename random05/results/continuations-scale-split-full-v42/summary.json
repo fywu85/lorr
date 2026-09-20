@@ -1,6 +1,72 @@
 [
   {
     "exit": 0,
+    "finished_utc": "2026-09-20T14:00:11.259204+00:00",
+    "name": "mean4-k2048-four",
+    "steps": 2000,
+    "binary_sha256": "9fe5c3d274913a164916e29a8d09e8b73f451e91986575879f63ee309b2c2c4c",
+    "environment": {
+      "R05_K": "2048",
+      "R05_THREADS": "4",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "4"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3492,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.754506643
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.6274554317229986,
+      "max": 0.754506643
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "8c9a04fd7ea73c53fb39123c1d1c585ba551b0d75ae0139e9f68a121215d79e9",
+    "valid": true,
+    "usage": {
+      "user_seconds": 4978.152285,
+      "system_seconds": 0.691798,
+      "peak_rss_kib": 286644,
+      "wall_seconds": 1256.9066618196666,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuations-scale-split-full-v42/mean4-k2048-four/summary.json"
+  },
+  {
+    "exit": 0,
     "finished_utc": "2026-09-20T13:51:31.581383+00:00",
     "name": "k2048-b4-start2",
     "steps": 2000,
@@ -400,6 +466,73 @@
       "exit": 0
     },
     "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuations-scale-split-full-v42/k4096-b8-start1/summary.json"
+  },
+  {
+    "exit": 0,
+    "finished_utc": "2026-09-20T14:00:16.590943+00:00",
+    "name": "k4096-b8-start2",
+    "steps": 2000,
+    "binary_sha256": "9fe5c3d274913a164916e29a8d09e8b73f451e91986575879f63ee309b2c2c4c",
+    "environment": {
+      "R05_K": "4096",
+      "R05_THREADS": "32",
+      "R05_GUIDANCE": "flow",
+      "R05_DISPERSION": "0.8",
+      "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
+      "R05_LOCAL": "0",
+      "R05_EQUAL": "1",
+      "R05_HORIZON": "2000",
+      "R05_COST_CACHE": "1",
+      "R05_WAIT_COST": "0.5",
+      "R05_TRIAGE_SCALE": "1.5",
+      "R05_TURN_COST": "0.6",
+      "R05_FLOW_AVERAGE": "1",
+      "R05_FLOW_NORMALIZE": "1",
+      "R05_FLOW_POWER": "3",
+      "R05_FLOW_BETWEENNESS": "0.75",
+      "R05_FLOW_SEED": "15",
+      "R05_NOISE": "200",
+      "R05_KEEP_BONUS": "0.5",
+      "R05_HUNGARIAN": "1000",
+      "R05_SCHED_GUIDE": "1",
+      "R05_FLOW_OUTPUT_PENALTY": "2.4",
+      "R05_RANDOM_BY_STEP": "1",
+      "R05_SEED": "3",
+      "R05_FLOW_FLIPS": "1",
+      "R05_FLOW_FLIP_SEED": "5",
+      "R05_CONTINUATIONS": "8",
+      "R05_CONTINUATION_START": "2"
+    },
+    "trick": true,
+    "result": {
+      "numTaskFinished": 3548,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0,
+      "entryComputeSamples": 2000,
+      "entryComputeMaxSeconds": 0.339098867
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.2175217010199999,
+      "max": 0.339098867
+    },
+    "actual_path_steps": [
+      2000,
+      2000
+    ],
+    "trajectory_sha256": "39c97a3d9f0eba902a3899f34c4d2016fdbaf79b7308f61e62fd870959ab8086",
+    "valid": true,
+    "usage": {
+      "user_seconds": 13411.407702,
+      "system_seconds": 14.365463,
+      "peak_rss_kib": 368260,
+      "wall_seconds": 437.26877579279244,
+      "exit": 0
+    },
+    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/continuations-scale-split-full-v42/k4096-b8-start2/summary.json"
   },
   {
     "exit": 0,

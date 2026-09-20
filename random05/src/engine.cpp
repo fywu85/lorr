@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <limits>
 #include <numeric>
@@ -26,6 +27,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.continuation_start=integer("R05_CONTINUATION_START",1);
     c.future_mutation=real("R05_FUTURE_MUTATION",0.3);
     c.share_prefix=integer("R05_SHARE_PREFIX",0);
+    c.packed_order=integer("R05_PACKED_ORDER",0);c.fast_dispersion=integer("R05_FAST_DISPERSION",0);
     if(c.continuations<1 || c.futures<1 || c.futures%c.continuations ||
        c.generations>c.futures/c.continuations || c.continuation_start<1 ||
        (c.continuations>1 && c.continuation_start>=c.depth) ||
@@ -113,6 +115,48 @@ Config Config::environment(const SharedEnvironment& env) {
     return c;
 }
 
+std::vector<int> priority_order(const std::vector<float>& priorities,bool packed) {
+    std::vector<int> order(priorities.size());
+    std::iota(order.begin(),order.end(),0);
+    if(!packed || !std::all_of(priorities.begin(),priorities.end(),[](float p){return std::isfinite(p);})) {
+        std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
+        return order;
+    }
+    static_assert(sizeof(float)==sizeof(uint32_t) && std::numeric_limits<float>::is_iec559,
+                  "packed priorities require IEEE binary32");
+    // Sort the float value and original agent ID together. This avoids an
+    // indirect float lookup per comparison and preserves stable tie ordering.
+    // Normalize signed zero because the original float comparator equates them.
+    std::vector<uint64_t> keys(priorities.size());
+    for(size_t a=0;a<priorities.size();++a) {
+        float p=priorities[a]==0?0.0f:priorities[a];uint32_t bits;
+        std::memcpy(&bits,&p,sizeof(bits));
+        uint32_t ascending=(bits&0x80000000u)?~bits:(bits^0x80000000u);
+        keys[a]=(uint64_t(~ascending)<<32)|uint32_t(a);
+    }
+    std::sort(keys.begin(),keys.end());
+    for(size_t k=0;k<keys.size();++k)order[k]=int(uint32_t(keys[k]));
+    return order;
+}
+
+int Graph::nearby_pairs(const std::vector<int>& locations) const {
+    std::vector<unsigned char> occupied(cells,0);
+    for(int v:locations)occupied[v]=1;
+    int pairs=0;
+    if(locations.size()<=size_t(cells/2)) {
+        for(int v:locations)for(int u:nearby[v])if(u>v)pairs+=occupied[u];
+    } else {
+        // Count all free-cell pairs, remove edges incident to a hole, then add
+        // back hole-hole pairs that the degree subtraction removed twice.
+        pairs=all_nearby_pairs;
+        for(int v=0;v<cells;++v)if(!occupied[v]) {
+            pairs-=int(nearby[v].size());
+            for(int u:nearby[v])if(u>v && !occupied[u])++pairs;
+        }
+    }
+    return pairs;
+}
+
 Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
     rows=env.rows;cols=env.cols;from_grid.assign(env.map.size(),-1);
     for(int i=0;i<int(env.map.size());++i) if(!env.map[i]) {
@@ -121,6 +165,15 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
     cells=int(to_grid.size());states=4*cells;
     if(cells>4096) throw std::invalid_argument("initial exact-table implementation limited to 4096 free cells");
     next.resize(cells);weight.resize(cells);degree.assign(cells,0);
+    nearby.resize(cells);
+    for(int v=0;v<cells;++v) {
+        const int p=to_grid[v],x=p%cols,y=p/cols;
+        for(int yy=std::max(0,y-2);yy<=std::min(rows-1,y+2);++yy)
+            for(int xx=std::max(0,x-2);xx<=std::min(cols-1,x+2);++xx) {
+                int u=from_grid[yy*cols+xx];if(u<0 || u==v)continue;
+                nearby[v].push_back(u);all_nearby_pairs+=u>v;
+            }
+    }
     for(int v=0;v<cells;++v) {
         int p=to_grid[v],x=p%cols,y=p/cols;
         const int dx[]={1,0,-1,0},dy[]={0,1,0,-1};
@@ -692,8 +745,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
         candidate_count[i]=count;
     }
-    std::vector<int> order(n);std::iota(order.begin(),order.end(),0);
-    std::stable_sort(order.begin(),order.end(),[&](int a,int b){return priorities[a]>priorities[b];});
+    std::vector<int> order=priority_order(priorities,cfg.packed_order);
     std::vector<int> prepared;
     auto choose=[&](bool kinematic) {
     std::fill(chosen.begin(),chosen.end(),-1);
@@ -913,14 +965,17 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     // undervalues completing a chain relative to advancing an unfinished one.
     if(cfg.completion_bonus>0)r.score+=cfg.completion_bonus*completions;
     if(cfg.dispersion) {
-        std::vector<int> occupancy(g.from_grid.size(),0);
-        for(int v:frame.loc)occupancy[g.to_grid[v]]=1;
         int pairs=0;
-        for(int v:frame.loc) {
-            int p=g.to_grid[v],x=p%g.cols,y=p/g.cols;
-            for(int yy=std::max(0,y-2);yy<=std::min(g.rows-1,y+2);++yy)
-                for(int xx=std::max(0,x-2);xx<=std::min(g.cols-1,x+2);++xx)
-                    if(yy*g.cols+xx>p)pairs+=occupancy[yy*g.cols+xx];
+        if(cfg.fast_dispersion)pairs=g.nearby_pairs(frame.loc);
+        else {
+            std::vector<int> occupancy(g.from_grid.size(),0);
+            for(int v:frame.loc)occupancy[g.to_grid[v]]=1;
+            for(int v:frame.loc) {
+                int p=g.to_grid[v],x=p%g.cols,y=p/g.cols;
+                for(int yy=std::max(0,y-2);yy<=std::min(g.rows-1,y+2);++yy)
+                    for(int xx=std::max(0,x-2);xx<=std::min(g.cols-1,x+2);++xx)
+                        if(yy*g.cols+xx>p)pairs+=occupancy[yy*g.cols+xx];
+            }
         }
         r.score-=cfg.dispersion*pairs;
     }

@@ -24,7 +24,7 @@ direct baselines for the archived competition instance.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 14:00 UTC.
+Updated: 2026-09-20 14:07 UTC.
 
 **Best overall single run: 3,555 tasks on 32 workers / 16 physical cores**, or
 **+12.1% versus matched NMS32 = 3,172**. The planner averages four simulated
@@ -33,16 +33,22 @@ keeping each candidate's priorities fixed for the first two simulated steps.
 Source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284); planner seed 3.
 All 2,000 steps are valid. This larger configuration has not been confirmed on
 four cores or fresh inputs. The preceding 3,501-task variant uses only 2,048
-futures; its four-core and planner-seed checks are underway.
+futures; its planner-seed checks are complete, while four-core validation remains open.
 
-**Best confirmed four-core run: 3,422 tasks**, or **+17.4% versus the strongest
+**Best confirmed four-core run: 3,492 tasks**, or **+19.8% versus the strongest
 matched NMS4 repeat = 2,914** (other repeats: 2,902 and 2,903). Every action,
-assignment and task event matches its 32-worker counterpart. Mean latency
-322 ms, maximum 435 ms, peak RSS 282 MB; no errors or timeouts.
-Source [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284), eight continuations,
-1,024 futures, one fixed initial step, planner seed 3.
-[Worker equivalence](random05/results/continuations8-validation-split-full-v42/worker-equivalence.json).
-The earlier 3,492-task configuration is still undergoing four-core confirmation.
+assignment and task event matches its 32-worker counterpart. Original mean
+latency 627 ms, maximum 755 ms; exact prefix reuse gives mean 578 ms,
+maximum 694 ms and peak RSS 296 MB, with the same complete trajectory.
+These are one pair of shared-host timing observations. Both runs have no errors
+or timeouts. Sources [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) and
+[da00823](https://github.com/fywu85/lorr/commit/da00823); four continuations,
+2,048 futures, one fixed initial step, planner seed 3.
+[Worker equivalence](random05/results/continuations-scale-split-full-v42/worker-equivalence.json),
+[optimization equivalence](random05/results/shared-prefix-split-full-v44/four-core-equivalence.json).
+The 3,501 configuration's four-core run failed at step 3 after 1,068 ms on a
+newly included shared host. Its failure is retained; no four-core result is
+claimed for that configuration yet.
 
 **Repeated improvement on the development input:** across planner seeds 0–4,
 four-continuation search averages 3,392.6 tasks and eight-continuation search
@@ -128,6 +134,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T13:46:39.608755+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Four-core reproduction, exact actions/schedules/events; mean of8 continuations; K1024/local0/planner seed3; `--trick RANDOM-05` | 3422 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +17.4% | [Full evidence](random05/results/continuations8-validation-split-full-v42/mean8-four/summary.json) |
 | 2026-09-20T13:52:47.072835+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of 8 continuations; K2048 total/local0; mutation starts after 2 steps; field15/flip5/planner seed3; `--trick RANDOM-05` | 3501 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +10.4% | [Full evidence](random05/results/continuations-scale-split-full-v42/k2048-b8-start2/summary.json) |
 | 2026-09-20T13:57:09.026640+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Mean of 4 continuations; K4096 total/local0; mutation starts after 2 steps; field15/flip5/planner seed3; `--trick RANDOM-05` | 3555 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +12.1% | [Full evidence](random05/results/continuations-scale-split-full-v42/k4096-b4-start2/summary.json) |
+| 2026-09-20T14:00:11.259204+00:00 | [a6ad284](https://github.com/fywu85/lorr/commit/a6ad284) | Four-core reproduction of all actions/schedules/events; B4/K2048/start1/local0/planner seed3; `--trick RANDOM-05` | 3492 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +19.8% | [Full evidence](random05/results/continuations-scale-split-full-v42/mean4-k2048-four/summary.json) |
+| 2026-09-20T14:04:45.937007+00:00 | [da00823](https://github.com/fywu85/lorr/commit/da00823) | Same full trajectory with exact prefix reuse; B4/K2048/start1/local0/planner seed3; `--trick RANDOM-05` | 3492 | 4 / 4 / EPYC 9354 | 2914 (4 workers) | +19.8% | [Full evidence](random05/results/shared-prefix-split-full-v44/shared-k2048-b4-four/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -721,3 +729,24 @@ fresh-instance result is implied. The frozen validation candidate scored 3,395 o
   four-core feasibility remains unverified. Shared-prefix reuse reproduces every
   action, schedule and event of the 3,492 and 3,450 controls on full runs.
   [Optimization equivalence](random05/results/shared-prefix-split-full-v44/shared-k2048-b4-equivalence.json).
+
+- The 3,492 trajectory is now reproduced on four cores, with and without exact
+  prefix reuse. Every action, assignment and event is identical across both
+  implementations and worker allocations. The four-core frontier rises to
+  **+19.8% versus matched NMS4**; timing details and linked evidence are above.
+
+- K2048/B8/start2 across planner seeds 0–4 gives 3,478 / 3,443 / 3,522 / 3,501 /
+  3,472, mean **3,483.2**, versus 3,338.4 for the preceding configuration (+4.3%;
+  all five pairs positive). Same development input, not fresh-input validation.
+  Start3/4 gives 3,449/3,389; future mutation 0.1/0.6/1.0 gives 3,314/3,460/3,484;
+  B4/start2/mutation0.6 gives 3,523; depth6/10 gives 3,284/3,503. None exceeds
+  the overall 3,555 record. The optimized 3,501 control is exactly equivalent.
+  Its four-core run on research58 exits 124 at step 3 (1,068 ms), so it is not
+  counted as a four-core success.
+  [Full comparison](random05/results/continuation-refinement-split-full-v44/summary.json).
+
+- Two exact optimizations pass the full regression suite in build-v45: packed
+  priority ordering preserves ties and signed-zero behavior; sparse/hole-based
+  dispersion counting preserves the original geometric pair count. Both default
+  off until full-map timing and trajectory comparisons. These change evaluation
+  cost, not the search objective or map policy.

@@ -12,11 +12,12 @@ scores from different inputs are not matched gains.
 - Overall: 3,555 tasks on 32 workers / 16 physical EPYC 9354 cores, source
   `a6ad284`, build-v42, K4096/B4/start2/local0, planner seed 3. +12.1% versus
   matched NMS32 = 3,172. Four-core feasibility is unverified.
-- Four cores: 3,422, same source, K1024/B8/start1/local0. +17.4% versus strongest
-  NMS4 repeat = 2,914. Mean 322 ms, maximum 435 ms, peak RSS 282 MB. Every action,
-  assignment and task event matches its 32-worker run.
-- K2048/B4/start1 = 3,492; its four-core repeat is still running.
-- K2048/B8/start2 = 3,501; its four-core and planner-seed checks are submitted.
+- Four cores: 3,492, K2048/B4/start1/local0. +19.8% versus strongest NMS4 = 2,914.
+  Source a6ad284 mean 627 ms/max 755 ms; exact prefix reuse source da00823 gives
+  mean 578 ms/max 694 ms, RSS 296 MB. Every action/schedule/event matches.
+- K2048/B4/start1 = 3,492; both four-core repetitions are complete and valid.
+- K2048/B8/start2 = 3,501; five-seed mean 3483.2 (+4.3% versus old configuration),
+  all five positive. Four-core research58 run fails at step 3 (1068 ms); retain it.
 - All successful frontier runs use full 2,000 steps and strict 1s deadlines.
   A timeout exits 124, never silently returns a partial search. Memory <=32 GB.
 - Log: RANDOM05_PROGRESS.md, with timestamps, producing commits, CPU allocation,
@@ -92,7 +93,7 @@ call them held out. A new solver validation must predeclare new inputs.
 
 The colleague's 3531/3715 counts are from private inputs. They are reference
 orientation, not directly comparable scores. Their roughly 27–28% matched gain
-remains the objective; current four-core gain is 17.4%, larger candidates pending.
+remains the objective; current four-core gain is 19.8%, larger candidates pending.
 
 ## Diagnosis and previous negative work
 
@@ -140,3 +141,17 @@ Do not transmit or repackage the blocked payload. Local work remains unblocked.
 Reserved uninitialized session: 27a4316e-b79d-46cf-86b4-41b0f558938a.
 Payload runs/random05/fable-review-01/payload.txt, SHA256
  ded0889fcaa2cb82a3f4fd9d5dc46f737bdf50cf7a9e466bb66f9114f9661d0f.
+
+## Latest completion update
+
+All v42–v44 batches above are complete. Scale K4096/B8/start2 = 3548; best3555
+unchanged. Prefix 3492 four-core comparison passes exact equivalence, mean
+578 ms versus unoptimized 627 ms in this shared-host pair. New continuation
+five-seed results: 3478/3443/3522/3501/3472, mean3483.2. Refinements did not beat
+3555; details in progress log. The failed four-core3501 run remains in evidence.
+
+Build-v45 job8899866 finished successfully with all regressions (2.96s).
+New options R05_PACKED_ORDER and R05_FAST_DISPERSION defaultoff, preserve exact
+priority order and dispersion pair counts. Full-map performance pending. See
+RESEARCH.md. Keep future four-core timing checks on prior research33/39 hosts;
+wide verified-host eligibility remains useful for32-worker screens.

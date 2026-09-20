@@ -218,3 +218,23 @@ removes9.4% of policy advances; B8/start2 removes21.9%. These are operation coun
 not measured runtime savings. Dense checks exercise task turnover, completion
 bonuses, discounting, reverse-turn costs, local refinement and two worker counts.
 Full trajectory equivalence and timing still require measurement.
+
+## Exact evaluation optimizations
+
+`R05_PACKED_ORDER=1` sorts the priority and agent ID as one integer key. The
+priority uses an order-preserving IEEE float transform; signed zero is normalized,
+and nonfinite values retain the original sorting path. Equal priorities preserve
+ascending agent ID exactly. This removes indirect priority-table reads from the
+sort comparator without changing the selected order.
+
+`R05_FAST_DISPERSION=1` precomputes the geometric proximity graph used by the
+existing 5-by-5 dispersion penalty. At high occupancy it counts occupied pairs
+from all free-cell pairs minus the degrees of empty cells, adding back empty-empty
+pairs once. At low occupancy it counts occupied neighbors directly. Both branches
+compute the same integer pair count, with no new objective or map-specific rule.
+
+Build-v45 passes ordering tests with random values, ties, signed zeros and
+nonfinite fallback, independent geometric pair counts across every occupancy
+of an obstacle map, and full dense task-turnover equivalence across worker counts.
+The features default off. Full-map trajectory and latency comparisons are required
+before claiming performance improvements.

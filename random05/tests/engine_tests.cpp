@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
+#include <numeric>
 #include <stdexcept>
 using namespace r05;
 void require(bool c,const char* m){if(!c)throw std::runtime_error(m);}
@@ -279,7 +281,54 @@ void operation_swap_rejection() {
         }
     }
 }
+void exact_hot_paths() {
+    std::mt19937 random(9354);
+    for(int n:{0,1,2,24,800})for(int trial=0;trial<30;++trial) {
+        std::vector<float> priorities(n);
+        for(float& p:priorities) {
+            p=std::uniform_real_distribution<float>(-200,200)(random);
+            if(trial%3==0)p=std::round(p); // many exact ties
+            if(trial%3==1)p+=1000000; // rounded pocket-priority values
+        }
+        if(n>=2){priorities[0]=-0.0f;priorities[1]=0.0f;}
+        require(priority_order(priorities,false)==priority_order(priorities,true),
+                "packed priorities changed descending value/agent-ID order");
+    }
+    std::vector<float> limits={0,-0.0f,std::numeric_limits<float>::denorm_min(),
+        -std::numeric_limits<float>::denorm_min(),1e20f,-1e20f,
+        std::numeric_limits<float>::infinity(),-std::numeric_limits<float>::infinity()};
+    require(priority_order(limits,false)==priority_order(limits,true),
+            "packed priorities changed nonfinite fallback ordering");
+    auto e=environment(7,9,0);
+    for(int p:{0,4,8,12,21,32,37,46,60})e.map[p]=1;
+    Config cfg;Graph graph(e,cfg);
+    std::vector<int> vertices(graph.cells);std::iota(vertices.begin(),vertices.end(),0);
+    for(int count=0;count<=graph.cells;++count) {
+        std::shuffle(vertices.begin(),vertices.end(),random);
+        std::vector<int> locations(vertices.begin(),vertices.begin()+count);
+        int expected=0;
+        for(int i=0;i<count;++i)for(int j=i+1;j<count;++j) {
+            int a=graph.to_grid[locations[i]],b=graph.to_grid[locations[j]];
+            expected+=std::abs(a%graph.cols-b%graph.cols)<=2 &&
+                      std::abs(a/graph.cols-b/graph.cols)<=2;
+        }
+        require(graph.nearby_pairs(locations)==expected,
+                "sparse/hole dispersion disagrees with geometric pair counting");
+    }
+    cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.random_by_step=true;cfg.cost_cache=true;cfg.dispersion=0.8;
+    cfg.share_prefix=true;cfg.rollout_match=true;cfg.local_trials=4;
+    const auto control=simulate(cfg,12);
+    for(int flags=1;flags<=3;++flags) {
+        cfg.packed_order=flags&1;cfg.fast_dispersion=flags&2;
+        require(control==simulate(cfg,12),"hot-path optimization changed dense task-turnover decisions");
+    }
+    cfg.threads=2;
+    require(control==simulate(cfg,12),"hot-path optimization changed with worker count");
+}
+
 int main() {
+    exact_hot_paths();
     for(int prefix:{1,2}) {
         Config cfg;cfg.futures=16;cfg.continuations=4;cfg.continuation_start=prefix;cfg.depth=6;
         cfg.random_by_step=true;cfg.cost_cache=true;cfg.rollout_match=true;
