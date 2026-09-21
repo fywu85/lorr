@@ -284,7 +284,7 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
     if(c.window && (c.operation_depth || c.rollout_match || c.replan_roots || c.rescore_roots ||
-       c.component_trials || c.snapshot_interval || c.reverse_penalty || c.plain_score || c.score_rank_power))
+       c.component_trials || c.snapshot_interval || c.reverse_penalty || c.plain_score))
         throw std::invalid_argument("windowed search requires fixed-chain costs without other experimental search modes");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)

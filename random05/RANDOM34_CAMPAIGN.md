@@ -7,7 +7,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,552 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,580 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,641 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
@@ -307,3 +307,23 @@ Each hybrid commits whole collision-linked groups and evaluates all declared
 future branches. Earlier dense R05 results do not establish transfer toR04.
 Temporal blocker scanning on R03 gives2523–2535 versus2551; the controls and
 unsuccessful alternatives remain audited. Full window composition is running.
+
+## September 21, 07:23 UTC: complete window merging reaches 2,580
+
+Source99/db2d9bc5, group6/I6144 with two sharing rounds, reaches2580 (+9.37%
+against2359). Mean535/max736ms, full800 steps, independent replay and order
+accounting passed. It is15 tasks short of2595. Group4 merging gives2562;
+annealing and temporal mixing do not add to it. All original outcomes remain.
+Next comparisons replicate seeds0/1/3/4 and groups5/8. Source101 tests explicit
+task-priority weights on this merged group6 recipe, with an exact control and
+the validated four-way heap. No newly generated task/start stream is used.
+
+## September 21, 07:28 UTC: weighted-window initialization rejection
+
+The six nonzero-rank source101 cases were rejected by the older window/search
+compatibility guard before planning. They have no throughput score and remain
+original failed attempts. The direct-Config algorithm regressions passed, but
+did not exercise environment parsing. The follow-up removes the obsolete rank
+exclusion and adds a parser test for acceptance with the matching trick flag,
+rejection without it, and continued rejection of unsupported future matching.
+The full suite and full-horizon cases will rerun before evaluating the idea.

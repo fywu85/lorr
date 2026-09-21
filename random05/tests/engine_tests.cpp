@@ -1,6 +1,7 @@
 #include "engine.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <numeric>
@@ -866,6 +867,28 @@ void move_proposal_bias() {
     }
 }
 
+void window_configuration() {
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* name,const char* value):key(name),present(std::getenv(name)!=nullptr) {
+            if(present)old=std::getenv(name);
+            require(setenv(name,value,1)==0,"could not set configuration fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting window("R05_WINDOW","8"),rank("R05_SCORE_RANK_POWER","0.5"),startup("R05_SCORE_RANK_STEPS","20");
+    auto env=environment(5,5,4);env.trick_instance="RANDOM-03";
+    const auto cfg=Config::environment(env);
+    require(cfg.window==8 && cfg.score_rank_power==.5 && cfg.score_rank_steps==20,
+            "explicit weighted window configuration was not accepted");
+    env.trick_instance.clear();bool refused=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){refused=true;}
+    require(refused,"task-priority window scoring bypassed its explicit trick gate");
+    env.trick_instance="RANDOM-03";Setting rematch("R05_ROLLOUT_MATCH","1");refused=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){refused=true;}
+    require(refused,"weighted window allowed unsupported future reassignment");
+}
+
 void window_components() {
     auto e=environment(3,5,3);Config cfg;Graph g(e,cfg);
     using Paths=std::vector<std::vector<int>>;
@@ -985,6 +1008,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    window_configuration();
     window_components();
     window_single_agent();
     window_reproducibility();
