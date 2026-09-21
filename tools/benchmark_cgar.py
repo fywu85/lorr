@@ -50,7 +50,7 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
             return False
         actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
         # Legacy binaries predate these explicit components; absent means OFF.
-        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands', 'rank_squared'):
+        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands', 'rank_squared', 'random_reference'):
             if key in expected_components:
                 actual.setdefault(key, '0')
         valid = valid and actual == dict(instance=instance, started_tasks='protected',
@@ -68,7 +68,7 @@ def main():
     parser.add_argument("--steps", type=int, help="Override the horizon for each selected instance")
     parser.add_argument("--horizon-profile", type=Path, help="JSON mapping of instance names to shorter screening horizons")
     parser.add_argument("--plan-time-limit-ms", type=int, default=1000, help="Decision deadline; 1000 is the competition setting")
-    parser.add_argument("--trick", choices=["WAREHOUSE", "SORTATION", "CITY-01", "CITY-02", "GAME", "RANDOM-04", "RANDOM-05"], help="Explicit map-specific policy; absent means generic")
+    parser.add_argument("--trick", choices=["WAREHOUSE", "SORTATION", "CITY-01", "CITY-02", "GAME", "RANDOM-01", "RANDOM-02", "RANDOM-03", "RANDOM-04", "RANDOM-05"], help="Explicit map-specific policy; absent means generic")
     parser.add_argument("--seed", type=int, help="Set CGAR_SEED explicitly")
     parser.add_argument("--log-detail-level", type=int, choices=[1, 2, 3], default=1, help="Simulator verbosity; 2 retains warnings and failures")
     parser.add_argument("--cpu-list", help="Distinct allowed logical CPUs, grouped per concurrent run")
@@ -122,11 +122,14 @@ def main():
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
     component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED']
-    explicit_components = any(k in environment for k in component_keys)
+    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick <instance>')
     if any(environment.get(k, '0') not in ('0', '1') for k in component_keys):
         parser.error('CGAR_TRICK component settings must be 0 or 1')
+    reference = environment.get('CGAR_TRICK_RANDOM_REFERENCE', '0')
+    if reference not in ('0','1','2'):
+        parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1 or 2')
     expected_components = None
     if args.trick and explicit_components:
         short = int(environment.get('CGAR_TRICK_SHORT_TASKS', '0'))
@@ -139,19 +142,23 @@ def main():
         expected_components['native_metric'] = int(environment.get('CGAR_TRICK_NATIVE_METRIC', '0'))
         expected_components['native_bands'] = int(environment.get('CGAR_TRICK_NATIVE_BANDS', '0'))
         expected_components['rank_squared'] = int(environment.get('CGAR_TRICK_RANK_SQUARED', '0'))
-    if args.trick in ('RANDOM-04', 'RANDOM-05') and expected_components is not None:
+    if args.trick in ('RANDOM-01', 'RANDOM-02', 'RANDOM-03', 'RANDOM-04', 'RANDOM-05') and expected_components is not None:
         expected_components['random_uniform'] = int(environment.get('CGAR_TRICK_RANDOM_UNIFORM', '0'))
+        expected_components['random_reference'] = int(reference)
     expected_trick_field = 'none' if args.trick else None
     if args.trick and environment.get('CGAR_TRICK_LANES', '1') == '1':
         native = environment.get('CGAR_TRICK_NATIVE_METRIC', '0') == '1'
         bands = environment.get('CGAR_TRICK_NATIVE_BANDS', '0') == '1'
-        random_field = args.trick in ('RANDOM-04', 'RANDOM-05')
+        random_field = args.trick in ('RANDOM-01', 'RANDOM-02', 'RANDOM-03', 'RANDOM-04', 'RANDOM-05')
         asset_prefix = 'random' if random_field else 'city' if args.trick in ('CITY-01','CITY-02') else args.trick.lower()
         if random_field and (not native or bands):
             parser.error('RANDOM field requires native metric without bands')
         if args.trick in ('CITY-01','CITY-02','GAME') and bands:
             parser.error('CITY/GAME native fields have no bands')
         asset_name = ('cgar/tricks/' + asset_prefix + '_native.hpp') if native or args.trick in ('SORTATION','CITY-01','CITY-02','GAME') else 'cgar/tricks/warehouse_lanes.hpp'
+        if random_field and reference != '0' and environment.get('CGAR_TRICK_RANDOM_UNIFORM','0') != '1':
+            asset_name = 'cgar/tricks/random_reference.hpp'
+            asset_prefix = 'random_nms' if reference == '1' else 'random_kk' + args.trick[-2:]
         asset = (ROOT / asset_name).read_bytes()
         if provenance is not None and provenance['sources'].get(asset_name) != hashlib.sha256(asset).hexdigest():
             parser.error('trick receipt asset does not match the frozen binary source manifest')

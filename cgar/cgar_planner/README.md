@@ -517,3 +517,20 @@ paths nor protected primary/recovery reservations, and all workers and repair
 stages use the same weights. Lanes can remain OFF for an isolated rank comparison.
 The default is OFF; even an explicit zero requires the CLI trick gate. This is
 an experimental score preference, not a demonstrated improvement or liveness proof.
+
+For explicit `--trick RANDOM-01` through `RANDOM-05`,
+`CGAR_TRICK_RANDOM_REFERENCE=1` selects NMS's unchanged first arrow layout,
+scaled uniformly from forward2/6 and turn2 to forward20/60 and turn20.
+Provider2 selects KK's forward weights for RANDOM-02/03/04, scaled by20.
+RANDOM-02's uniform stay1 is preserved as turn20; RANDOM-03/04 use a declared
+**forward-only adaptation** with uniform turn20, not KK's varying per-cell
+stay/turn costs. These require native metric and static lanes. Provider0 keeps
+the existing standalone-derived dense field; sparse instances require an
+explicit positive provider when lanes are enabled. No map-name autodispatch.
+
+Reference providers default to turn20 and permit explicit native turn1..64;
+legacy providers retain their default1 and1..16 range. The normalization remains20,
+and the oriented oracle supports edges below that value. Uniform forward20
+controls are available with `CGAR_TRICK_RANDOM_UNIFORM=1`. All fields retain
+occupancy/fleet gates and fingerprints; field source and costs appear in receipts.
+[Source verification and approximation scope](../../experiments/allmaps-20260920/random-reference/README.md).

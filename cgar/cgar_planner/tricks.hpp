@@ -5,6 +5,7 @@
 #include "../tricks/warehouse_native.hpp"
 #include "../tricks/sortation_native.hpp"
 #include "../tricks/random_native.hpp"
+#include "../tricks/random_reference.hpp"
 #include "../tricks/city_native.hpp"
 #include "../tricks/game_native.hpp"
 #include <stdexcept>
@@ -15,16 +16,17 @@
 
 namespace cgar { namespace tricks {
 
-inline bool random_instance(const std::string& name) { return name == "RANDOM-04" || name == "RANDOM-05"; }
+inline bool random_instance(const std::string& name) { return name == "RANDOM-01" || name == "RANDOM-02" || name == "RANDOM-03" || name == "RANDOM-04" || name == "RANDOM-05"; }
+inline bool dense_random_instance(const std::string& name) { return name == "RANDOM-04" || name == "RANDOM-05"; }
 
 inline bool grid_instance(const std::string& name) { return name == "CITY-01" || name == "CITY-02" || name == "GAME"; }
 
 inline void validate_name(const std::string& name) {
     if (name != "WAREHOUSE" && name != "SORTATION" && !random_instance(name) && !grid_instance(name))
-        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-04, RANDOM-05");
+        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -44,8 +46,9 @@ inline Options options(const std::string& instance) {
     const char* prewarm_threads = std::getenv("CGAR_TRICK_NATIVE_PREWARM_THREADS");
     const char* random_uniform = std::getenv("CGAR_TRICK_RANDOM_UNIFORM");
     const char* rank_squared = std::getenv("CGAR_TRICK_RANK_SQUARED");
+    const char* reference = std::getenv("CGAR_TRICK_RANDOM_REFERENCE");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -56,15 +59,28 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    int reference_id = 0;
+    if (reference) {
+        const std::string value(reference);
+        if (value != "0" && value != "1" && value != "2")
+            throw std::invalid_argument("random reference must be 0(existing), 1(NMS arrows) or 2(KK forward)");
+        reference_id = value[0] - '0';
+        if (!random_instance(instance) || (reference_id && (!boolean(lanes, true) || !boolean(native_metric, false))))
+            throw std::invalid_argument("random reference requires a RANDOM CLI gate and active references require native static lanes");
+        if (reference_id == 2 && instance != "RANDOM-02" && instance != "RANDOM-03" && instance != "RANDOM-04")
+            throw std::invalid_argument("KK forward reference is available only for RANDOM-02/03/04");
+    }
+    if (random_instance(instance) && !dense_random_instance(instance) && boolean(lanes, true) && !reference_id)
+        throw std::invalid_argument("RANDOM-01/02/03 static guidance requires an explicit reference provider");
     const bool squared = boolean(rank_squared, false);
-    if (rank_squared && instance != "GAME" && !random_instance(instance))
+    if (rank_squared && instance != "GAME" && !dense_random_instance(instance))
         throw std::invalid_argument("squared rank selector requires --trick GAME, RANDOM-04 or RANDOM-05");
     const bool uniform = boolean(random_uniform, false);
     if (random_uniform && (!random_instance(instance) || !boolean(lanes, true) || !boolean(native_metric, false)))
-        throw std::invalid_argument("random uniform control requires RANDOM-04/05, static lanes and native metric");
+        throw std::invalid_argument("random uniform control requires RANDOM instance, static lanes and native metric");
     if (random_instance(instance) && (boolean(native_bands, false) ||
         (boolean(lanes, true) && !boolean(native_metric, false))))
-        throw std::invalid_argument("RANDOM-04/05 field requires explicit native metric without bands");
+        throw std::invalid_argument("RANDOM field requires explicit native metric without bands");
     if (grid_instance(instance) && boolean(native_bands, false))
         throw std::invalid_argument("CITY/GAME native fields have no outer-band surcharge");
     int horizon = 0;
@@ -85,17 +101,18 @@ inline Options options(const std::string& instance) {
             percentile = percentile * 10 + (*p - '0');
         }
     }
-    int native_turn = 1;
+    const int max_native_turn = reference_id ? 64 : 16;
+    int native_turn = reference_id ? 20 : 1;
     if (native_turn_cost) {
         native_turn = 0;
-        if (!*native_turn_cost) throw std::invalid_argument("native turn cost must be an integer in [1,16]");
+        if (!*native_turn_cost) throw std::invalid_argument("native turn cost must be an integer in [1," + std::to_string(max_native_turn) + "]");
         for (const char* p = native_turn_cost; *p; ++p) {
-            if (*p < '0' || *p > '9' || native_turn > (16 - (*p - '0')) / 10)
-                throw std::invalid_argument("native turn cost must be an integer in [1,16]");
+            if (*p < '0' || *p > '9' || native_turn > (max_native_turn - (*p - '0')) / 10)
+                throw std::invalid_argument("native turn cost must be an integer in [1," + std::to_string(max_native_turn) + "]");
             native_turn = native_turn * 10 + (*p - '0');
         }
         if (native_turn < 1 || !boolean(native_metric, false))
-            throw std::invalid_argument("native turn cost requires a native metric and value in [1,16]");
+            throw std::invalid_argument("native turn cost requires a native metric and value in [1," + std::to_string(max_native_turn) + "]");
     }
     int prewarm = 0;
     if (prewarm_threads) {
@@ -118,7 +135,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:
@@ -135,12 +152,26 @@ struct FieldAsset {
     const uint8_t* native_costs = nullptr;
 };
 
-inline FieldAsset field_asset(const std::string& name) {
+inline FieldAsset field_asset(const std::string& name, int reference = 0) {
     validate_name(name);
-    if (random_instance(name))
+    if (reference < 0 || reference > 2 || (reference && !random_instance(name)))
+        throw std::invalid_argument("reference field requires a RANDOM instance and provider0..2");
+    if (random_instance(name)) {
+        const uint8_t* costs = random_forward;
+        const char* hash = random_native_nobands_field_sha256;
+        uint64_t fingerprint = random_native_nobands_fnv1a64;
+        if (reference == 1) {
+            costs = random_nms_forward; hash = random_nms_native_nobands_field_sha256;
+            fingerprint = random_nms_native_nobands_fnv1a64;
+        } else if (reference == 2) {
+            if (name == "RANDOM-02") { costs = random_kk02_forward; hash = random_kk02_native_nobands_field_sha256; fingerprint = random_kk02_native_nobands_fnv1a64; }
+            else if (name == "RANDOM-03") { costs = random_kk03_forward; hash = random_kk03_native_nobands_field_sha256; fingerprint = random_kk03_native_nobands_fnv1a64; }
+            else if (name == "RANDOM-04") { costs = random_kk04_forward; hash = random_kk04_native_nobands_field_sha256; fingerprint = random_kk04_native_nobands_fnv1a64; }
+            else throw std::invalid_argument("KK field has no RANDOM-01/05 provider");
+        }
         return {random_rows, random_cols, random_free, random_masks, nullptr,
-                random_occupancy_sha256, nullptr, nullptr, random_native_nobands_field_sha256,
-                0, random_native_nobands_fnv1a64, random_forward};
+                random_occupancy_sha256, nullptr, nullptr, hash, 0, fingerprint, costs};
+    }
     if (name == "CITY-01" || name == "CITY-02")
         return {city_rows, city_cols, city_free, city_masks, nullptr,
                 city_occupancy_sha256, city_field_sha256, nullptr, city_native_nobands_field_sha256,
@@ -177,14 +208,17 @@ inline void validate_map(const std::string& name, const std::vector<int>& map, i
 inline void validate_instance(const std::string& name, const std::vector<int>& map,
                               int rows, int cols, int robots) {
     validate_map(name, map, rows, cols);
-    if ((name == "RANDOM-04" && robots != 700) || (name == "RANDOM-05" && robots != 800) ||
+    if ((name == "RANDOM-01" && robots != 100) || (name == "RANDOM-02" && robots != 200) ||
+        (name == "RANDOM-03" && robots != 400) || (name == "RANDOM-04" && robots != 700) || (name == "RANDOM-05" && robots != 800) ||
         (name == "CITY-01" && robots != 1500) || (name == "CITY-02" && robots != 3000) ||
         (name == "GAME" && robots != 6500))
         throw std::invalid_argument("--trick " + name + " requires its exact MR24 team size");
 }
 
-inline void validate_native_options(const std::string& name, bool bands, bool uniform) {
-    validate_name(name);
+inline void validate_native_options(const std::string& name, bool bands, bool uniform, int reference = 0) {
+    field_asset(name, reference);
+    if (random_instance(name) && !dense_random_instance(name) && !reference)
+        throw std::invalid_argument("sparse RANDOM native guidance requires a reference provider");
     if (((random_instance(name) || grid_instance(name)) && bands) || (uniform && !random_instance(name)))
         throw std::invalid_argument("native field bands/uniform selector incompatible with named instance");
 }
@@ -207,9 +241,9 @@ inline std::vector<uint8_t> forward_costs(const std::string& name, const std::ve
 // Verify the actual installed vector, including normalized wall entries.
 // The default name preserves the existing Warehouse verification API.
 inline uint64_t validate_native_field(const std::vector<uint8_t>& costs, bool bands,
-                                      const std::string& name = "WAREHOUSE", bool uniform = false) {
-    validate_native_options(name, bands, uniform);
-    const auto asset = field_asset(name);
+                                      const std::string& name = "WAREHOUSE", bool uniform = false, int reference = 0) {
+    validate_native_options(name, bands, uniform, reference);
+    const auto asset = field_asset(name, reference);
     if (costs.size() != size_t(asset.rows) * asset.cols * 4)
         throw std::invalid_argument("native " + name + " field dimension mismatch");
     uint64_t value = 14695981039346656037ULL;
@@ -220,10 +254,10 @@ inline uint64_t validate_native_field(const std::vector<uint8_t>& costs, bool ba
 }
 
 inline std::vector<uint8_t> native_forward_costs(const std::string& name, const std::vector<int>& map,
-                                                 int rows, int cols, bool bands, bool uniform = false) {
-    validate_native_options(name, bands, uniform);
+                                                 int rows, int cols, bool bands, bool uniform = false, int reference = 0) {
+    validate_native_options(name, bands, uniform, reference);
     validate_map(name, map, rows, cols);
-    const auto asset = field_asset(name);
+    const auto asset = field_asset(name, reference);
     std::vector<uint8_t> result(map.size() * 4, 20);
     if (uniform) return result;
     if (asset.native_costs) return std::vector<uint8_t>(asset.native_costs, asset.native_costs + result.size());
@@ -237,10 +271,10 @@ inline std::vector<uint8_t> native_forward_costs(const std::string& name, const 
     return result;
 }
 
-inline const char* native_field_hash(bool bands, const std::string& name = "WAREHOUSE", bool uniform = false) {
-    validate_native_options(name, bands, uniform);
+inline const char* native_field_hash(bool bands, const std::string& name = "WAREHOUSE", bool uniform = false, int reference = 0) {
+    validate_native_options(name, bands, uniform, reference);
     if (uniform) return random_uniform_field_sha256;
-    const auto asset = field_asset(name);
+    const auto asset = field_asset(name, reference);
     return bands ? asset.native_bands_sha256 : asset.native_nobands_sha256;
 }
 

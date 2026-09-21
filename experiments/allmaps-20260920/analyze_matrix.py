@@ -41,9 +41,10 @@ def main():
     p.add_argument('--inputs', type=Path, required=True)
     p.add_argument('--control', required=True)
     p.add_argument('--seeds',type=int,nargs='+',default=[0])
-    p.add_argument('--trick', choices=['WAREHOUSE','SORTATION','CITY-01','CITY-02','GAME','RANDOM-04','RANDOM-05'])
+    p.add_argument('--trick', choices=['WAREHOUSE','SORTATION','CITY-01','CITY-02','GAME','RANDOM-01','RANDOM-02','RANDOM-03','RANDOM-04','RANDOM-05'])
     p.add_argument('--allow-random05', action='store_true', help='Explicitly include CGAR runs on RANDOM-05 without modifying the separate solver')
     p.add_argument('--hold-job')
+    p.add_argument('--cpus-per-instance',type=int,choices=[4,8],default=4,help='Required physical-core count for this declared comparison')
     p.add_argument('--analysis-tag', default='factor-analysis', help='Separate immutable verification attempt label')
     p.add_argument('--execute', action='store_true')
     a=p.parse_args()
@@ -60,8 +61,8 @@ def main():
             copies['experiments/'+name]=ROOT/'experiments'/name
         for name,source in copies.items():
             target=support/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
-        write(raw/(tag+'-request.json'),dict(commit=a.commit,control=a.control,trick=a.trick,seeds=a.seeds,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
-        command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--analysis-tag',tag,'--execute']
+        write(raw/(tag+'-request.json'),dict(commit=a.commit,control=a.control,trick=a.trick,seeds=a.seeds,allow_random05=a.allow_random05,cpus_per_instance=a.cpus_per_instance,files={n:sha(support/n) for n in copies}))
+        command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--analysis-tag',tag,'--cpus-per-instance',str(a.cpus_per_instance),'--execute']
         if a.trick:command+=['--trick',a.trick]
         if a.allow_random05:command+=['--allow-random05']
         command+=['--seeds']+list(map(str,a.seeds))
@@ -73,7 +74,7 @@ def main():
         write(raw/(tag+'-submission.json'),dict(command=submit,returncode=r.returncode,response=r.stdout))
         r.check_returncode();assert re.fullmatch(r'\d+\s*',r.stdout);print(r.stdout,end='',flush=True)
         subprocess.run(['qrls',r.stdout.strip()],check=True);return
-    request=read(raw/(tag+'-request.json'));assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05 and request.get('seeds',[0])==a.seeds
+    request=read(raw/(tag+'-request.json'));assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05 and request.get('seeds',[0])==a.seeds and request.get('cpus_per_instance',4)==a.cpus_per_instance
     for name,expected in request['files'].items():assert sha(support/name)==expected,name
     sys.path.insert(0,str(support));from cpu_resources import cpu_resources
     from warehouse_waiting import waiting_audit
@@ -93,7 +94,7 @@ def main():
     assert {(c['variant'],c['seed'],c['repeat']) for c in spec['cases']}=={(v,seed,0) for v in profiles for seed in a.seeds}
     track='TRICK' if a.trick else 'GENERIC'
     assert spec['trick']==a.trick and spec['experiment_track']==track
-    assert spec['time_limit_ms'] in (1000,5000) and spec['cpus_per_instance']==4
+    assert spec['time_limit_ms'] in (1000,5000) and spec['cpus_per_instance']==a.cpus_per_instance
     assert not spec['exclusive_host'] and spec['benchmark_mode']=='relaxed_development'
     core_count=spec['parallel_suites']*spec['jobs_per_suite']*spec['cpus_per_instance']
     assert len(allocation['selected_cpus'])==core_count and len(set(allocation['selected_cpus']))==core_count
@@ -122,7 +123,7 @@ def main():
         bindings=set()
         for summary in summaries[label]:
             name=summary['instance'];key=label+'/'+name;binding=summary['cpu'];bindings.add(tuple(binding))
-            assert len(binding)==4 and set(binding).issubset(meta['cpu_binding']) and len({core_of[c] for c in binding})==4
+            assert len(binding)==a.cpus_per_instance and set(binding).issubset(meta['cpu_binding']) and len({core_of[c] for c in binding})==a.cpus_per_instance
             assert meta['instances'][name]==dict(input=inputs['instances'][name]['input'],steps=horizons[name])
             assert summary['experiment_track_valid']
             if summary['valid']:assert summary['trick_receipt_valid']
@@ -135,7 +136,7 @@ def main():
             row=dict(case=label,variant=case['variant'],instance=name,seed=case['seed'],steps=horizons[name],
                      robots=inputs['instances'][name]['team_size'],valid=summary['valid'],outcome=summary['outcome'],tasks=None,
                      peak_rss_bytes=summary['peak_process_rss_bytes'],wall_seconds=summary['wall_seconds'],
-                     mean_cpu_cores=(usage['user_seconds']+usage['system_seconds'])/usage['wall_seconds'],reserved_physical_cores=4,
+                     mean_cpu_cores=(usage['user_seconds']+usage['system_seconds'])/usage['wall_seconds'],reserved_physical_cores=a.cpus_per_instance,
                      raw_result=str(raw/label/(name+'.json')))
             if summary['valid']:
                 m=metrics[label,name]
