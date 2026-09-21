@@ -483,3 +483,28 @@ Every proposal is evaluated anew through CGAR reservations and protected paths.
 All worker searches must finish, and any deadline raises a timeout. This borrows
 priority-search structure from the separate RANDOM-05 solver; it does not yet
 implement its movement pipeline or multiple future continuations.
+
+
+### Explicit RANDOM-04 / RANDOM-05 guidance transfer
+
+`--trick RANDOM-04` (700 robots) and `--trick RANDOM-05` (800 robots) require the
+exact archived 32x32 occupancy. There is no automatic map dispatch. With lanes
+active, set `CGAR_TRICK_NATIVE_METRIC=1`, `CGAR_TRICK_REMAINING_FLOW=1`,
+`CGAR_FLOW_COST_SCALE=20`, and `CGAR_TRICK_NATIVE_TURN_COST=6`, plus the ordinary
+temporal/oriented-guidance settings. Bands are unsupported. `CGAR_TRICK_LANES=0`
+provides the unchanged generic control.
+
+This imports the standalone solver's tuned field from source `233f5bf`, not its
+planner. Costs are a declared integer approximation (round half-up x10, forward
+5..43, turn6), not an exact copy of the original float metric. The oracle uses a
+positive lower bound of 1 internally and installs every validated edge; 20 is
+its normalization unit, not a minimum edge cost. `CGAR_TRICK_RANDOM_UNIFORM=1`
+replaces the field with forward20 everywhere, preserving turn6 and pure-potential
+scoring for a controlled comparison. The selector requires the named RANDOM
+trick and native metric even when set to zero. Component receipts record it;
+Warehouse and Sortation receipts retain their existing format.
+
+The asset generator and rounding proof live in
+`experiments/allmaps-20260920/random-transfer/guidance/`. No quality claim follows
+from installing the field. CGAR primary/recovery commitments and complete-worker
+deadline behavior remain unchanged.

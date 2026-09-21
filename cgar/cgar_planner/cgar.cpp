@@ -754,7 +754,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     match_horizon_ = trick_options.match_horizon;
     horizon_margins_.configure_percentile(trick_options.horizon_margin_percentile);
     if (!env->trick_instance.empty())
-        tricks::validate_map(env->trick_instance, env->map, env->rows, env->cols);
+        tricks::validate_instance(env->trick_instance, env->map, env->rows, env->cols, n_);
     stall_limit_ = env_int("CGAR_STALL", 4);
     commit_limit_ = env_int("CGAR_COMMIT_AGE", 3);
     plan_tables_ = env_int("CGAR_PLAN_TABLES", 256);
@@ -1070,16 +1070,25 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     oracle_.init(&cert_, table_mb << 20);
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
-        turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, flow_cost_scale_, guidance_cost_limit_);
+        // The RANDOM field is normalized around 20 but contains costs below 20.
+        // Use a positive lower bound in the oracle, then install every validated
+        // edge (also for the uniform control). Other metrics retain their base.
+        const int oracle_base = native_trick_metric_ && tricks::random_instance(env->trick_instance) ? 1 : flow_cost_scale_;
+        turn_oracle_.init(&cert_, mb << 20, guidance_turn_cost_, env_int("CGAR_TURN_COMPACT", 0) != 0, oracle_base, guidance_cost_limit_);
         if (static_trick_metric_) {
             auto field = native_trick_metric_ ?
-                tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands) :
+                tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands, trick_options.random_uniform) :
                 tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols);
-            const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands, env->trick_instance) : 0;
+            const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands, env->trick_instance, trick_options.random_uniform) : 0;
             turn_oracle_.set_forward_costs(std::move(field));
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
-            if (native_trick_metric_) {
+            if (native_trick_metric_ && tricks::random_instance(env->trick_instance)) {
+                std::printf("[CGAR_TRICK] instance=%s provider=%s normalization=20 turn=%d score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), trick_options.random_uniform ? "random-uniform-control" : "random05-flow-integer",
+                    guidance_turn_cost_, tricks::native_field_hash(false, env->trick_instance, trick_options.random_uniform),
+                    static_cast<unsigned long long>(installed_fingerprint), tricks::occupancy_hash(env->trick_instance));
+            } else if (native_trick_metric_) {
                 std::printf("[CGAR_TRICK] instance=%s provider=nms-native-metric forward_base=20 opposing=200 band=%d turn=%d score=pure_potential tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
                     env->trick_instance.c_str(), trick_options.native_bands, guidance_turn_cost_, tricks::native_field_hash(trick_options.native_bands, env->trick_instance),
                     static_cast<unsigned long long>(installed_fingerprint), tricks::occupancy_hash(env->trick_instance));
@@ -1092,8 +1101,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected\n",
-                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_);
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s\n",
+                env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_,
+                tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "");
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),

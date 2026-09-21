@@ -4,6 +4,7 @@
 #include "../tricks/warehouse_lanes.hpp"
 #include "../tricks/warehouse_native.hpp"
 #include "../tricks/sortation_native.hpp"
+#include "../tricks/random_native.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -12,12 +13,14 @@
 
 namespace cgar { namespace tricks {
 
+inline bool random_instance(const std::string& name) { return name == "RANDOM-04" || name == "RANDOM-05"; }
+
 inline void validate_name(const std::string& name) {
-    if (name != "WAREHOUSE" && name != "SORTATION")
-        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION");
+    if (name != "WAREHOUSE" && name != "SORTATION" && !random_instance(name))
+        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -35,8 +38,9 @@ inline Options options(const std::string& instance) {
     const char* match_horizon = std::getenv("CGAR_TRICK_MATCH_HORIZON");
     const char* native_turn_cost = std::getenv("CGAR_TRICK_NATIVE_TURN_COST");
     const char* prewarm_threads = std::getenv("CGAR_TRICK_NATIVE_PREWARM_THREADS");
+    const char* random_uniform = std::getenv("CGAR_TRICK_RANDOM_UNIFORM");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -47,6 +51,12 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    const bool uniform = boolean(random_uniform, false);
+    if (random_uniform && (!random_instance(instance) || !boolean(lanes, true) || !boolean(native_metric, false)))
+        throw std::invalid_argument("random uniform control requires RANDOM-04/05, static lanes and native metric");
+    if (random_instance(instance) && (boolean(native_bands, false) ||
+        (boolean(lanes, true) && !boolean(native_metric, false))))
+        throw std::invalid_argument("RANDOM-04/05 field requires explicit native metric without bands");
     int horizon = 0;
     if (known_horizon) {
         if (!*known_horizon) throw std::invalid_argument("CGAR_TRICK_KNOWN_HORIZON must be an integer in [0,1000000]");
@@ -98,7 +108,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:
@@ -112,10 +122,15 @@ struct FieldAsset {
     const char* native_bands_sha256;
     const char* native_nobands_sha256;
     uint64_t native_bands_fnv1a64, native_nobands_fnv1a64;
+    const uint8_t* native_costs = nullptr;
 };
 
 inline FieldAsset field_asset(const std::string& name) {
     validate_name(name);
+    if (random_instance(name))
+        return {random_rows, random_cols, random_free, random_masks, nullptr,
+                random_occupancy_sha256, nullptr, nullptr, random_native_nobands_field_sha256,
+                0, random_native_nobands_fnv1a64, random_forward};
     if (name == "SORTATION")
         return {sortation_rows, sortation_cols, sortation_free, sortation_masks,
                 sortation_native_band_hex, sortation_occupancy_sha256, sortation_field_sha256,
@@ -141,10 +156,24 @@ inline void validate_map(const std::string& name, const std::vector<int>& map, i
     if (free != asset.free_cells) throw std::invalid_argument("--trick " + name + " free-cell mismatch");
 }
 
+inline void validate_instance(const std::string& name, const std::vector<int>& map,
+                              int rows, int cols, int robots) {
+    validate_map(name, map, rows, cols);
+    if ((name == "RANDOM-04" && robots != 700) || (name == "RANDOM-05" && robots != 800))
+        throw std::invalid_argument("--trick " + name + " requires its exact MR24 team size");
+}
+
+inline void validate_native_options(const std::string& name, bool bands, bool uniform) {
+    validate_name(name);
+    if ((random_instance(name) && bands) || (uniform && !random_instance(name)))
+        throw std::invalid_argument("native field bands/uniform selector incompatible with named instance");
+}
+
 inline std::vector<uint8_t> forward_costs(const std::string& name, const std::vector<int>& map,
                                           int rows, int cols) {
     validate_map(name, map, rows, cols);
     const auto asset = field_asset(name);
+    if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane-mask metric");
     std::vector<uint8_t> result(map.size() * 4, 4);
     for (size_t cell = 0; cell < map.size(); ++cell) {
         const char ch = asset.masks[cell];
@@ -158,22 +187,26 @@ inline std::vector<uint8_t> forward_costs(const std::string& name, const std::ve
 // Verify the actual installed vector, including normalized wall entries.
 // The default name preserves the existing Warehouse verification API.
 inline uint64_t validate_native_field(const std::vector<uint8_t>& costs, bool bands,
-                                      const std::string& name = "WAREHOUSE") {
+                                      const std::string& name = "WAREHOUSE", bool uniform = false) {
+    validate_native_options(name, bands, uniform);
     const auto asset = field_asset(name);
     if (costs.size() != size_t(asset.rows) * asset.cols * 4)
         throw std::invalid_argument("native " + name + " field dimension mismatch");
     uint64_t value = 14695981039346656037ULL;
     for (uint8_t cost : costs) value = (value ^ cost) * 1099511628211ULL;
-    if (value != (bands ? asset.native_bands_fnv1a64 : asset.native_nobands_fnv1a64))
+    if (value != (uniform ? random_uniform_fnv1a64 : bands ? asset.native_bands_fnv1a64 : asset.native_nobands_fnv1a64))
         throw std::invalid_argument("native " + name + " installed field fingerprint mismatch");
     return value;
 }
 
 inline std::vector<uint8_t> native_forward_costs(const std::string& name, const std::vector<int>& map,
-                                                 int rows, int cols, bool bands) {
+                                                 int rows, int cols, bool bands, bool uniform = false) {
+    validate_native_options(name, bands, uniform);
     validate_map(name, map, rows, cols);
     const auto asset = field_asset(name);
     std::vector<uint8_t> result(map.size() * 4, 20);
+    if (uniform) return result;
+    if (asset.native_costs) return std::vector<uint8_t>(asset.native_costs, asset.native_costs + result.size());
     auto hex = [](char ch) { return ch <= '9' ? ch - '0' : ch - 'a' + 10; };
     for (size_t cell = 0; cell < map.size(); ++cell) {
         if (asset.masks[cell] == 'x') continue;
@@ -184,12 +217,17 @@ inline std::vector<uint8_t> native_forward_costs(const std::string& name, const 
     return result;
 }
 
-inline const char* native_field_hash(bool bands, const std::string& name = "WAREHOUSE") {
+inline const char* native_field_hash(bool bands, const std::string& name = "WAREHOUSE", bool uniform = false) {
+    validate_native_options(name, bands, uniform);
+    if (uniform) return random_uniform_field_sha256;
     const auto asset = field_asset(name);
     return bands ? asset.native_bands_sha256 : asset.native_nobands_sha256;
 }
 
-inline const char* lane_field_hash(const std::string& name) { return field_asset(name).lane_sha256; }
+inline const char* lane_field_hash(const std::string& name) {
+    if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane hash");
+    return field_asset(name).lane_sha256;
+}
 inline const char* occupancy_hash(const std::string& name) { return field_asset(name).occupancy_sha256; }
 
 }}  // namespace cgar::tricks
