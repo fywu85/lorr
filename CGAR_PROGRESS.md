@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T10:20:23.337736+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T10:46:41.652131+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-102023.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-104641.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority

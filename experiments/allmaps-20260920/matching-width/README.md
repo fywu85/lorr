@@ -21,3 +21,5 @@ quota pairs32/64,64/32,128/16,256/8keep the maximum participant quota at2048.
 Other selected settings stay fixed. Larger matrices still cost more arithmetic;
 strict1000ms deadlines decide which complete runs qualify. Four physical cores,
 32decimalGB, explicit --trick INSTANCE and node-local log spooling.
+
+Full CITY results: CITY01 width32/64/128/256=8440/8440/8435/8434; CITY02=16315/16315/16260/16203. All eight complete and valid, max825.85ms. Width64 repeats the entire control trajectory on both. No promotion. Actual groups are usually smaller than32; reduced group quotas lose coverage. RANDOM01 all widths693, RANDOM02 wider1194/1154/1154vs1215, RANDOM03 all wider1938vs1982. Keep width32.

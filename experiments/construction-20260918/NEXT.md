@@ -151,3 +151,49 @@ remaining,notpaid+tail. Changingitswaitpricealoneonlymostlyaffects repeatedservi
 A separatepaid-costrootidea andtruepipeline remainunimplemented. Ordinarychoice0
 waitseediscoredunrotated,thenexecutor mayrotate;commonfuture/windowconversion
 alreadyreconstructactualfirstrotation. Do not claim5stepforecastsareexecutedpromises.
+
+## Update 2026-09-21T11:00:04.988490+00:00
+
+Checkpoint8b281029committed345owned compact/docs paths; public push succeeded
+(including concurrent authorized main commits). Failed ignored-log add recovered
+by preserving compact failed analyzer logs as .txt; no raw solver outputs staged.
+CITYmatching allcomplete:01=8440/8440/8435/8434;02=16315/16315/16260/16203 for
+width32/64/128/256. Width64exactwholetraceidentityboth; no promotion. Evidence
+matching-width/city-results.json. Alltenproof104641, frontierunchanged1982R03.
+
+Chain-window composition source d28d451ac96dd654413a714ffa809f8bdf20983c FULLpassed
+40hashes, binary46d5130133429a474dfe2537a1fe9d075dc5ae27d121ee4add5dc1d86d97dc92.
+Buildruns/cgar-chain-window-build-v1-20260921proofchain-window/build-v1.
+CGAR_WINDOW_CHAIN_SEED1 requireswindow,chainmode1,wait==flowbase(or0default).
+6000serial/parallelactions,291changedfirst,916services, disabled/noopidentity,
+protectedprimary/recovery/capacityandstrictparserpassed. Root/repair objectives
+unchanged. R05seed10fourarm matrixjobs8902671/verifier8902672 running.
+CITY01knownhorizon-only bound/mean/p90transfer matrix8902669/8902670 running on
+oldqualified7fd2cfc6. CITY02previoussameidea lost; do not repeat it.
+
+New source e4cfcc4dace2f92139c8496dc8c21a708bc2ab12 adds general optional
+CGAR_SCHEDULER_CHAIN_POTENTIAL1. Requires existing static completeoracle;
+weightedtricksrequirepickupflow. Genericunitstaticgraphsalsosupported. Actual
+new-taskpair cost=exactfullchain+(pickup_weight-1)*existingapproach. Fixedstartup
+androbot-independentendpointbucketorderunchanged. Fullfreechain tailscomputed
+onceperschedulingentry, thenread-onlyqueries. Fair/held/started/matching unchanged.
+Noextratables. Staticunreachablequotescountold-estimatefallback; deadlinesfail.
+Statscgar-scheduler-chain config/samples; analyzercounters added. Independent
+fullaction/service shortestpathsproduction48choices,16differentoptima, startup,
+zero/default,metadata,fair,started,validactions tests PASSED in running suite.
+Buildjob8902687 runs/cgar-scheduler-chain-build-v1-20260921 stillinfullregressions;
+DO NOTEDITproduction/tests untilfinished. Qualifyall40source/testhashesandbinary.
+Thenqueue5twoarm fullmatrices scheduler-chain/random-01..05-v1.json atselected
+seeds4/2/2/0/10,parallel2,4physicalcores strict1s32GBlocalspool. Existing controls
+693/1215/1982/2059/3065 mustrepeatwholetrajectories. Recordcontrolfailuresifany.
+Do not composecurrentR05windowcandidateintoexact-assignment comparison.
+
+Movementdiagnosisall10completeatbottlenecks/{README,selected-movement-20260921.json}.
+R01/2/3turns24.23/30.08/40.65%;R04/5wait25.14/38.15%;CITYforward94.07/92.32%.
+Theseareactionshares, notcausalheadroomorthroughputbounds. Fableturn47stillcredits
+failed; no retryuntilavailabilitychanges. Sourcee4committednotyetpushed; docs/profiles
+uncommitted; checkpointwithexplicitownedpaths afterqualificationandqueueing.
+
+Scheduler-chain FULL40hashes/regression qualified11:00:50UTC, binaryb0d408f171f94b1cc9990350d18bed7994d3611bdfd57bba4bc9d8b614d3a441. All5two-armmatricesqueued:
+R01 8902692/93,R02 8902694/95,R03 8902696/97,R04 8902698/99,R05 8902700/01.
+Noactivebuild, sourcefree. No production edits pending.
