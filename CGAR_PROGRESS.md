@@ -9,13 +9,13 @@ RANDOM-05 solver into CGAR without modifying that solver's working tree.
 |---|---:|---|
 | WAREHOUSE | 155173 | TRICK; strict1s seeds0/2, max945/958ms |
 | SORTATION | 150353 | TRICK; seed0,5s development, max1152ms; runtime work remains |
-| CITY-01 | 7755 | TRICK; adapted NMS field, strict1s, max765ms, seed0 |
-| CITY-02 | 14851 | TRICK; adapted NMS field, strict1s, max807ms, seed0 |
-| GAME | 10080 | TRICK; adapted NMS field, strict1s, max905ms, seed0 |
-| RANDOM-01 | 611 | Generic; full5s development |
-| RANDOM-02 | 1084 | Generic; full5s development |
-| RANDOM-03 | 1484 | Generic; full5s development |
-| RANDOM-04 | 1503 | Generic; strict1s, direct pickup4 +64-group matching, seed0 |
+| CITY-01 | 8386 | TRICK; adapted field +pickup8/matching, strict1s, max755ms, seed6 |
+| CITY-02 | 16159 | TRICK; adapted field +pickup12/matching, strict1s, max826ms, seed0 |
+| GAME | 14664 | TRICK; adapted field +squared chain ranks, strict1s, max897ms, seed0 |
+| RANDOM-01 | 621 | TRICK; NMS arrows +pickup4, strict1s, max202ms, seed0 |
+| RANDOM-02 | 1160 | TRICK; NMS arrows +pickup4, strict1s, max186ms, seed0 |
+| RANDOM-03 | 1890 | TRICK; KK forward +chain ranks +pickup4, strict1s, max198ms, seed0 |
+| RANDOM-04 | 1645 | TRICK; squared rank, lanes OFF, strict1s, max140ms, seed2 |
 | RANDOM-05 | 2608 | TRICK; strict1s, tuned field +direct pickup4 +matching, seed2 |
 
 These are individual maxima with different explicit configurations, not one
@@ -99,3 +99,73 @@ is unchanged. Native6784 and native+short6758 are much weaker. This remains56.69
 below published NMS23274, with outstanding-task age p90=5000steps; throughput has
 improved, but the long waiting tail remains.
 [Full result](experiments/allmaps-20260920/results/game-native-full-v1/summary.md).
+
+CITY-01 subsequently reaches**8213** with direct pickup4, HRRN0 and64-group
+unopened matching on the adapted field (+5.91% over7755, +12.43% over generic7305).
+Full3000steps, strict1s, max758ms,8.11GB, four cores. This is2.46% below published
+NMS8420. Remaining-chain rank alone7739 and rank+dispatch8204 lose their respective
+equal-weight profiles. Waiting age p90 worsens1134->2553steps; forced-oldest
+admission remains enabled. Two initial configuration failures are retained and
+excluded, and their corrected explicit-selector runs supply the dispatch scores.
+[Selection/control and failure evidence](experiments/allmaps-20260920/city-game/city-01-dispatch-selected.json).
+
+Explicit NMS squared-rank weighting raises RANDOM-04 to1622/1645/1512 on planner
+seeds0/2/4, compared with1503/1480/1494: mean1593.00 vs1492.33 (+6.75%). All three
+pairs improve; all full strict1s runs are valid. The selected best1645 uses
+`--trick RANDOM-04` with lanesOFF; generic1503 remains the best no-trick record.
+All control trajectories reproduce the previous source. The record is still
+35.41% below published NMS2547. RANDOM-05's seed0 comparison2574->2596 is positive
+but does not yet beat its selected2608; additional seeds are running.
+[Exact rank comparison and selection](experiments/allmaps-20260920/rank-trick/random04-selected.json).
+
+CITY-01 now reaches**8378** (+2.01% over8213), full3000steps at strict1s. The control
+trajectory is identical. It is0.50% below published NMS8420.
+[Full comparison](experiments/allmaps-20260920/results/city-01-dispatch-tuning-v1/summary.md).
+
+CITY-02 now reaches**15797** (+6.37% over14851), full3000steps at strict1s. The control
+trajectory is identical. It is5.90% below published NMS16787.
+[Full comparison](experiments/allmaps-20260920/results/city-02-adapted-scheduling-v1/summary.md).
+
+RANDOM-05 rank replication is mixed: linear2574/2608/2528 versus squared
+2596/2571/2583, mean+0.52%. Keep the existing linear2608 maximum; all six runs
+valid1s, whole controls unchanged.
+[Three-seed rank summary](experiments/allmaps-20260920/rank-trick/three-seed-summary.json).
+
+GAME reaches**11146** with direct pickup4/HRRN0/matching64 on adapted guidance
+(+10.58% over10080). The full control is identical. Short preference alone10540
+and direct pickup without matching10765 also improve10080, but remain weaker.
+Full5000steps at strict1s; selected max894ms. This remains52.11% below published
+NMS23274. [Full comparison](experiments/allmaps-20260920/results/game-adapted-scheduling-v1/summary.md).
+
+GAME's stronger priority weights improve the adapted-field10080 control to
+13314 with linear current-goal ranks,14471 with squared ranks, and**14664** with
+squared remaining-chain ranks. All four full5000-step runs pass1s, selected
+max897ms. Whole10080 control is unchanged; the new best is45.48% above that
+paired control and31.56% above the11146 scheduling branch, but the latter is a
+different configuration. The remaining published NMS gap is37.00%.
+[Rank comparison](experiments/allmaps-20260920/results/game-squared-rank-full-v1/summary.md).
+
+NMS/KK reference fields give new sparse maxima613/1123/1541, compared with
+generic611/1084/1484. Full strict1s and whole controls unchanged. The RANDOM01
+gain is just2tasks on one seed; RANDOM03 uses a KK forward-only adaptation.
+On RANDOM04, uniform1307, NMS1506 and KK1569 all lose the squared generic1622
+seed0 control; retain the1645 seed2 overall best.
+[Reference selections and caveats](experiments/allmaps-20260920/random-reference/sparse-selected.json).
+
+Latest CITY records are**8386** (pickup8, seed6) and**16159** (pickup12, seed0),
+strict1s. CITY01 is34tasks below published8420; CITY02 remains628below16787.
+General remaining-chain ranks improve RANDOM03 1484->**1613** (+8.69%), while
+losing slightly on RANDOM01/02. Generic RANDOM01 portfolio ties**613** with
+roughly half the mean latency of the field profile. Whole controls are unchanged.
+[Full general comparison](experiments/allmaps-20260920/sparse-search/full-comparison.json).
+
+The new NMS field loses the current RANDOM05 field2574->2337, or2377 with
+squared ranks. Uniform1980 also loses. RANDOM04 NMS/KK fields likewise lose
+the1622 seed0 control. Both whole controls are identical; retain existing dense
+bests. [Dense reference comparison](experiments/allmaps-20260920/random-reference/dense-reference-summary.json).
+
+Combining mechanisms gives**621/1160/1890** on RANDOM01/02/03. Pickup4 helps
+the NMS field on01/02; remaining-chain ranks plus the KK forward adaptation
+and pickup4 improve03 by17.17% over the generic1613 control. All full seed0
+cases pass1s and all whole controls reproduce. Generic613/1084/1613 remain
+separate. [Full selection evidence](experiments/allmaps-20260920/sparse-search/field-interaction-selected.json).

@@ -1,3 +1,8 @@
+Updated: the new overall RANDOM-04 best is **1645**, with an explicit squared-rank
+trick and lanesOFF. [Current selected profile and three-seed proof](../rank-trick/random04-selected.json).
+The table below retains the previous general baseline and field-only RANDOM-05
+selection, which remain useful controls. The generic RANDOM-04 best is1503.
+
 # Current dense CGAR configurations
 
 Both use source [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9),

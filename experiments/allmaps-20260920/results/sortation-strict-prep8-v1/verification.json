@@ -1,0 +1,41 @@
+{
+  "checked_utc": "2026-09-21T02:50:18.819189+00:00",
+  "source_commit": "df94a520c77fcb3a73a4a8c74b5b13cab542d1d6",
+  "source_and_test_files": 29,
+  "binary_sha256": "a23a3c81195d71a7a13c9ee518d9896c0a1e130d985037080a18871ad74b606c",
+  "rows": [
+    {
+      "case": "trick_sortation_native_prep8-s0-r0",
+      "variant": "trick_sortation_native_prep8",
+      "instance": "SORTATION",
+      "seed": 0,
+      "steps": 5000,
+      "robots": 10000,
+      "valid": false,
+      "outcome": "timeout",
+      "tasks": null,
+      "peak_rss_bytes": 1463525376,
+      "wall_seconds": 1.504,
+      "mean_cpu_cores": 1.0667799868284458,
+      "reserved_physical_cores": 8,
+      "raw_result": "/shared/share_mala/fw2449/lorr2024/runs/cgar-sortation-strict-prep8-v1-20260921/trick_sortation_native_prep8-s0-r0/SORTATION.json",
+      "failure_lines": [
+        "CGAR_TIMEOUT timestep=0 elapsed_ms=1000.289 stage=temporal_repair"
+      ],
+      "trick_receipt_valid": true
+    }
+  ],
+  "valid_runs": 0,
+  "failed_runs": 1,
+  "disjoint_physical_core_groups": true,
+  "no_cpu_quota": true,
+  "decision_limit_ms": 1000,
+  "strict_one_second_limit": true,
+  "competition_budget_confirmed": false,
+  "random05_excluded": true,
+  "independent_random05_solver_untouched": true,
+  "trick": "SORTATION",
+  "control": "trick_sortation_native_prep8",
+  "full_horizons": true,
+  "scope": "Archived inputs and declared planner seeds, frozen factor profiles. Throughput comparisons require full horizons. Shared hosts and32decimalGB; exact enforced entry limit is recorded above. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim."
+}

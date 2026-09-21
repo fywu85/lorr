@@ -22,3 +22,10 @@ simulation because `CGAR_REASSIGN_MATCH=1` is intentionally incompatible with
 `CGAR_TRICK_UNOPENED_MATCH=1`, the explicit intended mechanism; all other values,
 source and binary remain unchanged. Only those two failed cases are resubmitted.
 No throughput is attributed to an initialization failure.
+
+Complete: equal control7755, remaining-chain linear ranks7739, corrected dispatch
+8213, corrected ranks+dispatch8204. All four actual simulations passed1s. The
+control exactly reproduces7755. Best8213 disables HRRN but retains oldest
+admission; outstanding-task age p90 increases1134->2553. The two original
+preinitialization failures are present in the original matrix verification,
+with no accepted task count. [Selected result](city-01-dispatch-selected.json).

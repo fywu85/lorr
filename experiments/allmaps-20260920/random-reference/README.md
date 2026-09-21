@@ -30,3 +30,21 @@ scheduling/planning with every supported provider. Full tests/build must pass
 before throughput runs. First compare full sparse generic controls against NMS
 and KK references, plus a native uniform-cost control to separate scalar/scoring
 conventions from guidance effects. Do not use partial task counts as full scores.
+
+Declared full seed0 matrices: RANDOM01 (3profiles), RANDOM02/03 (4each): lanesOFF
+selected generic control, native uniform20/turn20, NMS arrows, plus KK where
+supported. Keep the selected generic matching and HRRN settings; no new budget
+or ranking changes. RANDOM04 keeps squared ranks and compares lanesOFF1622
+against native uniform, NMS arrows and KK forward. RANDOM05 compares existing
+field2574, native uniform, NMS arrows, and NMS arrows+squared ranks. All keep
+selected direct/matching policies. Full600/600/800/1000/2000steps, strict1s, four
+physical cores per case, no partial scores, explicit instance flags. Each
+control must reproduce its prior complete trajectory. Input manifests and
+variants are frozen here before submission.
+
+Initial sparse results, all full and strict1s: RANDOM01 generic611/uniform609/
+NMS613; RANDOM02 generic1084/uniform1081/NMS1123/KK1120; RANDOM03 generic1484/
+uniform1150/NMS1421/KK1541. Whole generic controls identical. Only one seed;
+the2-task RANDOM01 improvement is not yet robust. RANDOM04 squared control1622
+beats uniform1307/NMS1506/KK1569. Keep its1645 overall record. RANDOM05 first
+allocation failed before simulation; unchanged retry onresearch44 is running.

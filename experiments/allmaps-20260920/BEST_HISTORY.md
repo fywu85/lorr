@@ -147,3 +147,129 @@ adaptation. HRRN and forced-oldest admission remain; outstanding-task age p90
 is still5000steps. One planner seed, no matched NMS claim.
 [Full results](results/game-native-full-v1/summary.md),
 [selection and exact config](city-game/game-selected.json).
+
+## CITY-01 scheduling improvement on adapted guidance
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-01 | 8213 | 0 | TRICK | 2026-09-21T02:41:14.968305+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_adapted_dispatch, --trick CITY-01 |
+
+Direct pickup4 +HRRN0 +64-group unopened matching improves7755->8213 (+5.91%),
+12.43% above the original7305 and2.46% below published NMS8420. Full3000steps,
+strict1s, max758.46ms, RSS8.11GB. The exact7755 control is reproduced by the same
+source/binary. Ranking alone7739 and ranking+dispatch8204 do not beat their paired
+equal-weight controls. Two original dispatch profiles used an incompatible
+generic selector and were rejected before simulation; corrected explicit-selector
+profiles are independently frozen and verified. Outstanding-task age p90 rises
+1134->2553steps; throughput is primary, with this fairness tradeoff recorded.
+[Selection and exact configuration](city-game/city-01-dispatch-selected.json).
+
+## Explicit rank-weighting records on RANDOM-04
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| RANDOM-04 | 1622 | 0 | TRICK | 2026-09-21T02:44:32.539872+00:00 | [a573aa5](https://github.com/fywu85/lorr/commit/a573aa5c0aae29de296c38ab1b679d5d8602800e) | trick_squared_rank, lanesOFF |
+| RANDOM-04 | 1645 | 2 | TRICK | 2026-09-21T02:49:22.119755+00:00 | [a573aa5](https://github.com/fywu85/lorr/commit/a573aa5c0aae29de296c38ab1b679d5d8602800e) | trick_squared_rank, lanesOFF |
+
+Full1000steps, strict1s, four physical cores and<0.2GB. Squared rank tasks
+1622/1645/1512 versus1503/1480/1494 over seeds0/2/4, mean1593.00 vs1492.33 (+6.75%).
+All three pairs improve, though the seed4 gain is small. Old controls reproduce
+exact whole trajectories. New overall best1645 seed2 is35.41% below historical
+NMS2547; best generic1503 remains separate. No known horizon or new field was
+added. Stronger priority weighting is explicitly a trick and is not a fairness
+guarantee. [Selection/resources/waiting](rank-trick/random04-selected.json).
+
+## CITY-01 follow-up: 8378 tasks
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-01 | 8378 | 0 | TRICK | 2026-09-21T02:57:33.518693+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_dispatch_pickup8 |
+
+Full3000steps and strict1s, four physical cores. Previous8213 control exactly reproduced. Improvement2.01%, still0.50% below published NMS8420. Selected max742.32ms, RSS8.11GB, outstanding-task age p90=2515steps. [Full comparison](results/city-01-dispatch-tuning-v1/summary.md).
+
+## CITY-02 follow-up: 15797 tasks
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-02 | 15797 | 0 | TRICK | 2026-09-21T02:57:28.288454+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_adapted_dispatch |
+
+Full3000steps and strict1s, four physical cores. Previous14851 control exactly reproduced. Improvement6.37%, still5.90% below published NMS16787. Selected max809.78ms, RSS8.50GB, outstanding-task age p90=2623steps. [Full comparison](results/city-02-adapted-scheduling-v1/summary.md).
+
+## GAME scheduling on the adapted field
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| GAME | 11146 | 0 | TRICK | 2026-09-21T03:03:53.328457+00:00 | [596b609](https://github.com/fywu85/lorr/commit/596b609351f4653dcb404e264edb4f20de98d7eb) | trick_adapted_direct_match64 |
+
+Full5000steps, strict1s, max893.90ms. Direct pickup4/HRRN0/matching64 improves
+10080->11146 (+10.58%), still52.11% below published NMS23274. All four full
+variants pass; short preference10540 and direct-without-matching10765 are weaker.
+Whole control trajectory unchanged. The winner retains forced-oldest admission.
+[Selected config/resources/waiting](city-game/game-dispatch-selected.json).
+
+## GAME priority-weighting record
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| GAME | 14664 | 0 | TRICK | 2026-09-21T03:05:32.672834+00:00 | [a573aa5](https://github.com/fywu85/lorr/commit/a573aa5c0aae29de296c38ab1b679d5d8602800e) | trick_adapted_squared_chain |
+
+Adapted-field equal weights10080, linear current-goal ranks13314, squared ranks
+14471, squared remaining-chain ranks14664. Full5000steps, all four strict1s and
+whole control unchanged. Selected max896.57ms, still37.00% below published NMS
+23274. The previous11146 scheduling branch is a different configuration; its
+benefit must be measured again on these ranks. One planner seed.
+[Selection and resources/waiting](city-game/game-rank-selected.json).
+
+## First sparse RANDOM reference fields
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| RANDOM-01 | 613 | 0 | TRICK | 2026-09-21T03:13:40.081729+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_nms_arrows |
+| RANDOM-02 | 1123 | 0 | TRICK | 2026-09-21T03:13:26.330631+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_nms_arrows |
+| RANDOM-03 | 1541 | 0 | TRICK | 2026-09-21T03:13:57.251324+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_kk_forward |
+
+Full600/600/800steps, strict1s, four cores, all eleven cases valid and all three
+generic controls whole-trajectory identical. NMS arrows give613/1123/1421; KK
+forward gives1120/1541 on RANDOM02/03. Native uniform controls609/1081/1150 show
+that metric/scoring convention alone does not explain the field gains. Select
+613/1123/1541 over prior611/1084/1484. RANDOM01 gains only2tasks on this one seed,
+so no robust improvement claim. RANDOM03 is a forward-only KK adaptation with
+uniform turn20, not the original per-cell stay costs.
+[Selections and controls](random-reference/sparse-selected.json).
+
+## Further CITY records and a general RANDOM-03 improvement
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-01 | 8386 | 6 | TRICK | 2026-09-21T03:16:47.853847+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_pickup8 |
+| CITY-02 | 16159 | 0 | TRICK | 2026-09-21T03:17:45.633819+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_dispatch_pickup12 |
+| RANDOM-03 | 1613 | 0 | GENERAL | 2026-09-21T03:21:00.367426+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | generic_chain_ranks |
+
+All full horizons, strict1s, four physical cores per run, below32decimalGB.
+CITY01 seeds0/2/4/6 are8378/8367/8374/8386; the selected seed6 is34tasks below
+published8420, a best-seed record rather than a matched configuration gain.
+CITY02 pickup12 reaches16159 from15797 (+2.29%), max825.46ms; the full control
+is identical. RANDOM03 general remaining-chain ranks reach1613 from1484
+(+8.69%), max191.37ms, overtaking the1541 field result. The same rank change
+slightly loses on RANDOM01/02, so this is not a universal improvement.
+RANDOM01 generic portfolio ties613 with mean74.75ms and max136.31ms; prefer
+that generic configuration at equal throughput while retaining the earlier
+field record. [General comparison](sparse-search/full-comparison.json),
+[CITY01 selection](city-game/city-01-pickup8-seeds-selected.json),
+[CITY02 selection](city-game/city-02-pickup12-selected.json).
+
+## Combining general changes with explicit fields
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| RANDOM-01 | 621 | 0 | TRICK | 2026-09-21T03:33:30.391404+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_nms_pickup4 |
+| RANDOM-02 | 1160 | 0 | TRICK | 2026-09-21T03:33:17.028428+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_nms_pickup4 |
+| RANDOM-03 | 1890 | 0 | TRICK | 2026-09-21T03:33:55.104927+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_kk_chain_pickup4 |
+
+RANDOM01/02 pickup4 on NMS arrows reaches621/1160, compared with613/1123.
+RANDOM03 chain ranks with KK forward guidance reaches1841, or1890with pickup4,
+compared with the1613 generic chain-rank control (+17.17%). All full600/600/800
+steps pass1s; selected maxima201.28/185.37/197.97ms. All whole controls reproduce.
+Keep generic613/1084/1613 separately. These are one-seed selected configurations;
+published NMS639/1221/2334 remains ahead and is not a matched local comparison.
+[Selection and resources/waiting](sparse-search/field-interaction-selected.json).

@@ -24,3 +24,14 @@ All1000/2000/5000steps, strict1000ms,32decimalGB, four bound physical cores per
 case on shared EPYC9354. Matrices run cases concurrently on disjoint cores.
 The separate RANDOM-05 solver is untouched. No known horizon or short-task
 selector is added. Complete runs and activation/resource/waiting evidence only.
+
+Dense results, all twelve full runs valid under1s: RANDOM04 linear1503/1480/1494
+versus squared1622/1645/1512, mean+6.75%, all three pairs positive. Select squared
+for the overall1645 record, retaining generic1503 separately. RANDOM05 linear
+2574/2608/2528 versus squared2596/2571/2583, mean+0.52%, two positive/one negative;
+keep the existing2608 best with linear weights. All six control trajectories
+reproduce prior sources. The first RANDOM05 replication allocation was rejected
+before simulation (16requested vs64visible cores); unchanged retry onresearch44
+passed. [Complete summary](three-seed-summary.json). GAME completed: equal10080, linear13314, squared14471, squared+chain14664.
+All four full cases pass1s; equal-control whole trace identical. Select14664
+over the separate11146 scheduling branch; no claim their effects add.
