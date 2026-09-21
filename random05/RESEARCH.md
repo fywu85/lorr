@@ -1660,3 +1660,24 @@ compare off/one/two passes on all five general and trick profiles, preserving
 full fixed budgets, deadlines, source controls and held-out exclusions.
 
 Source159/307d5cc9 passes56.13s regression, including the explicit ancestor-retreat witness. Binary6a4346d5600610bfd912c53cf435cada0ab35a70894c513b627e2cd585cec425. Thirty full general/trick cases compare0/1/2 complete retry passes across all five instances. Existing fixed work and strict deadlines are preserved, and face cycles remain disabled to isolate this change. All ten off controls have frozen six-field references.
+
+
+## 2026-09-21: prefix progress in bounded window search (source160 hypothesis)
+
+The existing window progress objective prefers earlier reductions of remaining
+chain cost only when a complete repair ties on primary cost and terminal
+potential. Its A* proposer nevertheless discarded equal-cost paths arriving at
+the same time, pose and task stage. Optional `R05_WINDOW_SEARCH_PROGRESS=1`
+(default0, requires `R05_WINDOW_PROGRESS_TIE=1`) retains the prefix with the smaller
+sum of raw remaining chain potentials and uses that sum after f/h in heap ties.
+Primary edge costs, weighted heuristic, fixed expansion budget and complete-plan
+acceptance are unchanged. This is a general mechanism with no geometry or horizon
+constants. Same-state prefix dominance is exact; bounded/weighted A* does not
+promise a globally optimal tertiary score. Off-mode integrals remain zero.
+
+Regression covers exhaustive one-agent primary optimality with repeated goals,
+local edge prices and completion charges, plus worker/heap/cache/checkpoint
+invariance, two-order component salvage and exhausted expansion budgets. Full
+RANDOM-01/02 and selected RANDOM-03 comparisons are required before promotion;
+there is no throughput claim yet. Larger-label memory and search overhead are
+explicit risks, especially near the strict one-second bound.

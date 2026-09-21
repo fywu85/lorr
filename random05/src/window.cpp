@@ -42,7 +42,8 @@ Cost path_cost(const Graph& g,const Config& cfg,const Chain* chain,int stage,con
         stage=arrived(chain,stage,path[t]);
         // A tertiary preference for progress earlier in the complete window.
         // It never trades a worse primary path cost or terminal potential for
-        // apparent early progress, and does not alter the bounded A* search.
+        // apparent early progress. Search-prefix tie-breaking is independently
+        // optional and still submits a complete plan to this same evaluator.
         if(cfg.window_progress_tie && chain)
             value.integral+=chain->cost(g,stage,path[t]/4,path[t]%4);
     }
@@ -73,11 +74,12 @@ struct Reservations {
         return from==to || other<0 || owner(t+1,from)!=other;
     }
 };
-struct Node {float f,h,g;int id,time,state,stage;};
+struct Node {float f,h,g;int id,time,state,stage;double integral;};
 struct Greater {
     bool operator()(const Node& a,const Node& b) const {
         if(a.f!=b.f)return a.f>b.f;
         if(a.h!=b.h)return a.h>b.h;
+        if(a.integral!=b.integral)return a.integral>b.integral;
         if(a.time!=b.time)return a.time<b.time;
         return a.id>b.id;
     }
@@ -95,6 +97,7 @@ struct SearchMemo {
 };
 struct Search {
     std::vector<float> costs;
+    std::vector<double> integrals;
     std::vector<int> parent;
     std::vector<uint32_t> seen;
     std::vector<Node> heap;
@@ -177,6 +180,7 @@ struct Search {
         const size_t size=size_t(horizon+1)*stages*g.states;
         if(size>size_t(std::numeric_limits<int>::max()))throw std::runtime_error("window state index overflow");
         if(costs.size()<size){costs.resize(size);parent.resize(size);seen.resize(size,0);}
+        if(cfg.window_search_progress && integrals.size()<size)integrals.resize(size);
         if(++epoch==0){std::fill(seen.begin(),seen.end(),0);++epoch;}
         heap.clear();
         if(!chain)stage=0;
@@ -198,21 +202,33 @@ struct Search {
             const int hops=g.hop(chain->goals[k],s/4)+completion_hops[k];
             return route+cfg.window_completion_price*std::min(horizon-time,hops);
         };
-        auto push=[&](int time,int k,int s,float cost,int previous) {
+        auto push=[&](int time,int k,int s,float cost,int previous,double prefix_integral) {
             int id=(time*stages+k)*g.states+s;
-            if(seen[id]==epoch && costs[id]<=cost)return;
+            double integral=0;
+            if(cfg.window_search_progress) {
+                integral=prefix_integral;
+                if(time>0 && chain && k<stages-1)
+                    integral+=heuristic_rows[k]?heuristic_rows[k][s]:chain->cost(g,k,s/4,s%4);
+            }
+            // At the same time/pose/task stage, every continuation is shared.
+            // An equal-primary-cost prefix with less integrated remaining work
+            // dominates the older prefix under the existing tertiary objective.
+            // This does not claim a global tertiary optimum for bounded A*.
+            if(seen[id]==epoch && (costs[id]<cost || (costs[id]==cost &&
+               (!cfg.window_search_progress || integrals[id]<=integral))))return;
             seen[id]=epoch;costs[id]=cost;parent[id]=previous;
+            if(cfg.window_search_progress)integrals[id]=integral;
             const float h=estimate(k,s,time);
             // This changes only proposal search priority. Whole-group acceptance
             // still compares the original unweighted complete-window objective.
             // At weight1 preserve the exact arithmetic of the reference search.
             const float priority=cfg.window_heuristic_weight==1?cost+h:cost+cfg.window_heuristic_weight*h;
-            insert({priority,h,cost,id,time,s,k},cfg.window_heap4);
+            insert({priority,h,cost,id,time,s,k,integral},cfg.window_heap4);
         };
-        push(0,stage,state,0,-1);int count=0;
+        push(0,stage,state,0,-1,0);int count=0;
         while(!heap.empty() && count<cfg.window_expansions) {
             const Node node=remove(cfg.window_heap4);
-            if(costs[node.id]!=node.g)continue;
+            if(costs[node.id]!=node.g || (cfg.window_search_progress && integrals[node.id]!=node.integral))continue;
             ++count;++expanded;
             const int s=node.state,k=node.stage,t=node.time;
             if(t==horizon) {
@@ -224,7 +240,7 @@ struct Search {
             const std::array<int,4> options={forward<0?-1:forward*4+dir,cell*4+(dir+1)%4,cell*4+(dir+3)%4,s};
             for(int next:options)if(next>=0 && allowed(t,cell,next/4)) {
                 float cost=action_cost(g,cfg,s,next,chain && k<int(chain->goals.size())?chain->goals[k]:-1);
-                push(t+1,arrived(chain,k,next),next,node.g+cost,node.id);
+                push(t+1,arrived(chain,k,next),next,node.g+cost,node.id,node.integral);
             }
         }
         // A failed bounded repair preserves the entire previously legal plan.

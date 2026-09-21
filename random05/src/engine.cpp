@@ -182,6 +182,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(progress_tie<0 || progress_tie>1 || (progress_tie && !c.window))
         throw std::invalid_argument("window progress tie-break requires an enabled window and a boolean value");
     c.window_progress_tie=progress_tie;
+    const int search_progress=integer("R05_WINDOW_SEARCH_PROGRESS",0);
+    if(search_progress<0 || search_progress>1 || (search_progress && !c.window_progress_tie))
+        throw std::invalid_argument("window search progress needs progress tie-breaking and a boolean value");
+    c.window_search_progress=search_progress;
     const int seed_merge=integer("R05_WINDOW_SEED_MERGE",0);
     if(seed_merge<0 || seed_merge>1 || (seed_merge && !c.window))
         throw std::invalid_argument("window seed merging requires an enabled window and a boolean value");

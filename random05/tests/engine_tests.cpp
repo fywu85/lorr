@@ -2215,6 +2215,21 @@ void window_configuration() {
         require(rejected,"window progress ties accepted a missing window");
     }
     {
+        Setting progress("R05_WINDOW_PROGRESS_TIE","1"),search("R05_WINDOW_SEARCH_PROGRESS","1"),
+            rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_search_progress,"general search progress was rejected");
+        Setting disabled("R05_WINDOW_PROGRESS_TIE","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"search progress accepted a disabled acceptance objective");
+    }
+    for(const char* value:{"-1","2"}) {
+        Setting search("R05_WINDOW_SEARCH_PROGRESS",value);
+        auto general=environment(5,5,4);general.trick_instance="RANDOM-03";bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"search progress accepted a non-boolean value");
+    }
+    {
         Setting invalid("R05_WINDOW_PROGRESS_TIE","2");
         auto general=environment(5,5,4);general.trick_instance="RANDOM-03";bool rejected=false;
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
@@ -2492,6 +2507,7 @@ void window_local_goal_optimum() {
     // Exhaustive finite-horizon dynamic programming independently checks the
     // bounded A* repair and complete-plan evaluator on a changing goal chain.
     // Both repeated goals and direction-dependent local prices are exercised.
+    for(bool search_progress:{false,true})
     for(int memo_capacity:{0,512})for(float completion_price:{0.f,.125f,.5f,2.f})for(bool nearby:{false,true}) {
     auto e=environment(5,5,1);e.trick_instance="RANDOM-03";
     e.curr_states[0].orientation=0;
@@ -2500,6 +2516,7 @@ void window_local_goal_optimum() {
     cfg.window=12;cfg.window_keep=3;cfg.window_islands=1;cfg.window_iterations=4;cfg.window_query_cache=memo_capacity;
     cfg.window_neighborhood=1;cfg.window_expansions=50000;cfg.threads=1;
     cfg.wait_cost=2;cfg.turn_cost=2;cfg.cost_cache=true;cfg.window_completion_price=completion_price;
+    cfg.window_progress_tie=search_progress;cfg.window_search_progress=search_progress;
     Engine engine(cfg);engine.initialize(&e);std::vector<Action> actions;std::vector<int> schedule;
     engine.compute(&e,actions,schedule);
     require(schedule==std::vector<int>{1},"single-agent local guidance changed the assignment");
@@ -2609,7 +2626,19 @@ void window_reproducibility() {
     const auto annealed_progress=simulate(cfg,8,5,5,true);
     cfg.threads=1;
     require(annealed_progress==simulate(cfg,8),"annealed progress ties depend on worker scheduling");
-    cfg.window_progress_tie=false;cfg.window_temperature=0;
+    cfg.window_temperature=0;cfg.window_search_progress=true;
+    cfg.window_repair_orders=2;cfg.window_component_repair=2;
+    cfg.window_query_cache=0;cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+    const auto prefix_progress=simulate(cfg,8,5,5,true);
+    cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+    require(prefix_progress==simulate(cfg,8),"search progress depends on workers, caching, heap or storage");
+    cfg.window_query_cache=4096;
+    require(prefix_progress==simulate(cfg,8,5,5,true),"search progress changed with memoization or checkpoint restoration");
+    cfg.window_expansions=1;
+    const auto bounded_progress=simulate(cfg,8,5,5,true);cfg.threads=1;
+    require(bounded_progress==simulate(cfg,8),"bounded failed progress searches depend on worker scheduling");
+    cfg.window_expansions=800;cfg.window_query_cache=0;cfg.window_repair_orders=1;cfg.window_component_repair=0;
+    cfg.window_search_progress=false;cfg.window_progress_tie=false;cfg.window_temperature=0;
     cfg.guidance="lanes";cfg.goal_local_radius=2;cfg.goal_local_mix=.5;
     const auto local_guidance=simulate(cfg,8,5,5,true);
     cfg.threads=2;cfg.cost_cache=false;cfg.window_heap4=true;
