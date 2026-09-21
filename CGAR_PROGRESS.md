@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T11:23:21.966990+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T11:52:22.749757+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -19,7 +19,7 @@ use eight physical cores; the other selected rows use four.
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
 | RANDOM-04 | 2,059 | 2,547 | 2,802 | 743 | 0 | 283.86 |
-| RANDOM-05 | 3,065 | 3,050 | 3,355 | 290 | 10 | 709.47 |
+| RANDOM-05 | 3,130 | 3,050 | 3,355 | 225 | 10 | 695.18 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
 are selected seed maxima, not averages of one universal configuration. The new
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-112321.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-115222.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -58,7 +58,7 @@ this is a deliberate fairness tradeoff, not a starvation-free claim. Held and
 started tasks remain protected. Known-horizon admission loses on GAME and CITY-02.
 [Replication](experiments/allmaps-20260920/game-fleet/dispatch-three-seed-summary.json).
 
-RANDOM-05 now reaches **3,065** (selected seed 10) with an explicit known-horizon admission trick
+The previous RANDOM-05 frontier reached **3,065** (selected seed 10) with an explicit known-horizon admission trick
 composed with complete-chain scoring. The mean-margin variant adds 16 tasks to the
 identical 3,027 control on seed 0. Its three-seed aggregate gain is 0.19%, with
 one loss. A declared seed scan gives 2,988/3,019/3,065/2,913 on seeds 6/8/10/12.
@@ -221,3 +221,15 @@ seed with consistent oracle units. No composition has yet been implemented.
 Fable was retried in the same authorized Claude Code session after 16 hours, but
 still reports exhausted usage credits. No review findings were produced.
 [Consultation receipt](experiments/allmaps-20260920/fable-followup/turn47/metadata.json).
+
+2026-09-21T11:37 UTC — Full RANDOM-05 paid-action scoring loses:3065control,
+2544paid,3018strict-wait-only,2553both. Four valid full2000 cases under1s;
+no frontier promotion. See allmaps/chain-paid/first-results.json. Dynamic task-cap
+and action-price matrices remain separate experiments, with their selected controls.
+
+2026-09-21 — RANDOM-05 reaches **3,130** completed tasks with the explicit700-task
+admission cap, against an identical3,065 control trajectory on seed10 (+2.12%).
+The full2000-step run has585.66ms mean,695.18ms maximum entry time and240MB peak RSS.
+The assignment audit preserves all held tasks; agep90 remains2000, so this is no
+starvation-free claim. Caps600/750 and all RANDOM04 caps lose. Seeds0/2 replication
+is declared. [Evidence](experiments/allmaps-20260920/task-cap/first-results.json).

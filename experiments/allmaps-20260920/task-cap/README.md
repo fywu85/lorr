@@ -38,3 +38,25 @@ fixed, including original scheduler pricing and temporal score. No paid-chain,
 new exact assignment, or window experiment is composed. Full1000/2000steps,
 strict1000ms,4 physical cores/case,32decimalGB and node-local logs. No throughput
 claim before full verification; repeat any positive signal on additional seeds.
+
+RANDOM04 full results: control2059; caps600/650/675=1941/1758/1911.
+All four valid under1s, independent admission audits pass and control repeats
+its full selected trajectory. No RANDOM04 promotion.
+
+RANDOM05 seed10 full results: control3065, cap600=3032, **cap700=3130**,
+cap750=2985. All four valid; the control repeats its full prior trajectory.
+The selected-seed improvement is65tasks(+2.12%), with585.66ms mean,695.18ms maximum,
+239,919,104-byte peak RSS. The independent2000-dispatch audit confirms at most700
+active assignments, all held tasks preserved, and3776distinct admitted tasks.
+Existing31-robot capacity parking remains unchanged. Outstanding-task agep90 is
+still2000; this is not starvation-free. Cap700 is promoted as an explicit trick,
+with exact profile inbest-random05.json. Seeds0and2 are declared matched replications
+against the identical uncapped profile, not selected on their outcomes.
+
+A bounded follow-up is declared before outcomes: selected seed10 cap700 control
+versus caps625/650/675. All other settings and full-run requirements remain fixed.
+The cap700 seed0/2 replication runs independently; this is a parameter search on
+the development seed, not a held-out generalization claim. In the first matrix,
+cap700 reduces observed pickup delay71.85->42.23steps and pre-pickup forward
+work89,352->48,831 actions, but total forward share also falls28.82%->27.90%.
+That does not establish that the throughput gain comes from less congestion.

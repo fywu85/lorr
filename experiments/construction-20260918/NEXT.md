@@ -117,3 +117,35 @@ f5049ddd0f2ac55f01f2493076f9538bca1acaa817beda5aff8a6a0c890234bc.
 Do not edit while queued matrices await dispatch. --local-log-spool archives full
 logs after exit including failures; strict time limits include actual logging.
 EarlierR02timeout2632ms retained; cause not proven, localspoolrepeatvalid1164 loses.
+
+## Update 2026-09-21T11:54:19.212956+00:00
+
+New selected RANDOM05=3130seed10, explicit taskcap700, source0962671f. Full2000,
+mean585.66ms,max695.18ms,RSS239919104bytes; held-task audit passed, agep90still2000.
+Control3065 exactwholetrace. Cap6003032,cap7502985. R04allcapslose1941/1758/1911
+vs2059. Canonicalprofile task-cap/best-random05.json. Proof115222, BEST_HISTORYupdated.
+Cap700replicationseeds0/2jobs8902775/76 usesoldqualified096. Nearbycaps625/650/675
+versus700seed10declaredtask-cap/random-05-neighbors-v3.json; submissionnext.
+PaidR05comparisonalllose2544/3018/2553vs3065, allvalid. ActionpriceR01
+turn40/wait20/both647/690/677vs693; R03 1799/1806/1575vs1982. Allvalid, no promotion.
+
+General next-movement commitments sourcee66daa2f065e2b9589f1e2c972c3437f2e636f2d
+FULL40hash/regressionqualified11:48:25UTC. Binarya7c3a6d7b8419cd833ef75347d608803d055737b6a83beda26884ee014410fd4.
+CGAR_TEMPORAL_MOVE_PROMISES0off,1nextFWonly,2nextFW/waitoccupancy. Replanssuffix,
+exactpose+taskgoalguard, priorityforcurrentCGARprotection+monotonecollisionreset.
+Seedsindex0aswellasalternativesretainpromise. Idlewaitmayrotate. Legacyhistory/
+windowincompatible; commonfutures/regional/branch/paidchaincompositions tested.
+19200serial/parallelactions,2412services,5645retainedFW,2853wait,357resets,
+occupiedcycle/changedtaskgoal/protectedreset/deadline/defaultidentitytested.
+No newfullpipelineclaim; itisCGAR'stemporalplanwithone-actionmotioncommitments.
+Rawruns/cgar-move-promises-build-v1-20260921, proofmove-promises/build-v1.
+R04seed0three-armjobs8902767/68 andR05seed10jobs8902769/70: uncappedcontrol,
+mode1,mode2. Declaredbeforecap700win, keeporiginalcontrols2059/3065.
+
+Warehouse+Sortation newwidergroupfullmatrices each2arms: currentwidth32groups64
+versuswidth64groups32 (2048participantceiling). Allotherselectedoptionsfixed.
+Oldqualified311d0480build. WH8cores5000steps jobs8902771/72; Sortation8cores5000
+steps8902773/74. Originalcontrols155173/150894; localspool. NewlyhashedWarehouse
+manifestwarehouse-sortation-matching/inputs-WAREHOUSE.json. Controltimeoutsfail.
+Noactivebuild, no sourceedits pending. Sourcee66andlatestdocsawaitcheckpoint/push;
+last ownpush602d6289. SeeACTIVE_JOBS for livework. Never touch otheragent files/jobs.

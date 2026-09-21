@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:16",
+    "-l",
+    "exclusive=false,h_rt=01:45:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-random01-action-prices-full-v1-20260921/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-random01-action-prices-full-v1-20260921/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8902740\n"
+}

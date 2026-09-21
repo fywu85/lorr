@@ -20,3 +20,7 @@ control1982. Four bound physical cores per case, strict1000ms complete entry,
 new paid-chain flags absent. Controls must repeat their full selected trajectories.
 No success is claimed before verification. Promote only full valid runs; any
 positive result will receive a separate matched-seed comparison.
+
+Full results: RANDOM01 control693; turn40=647; wait20=690; both677.
+RANDOM03 control1982; turn40=1799; wait20=1806; both1575. All eight valid,
+controls repeat whole selected trajectories, no promotion. Keep current prices.

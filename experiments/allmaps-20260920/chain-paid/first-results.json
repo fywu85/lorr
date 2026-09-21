@@ -1,7 +1,10 @@
 {
-  "checked_utc": "2026-09-21T11:23:21.889382+00:00",
+  "checked_utc": "2026-09-21T11:37:52.642026+00:00",
   "source_commit": "311d04800c369f227407b63641c1c4f0a7102186",
-  "evidence": "results/random04-chain-paid-full-v1/verification.json",
+  "evidence": [
+    "results/random04-chain-paid-full-v1/verification.json",
+    "results/random05-chain-paid-full-v1/verification.json"
+  ],
   "rows": [
     {
       "instance": "RANDOM-04",
@@ -62,6 +65,46 @@
         "ccr": 15.856285714285715,
         "wait": 24.897285714285715
       }
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_current_control",
+      "seed": 10,
+      "tasks": 3065,
+      "max_entry_seconds": 0.71439374,
+      "peak_rss_bytes": 239132672,
+      "trajectory_sha256": "30882b2d79ace1475b6a292f3c90799cf13113fb9b7cf8b51b64cd0b3d8cbdb9",
+      "evidence": "results/random05-chain-paid-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_paid",
+      "seed": 10,
+      "tasks": 2544,
+      "max_entry_seconds": 0.580624818,
+      "peak_rss_bytes": 238542848,
+      "trajectory_sha256": "aa986707fcf895e25692f9824d2186e6c8c7aa16bde3631356619052ad3aaf7f",
+      "evidence": "results/random05-chain-paid-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_strict",
+      "seed": 10,
+      "tasks": 3018,
+      "max_entry_seconds": 0.68826122,
+      "peak_rss_bytes": 239443968,
+      "trajectory_sha256": "ad12b73ca57b05e9a3a5d89da56a6c12f276cbe232bd8a5a953329f061e5d69a",
+      "evidence": "results/random05-chain-paid-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_paid_strict",
+      "seed": 10,
+      "tasks": 2553,
+      "max_entry_seconds": 0.590098473,
+      "peak_rss_bytes": 238596096,
+      "trajectory_sha256": "65a11ca4a09fa70a3fa8150ca1d3fa527f069b485f9897ece83b45286f1f9251",
+      "evidence": "results/random05-chain-paid-full-v1/verification.json"
     }
   ],
   "decision": "All candidates lose; no promotion."

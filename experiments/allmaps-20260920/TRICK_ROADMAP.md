@@ -7,16 +7,16 @@ than matched competitor runs. Every selected profile requires --trick INSTANCE.
 
 | Instance | Selected full strict1s | Next work |
 |---|---:|---|
-| WAREHOUSE | 155173 | Preserve qualified eight-core profile; +5% remains a stretch. |
-| SORTATION | 150894 | Runtime alternative 150865 has more measured deadline headroom. |
+| WAREHOUSE | 155173 | Qualified eight-core profile; bounded wider assignment comparison running. +5% remains a stretch. |
+| SORTATION | 150894 | Bounded wider assignment comparison running; runtime alternative150865 retains more deadline headroom. |
 | CITY-01 | 8440 | Wider matching and known-horizon transfer lose; keep current profile. |
 | CITY-02 | 16315 | Budget2 gain replicates; lower lane prices, horizon triage and wider matching lose. |
 | GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
-| RANDOM-01 | 693 | Retained-tail refresh replicates; exact chain assignment loses. Turn/wait price interaction queued. |
+| RANDOM-01 | 693 | Retained-tail refresh replicates; exact assignment and turn/wait price interactions lose. |
 | RANDOM-02 | 1215 | Delay, tail refresh, annealing, wider matching and exact chain assignment lose. |
-| RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment loses. Turn/wait price interaction queued. |
-| RANDOM-04 | 2059 | H20 is best selected seed, H15 has better mean; paid-chain scoring loses. Dynamic task cap queued. |
-| RANDOM-05 | 3065 | Chain-seed windows and exact assignment lose. Paid-chain scoring and dynamic task caps running. |
+| RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment and turn/wait price interactions lose. |
+| RANDOM-04 | 2059 | H20 is best selected seed, H15 has better mean; task caps lose. One-action motion commitments running. |
+| RANDOM-05 | 3130 | Task cap700 gains65 on seed10; seeds0/2 replication and nearby caps queued. One-action motion commitments running on prior uncapped control. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
 then a refreshed retained tail (+1.88%, all three positive). More attempts and

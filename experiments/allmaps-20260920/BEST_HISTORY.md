@@ -673,3 +673,11 @@ Previous selected maximum 1939. Full 800 steps; 4 physical cores, strict 1,000 m
 | 1982 | 2026-09-21T10:15:32.778021+00:00 | [c302547d](https://github.com/fywu85/lorr/commit/c302547df0651a2d662b269aa6d9a668addc14f2) | trick_delay3, seed 2, `--trick RANDOM-03` | [verification](results/random03-window-delay-seeds-full-v1/verification.json) |
 
 Previous selected maximum 1967. Full 800 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 662.92 ms. Delay3windowrepair replicates on seeds0/2/4:1967/1982/1948vs1939/1900/1870,+3.293%aggregate,allpositive. Newselectedmaximum1982seed2. Local-log-spool controls repeat full earlier trajectories.
+
+## RANDOM-05 3130 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3130 | 2026-09-21T11:49:47.972951+00:00 | [0962671f](https://github.com/fywu85/lorr/commit/0962671fee93801d104a0f35d723274ecc9994c7) | trick_task_cap700, seed 10, `--trick RANDOM-05` | [verification](results/random05-task-cap-full-v1/verification.json) |
+
+Previous selected maximum 3065. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 695.18 ms. RANDOM-05 seed10 cap700 reaches3130 vs exact3065 control; explicit trick with held tasks preserved, full strict1s max695.18ms. Selected-seed gain; seeds0/2 replication declared.

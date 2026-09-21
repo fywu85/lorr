@@ -32,3 +32,7 @@ explicit --trick INSTANCE. No new scheduler-chain cost or rolling-window repair
 is composed into these comparisons. No throughput claim before full verification.
 
 RANDOM04 full results: current2059; terminal chain1908; paid chain1714; paid chain with strict improving waits1683. All valid, max286.28ms, control exact full-trace identity. Paid scoring loses against its proper terminal-chain control too. No promotion. RANDOM05 pending.
+
+RANDOM-05 seed10 full2000 comparison completed: control3065, paid2544,
+strict-wait-only3018, paid+strict2553. All four valid under1s (maximum714.394ms).
+Paid scoring reduces completed tasks sharply; neither switch is promoted.

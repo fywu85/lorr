@@ -1,0 +1,338 @@
+{
+  "checked_utc": "2026-09-21T11:52:15.973964+00:00",
+  "rows": [
+    {
+      "variant": "trick_current_control",
+      "instance": "RANDOM-04",
+      "seed": 0,
+      "tasks": 2059,
+      "valid": true,
+      "max_entry_seconds": 0.281333956,
+      "peak_rss_bytes": 173998080,
+      "trajectory_sha256": "ad244aee69dd6a19659d22344e66c47836ab00ae639c588ad13dd81be084d206",
+      "evidence": "results/random04-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "selected_control_trajectory_exact": true,
+      "movement_percent": {
+        "fw": 38.02,
+        "cr": 23.00914285714286,
+        "ccr": 13.826285714285714,
+        "wait": 25.144571428571428
+      }
+    },
+    {
+      "variant": "trick_task_cap600",
+      "instance": "RANDOM-04",
+      "seed": 0,
+      "tasks": 1941,
+      "valid": true,
+      "max_entry_seconds": 0.284276649,
+      "peak_rss_bytes": 174534656,
+      "trajectory_sha256": "3a6281ac4fb4891bcf14ca4d8b079b12c85e13f709bfe5ffcfdaae5c08066d16",
+      "evidence": "results/random04-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "movement_percent": {
+        "fw": 33.66,
+        "cr": 24.93942857142857,
+        "ccr": 14.54042857142857,
+        "wait": 26.860142857142858
+      },
+      "random_task_cap": {
+        "configuration": {
+          "limit": "600",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "800",
+          "limit": "600",
+          "checks": "801",
+          "admitted": "2210",
+          "idle_robot_steps": "80100",
+          "peak_active": "600"
+        },
+        "independent_audit": {
+          "steps": 1000,
+          "peak_active": 600,
+          "min_active": 600,
+          "mean_active": 600.0,
+          "distinct_admitted_tasks": 2538,
+          "idle_robot_steps": 100000,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      }
+    },
+    {
+      "variant": "trick_task_cap650",
+      "instance": "RANDOM-04",
+      "seed": 0,
+      "tasks": 1758,
+      "valid": true,
+      "max_entry_seconds": 0.28605413,
+      "peak_rss_bytes": 173768704,
+      "trajectory_sha256": "6be33face3b11d37fc79ab0ab29d6ea7f8da10c8eea047daa94182e243c16062",
+      "evidence": "results/random04-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "movement_percent": {
+        "fw": 33.73885714285714,
+        "cr": 24.899142857142856,
+        "ccr": 14.532428571428571,
+        "wait": 26.829571428571427
+      },
+      "random_task_cap": {
+        "configuration": {
+          "limit": "650",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "800",
+          "limit": "650",
+          "checks": "801",
+          "admitted": "2121",
+          "idle_robot_steps": "40050",
+          "peak_active": "650"
+        },
+        "independent_audit": {
+          "steps": 1000,
+          "peak_active": 650,
+          "min_active": 650,
+          "mean_active": 650.0,
+          "distinct_admitted_tasks": 2406,
+          "idle_robot_steps": 50000,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      }
+    },
+    {
+      "variant": "trick_task_cap675",
+      "instance": "RANDOM-04",
+      "seed": 0,
+      "tasks": 1911,
+      "valid": true,
+      "max_entry_seconds": 0.268382115,
+      "peak_rss_bytes": 174010368,
+      "trajectory_sha256": "38b1e6a0b286e1047d1e5eeb8fb61b8976233170ba0cfb6f5002b426cee6b4ae",
+      "evidence": "results/random04-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "movement_percent": {
+        "fw": 35.817,
+        "cr": 23.835571428571427,
+        "ccr": 14.217571428571429,
+        "wait": 26.129857142857144
+      },
+      "random_task_cap": {
+        "configuration": {
+          "limit": "675",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "800",
+          "limit": "675",
+          "checks": "801",
+          "admitted": "2292",
+          "idle_robot_steps": "20025",
+          "peak_active": "675"
+        },
+        "independent_audit": {
+          "steps": 1000,
+          "peak_active": 675,
+          "min_active": 675,
+          "mean_active": 675.0,
+          "distinct_admitted_tasks": 2585,
+          "idle_robot_steps": 25000,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      }
+    },
+    {
+      "variant": "trick_current_control",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 3065,
+      "valid": true,
+      "max_entry_seconds": 0.694834118,
+      "peak_rss_bytes": 240545792,
+      "trajectory_sha256": "30882b2d79ace1475b6a292f3c90799cf13113fb9b7cf8b51b64cd0b3d8cbdb9",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "selected_control_trajectory_exact": true,
+      "movement_percent": {
+        "fw": 28.8198125,
+        "cr": 19.8851875,
+        "ccr": 13.144125,
+        "wait": 38.150875
+      }
+    },
+    {
+      "variant": "trick_task_cap600",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 3032,
+      "valid": true,
+      "max_entry_seconds": 0.70671405,
+      "peak_rss_bytes": 239480832,
+      "trajectory_sha256": "1e294dd0ef47b5fd7671bee54348ce8b9b14b9ba5b1b05849420feec024f80e4",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "random_task_cap": {
+        "configuration": {
+          "limit": "600",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "1800",
+          "limit": "600",
+          "checks": "1801",
+          "admitted": "3355",
+          "idle_robot_steps": "360200",
+          "peak_active": "600"
+        },
+        "independent_audit": {
+          "steps": 2000,
+          "peak_active": 600,
+          "min_active": 600,
+          "mean_active": 600.0,
+          "distinct_admitted_tasks": 3628,
+          "idle_robot_steps": 400000,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      },
+      "movement_percent": {
+        "fw": 26.324625,
+        "cr": 21.1100625,
+        "ccr": 13.4806875,
+        "wait": 39.084625
+      }
+    },
+    {
+      "variant": "trick_task_cap700",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 3130,
+      "valid": true,
+      "max_entry_seconds": 0.695175945,
+      "peak_rss_bytes": 239919104,
+      "trajectory_sha256": "5f5019fad736c211168d7d4ed28a089cd8164344bc0f98a761d745d91d2b809e",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "random_task_cap": {
+        "configuration": {
+          "limit": "700",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "1800",
+          "limit": "700",
+          "checks": "1801",
+          "admitted": "3509",
+          "idle_robot_steps": "180567",
+          "peak_active": "700"
+        },
+        "independent_audit": {
+          "steps": 2000,
+          "peak_active": 700,
+          "min_active": 647,
+          "mean_active": 696.5335,
+          "distinct_admitted_tasks": 3776,
+          "idle_robot_steps": 206933,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      },
+      "movement_percent": {
+        "fw": 27.9011875,
+        "cr": 20.2320625,
+        "ccr": 13.1899375,
+        "wait": 38.6768125
+      }
+    },
+    {
+      "variant": "trick_task_cap750",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 2985,
+      "valid": true,
+      "max_entry_seconds": 0.70526116,
+      "peak_rss_bytes": 239026176,
+      "trajectory_sha256": "b845b1713787352fc328ca69d1344c9a783c3b69378e49d4030b4e207fe6b343",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "random_task_cap": {
+        "configuration": {
+          "limit": "750",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "1800",
+          "limit": "750",
+          "checks": "1801",
+          "admitted": "3402",
+          "idle_robot_steps": "98068",
+          "peak_active": "750"
+        },
+        "independent_audit": {
+          "steps": 2000,
+          "peak_active": 750,
+          "min_active": 666,
+          "mean_active": 739.488,
+          "distinct_admitted_tasks": 3651,
+          "idle_robot_steps": 121024,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      },
+      "movement_percent": {
+        "fw": 28.386125,
+        "cr": 20.0749375,
+        "ccr": 13.1210625,
+        "wait": 38.417875
+      }
+    }
+  ],
+  "decision": "RANDOM04 all caps lose. RANDOM05 cap700 promotes selected seed10 to3130 (+65,+2.1207%); cap600/750 lose. Replication on seeds0/2 declared separately."
+}
