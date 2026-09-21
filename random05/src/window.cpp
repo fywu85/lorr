@@ -9,6 +9,7 @@
 #include <limits>
 #include <numeric>
 #include <stdexcept>
+#include <unordered_set>
 
 namespace r05 {
 namespace {
@@ -233,15 +234,74 @@ struct Search {
 struct Island { Paths paths;Cost cost;uint64_t expansions=0,saved=0,memo_hits=0,query_tests=0;int accepted=0,skipped_sorts=0,cost_hits=0; };
 }
 
+std::vector<int> window_pickup_hints(const Graph& g,const SharedEnvironment& env,
+    const std::vector<int>& schedule,const std::vector<unsigned char>& active,int max_hops,float length_weight) {
+    if(schedule.size()!=size_t(env.num_of_agents) || active.size()!=schedule.size() || max_hops<0 ||
+       !std::isfinite(length_weight) || length_weight<0)
+        throw std::invalid_argument("invalid window pickup-hint inputs");
+    const int n=int(schedule.size());std::vector<int> hints(n,-1);
+    if(!max_hops)return hints;
+    std::unordered_set<int> claimed(schedule.begin(),schedule.end());
+    std::vector<int> available;
+    for(const auto& item:env.task_pool)if(!claimed.count(item.first) && item.second.idx_next_loc==0)
+        available.push_back(item.first);
+    std::sort(available.begin(),available.end());
+    std::vector<int> lengths(available.size(),0);
+    for(size_t j=0;j<available.size();++j) {
+        const auto& locations=env.task_pool.at(available[j]).locations;
+        for(size_t k=1;k<locations.size();++k)lengths[j]+=g.hop(g.from_grid[locations[k-1]],g.from_grid[locations[k]]);
+    }
+    struct Pair {float cost;int agent,task;};std::vector<Pair> pairs;
+    for(int a=0;a<n;++a)if(active[a] && schedule[a]>=0) {
+        const auto& task=env.task_pool.at(schedule[a]);int remaining=0,p=g.from_grid[env.curr_states[a].location];
+        if(task.idx_next_loc>=int(task.locations.size()))continue;
+        for(int k=task.idx_next_loc;k<int(task.locations.size());++k) {
+            const int goal=g.from_grid[task.locations[k]];remaining+=g.hop(p,goal);p=goal;
+        }
+        if(remaining>max_hops)continue;
+        for(size_t j=0;j<available.size();++j) {
+            const int goal=g.from_grid[env.task_pool.at(available[j]).locations.front()];
+            pairs.push_back({remaining+g.hop(p,goal)+length_weight*lengths[j],a,available[j]});
+        }
+    }
+    std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {
+        if(a.cost!=b.cost)return a.cost<b.cost;
+        if(a.agent!=b.agent)return a.agent<b.agent;
+        return a.task<b.task;
+    });
+    std::unordered_set<int> reserved;
+    for(const auto& pair:pairs)if(hints[pair.agent]<0 && reserved.insert(pair.task).second)
+        hints[pair.agent]=pair.task;
+    return hints;
+}
+
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
     const auto& g=*graph;const int n=int(initial.loc.size()),h=cfg.window;
+    std::vector<const Chain*> planning_chains=assigned_;
+    std::vector<std::unique_ptr<Chain>> forecast_chains(n);
+    int pickup_hints=0;
+    if(cfg.window_next_pickup_hops>0) {
+        std::vector<unsigned char> active(n,0);
+        for(int a=0;a<n;++a)active[a]=assigned_[a]!=nullptr;
+        const auto hints=window_pickup_hints(g,env,previous_task_,active,cfg.window_next_pickup_hops,cfg.length_weight);
+        for(int a=0;a<n;++a)if(hints[a]>=0) {
+            Task forecast=env.task_pool.at(previous_task_[a]);
+            forecast.locations.push_back(env.task_pool.at(hints[a]).locations.front());
+            forecast_chains[a]=std::make_unique<Chain>(g,forecast,cfg.cost_cache);
+            planning_chains[a]=forecast_chains[a].get();++pickup_hints;
+        }
+    }
+    // The pipeline initializer still obeys real task stages. Only the repair
+    // objective, guides and search see this optional extra pickup. The scheduler
+    // receives no speculative assignment and chooses afresh on the next step.
+
     // Initial calls have a weak or absent retained plan. Their declared fixed
     // budget can reserve headroom without any elapsed-time early return.
     const int iterations=env.curr_timestep<cfg.window_initial_steps && cfg.window_first_iterations>0
         ?cfg.window_first_iterations:cfg.window_iterations;
     auto agent_weight=[&](int a) {return score_weights_.empty()?1.0:score_weights_[a];};
     auto agent_cost=[&](int a,const std::vector<int>& path) {
-        auto cost=path_cost(g,cfg,assigned_[a],initial.stage[a],path);
+        auto cost=path_cost(g,cfg,planning_chains[a],initial.stage[a],path);
         const double weight=agent_weight(a);cost.total*=weight;cost.remaining*=weight;cost.integral*=weight;
         return cost;
     };
@@ -297,11 +357,11 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         // travelled distance here can favor stationary plans in crowded states;
         // LNS still uses its ordinary complete-path objective after seeding.
         double value=0;
-        for(int a=0;a<n;++a)if(assigned_[a]) {
+        for(int a=0;a<n;++a)if(planning_chains[a]) {
             int stage=initial.stage[a];
             for(int t=1;t<=h;++t) {
-                stage=arrived(assigned_[a],stage,paths[a][t]);
-                value+=agent_weight(a)*assigned_[a]->cost(g,stage,paths[a][t]/4,paths[a][t]%4);
+                stage=arrived(planning_chains[a],stage,paths[a][t]);
+                value+=agent_weight(a)*planning_chains[a]->cost(g,stage,paths[a][t]/4,paths[a][t]%4);
             }
         }
         return value;
@@ -372,7 +432,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         guides.assign(n,std::vector<int>(h+1));
         for(int a=0;a<n;++a) {
             int stage=initial.stage[a],state=initial.loc[a]*4+initial.dir[a];
-            guides[a][0]=state;const Chain* chain=assigned_[a];
+            guides[a][0]=state;const Chain* chain=planning_chains[a];
             for(int t=1;t<=h;++t) {
                 int cell=state/4,dir=state%4,forward=g.next[cell][dir],selected=state;
                 float best=std::numeric_limits<float>::infinity(),best_h=best;
@@ -440,8 +500,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 // explore uniformly. Neighbors follow current planned positions.
                 if(iteration%2)for(int k=0;k<3;++k) {
                     int a=int(random()%n);
-                    auto delay=[&](int b){return costs[b].total-agent_weight(b)*(assigned_[b]?
-                        assigned_[b]->cost(g,initial.stage[b],initial.loc[b],initial.dir[b]):0);};
+                    auto delay=[&](int b){return costs[b].total-agent_weight(b)*(planning_chains[b]?
+                        planning_chains[b]->cost(g,initial.stage[b],initial.loc[b],initial.dir[b]):0);};
                     if(delay(a)>delay(pivot))pivot=a;
                 }
                 auto spatial_group=[&]() {
@@ -517,7 +577,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 if(cfg.window_repair_orders==1) {
                     for(;planned<count;++planned) {
                         int a=group[planned];
-                        if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned],cfg.window_query_cache?&memo[a]:nullptr))break;
+                        if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned],cfg.window_query_cache?&memo[a]:nullptr))break;
                         reserve.set(a,replacement[planned],true);
                         const bool unchanged=cfg.window_cost_reuse && replacement[planned]==old[planned];
                         // Assignment, start stage and scoring weights are fixed
@@ -538,7 +598,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         int built=0;
                         for(;built<count;++built) {
                             const int k=order?count-1-built:built,a=group[k];
-                            if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr))break;
+                            if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr))break;
                             reserve.set(a,candidate[k],true);
                         }
                         Cost candidate_cost;
@@ -655,8 +715,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d cost_reused=%d expansions=%llu search_reused=%llu expansions_saved=%llu query_tests=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),accepted,skipped_sorts,cost_hits,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d pickup_hints=%d accepted=%d skipped_sorts=%d cost_reused=%d expansions=%llu search_reused=%llu expansions_saved=%llu query_tests=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),pickup_hints,accepted,skipped_sorts,cost_hits,
             (unsigned long long)expanded,(unsigned long long)memo_hits,(unsigned long long)saved,
             (unsigned long long)query_tests,islands[best].cost.total,base_cost.total);
 }

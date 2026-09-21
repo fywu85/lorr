@@ -1504,3 +1504,29 @@ then replicate any winner before promotion. No held-out input may select the
 perturbation. Regression checks topology, positive costs, directional ratios,
 mean-cost preservation, physical-score separation, worker/cache/checkpoint
 reproduction and the flag gate.
+
+
+## Visible next-pickup hints for windowed planning (source155 experiment)
+
+The window cost currently ends useful progress at the last stop of the assigned
+task. `R05_WINDOW_NEXT_PICKUP_HOPS` (default0, at most the window) optionally
+matches nearly finished robots to distinct currently visible, unassigned and
+unopened orders. Eligibility uses remaining cell hops. A deterministic global
+greedy pairing minimizes remaining current work plus approach and the existing
+task-length price. The selected next pickup is appended only to a temporary
+planning chain; the real task, its assignment and its completion events remain
+unchanged. The scheduler recomputes actual assignments normally on the next step.
+
+Only the window cost, blocker guides and bounded repair searches see the hint.
+The pipeline seed continues to track real task stages. This tests whether a
+completion forecast can prepare departure and avoid planning idle tails without
+pretending to know unreleased orders. No map identity or known final run length
+is needed, so the mechanism is general. It is distinct from real whole-task
+chaining. Combine with completion-price overrides only after separate design;
+that combination is currently rejected. Every declared repair still completes,
+and the complete paths retain the ordinary collision and kinematic checks.
+
+Tests check unique hints, claimed/opened-task exclusion, remaining-work bounds,
+read-only task pools, insertion-order independence, dense task turnover,
+worker/query-cache/checkpoint invariance and configuration guards. No measured
+throughput benefit is claimed before full comparisons.

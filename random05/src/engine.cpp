@@ -206,6 +206,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(!std::isfinite(c.window_heuristic_weight) || c.window_heuristic_weight<1 || c.window_heuristic_weight>4 ||
        (c.window_heuristic_weight!=1 && !c.window))
         throw std::invalid_argument("window heuristic priority weight requires an enabled window and weight1..4");
+    c.window_next_pickup_hops=integer("R05_WINDOW_NEXT_PICKUP_HOPS",0);
+    if(c.window_next_pickup_hops<0 || c.window_next_pickup_hops>c.window ||
+       (c.window_next_pickup_hops>0 && (!c.window || c.window_completion_price>0)))
+        throw std::invalid_argument("next-pickup hints need an enabled window, hop bound0..window and no completion-price override");
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);

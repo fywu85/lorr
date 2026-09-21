@@ -2173,6 +2173,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"weighted search accepted an invalid weight");
     }
+    {
+        Setting hints("R05_WINDOW_NEXT_PICKUP_HOPS","8"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_next_pickup_hops==8,"general next-pickup hint was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"next-pickup hint accepted a missing window");
+    }
+    for(const char* value:{"-1","9","33"}) {
+        Setting hints("R05_WINDOW_NEXT_PICKUP_HOPS",value);auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"next-pickup hint accepted an invalid hop bound");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2248,6 +2261,30 @@ void window_single_agent() {
     }
     require(completed==5,"window task-chain planner mishandled repeated waypoints");
 }
+void window_future_pickup_selection() {
+    auto env=environment(1,9,3);env.task_pool.clear();env.curr_states[0].location=0;
+    env.curr_states[1].location=8;env.curr_states[2].location=4;
+    auto add=[&](int id,std::vector<int> goals,int stage=0) {
+        Task task;task.task_id=id;task.locations=std::move(goals);task.idx_next_loc=stage;env.task_pool[id]=task;
+    };
+    add(10,{2});add(20,{6});add(99,{2,4},1);add(30,{0,1});add(40,{8,7});
+    const std::vector<int> schedule={10,20,99};const std::vector<unsigned char> active={1,1,0};
+    Config cfg;Graph graph(env,cfg);
+    const auto hints=window_pickup_hints(graph,env,schedule,active,2,.25f);
+    require(hints==std::vector<int>({30,40,-1}),"future pickup matching reused a task or chose claimed/opened work");
+    require(window_pickup_hints(graph,env,schedule,active,1,.25f)==std::vector<int>({-1,-1,-1}),
+            "future pickup eligibility ignored remaining cell-hop work");
+    require(window_pickup_hints(graph,env,schedule,active,0,.25f)==std::vector<int>({-1,-1,-1}),
+            "zero future-pickup budget was not a no-op");
+    require(env.task_pool.at(10).locations==std::vector<int>({2}) &&
+            env.task_pool.at(99).idx_next_loc==1 && env.task_pool.size()==5,
+            "forecast selection mutated real tasks");
+    auto reordered=env;reordered.task_pool.clear();
+    for(int id:{40,30,99,20,10})reordered.task_pool[id]=env.task_pool.at(id);
+    require(hints==window_pickup_hints(graph,reordered,schedule,active,2,.25f),
+            "future pickup hints depend on task-pool insertion order");
+}
+
 void window_local_goal_optimum() {
     // Exhaustive finite-horizon dynamic programming independently checks the
     // bounded A* repair and complete-plan evaluator on a changing goal chain.
@@ -2452,6 +2489,16 @@ void window_reproducibility() {
         require(weighted_search==simulate(cfg,8,5,5,true),"weighted proposal search changed checkpoint replay");
     }
     cfg.window_heuristic_weight=1;
+    cfg.window_completion_price=0;
+    for(int hops:{4,8})for(int orders:{1,2}) {
+        cfg.window_next_pickup_hops=hops;cfg.window_repair_orders=orders;
+        cfg.window_query_cache=0;cfg.threads=1;
+        const auto forecast=simulate(cfg,12,5,5,true);
+        cfg.window_query_cache=512;cfg.threads=3;
+        require(forecast==simulate(cfg,12),"next-pickup forecast depends on workers or query memoization");
+        require(forecast==simulate(cfg,12,5,5,true),"next-pickup forecast changed checkpoint replay");
+    }
+    cfg.window_next_pickup_hops=0;
     cfg.window_query_cache=0;cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_query_cache=512;
@@ -2528,7 +2575,7 @@ int main() {
     window_configuration();
     window_components();
     window_single_agent();
-    window_local_goal_optimum();
+    window_future_pickup_selection();window_local_goal_optimum();
     window_reproducibility();
     move_proposal_bias();
     ranked_task_progress();

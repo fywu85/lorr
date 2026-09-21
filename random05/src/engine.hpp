@@ -67,7 +67,7 @@ struct Config {
     int score_rank_steps=0;
     int window=0, window_keep=6, window_islands=32, window_iterations=24, window_neighborhood=8, window_expansions=20000;
     int window_starts=1, window_rounds=1, window_first_iterations=0, window_initial_steps=1, window_blocker_rotation=0;
-    int window_repair_orders=1, window_query_cache=0;
+    int window_repair_orders=1, window_query_cache=0, window_next_pickup_hops=0;
     bool window_reuse=false, window_fast_groups=false, window_heap4=false, window_merge=false;
     bool window_progress_tie=false, window_seed_merge=false, window_group_mix=false, window_path_reuse=false, window_cost_reuse=false;
     float window_temperature=0, window_completion_price=0, window_heuristic_weight=1;
@@ -180,6 +180,10 @@ struct Frame {
     std::vector<const Chain*> active_chains, plain_chains;
     std::vector<unsigned char> free_tasks;
 };
+// Distinct hypothetical next pickups drawn only from currently visible,
+// unassigned unopened tasks. This returns hints, never simulator assignments.
+std::vector<int> window_pickup_hints(const Graph& graph,const SharedEnvironment& env,
+    const std::vector<int>& schedule,const std::vector<unsigned char>& active,int max_hops,float length_weight);
 // Undirected interactions through the occupied cells on preferred goal routes.
 std::vector<std::vector<int>> priority_dependencies(const Graph& graph,const Frame& frame,
     const std::vector<const Chain*>& assigned,int preferred_edges);
