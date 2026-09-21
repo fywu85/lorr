@@ -1,0 +1,284 @@
+{
+  "checked_utc": "2026-09-21T18:30:28.558020+00:00",
+  "protocol_commit": "f74286e6ba0490b74e1ed975b2289c93c79ae690",
+  "candidate_source_commit": "027df4d9",
+  "all_valid": true,
+  "instance": "RANDOM-02",
+  "steps": 600,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "source_checks": {
+    "ours": {
+      "commit": "027df4d9",
+      "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/window.cpp",
+        "src/joint_moves.cpp"
+      ]
+    },
+    "baseline": {
+      "commit": "611aa2a6",
+      "binary_sha256": "22ab6415fe3ce8e43e3cd52e7db2846b4f96aad99a14592be5c4d0ad3551f545",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/window.cpp",
+        "src/joint_moves.cpp"
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "seed": 50017,
+      "ours": 1382,
+      "nms_repeats": [
+        1213,
+        1203
+      ],
+      "stronger_nms": 1213,
+      "gain_percent": 13.932399010717234,
+      "baseline": 1376,
+      "gain_over_baseline_percent": 0.43604651162789665
+    },
+    {
+      "seed": 50018,
+      "ours": 1348,
+      "nms_repeats": [
+        1198,
+        1182
+      ],
+      "stronger_nms": 1198,
+      "gain_percent": 12.520868113522532,
+      "baseline": 1338,
+      "gain_over_baseline_percent": 0.7473841554558991
+    }
+  ],
+  "aggregate_gain_percent": 13.231024471173791,
+  "runs": {
+    "seed50017-ours": {
+      "tasks": 1382,
+      "finished_utc": "2026-09-21T18:20:54.705038+00:00",
+      "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+      "latency_seconds": {
+        "mean": 0.44459302062666695,
+        "max": 0.699828291
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 5970.16241,
+        "system_seconds": 65.383669,
+        "peak_rss_kib": 346520,
+        "wall_seconds": 269.98246002569795,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50017-ours/summary.json"
+    },
+    "seed50017-baseline": {
+      "tasks": 1376,
+      "finished_utc": "2026-09-21T18:22:48.853942+00:00",
+      "binary_sha256": "22ab6415fe3ce8e43e3cd52e7db2846b4f96aad99a14592be5c4d0ad3551f545",
+      "latency_seconds": {
+        "mean": 0.6347904355700003,
+        "max": 0.94599008
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 8943.479828,
+        "system_seconds": 76.73143,
+        "peak_rss_kib": 336188,
+        "wall_seconds": 384.1321969050914,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50017-baseline/summary.json"
+    },
+    "seed50017-nms-repeat1": {
+      "tasks": 1213,
+      "finished_utc": "2026-09-21T18:26:05.519203+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.950457132696666,
+        "max": 0.9512365
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 18173.174075,
+        "system_seconds": 5.363461,
+        "peak_rss_kib": 1656388,
+        "wall_seconds": 570.9907794259489,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50017-nms-repeat1/summary.json"
+    },
+    "seed50017-nms-repeat2": {
+      "tasks": 1203,
+      "finished_utc": "2026-09-21T18:26:05.541429+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9504460426183334,
+        "max": 0.951119332
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 18176.065883,
+        "system_seconds": 5.297794,
+        "peak_rss_kib": 1654668,
+        "wall_seconds": 571.0040567647666,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50017-nms-repeat2/summary.json"
+    },
+    "seed50018-ours": {
+      "tasks": 1348,
+      "finished_utc": "2026-09-21T18:19:59.181674+00:00",
+      "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+      "latency_seconds": {
+        "mean": 0.3401302865683334,
+        "max": 0.455146014
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 6114.806888,
+        "system_seconds": 53.712582,
+        "peak_rss_kib": 358920,
+        "wall_seconds": 204.59042072854936,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50018-ours/summary.json"
+    },
+    "seed50018-baseline": {
+      "tasks": 1338,
+      "finished_utc": "2026-09-21T18:21:25.556149+00:00",
+      "binary_sha256": "22ab6415fe3ce8e43e3cd52e7db2846b4f96aad99a14592be5c4d0ad3551f545",
+      "latency_seconds": {
+        "mean": 0.48392082334499975,
+        "max": 0.642710043
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 8732.175959,
+        "system_seconds": 61.494985,
+        "peak_rss_kib": 341472,
+        "wall_seconds": 290.9652311448008,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50018-baseline/summary.json"
+    },
+    "seed50018-nms-repeat1": {
+      "tasks": 1198,
+      "finished_utc": "2026-09-21T18:26:05.469127+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9503871960000011,
+        "max": 0.95066795
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 18192.899938,
+        "system_seconds": 4.234491,
+        "peak_rss_kib": 1655844,
+        "wall_seconds": 570.8745303954929,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50018-nms-repeat1/summary.json"
+    },
+    "seed50018-nms-repeat2": {
+      "tasks": 1182,
+      "finished_utc": "2026-09-21T18:26:15.370967+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9503640065583341,
+        "max": 0.950614437
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 600,
+      "usage": {
+        "user_seconds": 18194.877363,
+        "system_seconds": 4.062574,
+        "peak_rss_kib": 1656344,
+        "wall_seconds": 570.8250404074788,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random02-fresh-validation-v1-split/seed50018-nms-repeat2/summary.json"
+    }
+  },
+  "caveat": "Frozen held-out task/start inputs on the same map and the stated allocation. These are not the colleague's private inputs.",
+  "baseline_source_commit": "611aa2a6",
+  "aggregate_gain_over_baseline_percent": 0.5895357406042745
+}

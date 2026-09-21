@@ -1,18 +1,16 @@
 # RANDOM-05 results
 
-**Current selected archived best:4,236tasks** (+33.54% versus matched NMS32),
-source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9), plannerseed0.
-A mild startup preference (rankpower.125 for250steps) adds39tasks to the4197profile.
-The explicit680active-order cap leaves all800robots movable; cutoffscale1/mix1,
-selected guidance and fixed search work remain unchanged. All2000steps pass
-independent replay, strict1s limits and resource checks. Mean563.658/max817.827ms,
-RSS490.156MB. Exact repetition passes. Seeds0/1/2/3 score4236/4051/4172/4096;
-their aggregate is0.791% below the previous4197profile, so this is a selected
-record rather than a replicated mean improvement.
-[Paired seeds](results/random05-record4236-split-full-v132/paired-comparison.json).
-The preceding4197profile has an exact repeat and four valid planner seeds.
-FrozenV6validates the still-earlier4175profile at+31.99%againstNMS, not4236.
-[Current audit](results/random05-record4197-startup-split-full-v132/audit.json),
+**Current selected archived best: 4,242 tasks** (+33.73% versus matched NMS32),
+source[88551e69](https://github.com/fywu85/lorr/commit/88551e69), plannerseed0.
+Observed-progress horizon correction0.125/span32 adds six tasks to the4,236
+startup-weighted profile. Full2,000steps pass independent replay and strict
+resource/deadline checks: mean589.171/max780.487ms, RSS489.562MB.
+Exact repetition passes; seeds4242/4028/4183/4128 improve the previous
+four-seed aggregate by0.157% but remain0.635% below4,197's. The preceding4,236
+profile repeats exactly but its four-seed aggregate is0.791% below4,197's.
+FrozenV6 qualifies4,175 only, not these later selected records.
+[Current audit](results/random05-startup-progress-split-full-v144/audit.json),
+[paired seeds](results/random05-record4236-split-full-v132/paired-comparison.json),
 [fresh admission comparison](FRESH_VALIDATION_V6.md).
 
 The **4,000-task milestone is independently verified**:4,011 on the full archived
@@ -32,7 +30,7 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,236 | 3,172 | +33.5% | 564 / 818ms | 490MB |
+| 16 physical cores / 32 workers | 4,242 | 3,172 | +33.7% | 589 / 780ms | 490MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
@@ -50,7 +48,7 @@ These are selected single-seed maxima. Exact configurations and executable hashe
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9). Both use declared map-specific
+[88551e69](https://github.com/fywu85/lorr/commit/88551e69). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Earlier four-core frozen independent-input comparison
@@ -108,7 +106,7 @@ restored. Larger work budgets do not reliably improve throughput.
 
 ## Secondary waiting metrics
 
-The current four-core/32-worker records' longest completed orders take1,941/1,994 steps,
+The current four-core/32-worker records' longest completed orders take1,941/1,983 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

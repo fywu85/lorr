@@ -23,7 +23,7 @@ Large maps are outside active development.
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2606 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2782 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 4236 | 3172 |
+| RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -163,6 +163,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T17:28:48.985827+00:00 | RANDOM-05 | trick | 4236 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
 | 2026-09-21T17:35:08.379917+00:00 | RANDOM-04 | trick | 2778 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp5-span64/summary.json) |
 | 2026-09-21T17:35:31.545879+00:00 | RANDOM-04 | trick | 2782 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
+| 2026-09-21T18:11:42.053845+00:00 | RANDOM-05 | trick | 4242 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Full run](results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1014,3 +1015,53 @@ The selected4236 run repeats in all six trajectory/scheduling/task fields. Plann
 Source5cb554e5e60fb07130b630a1e4a2361548a1cb8e/build146 adds optional `R05_WINDOW_COMPLETION_PRICE`. Each action while an assigned visible chain remains unfinished incurs the declared price; completed agents do not. The planner still scores the complete fixed window and exact terminal route potential. A horizon-clipped remaining-hop bound supplies an admissible heuristic for the extra charge; repeated waypoints can weaken but cannot invalidate the bound. This task-priority change requires an explicit --trick RANDOM-0N. Tests compare with exhaustive dynamic programming on complete/incomplete/repeated chains and check worker/cache/heap/checkpoint/failure invariants. Build pending; no benchmark gain claimed.
 
 All four4236startup refinements are audited and lose: power.0625/.1875 for250steps=3961/4142, power.125 for375/500steps=4153/4075. Full original runs and failures remain retained.
+
+### 2026-09-21 18:10 UTC: exact buffer reuse and startup admission
+
+Source888c1d51/build147 passes44.91s regression, binary53bf672d2262a48b1f81e597eb6172a78c601f15a80fbd9e22d83dab21da2828. `R05_WINDOW_PATH_REUSE=1` reuses per-island old/replacement path buffers and swaps accepted paths, preserving arithmetic, random draws, search order and work counts. Tests cover mixed group sizes, both repair orders, worker/cache/heap/checkpoint and bounded-failure behavior. Ten full on/off runs cover general/trickR01/R02andtrickR03; full trace identity and runtime remain to be checked.
+
+Source9cce7453/build148 passes45.17s regression, binaryfd40a45ddf4ea596ed9f8d5489bc477f68d347fff1c3be9d0973d0c9d9a539e3. Explicit `R05_INITIAL_ACTIVE_CAP`/`R05_INITIAL_ACTIVE_STEPS` returns to the ordinary cap at a fixed step; all robots stay movable and opened assignments stay locked. Tests cover initial/steady/expiry boundaries, opened tasks above cap, exact/greedy matching, fast dummy shortcut, worker/checkpoint and trick gates. Eleven full comparisons freeze current2782/4236controls, smaller initialcaps400/480 onR04 and480/560 onR05 for100/250steps, plus the stable4197R05control. All current profile settings otherwise stay unchanged. No gain is claimed.
+
+All ten source145group-mix attempts are audited. General/trickR01 loses717/725 versus726/729; general/trickR02 loses1389/1381 versus1397/1408. R03control andmixed groups fail atstep8/77,1031.163/1038.732ms; no score is counted and no hardware cause is established. The eight successful sparse runs remain strict-valid.
+
+### 2026-09-21 18:16 UTC: sparse-density fresh validation frozen
+
+Protocolf74286e6 was committed before generating new seeds50017/50018 for RANDOM-01 and RANDOM-02. Sixteen full600step comparisons freeze selected trick729/1408, general726/1397, and two unmodified32-thread NMS repeats on each stream. General and trick profiles differ in several settings, so their comparison is not a single-option ablation. All new seeds are permanently excluded from tuning at any density. Report each input, aggregates and failures; no after-the-fact threshold. Existing R04seeds50013/50014remain ungenerated. These are new starts/tasks on the same map, not new layouts.
+
+### 2026-09-21 18:18 UTC: RANDOM-05 selected frontier4,242
+
+The startup/progress combination is independently audited at4242, mean589.171/max780.487ms, RSS489.562MB. Source88551e69/build144, seed0, progressmix.125/span32; other4236settings unchanged. Control4236matches all six fields. Mix.25atspan32/64scores4230/4230. This six-task selected gain has not yet received seed/fresh-input qualification. Completed waitmax1983,147initialordersunfinished/110unopened, oldest unfinishedcensored2000. Freeze exactrepeat andseeds1/2/3 on the same binary and full2000step input.
+
+### 2026-09-21 18:23 UTC: bounded development seed extension
+
+Freeze16 full development-input runs: existing selected R01/R02profiles on plannerseeds7..10 (source132), and current R04progress profile on seeds1/2/6/7/8/9/10/11 (source144). This completes the R04profile's declared0..11 planner-seed range, with existing0/3/4/5results retained. These are seed variations, not new algorithmic mechanisms; selected maxima and paired aggregates remain distinct. No fresh task/start seed is involved or used to choose settings. Sources are declared in experiments/random124-seed-extension-sources.json.
+
+### 2026-09-21 18:25 UTC: unchanged-path cost reuse
+
+Source0c80c10076da196d30c165ceebf1f490fa7ef71c/build149 passes45.52s regression, binary0a62da80e20fd949f5f3e9657eb5f421fc9b4ed40f73bb0ccc96e1c7c93965cd. Optional `R05_WINDOW_COST_REUSE=1` uses the stored complete cost when a repaired route is identical to the incumbent. Assignment, starting stage and scoring weights are fixed during this call, including secondary/tertiary fields. No floating-point sums, random draws or work counts are altered. Cached-hit counters expose reuse frequency. Full on/off comparisons cover five current window profiles; performance remains unmeasured.
+
+Source147path-buffer reuse passes all ten complete six-field reference comparisons, with mixed timing: R03off/on mean516.248/529.674ms,max752.221/797.388ms; R02trickmean309.784/332.675ms. Keep it off pending convincing speed evidence. Source146completion prices all lose onR01/R02/R03; its three off-controls are exact. All12runs audited; pricesstayoff.
+
+### 2026-09-21 18:28 UTC: current scheduler costs and admission at medium density
+
+Freeze14 full source132 comparisons on the selected development profiles. R01/R02each test task-length weight.125/.375. R03tests.125/.375/.5/1, full oriented-chain matching, keep-bonus0/2, late-horizonweight4withidleprice32, andactivecaps360/380withfast exact matching. This separates scheduling choices from the existing window/guidance search; every per-instance variant carries its explicit trick flag. These archived-input trials do not use the newly generated fresh inputs. No improvement is assumed.
+
+### 2026-09-21 18:33 UTC: sparse fresh validation passes
+
+All16 original runs pass frozen-protocol/source/binary/input/resource checks and independent complete replay. R01selected730/702, general727/698, NMS645/654 and630/630: selected+11.526%, general+10.981%aggregate versus stronger repeats. R02selected1382/1348, general1376/1338, NMS1213/1203 and1198/1182: selected+13.231%, general+12.567%. Every individual input is positive. These two task/start streams share the existing geometry; scores do not replace the development frontiers. See RANDOM01_FRESH_VALIDATION_V1.md and RANDOM02_FRESH_VALIDATION_V1.md. Seeds50017/50018remain excluded from tuning.
+
+### 2026-09-21 18:35 UTC: local coupling around the current dense profiles
+
+Freeze16 source144 full development runs. Around R04=2782: steadycaps540/580, dispersion.2/.6, fieldcontrast2.1/2.3, cutoff.8125/.9375. Around R05=4242: steadycaps660/700, dispersion.6/1, contrast2.2/2.6, cutoff.875/1.125. All preserve the current observed-progress correction and, for R05, startup weighting. Each case changes one value and retains its explicit instance trick. No new input or partial horizon is used; no gain claimed before full audit.
+
+### 2026-09-21 18:44 UTC: equal-cost matching exploration
+
+Source1d1022fa/build150 passes45.81s regression, binary9676644c51f9c31e034eba41802f1e44b7bb1b0552d9190f549999b0e3075394. Optional general `R05_MATCH_FREE_TIES=1` prefers an unoccupied column only when reduced-cost distances are exactly equal. The Hungarian optimum cost is preserved; the selected optimal pairing may change, so throughput needs new comparisons. Independent exhaustive rectangular optima, all-zero scan-count reduction, thousands of exact dummy-prefix equivalences, configuration guards and worker/checkpoint tests pass. Fourteen full off/on cases cover general/trickR01/R02plusselectedR03/R04/R05. No performance gain claimed.
+
+### 2026-09-21 18:44 UTC:4,242 qualification complete
+
+All four full runs are independently audited. Exact repetition matches all six fields. Seeds0/1/2/3=4242/4028/4183/4128, total16581, versus the previous4236profile16555 (+0.157%,three positive/one negative); versus4197profile16687 (-0.635%). Largest entry782.28ms. The selected best remains4242; no fresh qualification is implied. [Paired comparison](results/random05-record4242-split-full-v144/paired-comparison.json).
+
+### 2026-09-21 18:46 UTC: completed negative trials and runtime checks
+
+Source149unchanged-cost reuse passes all ten full six-field comparisons, but R03mean532.298/536.234ms does not show a gain. Source148initial caps all lose; all11cases and three full default controls are audited/exact. The16seed extensions add no record; R04eightpairedseeds improve0.3402%aggregate,6positive/2negative,while extensionseed11fails the first-step deadline at1050.759ms. Current-scheduler132all14attempts are audited and lose orfail; R03keep2fails t0at1102.232ms. All these failures remain excluded, without an inferred host cause. Detailed arrays and proofs remain in their results directories.

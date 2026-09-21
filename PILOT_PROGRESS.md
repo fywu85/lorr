@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 17:58 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 18:46 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -33,7 +33,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
 | RANDOM-03 | 2,606 | 2,334 | NMS | +11.65% | TRICK | 5 | 731.22 |
 | RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% | TRICK | 4 | 739.55 |
-| RANDOM-05 | 4,236 | 3,050 | NMS | +38.89% | TRICK | 0 | 817.83 |
+| RANDOM-05 | 4,242 | 3,050 | NMS | +39.08% | TRICK | 0 | 780.49 |
 
 **Published scores are historical targets, not matched local baselines.**
 This table uses the stronger published result from NMS and Kitty Knight.
@@ -57,7 +57,7 @@ assignment and task-event replay checks.
 | RANDOM-02 | 1,408 | 1,228 | +14.66% |
 | RANDOM-03 | 2,606 | 2,359 | +10.47% |
 | RANDOM-04 | 2,782 | 2,580 | +7.83% |
-| RANDOM-05 | 4,236 | 3,172 | +33.54% |
+| RANDOM-05 | 4,242 | 3,172 | +33.73% |
 
 These are selected individual bests, not an average or one universal preset.
 GENERAL means no map-specific guidance or known-horizon rule was enabled;
@@ -80,7 +80,7 @@ not unseen-map validation.
 | RANDOM-02 | 1,397 | 1,408 |
 | RANDOM-03 | 1,582 | 2,606 |
 | RANDOM-04 | 1,558 | 2,782 |
-| RANDOM-05 | 2,226 | 4,236 |
+| RANDOM-05 | 2,226 | 4,242 |
 
 Current selected records are pinned to their completion timestamps and source commits:
 
@@ -90,7 +90,7 @@ Current selected records are pinned to their completion timestamps and source co
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | RANDOM-03 | 2026-09-21T16:52:42.436655+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random03-field-price-split-full-v132/trick-random-03-field-price-physical0p25/summary.json) |
 | RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
-| RANDOM-05 | 2026-09-21T17:28:48.985827+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
+| RANDOM-05 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Run](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 
 **RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
 2,359 matched NMS (+10.30%). The frozen fresh-input comparison gives
@@ -108,10 +108,19 @@ RANDOM-04 currently reaches **2,782** (+7.83% above matched NMS),
 **56 tasks short** of 2,838. Its record peaks at 739.6 ms;
 The earlier 2,777-task profile repeated exactly. Eight planner seeds score
 2,726–2,777; all original, repeat and seed checks peak below 791 ms.
+New frozen task/start checks on RANDOM-01 and RANDOM-02 also pass:
+selected profiles beat the stronger NMS repeats by11.53% and13.23% in
+aggregate; general profiles are ahead by10.98% and12.57%. Every individual
+input is positive, and all16full runs pass timing/resource/replay checks.
+These two streams per density use the same layout, not unseen maps.
+[RANDOM-01](random05/RANDOM01_FRESH_VALIDATION_V1.md),
+[RANDOM-02](random05/RANDOM02_FRESH_VALIDATION_V1.md).
+
 The new2,782 record uses task-specific observed progress to adjust the
 known-horizon estimate. Exact repetition passes; four planner seeds improve
-the aggregate by0.336% (three gains, one loss), with maximum entry846.852ms.
-[Replication](random05/results/random34-progress-followup-split-full-v144/paired-comparison.json).
+the eight-seed aggregate by0.340% (six gains, two losses). Seed11's later
+extension fails the strict first-step deadline; it has no valid score.
+[Replication](random05/results/random124-seed-extension-split-full/paired-comparison.json).
 Fresh RANDOM-04 validation is still pending.
 The earlier 2,661-task configuration passed four planner seeds and exact
 repetitions below 491 ms; a later equivalent source control peaked at
@@ -133,11 +142,17 @@ planner seeds0/1/2/3 score4,197/4,168/4,179/4,143. All full qualification
 runs pass independent replay, with maximum870.036ms and RSS below491MB.
 [Qualification](random05/results/random05-record4197-split-full-v132/audit.json).
 
-The new4,236 selected best adds mild startup task weighting and repeats exactly.
+The preceding4,236 selected best adds mild startup task weighting and repeats exactly.
 Seeds0/1/2/3 score4,236/4,051/4,172/4,096: the aggregate is0.791% below
 the preceding4,197 profile, so this is a selected-seed record, not a
 replicated improvement. Fresh validation remains pending.
 [Replication](random05/results/random05-record4236-split-full-v132/paired-comparison.json).
+
+The current4,242 record adds observed-progress correction0.125/span32;
+mean589.171/max780.487ms, RAM489.562MB. It repeats exactly; four seeds
+score4,242/4,028/4,183/4,128 (+0.157% over4,236's profile, three gains
+and one loss; still0.635% below4,197's aggregate). Fresh validation is pending.
+[Evidence](random05/results/random05-startup-progress-split-full-v144/audit.json).
 
 **The earlier RANDOM-05 4,000-task milestone is independently verified.** The archived
 4,011-task configuration repeated exactly. Frozen fresh task/start inputs
@@ -152,8 +167,8 @@ All eight original fresh runs passed strict timing, resource and replay checks.
 
 The four-core RANDOM-05 record stays separate: **3,770 versus matched NMS4
 2,914 (+29.4%)**. Its earlier frozen fresh comparison was +25.42%.
-The current 32-worker archived record averages 564 ms per step, peaks at
-818 ms, and uses 490 MB peak RSS. Its longest completed order takes 1,994
+The current 32-worker archived record averages 589 ms per step, peaks at
+780 ms, and uses 490 MB peak RSS. Its longest completed order takes 1,983
 steps; some initial orders remain unfinished at 2,000, so the eventual
 maximum wait is unknown. Throughput, rather than fairness, selected these runs.
 [Completed and censored waits](random05/WAITING_PROGRESS.md),

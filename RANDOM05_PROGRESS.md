@@ -38,31 +38,30 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 18:01 UTC.
+Updated: 2026-09-21 18:18 UTC.
 
-**Current selected archived best:4,236tasks**, +33.54% versus matched NMS32=3,172
-and +0.93% versus4,197. Source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9),
-plannerseed0. This adds rankpower0.125 for the first250steps to the4197profile;
-all other settings remain unchanged: cap680, all800robots movable, cutoffscale1/mix1,
-firstK7968/K16320, B18/depth8, movebias3 and selected guidance. Admission,
-startup task preference, guidance and known horizon require `--trick RANDOM-05`.
-All2000steps pass independent replay and strict resource/deadline checks:
-mean563.658ms/max817.827ms, peakRSS490.156MB. Exact repetition passes; four
-planner seeds score4236/4051/4172/4096, aggregate0.791% below the preceding
-profile. This remains a selected-seed record; no fresh-input qualification is
-claimed for4236. Longest completed
-order1994steps;148initial orders remain unfinished,107unopened; oldest
-unfinished age is censored at2000.
-[Full audit](random05/results/random05-record4197-startup-split-full-v132/audit.json).
+**Current selected archived best: 4,242 tasks**, +33.73% versus matched NMS32=3,172.
+Source [88551e69](https://github.com/fywu85/lorr/commit/88551e69), planner seed0.
+The previous4,236 startup profile gains six tasks with observed-progress
+horizon correction at mix0.125/span32. All2,000steps pass independent replay,
+strict1s entry limits and32GB checks: mean589.171/max780.487ms, RSS489.562MB.
+Exact repetition passes. Planner seeds0/1/2/3 score4242/4028/4183/4128:
++0.157%aggregate over the4,236profile, but0.635% below the4,197profile.
+This remains a selected-seed record without fresh-input qualification.
+Longest completed order1,983steps;147initial orders unfinished,110unopened;
+oldest unfinished age is censored at2,000. All800robots remain movable.
+Admission cap680, startup weighting0.125/250steps, selected guidance and
+known-horizon scale1/mix1 are explicit `--trick RANDOM-05` choices.
+[Full audit](random05/results/random05-startup-progress-split-full-v144/audit.json).
 
-The preceding4197profile repeats exactly in all six trajectory fields. Planner
-seeds0/1/2/3 score4197/4168/4179/4143, all independently replayed, max870.036ms.
-[Qualification](random05/results/random05-record4197-split-full-v132/audit.json).
-The4175profile has exact repeats and seeds4175/4151/4171/4120. FrozenV6tests
-that4175configuration, not the later4197/4236refinements. All eightV6runs pass:
-fresh4182/4177 versus strongerNMS3155/3178, +31.99%aggregate and +5.25%versus
-the preceding4011recipe. Candidatefreshmax774/799ms.
-[Frozen V6evidence](random05/FRESH_VALIDATION_V6.md).
+The preceding4,236profile repeats exactly. Its four seeds4,236/4,051/4,172/4,096
+have a0.791% lower aggregate than the earlier4,197profile's4,197/4,168/4,179/4,143.
+The4,197profile remains the better of these two four-seed comparisons.
+[Paired evidence](random05/results/random05-record4236-split-full-v132/paired-comparison.json).
+FrozenV6 qualifies the still-earlier4,175profile: fresh4,182/4,177 versus stronger
+NMS3,155/3,178, +31.99%aggregate and+5.25%over the preceding4,011recipe.
+It does not qualify the later refinements.
+[FrozenV6](random05/FRESH_VALIDATION_V6.md).
 
 **Previous validated milestone:4,011tasks on32workers/16physical cores**,
 or **+26.5% versus matched NMS32=3,172**. Source
@@ -369,6 +368,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T16:24:44.415657+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoffscale1/mix1; explicit `--trick RANDOM-05` | 4197 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +32.3% | [Full evidence](random05/results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json) |
 
 | 2026-09-21T17:28:48.985827+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; explicit `--trick RANDOM-05` | 4236 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.5% | [Full evidence](random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
+| 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; explicit `--trick RANDOM-05` | 4242 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.7% | [Full evidence](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
+
 
 ## Reference evidence supplied by the user
 
@@ -1899,3 +1900,7 @@ RAMbelow490MB. This validates admission at the frozen4175settings, not the later
 ### 2026-09-21 17:57 UTC: startup record repeats, but the seed mean falls
 
 The selected4236 run repeats in all six trajectory/scheduling/task fields. Planner seeds0/1/2/3 score4236/4051/4172/4096, total16555, versus4197/4168/4179/4143, total16687: **-0.791%**, one positive and three negative. All four full2000step runs pass independent replay, source/input/resource checks, with maximum entry827.104ms. Keep4236 as the requested selected-seed frontier and preserve4197 as the better four-seed aggregate. FreshV6 qualifies4175 only. Evidence: [paired comparison](random05/results/random05-record4236-split-full-v132/paired-comparison.json).
+
+### 2026-09-21 18:44 UTC:4,242 qualification complete
+
+All four full runs are independently audited. Exact repetition matches all six fields. Seeds0/1/2/3=4242/4028/4183/4128, total16581, versus the previous4236profile16555 (+0.157%,three positive/one negative); versus4197profile16687 (-0.635%). Largest entry782.28ms. The selected best remains4242; no fresh qualification is implied. [Paired comparison](random05/results/random05-record4242-split-full-v144/paired-comparison.json).

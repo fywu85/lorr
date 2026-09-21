@@ -767,10 +767,10 @@
       "finished_utc": "2026-09-21T01:46:49.544530+00:00"
     },
     "trick": {
-      "source_commit": "027df4d9",
-      "evidence": "random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json",
+      "source_commit": "88551e69df5b6f5ee14600dfe3a7ae8fe586783c",
+      "evidence": "random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v144/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
         "cores": 16,
         "smt": 2,
@@ -778,7 +778,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-05",
-        "name": "trick-random-05-record4197-startup-rankp125-steps250",
+        "name": "trick-random-05-startup-progress-mixp125",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -836,10 +836,12 @@
           "R05_RESCORE_BLEND": "0",
           "R05_MOVE_BIAS": "3",
           "R05_ACTIVE_TASK_CAP": "680",
-          "R05_FAST_ADMISSION": "1"
+          "R05_FAST_ADMISSION": "1",
+          "R05_TRIAGE_PROGRESS_MIX": ".125",
+          "R05_TRIAGE_PROGRESS_WINDOW": "32"
         },
-        "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
+        "binary_sha256": "dca1dcb14741e98eb0cebf8cd5393fa612667b9e0b6a3c7000fe7252b4fa1ccf",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v144/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -848,9 +850,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 4236,
-      "finished_utc": "2026-09-21T17:28:48.985827+00:00",
-      "audit": "random05/results/random05-record4197-startup-split-full-v132/audit.json"
+      "tasks": 4242,
+      "finished_utc": "2026-09-21T18:11:42.053845+00:00",
+      "audit": "random05/results/random05-startup-progress-split-full-v144/audit.json"
     },
     "nms32_tasks": 3172
   }

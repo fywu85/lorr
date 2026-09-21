@@ -1,0 +1,115 @@
+{
+  "pairs": [
+    {
+      "instance": "RANDOM-01",
+      "profile": "general",
+      "runs": [
+        {
+          "reuse": false,
+          "latency_seconds": {
+            "mean": 0.10008015932333332,
+            "max": 0.158452381
+          },
+          "user_seconds": 1334.199604
+        },
+        {
+          "reuse": true,
+          "latency_seconds": {
+            "mean": 0.09791924925,
+            "max": 0.14726091
+          },
+          "user_seconds": 1251.542581
+        }
+      ]
+    },
+    {
+      "instance": "RANDOM-01",
+      "profile": "trick",
+      "runs": [
+        {
+          "reuse": false,
+          "latency_seconds": {
+            "mean": 0.09574240742500006,
+            "max": 0.155744179
+          },
+          "user_seconds": 1310.3967
+        },
+        {
+          "reuse": true,
+          "latency_seconds": {
+            "mean": 0.0662638647483333,
+            "max": 0.103316442
+          },
+          "user_seconds": 1163.885212
+        }
+      ]
+    },
+    {
+      "instance": "RANDOM-02",
+      "profile": "general",
+      "runs": [
+        {
+          "reuse": false,
+          "latency_seconds": {
+            "mean": 0.4717773940466668,
+            "max": 0.663390228
+          },
+          "user_seconds": 8553.175223
+        },
+        {
+          "reuse": true,
+          "latency_seconds": {
+            "mean": 0.4691403409433343,
+            "max": 0.698560504
+          },
+          "user_seconds": 8503.025976
+        }
+      ]
+    },
+    {
+      "instance": "RANDOM-02",
+      "profile": "trick",
+      "runs": [
+        {
+          "reuse": false,
+          "latency_seconds": {
+            "mean": 0.30978375857666696,
+            "max": 0.488955899
+          },
+          "user_seconds": 5574.951617
+        },
+        {
+          "reuse": true,
+          "latency_seconds": {
+            "mean": 0.3326754556916669,
+            "max": 0.508964971
+          },
+          "user_seconds": 5968.559271
+        }
+      ]
+    },
+    {
+      "instance": "RANDOM-03",
+      "profile": "trick",
+      "runs": [
+        {
+          "reuse": false,
+          "latency_seconds": {
+            "mean": 0.5162484161124996,
+            "max": 0.752221209
+          },
+          "user_seconds": 12749.802552
+        },
+        {
+          "reuse": true,
+          "latency_seconds": {
+            "mean": 0.5296737482037499,
+            "max": 0.797388035
+          },
+          "user_seconds": 13072.785761
+        }
+      ]
+    }
+  ],
+  "caveat": "Each run used a separate verified allocation on a shared host. Timings are mixed; no consistent causal speedup is established. All ten full traces match the selected reference in all six fields."
+}

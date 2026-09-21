@@ -1,0 +1,39 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T18:16:32.176010+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "f74286e6ba0490b74e1ed975b2289c93c79ae690",
+  "hosts": "research32|research33|research35|research36|research37|research39|research41|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "interprocedural_optimization": false,
+  "cases": [
+    {
+      "name": "seed50018-nms-repeat2",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random02-v1/seed50018/RANDOM-02.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 600,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random02-v1/seed50018/RANDOM-02.json": "6dd25b6ecdd4112a56dff5bb1c4e50690e3ed2df12573ee2ddb6cf0e376d28ae",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random02-v1/seed50018/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random02-v1/seed50018/agents.agents": "16065c174daf917c02decadeeb854ae0b3684845d186d9ca831f7b7cac45bd79",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random02-v1/seed50018/tasks.tasks": "c7d0549ccc69e68d5325cee254379e5eca74967077d29860370441f9a4ac536a"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/random02-fresh-validation-v1-split/seed50018-nms-repeat2.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1,
+  "runner_dependencies": {
+    "result_horizon.py": "1827e5afb1ab40875c72139fc73ba09667de854800e7389608cadbed3a83ea7c"
+  }
+}
