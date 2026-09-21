@@ -6,6 +6,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import executed_steps
 import statistics
 
 
@@ -42,7 +43,7 @@ def main():
     positions=[s[0]*32+s[1] for s in original['start']];headings=['ESWN'.index(s[2]) for s in original['start']]
     schedule=[-1]*len(paths);stages=defaultdict(int);finished=set();cumulative={}
     totals=dict(finished=0,waypoints=0,forwards=0,rotations=0,waits=0);cumulative[0]=dict(totals)
-    for time in range(1,original['makespan']+1):
+    for time in range(1,executed_steps(original)+1):
         for a,task in changes[time]:schedule[a]=task
         for a,row in enumerate(paths):
             action=row[time-1]

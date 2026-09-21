@@ -5,6 +5,7 @@ import datetime
 import json
 import math
 from pathlib import Path
+from result_horizon import summary_steps
 
 ROOT = Path(__file__).resolve().parents[2]
 DEST = ROOT / 'random05/results/random34-runtime'
@@ -35,7 +36,7 @@ def main():
         row = next(row for row in read(evidence) if row['name'] == case)
         raw = read(ROOT / 'runs/random05' / batch / case / case / 'result.json')
         values = sorted(float(v) * 1000 for v in raw['entryComputeTimes'])
-        assert len(values) == row['steps'] == row['result']['makespan']
+        assert len(values) == row['steps'] == summary_steps(row)
         assert all(math.isfinite(v) and 0 <= v < 1000 for v in values)
         assert abs(max(values) - row['latency_seconds']['max'] * 1000) < 1e-6
         assert row['valid'] and row['result']['numTaskFinished'] == audited['tasks']
@@ -66,6 +67,7 @@ def main():
     lines += ['',
               'The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).', '',
               'The 2,661-task RANDOM-04 recipe has exact repetitions and four planner seeds (0/3/4/5): 2,542/2,576/2,661/2,605 tasks. Across the listed originals, repetitions and equivalent controls, the maximum is below {} ms. The original build96 record and its seed checks peak below 490 ms; newer source controls are listed separately. Runtime has measured margin; throughput remains 177 tasks short of the 2,838 target. The older 2,641-task profile and its five-seed qualification are retained above as history.'.format(peak04), '',
+              'The newer 2,698-task record uses the explicit 560-task admission cap. Its first full run averages448.0 ms and peaks654.1 ms; repetition and planner-seed checks follow in the campaign. This is +4.57% against matched NMS, still140 tasks below target.', '',
               'CPU averages count occupied logical CPUs over the process lifetime, including initialization and OpenMP waiting. Each allocation contains 16 physical cores / 32 logical CPUs. RAM is peak RSS in decimal MB.', '',
               'Higher-work and other timed-out configurations remain in the campaign audits and are not represented as successful configurations here. [Machine-readable timings and evidence](timing.json).']
     (DEST / 'REPORT.md').write_text('\n'.join(lines) + '\n')

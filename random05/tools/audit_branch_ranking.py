@@ -7,6 +7,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from result_horizon import summary_steps
 
 
 def screening(rows, branches, retained, accept_equal=True):
@@ -43,7 +44,7 @@ def audit(log):
     log = log.resolve()
     summary = json.loads(log.with_name('summary.json').read_text())
     case = json.loads(log.with_name('case.json').read_text())
-    assert summary['valid'] and summary['result']['makespan'] == 2000, 'requires a complete valid run'
+    assert summary['valid'] and summary_steps(summary) == 2000, 'requires a complete valid run'
     env = case['env']
     interval = int(env['R05_BRANCH_DIAGNOSTICS'])
     assert interval > 0

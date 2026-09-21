@@ -6,6 +6,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import executed_steps
 import re
 
 
@@ -55,7 +56,7 @@ def audit(case, certified):
     paths = [row.split(',') for row in data['actualPaths']]
     loc = [row[0] * cols + row[1] for row in data['start']]
     direction = ['ESWN'.index(row[2]) for row in data['start']]
-    n, horizon = data['teamSize'], data['makespan']
+    n, horizon = data['teamSize'], executed_steps(data)
     schedule, stages = [-1] * n, defaultdict(int)
     total_forward = 0
     bins, phases, sampled = {}, defaultdict(Counter), {}

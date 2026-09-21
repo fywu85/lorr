@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 import shutil
 from audit_generalization import ROOT, source_check, sha
 from action_audit import audit as replay
@@ -100,7 +101,7 @@ def main():
                    latency_seconds=summary.get('latency_seconds'))
         assert row['peak_rss_bytes'] <= 32000000000
         if summary['valid']:
-            assert summary['exit'] == 0 and summary['result']['makespan'] == case['steps']
+            assert summary['exit'] == 0 and summary_steps(summary) == case['steps']
             assert summary['result']['entryComputeSamples'] == case['steps']
             assert all(summary['result'][k] == 0 for k in ('numPlannerErrors','numScheduleErrors','numEntryTimeouts'))
             assert summary['latency_seconds']['max'] <= 1

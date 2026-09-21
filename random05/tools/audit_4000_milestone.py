@@ -4,6 +4,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 import re
 import subprocess
 
@@ -106,7 +107,7 @@ def main():
         summary = read(work / 'summary.json')
         allocation = read(work.parent / 'allocation.json')['resources']
         runner = (ROOT / work.parent / 'runner.py').read_text()
-        assert case['steps'] == summary['result']['makespan'] == 2000
+        assert case['steps'] == summary_steps(summary) == 2000
         raw_result = read(work / 'result.json')
         timing_field = 'plannerTimes' if '-nms-' in name else 'entryComputeTimes'
         times = raw_result[timing_field]

@@ -6,12 +6,13 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from result_horizon import executed_steps
 
 
 def audit(path):
     raw = path.read_bytes()
     data = json.loads(raw)
-    horizon = data['makespan']
+    horizon = executed_steps(data)
     tasks = {task[0]: task for task in data['tasks']}
     assert len(tasks) == len(data['tasks']), 'duplicate task ID'
     for task, release, locations in tasks.values():
@@ -79,7 +80,7 @@ def main():
         if reference is None:
             reference = data
         assert data['start'] == reference['start'], 'different starting configurations'
-        assert data['makespan'] == reference['makespan'], 'different horizons'
+        assert executed_steps(data) == executed_steps(reference), 'different horizons'
         for task, release, locations in data['tasks']:
             assert task not in definitions or definitions[task] == locations, 'different task streams'
             definitions[task] = locations

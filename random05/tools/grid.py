@@ -2,6 +2,7 @@
 """Freeze, build and evaluate the independent Random05 campaign on GRID."""
 import argparse, datetime, hashlib, json, os, resource, shlex, shutil, subprocess, sys, time
 from pathlib import Path
+from result_horizon import executed_steps
 ROOT=Path(__file__).resolve().parents[2]
 if (Path(__file__).parent/'spec.json').exists():
     ROOT=Path(json.loads((Path(__file__).parent/'spec.json').read_text())['repo'])
@@ -60,6 +61,9 @@ def submit(a):
             else:(work/'cwd').mkdir()
     memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(max(32,sum(c.get('memory_gib',4 if c.get('team')=='nms' else 2) for c in spec['cases']))+slots-1)//slots)
     spec.update(physical=physical,slots=slots,exclusive=False,memory_per_slot_gib=memory_per_slot)
+    helper=Path(__file__).with_name('result_horizon.py')
+    shutil.copy2(helper,out/'result_horizon.py')
+    spec['runner_dependencies']={'result_horizon.py':sha(helper)}
     write(out/'spec.json',spec)
     # Freeze the runner too; ROOT for the frozen script is supplied by its spec.
     shutil.copy2(Path(__file__),out/'runner.py')
@@ -154,7 +158,12 @@ def execute(a):
             if data.get('actualPaths'):
                 summary['actual_path_steps']=[min(len(x.split(',')) for x in data['actualPaths']),max(len(x.split(',')) for x in data['actualPaths'])]
                 summary['trajectory_sha256']=hashlib.sha256(json.dumps(data['actualPaths'],separators=(',',':')).encode()).hexdigest()
-            summary['valid']=r.returncode==0 and data.get('makespan')==c.get('steps',2000) and all(data.get(k,0)==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts']) and not data.get('errors') and not data.get('scheduleErrors')
+            try:
+                horizon=executed_steps(data)
+                summary['result']['executedSteps']=horizon
+            except (AssertionError,KeyError,TypeError,ValueError) as error:
+                horizon=-1;summary['horizon_error']=str(error)
+            summary['valid']=r.returncode==0 and horizon==c.get('steps',2000) and len(times)==horizon and all(data.get(k,0)==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts']) and not data.get('errors') and not data.get('scheduleErrors')
         else:summary['valid']=False
         if (work/'usage.json').exists():summary['usage']=json.loads((work/'usage.json').read_text())
         write(work/'summary.json',summary);return summary

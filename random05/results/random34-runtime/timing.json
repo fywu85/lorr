@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-21T09:20:47.462618+00:00",
+  "checked_utc": "2026-09-21T09:53:01.168668+00:00",
   "rows": [
     {
       "label": "R03-control2551",
@@ -629,6 +629,74 @@
       "peak_rss_mb": 2104.07424,
       "evidence": "random05/results/random04-distance-potential-split-full-v113/trick-random-04-distance-potential-0/summary.json",
       "mean_logical_cpus": 28.294643839564017
+    },
+    {
+      "label": "R04-2661-control114",
+      "batch": "random04-edge-potential-split-full-v114",
+      "case": "trick-random-04-edge-potential-0",
+      "tasks": 2661,
+      "finished_utc": "2026-09-21T09:23:17.438995+00:00",
+      "binary_sha256": "fc05404391b993fccdfc3bee57c1ea6d167034c3c371ab9b2a3fbde6836c741c",
+      "seed": "4",
+      "mean_ms": 445.54579068399937,
+      "p50_ms": 451.11636150000004,
+      "p95_ms": 469.06655485,
+      "p99_ms": 471.69421532999996,
+      "max_ms": 483.893303,
+      "peak_rss_mb": 2076.622848,
+      "evidence": "random05/results/random04-edge-potential-split-full-v114/trick-random-04-edge-potential-0/summary.json",
+      "mean_logical_cpus": 31.58836765585004
+    },
+    {
+      "label": "R04-2661-control115",
+      "batch": "random04-blocker-mutation-split-full-v115",
+      "case": "trick-random-04-blocker-mutation-control",
+      "tasks": 2661,
+      "finished_utc": "2026-09-21T09:34:55.742091+00:00",
+      "binary_sha256": "5e0b2f5189b3a2aae2917f680e7aa2b51000b9788f28cb567c3a5b34314b0be9",
+      "seed": "4",
+      "mean_ms": 464.9000872059998,
+      "p50_ms": 478.028542,
+      "p95_ms": 484.26434,
+      "p99_ms": 489.50804382,
+      "max_ms": 502.153761,
+      "peak_rss_mb": 2081.619968,
+      "evidence": "random05/results/random04-blocker-mutation-split-full-v115/trick-random-04-blocker-mutation-control/summary.json",
+      "mean_logical_cpus": 31.592718152147206
+    },
+    {
+      "label": "R04-2661-control116",
+      "batch": "random04-admission-split-full-v116",
+      "case": "trick-random-04-admission-control",
+      "tasks": 2661,
+      "finished_utc": "2026-09-21T09:40:43.297956+00:00",
+      "binary_sha256": "9f4c5ea0259920d3f57ed2239caefe82caa92381d4bd6c4ca2dc5a642b65e99d",
+      "seed": "4",
+      "mean_ms": 462.50308048699975,
+      "p50_ms": 475.28901899999994,
+      "p95_ms": 481.729901,
+      "p99_ms": 486.03324297,
+      "max_ms": 506.06255200000004,
+      "peak_rss_mb": 2084.417536,
+      "evidence": "random05/results/random04-admission-split-full-v116/trick-random-04-admission-control/summary.json",
+      "mean_logical_cpus": 31.59764546768922
+    },
+    {
+      "label": "R04-record2698",
+      "batch": "random04-admission-split-full-v116",
+      "case": "trick-random-04-admission-cap560",
+      "tasks": 2698,
+      "finished_utc": "2026-09-21T09:40:28.766893+00:00",
+      "binary_sha256": "9f4c5ea0259920d3f57ed2239caefe82caa92381d4bd6c4ca2dc5a642b65e99d",
+      "seed": "4",
+      "mean_ms": 448.0289848740008,
+      "p50_ms": 460.348418,
+      "p95_ms": 468.68232965,
+      "p99_ms": 473.93168692,
+      "max_ms": 654.057954,
+      "peak_rss_mb": 1732.898816,
+      "evidence": "random05/results/random04-admission-split-full-v116/trick-random-04-admission-cap560/summary.json",
+      "mean_logical_cpus": 30.2551736315615
     }
   ],
   "caveat": "Complete archived-input observations; failed higher-work configurations remain in campaign audits. No fresh RANDOM-03/04 qualification yet."

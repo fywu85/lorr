@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 import re
 import subprocess
 from audit_task_waits import audit as audit_task_waits
@@ -28,7 +29,7 @@ def audit():
         directory = ROOT / 'random05/results' / name
         specification = read(directory / 'spec.json')
         for reference in read(directory / 'summary.json'):
-            assert reference['valid'] and reference['result']['makespan'] == 2000
+            assert reference['valid'] and summary_steps(reference) == 2000
             reference_case = next(c for c in specification['cases'] if c['name'] == reference['name'])
             references[reference['result']['numTaskFinished']] = (reference_case, read(directory / 'allocation.json'), name)
     report = []
@@ -49,7 +50,7 @@ def audit():
         assert len(matches) == 1, (utc, evidence, 'missing or ambiguous result')
         result = matches[0]
         assert result['valid'] and result['exit'] == 0, (utc, 'invalid run')
-        assert result['result']['makespan'] == 2000, (utc, 'partial run')
+        assert summary_steps(result) == 2000, (utc, 'partial run')
         for key in ('numPlannerErrors', 'numScheduleErrors', 'numEntryTimeouts'):
             assert result['result'][key] == 0, (utc, key)
         spec = read((ROOT / evidence).parent / 'spec.json')

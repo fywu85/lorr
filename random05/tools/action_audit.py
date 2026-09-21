@@ -6,6 +6,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import executed_steps
 
 ACTIONS = 'FRCW'
 
@@ -35,7 +36,7 @@ def audit(path, map_path):
                     if v>=0 and v not in d:d[v]=d[p]+1;q.append(v)
             distances[a]=d
         return distances[a][b]
-    n,steps = data['teamSize'],data['makespan']
+    n,steps = data['teamSize'],executed_steps(data)
     paths = [row.split(',') for row in data['actualPaths']]
     assert len(paths)==n and all(len(row)==steps for row in paths)
     goals={t[0]:[t[2][k]*cols+t[2][k+1] for k in range(0,len(t[2]),2)] for t in data['tasks']}

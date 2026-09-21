@@ -3,6 +3,7 @@
 import datetime
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 
 ROOT = Path(__file__).resolve().parents[2]
 INSTANCES = ('WAREHOUSE', 'SORTATION', 'CITY-01', 'CITY-02', 'GAME',
@@ -24,7 +25,7 @@ def render():
         summary = next(s for s in read(row['evidence']) if s['name'] == case['name'])
         assert summary['valid'] and summary['result']['numTaskFinished'] == row['tasks']
         assert summary['finished_utc'] == row['finished_utc']
-        assert summary['result']['makespan'] == case['steps']
+        assert summary_steps(summary) == case['steps']
         assert summary['latency_seconds']['max'] <= 1
         assert summary['usage']['peak_rss_kib'] * 1024 < 32000000000
         if profile == 'general':
@@ -90,6 +91,7 @@ def render():
             if r['case']['env'].get('R05_GUIDANCE', 'none') != 'none') or 'none'),
         'Selected known-horizon rules: {}.'.format(', '.join(i for i, (_, r, _) in selected.items()
             if int(r['case']['env'].get('R05_HORIZON', 0))) or 'none'),
+        'Selected task-admission caps: {}. Opened tasks remain protected; all robots remain movable.'.format(', '.join('{}={}'.format(i,r['case']['env']['R05_ACTIVE_TASK_CAP']) for i,(_,r,_) in selected.items() if int(r['case']['env'].get('R05_ACTIVE_TASK_CAP',0))) or 'none'),
         'All five RANDOM cases share one layout: this is density transfer,',
         'not unseen-map validation.', '',
         '| Instance | General best | Explicit-trick best |',
@@ -130,11 +132,13 @@ def render():
         '**+{:.2f}% aggregate**, with individual gains +11.69% and +9.13%.'.format(fresh03['aggregate_gain_percent']),
         'All eight fresh runs passed timing/resource checks and independent replay.',
         'The candidate stays below 701 ms on both fresh inputs; its archived exact',
-        'repeat and two other planner seeds peak below 675 ms. RANDOM-04 remains',
-        'short of its throughput target. Its 2,661-task configuration has four',
-        'planner seeds and exact repetitions; the selected qualification runs',
-        'stay below 491 ms per step. A later equivalent source control peaked',
-        'at 756 ms; all observed controls still meet the one-second limit.',
+        'repeat and two other planner seeds peak below 675 ms.',
+        'RANDOM-04 currently reaches **{:,}** ({:+.2f}% above matched NMS),'.format(selected['RANDOM-04'][1]['tasks'],100*(selected['RANDOM-04'][1]['tasks']/2580-1)),
+        '**{} tasks short** of 2,838. Its record peaks at {:.1f} ms;'.format(max(0,2838-selected['RANDOM-04'][1]['tasks']),1000*selected['RANDOM-04'][2]['latency_seconds']['max']),
+        'new-record repetitions and planner-seed qualification are tracked in the campaign.',
+        'The earlier 2,661-task configuration passed four planner seeds and exact',
+        'repetitions below 491 ms; a later equivalent source control peaked at',
+        '755.1 ms. That slower control remains in the timing evidence.',
         '[Full timing evidence](random05/results/random34-runtime/REPORT.md).',
         '[Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).', '']
     lines += ['',

@@ -3,6 +3,7 @@
 import argparse
 from collections import defaultdict, deque
 from pathlib import Path
+from result_horizon import executed_steps
 import datetime, hashlib, json
 
 
@@ -32,7 +33,8 @@ def audit(result, map_path):
     paths=[row.split(',') for row in data['actualPaths']]
     pos=[r*cols+c for r,c,d in data['start']];heading=['ESWN'.index(d) for r,c,d in data['start']]
     assignment=[-1]*data['teamSize'];stage=defaultdict(int);forward=0;frames=[]
-    for t in range(1,data['makespan']+1):
+    horizon=executed_steps(data)
+    for t in range(1,horizon+1):
         for a,i in changes[t]:assignment[a]=i
         for a,path in enumerate(paths):
             action=path[t-1]
@@ -45,7 +47,7 @@ def audit(result, map_path):
         for a,i in changes[t+1]:next_assignment[a]=i
         agents=[a for a,i in enumerate(assignment) if i<0 or stage[i] in (0,len(tasks[i]))]
         pool=sorted(i for i in tasks if releases[i]<=t and stage[i]==0)
-        remaining=data['makespan']-t
+        remaining=horizon-t
         rate=t*data['teamSize']/forward*1.25
         feasible={a:[i for i in pool if (dist(pos[a],tasks[i][0])+internal[i])*rate<=remaining] for a in agents}
         selected=sum(next_assignment[a] in feasible[a] for a in agents)

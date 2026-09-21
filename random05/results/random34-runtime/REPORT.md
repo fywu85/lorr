@@ -41,10 +41,16 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R04-2661-control109 | 2661 | 450.0 | 468.8 | 473.3 | 487.8 | 2076 | 31.6 |
 | R04-2661-control111 | 2661 | 464.6 | 483.5 | 487.9 | 490.8 | 2043 | 31.6 |
 | R04-2661-control113 | 2661 | 540.3 | 645.6 | 685.8 | 755.1 | 2104 | 28.3 |
+| R04-2661-control114 | 2661 | 445.5 | 469.1 | 471.7 | 483.9 | 2077 | 31.6 |
+| R04-2661-control115 | 2661 | 464.9 | 484.3 | 489.5 | 502.2 | 2082 | 31.6 |
+| R04-2661-control116 | 2661 | 462.5 | 481.7 | 486.0 | 506.1 | 2084 | 31.6 |
+| R04-record2698 | 2698 | 448.0 | 468.7 | 473.9 | 654.1 | 1733 | 30.3 |
 
 The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 
 The 2,661-task RANDOM-04 recipe has exact repetitions and four planner seeds (0/3/4/5): 2,542/2,576/2,661/2,605 tasks. Across the listed originals, repetitions and equivalent controls, the maximum is below 756 ms. The original build96 record and its seed checks peak below 490 ms; newer source controls are listed separately. Runtime has measured margin; throughput remains 177 tasks short of the 2,838 target. The older 2,641-task profile and its five-seed qualification are retained above as history.
+
+The newer 2,698-task record uses the explicit 560-task admission cap. Its first full run averages448.0 ms and peaks654.1 ms; repetition and planner-seed checks follow in the campaign. This is +4.57% against matched NMS, still140 tasks below target.
 
 CPU averages count occupied logical CPUs over the process lifetime, including initialization and OpenMP waiting. Each allocation contains 16 physical cores / 32 logical CPUs. RAM is peak RSS in decimal MB.
 

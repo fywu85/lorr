@@ -1,0 +1,139 @@
+{
+  "checked_utc": "2026-09-21T09:49:37.863952+00:00",
+  "source_commit": "aa171530",
+  "raw_result": "runs/random05/random04-admission-split-full-v116/trick-random-04-admission-cap480/trick-random-04-admission-cap480/result.json",
+  "raw_sha256": "09265fe3e83b3a7fe8d043580bd6a45197def245444264ddc2ef2b177e4b1064",
+  "original_summary_valid": false,
+  "original_summary_sha256": "6a4b2fcd610a37370c103a96732b92c6a02fb4ff4314d4d01fb4482de93f0de3",
+  "reported_makespan": 976,
+  "executed_steps": 1000,
+  "full_replay_valid": true,
+  "reason": "The old runner compared assigned-work makespan to the requested simulation horizon. All700 actual paths and all1000 entry samples establish1000 executed steps. Original rejection artifacts are preserved unchanged.",
+  "tasks": 2631,
+  "max_entry_seconds": 0.694025457,
+  "replay": {
+    "result": "runs/random05/random04-admission-split-full-v116/trick-random-04-admission-cap480/trick-random-04-admission-cap480/result.json",
+    "result_sha256": "09265fe3e83b3a7fe8d043580bd6a45197def245444264ddc2ef2b177e4b1064",
+    "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+    "tasks": 2631,
+    "steps": 1000,
+    "agents": 700,
+    "robot_steps": 700000,
+    "phases": {
+      "unopened": {
+        "W": 6380,
+        "C": 1884,
+        "R": 2650,
+        "F": 6279
+      },
+      "loaded": {
+        "F": 200978,
+        "W": 145447,
+        "R": 66935,
+        "C": 49447
+      },
+      "idle": {
+        "W": 117490,
+        "C": 17431,
+        "R": 26736,
+        "F": 58343
+      }
+    },
+    "work_by_final_status": {
+      "completed": {
+        "unopened": {
+          "W": 3230,
+          "F": 5088,
+          "C": 1542,
+          "R": 2218
+        },
+        "loaded": {
+          "C": 44702,
+          "F": 185280,
+          "W": 105760,
+          "R": 59831
+        }
+      },
+      "unfinished": {
+        "unopened": {
+          "W": 3150,
+          "F": 1191,
+          "R": 432,
+          "C": 342
+        },
+        "loaded": {
+          "F": 15698,
+          "W": 39687,
+          "C": 4745,
+          "R": 7104
+        }
+      }
+    },
+    "completed_loaded_lower_bound_cells": 112742,
+    "completed_loaded_detour_cells": 72538,
+    "completed_loaded_mean_steps": 150.35081717977954,
+    "completed_chain_lengths": {
+      "2": 880,
+      "3": 825,
+      "4": 613,
+      "5": 313
+    },
+    "unopened_reassignments": 2746,
+    "task_starts": 3075,
+    "waiting_streaks": {
+      "count": 116675,
+      "p50": 1,
+      "p90": 4,
+      "p99": 20,
+      "maximum": 463
+    },
+    "replay_valid": true,
+    "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+  },
+  "waiting": {
+    "result": "runs/random05/random04-admission-split-full-v116/trick-random-04-admission-cap480/trick-random-04-admission-cap480/result.json",
+    "result_sha256": "09265fe3e83b3a7fe8d043580bd6a45197def245444264ddc2ef2b177e4b1064",
+    "horizon_steps": 1000,
+    "tasks_finished": 2631,
+    "tasks_revealed": 3681,
+    "completed_latency": {
+      "count": 2631,
+      "mean_steps": 201.18091980235653,
+      "p50_steps": 149,
+      "p95_steps": 606,
+      "p99_steps": 850
+    },
+    "maximum_release_to_completion": {
+      "steps": 953,
+      "task_id": 546,
+      "released_at": 0,
+      "observed_at": 953
+    },
+    "maximum_release_to_first_waypoint": {
+      "steps": 955,
+      "task_id": 628,
+      "released_at": 0,
+      "observed_at": 955
+    },
+    "oldest_unfinished": {
+      "steps": 1000,
+      "task_id": 1044,
+      "released_at": 0,
+      "observed_at": 1000
+    },
+    "oldest_unopened": {
+      "steps": 1000,
+      "task_id": 1043,
+      "released_at": 0,
+      "observed_at": 1000
+    },
+    "unfinished_count": 1050,
+    "unopened_count": 606,
+    "initial_cohort_count": 1050,
+    "initial_restricted_mean_steps": 408.78190476190474,
+    "initial_still_unfinished": 211,
+    "initial_still_unopened": 163,
+    "initial_started_unfinished": 48,
+    "event_accounting_valid": true
+  }
+}

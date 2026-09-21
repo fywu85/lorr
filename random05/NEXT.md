@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 09:23 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 09:53 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2602 / 2661 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2602 / 2698 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +3.1% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +4.57% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -95,39 +95,54 @@ RANDOM03_FRESH_VALIDATION_V1.md contains full source/timing/wait evidence.
 The auditor checks actualNMSplannerTimes versusPILOTentryComputeTimes, rather
 than requiring PILOT-onlyentryComputeSamples from the unmodified reference.
 
-R04 CURRENT **2661**, sourcefa98fd1d/build96, batchrandom04-triage-refine-split-full-v96,
-case trick-random-04-triage-refine-mix075. B10/K8064/first4032,depth16/G4/E8/P8,
-screen2/keep4,rootmutation0.1/noise200/seed4,sharedrankings2048MiB,keepbonus0;
-field15/flip5/contrast2.4,turn0.6/wait0.5/dispersion0.8,
-horizon1000/triage1.25/mix0.75,guidedmatching/length0.25.
-Mean430.374/max465.929ms,RSS1551MB; finished08:24:36.112951UTC. Full1000/
-replayed/promoted. +3.14%againstNMS2580; still177tasks short of2838.
-The record and exact source96 repeat plus plannerseeds0/3/5 give2661/2661/
-2542/2576/2605. All original-source qualification runs peak below490ms.
-Sources108/109/111/113 controls repeat2661 in all six trace fields; source113
-peaks755.061ms (mean540.262), higher than the earlier controls but still below1s.
-Do not omit this slower observation or attribute a host cause without evidence.
-Runtime table has37rows including all these controls and qualificationseeds.
-No fresh R04 input exists. Reserve50013+onlyafter freezing a qualified candidate.
+R04 CURRENT **2698**, sourceaa171530/build116,
+batchrandom04-admission-split-full-v116, case trick-random-04-admission-cap560.
+Finished2026-09-21T09:40:28.766893UTC, mean448.029/max654.058ms,RSS1732.899MB.
+Fully replayed/promoted; +4.57% vsNMS2580, still140shortof2838. Seed4; every
+other2661setting retained but R05_ACTIVE_TASK_CAP=560. This is an explicit
+admission/fairness trick. Openedtasksstaylocked; all700robotsremainmovable.
+Openedtasksaboveacapwouldremainprotected. Defaultcap0preservesoldmatching.
+Config: B10/K8064/first4032,depth16/G4/E8/P8,screen2/keep4,rootmutation0.1,
+noise200,sharedrankings2048MiB,keepbonus0,field15/flip5/contrast2.4,
+turn0.6/wait0.5/dispersion0.8,horizon1000/triage1.25/mix0.75,guidedmatch/length0.25.
+Longestcompletedorder962steps;181initialordersunfinished,132unopened;
+oldestunfinishedcensored1000. Repetitions andseeds0/3/5pending.
 
-Source112/ed9fad87 introduced an approximate distance-potential mixture but
-failed to compile because it mutated the graph after const publication. Failure
-archived. Source113/09756c97 prepares the mutable graph before publishing it;
-regressionpassed09:04:36UTC. All six full runs closed/audited: control2661exact,
-fractions.0625/.125/.25/.5/1 give2561/2510/2370/2112/1576. Leave thisoptionoff.
-The guidance edgeprices stayedunchanged; mixedpotentialisnot exact/admissible
-for thoseedges, so windowed A* explicitlyrejects it.
+Prior2661sourcefa98fd1d/build96 remainsfullyqualifiedacross4seeds0/3/4/5:
+2542/2576/2661/2605. Originalsourcequalificationmax<490ms. Laterexactcontrols
+108/109/111/113/114/115/116allpreserve6fields; slowest113max755.061ms isretained,
+notattributedtoa host. Runtime table includes the new2698record andcontrols.
+No freshR04inputexists. Reserve50013+onlyafter freezingqualifiedcandidate.
 
-Source114/93746116 instead blends the actual forward/quarter-turn edgeprices
-with physicalcost2, then recomputes exact oriented distances. Bellmanregression,
-checkpoint/cache/workerchecks passed31.80s; buildfinished09:10:37UTC,
-SHAfc05404391b993fccdfc3bee57c1ea6d167034c3c371ab9b2a3fbde6836c741c.
-ACTIVE: random04-edge-potential-split-full-v114, control and fractions
-.0625/.125/.25/.5/1, six full1000steps/K8064/first4032. Jobs8902426–31.
-All other known PILOT batches through113 have closed and been independentlyaudited.
-Source111 optional immediate-root candidates alllose2538–2611 versus2661;
-allvalid/replayed. Controls111/113 have six-fieldproofs. Current runtime report
-includes the new755ms observation, so it doesnot claim every observed run<491ms.
+HORIZON CHECK FIX: makespan is maxassigned-workcost, NOT executedsteps.
+Cap480's oldrunnerrejectedmakespan976 althoughall700pathsand1000entrysamples
+cover1000stepswithnotimeouts. Newindependentreplayconfirms2631tasks; original
+invalidsummaryremainsunchanged, supplementalcap480-horizon-correction.json
+recordsfullproof. Correctedrunner/auditors use actualpathcounts andentrysamples,
+retainreportedmakespan,andrejectuneven/truncatedpaths. Sixhelpertests pass;
+all10existinggeneral/trickfrontierhorizonsremainunchanged. Thehelperisfrozen
+andhashedwithnewGRIDrunners. No benchmarkdata,binaryorinputwasrewritten.
+
+CURRENT SOURCE ca22bb7c/build118 (buildfinished09:42:18UTC,regression33.06s,
+SHA46120772ff5433e43b5ff9658c81bc9166864ba0b4bdf88688b703ab88b339d0).
+Source117/af886f08 (regression32.37s) stores exact scores+directioncodes in32B
+PreparedRanking vsrecent64B; source118addsR05_SHARED_ORDERS=1,8B entrieswhen
+movebias0, otherwiseautomaticfullscoredfallback. Allpacking,checkpoint/cache/
+worker/biasedfallback/bounded1MiBtests pass. Fullspeed/equalitypending.
+Source115/92a96cfa route-dependencymutations all2423–2597lose2661; allreplayed.
+Source116 admissioncaps660/620/560/480=2641/2686/2698/2631(lastcorrectedabove).
+Startupcaps560first200/400and620first200=2563/2594/2569,alllose.
+NMS-inspiredpriority+scorecoupling115 all2457–2614lose; allreplayed. Controls
+are6fieldexact. Physicaldistance113andedge114mixturesalsolose; detailsincampaign.
+
+ACTIVE:
+- random04-compact-cache-split-full-v118:6fullcases,117/11832byteand1188byte,
+  each2661cap0and2698cap560; jobs8902509–14. Mixedsource-map inexperiments.
+- random04-admission-refine-split-full-v116:8fullcases,controlcap560,
+  caps520/540/580/600,triage1/1.5,mix1; jobs8902515onward.
+- random04-record2698-seeds-split-full-v116:seeds0/3/5,submittingafterrefinements.
+  Submissionexecsession25503mayneedclosing. AllotherPILOTbatchesclosed/audited.
+These all retainstrict1s,full1000steps,32GB,anduntouchedheldout50001–12.
 
 RECENT NEGATIVE EVIDENCE:
 - Horizon matching108/d879feda weights.25/1/4/16:2602/2573/2575/2585 vs2661.
@@ -161,7 +176,7 @@ failedusagecredits. Prior79KB approvaldoesnot cover thisnewpayload according
 toautomaticreview. Preserve rejection explanation in any final response while
 unresolved. Readstatus.json inthatdirectoryforcontext.
 
-Lastverifiedpublicpush43572e0f. Laterownedcommits/evidence needpush. Only
+Lastverifiedpublicpush3176f076. Laterownedcommits/evidence needpush. Only
 random05/,PILOT_PROGRESS.md,RANDOM05_PROGRESS.md may becommitted. Fablepayload
 stays inignoredruns; do not publish or reroute it to bypass the rejection.
 

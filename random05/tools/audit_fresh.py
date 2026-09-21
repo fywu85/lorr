@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -112,7 +113,7 @@ def main():
         expected_binary = candidate if name.endswith('-ours') else baseline if name.endswith('-baseline') else reference
         assert case['binary_sha256'] == summary['binary_sha256'] == expected_binary, name
         assert summary['valid'] and summary['exit'] == 0, name
-        assert summary['result']['makespan'] == expected_steps, name
+        assert summary_steps(summary) == expected_steps, name
         # The unchanged NMS simulator reports wall time for the full combined
         # entry in plannerTimes; PILOT also exposes entryComputeTimes. Validate
         # the actual per-step series for both, rather than requiring a PILOT-

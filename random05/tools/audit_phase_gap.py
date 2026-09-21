@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Audit phase counts and initial task choices on three frozen Random05 traces."""
 from pathlib import Path
+from result_horizon import executed_steps
 import json,hashlib,datetime
 from collections import Counter,deque,defaultdict
 root=Path(__file__).resolve().parents[2];out=root/'random05/results/4k-gap-audit-v69';out.mkdir(parents=True,exist_ok=True)
@@ -20,7 +21,7 @@ def dist(a,b):
 records={};report={}
 for name,rel in cases.items():
  p=root/'runs/random05'/rel;raw=p.read_bytes();d=json.loads(raw);records[name]=d
- assert d['makespan']==2000 and d['teamSize']==800 and all(d[k]==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts'])
+ assert executed_steps(d)==2000 and d['teamSize']==800 and all(d[k]==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts'])
  tasks={t[0]:[t[2][i]*cols+t[2][i+1] for i in range(0,len(t[2]),2)] for t in d['tasks']};release={t[0]:t[1] for t in d['tasks']};hops={t:sum(dist(a,b) for a,b in zip(goals,goals[1:])) for t,goals in tasks.items()}
  first_assignment={a:int(s.split(',')[0].split(':')[1]) for a,s in enumerate(d['actualSchedule']) if s and s.split(',')[0].split(':')[0]=='1'}
  blocks=[];arrivals=[[] for _ in range(8)];completed=[[] for _ in range(8)]

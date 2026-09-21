@@ -6,6 +6,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import executed_steps
 
 
 def main():
@@ -18,7 +19,7 @@ def main():
     records=[]
     for case in json.loads(args.manifest.read_text()):
         path=Path(case['result']);raw=path.read_bytes();data=json.loads(raw)
-        steps=data['makespan'];assert steps%args.interval==0
+        steps=executed_steps(data);assert steps%args.interval==0
         assert all(data[k]==0 for k in ('numPlannerErrors','numScheduleErrors','numEntryTimeouts'))
         lengths={t[0]:len(t[2])//2 for t in data['tasks']}
         phases=[dict(start=i+1,end=i+args.interval,tasks=0,waypoints=0,

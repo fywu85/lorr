@@ -3,6 +3,7 @@
 import argparse
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -37,7 +38,7 @@ def main():
         assert row['replay']['replay_valid'] and row['waiting']['event_accounting_valid']
         assert summary['finished_utc'] == row['finished_utc']
         assert row['latency_seconds']['max'] <= 1 and row['peak_rss_bytes'] <= 32000000000
-        assert summary['result']['makespan'] == case['steps']
+        assert summary_steps(summary) == case['steps']
         index[instance][profile] = dict(source_commit=row['source_commit'], evidence=row['evidence'],
                                        case=case, tasks=row['tasks'], finished_utc=row['finished_utc'],
                                        audit=str(audit_path.resolve().relative_to(ROOT)))

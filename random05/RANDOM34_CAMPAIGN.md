@@ -482,7 +482,7 @@ payload/destination approval, despite general consultation authorization. The
 user question is pending; local research continues. This is separate from the
 previous CLI request that failed usage credits.
 
-## September 21, 09:23 UTC: completed repeats and physical-cost controls
+## September 21, 09:21 UTC: completed repeats and physical-cost controls
 
 The original 2,661-task profile now has four planner seeds (0/3/4/5):
 2,542/2,576/2,661/2,605. Original-source qualification and repetition peak below
@@ -502,3 +502,42 @@ prices toward physicalcost2, then solve exact distances. Regression checks the
 one-step Bellman relation, rotations, walls, checkpoint replay and worker/cache
 invariance. Six full trials are running with the same fractions and budget.
 Neither cost experiment changes the selected record or held-out inputs.
+
+## September 21, 09:31 UTC: route dependencies and explicit admission
+
+The coherent edge-cost test114 also loses: fractions.0625/.125/.25/.5/1 yield
+2548/2482/2450/2263/1878. All six full1000step runs are independently replayed;
+the2661 control is identical in all six trace fields, mean445.546/max483.893ms.
+Keep both physical-potential options off.
+
+Source115/92a96cfa passes dense/checkpoint/cache/worker regression and tests
+priority mutations among robots connected by preferred-route occupancy. Eight
+full comparisons retain the original K8064/first4032 fixed work. Source116
+separately implements a declared task-admission trick, preserving opened work
+and allowing every robot to yield. Dummy Hungarian columns select the requested
+number of real pairs; optional startup expiry returns to full admission. Its
+regression build is pending. Neither feature has a throughput claim.
+
+## September 21, 09:52 UTC: admission reaches 2,698; correct horizon checks
+
+The explicit560-task admission cap reaches **2,698**, sourceaa171530/build116,
+finished09:40:28.766893UTC. Mean448.029/max654.058ms; full1000steps and independent
+replay pass. That is+4.57% against matchedNMS2580 and140shortof2838. All700robots
+remain movable, openedordersstayprotected, and unopenedwork canwaitlonger.
+Longestcompletedorder962steps;181initialordersremainunfinished (132unopened),
+witholdestunfinishedcensored1000. Seeds0/3/5andnearbyadmission/triagechecksarequeued.
+
+Caps660/620give2641/2686; startupcapslose2563–2594. Cap480scores2631 over1000steps,
+but the originalrunner incorrectly rejected it: reportedmakespan976counts
+assigned-worksteps, not executedsteps. All700pathsand1000computesamples confirm
+thefullhorizon, and independentreplaypasses. Originalfailedsummaryiskept;
+cap480-horizon-correction.json records the correctedinterpretation. Newrunner
+and audithelperscheckactualhorizonsandentrycounts, preservingmakespanasa metric.
+Sixregressionsrejecttruncated/unequaltraces andmissingentrywork; all10existing
+general/trickfrontiers keeptheirverifiedhorizons. Noresultsorinputsareedited.
+
+All route-dependencymutations115lose2423–2597. CouplingNMS-inspired task-length
+prioritywithscoreweightsalso loses2457–2614; allfulltracesare independently
+replayed andallcontrolsrepeat2661exactly. Sources117/118 nowtest exact32byte
+scoredrankings andoptional8byte order-onlyrankings. Fullregressionpassed; six
+full2661/2698controlsare running before any speedclaim or runtimepromotion.

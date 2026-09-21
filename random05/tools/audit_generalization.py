@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from result_horizon import summary_steps
 import shutil
 import subprocess
 from action_audit import audit as replay
@@ -109,7 +110,7 @@ def main():
                        latency_seconds=summary.get('latency_seconds'), usage=summary['usage'])
             assert row['peak_rss_bytes'] <= 32000000000
             if summary['valid']:
-                assert summary['result']['makespan'] == item['steps']
+                assert summary_steps(summary) == item['steps']
                 assert summary['latency_seconds']['max'] <= 1
                 data = read(work / 'result.json')
                 assert hashlib.sha256(json.dumps(data['actualPaths'], separators=(',', ':')).encode()).hexdigest() == summary['trajectory_sha256']
