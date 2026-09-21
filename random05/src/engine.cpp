@@ -175,6 +175,11 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("invalid windowed search configuration");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+    c.priority_remaining_weight=real("R05_PRIORITY_REMAINING",0);
+    c.priority_remaining_steps=integer("R05_PRIORITY_REMAINING_STEPS",0);
+    if(!std::isfinite(c.priority_remaining_weight) || c.priority_remaining_weight<0 ||
+       c.priority_remaining_steps<0 || (c.priority_remaining_weight>0 && !random_trick))
+        throw std::invalid_argument("remaining-work priority requires a nonnegative weight and explicit --trick RANDOM-01..05");
     c.restart_period=integer("R05_RESTART_PERIOD",4);
     c.elite_decision_distance=real("R05_ELITE_DECISION_DISTANCE",0);
     if(c.restart_period<0 || !std::isfinite(c.elite_decision_distance) ||
@@ -302,6 +307,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.priority_remaining_weight>0 && (c.operation_depth || c.window))
+        throw std::invalid_argument("remaining-work priority is implemented for the pipelined policy only");
     if(c.window && (c.operation_depth || c.rollout_match || c.replan_roots || c.rescore_roots ||
        c.component_trials || c.snapshot_interval || c.reverse_penalty || c.plain_score))
         throw std::invalid_argument("windowed search requires fixed-chain costs without other experimental search modes");
@@ -1086,6 +1093,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         float priority=age+offsets[i];
         const bool active=assigned[i] && f.stage[i]<int(assigned[i]->goals.size());
         if(!active)priority-=100000;
+        else if(priority_remaining_scale_>0)priority-=priority_remaining_scale_*base_cost[i];
         if(cfg.deadends && g.pocket[p[i]] &&
            (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
@@ -1605,6 +1613,10 @@ std::vector<int> select_rollout_elites(const std::vector<Rollout>& results,int u
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule,int forced_candidate) {
     replan_stats_=ReplanStats{};rescore_stats_=RescoreStats{};
+    // Recompute the declared startup preference on every real call. It changes
+    // proposals only; complete rollout scoring and the fixed work remain intact.
+    priority_remaining_scale_=(!cfg.priority_remaining_steps || env->curr_timestep<cfg.priority_remaining_steps)
+        ?cfg.priority_remaining_weight:0;
     const bool save_snapshot=cfg.snapshot_interval>0 && env->curr_timestep>0 &&
                              env->curr_timestep%cfg.snapshot_interval==0;
     nlohmann::json snapshot;

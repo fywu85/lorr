@@ -68,6 +68,16 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_
             require(actions==replay_actions && assignment==replay_schedule,
                     "checkpoint restore changed the selected decision");
             require(after==engine.checkpoint(e),"checkpoint restore changed persistent solver state");
+            if(cfg.priority_remaining_steps>0) {
+                auto reference_cfg=cfg;reference_cfg.priority_remaining_steps=0;
+                if(step>=cfg.priority_remaining_steps)reference_cfg.priority_remaining_weight=0;
+                auto reference_env=e;Engine reference(reference_cfg);reference.initialize(&reference_env);reference.restore(before,reference_env);
+                std::vector<Action> reference_actions;std::vector<int> reference_schedule;
+                reference.compute(&reference_env,reference_actions,reference_schedule);
+                require(actions==reference_actions && assignment==reference_schedule,
+                        "startup priority did not match its active or expired policy");
+                require(after==reference.checkpoint(reference_env),"startup priority changed unrelated persistent state");
+            }
             if(cfg.score_rank_steps>0) {
                 // At the same saved state, a startup-weighted decision must
                 // equal the unlimited weighted solver before the boundary and
@@ -910,6 +920,32 @@ void rollout_elite_diversity() {
     }
 }
 
+void remaining_work_priorities() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto baseline=simulate(cfg,12);
+    cfg.priority_remaining_weight=2;cfg.priority_remaining_steps=68;
+    const auto biased=simulate(cfg,12,5,5,true);
+    require(biased!=baseline,"remaining-work priorities did not exercise the startup preference");
+    cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+    require(biased==simulate(cfg,12),"priority preference changed with cache or workers");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);
+            require(setenv(k,v,1)==0,"cannot configure priority fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting weight("R05_PRIORITY_REMAINING","2"),steps("R05_PRIORITY_REMAINING_STEPS","200");
+    auto env=environment(5,5,4);env.trick_instance="RANDOM-04";
+    require(Config::environment(env).priority_remaining_steps==200,"startup priority parser lost its boundary");
+    env.trick_instance.clear();bool rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"remaining-work priority escaped the explicit trick gate");
+}
+
 void horizon_aware_matching() {
     auto env=environment(1,5,1);
     Task a;a.task_id=7;a.locations={0,4,0};env.task_pool[7]=a;
@@ -1121,6 +1157,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    remaining_work_priorities();
     horizon_aware_matching();
     destination_demand_matching();
     guidance_reversal();

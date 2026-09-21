@@ -47,7 +47,8 @@ struct Config {
     bool fuse_cache_hits=false, lazy_cost_rows=false;
     int shared_rankings_mb=0;
     int restart_period=4;
-    float elite_decision_distance=0;
+    float elite_decision_distance=0, priority_remaining_weight=0;
+    int priority_remaining_steps=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
     int move_bias_mode=0;
@@ -210,6 +211,7 @@ private:
                        const std::vector<Rollout>& results,int best);
     void copy_replan_state(Engine& target,const Config& config) const;
     bool policy_profile_active_=false;
+    float priority_remaining_scale_=0;
     mutable std::vector<PolicyTiming> policy_timings_;
     uint64_t ranking_epoch_=0;
     float shared_wait_cost_=-1;
