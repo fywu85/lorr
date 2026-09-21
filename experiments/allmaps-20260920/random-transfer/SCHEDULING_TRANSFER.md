@@ -26,3 +26,20 @@ also remains. The weight test uses CGAR's current chain estimates, not the
 reference's exact oriented whole-chain dynamic program. Fairness is secondary
 and all waiting tails are retained. No known-horizon or short-task flag is added.
 Any timeout, simulator error or memory excess is a failed case, not a score.
+
+
+## First outcomes and replication
+
+All16full strict1s cases passed. Generic R04 control/direct4/match/both:
+1306/1343/1309/1503; generic R05:2036/2038/2062/2068. Field R04:
+1353/1481/1356/1338; field R05:2457/2421/2544/2574. All complete control
+trajectories match earlier runs. The combinations interact with the guidance;
+there is no universal winning preset.
+
+Replicate the generic R04 control and combined setting at planner seeds2/4.
+For R05 replicate field control, matching-only and the combined setting at2/4:
+matching-only was close enough to retain. Profiles are unchanged, four physical
+cores per case, same archived inputs, strict1000ms, full horizons,32decimalGB.
+Combine with seed0 and retain all failures; seeds change planner randomness,
+not the archived start/task streams. No further tuning on those seeds before
+reporting this comparison.

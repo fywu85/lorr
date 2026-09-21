@@ -63,3 +63,19 @@ Mean tasks (one worker / eight workers / eight with noise50): RANDOM-04 **1235.6
 | RANDOM-05 | 2457 | 2026-09-21T00:57:55.998209+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_random_field, --trick RANDOM-05 |
 
 RANDOM-05 sets the new overall selected CGAR best, **2457** versus2036on the same seed (+20.68%). RANDOM-04 reaches1353versus1306on seed0 (+3.60%); its generic seed4record1367 remains higher. These are full **strict1s TRICK** runs, four bound physical cores, shared EPYC9354; maximum field-profile decision times136.28/177.58ms. The uniform forward20/turn6 controls score1205/1941, so the nonuniform field contributes148/516tasks relative to the same scalar convention. One seed only; this is still19.44%below the historical NMS RANDOM-05 target3050. No cutoff or short-task trick was enabled. Both lanes-off whole trajectories exactly reproduce their earlier generic controls. [RANDOM-04](results/random04-guidance-full-v1/summary.md), [RANDOM-05](results/random05-guidance-full-v1/summary.md).
+
+## Replicated guidance and scheduling transfer
+
+The field versus generic means over planner seeds0/2/4 are **1299.00 vs1301.33**
+on RANDOM-04 (-0.18%) and **2478.33 vs2032.67** on RANDOM-05 (+21.93%).
+Thus the tuned field helps RANDOM-05 consistently but does not improve RANDOM-04
+on average. All full runs passed strict1s. [Replication](random-transfer/guidance/three-seed-summary.json).
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| RANDOM-04 | 1481 | 0 | TRICK | 2026-09-21T01:04:28.116168+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_direct_pickup4 |
+| RANDOM-04 | 1503 | 0 | GENERIC | 2026-09-21T01:04:31.682939+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | generic_match64_direct_pickup4 |
+| RANDOM-05 | 2537 | 2 | TRICK | 2026-09-21T01:04:44.326741+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_random_field |
+| RANDOM-05 | 2574 | 0 | TRICK | 2026-09-21T01:06:30.020067+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_match64_direct_pickup4 |
+
+The new scheduling profiles are still seed0 results. RANDOM-04 selects **generic1503** (direct pickup weight4 +64-group unopened matching), above the best field profile1481. RANDOM-05 selects **TRICK2574** (same scheduling combination plus the field), versus field control2457; generic matching/direct reaches2068. New selected maxima stayed below171ms. Matching alone with the field gives2544; direct pickup4alone gives2421. Interactions matter: the combined field/scheduling profile loses on RANDOM-04, so there is no universal preset claim. [Generic factors](results/dense-scheduler-generic-full-v1/summary.md), [RANDOM-04 field factors](results/random04-scheduler-field-full-v1/summary.md), [RANDOM-05 field factors](results/random05-scheduler-field-full-v1/summary.md). All control trajectories match prior runs; fairness remains secondary and recorded.

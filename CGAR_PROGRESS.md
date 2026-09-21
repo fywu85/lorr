@@ -22,8 +22,8 @@ them a veto on a throughput improvement.
 | RANDOM-01 |611|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
-| RANDOM-04 |1367|Generic; full strict1s, noise50 seed4; eight-worker control has better three-seed mean|
-| RANDOM-05 |2457|TRICK; full strict1s, tuned integer field, seed0; max178ms|
+| RANDOM-04 |1503|Generic; full strict1s, direct pickup4 +64-group matching, seed0|
+| RANDOM-05 |2574|TRICK; full strict1s, field +direct pickup4 +matching, seed0; max171ms|
 
 The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
 Warehouse matching/trick work; it is a starting measurement, not each instance's
@@ -86,3 +86,9 @@ The RANDOM-05 capacity policy excludes any task with a stop outside the core.
 A read-only audit attributes427of431never-assigned tasks in the2036control to
 this rule. This is a structural limitation, not a measured counterfactual gain.
 [Certificate and event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json).
+
+The field gain replicated across planner seeds0/2/4 on RANDOM-05: mean2478.33
+versus2032.67 (+21.93%); RANDOM-04 mean1299versus1301.33 (-0.18%).
+The subsequent16strict1s scheduling tests all passed and selected the new1503/2574
+records above. Those scheduling combinations have one seed so far.
+[Transfer details and exact controls](experiments/allmaps-20260920/random-transfer/SCHEDULING_TRANSFER.md).

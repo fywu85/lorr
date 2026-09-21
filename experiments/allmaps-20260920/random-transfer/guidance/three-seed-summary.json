@@ -1,0 +1,71 @@
+{
+  "checked_utc": "2026-09-21T01:09:00.730676+00:00",
+  "planner_seeds": [
+    0,
+    2,
+    4
+  ],
+  "all_runs_valid": true,
+  "strict_one_second": true,
+  "results": {
+    "RANDOM-04": {
+      "trick_random_control": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          1306,
+          1231,
+          1367
+        ],
+        "mean": 1301.3333333333333
+      },
+      "trick_random_field": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          1353,
+          1266,
+          1278
+        ],
+        "mean": 1299
+      },
+      "mean_delta_percent": -0.17930327868851403
+    },
+    "RANDOM-05": {
+      "trick_random_control": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          2036,
+          2031,
+          2031
+        ],
+        "mean": 2032.6666666666667
+      },
+      "trick_random_field": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          2457,
+          2537,
+          2441
+        ],
+        "mean": 2478.3333333333335
+      },
+      "mean_delta_percent": 21.925221384060343
+    }
+  },
+  "scope": "Same archived input per instance; three planner seeds, not independent task/start streams. Uniform controls are separate seed0 ablations."
+}
