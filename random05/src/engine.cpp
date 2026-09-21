@@ -11,6 +11,7 @@
 #include <limits>
 #include <numeric>
 #include <queue>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <type_traits>
@@ -272,6 +273,9 @@ Config Config::environment(const SharedEnvironment& env) {
     if((c.push_idle_free || c.push_exclude_swap) && (!c.fast_push || c.push_price<=0))
         throw std::invalid_argument("corrected displacement prices require positive push cost and its cached policy");
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
+    c.face_cycle_length=integer("R05_FACE_CYCLE_LENGTH",0);
+    if(c.face_cycle_length!=0 && (c.face_cycle_length<4 || c.face_cycle_length>32))
+        throw std::invalid_argument("face-cycle length must be zero or4..32");
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
@@ -474,6 +478,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.face_cycle_length && (!c.loops || c.operation_depth))
+        throw std::invalid_argument("face cycles require loop completion in the pipelined policy");
     if(c.idle_align && c.operation_depth)
         throw std::invalid_argument("idle alignment requires the pipelined policy");
     if(c.joint_proposals && (c.window || c.operation_depth || c.early_fill || c.early_root_period ||
@@ -835,6 +841,19 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         for(int yy=y+height-2;yy>y;--yy)ring.push_back(from_grid[yy*cols+x]);
         if(std::all_of(ring.begin(),ring.end(),[](int v){return v>=0;}))cycles.push_back(std::move(ring));
     }
+    if(cfg.loops && cfg.face_cycle_length) {
+        auto canonical=[](std::vector<int> ring) {
+            std::rotate(ring.begin(),std::min_element(ring.begin(),ring.end()),ring.end());
+            auto reverse=ring;std::reverse(reverse.begin()+1,reverse.end());
+            return std::min(ring,reverse);
+        };
+        std::set<std::vector<int>> existing;
+        for(const auto& ring:cycles)existing.insert(canonical(ring));
+        // Append deterministic topology-derived candidates. The legacy rings
+        // retain their order, and both directions still require joint legality.
+        for(auto ring:grid_face_cycles(*this,cfg.face_cycle_length))
+            if(existing.insert(ring).second){cycles.push_back(std::move(ring));++face_cycles_added;}
+    }
     if(cfg.cycle_mask) {
         cycle_masks.reserve(cycles.size());
         for(const auto& ring:cycles) {
@@ -1022,6 +1041,8 @@ void Engine::initialize(SharedEnvironment* env) {
     std::fprintf(stderr,"R05_INIT agents=%d cells=%d K=%d depth=%d threads=%d guidance=%s seed=%d table_mb=%.1f\n",
                  n,graph->cells,cfg.futures,cfg.depth,cfg.threads,cfg.guidance.c_str(),cfg.seed,
                  graph->distance.size()*sizeof(float)/1e6);
+    if(cfg.face_cycle_length)std::fprintf(stderr,"R05_CYCLES total=%zu added_faces=%d maximum_length=%d\n",
+        graph->cycles.size(),graph->face_cycles_added,cfg.face_cycle_length);
 }
 std::vector<double> progress_time_factors(const std::vector<double>& work,
     const std::vector<double>& rates,const std::vector<int>& samples,int warmup,float fraction) {

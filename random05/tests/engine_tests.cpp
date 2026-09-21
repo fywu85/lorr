@@ -747,6 +747,68 @@ void continuation_risk() {
     }
 }
 
+void topology_face_cycles() {
+    auto canonical=[](std::vector<int> ring) {
+        std::rotate(ring.begin(),std::min_element(ring.begin(),ring.end()),ring.end());
+        auto reverse=ring;std::reverse(reverse.begin()+1,reverse.end());return std::min(ring,reverse);
+    };
+    auto e=environment(5,5,0);e.map[6]=e.map[7]=e.map[12]=1;
+    Config cfg;Graph original(e,cfg);
+    std::vector<int> expected;
+    for(int grid:{0,1,2,3,8,13,18,17,16,11,10,5})expected.push_back(original.from_grid[grid]);
+    expected=canonical(expected);
+    const auto short_faces=grid_face_cycles(original,8),all_faces=grid_face_cycles(original,16);
+    require(std::find(short_faces.begin(),short_faces.end(),expected)==short_faces.end(),"face bound ignored");
+    require(std::count(all_faces.begin(),all_faces.end(),expected)==1,"missing or duplicate irregular face");
+    require(std::find(original.cycles.begin(),original.cycles.end(),expected)==original.cycles.end(),"fixture already has the irregular loop");
+    cfg.face_cycle_length=16;cfg.cycle_mask=true;Graph extended(e,cfg);
+    require(extended.face_cycles_added>0 && extended.cycles.size()>original.cycles.size(),"face cycles added no new proposals");
+    require(std::equal(original.cycles.begin(),original.cycles.end(),extended.cycles.begin()),"face cycles reordered the old proposals");
+    std::vector<std::vector<int>> seen;
+    for(size_t k=0;k<extended.cycles.size();++k) {
+        const auto& ring=extended.cycles[k];auto sorted=ring;std::sort(sorted.begin(),sorted.end());
+        require(ring.size()>=4 && ring.size()<=32 && std::adjacent_find(sorted.begin(),sorted.end())==sorted.end(),"non-simple face proposal");
+        std::vector<int> forward=ring,reverse=ring;
+        std::rotate(forward.begin(),forward.begin()+1,forward.end());
+        std::rotate(reverse.begin(),reverse.end()-1,reverse.end());
+        Engine::certify(extended,ring,forward);Engine::certify(extended,ring,reverse);
+        auto key=canonical(ring);require(std::find(seen.begin(),seen.end(),key)==seen.end(),"duplicate face/rectangle");seen.push_back(key);
+        std::vector<int> decoded;
+        for(const auto& mask:extended.cycle_masks[k])for(uint64_t bits=mask.bits;bits;bits&=bits-1)
+            decoded.push_back(int(mask.word*64+__builtin_ctzll(bits)));
+        std::sort(decoded.begin(),decoded.end());require(decoded==sorted,"face mask and perimeter disagree");
+    }
+    auto tree=environment(1,7,0);Graph corridor(tree,Config{});
+    require(grid_face_cycles(corridor,32).empty(),"bridge walk became a simultaneous rotation");
+    auto ring_env=environment(3,3,0);ring_env.map[4]=1;Graph ring_graph(ring_env,Config{});
+    require(grid_face_cycles(ring_graph,8).size()==1,"inner/outer face of a ring was duplicated");
+    auto gate=environment(3,3,1);const char* prior=std::getenv("R05_FACE_CYCLE_LENGTH");
+    const bool present=prior;const std::string old=prior?prior:"";
+    for(const char* value:{"3","33","-1"}) {
+        setenv("R05_FACE_CYCLE_LENGTH",value,1);bool rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid face bound accepted");
+    }
+    setenv("R05_FACE_CYCLE_LENGTH","16",1);
+    require(Config::environment(gate).face_cycle_length==16,"general face cycle option needs a trick flag");
+    if(present)setenv("R05_FACE_CYCLE_LENGTH",old.c_str(),1);else unsetenv("R05_FACE_CYCLE_LENGTH");
+    // Dense motion with task turnover, prefix sharing and the alternate mask
+    // implementation must agree across workers and checkpoint restoration.
+    Config policy;policy.face_cycle_length=16;policy.futures=16;policy.depth=6;
+    policy.continuations=4;policy.continuation_start=2;policy.share_prefix=true;
+    policy.random_by_step=true;policy.guidance="lanes";policy.cost_cache=true;
+    for(int mode:{0,3}) {
+        policy.pre_cycles=mode;policy.cycle_mask=false;policy.threads=1;
+        const auto reference=simulate(policy,12,5,5,true);
+        policy.cycle_mask=true;policy.threads=2;
+        require(reference==simulate(policy,12),"face cycles changed under masks/workers");
+        require(reference==simulate(policy,12,5,5,true),"face cycles changed checkpoint replay");
+    }
+    policy.pre_cycles=0;policy.window=8;policy.window_keep=3;policy.window_islands=4;policy.window_iterations=8;
+    policy.threads=1;const auto window=simulate(policy,10,5,5,true);policy.threads=2;
+    require(window==simulate(policy,10),"face-seeded window depends on worker count");
+}
+
 void cycle_word_masks() {
     auto e=environment(9,17,0);
     for(int cell:{3,21,35,64,70,89,121,144})e.map[cell]=1;
@@ -2614,6 +2676,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    topology_face_cycles();
     arrival_priority_semantics();
     optional_arrival_proposals();
     joint_assignment_semantics();joint_assignment_futures();idle_alignment();

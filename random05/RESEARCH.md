@@ -1617,3 +1617,22 @@ The selected trick729 remains stronger. Budget256/768/1024 variants lose.
 All source154 field jitter,155 next-pickup hints,153 extra-budget weighted search,
 and144 Hungarian-threshold results are audited and remain negative; original
 deadline failures are retained. No failed run receives a score.
+
+
+## Source158: bounded free-cell face cycles, all five instances
+
+The current pipelined policy repairs stopped rectangular rings, default2x2.
+A face of the free-cell graph can route around an irregular obstacle cluster
+without forming a free rectangle. `R05_FACE_CYCLE_LENGTH` (default0, enabled4..32)
+adds only simple face boundaries within a declared length bound. Half-edge
+traversal derives them from adjacency, canonicalizes direction/start and removes
+duplicates against existing rings. Articulation/bridge walks with repeated
+vertices are rejected. Both directions retain all existing kinematic, occupancy,
+move-gain and collision conditions. There are no map names, task-stream lookups,
+future tasks or horizon-dependent decisions in this mechanism.
+
+This is a general coordination hypothesis, not a claimed throughput gain.
+Test geometry, ring legality, masks, deterministic workers and checkpoint replay
+before full all-five general/trick comparisons. Current selected profiles and
+all frozen held-outs remain unchanged. Existing rectangular-loop expansions
+were already tested earlier; this specifically adds nonrectangular boundaries.

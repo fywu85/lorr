@@ -103,7 +103,7 @@ struct Config {
     float goal_local_mix=0;
     float flow_turn=0, flow_power=1, flow_alpha=1, flow_betweenness=0, flow_confidence_power=0;
     bool flow_average=false, flow_normalize=false, flow_reverse=false;
-    int loop_extent=2;
+    int loop_extent=2, face_cycle_length=0;
     bool predict_matching=false, rollout_age=false, rollout_match=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0, auction_bids_per_row=128;
     float auction_epsilon=0;
@@ -142,6 +142,7 @@ struct Graph {
     std::vector<std::array<int,4>> next;
     std::vector<std::array<float,5>> weight;
     std::vector<std::vector<int>> cycles, nearby;
+    int face_cycles_added=0;
     std::vector<std::vector<CycleWordMask>> cycle_masks;
     int all_nearby_pairs=0;
     std::vector<float> distance, any_heading_distance;
@@ -165,6 +166,8 @@ struct Graph {
     int direction(int a,int b) const;
     int nearby_pairs(const std::vector<int>& locations) const;
 };
+// Simple bounded faces of the free-cell graph, canonical and duplicate-free.
+std::vector<std::vector<int>> grid_face_cycles(const Graph& graph,int maximum_length);
 float arrival_priority_bonus(const Graph& graph,int cell,int heading,bool moving,int goal,float bonus);
 struct Chain {
     std::vector<int> goals;
