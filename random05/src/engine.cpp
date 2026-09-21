@@ -235,6 +235,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
     c.active_cap_triage_credit=real("R05_ACTIVE_CAP_TRIAGE_CREDIT",0);
     c.fast_admission=integer("R05_FAST_ADMISSION",0);
+    const int idle_alignment=integer("R05_IDLE_ALIGN",0);
+    if(idle_alignment<0 || idle_alignment>1)
+        throw std::invalid_argument("idle alignment must be zero or one");
+    c.idle_align=idle_alignment;
     c.admission_price=real("R05_ADMISSION_PRICE",-1);
     c.admission_price_steps=integer("R05_ADMISSION_PRICE_STEPS",0);
     if(c.admission_price_steps<0 || (c.admission_price_steps>0 && c.admission_price<0))
@@ -391,6 +395,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.idle_align && c.operation_depth)
+        throw std::invalid_argument("idle alignment requires the pipelined policy");
     if(c.joint_proposals && (c.window || c.operation_depth || c.early_fill || c.early_root_period ||
        c.arrival_root_period || c.rescore_roots || c.replan_roots || c.component_trials))
         throw std::invalid_argument("joint proposals require the ordinary pipeline without other root operators");
@@ -1311,6 +1317,19 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             if(!moving[i])for(int q:{(f.dir[i]+1)%4,(f.dir[i]+3)%4}) {
                 float x=cost(i,p[i],q)+0.05f*g.weight[p[i]][4];
                 if(x<best-1e-5f) {best=x;best_dir=q;}
+            }
+            if(cfg.idle_align && !active_chain[i] && !moving[i]) {
+                // Goal-less robots can prepare to yield while they wait. Pick
+                // an outgoing edge from the existing cost field; this adds no
+                // objective reward, movement, priority or privileged map data.
+                int target=f.dir[i];float price=INF;
+                for(int d=0;d<4;++d)if(g.next[p[i]][d]>=0) {
+                    const float value=g.weight[p[i]][d]+cfg.idle_eviction*g.pocket_depth[g.next[p[i]][d]]
+                        +.05f*g.weight[p[i]][4]*turn(d,f.dir[i]);
+                    if(value<price-1e-5f){price=value;target=d;}
+                }
+                // A half turn takes two idle steps, just as for active robots.
+                best_dir=turn(target,f.dir[i])==2?(f.dir[i]+1)%4:target;
             }
             idle_heading[i]=best_dir;
             base_cost[i]=cost(i,p[i],best_dir);

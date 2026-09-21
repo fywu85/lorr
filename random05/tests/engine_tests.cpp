@@ -1497,6 +1497,42 @@ void joint_assignment_futures() {
     require(components==simulate(cfg,12),"unrepaired joint components changed across workers");
 }
 
+void idle_alignment() {
+    // No orders: prepare a legal heading while keeping the promised wait.
+    Config cfg;cfg.futures=1;cfg.depth=1;cfg.wait_cost=.5f;cfg.idle_align=true;
+    auto env=environment(1,3,1);env.curr_states[0].location=2;env.curr_states[0].orientation=0;
+    Engine aligned(cfg);aligned.initialize(&env);
+    std::vector<Action> plan;std::vector<int> schedule;
+    for(int t=0;t<3;++t) {
+        env.curr_timestep=t;aligned.compute(&env,plan,schedule);
+        require(plan[0]==(t<2?CR:W),"idle alignment skipped a required quarter turn or kept rotating");
+        require(aligned.pending_cells()==std::vector<int>({2}),"idle alignment changed the promised wait");
+        require(schedule==std::vector<int>({-1}),"idle alignment invented an order");
+        if(plan[0]==CR)env.curr_states[0].orientation=(env.curr_states[0].orientation+1)%4;
+        env.curr_task_schedule=schedule;
+    }
+    cfg.idle_align=false;Engine old(cfg);env.curr_states[0].orientation=0;env.curr_timestep=0;
+    old.initialize(&env);old.compute(&env,plan,schedule);
+    require(plan[0]==W,"default idle policy changed");
+    // Active orders retain their goal-based heading and immutable assignment.
+    Task task;task.task_id=0;task.locations={2,0};task.idx_next_loc=1;
+    env.task_pool[0]=task;env.curr_task_schedule[0]=0;
+    Engine active_old(cfg);active_old.initialize(&env);active_old.compute(&env,plan,schedule);
+    const auto active_plan=plan;cfg.idle_align=true;Engine active_new(cfg);
+    active_new.initialize(&env);active_new.compute(&env,plan,schedule);
+    require(plan==active_plan && schedule==std::vector<int>({0}),"idle alignment changed an active order");
+    // Admitted and goal-less robots interact throughout dense task turnover.
+    cfg=Config{};cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    cfg.idle_align=true;cfg.active_task_cap=8;cfg.wait_cost=.5f;cfg.guidance="lanes";
+    const auto serial=simulate(cfg,12,5,5,true);
+    cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+    require(serial==simulate(cfg,12),"idle alignment changed with caches or workers");
+    cfg.share_prefix=true;
+    require(serial==simulate(cfg,12),"idle alignment changed with shared futures");
+}
+
 void optional_arrival_proposals() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -1758,7 +1794,7 @@ void window_reproducibility() {
 int main() {
     arrival_priority_semantics();
     optional_arrival_proposals();
-    joint_assignment_semantics();joint_assignment_futures();
+    joint_assignment_semantics();joint_assignment_futures();idle_alignment();
     for(float bonus:{50.f,200.f}) {
         Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
         cfg.arrival_priority=bonus;cfg.threads=1;cfg.active_task_cap=18;
