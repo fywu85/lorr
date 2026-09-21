@@ -189,6 +189,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
+    c.destination_load=real("R05_DESTINATION_LOAD",0);
+    if(!std::isfinite(c.destination_load) || c.destination_load<0)
+        throw std::invalid_argument("destination load coefficient must be finite and nonnegative");
     c.initial_length_weight=real("R05_INITIAL_LENGTH_WEIGHT",-1);
     c.initial_length_steps=integer("R05_INITIAL_LENGTH_STEPS",250);
     if((c.initial_length_weight<0 && c.initial_length_weight!=-1) || c.initial_length_steps<0)
@@ -782,6 +785,21 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             continuation[j]=chain.tail[0];
         }
     }
+    std::vector<float> destination_pressure;
+    if(cfg.destination_load>0) {
+        destination_pressure.assign(g.cells,0);
+        // Only already opened tasks are fixed demand. Unopened assignments are
+        // being rematched now and must not bias their own replacement costs.
+        for(int a=0;a<n;++a) {
+            const int id=env->curr_task_schedule[a];
+            if(id<0)continue;
+            const auto& task=env->task_pool.at(id);
+            if(task.idx_next_loc==0)continue;
+            const int goal=g.from_grid[task.locations.at(task.idx_next_loc)];
+            const int from=g.from_grid[env->curr_states[a].location];
+            destination_pressure[goal]+=1.f/(1+g.hop(goal,from));
+        }
+    }
     struct Pair { float cost;int agent,task; };
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && tasks.size()>=agents.size();
     std::vector<float> matrix(exact?agents.size()*tasks.size():0);
@@ -804,6 +822,8 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                     (g.dist(goal*4+d,p*4+env->curr_states[a].orientation)
                      +length_weight*continuation[j][d])/2);
             }
+            if(!destination_pressure.empty())
+                cost+=cfg.destination_load*destination_pressure[g.from_grid[task.locations[task.idx_next_loc]]];
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
             if(exact)matrix[size_t(row)*tasks.size()+j]=cost;
             else pairs.push_back({cost,a,j});

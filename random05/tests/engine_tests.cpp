@@ -871,6 +871,25 @@ void move_proposal_bias() {
     }
 }
 
+void destination_demand_matching() {
+    auto env=environment(1,5,2);env.curr_states[1].location=2;
+    Task locked;locked.task_id=7;locked.locations={0,1};locked.idx_next_loc=1;locked.agent_assigned=0;
+    env.task_pool[7]=locked;env.curr_task_schedule={7,-1};
+    Task a;a.task_id=8;a.locations={1};env.task_pool[8]=a;
+    Task b;b.task_id=9;b.locations={3};env.task_pool[9]=b;
+    Config cfg;cfg.keep_bonus=0;Engine ordinary(cfg);ordinary.initialize(&env);
+    std::vector<int> schedule;ordinary.match(&env,schedule);
+    require(schedule==std::vector<int>({7,8}),"destination demand fixture did not establish equal approach costs");
+    cfg.destination_load=4;cfg.hungarian_limit=1000;Engine balanced(cfg);balanced.initialize(&env);
+    balanced.match(&env,schedule);
+    require(schedule==std::vector<int>({7,9}),"destination demand did not avoid the busy goal while preserving the opened task");
+    cfg=Config{};cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.cost_cache=true;cfg.candidate_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+    cfg.random_by_step=true;cfg.hungarian_limit=1000;cfg.destination_load=4;
+    const auto signature=simulate(cfg,12,5,5,true);cfg.threads=2;
+    require(signature==simulate(cfg,12),"destination-aware matching changed with worker scheduling");
+}
+
 void guidance_reversal() {
     auto env=environment(5,5,4);env.map[7]=1;env.map[17]=1;
     Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;cfg.flow_normalize=true;cfg.flow_flips=2;
@@ -1029,6 +1048,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    destination_demand_matching();
     guidance_reversal();
     window_configuration();
     window_components();

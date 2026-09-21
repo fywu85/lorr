@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 07:23 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 07:56 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -25,15 +25,15 @@ Full horizons: 600 / 600 / 800 / 1000 / 2000. Strict 1s entry / 30s preprocessin
 32 decimal GB process guard. EPYC9354 allocation: 16 physical cores / 32 SMT
 workers, actual binding and no-quota checks. Shared hosts are allowed. Fixed
 work completes or the run fails; do not truncate work on a wall-clock deadline.
-All inputs 50001–50010 remain excluded from tuning. No 50011+ input was generated.
+All inputs 50001–50012 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
 Any further fresh validation requires freezing protocol/config before generation.
 
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2580 / 2641 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2602 / 2641 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +9.4% / +2.4% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +2.4% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -79,9 +79,45 @@ campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Active RANDOM-03/04 ten-percent work
 
+LATEST OVERRIDE (07:56UTC): R03 **2602**, source02bccaa7/build102, batch
+random03-merge-coupling-split-full-v102, case triage0875. All2580 merge6
+settings +heap4=1 and triage0.875. Mean507/max710ms/RSS434MB, completed
+07:48:41.498854 UTC. Independently replayed; archived target crossed (+10.30%).
+Protocol **0fb8a953e571d66e37aa0bd4d01eba34f60f6c5c** committed07:55UTC
+BEFORE generating50011/50012. Frozen JSON and manifest:
+experiments/random03-fresh-validation-v1-{protocol,full}.json. Generation
+metadata at results/random03-fresh-validation-v1/generation.json.
+Active fresh batch random03-fresh-validation-v1-split-full jobs8902162–69:
+candidate2602, previous2580 (same source102), NMS twice on each fresh input.
+Active archived qualification random03-record2602-validation-split-full-v102,
+jobs8902159–61: exact repeat and seeds0/3. No changing this frozen candidate
+based on other ongoing development or fresh outcomes. Overall goal ACTIVE:
+R04 still2641, target2838; R03 fresh and repetition audits still pending.
+
+Current source104/1436f231, regression passed, SHA
+d8853056bd9182f22abec9974e993c8d31afaeb884a17b2c78d2cbe51b2ca355.
+PreparedRanking48->64-byte alignment; optional R05_LAZY_COST_ROWS. Needsfull
+exact-control benchmark. Source103/eb43ba4a adds optional guidance reversal;
+all14full guidance variants lost. Source102 fixes environment parsing for
+weighted windows; all6actual weighted runs lose2466–2571. Preserve source101
+initialization rejections separately. Source102 extra merge rounds/horizons
+lose2532–2579. R04 closed-loop forecasts lose or exceed1s; visible-task rollout
+original refused allocation onresearch45, identical retry scores2511.
+Exclude research45 as well as34/40/42 from future submissions.
+
+Other active: random03-merge-budget-split-full-v100 (4,source03b68098), fixed
+I8192/rounds4/I10240 warmup withIPO+heap4; collect/audit. All older batches
+through guidance/merge-coupling and R04seed validation are closed/audited.
+R04 latest2641 recipe seeds0/1/3/5=2526/2601/2596/2628, allstrict. Profile
+shows setup~40% of sampled policy time. Physical16-worker R03 fails first
+step1156ms; R04 remains2641 butmean680/max861ms versus32-worker463/487.
+Last verified push c332609a; later freeze/source/evidence commits need push.
+
+The following section retains earlier context; use the latest override above.
+
 Goal ACTIVE: archived targets 2595 / 2838 plus strict subsecond qualification,
 selected exact repeat, three planner seeds and subsequently frozen fresh inputs.
-No fresh R03/04 input generated. Preserve 50001–10; freeze before 50011+.
+R03 inputs50011/50012 now exist only for frozen validation. Never tune on50001–50012. No fresh R04 input has been generated.
 
 R03 best **2580**, source db2d9bc5 / build99, batch
 random03-window-merge-split-full-v99, case trick-random-03-window-merge-merge6.
