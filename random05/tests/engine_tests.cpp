@@ -867,6 +867,23 @@ void move_proposal_bias() {
     }
 }
 
+void guidance_reversal() {
+    auto env=environment(5,5,4);env.map[7]=1;env.map[17]=1;
+    Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;cfg.flow_normalize=true;cfg.flow_flips=2;
+    Graph forward(env,cfg);cfg.flow_reverse=true;Graph reverse(env,cfg);
+    bool changed=false;
+    for(int v=0;v<forward.cells;++v) {
+        require(forward.weight[v][4]==reverse.weight[v][4],"reversing guidance changed turn costs");
+        for(int d=0;d<4;++d)if(forward.next[v][d]>=0) {
+            const int u=forward.next[v][d];
+            require(reverse.next[v][d]==u && reverse.weight[v][d]==forward.weight[u][(d+2)%4],
+                    "global guidance reversal changed topology or failed to swap edge prices");
+            changed|=forward.weight[v][d]!=reverse.weight[v][d];
+        }
+    }
+    require(changed,"guidance reversal fixture did not exercise directional prices");
+}
+
 void window_configuration() {
     struct Setting {
         std::string key,old;bool present;
@@ -1008,6 +1025,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    guidance_reversal();
     window_configuration();
     window_components();
     window_single_agent();

@@ -271,6 +271,9 @@ Config Config::environment(const SharedEnvironment& env) {
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
     c.flow_flips=integer("R05_FLOW_FLIPS",0);c.flow_flip_seed=integer("R05_FLOW_FLIP_SEED",1);
+    c.flow_reverse=integer("R05_FLOW_REVERSE",0);
+    if(c.flow_reverse && (!random_trick || c.guidance=="none"))
+        throw std::invalid_argument("guidance reversal requires weighted guidance and an explicit trick instance");
     if(c.flow_flips<0 || (c.flow_flips && c.guidance!="flow"))
         throw std::invalid_argument("field flips require flow guidance and a nonnegative count");
     if(c.guidance!="none" && !random_trick)
@@ -565,6 +568,14 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         for(int k=0;k<cfg.flow_flips;++k) {
             auto [v,d]=edges[k];int u=next[v][d];
             std::swap(weight[v][d],weight[u][(d+2)%4]);
+        }
+    }
+    if(cfg.flow_reverse) {
+        // Reverse every directional preference after local mutations, preserving
+        // each physical edge pair's two prices, turns and overall cost scale.
+        for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
+            const int u=next[v][d];
+            if(u>v)std::swap(weight[v][d],weight[u][(d+2)%4]);
         }
     }
     if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");
