@@ -10,6 +10,20 @@
 
 namespace r05 {
 struct MoveCandidate { int v,d;float score; };
+struct CachedMove {
+    float score=0;
+    uint16_t v=0;
+    uint8_t d=0, padding=0;
+};
+struct PreparedRanking {
+    float base_cost=0;
+    uint8_t idle_heading=0,count=0,kinematic_mask=0;
+    std::array<CachedMove,5> candidates{};
+    void load(std::array<MoveCandidate,5>& target) const {
+        for(int k=0;k<count;++k)target[k]={int(candidates[k].v),int(candidates[k].d),candidates[k].score};
+    }
+};
+static_assert(sizeof(PreparedRanking)==48,"unexpected prepared ranking size");
 struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
@@ -31,6 +45,7 @@ struct Config {
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
     bool fuse_cache_hits=false;
+    int shared_rankings_mb=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2;
@@ -83,6 +98,7 @@ struct Chain {
     std::vector<int> goals;
     std::vector<std::array<float,4>> tail;
     std::vector<std::vector<float>> values;
+    mutable std::vector<PreparedRanking> rankings;
     Chain(const Graph& g, const Task& t,bool cache=false);
     const float* cached_row(const Graph& g,int stage) const;
     float cost(const Graph& g,int stage,int cell,int direction) const;
@@ -128,11 +144,6 @@ struct OperationModel {
     std::vector<std::vector<std::vector<uint8_t>>> groups;
     explicit OperationModel(const Graph& graph);
     const std::array<int,horizon>& path(int state,int code) const {return paths[size_t(state)*count+code];}
-};
-struct CachedMove {
-    float score=0;
-    uint16_t v=0;
-    uint8_t d=0, padding=0;
 };
 struct alignas(64) CachedRanking {
     // The graph has at most4096 cells, so destination and heading fit exactly.
@@ -194,6 +205,9 @@ private:
     bool policy_profile_active_=false;
     mutable std::vector<PolicyTiming> policy_timings_;
     uint64_t ranking_epoch_=0;
+    float shared_wait_cost_=-1;
+    bool shared_intent_rotation_=false,shared_prospective_wait_=false;
+    void prepare_shared_rankings(int timestep);
     mutable std::vector<std::vector<CachedRanking>> candidate_rankings_;
     uint64_t total_forward_=0,total_agent_steps_=0;
     int triaged_=0;

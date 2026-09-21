@@ -567,6 +567,23 @@ void cached_candidate_rankings() {
     }
 }
 
+void shared_task_rankings() {
+    for(int variant=0;variant<5;++variant) {
+        Config cfg;cfg.guidance="lanes";cfg.futures=16;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+        cfg.cost_cache=variant!=0;cfg.goal_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+        cfg.radix_order=true;cfg.random_by_step=true;cfg.kinematic_mask=true;
+        cfg.candidate_cache=true;cfg.cache_slots=8;cfg.move_bias=variant==4?3:0;
+        if(variant==1)cfg.prospective_wait=true;
+        if(variant==2)cfg.intent_rotation=false;
+        if(variant==3)cfg.push_price=2;
+        const auto reference=simulate(cfg,12,7,7);
+        cfg.shared_rankings_mb=1; // not every two-stop task table can fit
+        require(reference==simulate(cfg,12,7,7,true),"shared task rankings changed bounded-cache turnover or checkpoint replay");
+        cfg.shared_rankings_mb=4;cfg.threads=2;cfg.fuse_cache_hits=true;
+        require(reference==simulate(cfg,12,7,7),"shared rankings changed with cache capacity or worker scheduling");
+    }
+}
+
 void shared_goal_costs() {
     auto e=environment(4,5,1);e.map[6]=1;
     Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;cfg.turn_cost=0.6;
@@ -922,6 +939,7 @@ int main() {
     persistent_elites();
     elite_parents();
     cached_candidate_rankings();
+    shared_task_rankings();
     shared_goal_costs();
     Config measured;measured.futures=4;measured.depth=6;measured.random_by_step=true;
     const auto unmeasured=simulate(measured,12);measured.profile=true;measured.policy_profile=true;

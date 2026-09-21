@@ -7,7 +7,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,514 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,551 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,565 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
@@ -140,3 +140,38 @@ weighting during startup, not a claim of causal attribution or shorter tasks.
 Four source89 full runs atB10/K8064 test rankpower0.5/1/2 for200steps and
 power1for400steps. The earlier all-run power0.25 test lost onR04; these are
 distinct predeclared startup ablations. Matching and task locks stay unchanged.
+
+Source90/ac5cbc9 passes regression23.26s. Six full R04 runtime controls test
+its one-cache-line representation: B10/K8064, B10/K11520, B18/K11520 with
+fused reads off/on, and B10/K11520 with OpenMP workers bound to the32 allocated
+logical CPUs, then also passive waiting. These are exact-behavior controls,
+not additional throughput policies; compare all six trace fields. Affinity stays
+within the verified16-core/32-thread GRID allocation. Timing differences on
+shared hosts require repeated qualification before a robust speedup claim.
+
+RANDOM-03 triage scales0.45/0.75/1/1.25 give2529/2538/2551/2514; scale1
+withguidedmix1 gives2545. The new2551 record is8.14% above NMS (44short of
+target), mean520/max698ms. All six cases fully replay. The horizon rule is
+an explicit trick. Source91/de0b763 passes regression24.46s for fixed-work
+annealed repairs with a retained best complete incumbent. Eight full R03 cases
+compare exact2551control, temperatures0.25/1/4, group3, group6 at6144repairs,
+and plannerseeds0/3. Temperature defaults0; no timeout truncation is introduced.
+
+The weaker-routing batch finishes2241–2483; none beats its2501 control.
+Do not infer that reducing detours necessarily increases throughput: opposing
+traffic and the cost field interact. Full-source90 follow-ups keepB10/K8064
+for headroom and separately test eight forecasting/search settings (future
+mutation0.1/0.5, risk-1/+0.5, elitefutureblend0.5, rootradius3, rootmutation0.1,
+dispersion0). These mechanisms were unhelpful in earlier RANDOM-05 stages, so
+this is a bounded density-specific recheck, not an untested general claim.
+
+A separate eight-case explicit guidance trick comparison removes the inherited
+R05 field flip, replaces its seed5 with0/1/2/3/4/6, or flips4edges atseed5.
+This tests small direction changes around the generated layout at700robots.
+No unseen task stream or hidden task information is used for selection.
+
+Seven full R03 source90 cost ablations hold the2551 cooperative/horizon
+recipe fixed: contrast2/2.2/2.6, turn1.5/2.5, wait1.5/3. Earlier broad contrast
+1.6/3.2 and simultaneous unit turn/wait tests lost at lower work; these finer
+one-change tests probe the stronger optimizer without silently combining
+settings. All are explicit tricks, full800steps, with strict timing preserved.

@@ -122,6 +122,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     c.fuse_cache_hits=integer("R05_FUSE_CACHE_HITS",0);
+    c.shared_rankings_mb=integer("R05_SHARED_RANKINGS_MB",0);
+    if(c.shared_rankings_mb<0 || c.shared_rankings_mb>16384)
+        throw std::invalid_argument("shared ranking cache budget must be 0..16384 MiB");
     c.kinematic_mask=integer("R05_KINEMATIC_MASK",0);
     c.cycle_mask=integer("R05_CYCLE_MASK",0);
     c.cache_slots=integer("R05_CACHE_SLOTS",64);
@@ -970,8 +973,15 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         && ranking_epoch_<=std::numeric_limits<uint32_t>::max()
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
     const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
+    const bool shared=cfg.shared_rankings_mb>0 && cfg.push_price==0 && !cfg.rollout_match && !cfg.replan_roots;
     for(int i=0;i<n;++i) {
-        if(cache && uint32_t(f.stage[i])<=std::numeric_limits<uint16_t>::max()) {
+        if(shared && active_chain[i] && !active_chain[i]->rankings.empty()) {
+            const auto& entry=active_chain[i]->rankings[(size_t(f.stage[i])*g.cells+p[i])*8+f.dir[i]*2+moving[i]];
+            ranking_hits[i]=2;idle_heading[i]=entry.idle_heading;base_cost[i]=entry.base_cost;
+            candidate_count[i]=entry.count;
+            if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
+            entry.load(candidates[i]);
+        } else if(cache && uint32_t(f.stage[i])<=std::numeric_limits<uint16_t>::max()) {
             const uint32_t pose=uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
             // Preserve the original hash/address sequence. The stored key only
             // removes unused bits; very long chains use the uncached path.
@@ -1054,7 +1064,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     for(int i=0;i<n;++i) {
         auto& cand=candidates[i];int count=0;
         if(ranking_hits[i]) {
-            if(!cfg.fuse_cache_hits) {
+            if(ranking_hits[i]==1 && !cfg.fuse_cache_hits) {
                 const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
                 if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
                 entry.load(cand);
@@ -1627,6 +1637,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
         frame.free_tasks.assign(future_tasks_.size(),1);
     }
+    prepare_shared_rankings(env->curr_timestep);
     mark(1);
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;

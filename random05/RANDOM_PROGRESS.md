@@ -20,7 +20,7 @@ Large maps are outside active development.
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2514 | 2359 |
+| RANDOM-03 | 400 | 800 | 1582 | 2551 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2565 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
@@ -126,6 +126,8 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T05:33:47.702672+00:00 | RANDOM-03 | trick | 2479 | [f60f254](https://github.com/fywu85/lorr/commit/f60f254) | [Full run](results/random03-window-budget-split-full-v86/trick-random-03-window-budget-group4-iterations8192/summary.json) |
 | 2026-09-21T05:47:24.158096+00:00 | RANDOM-03 | trick | 2483 | [49f9724](https://github.com/fywu85/lorr/commit/49f9724) | [Full run](results/random03-cooperative-split-full-v88/trick-random-03-cooperative-rounds4/summary.json) |
 | 2026-09-21T05:47:36.178484+00:00 | RANDOM-03 | trick | 2514 | [49f9724](https://github.com/fywu85/lorr/commit/49f9724) | [Full run](results/random03-cooperative-split-full-v88/trick-random-03-cooperative-rounds2/summary.json) |
+| 2026-09-21T06:01:02.811463+00:00 | RANDOM-03 | trick | 2545 | [dabfcc7](https://github.com/fywu85/lorr/commit/dabfcc7) | [Full run](results/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage100-guided/summary.json) |
+| 2026-09-21T06:01:05.809867+00:00 | RANDOM-03 | trick | 2551 | [dabfcc7](https://github.com/fywu85/lorr/commit/dabfcc7) | [Full run](results/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage100/summary.json) |
 
 
 ## September21: first development comparisons
@@ -465,3 +467,16 @@ but useful timing headroom. More aggressiveK14400 still has timeout attempts,
 so the2565frontier must not be called robust. [Cheaper-search audit](results/random04-cheaper-search-split-full-v80/audit.json).
 The new campaign still needs2595/2838, exact repeats, three-seed timing checks
 and newly frozen fresh-input validation. Held-out50001–10 remain excluded.
+
+### 2026-09-21 06:13 UTC: RANDOM-03 2,551, runtime work continues
+
+Adding explicit horizon800/triagescale1 to the cooperative2514profile gives
+2551 (+8.14% overmatchedNMS2359), mean520/max698ms, full800steps and
+independent replay. Source[dabfcc7](https://github.com/fywu85/lorr/commit/dabfcc7).
+[All six cutoff outcomes](results/random03-cooperative-triage-split-full-v89/audit.json).
+The dashboard now derives each selected horizon/guidance assumption from its
+manifest, so a new horizon-enabled record cannot inherit stale horizon-off prose.
+
+R04 routing/cost changes remain below2565. Compact-cache and thread-binding
+controls, fixed-work annealed R03repair, and targeted R04forecast/layout checks
+are running. No new robust-timing or ten-percent qualification is claimed.

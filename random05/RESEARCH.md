@@ -1260,3 +1260,23 @@ worse walk endpoint replaces the incumbent. Temperature0 is the exact default.
 Full-plan validation and no-worsening checks remain. Dense turnover/mobility,
 worker count, cached/uncached equivalence and checkpoint replay exercise the
 new path before full performance experiments. It is not a map-specific rule.
+
+## Shared immutable task/pose rankings (source92 experiment)
+
+Each worker currently caches the same candidate rankings independently, and
+real steps invalidate them even while a task's cost field stays fixed. Optional
+R05_SHARED_RANKINGS_MB instead builds immutable rankings for an assigned task's
+(stagedgoal,cell,heading,moving) states, shares them across workers, and retains
+them until the task leaves the visible pool. Construction runs in parallel
+before search; every entry uses the existing score arithmetic and stable order.
+A fixed MiB cap and stable agent ordering select tables that fit; others retain
+the exact existing calculation. Candidate scores, priorities, movement bias,
+collision resolution, futures and deadlines remain unchanged.
+
+This prototype bypasses dynamic push prices, virtual task matching, nested
+forecasts and operation planning. Wait/intent configuration changes invalidate
+tables. Tables belong to Chain objects and checkpoint restore rebuilds them.
+Dense7x7 regression comparisons cover cost-cache off, prospective wait, disabled
+intent rotation, dynamic bypass, move-bias proposals, partial/full memory caps,
+worker counts, task turnover and full checkpoint replay. The32GB process guard
+remains; source92 has no speed claim before regression and full paired controls.

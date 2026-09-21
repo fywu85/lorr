@@ -85,10 +85,13 @@ def render():
         'These are selected individual bests, not an average or one universal preset.',
         'GENERAL means no map-specific guidance or known-horizon rule was enabled;',
         'the general algorithm settings were still selected during development.',
-        'TRICK results require the corresponding `--trick INSTANCE` flag. RANDOM-03',
-        'uses a tuned guidance field with the horizon rule off. RANDOM-04 and',
-        'RANDOM-05 use both guidance and the known-horizon rule. All five RANDOM',
-        'cases share one layout: this is density transfer, not unseen-map validation.', '',
+        'TRICK results require the corresponding `--trick INSTANCE` flag.',
+        'Selected tuned guidance: {}.'.format(', '.join(i for i, (_, r, _) in selected.items()
+            if r['case']['env'].get('R05_GUIDANCE', 'none') != 'none') or 'none'),
+        'Selected known-horizon rules: {}.'.format(', '.join(i for i, (_, r, _) in selected.items()
+            if int(r['case']['env'].get('R05_HORIZON', 0))) or 'none'),
+        'All five RANDOM cases share one layout: this is density transfer,',
+        'not unseen-map validation.', '',
         '| Instance | General best | Explicit-trick best |',
         '|---|---:|---:|']
     for instance in INSTANCES:
@@ -144,7 +147,7 @@ def render():
         'remains stronger on the two crowded cases; the windowed transfer trials',
         'there were substantially worse. RANDOM-04 is still close to the local NMS',
         'baseline; improving throughput and timing headroom there is the next priority.',
-        'The latest depth16 follow-up reaches 2,565 on planner seed4, while seed6',
+        'An earlier depth16 profile reached 2,565 on planner seed4, while seed6',
         'gives 2,536. Seeds0 and3 fail the strict deadline (1,197 and 1,007 ms);',
         'the original failures remain recorded. Depth18 gives 2,525. An invalid',
         'depth20 work count is rejected at initialization and has no throughput score.',

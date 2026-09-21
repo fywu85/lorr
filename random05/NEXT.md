@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 05:56 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 06:13 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2514 / 2565 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2551 / 2565 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +6.6% / -0.6% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +8.1% / -0.6% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -79,46 +79,60 @@ campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Active RANDOM-03/04 ten-percent work
 
-The goal remains ACTIVE. Targets2595 and2838 plus robust subsecond qualification.
-Current R03=2514 source49f9724/build88, full800steps, mean544/max714ms,
-source/input/resource checks and independent action/waiting replay passed.
-Guided H20/keep14/I8192/group4/32islands/two sharing rounds/storage reuse,seed5;
-horizonOFF. Exact case is the frontier manifest. Source86 independent control
-2479 (mean520/max733), source88 exact control2479 and storage reuse2479
-(mean509/max695), sharing4/8=2483/2469,KK400=2429. All full/audited.
+The goal remains ACTIVE. Targets2595/2838 plus robust subsecond qualification.
+R03 now2551 (8.14% overmatchedNMS2359), source dabfcc7/build89, case
+trick-random-03-cooperative-triage-triage100 in
+random03-cooperative-triage-split-full-v89. Full800steps,mean520/max698ms.
+Samecooperative2514profile + horizon800/scale1/hop-only estimate. This known
+horizon is an explicit trick. All6triage cases full/audited; scales0.45/0.75/1.25
+=2529/2538/2514,scale1/mix1=2545. Newrecord independently replayed/promoted.
+No freshR03/04 input generated yet; keep50001–10 untouched.
 
-R04 record2565 remains sourcea2ff2b2/build80 depth16/K14400/seed4. Same-budget
-seeds0/3 and source87 repeated control/fused calls time out: this profile is NOT
-robustly qualified. Original failures are archived. LowerworkK8064/B10=2501,
-mean506/max575ms;B18=2473,B6=2355,B8=2461. All full/audited.
+R04 record2565 still sourcea2ff2b2/build80 depth16/K14400/B18/seed4,
+mean832/max949ms. Oldseeds0/3 andsource87control/fused have realtimeouts, so
+this profile is NOT robustly qualified. No claim that hostcontention caused them.
+B10/K8064 cheaperprofile=2501,mean498/max546ms in source89exactcontrol.
+Increasing B10 toK11520 gives2484;dispersion0.4=2507; othertriage/mix/turn
+variants2461–2496. Routing changes (weaker/strongercontrast,plain-scoremix,
+turn-awarefield,betweenness) alllose2241–2483. Startupscorepower0.5/1/2 at
+200steps gives2513/2509/2431;power1for400steps2479. No new R04frontier.
 
-Closed batches: random34-tenpercent-first-split-full (12cases incl one binding
-refusal and one timeout; mixed source map), random03-window-budget-split-full-v86
-(5), random04-cache-fusion-split-full-v87(3,2timeouts),
-random03-cooperative-split-full-v88(6), random04-cheaper-search-split-full-v80(8).
-Audits/equivalence proofs and all failures archived. Cache128/512/cyclemask
-exactly reproduce2565; fusedK11520 exactly reproduces2500 (mean686/max742ms),
-but observed single-run timing is not yet a robust speedup claim.
+Closed/audited batches before05:56UTC: first12mixed,windowbudgetv86(5),
+fusionv87(3,2timeouts),cooperativev88(6),cheaperR04v80(8).
+Currentclosed: R03triagev89(6,audited),R04compactv89(9,audited),
+R04routingv89(8,audited),R04startupv89(4,auditexec73508 aftersubmissions).
+Fullsix-field exactproofs: old2439 source86; old2479 source88control/reuse;
+old2565 cache128/512/cyclemask; old2500 source87fusedK11520.
+Source89controls (2514,2501,2500) need finalsix-fieldcomparisonproof written.
 
-Current source dabfcc7/build89 passes regression23.04s; binarySHA
-28020e7bf00bdd4d921d049b5a375047d327972d48641569c2cf13ba195b6616.
-It compactly aligns CachedRanking (104->96bytes) without policy changes.
-Source87 fuse flag defaultoff; source88 sharing default1/storage reuseoff.
+Sources:
+- dabfcc7/build89, regression23.04s, CachedRanking104->96bytes.
+- ac5cbc9/build90, regression23.26s, compact candidates and24-byteheader fit
+  one64-bytecacheline. Hash/score/order preserved; oversizedstage/epoch bypass.
+  binarySHA f288fa5449b5cf474672e5cb97f6470f628bb552fd1b32c5d4561459f3e8830c.
+- de0b763/build91, regression24.46s, optional fixed-work annealed windowrepairs,
+  preservebestcompleteincumbent; temperature0defaultexactcontrol.
+  binarySHA90e318c2e3c951f9945a6472e21cc8cd964c3ef8d1681d83ef6f637a9111840b.
 
-ACTIVE full batches submitted05:54UTC:
-- random03-cooperative-triage-split-full-v89, jobs8901724–29: source89 exact
-  2514control plus horizon800triage0.45/0.75/1/1.25 and scale1/guidedmix1.
-- random04-compact-followup-split-full-v89, jobs8901730–38: B10/K8064exact2501
-  control, K11520, then separate triage0.75/1, mix1, turn1, dispersion0.4;
-  two exact B18/K11520controls (2500), fusedoff/on.
-Audit both with --build build-v89 --source dabfcc7. Collect then promote only
-valid full records; preserve original failures. Source/config freeze before
-fresh task/start validation. No new fresh inputs have been generated.
+ACTIVE fullbatches:
+- random04-cacheline-runtime-split-full-v90, jobs8901762–67: exactB10K8064/11520,
+  B18K11520fusedoff/on, B10K11520OpenMPbinding andpassivewaiting.
+- random03-anneal-split-full-v91, jobs8901768–75: exact2551control,temperature
+  0.25/1/4,group3,group6/I6144,plannerseeds0/3.
+- random04-forecast-split-full-v90, jobs8901777–84: futuremutation0.1/0.5,
+  risk-1/+0.5,elitefutureblend0.5,radius3,rootmutation0.1,dispersion0.
+- random04-localfield-split-full-v90, jobs8901785–92: removeoldflip,1flip
+  seeds0/1/2/3/4/6,4flipsseed5. Explicitguidancetricks.
+- random03-cost-split-full-v90, jobs8901794–1800: contrast2/2.2/2.6,
+  turn1.5/2.5,wait1.5/3,otherwise2551profile.
+Audit source90withac5cbc9; source91withde0b763.
 
-R04 routing diagnostic: completed loaded forwards/lowerbound=2.05 for2565
-versus1.67 in NMS's archived2580 trace. Different selected tasks, observational
-only. Consider weaker guidance/detour penalties and trajectory efficiency, not
-more compute alone. Existing public NMS/KK weights lose badly on this policy.
+R04 motion diagnostic: completed loaded forwards/lowerbound=2.05for2565
+versus1.67inNMS2580. First200steps=428vs638completions, althoughinitial
+assignments have271two-stoptasksboth andsimilarhopwork. Differentselected
+tasksets/trajectories make this observational. Most routingsoftening testslose,
+so lowerdetours alone do not predict higher throughput. Evidence in
+results/random34-motion-diagnosis.
 
 ## Rejected source experiments / tool notes
 

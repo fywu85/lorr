@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-21T06:03:12.896816+00:00",
+  "checked_utc": "2026-09-21T06:05:49.375608+00:00",
   "source": {
     "commit": "dabfcc7",
     "binary_sha256": "28020e7bf00bdd4d921d049b5a375047d327972d48641569c2cf13ba195b6616",
@@ -630,6 +630,142 @@
     {
       "instance": "RANDOM-03",
       "profile": "trick",
+      "name": "trick-random-03-cooperative-triage-triage125",
+      "valid": true,
+      "source_commit": "dabfcc7",
+      "finished_utc": "2026-09-21T06:03:23.284282+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage125/summary.json",
+      "peak_rss_bytes": 459038720,
+      "latency_seconds": {
+        "mean": 0.6767486748175009,
+        "max": 0.862740524
+      },
+      "tasks": 2514,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage125/trick-random-03-cooperative-triage-triage125/result.json",
+        "result_sha256": "df63291f50b894acb3c11ef208e4d65a1ce9ad5d8fb00985b4af3fffd308df27",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2514,
+        "steps": 800,
+        "agents": 400,
+        "robot_steps": 320000,
+        "phases": {
+          "unopened": {
+            "C": 4191,
+            "R": 4369,
+            "F": 15195,
+            "W": 14467
+          },
+          "loaded": {
+            "F": 182712,
+            "R": 35858,
+            "C": 34446,
+            "W": 28762
+          },
+          "idle": {}
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "C": 3843,
+              "F": 14101,
+              "R": 4030,
+              "W": 2370
+            },
+            "loaded": {
+              "R": 35058,
+              "F": 179773,
+              "C": 33839,
+              "W": 11023
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 339,
+              "W": 12097,
+              "F": 1094,
+              "C": 348
+            },
+            "loaded": {
+              "F": 2939,
+              "W": 17739,
+              "R": 800,
+              "C": 607
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 123523,
+        "completed_loaded_detour_cells": 56250,
+        "completed_loaded_mean_steps": 103.29872712808273,
+        "completed_chain_lengths": {
+          "2": 741,
+          "3": 707,
+          "4": 590,
+          "5": 476
+        },
+        "unopened_reassignments": 4671,
+        "task_starts": 2752,
+        "waiting_streaks": {
+          "count": 10286,
+          "p50": 1,
+          "p90": 4,
+          "p99": 69,
+          "maximum": 179
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage125/trick-random-03-cooperative-triage-triage125/result.json",
+        "result_sha256": "df63291f50b894acb3c11ef208e4d65a1ce9ad5d8fb00985b4af3fffd308df27",
+        "horizon_steps": 800,
+        "tasks_finished": 2514,
+        "tasks_revealed": 3114,
+        "completed_latency": {
+          "count": 2514,
+          "mean_steps": 134.82418456642802,
+          "p50_steps": 106,
+          "p95_steps": 344,
+          "p99_steps": 577
+        },
+        "maximum_release_to_completion": {
+          "steps": 771,
+          "task_id": 374,
+          "released_at": 0,
+          "observed_at": 771
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 791,
+          "task_id": 439,
+          "released_at": 0,
+          "observed_at": 791
+        },
+        "oldest_unfinished": {
+          "steps": 800,
+          "task_id": 589,
+          "released_at": 0,
+          "observed_at": 800
+        },
+        "oldest_unopened": {
+          "steps": 800,
+          "task_id": 589,
+          "released_at": 0,
+          "observed_at": 800
+        },
+        "unfinished_count": 600,
+        "unopened_count": 362,
+        "initial_cohort_count": 600,
+        "initial_restricted_mean_steps": 198.60833333333332,
+        "initial_still_unfinished": 36,
+        "initial_still_unopened": 25,
+        "initial_started_unfinished": 11,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-03",
+      "profile": "trick",
       "name": "trick-random-03-cooperative-triage-triage100-guided",
       "valid": true,
       "source_commit": "dabfcc7",
@@ -764,9 +900,7 @@
       }
     }
   ],
-  "pending": [
-    "trick-random-03-cooperative-triage-triage125"
-  ],
-  "complete": false,
+  "pending": [],
+  "complete": true,
   "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
 }
