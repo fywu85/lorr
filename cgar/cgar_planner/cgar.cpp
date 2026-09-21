@@ -829,8 +829,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (turn_surcharge_ && (!flow_strength_ || !temporal_ || turn_cost_ != 1)))
         throw std::invalid_argument("turn surcharge requires temporal flow, unit physical turns and a value in [0,15]");
     guidance_turn_cost_ = native_trick_metric_ ? trick_options.native_turn_cost : turn_cost_ * flow_cost_scale_ + turn_surcharge_;
-    if (guidance_turn_cost_ > 16)
-        throw std::invalid_argument("scaled turn cost plus surcharge must not exceed 16");
+    const int guidance_turn_limit = trick_options.random_reference ? 64 : 16;
+    if (guidance_turn_cost_ > guidance_turn_limit)
+        throw std::invalid_argument("scaled turn cost plus surcharge must not exceed " + std::to_string(guidance_turn_limit));
     guide_enabled_ = env_int("CGAR_GUIDE_ROUTES", 0) != 0;
     if (guide_enabled_ && (!temporal_ || turn_cost_ != 1 || flow_strength_))
         throw std::invalid_argument("guide routes require temporal planning, unit turns and frozen flow disabled");

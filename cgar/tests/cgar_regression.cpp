@@ -3549,6 +3549,9 @@ void random_reference_trick_regression() {
  for(const auto& instance:instances)for(int reference:{1,2}) {
   if(reference==2&&(instance.second==100||instance.second==800))continue;
   setenv("CGAR_TRICK_RANDOM_REFERENCE",std::to_string(reference).c_str(),1);
+  // Exercise the extended upper bound through real pickup and planning too.
+  if(instance.second==200&&reference==1)setenv("CGAR_TRICK_NATIVE_TURN_COST","64",1);
+  else unsetenv("CGAR_TRICK_NATIVE_TURN_COST");
   auto e=base;e.num_of_agents=instance.second;e.trick_instance=instance.first;e.curr_timestep=10;
   e.curr_task_schedule.assign(e.num_of_agents,-1);e.goal_locations.resize(e.num_of_agents);
   for(int a=0;a<e.num_of_agents;++a)e.curr_states.emplace_back(free[a],0,a%4);
@@ -3562,7 +3565,7 @@ void random_reference_trick_regression() {
   require(step(e,e.curr_states,actions).size()==size_t(e.num_of_agents)&&!planner.stats().flow_publications,"reference invalid action or learned-field overwrite");actions_checked+=actions.size();
  }
  for(auto setting:settings)unsetenv(setting.first);
- for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_REMAINING_FLOW","CGAR_TRICK_RANDOM_REFERENCE"})unsetenv(key);
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_REMAINING_FLOW","CGAR_TRICK_RANDOM_REFERENCE","CGAR_TRICK_NATIVE_TURN_COST"})unsetenv(key);
  std::cout<<"RANDOM_REFERENCE_TRICK passed independent_oriented_states="<<compared<<" production_actions="<<actions_checked
   <<" map_and_fleet_gates=1 distinct_providers=4 corrupt_and_malformed_rejected=1 native_pickup_and_plan=8 sparse_rank_rejected=1\n";
 }

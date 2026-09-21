@@ -1,0 +1,11 @@
+{
+  "checked_utc": "2026-09-21T03:06:08.054653+00:00",
+  "status": "regression rejected first reference-provider production initialization",
+  "source_commit": "19d5b16ab081487772c76827abb26d921d4e7a8e",
+  "job": 8901360,
+  "build_log_sha256": "dcc1b62d0d013369fb4ba7fde698d9a50cb773722e93b15f7058dc63fd2e69d1",
+  "message": "scaled turn cost plus surcharge must not exceed16",
+  "cause": "The options parser allowed reference turns20..64, but the common CGAR initialization guard still capped all guidance turns at16.",
+  "fix": "Condition the common bound on the explicitly selected reference provider:64 for reference providers,16 unchanged for legacy and generic modes. Existing oriented and pickup graph bounds already support200.",
+  "no_benchmark_from_failed_build": true
+}
