@@ -87,7 +87,7 @@ struct Config {
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2, destination_load=0;
     float initial_length_weight=-1, match_horizon_weight=0;
     int initial_length_steps=250, active_task_cap=0, active_cap_steps=0;
-    bool fast_admission=false;
+    bool fast_admission=false, active_travel_rate=false;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     float flow_penalty=1.6, flow_output_penalty=-1, flow_normalize_ref=-1;
@@ -260,7 +260,9 @@ private:
     bool shared_intent_rotation_=false,shared_prospective_wait_=false,shared_orders_only_=false;
     void prepare_shared_rankings(int timestep);
     mutable std::vector<std::vector<CachedRanking>> candidate_rankings_;
-    uint64_t total_forward_=0,total_agent_steps_=0;
+    uint64_t total_forward_=0,total_agent_steps_=0,active_forward_=0,active_agent_steps_=0;
+    double travel_steps_per_cell() const;
+    void record_travel(const std::vector<Action>& actions);
     int triaged_=0;
     std::unordered_map<int,std::shared_ptr<Chain>> chains_, score_chains_;
     std::unique_ptr<Graph> score_graph_;

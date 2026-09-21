@@ -959,6 +959,33 @@ void compact_prepared_rankings() {
     }
 }
 
+void active_travel_calibration() {
+    auto env=environment(3,3,2);env.curr_states[0].location=4;env.curr_states[1].location=8;
+    Task task;task.task_id=7;task.locations={4,5};task.idx_next_loc=1;
+    env.task_pool[7]=task;env.curr_task_schedule={7,-1};env.curr_timestep=4;
+    Config cfg;cfg.futures=1;cfg.depth=3;cfg.horizon=13;cfg.triage_scale=1;
+    Engine ordinary(cfg);ordinary.initialize(&env);
+    auto snapshot=ordinary.checkpoint(env);
+    snapshot["total_agent_steps"]=1000;snapshot["total_forward"]=100;
+    snapshot["active_agent_steps"]=500;snapshot["active_forward"]=100;
+    ordinary.restore(snapshot,env);std::vector<Action> actions;std::vector<int> schedule;
+    ordinary.compute(&env,actions,schedule);
+    require(ordinary.triaged()==1,"full-fleet calibration fixture did not suppress the late task");
+    cfg.active_travel_rate=true;Engine calibrated(cfg);calibrated.initialize(&env);
+    calibrated.restore(snapshot,env);calibrated.compute(&env,actions,schedule);
+    require(calibrated.triaged()==0,"active travel calibration still counted goal-less robot time");
+    auto after=calibrated.checkpoint(env);
+    require(after.at("active_agent_steps")==501 && after.at("total_agent_steps")==1002,
+            "active travel accounting counted an idle robot or lost total robot time");
+    cfg.active_task_cap=22;cfg.hungarian_limit=1000;cfg.horizon=300;cfg.triage_scale=1;
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.cost_cache=true;cfg.random_by_step=true;
+    const auto reference=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(reference==simulate(cfg,12),"active travel calibration changed with worker scheduling");
+    cfg.replan_roots=1;cfg.replan_futures=1;cfg.replan_steps=2;cfg.replan_k=1;cfg.replan_continuations=1;
+    require(reference==simulate(cfg,12,5,5,true,true),"single-root forecast changed active travel accounting");
+}
+
 void exact_dummy_prefix() {
     std::mt19937 random(194837);
     int comparisons=0;
@@ -1380,6 +1407,7 @@ int main() {
     rollout_elite_diversity();
     bounded_order_rankings();
     compact_prepared_rankings();
+    active_travel_calibration();
     exact_dummy_prefix();
     active_task_admission();
     blocker_priority_mutations();

@@ -1429,3 +1429,19 @@ exact assignments against ordinary Hungarian, including no/all dummy cases.
 Dense admission/checkpoint/worker tests compare whole trajectories. Full runtime
 controls must still pass before promotion. This skips redundant matching work;
 it does not return a partial assignment or change the fixed forecast count.
+
+## Travel-time calibration with inactive goals
+
+After a task-admission cap, the existing estimate still divides all robot-time
+by all forward moves. Goal-less robots can inflate this estimate despite not
+pursuing orders. The cap560 profile improves2698->2738 when its cutoff scale
+falls1.25->1, supporting a test of that calibration rather than proving the cause.
+
+`R05_ACTIVE_TRAVEL_RATE=1` measures elapsed robot steps and forward actions only
+for robots whose task goal is active in the returned plan. Idle and deliberately
+triaged robots still participate in collision resolution, but are excluded from
+this estimator's numerator and denominator. The same estimate feeds declared
+horizon triage and optional matching-horizon costs. Counters are carried through
+checkpoints and shadow forecasts; no future tasks or elapsed compute time enter
+them. Default0 preserves the previous estimator. This remains an explicit
+known-horizon trick, and full comparisons must determine whether it helps.

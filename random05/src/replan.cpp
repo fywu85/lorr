@@ -23,6 +23,7 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
     target.cfg=config;target.quiet_=true;target.graph=graph;target.rng_=rng_;
     target.policy_profile_active_=false;target.replan_stats_=ReplanStats{};
     target.total_forward_=total_forward_;target.total_agent_steps_=total_agent_steps_;
+    target.active_forward_=active_forward_;target.active_agent_steps_=active_agent_steps_;
     target.triaged_=triaged_;target.chains_=chains_;target.assigned_=assigned_;
     target.score_chains_.clear();target.score_assigned_.clear();
     target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();target.score_weights_.clear();
@@ -101,8 +102,7 @@ int Engine::rank_replanned(const SharedEnvironment& env,const std::vector<int>& 
             shadow.pending_=root.first.pending;shadow.best_offsets_=root.offsets;
             shadow.predicted_loc_=root.first.loc;shadow.predicted_dir_=root.first.dir;
             if(cfg.persist_elites>1)shadow.past_offsets_=histories[r];
-            shadow.total_agent_steps_+=n;
-            shadow.total_forward_+=std::count(root.actions.begin(),root.actions.end(),FW);
+            shadow.record_travel(root.actions);
             auto& forecast=forecasts[trial];std::vector<Action> actions=root.actions;
             std::vector<int> assignment=schedule,from(n),to(n);
             for(int step=0;step<cfg.replan_steps;++step) {

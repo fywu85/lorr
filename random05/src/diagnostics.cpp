@@ -15,7 +15,8 @@ json Engine::checkpoint(const SharedEnvironment& env) const {
         {"pending",pending_},{"best_offsets",best_offsets_},{"past_offsets",past_offsets_},
         {"last_actions",last_actions_},{"predicted_loc",predicted_loc_},
         {"predicted_dir",predicted_dir_},{"operations",operations_},
-        {"total_forward",total_forward_},{"total_agent_steps",total_agent_steps_}
+        {"total_forward",total_forward_},{"total_agent_steps",total_agent_steps_},
+        {"active_forward",active_forward_},{"active_agent_steps",active_agent_steps_}
     };
     if(cfg.window)state["window_paths"]=window_paths_;
     state["states"]=json::array();
@@ -69,6 +70,7 @@ void Engine::restore(const json& state,SharedEnvironment& env) {
     operations_=state.at("operations").get<std::vector<int>>();
     window_paths_=state.value("window_paths",std::vector<std::vector<int>>{});
     total_forward_=state.at("total_forward");total_agent_steps_=state.at("total_agent_steps");
+    active_forward_=state.value("active_forward",uint64_t(0));active_agent_steps_=state.value("active_agent_steps",uint64_t(0));
     std::istringstream random(state.at("rng").get<std::string>());random>>rng_;
     if(!random)throw std::invalid_argument("invalid checkpoint RNG state");
     // Cached pointers are implementation state, never part of a saved decision.

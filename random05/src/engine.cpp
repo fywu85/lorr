@@ -277,6 +277,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    c.active_travel_rate=integer("R05_ACTIVE_TRAVEL_RATE",0);
+    if(c.active_travel_rate && (!random_trick || c.horizon<=0))
+        throw std::invalid_argument("active travel calibration requires a declared horizon and explicit trick instance");
     c.match_horizon_weight=real("R05_MATCH_HORIZON_WEIGHT",0);
     if(!std::isfinite(c.match_horizon_weight) || c.match_horizon_weight<0 ||
        (c.match_horizon_weight>0 && (!random_trick || c.horizon<=0)))
@@ -840,6 +843,19 @@ void Engine::initialize(SharedEnvironment* env) {
                  n,graph->cells,cfg.futures,cfg.depth,cfg.threads,cfg.guidance.c_str(),cfg.seed,
                  graph->distance.size()*sizeof(float)/1e6);
 }
+double Engine::travel_steps_per_cell() const {
+    const uint64_t forward=cfg.active_travel_rate?active_forward_:total_forward_;
+    const uint64_t steps=cfg.active_travel_rate?active_agent_steps_:total_agent_steps_;
+    return forward?double(steps)/forward:2;
+}
+
+void Engine::record_travel(const std::vector<Action>& actions) {
+    total_agent_steps_+=actions.size();total_forward_+=std::count(actions.begin(),actions.end(),FW);
+    if(cfg.active_travel_rate)for(size_t a=0;a<actions.size();++a)if(assigned_[a]) {
+        ++active_agent_steps_;active_forward_+=actions[a]==FW;
+    }
+}
+
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
     int dummy_columns,bool fast_dummy_prefix) {
     if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
@@ -935,7 +951,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             destination_pressure[goal]+=1.f/(1+g.hop(goal,from));
         }
     }
-    const double match_steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+    const double match_steps_per_cell=travel_steps_per_cell();
     const double remaining_steps=cfg.horizon-env->curr_timestep;
     struct Pair { float cost;int agent,task; };
     const int dummy_columns=capped?int(agents.size())-std::min(capacity,int(tasks.size())):0;
@@ -1856,7 +1872,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                     triage_guided[a]=chain->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
                     total_triage_guided+=triage_guided[a];
                 } else {
-                    double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+                    double steps_per_cell=travel_steps_per_cell();
                     if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
                         assigned_[a]=nullptr;++triaged_;
                     }
@@ -1870,7 +1886,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         // allowing direction and remaining turns to redistribute it across tasks.
         // These are currently assigned, visible chains only; no future stream.
         const double normalization=total_triage_guided>0?total_triage_hops/total_triage_guided:0;
-        const double steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+        const double steps_per_cell=travel_steps_per_cell();
         for(int a=0;a<n;++a)if(assigned_[a]) {
             const double remaining=(1-cfg.triage_guided_mix)*triage_hops[a]+
                 cfg.triage_guided_mix*normalization*triage_guided[a];
@@ -1920,7 +1936,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     if(cfg.window) {
         if(forced_candidate>=0)throw std::invalid_argument("forced root is unavailable for windowed search");
         window_plan(frame,*env,plan);
-        total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
+        record_travel(plan);
         return;
     }
     // Initialization of the first task pool has extra matching/cost work.
@@ -2248,7 +2264,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     plan=selected.actions;pending_=selected.first.pending;best_offsets_=selected.offsets;
     predicted_loc_=selected.first.loc;predicted_dir_=selected.first.dir;
     if(cfg.reverse_penalty>0)last_actions_=selected.actions;
-    total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
+    record_travel(plan);
     mark(4);
     if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0))
         std::fprintf(stderr,"R05_PROFILE t=%d assignment_ms=%.3f task_cost_ms=%.3f candidates_ms=%.3f lookahead_ms=%.3f final_ms=%.3f\n",
