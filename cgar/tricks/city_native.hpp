@@ -11,6 +11,10 @@ inline constexpr char city_native_nobands_field_sha256[] = "6308f060c71c0d341b2c
 inline constexpr char city_lane4_field_sha256[] = "de8aca1d7b8910126b9b62a261f5eaa8f8a68cb245dbd9c7b05db3db3c71dbab";
 inline constexpr char city_lane8_field_sha256[] = "42a1a35f7918315e22f16a74214217822e12bb448d5d88c11434628ab44003c4";
 inline constexpr char city_lane12_field_sha256[] = "645a9c0767513e00545e15b8e9b813ad32f4153c971fd53525d89749354b6f26";
+inline constexpr char city_lane24_field_sha256[] = "9127400e72a813b808761d826a3fe8e62d338d36d8f763b11b046b418a033bc1";
+inline constexpr char city_lane32_field_sha256[] = "a35bb1260f37f8b469853a7b880f602d3d4ff9990cef423a8e5c738e2bd7edcd";
+inline constexpr char city_lane48_field_sha256[] = "e985474a06db91393858d5935c532abdcce87c621ffda068e789fbd171738409";
+inline constexpr char city_lane64_field_sha256[] = "0fd911133d418c15133cd7a319e5c16039982d6a0aed60f2ba4e54496541d244";
 inline constexpr uint64_t city_native_nobands_fnv1a64 = 13870463150038177701ULL;
 inline constexpr char city_masks[] =
     "c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6xxxxc6c6c6c6c6c6c6c6c6c6cx"

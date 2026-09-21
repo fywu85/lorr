@@ -744,7 +744,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     static_trick_metric_ = trick_options.lanes;
     native_trick_metric_ = trick_options.native_metric;
     native_neutral_tail_ = trick_options.native_neutral_tail;
-    guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : 16;
+    guidance_cost_limit_ = native_trick_metric_ ? (trick_options.native_bands ? 201 : 200) : std::max(16, trick_options.lane_cost);
     if ((trick_options.native_bands && !native_trick_metric_) ||
         (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow)))
         throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow; native bands require native metric");

@@ -67,8 +67,9 @@ inline Options options(const std::string& instance) {
     int opposing = 16;
     if (lane_cost) {
         const std::string value(lane_cost);
-        if (value != "4" && value != "8" && value != "12" && value != "16")
-            throw std::invalid_argument("lane cost must be 4, 8, 12 or 16");
+        if (value != "4" && value != "8" && value != "12" && value != "16" &&
+            value != "24" && value != "32" && value != "48" && value != "64")
+            throw std::invalid_argument("lane cost must be 4, 8, 12, 16, 24, 32, 48 or 64");
         if (!grid_instance(instance) || !boolean(lanes, true) || boolean(native_metric, false))
             throw std::invalid_argument("lane cost requires explicit CITY/GAME adapted lanes");
         opposing = std::stoi(value);
@@ -267,9 +268,10 @@ inline std::vector<uint8_t> forward_costs(const std::string& name, const std::ve
                                           int rows, int cols, int opposing = 16) {
     validate_map(name, map, rows, cols);
     const auto asset = field_asset(name);
-    if ((opposing != 4 && opposing != 8 && opposing != 12 && opposing != 16) ||
+    if ((opposing != 4 && opposing != 8 && opposing != 12 && opposing != 16 &&
+         opposing != 24 && opposing != 32 && opposing != 48 && opposing != 64) ||
         (opposing != 16 && !grid_instance(name)))
-        throw std::invalid_argument("adapted lane price requires CITY/GAME and one of 4/8/12/16");
+        throw std::invalid_argument("adapted lane price requires CITY/GAME and one of 4/8/12/16/24/32/48/64");
     if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane-mask metric");
     std::vector<uint8_t> result(map.size() * 4, 4);
     for (size_t cell = 0; cell < map.size(); ++cell) {
@@ -325,10 +327,18 @@ inline const char* lane_field_hash(const std::string& name, int opposing = 16) {
     if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane hash");
     const auto asset = field_asset(name);
     if (opposing == 16) return asset.lane_sha256;
-    if (!grid_instance(name) || (opposing != 4 && opposing != 8 && opposing != 12))
-        throw std::invalid_argument("adapted lane hash requires CITY/GAME and one of 4/8/12/16");
-    if (name == "GAME") return opposing == 4 ? game_lane4_field_sha256 : opposing == 8 ? game_lane8_field_sha256 : game_lane12_field_sha256;
-    return opposing == 4 ? city_lane4_field_sha256 : opposing == 8 ? city_lane8_field_sha256 : city_lane12_field_sha256;
+    if (!grid_instance(name))
+        throw std::invalid_argument("adapted lane hash requires CITY/GAME");
+    switch (opposing) {
+        case 4: return name == "GAME" ? game_lane4_field_sha256 : city_lane4_field_sha256;
+        case 8: return name == "GAME" ? game_lane8_field_sha256 : city_lane8_field_sha256;
+        case 12: return name == "GAME" ? game_lane12_field_sha256 : city_lane12_field_sha256;
+        case 24: return name == "GAME" ? game_lane24_field_sha256 : city_lane24_field_sha256;
+        case 32: return name == "GAME" ? game_lane32_field_sha256 : city_lane32_field_sha256;
+        case 48: return name == "GAME" ? game_lane48_field_sha256 : city_lane48_field_sha256;
+        case 64: return name == "GAME" ? game_lane64_field_sha256 : city_lane64_field_sha256;
+        default: throw std::invalid_argument("adapted lane hash requires one of 4/8/12/16/24/32/48/64");
+    }
 }
 inline const char* occupancy_hash(const std::string& name) { return field_asset(name).occupancy_sha256; }
 

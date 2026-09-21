@@ -3849,7 +3849,7 @@ void city_game_trick_regression() {
    require(adapted[4*cell+h]==(base.map[cell]?4:against?16:4),"CITY/GAME adapted parity formula mismatch");++field_values;
   }
   require(options(name).lane_cost==16,"default adapted lane price changed");
-  for(int price:{4,8,12,16}) {
+  for(int price:{4,8,12,16,24,32,48,64}) {
    setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
    require(options(name).lane_cost==price,"explicit lane price lost");
    rejects([&]{options("");},"lane price accepted without CLI");
@@ -3873,24 +3873,31 @@ void city_game_trick_regression() {
   unsetenv("CGAR_TRICK_LANE_COST");
   rejects([&]{forward_costs(name,base.map,base.rows,base.cols,6);},"undeclared field price accepted");
   rejects([&]{lane_field_hash(name,6);},"undeclared field hash accepted");
-  // One independent full oriented heap per distinct map. Disconnected free
+  // Independent full oriented heaps per distinct map. Disconnected free
   // components must remain unreachable in both implementations.
   if(name!="CITY-02"){
    Certificate cert;cert.rows=base.rows;cert.cols=base.cols;
    for(int wall:base.map)cert.free.push_back(!wall);cert.core=cert.free;cert.pocket.assign(base.map.size(),-1);
-   const int goal=free[free.size()/2];std::vector<int> expected(base.map.size()*4,kInf);
-   using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> heap;
-   for(int h=0;h<4;++h){expected[goal*4+h]=0;heap.push({0,goal*4+h});}
-   while(!heap.empty()){
-    const auto item=heap.top();heap.pop();if(expected[item.second]!=item.first)continue;
-    const int cell=item.second/4,h=item.second%4;
-    auto relax=[&](int key,int price){if(item.first+price<expected[key]){expected[key]=item.first+price;heap.push({expected[key],key});}};
-    relax(cell*4+(h+1)%4,1);relax(cell*4+(h+3)%4,1);
-    const int before=nb(cell,(h+2)%4,base.rows,base.cols);if(before>=0&&!base.map[before])relax(before*4+h,native[before*4+h]);
+   const auto strong=forward_costs(name,base.map,base.rows,base.cols,64);
+   // Compare both the original native metric and the largest adapted price
+   // against an independent heap, including disconnected oriented states.
+   for(bool strong_metric:{false,true}) {
+    const auto& costs=strong_metric?strong:native;
+    const int turn=strong_metric?4:1,forward=strong_metric?4:20,bound=strong_metric?64:200;
+    const int goal=free[free.size()/2];std::vector<int> expected(base.map.size()*4,kInf);
+    using Item=std::pair<int,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> heap;
+    for(int h=0;h<4;++h){expected[goal*4+h]=0;heap.push({0,goal*4+h});}
+    while(!heap.empty()){
+     const auto item=heap.top();heap.pop();if(expected[item.second]!=item.first)continue;
+     const int cell=item.second/4,h=item.second%4;
+     auto relax=[&](int key,int price){if(item.first+price<expected[key]){expected[key]=item.first+price;heap.push({expected[key],key});}};
+     relax(cell*4+(h+1)%4,turn);relax(cell*4+(h+3)%4,turn);
+     const int before=nb(cell,(h+2)%4,base.rows,base.cols);if(before>=0&&!base.map[before])relax(before*4+h,costs[before*4+h]);
+    }
+    TurnDistanceOracle oracle;oracle.init(&cert,16<<20,turn,true,forward,bound);oracle.set_forward_costs(costs);
+    const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(30));
+    for(int cell:free)for(int h=0;h<4;++h){require(oracle.value(*table,cell,h)==expected[cell*4+h],"CITY/GAME oriented oracle differs from independent heap");++oriented_states;}
    }
-   TurnDistanceOracle oracle;oracle.init(&cert,16<<20,1,true,20,200);oracle.set_forward_costs(native);
-   const auto* table=oracle.table(goal,std::chrono::steady_clock::now()+std::chrono::seconds(30));
-   for(int cell:free)for(int h=0;h<4;++h){require(oracle.value(*table,cell,h)==expected[cell*4+h],"CITY/GAME oriented oracle differs from independent heap");++oriented_states;}
   }
   const auto certificate=build_certificate_feasible(base.map,base.rows,base.cols,base.num_of_agents);
   std::vector<int> core;for(int cell:free)if(certificate.core[cell])core.push_back(cell);
@@ -3931,7 +3938,7 @@ void city_game_trick_regression() {
   }
   setenv("CGAR_FLOW_COST_SCALE","4",1);
   std::vector<Action> explicit_default;
-  for(int price:{4,8,12,16}) {
+  for(int price:{4,8,12,16,24,32,48,64}) {
    setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
    auto active=base;active.trick_instance=name;active.curr_timestep=10;Cgar planner;planner.initialize(&active,30000);
    std::vector<int> schedule;planner.schedule(&active,30000,schedule);require(planner.stats().pickup_full_fields>0,"adapted price pickup inactive");install(active,schedule);

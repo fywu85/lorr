@@ -11,6 +11,10 @@ inline constexpr char game_native_nobands_field_sha256[] = "f25e710f77f359ef7f1f
 inline constexpr char game_lane4_field_sha256[] = "94a1669c5e5071ce52e00cb0561da661b58617c43c9b4edee7cb0aafeb483e77";
 inline constexpr char game_lane8_field_sha256[] = "6fa9d257ab94b22c4070de63ce28be7e85422ac84eda7e7eded0a8085b07b89c";
 inline constexpr char game_lane12_field_sha256[] = "38ae038fd57a0cf215acd33b26e64534ffd04df51afd4281692354392312d83d";
+inline constexpr char game_lane24_field_sha256[] = "4c3b146d278960c3e9aa98f32316be61df23cdfb40991c73a62f4f4cafd7a5bb";
+inline constexpr char game_lane32_field_sha256[] = "6a788a6d3752001c6e67736cdd71b8b3aad2075fa97b5c3698388a3a65d5554b";
+inline constexpr char game_lane48_field_sha256[] = "7971fa282149070e3b3671bf12a5d84bff339b8bf6499d7d399648c8c4682442";
+inline constexpr char game_lane64_field_sha256[] = "ce41fa0853abc76b202b6a11ba16fb79c9841d82b196cf024c7786ccd6507a62";
 inline constexpr uint64_t game_native_nobands_fnv1a64 = 2396239673730235117ULL;
 inline constexpr char game_masks[] =
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
