@@ -27,6 +27,60 @@ void validation() {
     for(int k=0;k<=int(t.locations.size());++k)for(int v=0;v<g.cells;++v)for(int o=0;o<4;++o)
         require(cached.cost(g,k,v,o)==chain.cost(g,k,v,o),"cached cost differs from exact oriented chain cost");
 }
+void local_goal_guidance() {
+    auto env=environment(5,5,1);Config cfg;cfg.guidance="lanes";cfg.goal_cache=true;
+    cfg.goal_local_radius=2;cfg.goal_local_mix=1;Graph g(env,cfg);
+    bool softened=false,unchanged=false;
+    for(int goal=0;goal<g.cells;++goal)for(int cell=0;cell<g.cells;++cell)
+        for(int direction=0;direction<4;++direction)if(g.next[cell][direction]>=0) {
+            float w=g.forward_weight(goal,cell,direction);
+            require(w>0,"local guidance made a nonpositive edge");
+            if(g.hop(goal,cell)<=1) {
+                require(w==2,"immediate goal approach did not reach physical edge cost");
+                softened=softened || g.weight[cell][direction]!=2;
+            }
+            if(g.hop(goal,cell)>cfg.goal_local_radius) {
+                require(w==g.weight[cell][direction],"local guidance changed a distant edge");unchanged=true;
+            }
+        }
+    require(softened && unchanged,"local guidance fixture did not cover both regions");
+    // Verify shortest-path Bellman equations independently over every target
+    // heading. Chained tails and policy lookups must share these edge prices.
+    for(int target=0;target<g.states;++target)for(int source=0;source<g.states;++source) {
+        if(target==source){require(g.dist(target,source)==0,"goal cost is not zero");continue;}
+        int cell=source/4,dir=source%4,v=g.next[cell][dir];
+        float best=std::min(g.dist(target,cell*4+(dir+1)%4),g.dist(target,cell*4+(dir+3)%4))+g.weight[cell][4];
+        if(v>=0)best=std::min(best,g.dist(target,v*4+dir)+g.forward_weight(target/4,cell,dir));
+        require(std::abs(g.dist(target,source)-best)<1e-4,"goal-local distance and move prices disagree");
+    }
+    Task task;task.locations={24,2,20};Chain ordinary(g,task),cached(g,task,true);
+    for(int stage=0;stage<3;++stage)for(int cell=0;cell<g.cells;++cell)for(int dir=0;dir<4;++dir)
+        require(ordinary.cost(g,stage,cell,dir)==cached.cost(g,stage,cell,dir),"goal-local chained cache mismatch");
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting radius("R05_GOAL_LOCAL_RADIUS","2"),mix("R05_GOAL_LOCAL_MIX",".5");
+    bool rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"goal-local guidance escaped the explicit trick gate");
+    env.trick_instance="RANDOM-04";
+    require(Config::environment(env).goal_local_mix==.5f,"valid goal-local guidance was rejected");
+    setenv("R05_GOAL_LOCAL_RADIUS","0",1);rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"goal-local guidance accepted zero radius");
+    setenv("R05_GOAL_LOCAL_RADIUS","2",1);setenv("R05_GOAL_LOCAL_MIX","1.5",1);rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"goal-local guidance accepted an extrapolated mixture");
+    setenv("R05_GOAL_LOCAL_MIX",".5",1);Setting window("R05_WINDOW","8");rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"unsupported window cost model accepted goal-local guidance");
+
+}
+
 void scheduling() {
     auto e=environment(3,3,2);Config cfg;Engine engine(cfg);engine.initialize(&e);
     Task t;t.task_id=7;t.locations={8,0};t.idx_next_loc=1;t.agent_assigned=0;e.task_pool[7]=t;
@@ -1546,6 +1600,17 @@ void window_reproducibility() {
 }
 
 int main() {
+    local_goal_guidance();
+    {
+        Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
+        cfg.goal_local_radius=2;cfg.goal_local_mix=.5;cfg.threads=1;
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.shared_rankings_mb=16;
+        require(reference==simulate(cfg,12),"goal-local shared rankings changed decisions");
+        cfg.shared_orders=true;cfg.threads=2;
+        require(reference==simulate(cfg,12),"goal-local compact rankings or workers changed decisions");
+    }
+
     feasible_move_proposals();
     rollout_elite_diversity();
     bounded_order_rankings();

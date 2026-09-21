@@ -32,7 +32,7 @@ void build_rankings(const Graph& g,const Config& cfg,const Chain& chain,bool ord
             std::array<MoveCandidate,5> candidates;int count=0;
             for(int d=0;d<4;++d) {
                 int v=g.next[p][d];if(v<0 || (!cfg.intent_rotation && !allowed(d)))continue;
-                candidates[count++]={v,d,cost(v,d)+g.weight[p][d]};
+                candidates[count++]={v,d,cost(v,d)+g.forward_weight(chain.goals[stage],p,d)};
             }
             float wait_value=entry.base_cost;
             if(cfg.prospective_wait)for(int d=0;d<4;++d)if(!moving || turn_distance(d,dir)<=1)

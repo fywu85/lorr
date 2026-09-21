@@ -316,6 +316,14 @@ Config Config::environment(const SharedEnvironment& env) {
     c.flow_seed=integer("R05_FLOW_SEED",c.flow_seed);c.flow_iterations=integer("R05_FLOW_ITERS",c.flow_iterations);
     c.rollout_age=integer("R05_ROLLOUT_AGE",0);c.rollout_match=integer("R05_ROLLOUT_MATCH",0);c.cost_cache=integer("R05_COST_CACHE",0);
     c.pocket_components=integer("R05_POCKET_COMPONENTS",0);
+    c.goal_local_radius=integer("R05_GOAL_LOCAL_RADIUS",0);
+    c.goal_local_mix=real("R05_GOAL_LOCAL_MIX",0);
+    if(c.goal_local_radius<0 || !std::isfinite(c.goal_local_mix) ||
+       c.goal_local_mix<0 || c.goal_local_mix>1 ||
+       (c.goal_local_mix>0 && (c.goal_local_radius==0 || !random_trick)))
+        throw std::invalid_argument("local goal guidance requires a positive radius, mix in [0,1] and explicit trick instance");
+    if(c.goal_local_mix>0 && (c.window || c.operation_depth || c.guidance_distance_mix>0))
+        throw std::invalid_argument("local goal guidance currently requires the pipelined policy and exact goal costs");
     c.flow_turn=real("R05_FLOW_TURN",0);
     c.flow_power=real("R05_FLOW_POWER",1);c.flow_alpha=real("R05_FLOW_ALPHA",1);
     c.flow_confidence_power=real("R05_FLOW_CONFIDENCE_POWER",0);
@@ -463,6 +471,7 @@ int Graph::nearby_pairs(const std::vector<int>& locations) const {
 }
 
 Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
+    goal_local_radius=cfg.goal_local_radius;goal_local_mix=cfg.goal_local_mix;
     rows=env.rows;cols=env.cols;from_grid.assign(env.map.size(),-1);
     for(int i=0;i<int(env.map.size());++i) if(!env.map[i]) {
         from_grid[i]=int(to_grid.size());to_grid.push_back(i);
@@ -743,7 +752,7 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             };
             relax(v*4+(o+1)%4,weight[v][4]);relax(v*4+(o+3)%4,weight[v][4]);
             int u=next[v][(o+2)%4];
-            if(u>=0)relax(u*4+o,weight[u][o]);
+            if(u>=0)relax(u*4+o,forward_weight(target/4,u,o));
         }
     }
     if(cfg.goal_cache) {
@@ -1204,6 +1213,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(active_chain[a])return active_chain[a]->cost(g,f.stage[a],v,d);
         return cfg.idle_eviction*g.pocket_depth[v];
     };
+    auto forward_weight=[&](int a,int cell,int d) {
+        return g.forward_weight(active_chain[a]?active_chain[a]->goals[f.stage[a]]:-1,cell,d);
+    };
     auto allowed=[&](int a,int d) {return moving[a]?d==f.dir[a]:turn(d,f.dir[a])<=1;};
     auto& idle_heading=scratch.idle_heading;idle_heading.resize(n);
     auto& forced_heading=scratch.forced_heading;forced_heading.assign(n,-1);
@@ -1329,12 +1341,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
         for(int d=0;d<4;++d) {
             int v=g.next[p[i]][d];if(v<0 || (!cfg.intent_rotation && !allowed(i,d)))continue;
-            float score=cost(i,v,d)+g.weight[p[i]][d];
+            float score=cost(i,v,d)+forward_weight(i,p[i],d);
             int b=owner[v];
             if(cfg.push_price>0 && b>=0 && b!=i) {
                 float loss=INF;
                 for(int q=0;q<4;++q)if(g.next[v][q]>=0 && allowed(b,q))
-                    loss=std::min(loss,cost(b,g.next[v][q],q)+g.weight[v][q]-base_cost[b]);
+                    loss=std::min(loss,cost(b,g.next[v][q],q)+forward_weight(b,v,q)-base_cost[b]);
                 score+=cfg.push_price*std::max(0.0f,std::min(100.0f,loss));
             }
             cand[count++]={v,d,score};

@@ -91,6 +91,8 @@ struct Config {
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     float flow_penalty=1.6, flow_output_penalty=-1, flow_normalize_ref=-1;
+    int goal_local_radius=0;
+    float goal_local_mix=0;
     float flow_turn=0, flow_power=1, flow_alpha=1, flow_betweenness=0, flow_confidence_power=0;
     bool flow_average=false, flow_normalize=false, flow_reverse=false;
     int loop_extent=2;
@@ -117,7 +119,8 @@ std::vector<double> rank_progress_weights(const std::vector<float>& remaining,fl
 std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix=false);
 struct CycleWordMask { size_t word;uint64_t bits; };
 struct Graph {
-    int cells=0, states=0, rows=0, cols=0;
+    int cells=0, states=0, rows=0, cols=0, goal_local_radius=0;
+    float goal_local_mix=0;
     std::vector<int> from_grid, to_grid, degree, pocket, pocket_depth;
     std::vector<std::array<int,4>> next;
     std::vector<std::array<float,5>> weight;
@@ -129,6 +132,17 @@ struct Graph {
     Graph(const SharedEnvironment& env, const Config& cfg);
     float dist(int target, int source) const { return distance[size_t(target)*states+source]; }
     int hop(int target, int source) const { return hops[size_t(target)*cells+source]; }
+    // Soft lane preferences fade only around the current waypoint. These same
+    // positive edge prices build its distance table and rank policy moves.
+    float forward_weight(int goal,int cell,int direction) const {
+        const float base=weight[cell][direction];
+        if(goal_local_mix==0 || goal<0)return base;
+        const int distance=hop(goal,cell);
+        if(distance>goal_local_radius)return base;
+        const float taper=float(goal_local_radius-(distance>0?distance:1)+1)/goal_local_radius;
+        const float fraction=goal_local_mix*taper;
+        return (1-fraction)*base+fraction*2;
+    }
     float approach(int target,int source) const;
     void blend_distances(const Graph& other,float fraction,int threads);
     int direction(int a,int b) const;
