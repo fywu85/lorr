@@ -1055,6 +1055,47 @@ void active_task_admission() {
     if(present)setenv("R05_ACTIVE_TASK_CAP",saved.c_str(),1);else unsetenv("R05_ACTIVE_TASK_CAP");
 }
 
+void priced_task_admission() {
+    auto env=environment(3,3,4);env.curr_states[3].location=8;
+    for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
+    Config cfg;cfg.hungarian_limit=1000;cfg.keep_bonus=0;cfg.admission_price=.5f;
+    std::vector<int> schedule;
+    for(int cap:{0,1,3})for(int limit:{0,1000})for(bool fast:{false,true}) {
+        cfg.active_task_cap=cap;cfg.hungarian_limit=limit;cfg.fast_admission=fast;
+        Engine engine(cfg);engine.initialize(&env);engine.match(&env,schedule);
+        require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1 && schedule[3]>=0,
+                "priced admission filled an expensive pair or skipped the inexpensive pair");
+        auto opened=env;opened.curr_task_schedule=schedule;opened.task_pool.at(schedule[3]).idx_next_loc=1;
+        opened.curr_states[3].location=4;engine.match(&opened,schedule);
+        require(schedule==opened.curr_task_schedule,"priced admission changed an opened task");
+    }
+    cfg.active_task_cap=2;cfg.hungarian_limit=1000;cfg.admission_price=100;
+    Engine cap(cfg);cap.initialize(&env);cap.match(&env,schedule);
+    require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==2,
+            "optional columns bypassed the mandatory admission cap");
+    cfg.active_task_cap=0;cfg.admission_price=0;env.task_pool.erase(0);env.task_pool.erase(1);env.task_pool.erase(2);
+    Engine scarce(cfg);scarce.initialize(&env);scarce.match(&env,schedule);
+    require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1,
+            "priced admission with fewer tasks than robots lost a free assignment");
+    env.task_pool.clear();scarce.match(&env,schedule);
+    require(std::all_of(schedule.begin(),schedule.end(),[](int t){return t<0;}),"empty priced pool assigned a task");
+    cfg=Config{};cfg.active_task_cap=22;cfg.admission_price=4;cfg.hungarian_limit=1000;
+    cfg.fast_admission=true;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
+    cfg.depth=6;cfg.random_by_step=true;cfg.share_prefix=true;cfg.cost_cache=true;
+    const auto signature=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(signature==simulate(cfg,12),"priced admission changed with worker scheduling");
+    const char* old=std::getenv("R05_ADMISSION_PRICE");const bool present=old;
+    const std::string saved=old?old:"";setenv("R05_ADMISSION_PRICE","4",1);
+    SharedEnvironment gate;bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"priced admission escaped the explicit trick flag");
+    gate.trick_instance="RANDOM-04";require(Config::environment(gate).admission_price==4,"priced admission parser changed the price");
+    setenv("R05_ADMISSION_PRICE","-.5",1);rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"priced admission accepted an invalid negative price");
+    if(present)setenv("R05_ADMISSION_PRICE",saved.c_str(),1);else unsetenv("R05_ADMISSION_PRICE");
+}
+
 void blocker_priority_mutations() {
     auto env=environment(5,5,4);Config cfg;Graph graph(env,cfg);
     Task task;task.locations={4};Chain chain(graph,task,true);
@@ -1410,6 +1451,7 @@ int main() {
     active_travel_calibration();
     exact_dummy_prefix();
     active_task_admission();
+    priced_task_admission();
     blocker_priority_mutations();
     physical_guidance_edges();
     mixed_guidance_potentials();

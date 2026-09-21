@@ -213,6 +213,11 @@ Config Config::environment(const SharedEnvironment& env) {
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
     c.fast_admission=integer("R05_FAST_ADMISSION",0);
+    c.admission_price=real("R05_ADMISSION_PRICE",-1);
+    if(!std::isfinite(c.admission_price) || c.admission_price<-1 ||
+       (c.admission_price<0 && c.admission_price!=-1) ||
+       (c.admission_price>=0 && !random_trick))
+        throw std::invalid_argument("optional assignment price requires a nonnegative price and explicit trick instance");
     if(c.active_task_cap<0 || c.active_cap_steps<0 || (c.active_task_cap>0 && !random_trick))
         throw std::invalid_argument("active task admission requires nonnegative settings and an explicit --trick RANDOM-01..05");
     c.destination_load=real("R05_DESTINATION_LOAD",0);
@@ -328,7 +333,7 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("mixed guidance potentials require weighted guidance and a non-windowed policy");
     if(c.guidance!="none" && !random_trick)
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
-    if(c.active_task_cap && c.rollout_match)
+    if((c.active_task_cap || c.admission_price>=0) && c.rollout_match)
         throw std::invalid_argument("active task admission does not support virtual task replacement forecasts");
     if(c.blocker_mutation_size && (c.window || c.operation_depth || c.mutation_radius))
         throw std::invalid_argument("blocker-directed mutations require the ordinary pipeline without spatial mutation");
@@ -954,8 +959,12 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     const double match_steps_per_cell=travel_steps_per_cell();
     const double remaining_steps=cfg.horizon-env->curr_timestep;
     struct Pair { float cost;int agent,task; };
-    const int dummy_columns=capped?int(agents.size())-std::min(capacity,int(tasks.size())):0;
-    const int columns=int(tasks.size())+dummy_columns;
+    const int dummy_columns=(capped || cfg.admission_price>=0)?int(agents.size())-std::min(capacity,int(tasks.size())):0;
+    // Additional idle columns make the remaining slots optional at this price.
+    // The original, strictly cheaper cap dummies stay last so their exact
+    // Hungarian-prefix optimization remains valid.
+    const int optional_columns=cfg.admission_price>=0?std::min(capacity,int(tasks.size())):0;
+    const int columns=int(tasks.size())+optional_columns+dummy_columns;
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && columns>=int(agents.size());
     std::vector<float> matrix(exact?agents.size()*columns:0);
     std::vector<Pair> pairs;if(!exact)pairs.reserve(agents.size()*tasks.size());
@@ -992,16 +1001,21 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             else pairs.push_back({cost,a,j});
         }
     }
+    if(exact && optional_columns) {
+        for(size_t row=0;row<agents.size();++row)
+            std::fill(matrix.begin()+row*columns+tasks.size(),
+                      matrix.begin()+row*columns+tasks.size()+optional_columns,cfg.admission_price);
+    }
     if(exact && dummy_columns) {
         float minimum=0;
-        for(size_t row=0;row<agents.size();++row)for(size_t j=0;j<tasks.size();++j)
+        for(size_t row=0;row<agents.size();++row)for(size_t j=0;j<tasks.size()+optional_columns;++j)
             minimum=std::min(minimum,matrix[row*columns+j]);
         // Every dummy is cheaper than every real pair, so an optimum fills all
-        // dummies and admits exactly capacity real pairs (when available).
-        // Their equal costs leave the chosen real matching minimum-cost.
+        // fixed dummies. Remaining slots admit minimum-cost real pairs or,
+        // when enabled, optional idle columns at the declared price.
         const float idle_cost=minimum-std::max(1.f,std::abs(minimum)*1e-6f);
         for(size_t row=0;row<agents.size();++row)
-            std::fill(matrix.begin()+row*columns+tasks.size(),matrix.begin()+(row+1)*columns,idle_cost);
+            std::fill(matrix.begin()+row*columns+tasks.size()+optional_columns,matrix.begin()+(row+1)*columns,idle_cost);
     }
     std::chrono::steady_clock::time_point matrix_done;
     if(cfg.profile)matrix_done=std::chrono::steady_clock::now();
@@ -1018,6 +1032,15 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission);
         for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
             schedule[agents[row]]=tasks[selected[row]];
+        if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
+            std::vector<float> admitted_costs;
+            for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
+                admitted_costs.push_back(matrix[row*columns+selected[row]]);
+            std::sort(admitted_costs.begin(),admitted_costs.end());
+            auto quantile=[&](double q){return admitted_costs.empty()?0.f:admitted_costs[size_t(q*(admitted_costs.size()-1))];};
+            std::fprintf(stderr,"R05_ADMISSION_PROFILE t=%d locked=%zu admitted=%zu capacity=%d cost_p50=%.3f cost_p90=%.3f cost_max=%.3f\n",
+                env->curr_timestep,locked.size(),admitted_costs.size(),capacity,quantile(.5),quantile(.9),quantile(1));
+        }
         report_match();return;
     }
     std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {
@@ -1026,7 +1049,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     });
     std::vector<bool> used(tasks.size(),false);int admitted=0;
     for(const auto& p:pairs) {
-        if(admitted>=capacity)break;
+        if(admitted>=capacity || (cfg.admission_price>=0 && p.cost>cfg.admission_price))break;
         if(schedule[p.agent]<0 && !used[p.task]) {
             schedule[p.agent]=tasks[p.task];used[p.task]=true;++admitted;
         }
