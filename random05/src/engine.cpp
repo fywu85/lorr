@@ -250,6 +250,10 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    c.match_horizon_weight=real("R05_MATCH_HORIZON_WEIGHT",0);
+    if(!std::isfinite(c.match_horizon_weight) || c.match_horizon_weight<0 ||
+       (c.match_horizon_weight>0 && (!random_trick || c.horizon<=0)))
+        throw std::invalid_argument("matching horizon weight requires a declared horizon and --trick RANDOM-01..05");
     if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     c.triage_guided_mix=real("R05_TRIAGE_GUIDED_MIX",0);
@@ -808,6 +812,8 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             destination_pressure[goal]+=1.f/(1+g.hop(goal,from));
         }
     }
+    const double match_steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
+    const double remaining_steps=cfg.horizon-env->curr_timestep;
     struct Pair { float cost;int agent,task; };
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && tasks.size()>=agents.size();
     std::vector<float> matrix(exact?agents.size()*tasks.size():0);
@@ -832,6 +838,14 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             }
             if(!destination_pressure.empty())
                 cost+=cfg.destination_load*destination_pressure[g.from_grid[task.locations[task.idx_next_loc]]];
+            if(cfg.match_horizon_weight>0) {
+                // Use only this visible unopened chain. Opened tasks remain
+                // locked above. Penalize estimated work beyond the explicitly
+                // declared end, so matching can avoid immediately triaged pairs.
+                const double hops=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+length[j];
+                const double estimate=hops*match_steps_per_cell*cfg.triage_scale;
+                cost+=cfg.match_horizon_weight*float(std::max(0.0,estimate-remaining_steps));
+            }
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
             if(exact)matrix[size_t(row)*tasks.size()+j]=cost;
             else pairs.push_back({cost,a,j});

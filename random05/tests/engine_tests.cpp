@@ -910,6 +910,38 @@ void rollout_elite_diversity() {
     }
 }
 
+void horizon_aware_matching() {
+    auto env=environment(1,5,1);
+    Task a;a.task_id=7;a.locations={0,4,0};env.task_pool[7]=a;
+    Task b;b.task_id=8;b.locations={3,3};env.task_pool[8]=b;
+    Config cfg;cfg.hungarian_limit=1000;cfg.keep_bonus=0;cfg.horizon=4;cfg.triage_scale=1;
+    std::vector<int> schedule;Engine ordinary(cfg);ordinary.initialize(&env);ordinary.match(&env,schedule);
+    require(schedule==std::vector<int>({7}),"horizon matching fixture did not prefer the nearer long chain");
+    cfg.match_horizon_weight=1;Engine finishable(cfg);finishable.initialize(&env);finishable.match(&env,schedule);
+    require(schedule==std::vector<int>({8}),"horizon-aware matching did not choose the shorter total trip");
+    cfg=Config{};cfg.horizon=180;cfg.match_horizon_weight=1;cfg.futures=32;cfg.continuations=4;
+    cfg.cost_cache=true;cfg.candidate_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;
+    cfg.random_by_step=true;cfg.hungarian_limit=1000;
+    const auto signature=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(signature==simulate(cfg,12),"horizon matching changed with worker scheduling");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);require(setenv(k,v,1)==0,"cannot configure horizon fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting horizon("R05_HORIZON","180"),weight("R05_MATCH_HORIZON_WEIGHT","1");
+    auto configured=environment(5,5,4);configured.trick_instance="RANDOM-04";
+    require(Config::environment(configured).match_horizon_weight==1,"horizon matching parser rejected an explicit trick");
+    configured.trick_instance.clear();bool rejected=false;
+    try{Config::environment(configured);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"horizon matching escaped the explicit trick gate");
+    configured.trick_instance="RANDOM-04";setenv("R05_HORIZON","0",1);rejected=false;
+    try{Config::environment(configured);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"horizon matching accepted an unknown end");
+}
+
 void destination_demand_matching() {
     auto env=environment(1,5,2);env.curr_states[1].location=2;
     Task locked;locked.task_id=7;locked.locations={0,1};locked.idx_next_loc=1;locked.agent_assigned=0;
@@ -1089,6 +1121,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    horizon_aware_matching();
     destination_demand_matching();
     guidance_reversal();
     window_configuration();
