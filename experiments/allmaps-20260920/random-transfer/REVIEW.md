@@ -106,3 +106,11 @@ production change or a claim that ignoring dead ends is safe for progress.
 The standalone solver explicitly handles pocket evacuation, so success there
 would motivate a compatible CGAR mechanism; simply toggling the switch is not
 that transfer. Keep all failures and stalls. No map-specific tuning is added.
+
+
+The complete certificate-off diagnostic lost on both maps:1306->1274on
+RANDOM-04 and2036->1953on RANDOM-05, all four full cases valid under1s. Thus the
+admission restriction is real, but removing the mechanism does not improve
+throughput on this control. Keep certificates enabled. Any future pocket-service
+transfer needs explicit coordinated evacuation rather than assuming a disabled
+certificate solves the bottleneck. [Full results](../results/dense-capacity-full-v1/summary.md).
