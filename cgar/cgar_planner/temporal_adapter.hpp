@@ -456,6 +456,69 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
         }
     }
+    if (window_options_.horizon) {
+        const auto started = Clock::now();
+        auto check = [&] { check_deadline(deadline_, "rolling_window"); };
+        WindowProblem problem;
+        problem.rows = cert_.rows; problem.cols = cert_.cols; problem.horizon = window_options_.horizon;
+        problem.turn_cost = guidance_turn_cost_;
+        problem.wait_cost = window_options_.wait_cost ? window_options_.wait_cost : flow_cost_scale_;
+        problem.oracle = &chain_potential_; problem.free = cert_.free; problem.fixed = pinned;
+        problem.forward.resize(cells);
+        for (int u = 0; u < cells; ++u) for (int d = 0; d < 4; ++d)
+            problem.forward[u][d] = turn_oracle_.forward_cost(u, d);
+        problem.allowed.resize(n_); problem.entry_allowed.resize(n_); problem.chains.resize(n_); problem.tasks.resize(n_); problem.seed.resize(n_);
+        for (int r = 0; r < n_; ++r) {
+            check(); problem.tasks[r] = agents_[r].task;
+            std::vector<int> stops;
+            const auto found = env_->task_pool.find(agents_[r].task);
+            if (agents_[r].goal >= 0) {
+                if (found != env_->task_pool.end() && found->second.idx_next_loc >= 0 &&
+                    found->second.idx_next_loc < int(found->second.locations.size()) &&
+                    found->second.locations[found->second.idx_next_loc] == agents_[r].goal)
+                    stops.assign(found->second.locations.begin() + found->second.idx_next_loc, found->second.locations.end());
+                else stops.push_back(agents_[r].goal);
+            }
+            problem.chains[r] = chain_potential_.make_chain(stops, 0, check);
+            if (chain_potential_.value(problem.chains[r], 0, loc_[r], ori_[r]) >= ChainPotential::infinity)
+                problem.fixed[r] = true;
+            problem.allowed[r].assign(cells, false); problem.entry_allowed[r].assign(cells, false);
+            for (int u = 0; u < cells; ++u) {
+                problem.allowed[r][u] = cert_.core[u] && allowed(r, u) && !witness[u];
+                problem.entry_allowed[r][u] = problem.allowed[r][u] && (intent_owner[u] < 0 || intent_owner[u] == r);
+            }
+            auto& path = problem.seed[r]; path.reserve(problem.horizon + 1); path.push_back(loc_[r] * 4 + ori_[r]);
+            const auto& choice = search.choice(r);
+            for (int t = 0; t < problem.horizon; ++t) {
+                const int action = t == 0 ? int(actions[r]) : t < 5 ? TemporalGeometry::operations()[choice.operation][t] : 3;
+                const int state = problem.next(path.back(), action);
+                if (state < 0 || (t < 5 && state / 4 != choice.path->cells[t]))
+                    throw std::logic_error("CGAR rolling-window seed conversion changed occupied cells");
+                path.push_back(state);
+            }
+        }
+        std::vector<uint64_t> seeds(window_options_.workers);
+        for (auto& seed : seeds) seed = temporal_rng_();
+        WindowStats window;
+        const auto paths = rolling_window_.solve(problem, window_options_, env_->curr_timestep, seeds, window, check);
+        if (!window.completed) throw std::logic_error("CGAR exposed an incomplete rolling window");
+        for (int r = 0; r < n_; ++r) {
+            const Action selected = static_cast<Action>(problem.action(paths[r][0], paths[r][1]));
+            if (problem.fixed[r] && selected != actions[r]) throw std::logic_error("rolling window changed a protected first action");
+            if (!problem.fixed[r]) { actions[r] = selected; next_[r] = paths[r][1] / 4; }
+        }
+        ++stats_.window_calls; stats_.window.merge(window);
+        stats_.window_changed_first += window.changed_first;
+        stats_.window_retained += window.retained; stats_.window_history_resets += window.history_resets;
+        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+            std::printf("[cgar-window] step=%d complete=1 attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, window.attempts, window.accepted, window.improved, window.searches,
+                window.expanded, window.capped, window.failed, window.retained, window.history_resets,
+                static_cast<long long>(window.seed_cost), static_cast<long long>(window.initial_cost), static_cast<long long>(window.final_cost),
+                window.changed_first, window.protected_robots, window.selected_worker, stats_.window_calls,
+                stats_.window.attempts, stats_.window_changed_first, stats_.window_retained, stats_.window_history_resets,
+                std::chrono::duration<double>(Clock::now() - started).count());
+    }
     if (temporal_priority_noise_) {
         temporal_priority_portfolio_.remember(priority_batch, best, env_->curr_timestep);
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)

@@ -232,6 +232,40 @@ def main():
                     assert (int(chain_samples[-1]['choices'])>0)==bool(chain_mode&1)
                 else:
                     assert not chain_config and not chain_samples
+                window_horizon=int(case['environment'].get('CGAR_WINDOW','0'))
+                window_config=[fields(l) for l in logs if l.startswith('[cgar-window-config] ')]
+                window_samples=[fields(l) for l in logs if l.startswith('[cgar-window] ')]
+                if window_horizon:
+                    assert not chain_mode and len(window_config)==1
+                    cfg=window_config[0];cells=int(cfg['cells'])
+                    for field,key,default in [('horizon','CGAR_WINDOW',0),('keep','CGAR_WINDOW_KEEP',6),
+                            ('iterations','CGAR_WINDOW_ITERS',128),('nodes','CGAR_WINDOW_NODES',2048),
+                            ('group','CGAR_WINDOW_GROUP',4),('workers','CGAR_WINDOW_WORKERS',4),
+                            ('threads','CGAR_WINDOW_THREADS',4),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
+                        assert int(cfg[field])==int(case['environment'].get(key,str(default)))
+                    assert cfg['seed']=='cgar' and cfg['protected']=='immutable' and cfg['objective']=='paid_plus_chain'
+                    assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
+                    assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
+                    assert 1<=int(cfg['turn_cost'])<=255 and 1<=int(cfg['wait_cost'])<=255
+                    if int(case['environment'].get('CGAR_WINDOW_WAIT_COST','0')):
+                        assert cfg['wait_cost']==case['environment']['CGAR_WINDOW_WAIT_COST']
+                    assert [int(x['step']) for x in window_samples]==list(range(200,row['steps']+1,200))
+                    attempts=int(cfg['iterations'])*int(cfg['workers'])
+                    for x in window_samples:
+                        assert x['complete']=='1' and int(x['attempts'])==attempts
+                        assert int(x['calls'])==int(x['step']) and int(x['total_attempts'])==attempts*int(x['step'])
+                        assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
+                        assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
+                        assert int(x['capped'])+int(x['failed'])<=int(x['searches'])
+                        assert 0<=int(x['final_cost'])<=int(x['initial_cost'])<=int(x['seed_cost'])
+                        assert 0<=int(x['selected_worker'])<int(cfg['workers'])
+                        assert 0<=int(x['changed_first'])<=row['robots']-int(x['protected'])
+                        assert 0<=int(x['retained'])<=row['robots'] and 0<=int(x['history_resets'])<=row['robots']
+                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets'):
+                        counts=[int(x[counter]) for x in window_samples];assert counts==sorted(counts)
+                    row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
+                else:
+                    assert not window_config and not window_samples
                 peak_samples=[fields(l) for l in logs if l.startswith('[cgar-regional-peaks] ')]
                 if int(case['environment'].get('CGAR_TEMPORAL_REGION_PEAK_AUDIT','0')):
                     assert [int(x['step']) for x in peak_samples]==list(range(200,row['steps']+1,200))

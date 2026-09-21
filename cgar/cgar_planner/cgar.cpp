@@ -938,6 +938,27 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         }
         return value;
     };
+    window_options_ = WindowOptions();
+    window_options_.horizon = priority_setting("CGAR_WINDOW", 0, 32);
+    window_options_.keep = priority_setting("CGAR_WINDOW_KEEP", 6, 31);
+    window_options_.iterations = priority_setting("CGAR_WINDOW_ITERS", 128, 65536);
+    window_options_.nodes = priority_setting("CGAR_WINDOW_NODES", 2048, 65536);
+    window_options_.group = priority_setting("CGAR_WINDOW_GROUP", 4, 32);
+    window_options_.workers = priority_setting("CGAR_WINDOW_WORKERS", 4, 32);
+    window_options_.threads = priority_setting("CGAR_WINDOW_THREADS", 4, 32);
+    window_options_.wait_cost = priority_setting("CGAR_WINDOW_WAIT_COST", 0, 255);
+    rolling_window_ = RollingWindow();
+    if (window_options_.horizon) {
+        if (window_options_.horizon < 6 || window_options_.keep >= window_options_.horizon ||
+            !window_options_.iterations || !window_options_.nodes || !window_options_.group ||
+            !window_options_.workers || !window_options_.threads || window_options_.threads > window_options_.workers ||
+            !temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
+            native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ ||
+            (flow_strength_ && !static_trick_metric_))
+            throw std::invalid_argument("rolling window requires static temporal guidance, horizon6-32, keep<horizon and positive fixed work; guide/next-errand/neutral-tail/legacy-history are incompatible");
+    } else if (window_options_.keep != 6 || window_options_.iterations != 128 || window_options_.nodes != 2048 ||
+               window_options_.group != 4 || window_options_.workers != 4 || window_options_.threads != 4 || window_options_.wait_cost)
+        throw std::invalid_argument("rolling-window work overrides require an enabled window");
     temporal_chain_mode_ = priority_setting("CGAR_TEMPORAL_CHAIN_MODE", 0, 3);
     temporal_chain_mb_ = priority_setting("CGAR_TEMPORAL_CHAIN_MB", 512, 8192);
     temporal_chain_threads_ = priority_setting("CGAR_TEMPORAL_CHAIN_THREADS", 1, 32);
@@ -947,8 +968,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         !temporal_chain_mb_ || !temporal_chain_threads_ ||
         ((temporal_chain_mode_ & 2) && temporal_order_ != 2)))
         throw std::invalid_argument("chain potential requires temporal static guidance, a memory budget, and chain ordering for rank mode; guide/next-errand/neutral-tail are incompatible");
-    if (!temporal_chain_mode_ && (temporal_chain_mb_ != 512 || temporal_chain_threads_ != 1))
-        throw std::invalid_argument("chain potential resources require an enabled chain mode");
+    if (temporal_chain_mode_ && window_options_.horizon)
+        throw std::invalid_argument("rolling window uses its own paid-action plus chain objective; five-step chain scoring must be disabled");
+    if (window_options_.horizon && (!temporal_chain_mb_ || !temporal_chain_threads_))
+        throw std::invalid_argument("rolling window requires complete chain table resources");
+    if (!temporal_chain_mode_ && !window_options_.horizon && (temporal_chain_mb_ != 512 || temporal_chain_threads_ != 1))
+        throw std::invalid_argument("chain potential resources require an enabled chain mode or rolling window");
     temporal_region_options_.keep_peak = priority_setting("CGAR_TEMPORAL_REGION_KEEP_PEAK", 0, 1) != 0;
     if (temporal_region_options_.keep_peak && !temporal_regions_)
         throw std::invalid_argument("regional peak retention requires enabled regions");
@@ -995,7 +1020,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         // The phases run sequentially. Complete pickup workers are additionally
         // bounded by the fixed field quota and the total robot count.
         const int pickup_threads = std::min({pickup_full_threads_, pickup_full_robots_, n_});
-        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1, pickup_threads, trick_options.native_prewarm_threads});
+        const int required_threads = std::max({temporal_ ? temporal_threads_ : 1, temporal_ ? temporal_prepare_threads_ : 1, temporal_regions_ ? temporal_region_options_.threads : 1, turn_prefetch_threads_, temporal_table_batch_ ? temporal_table_threads_ : 1, pickup_threads, trick_options.native_prewarm_threads, window_options_.horizon ? window_options_.threads : 1, (window_options_.horizon || temporal_chain_mode_) ? temporal_chain_threads_ : 1});
         cpu_set_t affinity; CPU_ZERO(&affinity);
         if (sched_getaffinity(0, sizeof(affinity), &affinity) || CPU_COUNT(&affinity) < required_threads)
             throw std::invalid_argument("planner or pickup threads exceed the allowed logical CPU affinity");
@@ -1173,13 +1198,18 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             env_int("CGAR_FLOW_MIN_MARGIN_PERCENT", 0), env_int("CGAR_FLOW_REFRESH_INTERVAL", 0), flow_cost_scale_, cache_only_refresh != 0);
     }
 
-    if (temporal_chain_mode_) {
+    if (temporal_chain_mode_ || window_options_.horizon) {
+        const int wait = window_options_.horizon && window_options_.wait_cost ? window_options_.wait_cost : flow_cost_scale_;
         chain_potential_.initialize(cert_.free, cert_.core, cert_.pocket, cert_.rows, cert_.cols,
             [&](int cell, int heading) { return turn_oracle_.forward_cost(cell, heading); },
-            guidance_turn_cost_, flow_cost_scale_, size_t(temporal_chain_mb_) << 20, temporal_chain_threads_,
+            guidance_turn_cost_, wait, size_t(temporal_chain_mb_) << 20, temporal_chain_threads_,
             [&] { check_deadline(preprocess_deadline, "chain_potential_preprocess"); });
-        std::printf("[cgar-chain-config] mode=%d score=%d order=%d complete=1 cells=%d stored_bytes=%zu threads=%d service=after_action domain=core_goal_pocket_escape fixed_work=1\n",
+        if (temporal_chain_mode_) std::printf("[cgar-chain-config] mode=%d score=%d order=%d complete=1 cells=%d stored_bytes=%zu threads=%d service=after_action domain=core_goal_pocket_escape fixed_work=1\n",
             temporal_chain_mode_, int(bool(temporal_chain_mode_ & 1)), int(bool(temporal_chain_mode_ & 2)),
+            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_);
+        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed=cgar protected=immutable objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
+            window_options_.horizon, window_options_.keep, window_options_.iterations, window_options_.nodes,
+            window_options_.group, window_options_.workers, window_options_.threads, guidance_turn_cost_, wait,
             chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_);
     }
 

@@ -5669,4 +5669,164 @@ void temporal_chain_regression() {
  std::cout<<"TEMPORAL_CHAIN passed serial_parallel_actions="<<checked<<" service_events="<<served<<" modes=0,1,2,3 disabled_trajectory_identity=1 repeated_and_replaced_tasks=1 protected_primary=1 strict_parser=1\n";
 }
 
-int main(){try{chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+// Independent layered dynamic program on actual actions, task stages and fixed
+// reservations. Terminal values come from the independent product-graph oracle.
+int64_t window_action_reference(const WindowProblem& p,int r,const std::vector<int64_t>& terminal) {
+ using Key=std::array<int,3>;std::map<Key,int64_t> current,next;
+ current[{p.seed[r][0]/4,p.seed[r][0]%4,0}]=0;
+ for(int t=1;t<=p.horizon;++t){
+  next.clear();
+  for(const auto& item:current)for(int a=0;a<4;++a){
+   const int u=item.first[0],h=item.first[1],k=item.first[2];int v=u,d=h;
+   if(a==0){v=nb(u,h,p.rows,p.cols);if(v<0||!p.free[v]||!p.entry_allowed[r][v])continue;}
+   else if(a==1)d=(h+1)%4;else if(a==2)d=(h+3)%4;
+   if(!p.allowed[r][v])continue;bool conflict=false;
+   for(int j=0;j<int(p.seed.size());++j)if(j!=r)
+    conflict=conflict||v==p.seed[j][t]/4||(u==p.seed[j][t]/4&&v==p.seed[j][t-1]/4);
+   if(conflict)continue;
+   const int stage=k+(k<int(p.chains[r].goals.size())&&v==p.chains[r].goals[k]);
+   const int cost=a==0?p.forward[u][h]:(a==3?(k==int(p.chains[r].goals.size())?0:p.wait_cost):p.turn_cost);
+   const Key key{v,d,stage};const auto found=next.find(key);const int64_t value=item.second+cost;
+   if(found==next.end()||value<found->second)next[key]=value;
+  }
+  current.swap(next);
+ }
+ int64_t best=ChainPotential::infinity;const int states=p.free.size()*4;
+ for(const auto& item:current){const auto& k=item.first;const auto tail=terminal[k[2]*states+k[0]*4+k[1]];
+  if(tail<ChainPotential::infinity)best=std::min(best,item.second+tail);}
+ return best;
+}
+
+void rolling_window_search_regression() {
+ auto require=[](bool ok,const std::string& why){if(!ok)throw std::runtime_error("ROLLING_WINDOW_SEARCH "+why);};
+ int checked=0;long long rollback_cases=0;
+ for(int layout=0;layout<3;++layout)for(int costset=0;costset<2;++costset){
+  WindowProblem p;p.rows=3;p.cols=4;p.horizon=4;p.free.assign(12,true);
+  if(layout)p.free[6]=false;
+  auto core=p.free;std::vector<int> pocket(12,-1);
+  if(layout==2){core[10]=false;pocket[10]=0;}
+  p.turn_cost=costset?4:1;p.wait_cost=costset?3:1;p.forward.resize(12);
+  for(int u=0;u<12;++u)for(int h=0;h<4;++h)p.forward[u][h]=1+(costset?(u+h)%3:0);
+  ChainPotential oracle;oracle.initialize(p.free,core,pocket,3,4,[&](int u,int h){return p.forward[u][h];},p.turn_cost,p.wait_cost,1<<20,1,[]{});
+  p.oracle=&oracle;p.fixed={false,true};p.tasks={0,1};p.allowed={core,core};p.entry_allowed=p.allowed;
+  p.seed.assign(2,WindowPath(5));p.chains.resize(2);p.chains[1]=oracle.make_chain({},0,[]{});
+  // Protected forward moves vacate a cell at the same time another may enter.
+  p.seed[1]={1*4+1,5*4+1,9*4+1,9*4+1,9*4+1};
+  for(const auto& stops:std::vector<std::vector<int>>{{11},{0,0,11},{2,1},{4,4,0},{}})
+   for(int cell:{0,4})for(int heading=0;heading<4;++heading)for(int intent=0;intent<2;++intent){
+    p.seed[0].assign(5,cell*4+heading);p.entry_allowed[0]=core;if(intent)p.entry_allowed[0][3]=false;
+    p.chains[0]=oracle.make_chain(stops,0,[]{});p.validate(p.seed,[]{});
+    auto reference=chain_action_reference(p.free,core,pocket,3,4,stops,p.forward,p.turn_cost,p.wait_cost);
+    const int64_t expected=window_action_reference(p,0,reference);
+    WindowOptions options;options.horizon=4;options.nodes=20000;WindowScratch scratch;
+    WindowSearch search(p,options,p.seed,scratch,0);search.reserve(0,false);WindowPath path;
+    require(search.path(0,path,[]{}),"bounded A-star missed a feasible small path");
+    auto result=p.seed;result[0]=path;p.validate(result,[]{});
+    require(p.cost(0,path)==expected,"paid action plus remaining-chain optimum differs from independent layered search");++checked;
+   }
+ }
+ WindowProblem p;p.rows=p.cols=5;p.horizon=8;p.free.assign(25,true);p.forward.assign(25,{1,1,1,1});p.turn_cost=2;p.wait_cost=2;
+ ChainPotential oracle;oracle.initialize(p.free,p.free,std::vector<int>(25,-1),5,5,[](int,int){return 1;},2,2,1<<20,1,[]{});p.oracle=&oracle;
+ const std::vector<int> start{0,3,7,10,14,17,20,24};
+ p.fixed.assign(start.size(),false);p.fixed[0]=true;p.allowed.assign(start.size(),p.free);p.entry_allowed=p.allowed;
+ for(int r=0;r<int(start.size());++r){p.tasks.push_back(r);p.seed.emplace_back(9,start[r]*4+r%4);
+  p.chains.push_back(oracle.make_chain({start[r],start[r],(start[r]+12)%25},0,[]{}));}
+ for(int t=1;t<=8;++t)p.seed[0][t]=4; // protected first FW, then stationary
+ p.validate(p.seed,[]{});
+ WindowOptions options;options.horizon=8;options.keep=3;options.iterations=64;options.nodes=2048;options.group=4;
+ const std::vector<uint64_t> seeds{13,29,41,83};RollingWindow serial,parallel;WindowStats a,b;
+ options.threads=1;auto first=serial.solve(p,options,0,seeds,a,[]{});
+ options.threads=4;auto repeat=parallel.solve(p,options,0,seeds,b,[]{});
+ require(first==repeat&&a.completed&&b.completed&&a.attempts==256&&b.attempts==256&&
+  a.expanded==b.expanded&&a.final_cost==b.final_cost&&a.accepted==b.accepted,"serial and parallel islands differ");
+ require(a.improved>0&&a.changed_first>0&&a.final_cost<a.seed_cost,"repair fixture is vacuous");
+ require(first[0]==p.seed[0],"protected motion changed");
+ // Returning one complete path cannot authorize a partial group replacement.
+ for(int cap:{1,9,16,32}){
+  auto capped=options;capped.nodes=cap;RollingWindow engine;WindowStats observed;
+  auto result=engine.solve(p,capped,0,seeds,observed,[]{});p.validate(result,[]{});
+  require(observed.completed&&observed.attempts==256&&observed.final_cost<=observed.seed_cost,"bounded group repair did not complete safely");
+  if(cap==1)require(result==p.seed&&observed.capped>0&&!observed.accepted,"node exhaustion returned a partial path");
+  rollback_cases+=observed.partial_rollbacks;
+ }
+ require(rollback_cases>0,"no successful-first/failed-later group rollback exercised");
+ WindowScratch scratch;options.threads=1;WindowSearch interrupted(p,options,p.seed,scratch,13);bool timeout=false;
+ try{interrupted.run([&]{if(interrupted.stats.improved)throw Timeout("window_after_improvement_fixture");});}
+ catch(const Timeout&){timeout=true;}
+ require(timeout&&interrupted.stats.improved>0&&!interrupted.stats.completed,"deadline after an improvement returned success");
+ // Shift only compatible histories. A task swap, even with the same stops,
+ // invalidates that robot; a new protected path remains authoritative.
+ auto next=p;int swapped=-1;
+ for(int r=0;r<int(start.size());++r){
+  next.seed[r].assign(9,first[r][1]);auto stops=p.chains[r].goals;
+  if(!stops.empty()&&first[r][1]/4==stops.front())stops.erase(stops.begin());
+  next.chains[r]=oracle.make_chain(stops,0,[]{});
+  if(r>0&&first[r][2]!=first[r][1])swapped=r;
+ }
+ require(swapped>0,"history swap fixture has no future movement");++next.tasks[swapped];next.fixed[1]=true;
+ options.nodes=1;options.iterations=8;WindowStats history;auto continued=serial.solve(next,options,1,seeds,history,[]{});
+ next.validate(continued,[]{});require(continued[swapped]==next.seed[swapped]&&continued[1]==next.seed[1],"stale task or new protection retained an old path");
+ require(history.retained>0,"no valid suffix retained after one-action service advancement");
+ // An unchanged occupied intent can be waited/rotated on, but never re-entered.
+ auto intent=p;intent.entry_allowed[2][start[2]]=false;intent.validate(intent.seed,[]{});
+ require(intent.permits(2,intent.seed[2][0],intent.next(intent.seed[2][0],1)),"occupied foreign intent cannot rotate");
+ require(!intent.permits(2,(start[2]-1)*4,start[2]*4),"foreign intent permits re-entry");
+ std::cout<<"ROLLING_WINDOW_SEARCH passed independent_layered_optima="<<checked<<" serial_parallel=1 complete_group_rollback="<<rollback_cases<<" fixed_attempts=1 protected_paths=1 repeated_service=1 task_swap_history=1 deadline_after_improvement=1\n";
+}
+
+void rolling_window_production_regression() {
+ auto require=[](bool ok,const std::string& why){if(!ok)throw std::runtime_error("ROLLING_WINDOW_PRODUCTION "+why);};
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_ORIENTATION_GUIDANCE","1"},
+  {"CGAR_TEMPORAL_STEPS","64"},{"CGAR_TEMPORAL_WORKERS","2"},{"CGAR_TEMPORAL_THREADS","1"},{"CGAR_TURN_COST","2"}};
+ auto fixture=[](){SharedEnvironment e;e.rows=7;e.cols=9;e.num_of_agents=20;e.map.assign(63,0);
+  e.curr_task_schedule.resize(20);e.goal_locations.resize(20);
+  for(int r=0;r<20;++r){e.curr_states.emplace_back(r*3,0,r%4);e.curr_task_schedule[r]=r;
+   Task t;t.task_id=r;t.agent_assigned=r;t.locations={r*3,r*3,62-r*3};e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
+ for(auto s:settings)setenv(s.first,s.second,1);
+ const std::vector<std::pair<const char*,const char*>> active={{"CGAR_WINDOW","12"},{"CGAR_WINDOW_KEEP","6"},
+  {"CGAR_WINDOW_ITERS","32"},{"CGAR_WINDOW_NODES","512"},{"CGAR_WINDOW_WORKERS","4"},{"CGAR_WINDOW_THREADS","1"},{"CGAR_WINDOW_WAIT_COST","2"}};
+ std::vector<int> absent,disabled;int checked=0,services=0;long long changed=0,retained=0;
+ for(int mode=-1;mode<2;++mode){
+  if(mode==0)setenv("CGAR_WINDOW","0",1);if(mode==1)for(auto s:active)setenv(s.first,s.second,1);
+  auto e=fixture();Cgar serial;serial.initialize(&e,5000);
+  if(mode==1)setenv("CGAR_WINDOW_THREADS","4",1);Cgar parallel;parallel.initialize(&e,5000);
+  for(int tick=0;tick<60;++tick){e.curr_timestep=tick;std::vector<Action>a,b;
+   serial.plan(&e,2000,a);parallel.plan(&e,2000,b);require(a==b,"thread count changed production decisions");
+   auto next=step(e,e.curr_states,a);require(!next.empty(),"production action collision");e.curr_states=next;checked+=a.size();
+   for(int r=0;r<20;++r){if(mode<0)absent.push_back(int(a[r]));if(mode==0)disabled.push_back(int(a[r]));
+    auto& old=e.task_pool.at(e.curr_task_schedule[r]);
+    if(e.curr_states[r].location==old.locations[old.idx_next_loc]){
+     ++old.idx_next_loc;++services;
+     if(old.idx_next_loc==int(old.locations.size())){int id=old.task_id;Task t;t.task_id=100+tick*20+r;t.agent_assigned=r;
+      int u=e.curr_states[r].location;t.locations={(u+19)%63,(u+19)%63,(u+43)%63};e.task_pool.emplace(t.task_id,t);e.curr_task_schedule[r]=t.task_id;e.task_pool.erase(id);}
+    }
+    const auto& task=e.task_pool.at(e.curr_task_schedule[r]);e.goal_locations[r]={{task.locations[task.idx_next_loc],tick}};
+   }
+  }
+  if(mode==1){require(serial.stats().window_calls==60&&serial.stats().window.attempts==60*32*4,"production fixed work accounting failed");
+   require(serial.stats().window.expanded==parallel.stats().window.expanded,"worker work depends on thread count");
+   changed=serial.stats().window_changed_first;retained=serial.stats().window_retained;
+   require(changed>0&&retained>0,"production overlay or history was unused");
+  }else require(!serial.stats().window_calls,"disabled rolling window did work");
+  for(auto s:active)unsetenv(s.first);
+ }
+ require(absent==disabled,"default-off trajectory changed");
+ // Reject invalid and silently ignored configurations before planning.
+ for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_WINDOW","5"},{"CGAR_WINDOW","33"},{"CGAR_WINDOW","-1"},
+  {"CGAR_WINDOW","20x"},{"CGAR_WINDOW_KEEP","12"},{"CGAR_WINDOW_ITERS","0"},{"CGAR_WINDOW_NODES","0"},
+  {"CGAR_WINDOW_GROUP","0"},{"CGAR_WINDOW_WORKERS","0"},{"CGAR_WINDOW_THREADS","5"},{"CGAR_WINDOW_WAIT_COST","256"},
+  {"CGAR_TEMPORAL_CHAIN_MODE","1"},{"CGAR_TEMPORAL_WARM_START","1"},{"CGAR_TEMPORAL_PROMISE_AFTER_TURN","1"},{"CGAR_FLOW_STRENGTH","4"}}){
+  for(auto s:active)setenv(s.first,s.second,1);setenv(bad.first,bad.second,1);bool rejected=false;
+  try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,std::string("invalid option accepted ")+bad.first);unsetenv(bad.first);
+  for(auto s:active)unsetenv(s.first);
+ }
+ setenv("CGAR_WINDOW_ITERS","12",1);bool rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
+ require(rejected,"disabled work override accepted");unsetenv("CGAR_WINDOW_ITERS");
+ for(auto s:active)setenv(s.first,s.second,1);
+ temporal_primary_regression(); // real protected primary and recovery/pocket fixtures
+ for(auto s:active)unsetenv(s.first);for(auto s:settings)unsetenv(s.first);
+ std::cout<<"ROLLING_WINDOW_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" retained="<<retained<<" disabled_identity=1 primary_recovery=1 strict_parser=1\n";
+}
+
+int main(){try{rolling_window_search_regression();rolling_window_production_regression();chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

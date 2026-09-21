@@ -160,3 +160,50 @@ is exposed, and preprocessing or planning timeouts fail explicitly.
 choices. Independent regression compares against a heap shortest-path search on
 the full action/service product graph and checks serial/parallel production actions.
 The option remains experimental pending full throughput comparisons.
+
+
+### Experimental CGAR-seeded rolling window
+
+`CGAR_WINDOW=20` enables a general fixed-work rolling-window repair layer. Default
+0 preserves all earlier decisions and random streams. It starts from the complete
+CGAR five-action plan (including actual wait-seed rotations) and appends waits.
+Primary, recovery, parked and supporting paths remain immutable; ordinary paths
+obey the same core, witness and protected-intent restrictions. Protected tails
+are conservative forecasts, not predictions of future primary/recovery decisions.
+
+Each independent island repairs small robot groups using time-space A* with a task
+stage in the state. Its objective is paid action costs plus exact remaining-chain
+potential; idle waits after completing the revealed chain cost zero. Services
+occur after actions, at most one per tick. A group is committed only if every
+replacement is complete, collision-free and no more expensive in aggregate.
+Node-cap exhaustion rolls back the entire group. All declared attempts and all
+islands finish; a deadline raises an error even after a better plan was visited.
+The selected island returns a complete plan and executes its first action.
+
+`CGAR_WINDOW_KEEP` retains up to 6 actions from the previous suffix by default.
+Retention checks observed cell/heading, task identity, one-step service advancement,
+current domains and new protected reservations. Conflicting histories reset
+monotonically to the validated fresh seed. Fresh and retained seeds compete on the
+same objective. Keep must be smaller than the configured horizon (6–32).
+
+Work defaults: `CGAR_WINDOW_ITERS=128` attempts **per island**,
+`CGAR_WINDOW_NODES=2048` expanded states **per single-robot search**,
+`CGAR_WINDOW_GROUP=4`, `CGAR_WINDOW_WORKERS=4`, `CGAR_WINDOW_THREADS=4`.
+Thread count changes execution allocation without changing island seeds or results.
+`CGAR_WINDOW_WAIT_COST=0` uses the ordinary forward base; a positive override
+uses that integer wait cost. Turn/forward costs follow the static guidance graph.
+The existing `CGAR_TEMPORAL_CHAIN_MB/THREADS` bound and build the complete oracle.
+
+The first implementation requires static guidance and disables five-step chain
+scoring, legacy temporal history/promises, guide routes and partial next-errand
+scoring while the new layer is enabled. Instance fields still require
+`--trick INSTANCE`. No run horizon or unrevealed task is used. Existing temporal
+score/rotation diagnostics describe the seed search; `[cgar-window-config]` and
+`[cgar-window]` identify the final objective, complete work, history and changed
+first actions. Movement diagnostics account for the actions actually executed.
+
+This is a new implementation informed by PILOT's rolling-window mechanism, not
+an imported alternative planner. Its production default remains off. Independent
+layered action search, protected paths, atomic rollback, task-history invalidation,
+deadline propagation and serial/parallel production decisions are regression-tested.
+Throughput promotion requires full strict one-second benchmark evidence.
