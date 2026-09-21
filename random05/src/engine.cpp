@@ -214,6 +214,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
     c.fast_admission=integer("R05_FAST_ADMISSION",0);
     c.admission_price=real("R05_ADMISSION_PRICE",-1);
+    c.admission_price_steps=integer("R05_ADMISSION_PRICE_STEPS",0);
+    if(c.admission_price_steps<0 || (c.admission_price_steps>0 && c.admission_price<0))
+        throw std::invalid_argument("startup admission price needs a nonnegative duration and an enabled price");
     if(!std::isfinite(c.admission_price) || c.admission_price<-1 ||
        (c.admission_price<0 && c.admission_price!=-1) ||
        (c.admission_price>=0 && !random_trick))
@@ -919,6 +922,8 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     if(cfg.profile)match_start=std::chrono::steady_clock::now();
     const auto& g=*graph;const int n=env->num_of_agents;
     schedule=env->curr_task_schedule;
+    const float admission_price=(!cfg.admission_price_steps || env->curr_timestep<cfg.admission_price_steps)
+        ?cfg.admission_price:-1;
     const float length_weight=cfg.initial_length_weight>=0 && env->curr_timestep<cfg.initial_length_steps
         ?cfg.initial_length_weight:cfg.length_weight;
     std::vector<int> agents, tasks;std::unordered_set<int> locked;
@@ -966,11 +971,11 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     const double match_steps_per_cell=travel_steps_per_cell();
     const double remaining_steps=cfg.horizon-env->curr_timestep;
     struct Pair { float cost;int agent,task; };
-    const int dummy_columns=(capped || cfg.admission_price>=0)?int(agents.size())-std::min(capacity,int(tasks.size())):0;
+    const int dummy_columns=(capped || admission_price>=0)?int(agents.size())-std::min(capacity,int(tasks.size())):0;
     // Additional idle columns make the remaining slots optional at this price.
     // The original, strictly cheaper cap dummies stay last so their exact
     // Hungarian-prefix optimization remains valid.
-    const int optional_columns=cfg.admission_price>=0?std::min(capacity,int(tasks.size())):0;
+    const int optional_columns=admission_price>=0?std::min(capacity,int(tasks.size())):0;
     const int columns=int(tasks.size())+optional_columns+dummy_columns;
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && columns>=int(agents.size());
     std::vector<float> matrix(exact?agents.size()*columns:0);
@@ -1011,7 +1016,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     if(exact && optional_columns) {
         for(size_t row=0;row<agents.size();++row)
             std::fill(matrix.begin()+row*columns+tasks.size(),
-                      matrix.begin()+row*columns+tasks.size()+optional_columns,cfg.admission_price);
+                      matrix.begin()+row*columns+tasks.size()+optional_columns,admission_price);
     }
     if(exact && dummy_columns) {
         float minimum=0;
@@ -1056,7 +1061,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     });
     std::vector<bool> used(tasks.size(),false);int admitted=0;
     for(const auto& p:pairs) {
-        if(admitted>=capacity || (cfg.admission_price>=0 && p.cost>cfg.admission_price))break;
+        if(admitted>=capacity || (admission_price>=0 && p.cost>admission_price))break;
         if(schedule[p.agent]<0 && !used[p.task]) {
             schedule[p.agent]=tasks[p.task];used[p.task]=true;++admitted;
         }

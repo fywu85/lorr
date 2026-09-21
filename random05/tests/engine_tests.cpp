@@ -1106,6 +1106,17 @@ void priced_task_admission() {
     Engine cap(cfg);cap.initialize(&env);cap.match(&env,schedule);
     require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==2,
             "optional columns bypassed the mandatory admission cap");
+    cfg.admission_price=.5f;cfg.admission_price_steps=10;
+    for(int limit:{0,1000}) {
+        cfg.hungarian_limit=limit;Engine startup(cfg);startup.initialize(&env);
+        env.curr_timestep=9;startup.match(&env,schedule);
+        require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1,
+                "startup price expired before the declared boundary");
+        env.curr_timestep=10;startup.match(&env,schedule);
+        require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==2,
+                "startup price did not expire while preserving the task cap");
+    }
+    env.curr_timestep=0;cfg.admission_price_steps=0;cfg.hungarian_limit=1000;
     cfg.active_task_cap=0;cfg.admission_price=0;env.task_pool.erase(0);env.task_pool.erase(1);env.task_pool.erase(2);
     Engine scarce(cfg);scarce.initialize(&env);scarce.match(&env,schedule);
     require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1,
@@ -1113,6 +1124,7 @@ void priced_task_admission() {
     env.task_pool.clear();scarce.match(&env,schedule);
     require(std::all_of(schedule.begin(),schedule.end(),[](int t){return t<0;}),"empty priced pool assigned a task");
     cfg=Config{};cfg.active_task_cap=22;cfg.admission_price=4;cfg.hungarian_limit=1000;
+    cfg.admission_price_steps=51;
     cfg.fast_admission=true;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
     cfg.depth=6;cfg.random_by_step=true;cfg.share_prefix=true;cfg.cost_cache=true;
     const auto signature=simulate(cfg,12,5,5,true);cfg.threads=3;
