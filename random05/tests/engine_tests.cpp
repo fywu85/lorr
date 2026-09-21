@@ -1506,7 +1506,7 @@ void idle_alignment() {
     for(int t=0;t<3;++t) {
         env.curr_timestep=t;aligned.compute(&env,plan,schedule);
         require(plan[0]==(t<2?CR:W),"idle alignment skipped a required quarter turn or kept rotating");
-        require(aligned.pending_cells()==std::vector<int>({2}),"idle alignment changed the promised wait");
+        require(aligned.checkpoint(env).at("pending").get<std::vector<int>>()==std::vector<int>({2}),"idle alignment changed the promised wait");
         require(schedule==std::vector<int>({-1}),"idle alignment invented an order");
         if(plan[0]==CR)env.curr_states[0].orientation=(env.curr_states[0].orientation+1)%4;
         env.curr_task_schedule=schedule;
