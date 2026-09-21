@@ -101,6 +101,25 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             known_next[i] = next; prepared_next[i] = turn_oracle_.peek(next);
         }
     }
+    TemporalMovePromiseStats move_promise_stats;
+    std::vector<int> move_promised, move_tasks;
+    if (temporal_move_promises_) {
+        std::vector<int> forward(n_), baseline(n_); move_tasks.resize(n_);
+        for (int r = 0; r < n_; ++r) {
+            goals[r] = agents_[r].goal; move_tasks[r] = agents_[r].task;
+            forward[r] = neighbor(loc_[r], ori_[r]);
+            baseline[r] = pinned[r] && actions[r] == Action::FW ? forward[r] : loc_[r];
+        }
+        move_promised = temporal_move_history_.prepare(env_->curr_timestep, cells, temporal_move_promises_,
+            loc_, ori_, goals, move_tasks, forward, baseline, pinned,
+            [&](int r, int to) { return cert_.core[to] && allowed(r, to) && !witness[to] &&
+                (to == loc_[r] || intent_owner[to] < 0 || intent_owner[to] == r); },
+            move_promise_stats, [&] { check_deadline(deadline_, "temporal_move_promises"); });
+        ++stats_.move_promise_calls;
+        stats_.move_promise_forward += move_promise_stats.retained_forward;
+        stats_.move_promise_wait += move_promise_stats.retained_wait;
+        stats_.move_promise_resets += move_promise_stats.collision_resets;
+    }
     std::vector<std::array<long long, 5>> next_metrics(temporal_prepare_threads_, {0, 0, 0, 0, 0});
     std::vector<std::array<long long, 8>> chain_metrics(temporal_chain_mode_ ? temporal_prepare_threads_ : 0, std::array<long long, 8>{});
     std::vector<std::array<long long, 2>> native_service_metrics(native_neutral_tail_ ? temporal_prepare_threads_ : 0, {0, 0});
@@ -239,7 +258,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, chain_initial));
             choices[i].reserve(pinned[i] ? 1 : 129);
             int seed_first_action = pinned[i] ? static_cast<int>(actions[i]) : 3;
-            if (temporal_chain_paid_ && !pinned[i] && goal >= 0 && wait_orientation_table) {
+            if (temporal_move_promises_ && move_promised[i] >= 0 && move_promised[i] != loc_[i]) seed_first_action = 0;
+            if (temporal_chain_paid_ && !pinned[i] && seed_first_action == 3 && goal >= 0 && wait_orientation_table) {
                 seed_first_action = TemporalGeometry::wait_action(
                     turn_oracle_.value(*wait_orientation_table, loc_[i], ori_[i]),
                     turn_oracle_.value(*wait_orientation_table, loc_[i], (ori_[i] + 1) % 4),
@@ -253,6 +273,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             for (int op = 1; op < 129; ++op) {
                 const auto& path = paths[op];
                 if (!path.valid || (!temporal_steps_ && path.depth > 3)) continue;
+                if (temporal_move_promises_ && move_promised[i] >= 0 && path.cells[0] != move_promised[i]) continue;
                 bool valid = true; int from = loc_[i];
                 for (int t = 0; t < 5; ++t) {
                     const int to = path.cells[t];
@@ -485,7 +506,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             auto root = problem;
             for (int r = 0; r < n_; ++r) {
                 check(); const auto& choice = proposal->choice(r);
-                const int first = pinned[r] ? int(actions[r]) : proposal->selected(r) ? choice.path->first_action : waiting_action[r];
+                const int first = pinned[r] ? int(actions[r]) : (proposal->selected(r) || choice.path->cells[0] != loc_[r]) ? choice.path->first_action : waiting_action[r];
                 auto& path = root.seed[r]; path.reserve(root.horizon + 1); path.push_back(loc_[r] * 4 + ori_[r]);
                 for (int t = 0; t < root.horizon; ++t) {
                     const int action = t == 0 ? first : t < 5 ? TemporalGeometry::operations()[choice.operation][t] : 3;
@@ -543,8 +564,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         agents_[i].committed = -1; agents_[i].commit_age = 0;
         if (search.selected(i) != 0)
             stats_.temporal_planned_rotations += actions[i] == Action::CR || actions[i] == Action::CCR;
-        else ++stats_.temporal_wait_seeds;
-        if (search.selected(i) == 0 && agents_[i].goal >= 0) {
+        else if (path.cells[0] == loc_[i]) ++stats_.temporal_wait_seeds;
+        if (search.selected(i) == 0 && path.cells[0] == loc_[i] && agents_[i].goal >= 0) {
             auto orient_wait = [&](int wait, int right, int left) {
                 const int chosen = TemporalGeometry::wait_action(wait, right, left, temporal_strict_wait_turns_);
                 if (temporal_chain_paid_ && chosen != path.first_action)
@@ -649,6 +670,25 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 window.delay_draws, window.delay_replacements, stats_.window.delay_draws, stats_.window.delay_replacements,
                 window.uphill_accepted, window.incumbent_updates, window.incumbent_restores, stats_.window.uphill_accepted, stats_.window.incumbent_updates,
                 std::chrono::duration<double>(Clock::now() - started).count());
+    }
+    if (temporal_move_promises_) {
+        std::vector<int> expected(n_), headings = ori_, pending(n_);
+        for (int r = 0; r < n_; ++r) {
+            expected[r] = search.choice(r).path->cells[0];
+            pending[r] = search.choice(r).path->cells[1];
+            if (move_promised[r] >= 0 && next_[r] != move_promised[r])
+                throw std::logic_error("temporal search broke a one-action motion promise");
+            if (actions[r] == Action::CR) headings[r] = (ori_[r] + 1) % 4;
+            else if (actions[r] == Action::CCR) headings[r] = (ori_[r] + 3) % 4;
+        }
+        temporal_move_history_.remember(env_->curr_timestep, expected, headings, goals, move_tasks, pending);
+        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+            std::printf("[cgar-move-promises] step=%d mode=%d history=%d forward=%d wait=%d initial_resets=%d collision_resets=%d calls=%lld total_forward=%lld total_wait=%lld total_resets=%lld\n",
+                env_->curr_timestep + 1, temporal_move_promises_, int(move_promise_stats.history_valid),
+                move_promise_stats.retained_forward, move_promise_stats.retained_wait,
+                move_promise_stats.initial_resets, move_promise_stats.collision_resets, stats_.move_promise_calls,
+                stats_.move_promise_forward, stats_.move_promise_wait, stats_.move_promise_resets);
+        check_deadline(deadline_, "temporal_move_promises_complete");
     }
     if (temporal_priority_noise_) {
         temporal_priority_portfolio_.remember(priority_batch, priority_selected_worker, env_->curr_timestep);

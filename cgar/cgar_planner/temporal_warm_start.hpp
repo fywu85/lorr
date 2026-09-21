@@ -9,6 +9,100 @@ struct TemporalWarmStats {
     int retained = 0, initial_resets = 0, collision_resets = 0;
 };
 
+// Carry only the next occupied cell of a complete previous plan. This is a
+// one-action motion commitment; the remaining four actions are replanned. It
+// does not require a suffix match. CGAR's current protected moves take priority.
+struct TemporalMovePromiseStats {
+    bool history_valid = false;
+    int retained_forward = 0, retained_wait = 0, initial_resets = 0, collision_resets = 0;
+};
+
+class TemporalMovePromises {
+public:
+    void clear() { tick_ = -2; expected_.clear(); headings_.clear(); goals_.clear(); tasks_.clear(); pending_.clear(); }
+    void remember(int tick, const std::vector<int>& expected, const std::vector<int>& headings,
+                  const std::vector<int>& goals, const std::vector<int>& tasks, const std::vector<int>& pending) {
+        if (headings.size() != expected.size() || goals.size() != expected.size() ||
+            tasks.size() != expected.size() || pending.size() != expected.size())
+            throw std::logic_error("invalid temporal move-promise history dimensions");
+        tick_ = tick; expected_ = expected; headings_ = headings; goals_ = goals; tasks_ = tasks; pending_ = pending;
+    }
+
+    template<class Allowed, class Deadline>
+    std::vector<int> prepare(int tick, int cells, int mode, const std::vector<int>& locations,
+            const std::vector<int>& headings, const std::vector<int>& goals, const std::vector<int>& tasks,
+            const std::vector<int>& forward, const std::vector<int>& baseline, const std::vector<char>& fixed,
+            Allowed allowed, TemporalMovePromiseStats& stats, Deadline check) const {
+        const int n = int(locations.size());
+        if (mode < 1 || mode > 2 || headings.size() != locations.size() || goals.size() != locations.size() ||
+            tasks.size() != locations.size() || forward.size() != locations.size() ||
+            baseline.size() != locations.size() || fixed.size() != locations.size())
+            throw std::logic_error("invalid temporal move-promise input dimensions");
+        std::vector<int> result(n, -1);
+        check();
+        if (tick != tick_ + 1 || expected_.size() != locations.size()) return result;
+        for (int r = 0; r < n; ++r) {
+            if (!(r & 63)) check();
+            if (locations[r] != expected_[r] || headings[r] != headings_[r]) return result;
+        }
+        stats.history_valid = true;
+        std::vector<int> occupant(cells, -1), promised_owner(cells, -1), owner(cells, -1), queue;
+        std::vector<char> keep(n, false);
+        for (int r = 0; r < n; ++r) {
+            check();
+            const int from = locations[r], to = pending_[r], base = baseline[r];
+            if (from < 0 || from >= cells || to < 0 || to >= cells || base < 0 || base >= cells ||
+                (to != from && to != forward[r]) || (base != from && base != forward[r]) ||
+                (!fixed[r] && base != from) || occupant[from] >= 0 || promised_owner[to] >= 0 || owner[base] >= 0)
+                throw std::logic_error("invalid temporal move-promise geometry");
+            occupant[from] = r; promised_owner[to] = r; owner[base] = r;
+            keep[r] = !fixed[r] && goals[r] == goals_[r] && tasks[r] == tasks_[r] &&
+                      (mode == 2 || to != from) && allowed(r, to);
+            if (!keep[r]) { queue.push_back(r); ++stats.initial_resets; }
+        }
+        for (int r = 0; r < n; ++r) {
+            const int prior = occupant[pending_[r]], base = occupant[baseline[r]];
+            if ((pending_[r] != locations[r] && prior >= 0 && pending_[prior] == locations[r]) ||
+                (baseline[r] != locations[r] && base >= 0 && baseline[base] == locations[r]))
+                throw std::logic_error("temporal move-promise input edge swap");
+        }
+        // Both the old one-action promises and the protected/current-wait seeds
+        // are jointly legal. Replacing a promise with its seed can conflict with
+        // another old promise, which is then reset too. Each enters once.
+        for (size_t head = 0; head < queue.size(); ++head) {
+            check(); const int r = queue[head], target = baseline[r];
+            auto reset = [&](int other) {
+                if (other >= 0 && keep[other]) {
+                    keep[other] = false; queue.push_back(other); ++stats.collision_resets;
+                }
+            };
+            reset(promised_owner[target]);
+            const int other = occupant[target];
+            if (target != locations[r] && other >= 0 && pending_[other] == locations[r]) reset(other);
+        }
+        std::fill(owner.begin(), owner.end(), -1);
+        for (int r = 0; r < n; ++r) {
+            const int target = keep[r] ? pending_[r] : baseline[r];
+            if (owner[target] >= 0) throw std::logic_error("temporal move-promise closure vertex conflict");
+            owner[target] = r;
+            if (keep[r]) {
+                result[r] = target;
+                if (target == locations[r]) ++stats.retained_wait; else ++stats.retained_forward;
+            }
+        }
+        for (int r = 0; r < n; ++r) {
+            const int target = keep[r] ? pending_[r] : baseline[r], other = occupant[target];
+            if (target != locations[r] && other >= 0 &&
+                (keep[other] ? pending_[other] : baseline[other]) == locations[r])
+                throw std::logic_error("temporal move-promise closure edge swap");
+        }
+        check(); return result;
+    }
+private:
+    int tick_ = -2;
+    std::vector<int> expected_, headings_, goals_, tasks_, pending_;
+};
+
 class TemporalWarmStart {
 public:
     void clear() { timestep_ = -2; paths_.clear(); operations_.clear(); goals_.clear(); orientations_.clear(); }

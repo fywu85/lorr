@@ -391,3 +391,17 @@ No elapsed-time cutoff or partial search result is introduced. Diagnostics and a
 independent replay of actual assignment events verify the declared cap and that
 held tasks were not dropped. Full-fleet and explicit-zero cases preserve the
 uncapped assignment/action trajectory.
+
+`CGAR_TEMPORAL_MOVE_PROMISES=1` experimentally carries only the next forward
+movement of the previous complete temporal plan. Mode2 additionally carries its
+next stationary occupied cell, allowing a new turn while staying there. Both
+modes replan the remaining tail. Exact observed pose and unchanged task/goal are
+required; current CGAR primary, recovery, pocket and capacity protections override
+old promises. Resetting one conflicting move cancels every dependent move before
+new search. Complete safe seeds and all searchable alternatives retain surviving
+promises, including fallback index0. Every declared search still finishes or
+throws its deadline failure. Default0 consumes no history or extra RNG draws.
+Legacy warm/after-turn history and rolling-window repair are incompatible.
+Common-future scoring, regional repair and bounded branch transactions retain
+these one-action constraints. This is a CGAR commitment transfer, not a replacement
+with PILOT's separate pipelined policy, and has no measured throughput claim yet.

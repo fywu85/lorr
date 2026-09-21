@@ -342,6 +342,27 @@ def main():
                     assert (int(chain_samples[-1]['choices'])>0)==bool(chain_mode&1)
                 else:
                     assert not chain_config and not chain_samples
+                move_mode=int(case['environment'].get('CGAR_TEMPORAL_MOVE_PROMISES','0'))
+                move_config=[fields(l) for l in logs if l.startswith('[cgar-move-promise-config] ')]
+                move_samples=[fields(l) for l in logs if l.startswith('[cgar-move-promises] ')]
+                if move_mode:
+                    assert move_mode in (1,2)
+                    assert move_config==[dict(mode=str(move_mode),actions='1',tail='replan',pose='exact',task_goal='unchanged',protected_priority='1',fixed_work='1',timeout_is_failure='1')]
+                    assert [int(x['step']) for x in move_samples]==list(range(200,row['steps']+1,200))
+                    for x in move_samples:
+                        assert int(x['mode'])==move_mode and int(x['history']) in (0,1)
+                        assert 0<int(x['calls'])<=int(x['step'])
+                        counts=[int(x[k]) for k in ('forward','wait','initial_resets','collision_resets')]
+                        assert all(0<=n<=row['robots'] for n in counts)
+                        assert sum(counts)==row['robots']*int(x['history'])
+                        assert 0<=int(x['total_forward'])+int(x['total_wait'])<=row['robots']*int(x['calls'])
+                        assert 0<=int(x['total_resets'])<=row['robots']*int(x['calls'])
+                        if move_mode==1: assert not int(x['wait']) and not int(x['total_wait'])
+                    for counter in ('calls','total_forward','total_wait','total_resets'):
+                        counts=[int(x[counter]) for x in move_samples];assert counts==sorted(counts)
+                    assert int(move_samples[-1]['total_forward'])>0
+                    row['move_promises']=dict(configuration=move_config[0],last_sample=move_samples[-1])
+                else:assert not move_config and not move_samples
                 chain_paid=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_PAID_COST','0'))
                 chain_paid_config=[fields(l) for l in logs if l.startswith('[cgar-chain-paid-config] ')]
                 chain_paid_samples=[fields(l) for l in logs if l.startswith('[cgar-chain-paid] ')]

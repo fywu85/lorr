@@ -287,6 +287,7 @@ struct Stats {
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
     long long temporal_rank_squared_robots = 0;
     long long temporal_promise_calls = 0, temporal_promise_retained = 0, temporal_promise_collision_resets = 0;
+    long long move_promise_calls = 0, move_promise_forward = 0, move_promise_wait = 0, move_promise_resets = 0;
     long long temporal_warm_worker_runs = 0, temporal_cold_worker_runs = 0, temporal_selected_warm_runs = 0;
     long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0, guide_refinements = 0;
     long long txns = 0;
@@ -563,6 +564,8 @@ private:
     bool guide_enabled_ = false;
     TemporalGeometry temporal_geometry_;
     TemporalWarmStart temporal_history_;
+    TemporalMovePromises temporal_move_history_;
+    int temporal_move_promises_ = 0;
     bool temporal_warm_start_ = false, temporal_strict_wait_turns_ = false;
     bool temporal_promise_after_turn_ = false;
     bool temporal_mixed_start_ = false, temporal_next_errand_ = false;

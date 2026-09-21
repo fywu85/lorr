@@ -807,6 +807,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("next-errand scoring requires temporal planning and a boolean setting");
     temporal_next_errand_ = next_errand != 0;
     temporal_history_.clear();
+    temporal_move_history_.clear();
     if (temporal_warm_start_ && !temporal_) throw std::invalid_argument("temporal warm start requires temporal planning");
     turn_prefetch_threads_ = env_int("CGAR_TURN_PREFETCH_THREADS", 0);
     if (turn_prefetch_threads_ < 0 || turn_prefetch_threads_ > 32 ||
@@ -943,6 +944,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         }
         return value;
     };
+    temporal_move_promises_ = priority_setting("CGAR_TEMPORAL_MOVE_PROMISES", 0, 2);
+    if (temporal_move_promises_ && (!temporal_ || temporal_warm_start_ || temporal_promise_after_turn_))
+        throw std::invalid_argument("one-action move promises require temporal planning with legacy warm/after-turn history disabled");
+    if (temporal_move_promises_)
+        std::printf("[cgar-move-promise-config] mode=%d actions=1 tail=replan pose=exact task_goal=unchanged protected_priority=1 fixed_work=1 timeout_is_failure=1\n", temporal_move_promises_);
     window_options_ = WindowOptions();
     window_options_.horizon = priority_setting("CGAR_WINDOW", 0, 32);
     window_options_.keep = priority_setting("CGAR_WINDOW_KEEP", 6, 31);
@@ -967,7 +973,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             !window_options_.iterations || !window_options_.nodes || !window_options_.group ||
             !window_options_.workers || !window_options_.threads || window_options_.threads > window_options_.workers ||
             !temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
-            native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ ||
+            native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ || temporal_move_promises_ ||
             (flow_strength_ && !static_trick_metric_))
             throw std::invalid_argument("rolling window requires static temporal guidance, horizon6-32, keep<horizon and positive fixed work; guide/next-errand/neutral-tail/legacy-history are incompatible");
     } else if (window_options_.keep != 6 || window_options_.iterations != 128 || window_options_.nodes != 2048 ||

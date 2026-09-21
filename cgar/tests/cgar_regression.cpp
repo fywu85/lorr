@@ -6390,4 +6390,109 @@ void common_futures_production_regression() {
  std::cout<<"COMMON_FUTURES_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" disabled_identity=1 single_root_rng_identity=1 regional_capture_single_identity=1 regional_roots=1 chain_score=1 priority_persistence=1 primary_recovery_pocket_capacity=1 strict_parser=1\n";
 }
 
-int main(){try{pickup_startup_regression();common_futures_search_regression();common_futures_production_regression();rolling_window_search_regression();rolling_window_production_regression();rolling_window_chain_seed_regression();scheduler_chain_potential_regression();random_task_cap_regression();chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+
+void temporal_move_promise_regression() {
+ auto require=[](bool ok,const std::string& why){if(!ok)throw std::runtime_error("MOVE_PROMISE "+why);};
+ // Independent occupied-cycle and chain checks. No five-action suffix is needed.
+ const std::vector<int> loc{0,1,3,2},dir{0,1,2,3},goal{3,2,0,1},task{0,1,2,3},dest{1,3,2,0};
+ TemporalMovePromises history;history.remember(7,loc,dir,goal,task,dest);
+ for(int mode:{1,2}) {
+  TemporalMovePromiseStats stats;
+  auto kept=history.prepare(8,4,mode,loc,dir,goal,task,dest,loc,std::vector<char>(4,false),[](int,int){return true;},stats,[]{});
+  require(kept==dest&&stats.history_valid&&stats.retained_forward==4&&!stats.collision_resets,"occupied cycle was not carried");
+  SharedEnvironment e;e.rows=e.cols=2;e.map.assign(4,0);e.num_of_agents=4;
+  for(int r=0;r<4;++r)e.curr_states.emplace_back(loc[r],0,dir[r]);
+  require(!step(e,e.curr_states,std::vector<Action>(4,Action::FW)).empty(),"carried cycle fails independent action validation");
+  for(int change=0;change<4;++change) {
+   auto goals=goal,tasks=task;std::vector<char> fixed(4,false);
+   if(change==0)fixed[0]=true;if(change==1)goals[0]=0;if(change==2)tasks[0]=99;
+   TemporalMovePromiseStats reset;
+   auto result=history.prepare(8,4,mode,loc,dir,goals,tasks,dest,loc,fixed,
+    [&](int r,int){return change!=3||r!=0;},reset,[]{});
+   require(result==std::vector<int>(4,-1)&&reset.initial_resets==1&&reset.collision_resets==3,
+    "protected/task/goal/permission change did not reset the dependent cycle");
+  }
+ }
+ {
+  std::vector<int> cells{0,1,4},heading{0,0,0},goals{5,5,-1},tasks{0,1,-1},pending{1,2,4},forward{1,2,5};
+  TemporalMovePromises chain;chain.remember(0,cells,heading,goals,tasks,pending);
+  for(int mode:{1,2}){TemporalMovePromiseStats st;
+   auto kept=chain.prepare(1,6,mode,cells,heading,goals,tasks,forward,cells,std::vector<char>(3,false),[](int,int){return true;},st,[]{});
+   require(kept==std::vector<int>({1,2,mode==2?4:-1})&&st.retained_forward==2&&st.retained_wait==(mode==2),"wait-mode semantics changed");
+  }
+  goals[1]=3;TemporalMovePromiseStats changed;
+  auto result=chain.prepare(1,6,2,cells,heading,goals,tasks,forward,cells,std::vector<char>(3,false),[](int,int){return true;},changed,[]{});
+  require(result==std::vector<int>({-1,-1,4})&&changed.collision_resets==1,"reset destroyed an independent idle component");
+ }
+ for(int mismatch=0;mismatch<3;++mismatch){auto cells=loc,headings=dir;int tick=8;
+  if(mismatch==0)cells[0]=3;if(mismatch==1)headings[0]=2;if(mismatch==2)tick=9;
+  TemporalMovePromiseStats stale;auto result=history.prepare(tick,4,2,cells,headings,goal,task,dest,loc,std::vector<char>(4,false),[](int,int){return true;},stale,[]{});
+  require(result==std::vector<int>(4,-1)&&!stale.history_valid,"stale state was reused");
+ }
+ bool timeout=false;TemporalMovePromiseStats interrupted;
+ try{history.prepare(8,4,2,loc,dir,goal,task,dest,loc,std::vector<char>(4,false),[](int,int){return true;},interrupted,[]{throw Timeout("move_promise_fixture");});}
+ catch(const Timeout&){timeout=true;}require(timeout,"deadline was swallowed");
+ TemporalMovePromiseStats retry;require(history.prepare(8,4,2,loc,dir,goal,task,dest,loc,std::vector<char>(4,false),[](int,int){return true;},retry,[]{})==dest,"failed prepare mutated history");
+ history.clear();TemporalMovePromiseStats empty;require(history.prepare(8,4,2,loc,dir,goal,task,dest,loc,std::vector<char>(4,false),[](int,int){return true;},empty,[]{})==std::vector<int>(4,-1),"empty history manufactured a promise");
+
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_ORIENTATION_GUIDANCE","1"},
+  {"CGAR_TEMPORAL_STEPS","128"},{"CGAR_TEMPORAL_WORKERS","4"},{"CGAR_TEMPORAL_REGIONS","4"},
+  {"CGAR_TEMPORAL_REGION_STEPS","128"},{"CGAR_TEMPORAL_REGION_ROUNDS","2"}};
+ auto fixture=[](){SharedEnvironment e;e.rows=e.cols=6;e.num_of_agents=24;e.map.assign(36,0);
+  e.curr_task_schedule.resize(24);e.goal_locations.resize(24);
+  for(int r=0;r<24;++r){e.curr_states.emplace_back(r,0,r%4);e.curr_task_schedule[r]=r;Task t;
+   t.task_id=r;t.agent_assigned=r;t.locations={r,r,35-r};e.task_pool.emplace(r,t);e.goal_locations[r]={{r,0}};}return e;};
+ int actions_checked=0,services=0,changed_actions=0;long long forward_promises=0,wait_promises=0,resets=0;
+ std::vector<int> absent,disabled;
+ for(int scenario=-1;scenario<=6;++scenario){
+  for(auto x:settings)setenv(x.first,x.second,1);
+  const int mode=scenario<0?-1:scenario==0?0:scenario==1||scenario==3||scenario==5?1:2;
+  if(mode<0)unsetenv("CGAR_TEMPORAL_MOVE_PROMISES");else setenv("CGAR_TEMPORAL_MOVE_PROMISES",std::to_string(mode).c_str(),1);
+  if(scenario==3||scenario==4){setenv("CGAR_FUTURE_ROOTS","4",1);setenv("CGAR_FUTURE_HORIZON","10",1);setenv("CGAR_FUTURE_BRANCHES","2",1);}
+  if(scenario==5){setenv("CGAR_TEMPORAL_CHAIN_MODE","1",1);setenv("CGAR_TEMPORAL_CHAIN_PAID_COST","1",1);}
+  if(scenario==6)setenv("CGAR_TEMPORAL_BRANCH_WORK","32",1);
+  auto e=fixture();
+  setenv("CGAR_TEMPORAL_THREADS","1",1);setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);
+  if(scenario==3||scenario==4)setenv("CGAR_FUTURE_THREADS","1",1);
+  Cgar serial;serial.initialize(&e,5000);
+  setenv("CGAR_TEMPORAL_THREADS","4",1);setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
+  if(scenario==3||scenario==4)setenv("CGAR_FUTURE_THREADS","4",1);
+  Cgar parallel;parallel.initialize(&e,5000);
+  for(int tick=0;tick<100;++tick){e.curr_timestep=tick;std::vector<Action>a,b;serial.plan(&e,5000,a);parallel.plan(&e,5000,b);
+   require(a==b,"thread count changed whole actions");auto next=step(e,e.curr_states,a);require(!next.empty(),"invalid complete production action");e.curr_states=next;
+   for(int r=0;r<24;++r){const int offset=tick*24+r;if(mode<0)absent.push_back(int(a[r]));if(mode==0)disabled.push_back(int(a[r]));if(scenario==1)changed_actions+=int(a[r])!=absent[offset];
+    Task& task=e.task_pool.at(e.curr_task_schedule[r]);
+    if(e.curr_states[r].location==task.locations[task.idx_next_loc]){++task.idx_next_loc;++services;
+     if(task.idx_next_loc==int(task.locations.size())){int old=task.task_id;Task fresh;fresh.task_id=100+tick*24+r;fresh.agent_assigned=r;fresh.t_revealed=tick;
+      int u=e.curr_states[r].location;fresh.locations={(u+17)%36,(u+17)%36,(u+29)%36};e.task_pool.emplace(fresh.task_id,fresh);e.curr_task_schedule[r]=fresh.task_id;e.task_pool.erase(old);}
+    }
+    const auto& current=e.task_pool.at(e.curr_task_schedule[r]);e.goal_locations[r]={{current.locations[current.idx_next_loc],tick}};
+   }actions_checked+=a.size();
+  }
+  auto x=serial.stats(),y=parallel.stats();
+  require(x.move_promise_calls==y.move_promise_calls&&x.move_promise_forward==y.move_promise_forward&&
+   x.move_promise_wait==y.move_promise_wait&&x.move_promise_resets==y.move_promise_resets,"thread-dependent promise accounting");
+  if(mode>0){require(x.move_promise_calls==100&&x.move_promise_forward>0,"no production forward promise exercised");
+   require((x.move_promise_wait>0)==(mode==2),"production wait mode changed");forward_promises+=x.move_promise_forward;wait_promises+=x.move_promise_wait;resets+=x.move_promise_resets;}
+  else require(!x.move_promise_calls,"disabled mechanism did work");
+  for(const char* key:{"CGAR_TEMPORAL_CHAIN_MODE","CGAR_TEMPORAL_CHAIN_PAID_COST","CGAR_TEMPORAL_BRANCH_WORK","CGAR_FUTURE_ROOTS","CGAR_FUTURE_HORIZON","CGAR_FUTURE_BRANCHES","CGAR_FUTURE_THREADS","CGAR_TEMPORAL_THREADS","CGAR_TEMPORAL_PREP_THREADS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(key);
+  for(auto x:settings)unsetenv(x.first);
+ }
+ require(absent==disabled&&changed_actions>0&&services>0&&resets>0,"off identity or nonvacuous movement fixture failed");
+ for(auto x:settings)setenv(x.first,x.second,1);
+ for(const char* bad:{"-1","3","1x","","999999999999999999999"}){setenv("CGAR_TEMPORAL_MOVE_PROMISES",bad,1);bool rejected=false;
+  try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}require(rejected,"invalid mode accepted");}
+ setenv("CGAR_TEMPORAL_MOVE_PROMISES","1",1);
+ for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_TEMPORAL","0"},{"CGAR_TEMPORAL_WARM_START","1"},{"CGAR_TEMPORAL_PROMISE_AFTER_TURN","1"},{"CGAR_WINDOW","20"}}){
+  setenv(bad.first,bad.second,1);bool rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,std::string("incompatible mode accepted ")+bad.first);unsetenv(bad.first);setenv("CGAR_TEMPORAL","1",1);
+ }
+ for(auto x:settings)unsetenv(x.first);
+ for(const char* mode:{"1","2"}){setenv("CGAR_TEMPORAL_MOVE_PROMISES",mode,1);temporal_primary_regression();temporal_idle_blocker();}
+ unsetenv("CGAR_TEMPORAL_MOVE_PROMISES");
+ std::cout<<"TEMPORAL_MOVE_PROMISES passed serial_parallel_actions="<<actions_checked<<" services="<<services<<" changed_actions="<<changed_actions
+  <<" retained_forward="<<forward_promises<<" retained_wait="<<wait_promises<<" collision_resets="<<resets
+  <<" default_identity=1 occupied_cycle=1 dependent_reset=1 idle_component=1 task_goal_pose_guard=1 futures_chain_paid_branch=1 primary_recovery_pocket_capacity=1 deadline=1 strict_parser=1\n";
+}
+
+int main(){try{temporal_move_promise_regression();pickup_startup_regression();common_futures_search_regression();common_futures_production_regression();rolling_window_search_regression();rolling_window_production_regression();rolling_window_chain_seed_regression();scheduler_chain_potential_regression();random_task_cap_regression();chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
