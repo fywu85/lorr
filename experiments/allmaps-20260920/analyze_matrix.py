@@ -158,8 +158,22 @@ def main():
                     assert all(int(x['reused'])==int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_PERSIST','0')) for x in priority_samples)
                 else:
                     assert not priority_samples
+                after_turn=int(case['environment'].get('CGAR_TEMPORAL_PROMISE_AFTER_TURN','0'))
+                promise_samples=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise] ')]
+                promise_config=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise-config] ')]
+                if after_turn:
+                    assert promise_config==[dict(after_turn='1',actions='1',protected_priority='1',fixed_work='1')]
+                    assert [int(x['step']) for x in promise_samples]==list(range(200,row['steps']+1,200))
+                    assert all(int(x['after_turn'])==1 and int(x['calls'])==int(x['step']) for x in promise_samples)
+                    assert all(0<=int(x['retained'])<=row['robots'] and 0<=int(x['collision_resets'])<=row['robots'] for x in promise_samples)
+                    totals=[int(x['retained_total']) for x in promise_samples]
+                    resets=[int(x['collision_resets_total']) for x in promise_samples]
+                    assert totals==sorted(totals) and resets==sorted(resets) and totals[-1]>0
+                    assert totals[-1]+resets[-1]<=row['robots']*row['steps']
+                else:
+                    assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
-                work[key]=dict(priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)

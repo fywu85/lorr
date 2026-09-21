@@ -52,3 +52,29 @@ protected/goal-change dependency reset, unchanged score reference, sorted legal
 alternatives, non-turn exclusion, stale state, timeout propagation, disabled
 trajectory equivalence, and serial/parallel production episodes with protected
 primary paths and guidance updates. Results are pending GRID execution.
+
+## Predeclared full-horizon comparison
+
+Source aa63d48; build/test pending. Four physical cores per case, exact archived
+MR24 inputs, planner seed0, complete1000/2000 steps, enforced1000ms decisions,
+32decimalGB, shared EPYC9354 hosts. Variant settings are frozen in the adjacent
+`promise-*-variants.json` files before runs begin.
+
+* Generic RANDOM-04: selected1503-task control versus after-turn promises.
+* RANDOM-04 TRICK: field +direct pickup4, matching OFF (prior1481 seed0), a2x2
+  comparison of promises and explicit short-task preference. This revisits the
+  separate trick branch; it does not replace the selected generic profile.
+* RANDOM-05 TRICK: field +direct pickup4 +matching64 (prior2574 seed0), the same
+  2x2 comparison. The current individual record2608 is seed2, not this seed0
+  control. Compare paired seed0 results first, then replicate any improvement.
+
+`CGAR_TRICK_SHORT_TASKS=1` here removes forced-oldest admissions. HRRN was already
+OFF in these controls, so that setting does not silently bundle an aging change.
+Started ownership and CGAR motion protections stay intact. Report throughput and
+waiting tails without imposing a fairness veto. Every trick matrix requires the
+correct explicit `--trick RANDOM-04` or `--trick RANDOM-05`.
+
+The existing known-horizon scheduler requires an unrestricted full core, which
+these pocket-bearing instances do not provide. It cannot simply be enabled here;
+a future horizon transfer must use a valid free-space distance bound or a clearly
+labelled heuristic. Keep that change separate from this controlled comparison.
