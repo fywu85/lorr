@@ -1138,7 +1138,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             ranking_hits[i]=2;idle_heading[i]=entry.idle_heading;base_cost[i]=entry.base_cost;
             candidate_count[i]=entry.count;
             if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
-            entry.load(candidates[i]);
+            entry.load(candidates[i],p[i],g.next[p[i]]);
         } else if(cache && uint32_t(f.stage[i])<=std::numeric_limits<uint16_t>::max()) {
             const uint32_t pose=uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
             // Preserve the original hash/address sequence. The stored key only

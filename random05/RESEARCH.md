@@ -1370,3 +1370,32 @@ related negative precedent, so the admission test is bounded and default-off.
 It tests whether modestly reducing competing task goals helps RANDOM-04, with
 opened orders protected and full admission restored in the startup variants.
 No gain is claimed before full strict runs.
+
+## Couple task-length priority with the weighted improvement objective
+
+Read-only inspection of NMS `Objects/Environment/robot_handler.cpp` and
+`Planner/PIBT/pibts.cpp` confirms two coupled choices on RANDOM-04: rank agents
+by estimated remaining task-chain work, and use the squared inverse rank for
+both its construction order and weighted operation improvements. Earlier PILOT
+remaining-work priority and progress-score weighting tests were separate.
+Their losses do not establish whether the pair is useful together.
+
+A declared eight-case full comparison holds the2661 search profile fixed and
+uses existing flags: score power2 alone, priority coefficient4 alone, both,
+both with age capped1, the latter with noise50, and weaker/stronger pairs.
+The control is unchanged. These are explicit task-priority tricks; the age-cap
+variants deliberately weaken starvation protection. All waits and abandoned
+work remain in independent audits. This adapts a design idea, not NMS code,
+and does not claim to reproduce its multi-action operation optimizer.
+
+## Exact 32-byte shared rankings
+
+Each prepared candidate destination is either the current cell or one of its
+four outgoing neighbors. Store that direction code and the unchanged float
+score, then reconstruct the vertex and heading when loading. The whole entry
+is32bytes, versus the recent64byte aligned representation (48bytes in source96).
+No candidate is dropped, no score is quantized, and ordering/ties remain exact.
+The existing deterministic cache-byte budget admits whichever tables fit; misses
+use the same exact policy. Regression must cover waits at all headings, ordered
+candidate reconstruction, partial-budget caches, worker scheduling and routing
+bias. Full trajectory equality and measured runtime are required before a win.

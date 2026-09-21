@@ -39,11 +39,9 @@ void build_rankings(const Graph& g,const Config& cfg,const Chain& chain) {
                 while(j>0 && value.score<candidates[j-1].score){candidates[j]=candidates[j-1];--j;}
                 candidates[j]=value;
             }
-            entry.count=uint8_t(count);
-            for(int k=0;k<count;++k) {
-                entry.candidates[k]={candidates[k].score,uint16_t(candidates[k].v),uint8_t(candidates[k].d),0};
+            entry.count=uint8_t(count);entry.save(candidates,p);
+            for(int k=0;k<count;++k)
                 if(candidates[k].v==p || allowed(candidates[k].d))entry.kinematic_mask|=uint8_t(1u<<k);
-            }
         }
     }
     chain.rankings=std::move(table);

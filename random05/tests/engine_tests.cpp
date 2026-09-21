@@ -920,6 +920,24 @@ void rollout_elite_diversity() {
     }
 }
 
+void compact_prepared_rankings() {
+    // Preserve every score bit and ranking position, including waiting with
+    // each possible idle heading and arbitrary nonconsecutive vertex IDs.
+    const std::array<int,4> neighbors{73,12,805,301};
+    for(int heading=0;heading<4;++heading)for(int shift=0;shift<5;++shift) {
+        PreparedRanking entry;entry.count=5;entry.idle_heading=uint8_t(heading);
+        std::array<MoveCandidate,5> source{},restored{};
+        for(int k=0;k<5;++k) {
+            const int d=(k+shift)%5;
+            source[k]={d==4?91:neighbors[d],d==4?heading:d,(k-2)*1.234567f};
+        }
+        entry.save(source,91);entry.load(restored,91,neighbors);
+        for(int k=0;k<5;++k)
+            require(source[k].v==restored[k].v && source[k].d==restored[k].d &&
+                    source[k].score==restored[k].score,"compact prepared ranking changed an ordered candidate");
+    }
+}
+
 void active_task_admission() {
     auto env=environment(3,3,4);env.curr_states[3].location=8;
     for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
@@ -1309,6 +1327,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    compact_prepared_rankings();
     active_task_admission();
     blocker_priority_mutations();
     physical_guidance_edges();

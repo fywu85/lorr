@@ -15,15 +15,25 @@ struct CachedMove {
     uint16_t v=0;
     uint8_t d=0, padding=0;
 };
-struct alignas(64) PreparedRanking {
+struct PreparedRanking {
+    std::array<float,5> scores{};
     float base_cost=0;
+    std::array<uint8_t,5> destinations{}; // 0..3: outgoing edge; 4: same cell
     uint8_t idle_heading=0,count=0,kinematic_mask=0;
-    std::array<CachedMove,5> candidates{};
-    void load(std::array<MoveCandidate,5>& target) const {
-        for(int k=0;k<count;++k)target[k]={int(candidates[k].v),int(candidates[k].d),candidates[k].score};
+    void save(const std::array<MoveCandidate,5>& source,int cell) {
+        for(int k=0;k<count;++k) {
+            scores[k]=source[k].score;
+            destinations[k]=uint8_t(source[k].v==cell?4:source[k].d);
+        }
+    }
+    void load(std::array<MoveCandidate,5>& target,int cell,const std::array<int,4>& neighbors) const {
+        for(int k=0;k<count;++k) {
+            const int edge=destinations[k];
+            target[k]={edge==4?cell:neighbors[edge],edge==4?int(idle_heading):edge,scores[k]};
+        }
     }
 };
-static_assert(sizeof(PreparedRanking)==64,"unexpected prepared ranking size");
+static_assert(sizeof(PreparedRanking)==32,"unexpected prepared ranking size");
 struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
