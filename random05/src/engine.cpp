@@ -965,12 +965,17 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // the original path. All other ranking inputs are captured below; priorities
     // and collision resolution are always recomputed for the current future.
     CachedRanking* cache=cfg.candidate_cache && cfg.push_price==0 && !candidate_rankings_.empty()
+        && ranking_epoch_<=std::numeric_limits<uint32_t>::max()
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
     const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
     for(int i=0;i<n;++i) {
-        if(cache) {
-            uint64_t key=(uint64_t(uint32_t(f.stage[i]))<<32)|uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
-            size_t slot=(key*0x9e3779b97f4a7c15ULL)>>cache_shift;
+        if(cache && uint32_t(f.stage[i])<=std::numeric_limits<uint16_t>::max()) {
+            const uint32_t pose=uint32_t(p[i]*8+f.dir[i]*2+moving[i]);
+            // Preserve the original hash/address sequence. The stored key only
+            // removes unused bits; very long chains use the uncached path.
+            const uint64_t hash_key=(uint64_t(uint32_t(f.stage[i]))<<32)|pose;
+            const uint32_t key=(uint32_t(f.stage[i])<<16)|pose;
+            size_t slot=(hash_key*0x9e3779b97f4a7c15ULL)>>cache_shift;
             auto* entry=&cache[size_t(i)*cfg.cache_slots+slot];ranking_slots[i]=entry;
             if(entry->epoch==ranking_epoch_ && entry->key==key && entry->chain==active_chain[i]) {
                 ranking_hits[i]=1;idle_heading[i]=entry->idle_heading;base_cost[i]=entry->base_cost;
@@ -979,10 +984,10 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
                     // Later collision/priority resolution still runs unchanged.
                     candidate_count[i]=entry->count;
                     if(cfg.kinematic_mask)kinematic_masks[i]=entry->kinematic_mask;
-                    std::copy_n(entry->candidates.begin(),entry->count,candidates[i].begin());
+                    entry->load(candidates[i]);
                 }
             } else {
-                entry->epoch=ranking_epoch_;entry->key=key;entry->chain=active_chain[i];
+                entry->epoch=uint32_t(ranking_epoch_);entry->key=key;entry->chain=active_chain[i];
             }
         }
         if(!ranking_hits[i]) {
@@ -1050,7 +1055,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             if(!cfg.fuse_cache_hits) {
                 const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
                 if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
-                std::copy_n(entry.candidates.begin(),entry.count,cand.begin());
+                entry.load(cand);
             }
             continue;
         }
@@ -1094,7 +1099,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         if(ranking_slots[i]) {
             auto& entry=*ranking_slots[i];entry.count=count;
             if(cfg.kinematic_mask)entry.kinematic_mask=kinematic_masks[i];
-            std::copy_n(cand.begin(),count,entry.candidates.begin());
+            entry.save(cand);
         }
     }
     // Explore nearby routing alternatives as well as priority orders. The

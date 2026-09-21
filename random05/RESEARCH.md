@@ -1233,3 +1233,16 @@ Compile-time layout checks enforce that representation. Existing uncached/cache,
 eviction, worker, dynamic-cost bypass, checkpoint and dense turnover tests are
 the semantic controls. No throughput or speed claim precedes full equivalence
 and measured timing comparisons. This is a general representation optimization.
+
+## One-line cached rankings (source90 experiment)
+
+Graph construction already rejects more than4096 free cells. Cached candidate
+destinations therefore fit16bits and headings8bits without changing score bits.
+Store a candidate in8bytes instead of12, and each five-candidate ranking plus
+its24-byte header in one aligned64-byte line (source89 used96bytes). Keep the
+original64-bit hash/address sequence while compressing the stored pose/stage
+key to32bits. Very long stages above65535 use the ordinary uncached calculation;
+epoch values above32bits also bypass caching, so truncation cannot cause false
+hits. No score/order/priority/work count changes. Existing dense uncached/cache,
+eviction, fused-read, checkpoint and worker controls test exact policy behavior.
+Full frozen controls and repeated timing measurements remain necessary.

@@ -115,3 +115,28 @@ separately test triage0.75/1, guided mix1, turncost1, dispersion0.4. TwoB18/K115
 controls test the compact layout and optional fused read against2500. All full
 1000 steps, with fixed work and strict deadlines. The earlier fusedK11520 run
 finishes2500 atmean686/max742ms; exact replay equivalence is checked separately.
+
+## Routing diagnostic and declared lower-work routing ablation
+
+The2565R04 trace uses2.05 completed loaded forward moves per hop lower bound,
+versus1.67 in NMS's2580 trace. This is observational across different completed
+task sets. Its200-step completion blocks are428/559/489/461/628 against
+NMS638/520/451/474/497: most of the net gap comes from initialization, while
+the horizon trick helps late. Full motion phase evidence is in
+results/random34-motion-diagnosis.
+
+Eight full source89 trials retain the lowerworkB10/K8064 budget for headroom.
+They test directional contrast0.8/1.6/3.2, contrast1.6 with reference scale2.4,
+plain-distance score blend0.25/0.5, turn-aware field construction0.5 without
+the previous field's flip, and weaker betweenness0.25. These separate route
+construction from rollout scoring; all use explicit --trick RANDOM-04.
+No new held-out input is used. Compare to declared exact2501control.
+
+Initial matching is very similar in the2565/NMS2580 traces: both assign271
+two-stop tasks; internal hop sums26774/27306, approach697/624. NMS's first
+200steps nevertheless completes638 versus428 with2421 versus2166waypoints.
+This motivates a bounded R04-specific recheck of the existing progress-rank
+weighting during startup, not a claim of causal attribution or shorter tasks.
+Four source89 full runs atB10/K8064 test rankpower0.5/1/2 for200steps and
+power1for400steps. The earlier all-run power0.25 test lost onR04; these are
+distinct predeclared startup ablations. Matching and task locks stay unchanged.

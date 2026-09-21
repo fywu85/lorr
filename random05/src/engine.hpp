@@ -128,17 +128,29 @@ struct OperationModel {
     explicit OperationModel(const Graph& graph);
     const std::array<int,horizon>& path(int state,int code) const {return paths[size_t(state)*count+code];}
 };
-struct alignas(32) CachedRanking {
-    // The lookup header fits one half cache line. Aligning the candidate block
-    // keeps this entry at 96 bytes and prevents a hit from spanning three lines.
-    uint64_t epoch=0,key=0;
+struct CachedMove {
+    float score=0;
+    uint16_t v=0;
+    uint8_t d=0, padding=0;
+};
+struct alignas(64) CachedRanking {
+    // The graph has at most4096 cells, so destination and heading fit exactly.
+    // A hit, including all five candidates, occupies one64-byte cache line.
+    uint32_t epoch=0,key=0;
     const Chain* chain=nullptr;
     float base_cost=0;
     uint8_t idle_heading=0,count=0,kinematic_mask=0;
-    alignas(32) std::array<MoveCandidate,5> candidates{};
+    std::array<CachedMove,5> candidates{};
+    void load(std::array<MoveCandidate,5>& target) const {
+        for(int k=0;k<count;++k)target[k]={int(candidates[k].v),int(candidates[k].d),candidates[k].score};
+    }
+    void save(const std::array<MoveCandidate,5>& source) {
+        for(int k=0;k<count;++k)candidates[k]={source[k].score,uint16_t(source[k].v),uint8_t(source[k].d),0};
+    }
 };
-static_assert(offsetof(CachedRanking,candidates)==32,"ranking header exceeds half a cache line");
-static_assert(sizeof(CachedRanking)==96,"unexpected ranking-cache layout");
+static_assert(sizeof(CachedMove)==8,"unexpected compact candidate layout");
+static_assert(offsetof(CachedRanking,candidates)==24,"ranking header exceeds24 bytes");
+static_assert(sizeof(CachedRanking)==64,"ranking cache must fit one line");
 struct alignas(64) PolicyTiming {
     uint64_t calls=0,samples=0;
     std::array<uint64_t,7> nanoseconds{};
