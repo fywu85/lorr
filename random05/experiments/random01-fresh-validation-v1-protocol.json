@@ -1,0 +1,29 @@
+{
+  "declared_utc": "2026-09-21T18:14:28.530507+00:00",
+  "instance": "RANDOM-01",
+  "candidate_source_commit": "027df4d9",
+  "candidate_binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "baseline_source_commit": "a2ff2b2",
+  "baseline_binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+  "manifest": "random05/experiments/random01-fresh-validation-v1-full.json",
+  "generation": "random05/results/random01-fresh-validation-v1/generation.json",
+  "seeds": [
+    50017,
+    50018
+  ],
+  "candidate_development_tasks": 729,
+  "baseline_development_tasks": 726,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "comparison": "Report every input and aggregate against stronger unmodified NMS repetition; compare the selected general solver separately. No success threshold is imposed after seeing results.",
+    "timing": "Full600steps, strict1000ms entry and30000ms preprocessing,32decimalGBguard. Complete fixed work or fail.",
+    "integrity": "Commit before generating50017/50018. No tuning on these inputs at any density. Preserve original failed attempts. Independently replay all successful full traces."
+  },
+  "description": "First fresh-start/task qualification of the frozen sparse-density selected profiles. Candidate is trick-enabled, baseline is the selected general solver; this is not a single-option ablation. Two fresh streams on the existing layout, not unseen-layout validation."
+}
