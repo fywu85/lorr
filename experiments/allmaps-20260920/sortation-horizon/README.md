@@ -15,3 +15,9 @@ No map geometry or task-stream fitting is added. This is an explicit
 32decimalGB RSS, local log spool. Control150894 must reproduce its whole trace.
 Its previous max994ms is close to the limit: any timeout is retained as failure.
 Replicate improvements before claiming a seed-robust effect.
+
+
+Completed strict full results: control150894, mean153963, p90margin154160. Selected154160 gains2.1644% over the control and0.9469% over publishedmax152714. Its maximum is986.967ms; the mean arm peaks995.886ms. All runs pass, and the control exactly repeats its prior full trajectory. This is one-seed evidence. Preserve the declared horizon assumption and report narrow runtime headroom. [Results](first-results.json).
+
+
+Next declared comparison before submission: current2Mglobal candidate allowance versus1.5M and1M, retaining all regional search, p90horizon scheduling,8physicalcores and every other setting. Full5000steps/seed0. This explicitly changes fixed search work to test throughput/latency tradeoffs; it is not a timing-dependent cutoff. Earlier no-horizon1M lost only49tasks against2M and hadmoreheadroom. No assumption of an identical effect with horizon scheduling.

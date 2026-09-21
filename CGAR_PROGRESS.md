@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T14:04:45.147566+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T14:14:51.795667+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -11,7 +11,7 @@ use eight physical cores; the other selected rows use four.
 | Instance | CGAR best | max(NMS, KK) | New target | Remaining | Seed | Max step (ms) |
 |---|---:|---:|---:|---:|---:|---:|
 | WAREHOUSE | 155,173 | 154,795 | 162,535 | 7,362 | 0 | 944.77 |
-| SORTATION | 150,894 | 152,714 | 160,350 | 9,456 | 0 | 993.90 |
+| SORTATION | 154,160 | 152,714 | 160,350 | 6,190 | 0 | 986.97 |
 | CITY-01 | 8,453 | 8,445 | 8,868 | 415 | 6 | 764.78 |
 | CITY-02 | 16,840 | 16,997 | 17,847 | 1,007 | 8 | 802.56 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-140445.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-141451.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority

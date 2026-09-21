@@ -1,26 +1,36 @@
 {
-  "updated_utc": "2026-09-21T14:04:45.147566+00:00",
+  "updated_utc": "2026-09-21T14:19:42.631166+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
-      "suffix": "sortation-horizon-full-v1",
-      "matrix_job": 8902917,
-      "verifier_job": 8902918,
-      "physical_cores_per_case": 8,
-      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-sortation-horizon-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/sortation-horizon-full-v1"
-    },
-    {
-      "suffix": "random04-committed-work-replicate-full-v2",
-      "matrix_job": 8902948,
-      "verifier_job": 8902949,
+      "suffix": "city02-routing-dispatch-full-v1",
+      "matrix_job": 8902959,
+      "verifier_job": 8902960,
       "physical_cores_per_case": 4,
       "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random04-committed-work-replicate-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/random04-committed-work-replicate-full-v2"
+      "raw": "runs/cgar-city02-routing-dispatch-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/city02-routing-dispatch-full-v1"
+    },
+    {
+      "suffix": "random04-committed-rounds12-full-v3",
+      "matrix_job": 8902962,
+      "verifier_job": 8902963,
+      "physical_cores_per_case": 4,
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random04-committed-rounds12-full-v3-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-committed-rounds12-full-v3"
+    },
+    {
+      "suffix": "sortation-horizon-headroom-full-v2",
+      "matrix_job": 8902964,
+      "verifier_job": 8902965,
+      "physical_cores_per_case": 8,
+      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-sortation-horizon-headroom-full-v2-20260921",
+      "report": "experiments/allmaps-20260920/results/sortation-horizon-headroom-full-v2"
     }
   ],
   "builds": [
@@ -167,6 +177,12 @@
       "raw": "runs/cgar-window-merge-build-v1-20260921",
       "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a",
       "status": "complete; all41source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902968,
+      "raw": "runs/cgar-window-blockers-build-v1-20260921",
+      "source_commit": "a18486c5a229932afb0f974c1663ed8eef61eed5",
+      "status": "running; recursive blocker/full-group regression qualification pending"
     }
   ]
 }

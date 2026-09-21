@@ -1,6 +1,6 @@
 # Active CGAR throughput targets
 
-Updated 2026-09-21T14:04:45.147566+00:00. The user now requests **10% above max(NMS, KK)** for
+Updated 2026-09-21T14:14:51.795667+00:00. The user now requests **10% above max(NMS, KK)** for
 RANDOM-01–05 and a stretch **5% above max(NMS, KK)** for the other five instances. Integer
 targets round upward. Selected-seed maxima may qualify; replication and fairness
 remain separately reported. These are published historical baselines, not matched
@@ -9,7 +9,7 @@ local competitor measurements.
 | Instance | NMS | KK | Stronger baseline | Margin | New target | CGAR best |
 |---|---:|---:|---:|---:|---:|---:|
 | WAREHOUSE | 154,795 | 152,605 | 154,795 | 5% | 162,535 | 155,173 |
-| SORTATION | 152,714 | 150,739 | 152,714 | 5% | 160,350 | 150,894 |
+| SORTATION | 152,714 | 150,739 | 152,714 | 5% | 160,350 | 154,160 |
 | CITY-01 | 8,420 | 8,445 | 8,445 | 5% | 8,868 | 8,453 |
 | CITY-02 | 16,787 | 16,997 | 16,997 | 5% | 17,847 | 16,840 |
 | GAME | 23,274 | 22,604 | 23,274 | 5% | 24,438 | 24,447 |

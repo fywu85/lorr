@@ -1,0 +1,3 @@
+# CITY02 dispatch with the stronger field
+
+Declared 2026-09-21T14:09:17.046290+00:00. The price24 field replicates a gain over16, but the selected pickup12 and matching cadence10 were tuned with the weaker field. Compare unchanged selected16840seed8 against pickup8, pickup16, or cadence1 individually. All other routing, admission, fairness and complete planning work unchanged. Full3000steps, seed8,4bound physical cores per case, strict1000ms,32decimalGB. Explicit --trick CITY-02. No known-horizon or future-task access. Frozen qualified sourcef22bc68b; require exact16840control trajectory. This interaction test does not assume that old weaker-field conclusions transfer.

@@ -801,3 +801,19 @@ Previous selected maximum 8440. Full 3000 steps; 4 physical cores, strict 1,000 
 | 16840 | 2026-09-21T14:02:46.608996+00:00 | [f22bc68b](https://github.com/fywu85/lorr/commit/f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9) | trick_current_profile, seed 8, `--trick CITY-02` | [verification](results/city02-seed-frontier-full-v1/verification.json) |
 
 Previous selected maximum 16839. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 802.56 ms. Unchanged selected CITY profile on additional planner seeds. This is a selected-seed record, not an algorithm improvement or a claim of average outperformance; all other seed outcomes and nearby lane-price losses are retained.
+
+## SORTATION 153963 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 153963 | 2026-09-21T14:12:20.843741+00:00 | [6fc0cc50](https://github.com/fywu85/lorr/commit/6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0) | trick_horizon_mean, seed 0, `--trick SORTATION` | [verification](results/sortation-horizon-full-v1/verification.json) |
+
+Previous selected maximum 150894. Full 5000 steps; 8 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 995.89 ms. Existing explicit known-horizon admission and matching transfer with observed task-duration residuals, full5000steps. Single planner seed; empirical strict1s but narrow timing headroom. All held/started tasks and protected CGAR actions remain authoritative.
+
+## SORTATION 154160 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 154160 | 2026-09-21T14:11:58.945725+00:00 | [6fc0cc50](https://github.com/fywu85/lorr/commit/6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0) | trick_horizon_p90, seed 0, `--trick SORTATION` | [verification](results/sortation-horizon-full-v1/verification.json) |
+
+Previous selected maximum 153963. Full 5000 steps; 8 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 986.97 ms. Existing explicit known-horizon admission and matching transfer with observed task-duration residuals, full5000steps. Single planner seed; empirical strict1s but narrow timing headroom. All held/started tasks and protected CGAR actions remain authoritative.

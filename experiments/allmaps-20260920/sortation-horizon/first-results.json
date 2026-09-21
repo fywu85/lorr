@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-09-21T14:14:52.162201+00:00",
+  "rows": [
+    {
+      "case": "trick_current_control-s0-r0",
+      "variant": "trick_current_control",
+      "tasks": 150894,
+      "max_entry_seconds": 0.988287207,
+      "peak_rss_bytes": 12395524096,
+      "outstanding_age_p90": 656,
+      "trajectory_sha256": "3ad676f4f913f38a73824134aace6aff3400445fca743b0703fe347901eab001"
+    },
+    {
+      "case": "trick_horizon_mean-s0-r0",
+      "variant": "trick_horizon_mean",
+      "tasks": 153963,
+      "max_entry_seconds": 0.995885797,
+      "peak_rss_bytes": 12403089408,
+      "outstanding_age_p90": 551,
+      "trajectory_sha256": "265a743bc10eed3c96d0be9e9f9e22fd8dc8969d69907ad3702f07b1922123a8"
+    },
+    {
+      "case": "trick_horizon_p90-s0-r0",
+      "variant": "trick_horizon_p90",
+      "tasks": 154160,
+      "max_entry_seconds": 0.986966255,
+      "peak_rss_bytes": 12404432896,
+      "outstanding_age_p90": 541,
+      "trajectory_sha256": "e8cd65f351c030721ba0e2427a2cde783a7c7748ab20daa8f484cef417f42d4f"
+    }
+  ],
+  "control_trajectory_exact": true,
+  "previous_matching_evidence": "results/sortation-dispatch-runtime-full-v1/verification.json",
+  "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
+  "evidence": "results/sortation-horizon-full-v1/verification.json",
+  "selected_improvement_percent": 2.1644333108009617,
+  "versus_published_max_percent": 0.9468680016239572,
+  "decision": "Select154160seed0, known5000horizon plus p90 residual and horizon matching. Narrow timing headroom; no seed-robustness or starvation-free claim."
+}

@@ -1,6 +1,6 @@
 # Continue CGAR across ten instances
 
-Updated 2026-09-21T14:06:57.742781+00:00. Latest user prioritizes RANDOM02-04 and pushing SORTATION/CITY01/CITY02 above max(NMS,KK); latest PILOT source review explicitly authorized.
+Updated 2026-09-21T14:20:46.334029+00:00. Latest user prioritizes RANDOM02-04 and pushing SORTATION/CITY01/CITY02 above max(NMS,KK); latest PILOT source review explicitly authorized.
 
 Targets: +10% over max(published NMS, KK) on RANDOM-01 through RANDOM-05; stretch +5% on the other five. Throughput is primary, fairness secondary. Selected-seed maxima count, but distinguish those from replicated gains. The old formal Warehouse160k goal text is obsolete; continue the latest all-map scope. No internal subagents.
 
@@ -19,7 +19,7 @@ All shell calls require_escalated (default bwrap fails); Python3.7. Heavy builds
 | Instance | Tasks | Seed | Max entry ms |
 |---|---:|---:|---:|
 | WAREHOUSE | 155173 | 0 | 944.766 |
-| SORTATION | 150894 | 0 | 993.898 |
+| SORTATION | 154160 | 0 | 986.966 |
 | CITY-01 | 8453 | 6 | 764.785 |
 | CITY-02 | 16840 | 8 | 802.558 |
 | GAME | 24447 | 4 | 826.520 |
@@ -31,7 +31,7 @@ All shell calls require_escalated (default bwrap fails); Python3.7. Heavy builds
 
 All are full-horizon TRICK profiles. Warehouse and Sortation reserve8 physical cores; others4. GAME and RANDOM05 meet the selected-seed margin target. Published baselines are historical targets, not matched competitor reruns. No starvation-free claim. RANDOM05 parks31 capacity robots and its best now adds cap700. GAME restricts the active fleet. Warehouse has exclusive qualification and100M-action replay; other results have simulator plus complete movement/wait audits.
 
-Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-140445.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, committed-work/best-random04.json, move-promises/best-random05.json and city-seed-frontier/best-city01.json / best-city02.json.
+Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-141451.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, committed-work/best-random04.json, move-promises/best-random05.json and city-seed-frontier/best-city01.json / best-city02.json.
 
 Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on seeds0/2/4, +16.319% aggregate, all positive. Forward-only gains11.529%. RANDOM05 seed10:3065 ->3391mode1 ->3571mode2, then3610 with cap700. Cap composition adds39 (+1.09%) on one seed; no replicated cap claim. R05 uncapped replication is complete:3532/3531/3571 versus3043/3015/3065 on seeds0/2/10, +16.5625% aggregate, all positive. All three mode1 scores also exceed3355. Cap composition remains single-seed evidence.
 
@@ -48,7 +48,7 @@ Older exact assignment, sparse action prices, regional-future roots, and various
 
 ## Builds and source
 
-Latest fully qualified production source766e2508919fdec01bb4aaefce15825deedde04a implements generic optional CGAR_WINDOW_MERGE=1. All41 source/test hashes, binary and full regression passed. Raw runs/cgar-window-merge-build-v1-20260921, binary1f68798699416623c41aa17c7f53b04ff5b9931003f7d3bddabdfeca7c9b051a, proof window-merge/build-v1. No active build or production edits pending.
+Latest fully qualified production source766e2508919fdec01bb4aaefce15825deedde04a implements generic optional CGAR_WINDOW_MERGE=1. All41 source/test hashes, binary and full regression passed. Raw runs/cgar-window-merge-build-v1-20260921, binary1f68798699416623c41aa17c7f53b04ff5b9931003f7d3bddabdfeca7c9b051a, proof window-merge/build-v1. New sourcea18486c5a229932afb0f974c1663ed8eef61eed5 adds optional cached recursive blocker neighborhoods and full-size repair groups; build8902968 is running, not qualified yet. Frozen binary benchmarks are independent. No source/test edits during build.
 
 Every window worker finishes first. Starting from its existing best, visit all other workers in index order; connect every cross-parent vertex/head-on conflict across the full horizon and adopt only improving complete components. CGAR protected prefixes/paths, pocket permissions and first-cell commitments remain validated. Exact integer gains and complete donor counts are reconciled; default0 preserves old work/RNG/actions, late failure publishes no answer/history. Tests:11 independent quadratic graphs,20 complete component mixtures, isolated head-on/cycle/complementary fixtures, protected/promise gate, unchanged worker work, serial/parallel identity, late failure; production14400actions/2147services.
 
@@ -58,15 +58,17 @@ Reference-strength source6fc0cc50 remains qualified, but every25/50/75 treatment
 
 ## Pending jobs
 
-- sortation-horizon-full-v1: matrix8902917, verifier8902918, source6fc0cc50, 8 physical cores/case.
-- random04-committed-work-replicate-full-v2: matrix8902948, verifier8902949, sourcef22bc68b, 4 physical cores/case.
+- city02-routing-dispatch-full-v1: matrix8902959, verifier8902960, sourcef22bc68b, 4 physical cores/case.
+- random04-committed-rounds12-full-v3: matrix8902962, verifier8902963, sourcef22bc68b, 4 physical cores/case.
+- sortation-horizon-headroom-full-v2: matrix8902964, verifier8902965, source6fc0cc50, 8 physical cores/case.
+- window-blockers build8902968/sourcea18486c5: complete regression pending; do not edit production/tests until build ends.
 
 Warehouse verification is complete after two preserved parser failures: missing cap defaults to0, and the compiled solver emits no cap diagnostics at0. The third analysis verifies both unchanged solver outputs. No solver was rerun. Evidence and failures are in warehouse-sortation-matching.
 
 ## Next bounded work
 
 1. Collect SORTATION known-horizon transfer and RANDOM04 committed-work replication. RANDOM04 seed4 rises2321->2358 with8rounds and2398 with16workers+8rounds; maximum0.549s. Both positive treatments are replicating on seeds0/2. Additional workers alone lose2278. Current best is committed-work/best-random04.json.
-2. Completed CITY neighbors all lose: CITY01price16/20=8440/8434, CITY02price24/20/28=16839/16254/16611. Original verifier omitted legal20/28; same simulation outputs reanalysed after parser-only whitelist fix, original failures retained. Fixed-profile CITY seeds6/8/10/12 give8453/8433/8437/8427 and16719/16840/16704/16741. CITY01selected8453 now passes8445by8; CITY02selected16840 remains157short. This is selected-seed evidence, not an algorithm effect. Generic window merge loses: R02control1215,merge1173,wide1189; R03control1982,merge1962,wide1859. All controls match complete prior trajectories. Keep merge0. Explore causal blocker neighborhoods next; not implemented yet.
+2. Completed CITY neighbors all lose: CITY01price16/20=8440/8434, CITY02price24/20/28=16839/16254/16611. Original verifier omitted legal20/28; same simulation outputs reanalysed after parser-only whitelist fix, original failures retained. Fixed-profile CITY seeds6/8/10/12 give8453/8433/8437/8427 and16719/16840/16704/16741. CITY01selected8453 now passes8445by8; CITY02selected16840 remains157short. This is selected-seed evidence, not an algorithm effect. Generic window merge loses: R02control1215,merge1173,wide1189; R03control1982,merge1962,wide1859. All controls match complete prior trajectories. Keep merge0. Causal blockers and full-size groups are implemented at a18486c5, regression qualification pending. See window-blockers/README.md for first2x2 protocols.
 3. Further source hypotheses from PILOT: cached displacement costs excluding a head-on destination, goal-local guidance, complete joint-movement proposals with bounded matching swap repairs. Do not infer measured gains from their presence in source. Evaluate interaction with CGAR primary/recovery and current motion commitments before any transfer. Sparse worker-component merge was already present in the frozen reference but not previously transferred.
 
 Latest immutable PILOT snapshot: /tmp/cgar-pilot-readonly-027df4d9/*.cpp and engine.hpp, commit027df4d97ad737ad6319354abe8b92afc2840473. Source-only review/provenance: pilot-transfer/source-review-20260921-1328.json. No independent agent working files or live outcomes were read or changed. Earlier source d51bdbf2c4e6830f8cabacb52ac9cfa8234aa663 remains archived.
@@ -85,3 +87,6 @@ Authorized push: GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 git -c 'credential
 Frozen benchmark runner now has SHAc15523cffd8968d1542d5b937763e11b8cb6570d5d3f427b9676ed709f9ee119. Previous runner3a2c... boundary is recorded in lane-neighbors/runner-upgrade-boundary.json: every preexisting case had loaded its old runner before the change. Do not edit the live runner while any queued matrix still has an unlaunched case. Metadata.json appears after runner code/hash and assets load; remaining running processes retain those originals.
 
 NFS negative cache: list parent and retry; do not rerun a solver merely for visibility. Local log spool archives full logs after every exit including failures. Strict entry time still includes logging. Earlier2632ms timeout is retained; its cause is unproven.
+
+
+Latest completed SORTATION:150894control,153963mean,154160p90 horizon scheduling. All full5000steps valid; selected154160 is+0.9469% over published152714 and+2.1644% overcontrol. Exact control trace reproduced. Max986.966ms means narrow timing headroom; new2M/1.5M/1Mfixed-global-work comparison is running. Best profile sortation-horizon/best-sortation.json. Single-seed claim only. RANDOM04workreplication is now complete:16workers/8rounds gives2198/2275/2398 versus2176/2304/2321, +1.0293% aggregate, one loss;8workers/8rounds loses0.5146% aggregate. Further12round probes and CITY02pickup8/16/cadence1 withprice24 are predeclared and running. Last qualified checkpointbd92de1d pushed; a18486c5 source not yet pushed pending qualification.
