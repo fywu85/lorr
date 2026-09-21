@@ -366,6 +366,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             std::vector<int> group(n);std::vector<float> keys(n);
             const int largest_count=std::min(cfg.window_neighborhood*(cfg.window_group_mix?2:1),n);
             std::vector<int> linked;linked.reserve(largest_count);
+            Paths reused_old,reused_replacement;
+            if(cfg.window_path_reuse){reused_old.resize(largest_count);reused_replacement.resize(largest_count);}
             std::vector<uint32_t> marked(n,0);
             for(int iteration=0;iteration<iterations/cfg.window_rounds;++iteration) {
                 // Fixed multiscale groups expose larger interacting coalitions
@@ -447,7 +449,13 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 }
                 }
                 std::shuffle(group.begin(),group.begin()+count,random);
-                std::vector<std::vector<int>> old(count),replacement(count);
+                // Reusing complete path buffers avoids millions of tiny heap
+                // allocations in high-budget repairs. Contents never enter the
+                // search until explicitly overwritten or successfully solved.
+                Paths fresh_old,fresh_replacement;
+                Paths& old=cfg.window_path_reuse?reused_old:fresh_old;
+                Paths& replacement=cfg.window_path_reuse?reused_replacement:fresh_replacement;
+                old.resize(count);replacement.resize(count);
                 Cost previous,proposed;
                 for(int k=0;k<count;++k) {
                     int a=group[k];old[k]=island.paths[a];reserve.set(a,old[k],false);
@@ -510,7 +518,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 if(accept) {
                     ++island.accepted;
                     for(int k=0;k<count;++k) {
-                        int a=group[k];island.paths[a]=std::move(replacement[k]);
+                        int a=group[k];
+                        if(cfg.window_path_reuse)island.paths[a].swap(replacement[k]);
+                        else island.paths[a]=std::move(replacement[k]);
                         costs[a]=agent_cost(a,island.paths[a]);
                     }
                     if(cfg.window_temperature>0) {

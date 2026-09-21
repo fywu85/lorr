@@ -1939,6 +1939,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"completion weighting accepted an invalid price");
     }
+    {
+        Setting reuse("R05_WINDOW_PATH_REUSE","1"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_path_reuse,"general path reuse was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"path reuse accepted a missing window");
+    }
+    {
+        Setting reuse("R05_WINDOW_PATH_REUSE","2");auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"path reuse accepted a non-boolean value");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2175,6 +2188,15 @@ void window_reproducibility() {
         cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
         require(mixed_sizes==simulate(cfg,8),"mixed repair sizes depend on workers, caches, heap or storage");
         require(mixed_sizes==simulate(cfg,8,5,5,true),"mixed repair sizes changed after checkpoint restoration");
+    }
+    cfg.window_neighborhood=5;
+    for(bool mixed_groups:{false,true})for(int orders:{1,2}) {
+        cfg.window_group_mix=mixed_groups;cfg.window_repair_orders=orders;
+        cfg.window_path_reuse=false;cfg.threads=1;
+        const auto original_buffers=simulate(cfg,8,5,5,true);
+        cfg.window_path_reuse=true;cfg.threads=3;
+        require(original_buffers==simulate(cfg,8),"path-buffer reuse changed repairs across group sizes/orders/workers");
+        require(original_buffers==simulate(cfg,8,5,5,true),"path-buffer reuse changed checkpoint replay");
     }
     cfg.window_completion_price=.5;cfg.window_neighborhood=5;
     cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;

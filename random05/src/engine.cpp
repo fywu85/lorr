@@ -187,6 +187,10 @@ Config Config::environment(const SharedEnvironment& env) {
        (!c.window || c.window_neighborhood<2 || c.window_neighborhood>32)))
         throw std::invalid_argument("mixed window groups need an enabled window, base size2..32 and a boolean value");
     c.window_group_mix=group_mix;
+    const int path_reuse=integer("R05_WINDOW_PATH_REUSE",0);
+    if(path_reuse<0 || path_reuse>1 || (path_reuse && !c.window))
+        throw std::invalid_argument("window path reuse needs an enabled window and a boolean value");
+    c.window_path_reuse=path_reuse;
     c.window_completion_price=real("R05_WINDOW_COMPLETION_PRICE",0);
     if(!std::isfinite(c.window_completion_price) || c.window_completion_price<0 || c.window_completion_price>8 ||
        (c.window_completion_price>0 && (!c.window || !random_trick)))
