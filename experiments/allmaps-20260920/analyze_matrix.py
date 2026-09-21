@@ -428,6 +428,8 @@ def main():
                     delay_samples=int(case['environment'].get('CGAR_WINDOW_DELAY_SAMPLES','0'));assert int(cfg.get('delay_samples','0'))==delay_samples and 0<=delay_samples<=16
                     temperature=int(case['environment'].get('CGAR_WINDOW_TEMPERATURE','0'));assert int(cfg.get('temperature','0'))==temperature and 0<=temperature<=65536
                     merge=int(case['environment'].get('CGAR_WINDOW_MERGE','0'));assert int(cfg.get('merge','0'))==merge and merge in (0,1)
+                    blockers=int(case['environment'].get('CGAR_WINDOW_BLOCKERS','0'));assert int(cfg.get('blockers','0'))==blockers and blockers in (0,1,2)
+                    full_group=int(case['environment'].get('CGAR_WINDOW_FULL_GROUP','0'));assert int(cfg.get('full_group','0'))==full_group and full_group in (0,1)
                     assert cfg['seed']=='cgar' and cfg['protected'] in ('immutable','immutable_first_action') and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -462,6 +464,24 @@ def main():
                         assert int(x.get('total_merge_donors','0'))==donors*int(x['step'])
                         assert 0<=int(x.get('total_merge_accepted','0'))<=donors*row['robots']*int(x['step'])
                         if not merge:assert merged==components==robots==gain==int(x.get('total_merge_gain','0'))==0
+                        if blockers or full_group:assert 'eligible_agents' in x
+                        if 'eligible_agents' in x:
+                            eligible=int(x['eligible_agents']);workers=int(cfg['workers']);group_size=int(cfg['group'])
+                            assert 0<=eligible<=row['robots']*workers and eligible%workers==0
+                            effective_group=min(group_size,eligible//workers)
+                            guides=int(x['guide_paths']);guide_steps=int(x['guide_steps'])
+                            checks=int(x['blocker_checks']);links=int(x['blocker_links'])
+                            members=int(x['group_agents']);full=int(x['full_groups'])
+                            assert guides==(eligible if blockers else 0) and guide_steps==guides*window_horizon
+                            assert (attempts if eligible else 0)<=members<=attempts*effective_group
+                            assert 0<=full<=attempts and 0<=links<=members-(attempts if eligible else 0)
+                            assert 0<=checks<=attempts*effective_group*window_horizon
+                            if not blockers:assert checks==links==0
+                            if full_group:assert full==(attempts if eligible else 0) and members==attempts*effective_group
+                            assert 0<=int(x['total_guide_paths'])<=row['robots']*workers*int(x['step'])
+                            assert 0<=int(x['total_blocker_links'])<=int(x['total_group_agents'])<=attempts*group_size*int(x['step'])
+                            assert 0<=int(x['total_blocker_checks'])<=attempts*group_size*window_horizon*int(x['step'])
+                            assert 0<=int(x['total_full_groups'])<=attempts*int(x['step'])
                         assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
                         assert int(x['capped'])+int(x['failed'])<=int(x['searches'])
@@ -473,13 +493,15 @@ def main():
                         assert 0<=int(x['selected_worker'])<int(cfg['workers'])
                         assert 0<=int(x['changed_first'])<=row['robots']-int(x['protected'])
                         assert 0<=int(x['retained'])<=row['robots'] and 0<=int(x['history_resets'])<=row['robots']
-                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets','total_delay_draws','total_delay_replacements','total_uphill_accepted','total_incumbent_updates','total_merge_donors','total_merge_accepted','total_merge_gain'):
+                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets','total_delay_draws','total_delay_replacements','total_uphill_accepted','total_incumbent_updates','total_merge_donors','total_merge_accepted','total_merge_gain','total_guide_paths','total_blocker_checks','total_blocker_links','total_group_agents','total_full_groups'):
                         counts=[int(x.get(counter,'0')) for x in window_samples];assert counts==sorted(counts)
                     row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
                 else:
                     assert not window_config and not window_samples
                     assert not int(case['environment'].get('CGAR_WINDOW_CHAIN_SEED','0'))
                     assert not int(case['environment'].get('CGAR_WINDOW_MERGE','0'))
+                    assert not int(case['environment'].get('CGAR_WINDOW_BLOCKERS','0'))
+                    assert not int(case['environment'].get('CGAR_WINDOW_FULL_GROUP','0'))
                 future_roots=int(case['environment'].get('CGAR_FUTURE_ROOTS','0'))
                 future_config=[fields(l) for l in logs if l.startswith('[cgar-future-config] ')]
                 future_samples=[fields(l) for l in logs if l.startswith('[cgar-future] ')]

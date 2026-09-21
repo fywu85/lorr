@@ -19,6 +19,8 @@ struct WindowOptions {
     int delay_samples = 0;  // extra candidates on half the repair attempts; zero preserves the old random stream
     int temperature = 0;  // initial cost units; cooling is by completed iteration count
     int merge = 0;  // combine compatible paths only after every worker completes
+    int blockers = 0;  // cached guide blockers: 1 earliest first, 2 rotated time scan
+    int full_group = 0;  // fill the declared group size instead of sampling 1..group
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -215,6 +217,8 @@ struct WindowStats {
     long long delay_draws = 0, delay_replacements = 0;
     long long uphill_accepted = 0, incumbent_updates = 0, incumbent_restores = 0;
     long long merge_donors = 0, merge_components = 0, merge_accepted = 0, merge_robots = 0;
+    long long guide_paths = 0, guide_steps = 0, blocker_checks = 0, blocker_links = 0;
+    long long eligible_agents = 0, group_agents = 0, full_groups = 0;
     int64_t merge_gain = 0, pre_merge_cost = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
     int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
@@ -226,6 +230,9 @@ struct WindowStats {
         uphill_accepted += other.uphill_accepted; incumbent_updates += other.incumbent_updates; incumbent_restores += other.incumbent_restores;
         merge_donors += other.merge_donors; merge_components += other.merge_components;
         merge_accepted += other.merge_accepted; merge_robots += other.merge_robots; merge_gain += other.merge_gain;
+        guide_paths += other.guide_paths; guide_steps += other.guide_steps;
+        blocker_checks += other.blocker_checks; blocker_links += other.blocker_links;
+        eligible_agents += other.eligible_agents; group_agents += other.group_agents; full_groups += other.full_groups;
     }
 };
 
@@ -286,6 +293,62 @@ void merge_window_donor(const WindowProblem& p, std::vector<WindowPath>& current
 
 // Reused dense labels plus immutable predecessor records. Updating a state label
 // cannot silently rewrite a previously queued path's ancestry.
+// These guides only select repair partners. They ignore other robots, but
+// preserve individual CGAR domains, locked actions, first-cell commitments and
+// the one-service-after-each-action task semantics. Every emitted plan is still
+// repaired against all remaining reservations and validated jointly.
+template<class Check>
+WindowPath window_unreserved_guide(const WindowProblem& p, int r, Check check) {
+    WindowPath guide{p.seed[r][0]}; size_t stage = 0;
+    for (int t = 1; t <= p.horizon; ++t) {
+        check(); const int state = guide.back(); int best = -1; size_t next_stage = stage;
+        std::tuple<int64_t, int64_t, int> best_key{std::numeric_limits<int64_t>::max(), 0, 0};
+        for (int a = 0; a < 4; ++a) {
+            const int next = p.next(state, a);
+            if (!p.permits(r, state, next) || (t <= p.prefix(r) && next != p.seed[r][t]) ||
+                (t == 1 && p.first_cell(r) >= 0 && next / 4 != p.first_cell(r))) continue;
+            const size_t after = stage + (stage < p.chains[r].goals.size() && next / 4 == p.chains[r].goals[stage]);
+            const int64_t tail = p.oracle->value(p.chains[r], after, next / 4, next % 4);
+            const auto key = std::make_tuple(p.step_cost(r, stage, state, a) + tail, tail, a);
+            if (key < best_key) { best_key = key; best = next; next_stage = after; }
+        }
+        if (best < 0) throw std::logic_error("rolling-window guide cannot honor its protected action");
+        guide.push_back(best); stage = next_stage;
+    }
+    return guide;
+}
+
+// Breadth-first closure of actual vertex or reverse-edge blockers of a guide.
+// Source-cell occupancy alone is not a head-on conflict. Fixed CGAR owners are
+// never made eligible, even when they obstruct a guide. The scan order is fixed
+// before each repair and bounded by group size times the declared horizon.
+template<class Owner, class Check>
+std::vector<int> window_blocker_group(const WindowProblem& p, const std::vector<WindowPath>& guides,
+        int root, int target, int start, Owner owner, Check check, long long& inspected) {
+    if (root < 0 || root >= int(p.seed.size()) || p.fixed[root] || target < 1 ||
+        start < 0 || start >= p.horizon || guides.size() != p.seed.size())
+        throw std::invalid_argument("invalid rolling-window blocker group");
+    std::vector<int> group{root};
+    auto add = [&](int r) {
+        if (r >= 0 && !p.fixed[r] && int(group.size()) < target &&
+            std::find(group.begin(), group.end(), r) == group.end()) group.push_back(r);
+    };
+    for (size_t head = 0; head < group.size() && int(group.size()) < target; ++head) {
+        check(); const auto& route = guides[group[head]];
+        if (route.size() != size_t(p.horizon + 1)) throw std::logic_error("incomplete rolling-window blocker guide");
+        for (int offset = 0; offset < p.horizon && int(group.size()) < target; ++offset) {
+            check(); ++inspected; const int t = 1 + (start + offset) % p.horizon;
+            const int from = route[t - 1] / 4, to = route[t] / 4;
+            add(owner(t, to));
+            if (from != to) {
+                const int crossing = owner(t - 1, to);
+                if (crossing >= 0 && owner(t, from) == crossing) add(crossing);
+            }
+        }
+    }
+    return group;
+}
+
 struct WindowScratch {
     struct Node { int state, time, stage, parent; int64_t paid, estimate; };
     struct Earlier {
@@ -396,6 +459,14 @@ public:
     }
     template<class Check>
     void run(Check check) {
+        stats.eligible_agents = eligible_.size();
+        if (o_.blockers) {
+            guides_.resize(paths_.size());
+            for (int r : eligible_) {
+                guides_[r] = window_unreserved_guide(p_, r, check);
+                ++stats.guide_paths; stats.guide_steps += p_.horizon;
+            }
+        }
         auto order = eligible_; std::shuffle(order.begin(), order.end(), rng_);
         std::vector<WindowPath> incumbent;
         std::vector<char> dirty;
@@ -424,7 +495,9 @@ public:
                     }
                 }
             }
-            auto group = neighborhood(root);
+            auto group = neighborhood(root, check);
+            stats.group_agents += group.size();
+            stats.full_groups += group.size() == std::min<size_t>(o_.group, eligible_.size());
             if (iteration & 1) std::shuffle(group.begin(), group.end(), rng_);
             std::vector<WindowPath> before; before.reserve(group.size());
             int64_t old_cost = 0, old_remaining = 0;
@@ -495,31 +568,40 @@ public:
     }
 private:
     int owner(int time, int cell) const { return owners_[time * p_.free.size() + cell]; }
-    std::vector<int> neighborhood(int root) {
-        const int target = 1 + rng_() % std::min<size_t>(o_.group, eligible_.size());
+    template<class Check>
+    std::vector<int> neighborhood(int root, Check check) {
+        const int sampled_target = 1 + rng_() % std::min<size_t>(o_.group, eligible_.size());
+        const int target = o_.full_group ? std::min<size_t>(o_.group, eligible_.size()) : sampled_target;
         std::vector<int> group{root}, candidates;
-        auto append = [&](int r) {
-            if (r >= 0 && !p_.fixed[r] && std::find(group.begin(), group.end(), r) == group.end() &&
-                std::find(candidates.begin(), candidates.end(), r) == candidates.end()) candidates.push_back(r);
-        };
-        // Unconstrained remaining-chain descent reveals who actually blocks a
-        // useful future route. It is used only to choose a repair neighborhood.
-        int state = paths_[root][0], stage = 0;
-        for (int t = 1; t <= p_.horizon; ++t) {
-            int best = state, next_stage = stage; int64_t best_cost = ChainPotential::infinity;
-            const int start = rng_() % 4;
-            for (int k = 0; k < 4; ++k) {
-                const int a = (start + k) % 4, next = p_.next(state, a);
-                if (!p_.permits(root, state, next)) continue;
-                const int s = stage + (stage < int(p_.chains[root].goals.size()) && next / 4 == p_.chains[root].goals[stage]);
-                const int64_t value = p_.step_cost(root, stage, state, a) + p_.oracle->value(p_.chains[root], s, next / 4, next % 4);
-                if (value < best_cost) { best = next; next_stage = s; best_cost = value; }
+        if (o_.blockers) {
+            const int start = o_.blockers == 2 ? rng_() % p_.horizon : 0;
+            group = window_blocker_group(p_, guides_, root, target, start,
+                [&](int t, int cell) { return owner(t, cell); }, check, stats.blocker_checks);
+            stats.blocker_links += group.size() - 1;
+        } else {
+            auto append = [&](int r) {
+                if (r >= 0 && !p_.fixed[r] && std::find(group.begin(), group.end(), r) == group.end() &&
+                    std::find(candidates.begin(), candidates.end(), r) == candidates.end()) candidates.push_back(r);
+            };
+            // Unconstrained remaining-chain descent reveals who actually blocks a
+            // useful future route. It is used only to choose a repair neighborhood.
+            int state = paths_[root][0], stage = 0;
+            for (int t = 1; t <= p_.horizon; ++t) {
+                int best = state, next_stage = stage; int64_t best_cost = ChainPotential::infinity;
+                const int start = rng_() % 4;
+                for (int k = 0; k < 4; ++k) {
+                    const int a = (start + k) % 4, next = p_.next(state, a);
+                    if (!p_.permits(root, state, next)) continue;
+                    const int s = stage + (stage < int(p_.chains[root].goals.size()) && next / 4 == p_.chains[root].goals[stage]);
+                    const int64_t value = p_.step_cost(root, stage, state, a) + p_.oracle->value(p_.chains[root], s, next / 4, next % 4);
+                    if (value < best_cost) { best = next; next_stage = s; best_cost = value; }
+                }
+                append(owner(t, best / 4)); append(owner(t, state / 4));
+                state = best; stage = next_stage;
             }
-            append(owner(t, best / 4)); append(owner(t, state / 4));
-            state = best; stage = next_stage;
+            std::shuffle(candidates.begin(), candidates.end(), rng_);
+            for (int r : candidates) { if (int(group.size()) == target) break; group.push_back(r); }
         }
-        std::shuffle(candidates.begin(), candidates.end(), rng_);
-        for (int r : candidates) { if (int(group.size()) == target) break; group.push_back(r); }
         for (size_t head = 0; head < group.size() && int(group.size()) < target; ++head) {
             const int r = group[head], t = 1 + rng_() % p_.horizon, cell = paths_[r][t] / 4;
             const int start = rng_() % 4;
@@ -535,11 +617,15 @@ private:
             const int r = eligible_[rng_() % eligible_.size()];
             if (std::find(group.begin(), group.end(), r) == group.end()) group.push_back(r);
         }
+        if (o_.full_group) for (int r : eligible_) {
+            if (int(group.size()) == target) break;
+            if (std::find(group.begin(), group.end(), r) == group.end()) group.push_back(r);
+        }
         return group;
     }
     const WindowProblem& p_;
     const WindowOptions& o_;
-    std::vector<WindowPath> paths_;
+    std::vector<WindowPath> paths_, guides_;
     WindowScratch& scratch_;
     std::mt19937_64 rng_;
     std::vector<int> owners_, eligible_;
@@ -557,6 +643,7 @@ public:
             options.group < 1 || options.workers < 1 || options.workers > 32 || options.threads < 1 ||
             options.threads > options.workers || options.delay_samples < 0 || options.delay_samples > 16 ||
             options.temperature < 0 || options.temperature > 65536 || options.merge < 0 || options.merge > 1 ||
+            options.blockers < 0 || options.blockers > 2 || options.full_group < 0 || options.full_group > 1 ||
             seeds.size() != size_t(options.workers))
             throw std::invalid_argument("invalid rolling-window work declaration");
         if (options.history_rollout < 0 || options.history_rollout > 1 ||

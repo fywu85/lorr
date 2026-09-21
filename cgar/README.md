@@ -443,3 +443,16 @@ Primary/recovery paths, protected prefixes, permissions and promised occupied
 cells remain enforced. Default0 preserves old choices and RNG; all workers and
 all donor merges finish before actions or history are published. Deadline errors
 fail the entire entry. Diagnostics reconcile the before/after cost and donor count.
+
+
+`CGAR_WINDOW_BLOCKERS=1|2` caches each ordinary robot's unreserved guide and
+selects repair partners recursively from its vertex and actual head-on blockers.
+Mode1 scans earliest conflicts first; mode2 rotates the scan by a sampled time.
+Guides preserve protected prefixes, first-cell promises, domains and per-action
+service semantics, but only select partners: they are never published as joint
+plans. Every group still uses bounded A*, reservations, full rollback and final
+joint validation. Zero preserves the previous neighborhood RNG and choices.
+`CGAR_WINDOW_FULL_GROUP=1` independently fills every repair to the configured
+maximum group size (or the number of eligible robots). It increases agents per
+attempt, so compare it as a fixed-work change. Both options require an enabled
+window and default to0; all declared attempts must finish before any answer.
