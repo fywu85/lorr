@@ -973,9 +973,15 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
         }
         first_row=dummy_columns+1;
     }
+    // Byte flags avoid packed-bit extraction in both full-column scans. Reuse
+    // the augmentation scratch arrays, preserving every scan and arithmetic
+    // operation in the original order (including deterministic tie-breaking).
+    std::vector<double> distance(nc+1);
+    std::vector<uint8_t> visited(nc+1);
     for(int row=first_row;row<=nr;++row) {
         owner[0]=row;int column=0;
-        std::vector<double> distance(nc+1,1e30);std::vector<bool> visited(nc+1,false);
+        std::fill(distance.begin(),distance.end(),1e30);
+        std::fill(visited.begin(),visited.end(),0);
         do {
             visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
             for(int j=1;j<=nc;++j)if(!visited[j]) {

@@ -1181,6 +1181,36 @@ void active_travel_calibration() {
     require(reference==simulate(cfg,12,5,5,true,true),"single-root forecast changed active travel accounting");
 }
 
+void rectangular_matching_optimality() {
+    // Independent enumeration of injective assignments checks the optimum,
+    // including rectangular pools, negative keep bonuses and extensive ties.
+    std::mt19937 random(624917);
+    for(int rows=1;rows<=5;++rows)for(int extra:{0,2})for(int trial=0;trial<20;++trial) {
+        const int columns=rows+extra;
+        std::vector<float> matrix(size_t(rows)*columns);
+        for(auto& value:matrix)value=(int(random()%17)-8)*.25f;
+        double optimum=1e30;
+        auto enumerate=[&](auto&& self,int row,unsigned used,double cost)->void {
+            if(row==rows){optimum=std::min(optimum,cost);return;}
+            for(int column=0;column<columns;++column)if(!(used&(1u<<column)))
+                self(self,row+1,used|(1u<<column),cost+matrix[size_t(row)*columns+column]);
+        };
+        enumerate(enumerate,0,0,0);
+        const auto chosen=hungarian_assignment(matrix,rows,columns);
+        require(int(chosen.size())==rows,"rectangular matching lost a row");
+        unsigned used=0;double actual=0;
+        for(int row=0;row<rows;++row) {
+            const int column=chosen[row];
+            require(column>=0 && column<columns && !(used&(1u<<column)),"rectangular matching reused or missed a column");
+            used|=1u<<column;actual+=matrix[size_t(row)*columns+column];
+        }
+        require(actual==optimum,"rectangular matching differs from exhaustive optimum");
+    }
+    require(hungarian_assignment({},0,0).empty(),"empty matching was not empty");
+    require(hungarian_assignment(std::vector<float>(15,0),3,5)==std::vector<int>({0,1,2}),
+            "equal-price matching changed its stable column ties");
+}
+
 void exact_dummy_prefix() {
     std::mt19937 random(194837);
     int comparisons=0;
@@ -2043,6 +2073,7 @@ int main() {
     bounded_order_rankings();
     compact_prepared_rankings();
     active_travel_calibration();
+    rectangular_matching_optimality();
     exact_dummy_prefix();
     active_task_admission();
     priced_task_admission();
