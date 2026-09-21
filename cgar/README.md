@@ -162,6 +162,33 @@ the full action/service product graph and checks serial/parallel production acti
 The option remains experimental pending full throughput comparisons.
 
 
+### Experimental complete-chain assignment cost
+
+`CGAR_SCHEDULER_CHAIN_POTENTIAL=1` optionally reuses the complete static chain
+oracle already enabled by temporal chain scoring, a rolling window or common
+futures. Default 0 preserves the previous assignments. It prices each actual
+robot/task candidate by the exact oriented cost through all revealed errands,
+plus `(CGAR_PICKUP_WEIGHT - 1) * approach_cost`. The full-chain potential already
+includes one approach trip. Heading changes and repeated on-cell services are
+priced by the same action graph used by the oracle.
+
+The first dispatch and the robot-independent ordering of endpoint buckets retain
+their old rules. All later candidate comparisons use the new cost. Existing
+candidate quotas, pickup search, oldest-task admission, unopened matching, held
+and started ownership, and complete-work deadlines remain in force. A statically
+unreachable quote uses the old estimate and is counted; a timeout always fails.
+The option builds no additional distance tables. Weighted map tricks require
+oriented pickup flow and their explicit `--trick INSTANCE`. Unweighted generic
+static graphs are supported too. Dynamic guidance and legacy chain-price or
+pair/pool reassignment modes are incompatible.
+
+`[cgar-scheduler-chain-config]` declares the objective and shared-oracle use;
+`[cgar-scheduler-chain]` counts tasks, actual pair queries, coverage and changed
+costs. Independent action/service shortest-path tests check production assignment
+choices, pickup bias, repeated stops, default/startup identity and held/fair-task
+protections. Full throughput comparisons are required before promotion.
+
+
 ### Experimental CGAR-seeded rolling window
 
 `CGAR_WINDOW=20` enables a general fixed-work rolling-window repair layer. Default

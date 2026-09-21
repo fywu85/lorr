@@ -268,6 +268,8 @@ struct Stats {
     long long regional_peaks_restored = 0;
     long long chain_robot_steps = 0, chain_fallback_steps = 0, chain_scored_choices = 0;
     long long chain_service_choices = 0, chain_multi_service_choices = 0, chain_completed_choices = 0;
+    long long scheduler_chain_calls = 0, scheduler_chain_tasks = 0, scheduler_chain_pairs = 0;
+    long long scheduler_chain_covered = 0, scheduler_chain_fallback = 0, scheduler_chain_changed = 0;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
@@ -564,6 +566,7 @@ private:
     bool temporal_mixed_start_ = false, temporal_next_errand_ = false;
     bool temporal_remaining_flow_ = false;
     ChainPotential chain_potential_;
+    bool scheduler_chain_potential_ = false;
     WindowOptions window_options_;
     FutureOptions future_options_;
     std::mt19937_64 future_rng_{0};

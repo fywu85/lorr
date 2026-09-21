@@ -262,6 +262,22 @@ def main():
                     assert int(x['forward_base'])>=1 and int(x['turn'])>=1
                     row['oriented_startup']=x
                 else:assert not startup_config and not startup_samples
+                scheduler_chain=int(case['environment'].get('CGAR_SCHEDULER_CHAIN_POTENTIAL','0'))
+                scheduler_chain_config=[fields(l) for l in logs if l.startswith('[cgar-scheduler-chain-config] ')]
+                scheduler_chain_samples=[fields(l) for l in logs if l.startswith('[cgar-scheduler-chain] ')]
+                if scheduler_chain:
+                    assert scheduler_chain==1
+                    assert scheduler_chain_config==[dict(enabled='1',objective='chain_plus_extra_pickup',pickup_weight=case['environment'].get('CGAR_PICKUP_WEIGHT','1'),startup='legacy',bucket_order='legacy',fair='unchanged',held='unchanged',shared_oracle='1',extra_tables='0',service='after_action',fixed_work='1',timeout_is_failure='1')]
+                    assert [int(x['t']) for x in scheduler_chain_samples]==list(range(0,row['steps'],200))
+                    for x in scheduler_chain_samples:
+                        assert 0<=int(x['calls'])<=int(x['t'])
+                        assert 0<=int(x['covered'])+int(x['fallback'])==int(x['pairs'])
+                        assert 0<=int(x['changed'])<=int(x['covered'])
+                    for counter in ('calls','tasks','pairs','covered','fallback','changed'):
+                        counts=[int(x[counter]) for x in scheduler_chain_samples];assert counts==sorted(counts)
+                    assert int(scheduler_chain_samples[-1]['pairs'])>0
+                    row['scheduler_chain_potential']=dict(configuration=scheduler_chain_config[0],last_sample=scheduler_chain_samples[-1])
+                else:assert not scheduler_chain_config and not scheduler_chain_samples
                 chain_mode=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MODE','0'))
                 chain_config=[fields(l) for l in logs if l.startswith('[cgar-chain-config] ')]
                 chain_samples=[fields(l) for l in logs if l.startswith('[cgar-chain] ')]

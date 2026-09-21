@@ -1083,6 +1083,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("chain flow pricing requires generic learned pickup flow and mode0..4; incompatible with tricks, remaining-flow score, guide routes or rematching");
     if (chain_flow_pricing_)
         std::printf("[cgar-chain-pricing] mode=%d shadow=%d resident_only=1 extra_tables=0\n", chain_flow_pricing_, chain_flow_pricing_ == 4);
+    scheduler_chain_potential_ = priority_setting("CGAR_SCHEDULER_CHAIN_POTENTIAL", 0, 1) != 0;
+    if (scheduler_chain_potential_ && ((static_trick_metric_ && !pickup_flow_) || chain_flow_pricing_ || reassign_ || reassign_pool_ ||
+        (!temporal_chain_mode_ && !window_options_.horizon && !future_options_.roots)))
+        throw std::invalid_argument("scheduler chain potential requires an existing complete static oracle and oriented pickup flow for weighted tricks; legacy chain pricing and pair/pool reassignment are incompatible");
     const int reassign_match = env_int("CGAR_REASSIGN_MATCH", 0);
     if (reassign_match < 0 || reassign_match > 1 ||
         (reassign_match && !env->trick_instance.empty()) ||
@@ -1256,6 +1260,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             window_options_.group, window_options_.workers, window_options_.threads, guidance_turn_cost_, wait,
             chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature, window_chain_seed);
     }
+
+    if (scheduler_chain_potential_)
+        std::printf("[cgar-scheduler-chain-config] enabled=1 objective=chain_plus_extra_pickup pickup_weight=%d startup=legacy bucket_order=legacy fair=unchanged held=unchanged shared_oracle=1 extra_tables=0 service=after_action fixed_work=1 timeout_is_failure=1\n", pickup_weight_);
 
     if (future_options_.roots)
         std::printf("[cgar-future-config] roots=%d horizon=%d branches=%d threads=%d noise=%d regional_roots=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed=cgar protected=full_root_path objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
@@ -2214,6 +2221,10 @@ void Cgar::log_summary() {
             stats_.pickup_flow_searches, stats_.pickup_flow_pops, stats_.pickup_flow_states,
             stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
             stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
+    if (scheduler_chain_potential_)
+        std::printf("[cgar-scheduler-chain] t=%d calls=%lld tasks=%lld pairs=%lld covered=%lld fallback=%lld changed=%lld\n",
+            env_->curr_timestep, stats_.scheduler_chain_calls, stats_.scheduler_chain_tasks, stats_.scheduler_chain_pairs,
+            stats_.scheduler_chain_covered, stats_.scheduler_chain_fallback, stats_.scheduler_chain_changed);
     if (chain_flow_pricing_)
         std::printf("[cgar-chain-price] t=%d mode=%d calls=%lld observations=%lld covered=%lld missing=%lld outside=%lld unreachable=%lld invalid=%lld changed=%lld active_assignments=%lld assigned_covered=%lld assigned_imputed=%lld shadow_queries=%lld shadow_changed2=%lld shadow_changed3=%lld shadow_specific=%lld\n",
             env_->curr_timestep, chain_flow_pricing_, stats_.chain_price_calls, stats_.chain_price_observations,
@@ -3102,11 +3113,17 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         stats_.pickup_flow_warmup_calls += !pickup_metric;
     }
     const bool chain_metric = chain_flow_pricing_ && pickup_metric;
+    const bool exact_chain_metric = scheduler_chain_potential_ && env->curr_timestep > 0 &&
+        (pickup_metric || (!flow_strength_ && !static_trick_metric_));
+    if (exact_chain_metric && !chain_potential_.ready())
+        throw std::logic_error("scheduler chain potential is incomplete");
+    std::vector<ChainPotential::Chain> task_chains;
     struct TaskCost { int id, first, chain, revealed; int native = 0, price = 0; ResidentChainPrice resident; bool all_table = false; int repeated_stops = 0; };
     long long ratio_numerator = 0, ratio_denominator = 0;
     struct Pair { double score; int cost, task, robot, pickup; bool global = false; bool horizon_impossible = false; int horizon_tier = 0; };
     std::vector<int> ids(free_tasks_.begin(), free_tasks_.end());
     std::sort(ids.begin(), ids.end());
+    if (exact_chain_metric) { task_chains.reserve(ids.size()); ++stats_.scheduler_chain_calls; }
     std::vector<TaskCost> tasks;
     std::vector<std::vector<int>> at_cell(cert_.free.size());
     for (int id : ids) {
@@ -3118,6 +3135,11 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         at_cell[first].push_back(static_cast<int>(tasks.size()));
         const int chain = task_chain_cost(id);  // Preserve spatial admission/recency work in every mode.
         TaskCost item{id, first, chain, task.t_revealed};
+        if (exact_chain_metric) {
+            task_chains.push_back(chain_potential_.make_chain(task.locations, task.idx_next_loc,
+                [&] { check_deadline(deadline_, "scheduler_chain_tail"); }));
+            ++stats_.scheduler_chain_tasks;
+        }
         if (known_horizon_ && env->curr_timestep < known_horizon_)
             for (size_t k = task.idx_next_loc + 1; k < task.locations.size(); ++k)
                 item.repeated_stops += task.locations[k] == task.locations[k - 1];
@@ -3202,14 +3224,29 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     const int now = env->curr_timestep;
     const bool horizon_active = known_horizon_ && now < known_horizon_;
     const auto horizon_model = horizon_margins_.snapshot();  // immutable for this whole scheduling entry
-    auto pair_for = [&](int r, int t, int d, bool assess_horizon = true) {
+    auto pair_for = [&](int r, int t, int d, bool actual_pair = true) {
         const auto& task = tasks[t];
-        const int cost = static_cast<int>(std::max<long long>(pickup_scale, std::min<long long>(kInf - 1,
+        int cost = static_cast<int>(std::max<long long>(pickup_scale, std::min<long long>(kInf - 1,
             static_cast<long long>(pickup_weight_) * d + (chain_metric && chain_flow_pricing_ != 4 ?
                 task.price : static_cast<long long>(pickup_scale) * task.chain))));
+        if (exact_chain_metric && actual_pair) {
+            // The exact potential already includes one approach trip. Add only
+            // the existing extra pickup preference, without pricing it twice.
+            // Endpoint bucket sorting is robot-independent and stays unchanged.
+            check_deadline(deadline_, "scheduler_chain_pair");
+            const auto& state = env->curr_states[r];
+            const int64_t remaining = chain_potential_.value(task_chains[t], 0, state.location, state.orientation);
+            ++stats_.scheduler_chain_pairs;
+            if (remaining < ChainPotential::infinity) {
+                const int selected = static_cast<int>(std::max<int64_t>(pickup_scale, std::min<int64_t>(kInf - 1,
+                    remaining + int64_t(pickup_weight_ - 1) * d)));
+                ++stats_.scheduler_chain_covered; stats_.scheduler_chain_changed += selected != cost;
+                cost = selected;
+            } else ++stats_.scheduler_chain_fallback; // A static unreachable quote, never a time-based fallback.
+        }
         Pair result{hrrn_ ? 1.0 + (static_cast<double>(std::max(0, now - task.revealed)) * pickup_scale) / cost : 1.0,
                     cost, t, r, d};
-        if (horizon_active && assess_horizon) {
+        if (horizon_active && actual_pair) {
             const int from = env->curr_states[r].location;
             const auto* table = oracle_.peek(task.first);  // no builds or LRU mutation
             int spatial = table ? oracle_.value(*table, from) : oracle_.manhattan(from, task.first);
