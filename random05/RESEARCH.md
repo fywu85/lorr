@@ -1399,3 +1399,18 @@ The existing deterministic cache-byte budget admits whichever tables fit; misses
 use the same exact policy. Regression must cover waits at all headings, ordered
 candidate reconstruction, partial-budget caches, worker scheduling and routing
 bias. Full trajectory equality and measured runtime are required before a win.
+
+## Optional eight-byte order cache
+
+With routing bias off, cached policy candidates use only sorted destinations,
+idle heading, kinematic mask and the exact base-cost float.
+`R05_SHARED_ORDERS=1` packs those into8bytes. It reconstructs the same moves
+and uses the existing policy and score calculation. If routing bias is enabled,
+the cache automatically retains full32byte scored entries instead. Dynamic
+push prices still bypass shared caching. Both table types count against the
+same deterministic byte budget and are invalidated on a representation change.
+
+Tests cover every packed mask/heading/count, exact dense trajectories, worker
+and checkpoint replay, biased-route fallback, and an explicit1MiB cache case
+where not all99 two-errand tables fit. Full-run comparisons remain required;
+this changes storage only and does not reduce declared search work.

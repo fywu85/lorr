@@ -11,13 +11,17 @@
 namespace r05 {
 namespace {
 int turn_distance(int a,int b) {int d=std::abs(a-b);return std::min(d,4-d);}
-void build_rankings(const Graph& g,const Config& cfg,const Chain& chain) {
-    std::vector<PreparedRanking> table(size_t(chain.goals.size())*g.cells*8);
+void build_rankings(const Graph& g,const Config& cfg,const Chain& chain,bool orders_only) {
+    const size_t entries=size_t(chain.goals.size())*g.cells*8;
+    std::vector<PreparedRanking> table(orders_only?0:entries);
+    std::vector<PreparedOrder> orders(orders_only?entries:0);
     for(int stage=0;stage<int(chain.goals.size());++stage) {
         const float* row=chain.cached_row(g,stage);
         auto cost=[&](int v,int d){return row?row[v*4+d]:chain.cost(g,stage,v,d);};
         for(int p=0;p<g.cells;++p)for(int dir=0;dir<4;++dir)for(int moving=0;moving<2;++moving) {
-            auto& entry=table[(size_t(stage)*g.cells+p)*8+dir*2+moving];
+            const size_t index=(size_t(stage)*g.cells+p)*8+dir*2+moving;
+            PreparedRanking temporary;
+            auto& entry=orders_only?temporary:table[index];
             auto allowed=[&](int d){return moving?d==dir:turn_distance(d,dir)<=1;};
             int best_dir=dir;float best=cost(p,best_dir);
             if(!moving)for(int q:{(dir+1)%4,(dir+3)%4}) {
@@ -42,9 +46,10 @@ void build_rankings(const Graph& g,const Config& cfg,const Chain& chain) {
             entry.count=uint8_t(count);entry.save(candidates,p);
             for(int k=0;k<count;++k)
                 if(candidates[k].v==p || allowed(candidates[k].d))entry.kinematic_mask|=uint8_t(1u<<k);
+            if(orders_only)orders[index].save(entry);
         }
     }
-    chain.rankings=std::move(table);
+    chain.rankings=std::move(table);chain.order_rankings=std::move(orders);
 }
 }
 
@@ -54,28 +59,36 @@ void Engine::prepare_shared_rankings(int timestep) {
     // otherwise need a different ownership protocol. Dynamic push costs bypass.
     if(!cfg.shared_rankings_mb || cfg.push_price>0 || cfg.rollout_match || cfg.replan_roots || cfg.operation_depth)return;
     const auto& g=*graph;
+    // Biased routing needs actual scores. Keep its full exact entries even if
+    // the order-only optimization is requested for a shared preset.
+    const bool orders_only=cfg.shared_orders && cfg.move_bias==0;
     const bool changed=cfg.wait_cost!=shared_wait_cost_ || cfg.intent_rotation!=shared_intent_rotation_ ||
-                       cfg.prospective_wait!=shared_prospective_wait_;
-    if(changed)for(const auto& item:chains_)std::vector<PreparedRanking>().swap(item.second->rankings);
+                       cfg.prospective_wait!=shared_prospective_wait_ || orders_only!=shared_orders_only_;
+    auto clear_tables=[&]() {
+        for(const auto& item:chains_) {
+            std::vector<PreparedRanking>().swap(item.second->rankings);
+            std::vector<PreparedOrder>().swap(item.second->order_rankings);
+        }
+    };
+    if(changed)clear_tables();
     shared_wait_cost_=cfg.wait_cost;shared_intent_rotation_=cfg.intent_rotation;shared_prospective_wait_=cfg.prospective_wait;
+    shared_orders_only_=orders_only;
     const size_t limit=size_t(cfg.shared_rankings_mb)*1024*1024;
     size_t used=0;
-    for(const auto& item:chains_)used+=item.second->rankings.size()*sizeof(PreparedRanking);
-    if(used>limit) {
-        for(const auto& item:chains_)std::vector<PreparedRanking>().swap(item.second->rankings);
-        used=0;
-    }
+    for(const auto& item:chains_)
+        used+=item.second->rankings.size()*sizeof(PreparedRanking)+item.second->order_rankings.size()*sizeof(PreparedOrder);
+    if(used>limit){clear_tables();used=0;}
     std::vector<const Chain*> pending;std::unordered_set<const Chain*> seen;
     // Stable agent order decides which tables fit, never elapsed time. A task
     // that does not fit still uses the exact existing worker cache/calculation.
-    for(const Chain* chain:assigned_)if(chain && chain->rankings.empty() && seen.insert(chain).second) {
-        const size_t bytes=chain->goals.size()*size_t(g.cells)*8*sizeof(PreparedRanking);
+    for(const Chain* chain:assigned_)if(chain && chain->rankings.empty() && chain->order_rankings.empty() && seen.insert(chain).second) {
+        const size_t bytes=chain->goals.size()*size_t(g.cells)*8*(orders_only?sizeof(PreparedOrder):sizeof(PreparedRanking));
         if(bytes<=limit-used){used+=bytes;pending.push_back(chain);}
     }
     std::vector<std::exception_ptr> errors(pending.size());
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(size_t i=0;i<pending.size();++i) {
-        try{build_rankings(g,cfg,*pending[i]);}catch(...){errors[i]=std::current_exception();}
+        try{build_rankings(g,cfg,*pending[i],orders_only);}catch(...){errors[i]=std::current_exception();}
     }
     for(const auto& error:errors)if(error)std::rethrow_exception(error);
     if(!quiet_ && (timestep<5 || timestep%100==0))

@@ -594,9 +594,21 @@ void shared_task_rankings() {
         require(reference==simulate(cfg,12,7,7),"shared rankings changed with cache capacity or worker scheduling");
         cfg.lazy_cost_rows=true;
         require(reference==simulate(cfg,12,7,7,true),"lazy cost rows changed shared rankings or checkpoint replay");
+        cfg.shared_orders=true;cfg.shared_rankings_mb=1;
+        require(reference==simulate(cfg,12,7,7,true),"order-only rankings changed policy or biased-routing fallback");
         cfg.shared_rankings_mb=0;cfg.threads=1;
         require(reference==simulate(cfg,12,7,7),"lazy cost rows changed the private-cache fallback");
     }
+}
+
+void bounded_order_rankings() {
+    Config cfg;cfg.futures=4;cfg.depth=4;cfg.cost_cache=true;cfg.random_by_step=true;
+    cfg.scratch_reuse=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    const auto baseline=simulate(cfg,12,10,10);
+    // 99 two-errand chains need at least1,267,200 bytes even at8 bytes/entry.
+    // The1MiB budget therefore exercises exact fallback for uncached chains.
+    cfg.shared_orders=true;cfg.shared_rankings_mb=1;cfg.threads=3;
+    require(baseline==simulate(cfg,12,10,10,true),"bounded order cache changed task turnover or fallback");
 }
 
 void shared_goal_costs() {
@@ -935,6 +947,15 @@ void compact_prepared_rankings() {
         for(int k=0;k<5;++k)
             require(source[k].v==restored[k].v && source[k].d==restored[k].d &&
                     source[k].score==restored[k].score,"compact prepared ranking changed an ordered candidate");
+        for(int count=1;count<=5;++count)for(unsigned mask=0;mask<32;++mask) {
+            entry.count=uint8_t(count);entry.kinematic_mask=uint8_t(mask);entry.base_cost=12.34567f;
+            PreparedOrder order;order.save(entry);order.load(restored,91,neighbors);
+            require(order.base_cost==entry.base_cost && order.count()==count && order.kinematic_mask()==mask &&
+                    order.idle_heading()==heading,"order-only ranking changed its cost or kinematic metadata");
+            for(int k=0;k<count;++k)
+                require(source[k].v==restored[k].v && source[k].d==restored[k].d,
+                        "order-only ranking changed an ordered destination");
+        }
     }
 }
 
@@ -1327,6 +1348,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    bounded_order_rankings();
     compact_prepared_rankings();
     active_task_admission();
     blocker_priority_mutations();

@@ -34,6 +34,27 @@ struct PreparedRanking {
     }
 };
 static_assert(sizeof(PreparedRanking)==32,"unexpected prepared ranking size");
+// When routing bias is off, collision resolution reads order, not scores.
+struct PreparedOrder {
+    float base_cost=0;
+    uint32_t packed=0;
+    int idle_heading() const {return int((packed>>15)&3u);}
+    int count() const {return int((packed>>17)&7u);}
+    unsigned int kinematic_mask() const {return (packed>>20)&31u;}
+    void save(const PreparedRanking& source) {
+        base_cost=source.base_cost;
+        packed=(uint32_t(source.idle_heading)<<15)|(uint32_t(source.count)<<17)|
+               (uint32_t(source.kinematic_mask)<<20);
+        for(int k=0;k<source.count;++k)packed|=uint32_t(source.destinations[k])<<(3*k);
+    }
+    void load(std::array<MoveCandidate,5>& target,int cell,const std::array<int,4>& neighbors) const {
+        for(int k=0;k<count();++k) {
+            const int edge=int((packed>>(3*k))&7u);
+            target[k]={edge==4?cell:neighbors[edge],edge==4?idle_heading():edge,0};
+        }
+    }
+};
+static_assert(sizeof(PreparedOrder)==8,"unexpected prepared order size");
 struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
@@ -54,7 +75,7 @@ struct Config {
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
-    bool fuse_cache_hits=false, lazy_cost_rows=false;
+    bool fuse_cache_hits=false, lazy_cost_rows=false, shared_orders=false;
     int shared_rankings_mb=0;
     int restart_period=4;
     int blocker_mutation_size=0, blocker_mutation_period=2, blocker_mutation_edges=1;
@@ -115,6 +136,7 @@ struct Chain {
     std::vector<std::array<float,4>> tail;
     std::vector<std::vector<float>> values;
     mutable std::vector<PreparedRanking> rankings;
+    mutable std::vector<PreparedOrder> order_rankings;
     Chain(const Graph& g, const Task& t,bool cache=false);
     const float* cached_row(const Graph& g,int stage) const;
     float cost(const Graph& g,int stage,int cell,int direction) const;
@@ -232,7 +254,7 @@ private:
     mutable std::vector<PolicyTiming> policy_timings_;
     uint64_t ranking_epoch_=0;
     float shared_wait_cost_=-1;
-    bool shared_intent_rotation_=false,shared_prospective_wait_=false;
+    bool shared_intent_rotation_=false,shared_prospective_wait_=false,shared_orders_only_=false;
     void prepare_shared_rankings(int timestep);
     mutable std::vector<std::vector<CachedRanking>> candidate_rankings_;
     uint64_t total_forward_=0,total_agent_steps_=0;

@@ -124,6 +124,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.fuse_cache_hits=integer("R05_FUSE_CACHE_HITS",0);
     c.lazy_cost_rows=integer("R05_LAZY_COST_ROWS",0);
     c.shared_rankings_mb=integer("R05_SHARED_RANKINGS_MB",0);
+    c.shared_orders=integer("R05_SHARED_ORDERS",0);
     if(c.shared_rankings_mb<0 || c.shared_rankings_mb>16384)
         throw std::invalid_argument("shared ranking cache budget must be 0..16384 MiB");
     c.kinematic_mask=integer("R05_KINEMATIC_MASK",0);
@@ -1133,7 +1134,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
     const bool shared=cfg.shared_rankings_mb>0 && cfg.push_price==0 && !cfg.rollout_match && !cfg.replan_roots;
     for(int i=0;i<n;++i) {
-        if(shared && active_chain[i] && !active_chain[i]->rankings.empty()) {
+        if(shared && cfg.shared_orders && cfg.move_bias==0 && active_chain[i] && !active_chain[i]->order_rankings.empty()) {
+            const auto& entry=active_chain[i]->order_rankings[(size_t(f.stage[i])*g.cells+p[i])*8+f.dir[i]*2+moving[i]];
+            ranking_hits[i]=2;idle_heading[i]=entry.idle_heading();base_cost[i]=entry.base_cost;
+            candidate_count[i]=entry.count();
+            if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask();
+            entry.load(candidates[i],p[i],g.next[p[i]]);
+        } else if(shared && active_chain[i] && !active_chain[i]->rankings.empty()) {
             const auto& entry=active_chain[i]->rankings[(size_t(f.stage[i])*g.cells+p[i])*8+f.dir[i]*2+moving[i]];
             ranking_hits[i]=2;idle_heading[i]=entry.idle_heading;base_cost[i]=entry.base_cost;
             candidate_count[i]=entry.count;
