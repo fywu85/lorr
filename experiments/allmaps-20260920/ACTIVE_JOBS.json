@@ -1,16 +1,66 @@
 {
-  "updated_utc": "2026-09-21T08:15:09.351434+00:00",
+  "updated_utc": "2026-09-21T09:06:29.778727+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
-      "suffix": "random03-rolling-window-scale8-full-v6",
-      "matrix_job": 8902208,
-      "verifier_job": 8902209,
-      "physical_cores_per_case": 8,
-      "source_commit": "339718b3bc0364afb1f780033304b5f88d6d3ce9",
+      "suffix": "random03-window-horizons-full-v8",
+      "matrix_job": 8902385,
+      "verifier_job": 8902386,
+      "physical_cores_per_case": 4,
+      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random03-rolling-window-scale8-full-v6-20260921",
-      "report": "experiments/allmaps-20260920/results/random03-rolling-window-scale8-full-v6"
+      "raw": "runs/cgar-random03-window-horizons-full-v8-20260921",
+      "report": "experiments/allmaps-20260920/results/random03-window-horizons-full-v8"
+    },
+    {
+      "suffix": "random05-common-futures-full-v1",
+      "matrix_job": 8902391,
+      "verifier_job": 8902392,
+      "physical_cores_per_case": 4,
+      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random05-common-futures-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random05-common-futures-full-v1"
+    },
+    {
+      "suffix": "random01-window-uniform-seeds-full-v1",
+      "matrix_job": 8902398,
+      "verifier_job": 8902399,
+      "physical_cores_per_case": 4,
+      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random01-window-uniform-seeds-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random01-window-uniform-seeds-full-v1"
+    },
+    {
+      "suffix": "city01-rematch-transfer-full-v2",
+      "matrix_job": 8902400,
+      "verifier_job": 8902401,
+      "physical_cores_per_case": 4,
+      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-city01-rematch-transfer-full-v2-20260921",
+      "report": "experiments/allmaps-20260920/results/city01-rematch-transfer-full-v2"
+    },
+    {
+      "suffix": "random04-common-futures-seeds-full-v1",
+      "matrix_job": 8902403,
+      "verifier_job": 8902404,
+      "physical_cores_per_case": 4,
+      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random04-common-futures-seeds-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-common-futures-seeds-full-v1"
+    },
+    {
+      "suffix": "random04-common-futures-depth-full-v2",
+      "matrix_job": 8902405,
+      "verifier_job": 8902407,
+      "physical_cores_per_case": 4,
+      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random04-common-futures-depth-full-v2-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-common-futures-depth-full-v2"
     }
   ],
   "builds": [
@@ -37,6 +87,18 @@
       "raw": "runs/cgar-rolling-window-build-v4-20260921",
       "source_commit": "339718b3",
       "status": "complete; all39source/test hashes and full regression verified"
+    },
+    {
+      "job": 8902264,
+      "raw": "runs/cgar-field-options-build-v1-20260921",
+      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
+      "status": "complete; all39source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902367,
+      "raw": "runs/cgar-common-futures-build-v1-20260921",
+      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
     }
   ]
 }

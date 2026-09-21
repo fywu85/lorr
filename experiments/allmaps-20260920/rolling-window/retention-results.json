@@ -1,0 +1,105 @@
+{
+  "checked_utc": "2026-09-21T08:58:56.352855+00:00",
+  "conclusion": "R01/R02 short keeps retained zero histories; keep0 whole trajectories match. R03 keep0 andkeep6 whole trajectories match, exceeding keep14/19. Long old tails lose here.",
+  "comparisons": [
+    {
+      "report": "results/random01-rolling-window-retention-full-v7/verification.json",
+      "rows": [
+        {
+          "case": "trick_retained_control-s2-r0",
+          "tasks": 662,
+          "valid": true,
+          "max_entry_seconds": 0.444468911,
+          "trajectory_sha256": "d856cd763196368b13f984cb281f0bb827285c96645d52466dbc496f2df953c7"
+        },
+        {
+          "case": "trick_keep0-s2-r0",
+          "tasks": 662,
+          "valid": true,
+          "max_entry_seconds": 0.45074738,
+          "trajectory_sha256": "d856cd763196368b13f984cb281f0bb827285c96645d52466dbc496f2df953c7"
+        },
+        {
+          "case": "trick_keep10-s2-r0",
+          "tasks": 662,
+          "valid": true,
+          "max_entry_seconds": 0.423474276,
+          "trajectory_sha256": "d856cd763196368b13f984cb281f0bb827285c96645d52466dbc496f2df953c7"
+        },
+        {
+          "case": "trick_keep19-s2-r0",
+          "tasks": 657,
+          "valid": true,
+          "max_entry_seconds": 0.462325664,
+          "trajectory_sha256": "f6c2b3450ec79134ac795040a34fdc060834379b22cf0d319d013a3fa61ebb93"
+        }
+      ]
+    },
+    {
+      "report": "results/random02-rolling-window-retention-full-v7/verification.json",
+      "rows": [
+        {
+          "case": "trick_retained_control-s2-r0",
+          "tasks": 1215,
+          "valid": true,
+          "max_entry_seconds": 0.37219025,
+          "trajectory_sha256": "a7ee5a2f0e741ac129c1898e49ba0862924fa38af13458d1ce56ce032455132e"
+        },
+        {
+          "case": "trick_keep0-s2-r0",
+          "tasks": 1215,
+          "valid": true,
+          "max_entry_seconds": 0.356767544,
+          "trajectory_sha256": "a7ee5a2f0e741ac129c1898e49ba0862924fa38af13458d1ce56ce032455132e"
+        },
+        {
+          "case": "trick_keep6-s2-r0",
+          "tasks": 1215,
+          "valid": true,
+          "max_entry_seconds": 0.368860513,
+          "trajectory_sha256": "a7ee5a2f0e741ac129c1898e49ba0862924fa38af13458d1ce56ce032455132e"
+        },
+        {
+          "case": "trick_keep19-s2-r0",
+          "tasks": 1197,
+          "valid": true,
+          "max_entry_seconds": 0.378790693,
+          "trajectory_sha256": "9b3e2cfebb94b2ef37dcca7bbb65519e768288eaf468028babe47840457dabe7"
+        }
+      ]
+    },
+    {
+      "report": "results/random03-rolling-window-retention-full-v7/verification.json",
+      "rows": [
+        {
+          "case": "trick_retained_control-s0-r0",
+          "tasks": 1849,
+          "valid": true,
+          "max_entry_seconds": 0.633489812,
+          "trajectory_sha256": "2fa03e94b4b83beedea1360831879de200cfe00edf86e1ba79ae00dfe5d79f38"
+        },
+        {
+          "case": "trick_keep0-s0-r0",
+          "tasks": 1939,
+          "valid": true,
+          "max_entry_seconds": 0.586087742,
+          "trajectory_sha256": "6654747b4c58321f0c87cce42168007815fa30df51d07b0c21564501cf464e65"
+        },
+        {
+          "case": "trick_keep6-s0-r0",
+          "tasks": 1939,
+          "valid": true,
+          "max_entry_seconds": 0.617994503,
+          "trajectory_sha256": "6654747b4c58321f0c87cce42168007815fa30df51d07b0c21564501cf464e65"
+        },
+        {
+          "case": "trick_keep19-s0-r0",
+          "tasks": 1873,
+          "valid": true,
+          "max_entry_seconds": 0.611228337,
+          "trajectory_sha256": "508c13abc75df6c6fd4d174ce6c280b3a8b24e4f0ae6d2bd3810ce4c7137d011"
+        }
+      ]
+    }
+  ]
+}

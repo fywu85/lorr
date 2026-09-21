@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T08:15:09.351434+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T09:06:12.707401+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -15,10 +15,10 @@ use eight physical cores; the other selected rows use four.
 | CITY-01 | 8,427 | 8,445 | 8,868 | 441 | 2 | 753.90 |
 | CITY-02 | 16,315 | 16,997 | 17,847 | 1,532 | 0 | 821.72 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
-| RANDOM-01 | 662 | 688 | 757 | 95 | 2 | 431.85 |
+| RANDOM-01 | 668 | 688 | 757 | 89 | 2 | 467.96 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
-| RANDOM-03 | 1,902 | 2,334 | 2,568 | 666 | 0 | 298.41 |
-| RANDOM-04 | 1,999 | 2,547 | 2,802 | 803 | 0 | 238.42 |
+| RANDOM-03 | 1,939 | 2,334 | 2,568 | 629 | 0 | 586.09 |
+| RANDOM-04 | 2,023 | 2,547 | 2,802 | 779 | 0 | 268.97 |
 | RANDOM-05 | 3,065 | 3,050 | 3,355 | 290 | 10 | 709.47 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-081509.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-090612.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -75,8 +75,11 @@ separately score 2,946 with a 799.65 ms maximum; composition with32starts loses
 retention loses two of three seeds and the mean, so it remains off here.
 [Replication](experiments/allmaps-20260920/regional-search/random05-diversity-three-seed-summary.json).
 
-RANDOM-04 retains **1,999** with KK forward guidance, turn price 2, hotter search
-and peak retention. Retention gives the best individual run but reduces the
+RANDOM-04 now reaches **2,023** with a general15-action common-continuation
+comparison of four complete CGAR roots. The seed0control repeats1,999; shorter
+10-action forecasts lose. The maximum is268.97ms on four cores. This selected-seed
+gain is awaiting replication. Existing KK field, turn2, hotter regional search
+and peak retention remain explicit tricks. Peak retention alone had reduced the
 three-seed mean against the hot control. RANDOM-02 scheduling improvements
 replicate across three seeds and reach 1,197; nearby turn prices lost. CITY-02
 similarly reaches 16,315. More frequent finite rematching loses on RANDOM-03.
@@ -104,8 +107,13 @@ forecasts to move. All three matched window controls reproduce their full earlie
 trajectories. Against the previous frontier profiles, RANDOM-01 scores 658/662/648 versus
 645/647/595 (+4.29% aggregate, all positive). RANDOM-02 scores 1180/1215/1202
 versus 1188/1189/1197 (+0.64% aggregate, one loss). Earlier control trajectories repeat.
-RANDOM-03 remains at 1,902: the best new prefix result is only 1,849. More search
-and safer future forecasts are separate factors; neither is enabled universally.
+RANDOM-03 subsequently improves to **1,939** with retained history disabled.
+It scores 1,939/1,900/1,870 versus 1,902/1,798/1,848 on seeds0/2/4, a **2.90%**
+aggregate gain with all three positive. Its maximum across the replication is
+633.22ms on four cores. Keeping long prior tails loses here. More starts on eight
+cores also lose; doubling four-island work to8192times4 exceeded the deadline.
+[Replication](experiments/allmaps-20260920/rolling-window/random03-three-seed-summary.json).
+More search and safer future forecasts are separate factors; neither is universal.
 [Protected-forecast comparisons](experiments/allmaps-20260920/rolling-window/protected-prefix-results.json).
 
 SORTATION's new runtime alternative scores **150,865**, only 29 below its frontier,
@@ -113,3 +121,19 @@ with a maximum **894.99 ms** in the measured run. It combines two parallel start
 with more frequent bounded rematching. This remains an alternative with more
 observed timing headroom, not a throughput record.
 [Exact configuration](experiments/allmaps-20260920/sortation/runtime-alternative-v3.json).
+
+The static-field follow-up finds no new gain: the exported PILOT field loses on
+RANDOM-01/02/03, and lowering opposing-lane penalties loses on both CITY cases and GAME.
+Existing fields remain selected. [Complete comparisons](experiments/allmaps-20260920/field-options/first-results.json).
+A separate default-off experiment now compares complete CGAR roots under common
+longer continuations. It preserves protected actions, uses fixed complete work,
+and does not claim to reproduce PILOT's two-phase pipeline. Full regression passes, including7,200serial/parallel production actions, exact
+one-root trajectory identity and late-timeout failure. Forty source/test hashes
+match source965756fd. Full crowded-case benchmarks are running.
+[Declared design](experiments/allmaps-20260920/common-futures/README.md).
+
+RANDOM-01 subsequently reaches **668** with uniform forward costs at the same
+4096repair attempts per island. Its662control repeats exactly; the uniform arm
+at lower2048work had reached656. Turn40loses in both fields. Two additional
+paired seeds are running before any average-gain claim. RANDOM-02 retains1215;
+turn40and lower wait price lose. [Window cost factors](experiments/allmaps-20260920/results/random01-window-costs-full-v8/verification.json).

@@ -593,3 +593,27 @@ Previous selected maximum 1202. Full 600 steps; 4 physical cores, strict 1,000 m
 | 3065 | 2026-09-21T08:08:28.600941+00:00 | [7783736f](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | trick_selected, seed 10, `--trick RANDOM-05` | [verification](results/random05-chain-horizon-seedscan-full-v1/verification.json) |
 
 Previous selected maximum 3043. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 709.47 ms. Best of the declared planner-seed scan 6/8/10/12: 2988/3019/3065/2913. Same frozen horizon-and-chain profile, no new algorithm change. Above published NMS 3050 on this archived input and selected seed, not a matched competitor run. Target remains 3355; starvation is not eliminated.
+
+## RANDOM-03 1939 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1939 | 2026-09-21T08:29:05.388485+00:00 | [339718b3](https://github.com/fywu85/lorr/commit/339718b3bc0364afb1f780033304b5f88d6d3ce9) | trick_keep0, seed 0, `--trick RANDOM-03` | [verification](results/random03-rolling-window-retention-full-v7/verification.json) |
+
+Previous selected maximum 1902. Full 800 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 586.09 ms. CGAR-seeded fixed-work window with protected first actions and history disabled. The previous window control 1849 repeats its full trajectory. Keep0 and keep6 both score1939, above the earlier no-window frontier1902; keep19 gives1873. This selected-seed gain awaits replication, and is not a claim that retaining plans is universally harmful.
+
+## RANDOM-01 668 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 668 | 2026-09-21T09:00:36.367232+00:00 | [cd145411](https://github.com/fywu85/lorr/commit/cd145411374c2009c98c82e5050ab7c2cc7676a1) | trick_uniform_turn20, seed 2, `--trick RANDOM-01` | [verification](results/random01-window-costs-full-v8/verification.json) |
+
+Previous selected maximum 662. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 467.96 ms. Uniform forward costs with unchanged4096attempts per island improve this selected seed. No average-gain claim; two additional paired seeds queued.
+
+## RANDOM-04 2023 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2023 | 2026-09-21T09:03:43.316338+00:00 | [965756fd](https://github.com/fywu85/lorr/commit/965756fdbf5111441d2f40bf97d3b604f8a85a0b) | trick_future_r4_h15_b2, seed 0, `--trick RANDOM-04` | [verification](results/random04-common-futures-full-v1/verification.json) |
+
+Previous selected maximum 1999. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 268.97 ms. General complete common-future selection, four roots, two branches and15action forecasts; existing KK/rank/matching tricks retained. Shorter10action forecasts lose. Selected seed result; replication pending.

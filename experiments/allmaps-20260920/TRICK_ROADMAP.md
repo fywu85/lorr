@@ -1,55 +1,39 @@
-# General mechanisms and explicit instance tricks proceed together
+# CGAR next experiments across ten instances
 
-Updated 2026-09-21T06:37:35.178872+00:00. The active targets are +10% over max(NMS,KK) on RANDOM cases and a stretch +5%
-on the other five. Throughput is primary and fairness secondary. Every instance trick
-requires `--trick INSTANCE` and labelled commits/logs. Individual seeds may set
-records; separate maxima from replicated average gains. The independent RANDOM-05
-code, builds, jobs and held-out streams remain outside this campaign's edit scope.
+Updated 2026-09-21T09:08:18.069431+00:00. Targets remain +10% over max(published NMS,KK)
+on RANDOM01-05 and a stretch +5% elsewhere. Throughput primary, fairness secondary.
+Selected-seed maxima qualify. Preserve general mechanisms and explicit instance
+tricks separately; all selected profiles currently require `--trick INSTANCE`.
+Historical published targets are not matched local competitor runs.
 
-| Instance | Selected full strict1s | Next comparison |
+| Instance | Selected full strict1s | Next work |
 |---|---:|---|
-|WAREHOUSE|155173|Preserve the qualified eight-core profile.|
-|SORTATION|150894|Two1Mstarts provide150830with888.48ms max; finite rematching is running on that runtime alternative.|
-|CITY-01|8427|Retain8427; extend general improvements only after controlled evidence.|
-|CITY-02|16315|Remaining-potential score, chain priority and horizon all lost. Investigate trip lengths/assignment; waiting is under2%.|
-|GAME|24447|Pickup12 improves all three seeds; active fleet remains an explicit fairness tradeoff.|
-|RANDOM-01|647|Rolling-window variants reach642but remain below647. Protected future forecasts are the next factor.|
-|RANDOM-02|1197|Longer-window/current-field variant1144still loses. Preserve1197while isolating forecast constraints.|
-|RANDOM-03|1902|Finite rematching and construction diversity lost. Window/current-field1829at2048attempts; forecast constraints and additional work remain to test.|
-|RANDOM-04|1999|Preserve1999; coordinated motion remains structural candidate; chain cost alone lost.|
-|RANDOM-05|3043|Chain scoring replicated+3.59%; known-horizon mean margins add16onseed0. Margin replication and explicit selected-seed scan running.|
+|WAREHOUSE|155173|Preserve qualified eight-core profile; new5%target is a stretch.|
+|SORTATION|150894|Retain150894; runtime alternative150865has895ms max.|
+|CITY-01|8427|Transfer CITY02 pickup grouping and two allowed rematches in a2x2factor.|
+|CITY-02|16315|Lower lane penalties all lost; investigate assignment or route quality.|
+|GAME|24447|New margin goal met; lower lane penalties lose sharply.|
+|RANDOM-01|668|Replicate uniform-window668; explore forecast initialization.|
+|RANDOM-02|1215|Keep1215; turn40/wait20lose.|
+|RANDOM-03|1939|Keep1939history-off; horizon10/15/25factors pending.|
+|RANDOM-04|2023|Replicate2023common-future gain; longer/extra branches and chain composition.|
+|RANDOM-05|3065|Keep3065selected seed10; common-future factors pending.|
 
-General complete-chain guidance is implemented and tested (defaultoff). It retains
-all arrival headings, advances one service after each action, and exposes no
-partial preprocessing. Full regression and independent product-graph costs pass.
-It improves one selected RANDOM01seed but loses on RANDOM02/03/04. Exact static
-potential alone does not reproduce the reference's pipeline or depth8future search.
-The strongest RANDOM03 loss is associated with much more waiting, so the next
-structural experiment should isolate motion commitments rather than rename a
-larger construction portfolio as a faithful multi-step rollout.
+The window layer is seeded by a valid CGAR plan and preserves real primary and
+support actions. Atomic group repairs, exact task-stage costs, independent random
+streams, serial/parallel identity and timeout failure are regression-tested.
+R01/R02/R03 now benefit on selected seeds; R01/R03 improve all three matched seeds.
+History-off helps R03. A remaining hypothesis is that truncating a retained prefix
+into waits makes it incomparable with a fully projected fresh seed. A separate
+optional tail refresh can test that; do not silently alter current frontiers.
 
-General regional peak retention also remains optional: full prescribed work
-completes before restoring the best complete plan; timeout always fails. It yields
-the best individual hot RANDOM04 run but reduces the three-seed mean; it loses
-the RANDOM05 mean and the RANDOM03 control. Preserve negative results.
+The common-future selector is general and defaultoff. It compares completed CGAR
+proposals under common future orders, keeps all protected paths, and finishes
+all declared evaluations. It does not reproduce PILOT's two-phase motion pipeline.
+R04's15action arm improves seed0while10action arms lose; replication is necessary.
+The independent PILOT tree, jobs, builds and held-out streams remain untouched.
 
-Instance tricks include NMS arrows/priority weighting, KK forward guidance, the
-frozen standalone guidance field, GAME fleet admission and explicit known-horizon
-admission. Full horizons matter: early GAME prefixes reverse the sign of its fleet
-gain. Horizon admission loses on the latest GAME/CITY02 controls.
-
-[Reference fingerprints](trick-review-source-hashes.json), [RANDOM transfer study](random-transfer/REVIEW.md),
-[chain factors](chain-potential/first-factor-results.json), [selected settings](selected-full-results.json),
-[history](BEST_HISTORY.md).
-
-The next substantial transfer is [a CGAR-seeded rolling-window repair layer](pilot-transfer/NEXT_TRANSFER.md),
-with explicit primary/recovery protection and fixed completed work. PILOT remains
-a read-only reference; its results are never counted as CGAR records.
-
-The CGAR-seeded rolling window is now implemented with fixed complete attempts,
-atomic group rollback, optional joint seed extension and progress tie preferences.
-All variants remain defaultoff and below current selected maxima. A new optional
-protected-prefix forecast preserves actual CGAR primary/support actions and leaves
-transactions/witnesses/parked paths frozen; full tests/benchmarks are being completed.
-[Window factors](rolling-window/rollout-progress-results.json),
-[city/Sortation movement diagnosis](motion-bottleneck-20260921.json).
+[Exact selected settings](selected-full-results.json), [history](BEST_HISTORY.md),
+[current jobs](ACTIVE_JOBS.json), [field negatives](field-options/first-results.json),
+[window replication](rolling-window/random03-three-seed-summary.json),
+[common-future design](common-futures/README.md).

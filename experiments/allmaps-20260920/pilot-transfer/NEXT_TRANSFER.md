@@ -72,15 +72,16 @@ budget; do not silently allocate quadratic tables on large maps.
    full strict one-second comparisons before recording a frontier improvement.
 
 This design is implemented in15640f8d, with coordinated seed extension in72418383,
-progress ties in441e8a15, and protected-prefix forecasts in339718b3. The first three
-builds pass full regression; protected-prefix build qualification is pending.
-Full window comparisons remain below selected RANDOM01/02/03records. No throughput
-improvement has been promoted from the new window layer.
-The crowded pipeline/continuation transfer remains a subsequent, separate change.
-A useful read-only diagnostic first measures how often a five-step plan advertises
-a forward move next step, then replans another wait under an unchanged task and
-compatible protections. That can distinguish repeated deferral from genuinely
-blocked traffic without assuming static-potential correctness implies progress.
+progress ties in441e8a15, and protected-prefix forecasts in339718b3. Full regression
+passes. It now supplies selected RANDOM01/02/03records, and history-off R03 improves
+all three matched seeds. Consult the live [frontier](../selected-full-results.json)
+for current numbers rather than treating this design note as a scoreboard.
+
+Common-continuation selection is implemented separately in965756fd. It completes
+every declared root/branch pair, preserves protected root paths, and evaluates
+paid action plus remaining chain. Serial/parallel, one-root identity and late
+failure tests pass. R04 improves one selected seed; broader tests are running.
+This transfers common future comparison, not a two-phase movement pipeline.
 
 The exact full-chain transfer is already implemented: RANDOM-05 score-only improves
 2,956 to 3,027 on seed 0, while changing its priority order loses. RANDOM-01 can
@@ -92,8 +93,8 @@ Read the current allmaps/rolling-window reports before extending this work. The
 initial uniform arms mistakenly used reference0and were rejected before running;
 corrected profiles retain reference1with uniform1and verified constant20weights.
 Window RNG is independent as of72418383; a no-op enabled layer preserves complete
-CGAR trajectories. Four physical cores suffice for all completed window variants
-so far (max500.4ms); future higher fixed work may use8or16cores within32GB.
+CGAR trajectories. Four physical cores qualify the selected window variants. The eight-core R03
+8192times4variant exceeded1s and is recorded as failed; more work is not a free gain.
 
 A structural hypothesis remains: freezing protected tails for20steps can suppress
 feasible future traffic even when only their actual first action must be fixed.
