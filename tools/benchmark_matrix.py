@@ -123,6 +123,8 @@ def main():
         parser.error('--trick requires the named instance and trick_ variant labels')
     if not args.trick and any(name.startswith('trick_') for name in variants):
         parser.error('trick_ variants require --trick <instance>')
+    if args.trick and any(env.get('CGAR_REASSIGN_MATCH','0') != '0' for env in variants.values()):
+        parser.error('under --trick use CGAR_TRICK_UNOPENED_MATCH, not CGAR_REASSIGN_MATCH')
     cases = [{'name': '{}-s{}-r{}'.format(name, seed, repeat), 'variant': name, 'seed': seed,
               'repeat': repeat, 'environment': env} for repeat in range(args.repeat) for seed in args.seeds for name, env in variants.items()]
     if not cases:

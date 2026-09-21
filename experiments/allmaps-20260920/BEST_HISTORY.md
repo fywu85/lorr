@@ -102,3 +102,48 @@ CITY-01/02 and GAME now have explicit NMS guidance providers with full regressio
 proof; their full1s throughput comparisons are running. No pending result is
 entered as a new best. [Declared comparisons](city-game/README.md),
 [parallel general/trick roadmap](TRICK_ROADMAP.md).
+
+## First strict CITY guidance improvement
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-01 | 7755 | 0 | TRICK | 2026-09-21T02:11:25.104932+00:00 | [596b609](https://github.com/fywu85/lorr/commit/596b609351f4653dcb404e264edb4f20de98d7eb) | trick_adapted_grid, --trick CITY-01 |
+
+The adapted4/16 NMS field improves7305->7755 (+6.16%), still7.90% below published
+NMS8420. All four full3000-step cases pass strict1s and32decimalGB on four cores.
+The selected profile's maximum decision is764.89ms. Its HRRN and forced-oldest
+admissions remain enabled; no new fairness relaxation is bundled into this win.
+Native20/200/pure-potential scores6815; native+short preference6669. Therefore the
+raw native convention is not the selected CITY transfer. The lanes-off control
+exactly reproduces the previous generic whole trajectory. One planner seed.
+[Full comparison](results/city-01-native-full-v1/summary.md),
+[selection/control proof and exact config](city-game/city-01-selected.json).
+
+## Strict CITY-02 guidance improvement
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-02 | 14851 | 0 | TRICK | 2026-09-21T02:11:18.277003+00:00 | [596b609](https://github.com/fywu85/lorr/commit/596b609351f4653dcb404e264edb4f20de98d7eb) | trick_adapted_grid, --trick CITY-02 |
+
+The adapted field improves14068->14851 (+5.57%), still11.53% below published
+NMS16787. All four full3000-step cases pass1s and32decimalGB on four cores.
+The selected maximum is807.04ms. Native field14185 and native+short14265 also
+beat this seed's control, but remain below the adapted field. Selected HRRN and
+forced-oldest admissions stay enabled; whole control trajectory unchanged.
+[Full results](results/city-02-native-full-v1/summary.md),
+[selection and exact config](city-game/city-02-selected.json).
+
+## Strict GAME guidance improvement
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| GAME | 10080 | 0 | TRICK | 2026-09-21T02:21:10.956432+00:00 | [596b609](https://github.com/fywu85/lorr/commit/596b609351f4653dcb404e264edb4f20de98d7eb) | trick_adapted_grid, --trick GAME |
+
+Adapted guidance improves6519->10080 (+54.62%), still56.69% below published
+NMS23274. All four full5000-step cases pass strict1s and32decimalGB. The selected
+maximum is904.65ms, RSS10.51GB, four physical cores. The control reproduces the
+previous whole trajectory. Native6784 and native+short6758 underperform the
+adaptation. HRRN and forced-oldest admission remain; outstanding-task age p90
+is still5000steps. One planner seed, no matched NMS claim.
+[Full results](results/game-native-full-v1/summary.md),
+[selection and exact config](city-game/game-selected.json).

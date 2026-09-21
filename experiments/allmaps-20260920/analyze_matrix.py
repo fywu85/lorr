@@ -44,8 +44,11 @@ def main():
     p.add_argument('--trick', choices=['WAREHOUSE','SORTATION','CITY-01','CITY-02','GAME','RANDOM-04','RANDOM-05'])
     p.add_argument('--allow-random05', action='store_true', help='Explicitly include CGAR runs on RANDOM-05 without modifying the separate solver')
     p.add_argument('--hold-job')
+    p.add_argument('--analysis-tag', default='factor-analysis', help='Separate immutable verification attempt label')
     p.add_argument('--execute', action='store_true')
-    a=p.parse_args();raw=a.raw.resolve();out=a.output.resolve();support=raw/'factor-analysis-support'
+    a=p.parse_args()
+    if not re.fullmatch(r'[a-zA-Z0-9_-]+',a.analysis_tag):p.error('analysis tag must be a simple label')
+    tag=a.analysis_tag;raw=a.raw.resolve();out=a.output.resolve();support=raw/(tag+'-support')
     if not a.execute:
         support.mkdir(exist_ok=False)
         copies={'analyze_matrix.py':Path(__file__), 'variants.json':a.variants.resolve(),
@@ -57,24 +60,24 @@ def main():
             copies['experiments/'+name]=ROOT/'experiments'/name
         for name,source in copies.items():
             target=support/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
-        write(raw/'factor-analysis-request.json',dict(commit=a.commit,control=a.control,trick=a.trick,seeds=a.seeds,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
-        command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--execute']
+        write(raw/(tag+'-request.json'),dict(commit=a.commit,control=a.control,trick=a.trick,seeds=a.seeds,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
+        command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--analysis-tag',tag,'--execute']
         if a.trick:command+=['--trick',a.trick]
         if a.allow_random05:command+=['--allow-random05']
         command+=['--seeds']+list(map(str,a.seeds))
-        job=raw/'factor-analysis.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
+        job=raw/(tag+'.sh');job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
         submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research43.grid.gsb,debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','1','-binding','linear:1',
-                '-l','exclusive=false,h_rt=00:45:00,h_vmem=12G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/'factor-analysis.log'),'-S','/bin/bash']
+                '-l','exclusive=false,h_rt=00:45:00,h_vmem=12G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/(tag+'.log')),'-S','/bin/bash']
         if a.hold_job:submit+=['-hold_jid',a.hold_job]
         submit.append(str(job));r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
-        write(raw/'factor-analysis-submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout))
+        write(raw/(tag+'-submission.json'),dict(command=submit,returncode=r.returncode,response=r.stdout))
         r.check_returncode();assert re.fullmatch(r'\d+\s*',r.stdout);print(r.stdout,end='',flush=True)
         subprocess.run(['qrls',r.stdout.strip()],check=True);return
-    request=read(raw/'factor-analysis-request.json');assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05 and request.get('seeds',[0])==a.seeds
+    request=read(raw/(tag+'-request.json'));assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05 and request.get('seeds',[0])==a.seeds
     for name,expected in request['files'].items():assert sha(support/name)==expected,name
     sys.path.insert(0,str(support));from cpu_resources import cpu_resources
     from warehouse_waiting import waiting_audit
-    resources=cpu_resources();write(raw/'factor-analysis-allocation.json',resources)
+    resources=cpu_resources();write(raw/(tag+'-allocation.json'),resources)
     assert resources['effective_cpu_quota'] is None and resources['physical_cores_visible']==1,resources
     os.sched_setaffinity(0,resources['representative_cpus'])
     build,spec,allocation=(read(raw/name) for name in ['build.json','spec.json','allocation.json'])
@@ -121,13 +124,13 @@ def main():
             name=summary['instance'];key=label+'/'+name;binding=summary['cpu'];bindings.add(tuple(binding))
             assert len(binding)==4 and set(binding).issubset(meta['cpu_binding']) and len({core_of[c] for c in binding})==4
             assert meta['instances'][name]==dict(input=inputs['instances'][name]['input'],steps=horizons[name])
-            assert summary['experiment_track_valid'] and summary['trick_receipt_valid']
+            assert summary['experiment_track_valid']
+            if summary['valid']:assert summary['trick_receipt_valid']
             assert summary['max_process_memory_bytes']==32000000000
             logs=(raw/label/(name+'.log')).read_text().splitlines()
-            if a.trick:
-                assert any(l.startswith('[CGAR_TRICK] instance='+a.trick+' ') for l in logs)
-            else:
-                assert not any(l.startswith('[CGAR_TRICK') for l in logs)
+            if summary['valid']:
+                if a.trick:assert any(l.startswith('[CGAR_TRICK] instance='+a.trick+' ') for l in logs)
+                else:assert not any(l.startswith('[CGAR_TRICK') for l in logs)
             usage=summary['process_resources']
             row=dict(case=label,variant=case['variant'],instance=name,seed=case['seed'],steps=horizons[name],
                      robots=inputs['instances'][name]['team_size'],valid=summary['valid'],outcome=summary['outcome'],tasks=None,
@@ -179,7 +182,8 @@ def main():
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)
             else:
                 assert summary['after'] is None, 'failed run must not have an accepted partial score'
-                row['failure_lines']=[l for l in logs if 'CGAR_TIMEOUT' in l or 'CGAR_ERROR' in l]
+                row['failure_lines']=[l for l in logs if 'CGAR_TIMEOUT' in l or 'CGAR_ERROR' in l or 'CGAR_INITIALIZATION_ERROR' in l]
+                row['trick_receipt_valid']=summary['trick_receipt_valid']
             rows.append(row)
         assert len(summaries[label])==len(spec['instances'])
         for first in bindings:
@@ -194,7 +198,7 @@ def main():
                 competition_budget_confirmed=False,random05_excluded='RANDOM-05' not in spec['instances'],independent_random05_solver_untouched=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,
                 scope='Archived inputs and declared planner seeds, frozen factor profiles. Throughput comparisons require full horizons. Shared hosts and32decimalGB; exact enforced entry limit is recorded above. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim.')
     write(out/'verification.json',report);write(out/'fairness.json',fairness);write(out/'regional-work.json',work)
-    for name in ['completion.json','submission.json','factor-analysis-request.json','factor-analysis-submission.json']:
+    for name in ['completion.json','submission.json',tag+'-request.json',tag+'-submission.json']:
         shutil.copy2(raw/name,out/name)
     lines=['# Controlled CGAR factor matrix','',report['scope'],'','Enforced entry limit: '+str(spec['time_limit_ms'])+'ms. Planner seeds: '+str(a.seeds)+'.','',
            '| Instance / variant / seed | Tasks | Mean ms | Max ms | RSS GB | Outstanding age p90 |',

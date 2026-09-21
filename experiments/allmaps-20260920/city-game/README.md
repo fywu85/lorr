@@ -44,6 +44,18 @@ The first build failed a new fixture assertion because timestep0 deliberately
 uses spatial mass dispatch; the native pickup fixture now uses timestep10.
 Production code did not change for that test correction. [Failure record](build-v1-failed/failure.json).
 
-Full matrices are submitted: CITY-01 job8901193 / verifier8901194,
-CITY-02 job8901195 / verifier8901196, GAME job8901197 / verifier8901198.
-No CITY/GAME throughput gain is claimed until complete results are verified.
+All twelve full cases are complete and verified (CITY-01 jobs8901193/94,
+CITY-02 jobs8901195/96, GAME jobs8901197/98). Every generic control reproduces
+its previous complete trajectory. Each winner retains HRRN and oldest admission.
+
+| Instance | Control | Adapted field | Native field | Native + short | Selected maximum ms |
+|---|---:|---:|---:|---:|---:|
+| CITY-01 |7305|**7755**|6815|6669|764.89|
+| CITY-02 |14068|**14851**|14185|14265|807.04|
+| GAME |6519|**10080**|6784|6758|904.65|
+
+All strict1s, source/binary above, seed0 on the archived stream. These three
+adapted profiles become selected bests. Published NMS gaps remain7.90%,11.53%,
+and56.69%; published scores are not matched local controls. GAME still has an
+outstanding-task age p90 of5000steps. Selection JSONs retain exact configuration,
+completion timestamp, whole-control hash and resource/waiting evidence.

@@ -1,6 +1,6 @@
 # Continue CGAR across all ten instances, general improvements and explicit tricks
 
-Updated2026-09-21 around02:06UTC. Follow actual user scope, not the obsolete
+Updated2026-09-21 around02:34UTC. Follow actual user scope, not the obsolete
 formal Warehouse160k goal: improve CGAR across all ten LoRR2024 instances, NMS
 primary, throughput first, fairness secondary. Latest user steering explicitly
 asks to pursue instance-specific tricks alongside general changes. RANDOM-04/05
@@ -40,9 +40,12 @@ Published NMS targets in TARGETS.md are not fresh matched local controls.
   V110 whole trajectories. Do not retune Warehouse now.
 * Sortation150353 vs152714: native NMS field bands1,5s development, max1152ms,
   four cores,12.47GB. Runtime qualification remains outstanding.
-* Generic City01=7305, City02=14068, GAME6519; NMS8420/16787/23274.
-  Sourceeb99380, selected generic_regions_4m from regional-variants.json.
-  Original5s runs took~14/14/25min; measured max683/726/818ms, not strict proof.
+* CITY01=7755, CITY02=14851, GAME10080, all TRICK adapted4/16 NMS fields.
+  Source596b609, binary41aea678..., seed0, strict1s maxima765/807/905ms,
+  four physical cores; full3000/3000/5000steps. Generic controls7305/14068/6519
+  are whole-trajectory identical to sourceeb99380. NMS8420/16787/23274, no
+  matched NMS claim. Best configs/selection proofs city-game/best-*.json and
+  *-selected.json; full comparisons results/{city-01,city-02,game}-native-full-v1.
 * Generic R01=611, R02=1084, R03=1484; NMS639/1221/2334. Selected direct cost plus
   bounded matching from six-factor matrix. Original5s development.
 * R04 generic1503 seed0, strict1s. Seeds0/2/4=1503/1480/1494, mean1492.33.
@@ -136,35 +139,36 @@ dispatch even with static fields. Set native test fixture to timestep10, matchin
 existing fixtures; production code unchanged. Failure receipts retained in
 city-game/build-v1-failed, successful build-v2/checks.json.
 
-Three four-profile full matrices are RUNNING, strict1000ms,32decimalGB,4physical
-cores per case,16per matrix, shared EPYC9354 research57. At02:02UTC all12cases had
-passed step400 without reported solver errors. No throughput gain claimed yet.
+All twelve full CITY/GAME cases are complete and verified. Adapted field wins
+7755/14851/10080. Native gives6815/14185/6784; native+short6669/14265/6758.
+All12 valid1s, all three generic controls exactly reproduced. Retain adapted
+field, HRRN and forced-oldest admission. GAME waiting agep90 remains5000.
 
-| Instance | Matrix job | Held verifier | Raw directory |
-|---|---|---|---|
-| CITY-01 |8901193|8901194|runs/cgar-city-01-native-full-v1-20260921|
-| CITY-02 |8901195|8901196|runs/cgar-city-02-native-full-v1-20260921|
-| GAME |8901197|8901198|runs/cgar-game-native-full-v1-20260921|
+Latest guard source85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12, binary
+726eedf767129d409fad5d869e124368b6048fa74adbb5b5ae37fc4939d600f7,
+frozen runs/cgar-promise-guard-build-v1-20260921, full suite passed. It rejects
+positive branch work with after-turn promises (branch resolver can try ordinary
+choice0). Neither option was combined in measured profiles. Proof
+random-transfer/promise-guard-build-v1.
 
-Frozen profiles city-game/variants.json: lanesOFFcontrol, adapted4/16field,
-native20/200/pure-potential, native+short preference. The last bundles disabling
-HRRN and forced-oldest admission, unlike the dense short-only test. Compare the
-whole lanes-off control hashes with selected generic City/Game traces before
-crediting gains. Native transfer bundles field units and score convention;
-adapted vs native is not an isolated lane-direction effect. No promise/horizon.
-Expected results directories results/city-01-native-full-v1, city-02-native-full-v1,
-game-native-full-v1. Inspect verification.json first, not partial scores.
-
-If allocation guard rejects a verifier, retain first allocation/log and resubmit
-its frozen shell unchanged on research44 with exact one core; record retry.
-If an entry times out, keep it a failure. Diagnose or compare a labelled5s fixed-
-work run only to separate load/runtime from trajectory quality; don't accept a
-partial score or silently relax qualification. Four-core full runs may take14–35min.
+CITY01 adapted2x2 factor matrix8901238/verifier8901239 still running at02:34UTC:
+control, remaining-chain order2/unequal rank; direct pickup4/HRRN0/matching64;
+and both. The dispatch cases failed before simulation: generic matching flag
+wrong under --trick. Retain failure receipts/original declaration. Corrected
+selector CGAR_TRICK_UNOPENED_MATCH=1 in city-game/city-01-adapted-dispatch-corrected.json,
+only those two resubmitted job8901254/verifier8901255, same frozen guard binary.
+Raw prefixes runs/cgar-city-01-adapted-{factors,dispatch-corrected}-v1-20260921.
+Original verifier cannot represent preinit missing trick receipts; enhanced
+analyzer now supports --analysis-tag for a separate immutable verification
+attempt and only demands receipts for valid rows. Resubmit original matrix
+analysis with a new tag after completion/hold8901238; do not overwrite frozen
+analysis support. Reject invalid rows without accepting partial throughput.
+Matrix submitter now rejects that known flag conflict before queuing.
 
 ## Concrete next steps while large-map jobs finish
 
-1. Collect/verify all12CITY/GAME cases. Promote only complete improvements;
-   record actual timestamps/source/binary, strict latency/RSS and waiting tails.
+1. Finish CITY01 factors and corrected dispatch pair; verify original7755
+   control unchanged. CITY/GAME records now logged. Commit/push owned evidence.
 2. Implement an explicit trick for NMS's squared rank power, first for GAME and
    RANDOM-04/05, as a separate opt-in selector requiring --trick. Current dense
    ranks are linear. Default OFF must preserve trajectories and CGAR protections.

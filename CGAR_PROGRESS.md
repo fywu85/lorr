@@ -9,9 +9,9 @@ RANDOM-05 solver into CGAR without modifying that solver's working tree.
 |---|---:|---|
 | WAREHOUSE | 155173 | TRICK; strict1s seeds0/2, max945/958ms |
 | SORTATION | 150353 | TRICK; seed0,5s development, max1152ms; runtime work remains |
-| CITY-01 | 7305 | Generic; full5s development |
-| CITY-02 | 14068 | Generic; full5s development |
-| GAME | 6519 | Generic; full5s development |
+| CITY-01 | 7755 | TRICK; adapted NMS field, strict1s, max765ms, seed0 |
+| CITY-02 | 14851 | TRICK; adapted NMS field, strict1s, max807ms, seed0 |
+| GAME | 10080 | TRICK; adapted NMS field, strict1s, max905ms, seed0 |
 | RANDOM-01 | 611 | Generic; full5s development |
 | RANDOM-02 | 1084 | Generic; full5s development |
 | RANDOM-03 | 1484 | Generic; full5s development |
@@ -71,12 +71,31 @@ Selected bests are unchanged. [Complete negative result](experiments/allmaps-202
 
 The parallel trick track now includes explicit NMS CITY/GAME guidance providers,
 verified against the unchanged archived constructor and independent formulas.
-Their full CGAR tests/build passed; strict1s field/admission comparisons are running.
-They require `--trick CITY-01`, `--trick CITY-02` or `--trick GAME`; no throughput
-gain is claimed before the complete measurements.
+Their full CGAR tests/build and all twelve strict1s field/admission runs passed.
+They require `--trick CITY-01`, `--trick CITY-02` or `--trick GAME`; the adapted field wins on all three instances.
 [Declared CITY/GAME comparison](experiments/allmaps-20260920/city-game/README.md).
 
 The follow-up native service-tail scoring check also lost: RANDOM-04 1481->1398,
 RANDOM-05 2574->2542, both full seed0 pairs valid under1s. Best profiles remain
 unchanged. [Ablation](experiments/allmaps-20260920/random-transfer/NEUTRAL_SERVICE_CHECK.md).
 [Per-instance trick roadmap and NMS/KK source findings](experiments/allmaps-20260920/TRICK_ROADMAP.md).
+
+CITY-01 now improves7305->7755 (+6.16%) using the adapted4/16 NMS field, full3000
+steps at strict1s, four physical cores. All four field/short-preference variants
+were valid. Native20/200/pure-potential6815 and native+short6669 lost the7305
+control; the selected7755 retains HRRN and forced-oldest admission. It remains
+7.90% below published NMS8420. The complete control trajectory is unchanged.
+[Full result and resource/waiting evidence](experiments/allmaps-20260920/results/city-01-native-full-v1/summary.md).
+
+CITY-02 similarly improves14068->14851 (+5.57%) with the adapted field, strict1s,
+max807ms; full control trajectory unchanged. Native14185 and native+short14265
+also beat its control but remain below14851. The selected configuration retains
+HRRN and forced-oldest admission and is11.53% below published NMS16787.
+[Full result](experiments/allmaps-20260920/results/city-02-native-full-v1/summary.md).
+
+GAME improves6519->10080 (+54.62%) with the adapted field over5000 steps, strict1s,
+max905ms and10.51GB peak RSS on four physical cores. Its generic control trajectory
+is unchanged. Native6784 and native+short6758 are much weaker. This remains56.69%
+below published NMS23274, with outstanding-task age p90=5000steps; throughput has
+improved, but the long waiting tail remains.
+[Full result](experiments/allmaps-20260920/results/game-native-full-v1/summary.md).
