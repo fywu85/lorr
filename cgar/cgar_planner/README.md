@@ -603,3 +603,15 @@ A separate random stream leaves existing fresh seeds and repair seeds unchanged.
 Any deadline failure propagates before a new persistent history is published.
 This is a general default-off experiment; it has no map lookup or throughput
 claim until full comparisons finish.
+
+
+`CGAR_PICKUP_STARTUP=1` also uses the current orientation/forward metric for
+initial timestep-zero dispatch. The default0 keeps the earlier spatial mass
+assignment. Complete-field robot quotas, search caps, candidate limits and
+failure semantics are unchanged; every declared field must finish. This general
+option requires pickup flow and adds no map lookup. Before a learned field has
+been published, its current metric is the uniform oriented metric. Later warmup
+policy is unchanged. Static instance fields still require their explicit trick
+gate. This can be expensive for large initial fleets and is never auto-enabled
+based on elapsed time. Full benchmarks determine whether better initial pairings
+repay the extra work; no throughput gain is assumed.

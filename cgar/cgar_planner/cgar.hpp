@@ -641,7 +641,7 @@ private:
     int fallback_samples_ = 64;
     int global_samples_ = 0;
     int pickup_weight_ = 1;
-    bool pickup_flow_ = false;
+    bool pickup_flow_ = false, pickup_startup_ = false;
     int chain_flow_pricing_ = 0;  // 0 native, 1 resident, 2 imputed, 3 ratio-only, 4 shadow
     int pickup_flow_nodes_ = 8192;
     OrientedPickupSearch pickup_search_;

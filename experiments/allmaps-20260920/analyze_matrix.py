@@ -212,6 +212,18 @@ def main():
                     if int(case['environment'].get('CGAR_TRICK_HORIZON_MARGIN','0')):
                         margin_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon-margin] ')]
                         assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
+                startup=int(case['environment'].get('CGAR_PICKUP_STARTUP','0'))
+                startup_config=[fields(l) for l in logs if l.startswith('[cgar-pickup-startup-config] ')]
+                startup_samples=[fields(l) for l in logs if l.startswith('[cgar-pickup-startup] ')]
+                if startup:
+                    assert startup_config==[dict(enabled='1',initial_metric='oriented_current',quotas='unchanged',fixed_work='1',timeout_is_failure='1')]
+                    assert len(startup_samples)==1
+                    x=startup_samples[0];assert int(x['step'])==0 and int(x['robots'])==row['robots']
+                    assert int(x['full_quota'])==int(case['environment'].get('CGAR_PICKUP_FULL_ROBOTS','0'))
+                    assert int(x['node_limit'])==int(case['environment'].get('CGAR_PICKUP_FLOW_NODES','8192'))
+                    assert int(x['forward_base'])>=1 and int(x['turn'])>=1
+                    row['oriented_startup']=x
+                else:assert not startup_config and not startup_samples
                 chain_mode=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MODE','0'))
                 chain_config=[fields(l) for l in logs if l.startswith('[cgar-chain-config] ')]
                 chain_samples=[fields(l) for l in logs if l.startswith('[cgar-chain] ')]

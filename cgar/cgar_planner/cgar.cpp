@@ -1027,6 +1027,13 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (pickup_flow && !flow_strength_ && !static_trick_metric_))
         throw std::invalid_argument("pickup flow requires learned flow, a boolean setting and 1-65536 queue pops");
     pickup_flow_ = pickup_flow != 0;
+    const char* startup = std::getenv("CGAR_PICKUP_STARTUP");
+    if (startup && std::string(startup) != "0" && std::string(startup) != "1")
+        throw std::invalid_argument("pickup startup must be 0 or 1");
+    pickup_startup_ = startup && std::string(startup) == "1";
+    if (pickup_startup_ && !pickup_flow_)
+        throw std::invalid_argument("oriented startup dispatch requires pickup flow");
+    if (pickup_startup_) std::printf("[cgar-pickup-startup-config] enabled=1 initial_metric=oriented_current quotas=unchanged fixed_work=1 timeout_is_failure=1\n");
     pickup_full_robots_ = env_int("CGAR_PICKUP_FULL_ROBOTS", 0);
     pickup_full_threads_ = env_int("CGAR_PICKUP_FULL_THREADS", 4);
     if (pickup_full_robots_ < 0 || pickup_full_robots_ > 256 ||
@@ -3063,13 +3070,18 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     // last complete published metric without changing that lifecycle. Before
     // its first publication the original scheduler is preserved exactly.
     // An explicitly requested static trick is complete at initialization.
-    // Keep the generic mass dispatch at tick0: weighted searches for all
+    // Default to generic mass dispatch at tick0: weighted searches for all
     // initially free robots exceed the entry budget. Later pickup work uses
     // the static field under the same fixed quotas. This is a fixed startup
-    // rule, never an elapsed-time fallback. No environment variable activates it.
+    // rule, never an elapsed-time fallback. The opt-in startup experiment uses
+    // the current oriented metric with unchanged fixed quotas, even at tick0.
     const bool pickup_metric = pickup_flow_ &&
-        ((static_trick_metric_ && env->curr_timestep > 0) || flow_guidance_.publications() > 0);
+        ((pickup_startup_ && env->curr_timestep == 0) ||
+         (static_trick_metric_ && env->curr_timestep > 0) || flow_guidance_.publications() > 0);
     const int pickup_scale = pickup_metric ? flow_cost_scale_ : 1;
+    if (pickup_startup_ && env->curr_timestep == 0 && diagnostics_)
+        std::printf("[cgar-pickup-startup] step=0 robots=%zu full_quota=%d node_limit=%d forward_base=%d turn=%d\n",
+            robots.size(), pickup_full_robots_, pickup_flow_nodes_, flow_cost_scale_, guidance_turn_cost_);
     if (pickup_flow_) {
         stats_.pickup_flow_snapshot_publication = flow_guidance_.publications();
         stats_.pickup_flow_warmup_calls += !pickup_metric;
