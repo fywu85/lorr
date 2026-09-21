@@ -26,7 +26,7 @@ struct TemporalRegionPeaks {
         if (!a.completed) throw std::logic_error("incomplete regional peak audit");
         ++batches; attempts += a.attempts; peak_updates += a.peak_updates;
         lost_peaks += a.peak_score > a.returned_score + 1e-6;
-        lost_improvements += a.peak_score > a.initial_score + 1e-6 && a.final_score <= a.initial_score + 1e-6;
+        lost_improvements += a.peak_score > a.initial_score + 1e-6 && a.returned_score <= a.initial_score + 1e-6;
         peak_attempt_sum += a.peak_attempt; max_peak_attempt = std::max(max_peak_attempt, a.peak_attempt);
         peak_gain += a.peak_score - a.initial_score; final_gain += a.final_score - a.initial_score;
         discarded_gain += std::max(0.0, a.peak_score - a.returned_score);

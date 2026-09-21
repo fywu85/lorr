@@ -3449,7 +3449,7 @@ void temporal_keep_peak_regression() {
   auto selected=retained.selections();TemporalPibt rebuilt(49,choices,fixed,power,8192,0,&selected);
   if(rebuilt.score()!=retained.score())throw std::runtime_error("retained peak has inconsistent reservations or score");
   TemporalRegionPeaks totals;totals.observe(audit);
-  if(totals.lost_peaks||totals.discarded_gain!=0)throw std::runtime_error("retention discarded an analytic peak");
+  if(totals.lost_peaks||totals.lost_improvements||totals.discarded_gain!=0)throw std::runtime_error("retention discarded an analytic peak");
   for(int continuation=0;continuation<2;++continuation){
    if(ordinary.selections()!=disabled.selections()||ordinary.score()!=disabled.score()||
       !same_work(ordinary.stats,disabled.stats)||ordinary.stats.repair_batches_kept!=disabled.stats.repair_batches_kept||
