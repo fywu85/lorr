@@ -22,7 +22,7 @@ Large maps are outside active development.
 |---|---:|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 727 | 733 | 688 | +6.54% |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1260 | +11.75% |
-| RANDOM-03 | 400 | 800 | 1634 | 2620 | 2334 | +12.25% |
+| RANDOM-03 | 400 | 800 | 1634 | 2621 | 2334 | +12.30% |
 | RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2547 | +9.23% |
 | RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3050 | +39.08% |
 
@@ -182,6 +182,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T22:49:58.306922+00:00 | RANDOM-04 | general | 1616 | [1bd28feed8368b2a61b2fc9a08867a518b2d0c9f](https://github.com/fywu85/lorr/commit/1bd28feed8368b2a61b2fc9a08867a518b2d0c9f) | [Full run](results/random12345-face-cycles-split-full-v158/general-random-04-face-cycles8/summary.json) |
 | 2026-09-21T23:30:21.892751+00:00 | RANDOM-01 | trick | 732 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12345-physical-deadline-split-full-v162/trick-random-01-physical-deadline1/summary.json) |
 | 2026-09-21T23:35:12.917204+00:00 | RANDOM-01 | trick | 733 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random01-record732-split-full-v162/trick-random-01-record732-seed1-feasible1/summary.json) |
+| 2026-09-21T23:36:22.952126+00:00 | RANDOM-03 | trick | 2621 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json) |
 
 
 ## September21: first development comparisons

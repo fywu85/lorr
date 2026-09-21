@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-21T23:31:22.757115+00:00",
+  "checked_utc": "2026-09-21T23:52:07.957502+00:00",
   "source": {
     "commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
     "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
@@ -369,6 +369,288 @@
       }
     },
     {
+      "instance": "RANDOM-02",
+      "profile": "trick",
+      "name": "trick-random-02-physical-deadline0",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:33:02.258929+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline0/summary.json",
+      "peak_rss_bytes": 365830144,
+      "latency_seconds": {
+        "mean": 0.3364960542466671,
+        "max": 0.527308175
+      },
+      "tasks": 1408,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline0/trick-random-02-physical-deadline0/result.json",
+        "result_sha256": "3b63b51947cab2a1611d582ce1ce7cf1f677e074e3734a51b69ee545b014d1fc",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 1408,
+        "steps": 600,
+        "agents": 200,
+        "robot_steps": 120000,
+        "phases": {
+          "unopened": {
+            "F": 6192,
+            "C": 1724,
+            "R": 1752,
+            "W": 721
+          },
+          "loaded": {
+            "C": 11250,
+            "F": 74626,
+            "R": 11121,
+            "W": 4785
+          },
+          "idle": {
+            "W": 7493,
+            "F": 208,
+            "R": 63,
+            "C": 65
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "F": 6094,
+              "C": 1691,
+              "W": 671,
+              "R": 1704
+            },
+            "loaded": {
+              "C": 11107,
+              "F": 73860,
+              "R": 10990,
+              "W": 3565
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 33,
+              "R": 48,
+              "F": 98,
+              "W": 50
+            },
+            "loaded": {
+              "F": 766,
+              "C": 143,
+              "R": 131,
+              "W": 1220
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 69120,
+        "completed_loaded_detour_cells": 4740,
+        "completed_loaded_mean_steps": 70.68323863636364,
+        "completed_chain_lengths": {
+          "2": 422,
+          "3": 405,
+          "4": 312,
+          "5": 269
+        },
+        "unopened_reassignments": 1023,
+        "task_starts": 1429,
+        "waiting_streaks": {
+          "count": 3413,
+          "p50": 1,
+          "p90": 6,
+          "p99": 48,
+          "maximum": 106
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline0/trick-random-02-physical-deadline0/result.json",
+        "result_sha256": "3b63b51947cab2a1611d582ce1ce7cf1f677e074e3734a51b69ee545b014d1fc",
+        "horizon_steps": 600,
+        "tasks_finished": 1408,
+        "tasks_revealed": 1708,
+        "completed_latency": {
+          "count": 1408,
+          "mean_steps": 95.56889204545455,
+          "p50_steps": 76,
+          "p95_steps": 242,
+          "p99_steps": 430
+        },
+        "maximum_release_to_completion": {
+          "steps": 596,
+          "task_id": 77,
+          "released_at": 0,
+          "observed_at": 596
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 441,
+          "task_id": 77,
+          "released_at": 0,
+          "observed_at": 441
+        },
+        "oldest_unfinished": {
+          "steps": 600,
+          "task_id": 295,
+          "released_at": 0,
+          "observed_at": 600
+        },
+        "oldest_unopened": {
+          "steps": 600,
+          "task_id": 295,
+          "released_at": 0,
+          "observed_at": 600
+        },
+        "unfinished_count": 300,
+        "unopened_count": 279,
+        "initial_cohort_count": 300,
+        "initial_restricted_mean_steps": 145.2,
+        "initial_still_unfinished": 17,
+        "initial_still_unopened": 16,
+        "initial_started_unfinished": 1,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-02",
+      "profile": "trick",
+      "name": "trick-random-02-physical-deadline1",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:33:02.727151+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline1/summary.json",
+      "peak_rss_bytes": 420261888,
+      "latency_seconds": {
+        "mean": 0.33716369740166635,
+        "max": 0.523935008
+      },
+      "tasks": 1403,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline1/trick-random-02-physical-deadline1/result.json",
+        "result_sha256": "1fa475cbc3aea67ed16157ac9a9624538c72bc278ff84e87e3180d16de0311e4",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 1403,
+        "steps": 600,
+        "agents": 200,
+        "robot_steps": 120000,
+        "phases": {
+          "unopened": {
+            "F": 6141,
+            "C": 1712,
+            "R": 1738,
+            "W": 686
+          },
+          "loaded": {
+            "C": 11210,
+            "F": 74567,
+            "R": 11134,
+            "W": 4604
+          },
+          "idle": {
+            "W": 7867,
+            "F": 217,
+            "R": 46,
+            "C": 78
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "F": 6032,
+              "C": 1673,
+              "W": 668,
+              "R": 1699
+            },
+            "loaded": {
+              "C": 11056,
+              "F": 73698,
+              "R": 10988,
+              "W": 3479
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 39,
+              "R": 39,
+              "F": 109,
+              "W": 18
+            },
+            "loaded": {
+              "F": 869,
+              "C": 154,
+              "R": 146,
+              "W": 1125
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 68908,
+        "completed_loaded_detour_cells": 4790,
+        "completed_loaded_mean_steps": 70.72059871703493,
+        "completed_chain_lengths": {
+          "2": 421,
+          "3": 401,
+          "4": 314,
+          "5": 267
+        },
+        "unopened_reassignments": 1016,
+        "task_starts": 1423,
+        "waiting_streaks": {
+          "count": 3378,
+          "p50": 1,
+          "p90": 6,
+          "p99": 53,
+          "maximum": 109
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-02-physical-deadline1/trick-random-02-physical-deadline1/result.json",
+        "result_sha256": "1fa475cbc3aea67ed16157ac9a9624538c72bc278ff84e87e3180d16de0311e4",
+        "horizon_steps": 600,
+        "tasks_finished": 1403,
+        "tasks_revealed": 1703,
+        "completed_latency": {
+          "count": 1403,
+          "mean_steps": 95.5495367070563,
+          "p50_steps": 76,
+          "p95_steps": 241,
+          "p99_steps": 430
+        },
+        "maximum_release_to_completion": {
+          "steps": 595,
+          "task_id": 29,
+          "released_at": 0,
+          "observed_at": 595
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 441,
+          "task_id": 77,
+          "released_at": 0,
+          "observed_at": 441
+        },
+        "oldest_unfinished": {
+          "steps": 600,
+          "task_id": 295,
+          "released_at": 0,
+          "observed_at": 600
+        },
+        "oldest_unopened": {
+          "steps": 600,
+          "task_id": 295,
+          "released_at": 0,
+          "observed_at": 600
+        },
+        "unfinished_count": 300,
+        "unopened_count": 280,
+        "initial_cohort_count": 300,
+        "initial_restricted_mean_steps": 145.18,
+        "initial_still_unfinished": 17,
+        "initial_still_unopened": 16,
+        "initial_started_unfinished": 1,
+        "event_accounting_valid": true
+      }
+    },
+    {
       "instance": "RANDOM-03",
       "profile": "trick",
       "name": "trick-random-03-physical-deadline0",
@@ -387,6 +669,429 @@
       "note": "Allocation rejected before solver launch; original attempt retained."
     },
     {
+      "instance": "RANDOM-03",
+      "profile": "trick",
+      "name": "trick-random-03-physical-deadline1",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:36:22.952126+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json",
+      "peak_rss_bytes": 463966208,
+      "latency_seconds": {
+        "mean": 0.5021343452962496,
+        "max": 0.745646255
+      },
+      "tasks": 2621,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/trick-random-03-physical-deadline1/result.json",
+        "result_sha256": "f555b75a8cf3dac1210e8f5a1bff4e9e4a2196e03f971dc8423d558d05319158",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2621,
+        "steps": 800,
+        "agents": 400,
+        "robot_steps": 320000,
+        "phases": {
+          "unopened": {
+            "C": 4338,
+            "R": 4526,
+            "F": 14347,
+            "W": 2796
+          },
+          "loaded": {
+            "F": 187794,
+            "R": 37204,
+            "W": 22071,
+            "C": 35679
+          },
+          "idle": {
+            "F": 485,
+            "W": 10524,
+            "R": 122,
+            "C": 114
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "C": 4079,
+              "F": 13531,
+              "R": 4226,
+              "W": 2522
+            },
+            "loaded": {
+              "R": 35903,
+              "F": 182374,
+              "C": 34444,
+              "W": 14179
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "F": 816,
+              "C": 259,
+              "W": 274,
+              "R": 300
+            },
+            "loaded": {
+              "C": 1235,
+              "F": 5420,
+              "W": 7892,
+              "R": 1301
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 130162,
+        "completed_loaded_detour_cells": 52212,
+        "completed_loaded_mean_steps": 101.83136207554368,
+        "completed_chain_lengths": {
+          "2": 763,
+          "3": 734,
+          "4": 621,
+          "5": 503
+        },
+        "unopened_reassignments": 4010,
+        "task_starts": 2753,
+        "waiting_streaks": {
+          "count": 12087,
+          "p50": 1,
+          "p90": 4,
+          "p99": 43,
+          "maximum": 127
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/trick-random-03-physical-deadline1/result.json",
+        "result_sha256": "f555b75a8cf3dac1210e8f5a1bff4e9e4a2196e03f971dc8423d558d05319158",
+        "horizon_steps": 800,
+        "tasks_finished": 2621,
+        "tasks_revealed": 3221,
+        "completed_latency": {
+          "count": 2621,
+          "mean_steps": 134.35062953071346,
+          "p50_steps": 105,
+          "p95_steps": 355,
+          "p99_steps": 602
+        },
+        "maximum_release_to_completion": {
+          "steps": 787,
+          "task_id": 7,
+          "released_at": 0,
+          "observed_at": 787
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 667,
+          "task_id": 45,
+          "released_at": 0,
+          "observed_at": 667
+        },
+        "oldest_unfinished": {
+          "steps": 800,
+          "task_id": 598,
+          "released_at": 0,
+          "observed_at": 800
+        },
+        "oldest_unopened": {
+          "steps": 800,
+          "task_id": 582,
+          "released_at": 0,
+          "observed_at": 800
+        },
+        "unfinished_count": 600,
+        "unopened_count": 468,
+        "initial_cohort_count": 600,
+        "initial_restricted_mean_steps": 191.84666666666666,
+        "initial_still_unfinished": 28,
+        "initial_still_unopened": 25,
+        "initial_started_unfinished": 3,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-physical-deadline0",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:37:19.734328+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline0/summary.json",
+      "peak_rss_bytes": 700698624,
+      "latency_seconds": {
+        "mean": 0.45859991551100043,
+        "max": 0.792621784
+      },
+      "tasks": 2782,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline0/trick-random-04-physical-deadline0/result.json",
+        "result_sha256": "eecd1eaa179101dfaa02e7f510e9607e229da5fea2adeb823f19251be2b6c05b",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2782,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 5703,
+            "C": 2546,
+            "R": 3597,
+            "F": 8018
+          },
+          "loaded": {
+            "F": 227469,
+            "W": 146955,
+            "C": 58254,
+            "R": 79618
+          },
+          "idle": {
+            "W": 91459,
+            "R": 19777,
+            "C": 12900,
+            "F": 43704
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5373,
+              "R": 3349,
+              "F": 7583,
+              "C": 2423
+            },
+            "loaded": {
+              "R": 74649,
+              "F": 215577,
+              "C": 54689,
+              "W": 132325
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 248,
+              "W": 330,
+              "F": 435,
+              "C": 123
+            },
+            "loaded": {
+              "C": 3565,
+              "F": 11892,
+              "W": 14630,
+              "R": 4969
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122771,
+        "completed_loaded_detour_cells": 92806,
+        "completed_loaded_mean_steps": 171.54565061107118,
+        "completed_chain_lengths": {
+          "2": 903,
+          "3": 850,
+          "4": 664,
+          "5": 365
+        },
+        "unopened_reassignments": 3682,
+        "task_starts": 2928,
+        "waiting_streaks": {
+          "count": 121359,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 552
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline0/trick-random-04-physical-deadline0/result.json",
+        "result_sha256": "eecd1eaa179101dfaa02e7f510e9607e229da5fea2adeb823f19251be2b6c05b",
+        "horizon_steps": 1000,
+        "tasks_finished": 2782,
+        "tasks_revealed": 3832,
+        "completed_latency": {
+          "count": 2782,
+          "mean_steps": 217.51545650611072,
+          "p50_steps": 171,
+          "p95_steps": 596,
+          "p99_steps": 880
+        },
+        "maximum_release_to_completion": {
+          "steps": 998,
+          "task_id": 357,
+          "released_at": 0,
+          "observed_at": 998
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 817,
+          "task_id": 252,
+          "released_at": 0,
+          "observed_at": 817
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 904,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.4790476190476,
+        "initial_still_unfinished": 175,
+        "initial_still_unopened": 163,
+        "initial_started_unfinished": 12,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-physical-deadline1",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:38:42.859510+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline1/summary.json",
+      "peak_rss_bytes": 738516992,
+      "latency_seconds": {
+        "mean": 0.5416608402959995,
+        "max": 0.813251655
+      },
+      "tasks": 2782,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline1/trick-random-04-physical-deadline1/result.json",
+        "result_sha256": "d6f350b610a4005f048a56a45c8624b60ac0d70046d206b475f9ce6d9a8da0dd",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2782,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 5703,
+            "C": 2546,
+            "R": 3597,
+            "F": 8018
+          },
+          "loaded": {
+            "F": 227469,
+            "W": 146955,
+            "C": 58254,
+            "R": 79618
+          },
+          "idle": {
+            "W": 91459,
+            "R": 19777,
+            "C": 12900,
+            "F": 43704
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5373,
+              "R": 3349,
+              "F": 7583,
+              "C": 2423
+            },
+            "loaded": {
+              "R": 74649,
+              "F": 215577,
+              "C": 54689,
+              "W": 132325
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 248,
+              "W": 330,
+              "F": 435,
+              "C": 123
+            },
+            "loaded": {
+              "C": 3565,
+              "F": 11892,
+              "W": 14630,
+              "R": 4969
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122771,
+        "completed_loaded_detour_cells": 92806,
+        "completed_loaded_mean_steps": 171.54565061107118,
+        "completed_chain_lengths": {
+          "2": 903,
+          "3": 850,
+          "4": 664,
+          "5": 365
+        },
+        "unopened_reassignments": 3682,
+        "task_starts": 2928,
+        "waiting_streaks": {
+          "count": 121359,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 552
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-04-physical-deadline1/trick-random-04-physical-deadline1/result.json",
+        "result_sha256": "d6f350b610a4005f048a56a45c8624b60ac0d70046d206b475f9ce6d9a8da0dd",
+        "horizon_steps": 1000,
+        "tasks_finished": 2782,
+        "tasks_revealed": 3832,
+        "completed_latency": {
+          "count": 2782,
+          "mean_steps": 217.51545650611072,
+          "p50_steps": 171,
+          "p95_steps": 596,
+          "p99_steps": 880
+        },
+        "maximum_release_to_completion": {
+          "steps": 998,
+          "task_id": 357,
+          "released_at": 0,
+          "observed_at": 998
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 817,
+          "task_id": 252,
+          "released_at": 0,
+          "observed_at": 817
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 904,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.4790476190476,
+        "initial_still_unfinished": 175,
+        "initial_still_unopened": 163,
+        "initial_started_unfinished": 12,
+        "event_accounting_valid": true
+      }
+    },
+    {
       "instance": "RANDOM-05",
       "profile": "trick",
       "name": "trick-random-05-physical-deadline0",
@@ -403,16 +1108,150 @@
       },
       "solver_started": false,
       "note": "Allocation rejected before solver launch; original attempt retained."
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-physical-deadline1",
+      "valid": true,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "finished_utc": "2026-09-21T23:49:18.094829+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-05-physical-deadline1/summary.json",
+      "peak_rss_bytes": 530624512,
+      "latency_seconds": {
+        "mean": 0.577719496919001,
+        "max": 0.881924915
+      },
+      "tasks": 4241,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-05-physical-deadline1/trick-random-05-physical-deadline1/result.json",
+        "result_sha256": "c318307d58d58f2964f74caeb662d8935df25a659832f6436a240608b286bb32",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4241,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "W": 19488,
+            "R": 9817,
+            "C": 6571,
+            "F": 17060
+          },
+          "loaded": {
+            "R": 215602,
+            "W": 479422,
+            "F": 445110,
+            "C": 153920
+          },
+          "idle": {
+            "W": 130422,
+            "C": 22872,
+            "R": 37909,
+            "F": 61807
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 16556,
+              "F": 14881,
+              "R": 8646,
+              "C": 5801
+            },
+            "loaded": {
+              "R": 200409,
+              "W": 436588,
+              "F": 417032,
+              "C": 143757
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 770,
+              "F": 2179,
+              "W": 2932,
+              "R": 1171
+            },
+            "loaded": {
+              "R": 15193,
+              "F": 28078,
+              "W": 42834,
+              "C": 10163
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 197388,
+        "completed_loaded_detour_cells": 219644,
+        "completed_loaded_mean_steps": 282.43008724357463,
+        "completed_chain_lengths": {
+          "2": 1304,
+          "3": 1234,
+          "5": 670,
+          "4": 1033
+        },
+        "unopened_reassignments": 4381,
+        "task_starts": 4667,
+        "waiting_streaks": {
+          "count": 312801,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 251
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random12345-physical-deadline-split-full-v162/trick-random-05-physical-deadline1/trick-random-05-physical-deadline1/result.json",
+        "result_sha256": "c318307d58d58f2964f74caeb662d8935df25a659832f6436a240608b286bb32",
+        "horizon_steps": 2000,
+        "tasks_finished": 4241,
+        "tasks_revealed": 5441,
+        "completed_latency": {
+          "count": 4241,
+          "mean_steps": 358.2037255364301,
+          "p50_steps": 281,
+          "p95_steps": 992,
+          "p99_steps": 1661
+        },
+        "maximum_release_to_completion": {
+          "steps": 1982,
+          "task_id": 55,
+          "released_at": 0,
+          "observed_at": 1982
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1851,
+          "task_id": 724,
+          "released_at": 0,
+          "observed_at": 1851
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 774,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 640.8341666666666,
+        "initial_still_unfinished": 147,
+        "initial_still_unopened": 123,
+        "initial_started_unfinished": 24,
+        "event_accounting_valid": true
+      }
     }
   ],
-  "pending": [
-    "trick-random-02-physical-deadline0",
-    "trick-random-02-physical-deadline1",
-    "trick-random-03-physical-deadline1",
-    "trick-random-04-physical-deadline0",
-    "trick-random-04-physical-deadline1",
-    "trick-random-05-physical-deadline1"
-  ],
-  "complete": false,
+  "pending": [],
+  "complete": true,
   "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
 }

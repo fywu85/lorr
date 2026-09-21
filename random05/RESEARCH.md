@@ -1754,7 +1754,7 @@ original failure and binary identity remain in results/build-v161; the complete
 suite must pass in the new frozen build before any throughput measurement.
 
 
-## Source162 sparse repair acceptance follow-up (2026-09-21 23:47 UTC)
+## Source162 sparse repair acceptance follow-up (2026-09-21 23:44 UTC)
 
 After all-five coordination tests, give RANDOM-01/02 a separate bounded search
 experiment. The existing complete-plan annealer has been tested on03, but no
@@ -1766,3 +1766,23 @@ The audited source162 binary and existing regression are reused. Four disabled
 controls must reproduce all six trace fields; full600steps,1second,32GB limits
 remain. No fresh streams or new algorithmic source are involved. The separate
 RANDOM-01 exact733 repeat is also frozen before launch. No gain is presumed.
+
+
+## Traffic-assignment convergence follow-up (2026-09-21T23:54:08.874051+00:00)
+
+A separate bounded trick experiment covers RANDOM-03/04/05 while the sparse
+repair trials run. Existing guidance searches varied layout seeds and output
+prices but retained20traffic-assignment iterations. Compare10/20/40/80 on each
+current selected profile with identical seed15, one-edge flip, cost scale,
+planner seed, scheduler and search work. This changes only preprocessing of the
+soft directional field; it reads uniform all-pairs map demand, not future tasks.
+The hypothesis is that fewer/more assignment updates yield a field with better
+throughput at a given density. It is not a presumed convergence or quality gain.
+
+All12full runs use the audited source162 binary, --trick INSTANCE, strict1s
+entries/30s preprocessing/32GB. Three20-iteration controls must reproduce all six
+trace fields. Preserve all lower scores/timeouts; any selected increase requires
+repetition and paired planner seeds before a repeatability claim. No held-out
+stream is touched. The new2621RANDOM-03 physical-gate record also gets its own
+exact repeat and pairedseeds0/1/2/3/4 (nine additional runs including the original
+selectingseed3pair). A one-task selected increase is not a proven mean gain.
