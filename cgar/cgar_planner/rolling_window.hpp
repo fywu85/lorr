@@ -15,6 +15,7 @@ namespace cgar {
 struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
     int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0, history_rollout = 0;
+    int delay_samples = 0;  // extra candidates on half the repair attempts; zero preserves the old random stream
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -205,12 +206,14 @@ struct WindowStats {
     bool completed = false;
     long long attempts = 0, accepted = 0, improved = 0, searches = 0, expanded = 0;
     long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0, history_batches = 0;
+    long long delay_draws = 0, delay_replacements = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
     int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
     int changed_first = 0, protected_robots = 0, selected_worker = 0;
     void merge(const WindowStats& other) {
         attempts += other.attempts; accepted += other.accepted; improved += other.improved;
         searches += other.searches; expanded += other.expanded; capped += other.capped; failed += other.failed; partial_rollbacks += other.partial_rollbacks; history_batches += other.history_batches;
+        delay_draws += other.delay_draws; delay_replacements += other.delay_replacements;
     }
 };
 
@@ -252,6 +255,16 @@ public:
           owners_((p_.horizon + 1) * p_.free.size(), -1) {
         for (int r = 0; r < int(paths_.size()); ++r) {
             reserve(r, true); if (!p_.fixed[r]) eligible_.push_back(r);
+        }
+        if (o_.delay_samples) {
+            costs_.resize(paths_.size()); lower_bounds_.resize(paths_.size());
+            for (int r : eligible_) {
+                costs_[r] = p_.cost(r, paths_[r]);
+                const int start = paths_[r][0];
+                lower_bounds_[r] = p_.oracle->value(p_.chains[r], 0, start / 4, start % 4);
+                if (lower_bounds_[r] >= ChainPotential::infinity)
+                    throw std::logic_error("unreachable rolling-window delay lower bound");
+            }
         }
     }
     const std::vector<WindowPath>& paths() const { return paths_; }
@@ -319,28 +332,49 @@ public:
         for (int iteration = 0; iteration < o_.iterations; ++iteration) {
             check(); ++stats.attempts;
             if (eligible_.empty()) continue;
-            const int root = iteration < int(order.size()) ? order[iteration] : eligible_[rng_() % eligible_.size()];
+            int root = iteration < int(order.size()) ? order[iteration] : eligible_[rng_() % eligible_.size()];
+            // Keep the initial sweep and half the later attempts unbiased. The
+            // other half compare avoidable path cost, not remaining task length.
+            // This bounded tournament follows PILOT's delayed-route heuristic.
+            if (iteration >= int(order.size()) && (iteration & 1)) {
+                for (int draw = 0; draw < o_.delay_samples; ++draw) {
+                    const int candidate = eligible_[rng_() % eligible_.size()]; ++stats.delay_draws;
+                    if (costs_[candidate] - lower_bounds_[candidate] > costs_[root] - lower_bounds_[root]) {
+                        root = candidate; ++stats.delay_replacements;
+                    }
+                }
+            }
             auto group = neighborhood(root);
             if (iteration & 1) std::shuffle(group.begin(), group.end(), rng_);
             std::vector<WindowPath> before; before.reserve(group.size());
             int64_t old_cost = 0, old_remaining = 0;
-            for (int r : group) { old_cost += p_.cost(r, paths_[r]); if (o_.progress_ties) old_remaining += p_.remaining(r, paths_[r]); before.push_back(paths_[r]); reserve(r, false); }
+            for (int r : group) { old_cost += o_.delay_samples ? costs_[r] : p_.cost(r, paths_[r]); if (o_.progress_ties) old_remaining += p_.remaining(r, paths_[r]); before.push_back(paths_[r]); reserve(r, false); }
             int repaired = 0; int64_t new_cost = 0, new_remaining = 0;
+            std::vector<int64_t> proposed_costs;
+            if (o_.delay_samples) proposed_costs.reserve(group.size());
             for (int r : group) {
                 WindowPath proposed;
                 if (!path(r, proposed, check)) break;
-                paths_[r] = std::move(proposed); new_cost += p_.cost(r, paths_[r]);
+                paths_[r] = std::move(proposed); const int64_t cost = p_.cost(r, paths_[r]); new_cost += cost;
+                if (o_.delay_samples) proposed_costs.push_back(cost);
                 if (o_.progress_ties) new_remaining += p_.remaining(r, paths_[r]);
                 reserve(r, true); ++repaired;
             }
             if (repaired == int(group.size()) && (new_cost < old_cost ||
                 (new_cost == old_cost && (!o_.progress_ties || new_remaining <= old_remaining)))) {
                 ++stats.accepted; stats.improved += new_cost < old_cost || (o_.progress_ties && new_remaining < old_remaining);
+                if (o_.delay_samples) for (size_t k = 0; k < group.size(); ++k) costs_[group[k]] = proposed_costs[k];
             } else {
                 stats.partial_rollbacks += repaired > 0 && repaired < int(group.size());
                 for (int k = 0; k < repaired; ++k) reserve(group[k], false);
                 for (size_t k = 0; k < group.size(); ++k) { paths_[group[k]] = std::move(before[k]); reserve(group[k], true); }
             }
+        }
+        // A rejected or partially repaired group must never change the delay
+        // cache. Reconcile every live cost before exposing a completed island.
+        if (o_.delay_samples) for (int r : eligible_) {
+            check();
+            if (costs_[r] != p_.cost(r, paths_[r])) throw std::logic_error("rolling-window delay cache disagrees with committed paths");
         }
         check(); stats.completed = true;
     }
@@ -394,6 +428,7 @@ private:
     WindowScratch& scratch_;
     std::mt19937_64 rng_;
     std::vector<int> owners_, eligible_;
+    std::vector<int64_t> costs_, lower_bounds_;
 };
 
 class RollingWindow {
@@ -405,7 +440,8 @@ public:
         if (options.horizon != p.horizon || options.horizon < 1 || options.horizon > 32 ||
             options.keep < 0 || options.keep >= p.horizon || options.iterations < 1 || options.nodes < 1 ||
             options.group < 1 || options.workers < 1 || options.workers > 32 || options.threads < 1 ||
-            options.threads > options.workers || seeds.size() != size_t(options.workers))
+            options.threads > options.workers || options.delay_samples < 0 || options.delay_samples > 16 ||
+            seeds.size() != size_t(options.workers))
             throw std::invalid_argument("invalid rolling-window work declaration");
         if (options.history_rollout < 0 || options.history_rollout > 1 ||
             (options.history_rollout && (options.keep < 5 || !options.seed_rollout || !rollout.geometry || !rollout.order || rollout.displacement_limit < 1)))
