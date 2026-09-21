@@ -991,6 +991,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     future_options_.threads = priority_setting("CGAR_FUTURE_THREADS", 4, 32);
     future_options_.noise = priority_setting("CGAR_FUTURE_NOISE", 50, 1000000);
     future_options_.regional_roots = priority_setting("CGAR_FUTURE_REGIONAL_ROOTS", 0, 1);
+    future_options_.crowd_cost = priority_setting("CGAR_FUTURE_CROWD_COST", 0, 255);
     future_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0xe7037ed1a0b428dbULL);
     if (future_options_.roots) {
         if (future_options_.roots > temporal_workers_ || future_options_.horizon < 10 ||
@@ -1000,7 +1001,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ ||
             window_options_.horizon || (flow_strength_ && !static_trick_metric_))
             throw std::invalid_argument("common futures require static temporal guidance, roots<=workers, horizon10/15/20/25/30 and positive complete work; window/guide/next-errand/neutral-tail/legacy-history are incompatible");
-    } else if (future_options_.horizon != 15 || future_options_.branches != 4 || future_options_.threads != 4 || future_options_.noise != 50 || future_options_.regional_roots)
+    } else if (future_options_.horizon != 15 || future_options_.branches != 4 || future_options_.threads != 4 || future_options_.noise != 50 || future_options_.regional_roots || future_options_.crowd_cost)
         throw std::invalid_argument("common-future work overrides require enabled roots");
     temporal_chain_mode_ = priority_setting("CGAR_TEMPORAL_CHAIN_MODE", 0, 3);
     temporal_chain_paid_ = priority_setting("CGAR_TEMPORAL_CHAIN_PAID_COST", 0, 1) != 0;
@@ -1286,10 +1287,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         std::printf("[cgar-scheduler-chain-config] enabled=1 objective=chain_plus_extra_pickup pickup_weight=%d startup=legacy bucket_order=legacy fair=unchanged held=unchanged shared_oracle=1 extra_tables=0 service=after_action fixed_work=1 timeout_is_failure=1\n", pickup_weight_);
 
     if (future_options_.roots)
-        std::printf("[cgar-future-config] roots=%d horizon=%d branches=%d threads=%d noise=%d regional_roots=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed=cgar protected=full_root_path objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
+        std::printf("[cgar-future-config] roots=%d horizon=%d branches=%d threads=%d noise=%d regional_roots=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d crowd_cost=%d seed=cgar protected=full_root_path objective=%s service=after_action fixed_work=1 timeout_is_failure=1\n",
             future_options_.roots, future_options_.horizon, future_options_.branches, future_options_.threads,
             future_options_.noise, future_options_.regional_roots, guidance_turn_cost_, flow_cost_scale_, chain_potential_.free_cells(),
-            chain_potential_.storage_bytes(), temporal_chain_threads_);
+            chain_potential_.storage_bytes(), temporal_chain_threads_, future_options_.crowd_cost,
+            future_options_.crowd_cost ? "paid_plus_chain_plus_crowd" : "paid_plus_chain");
 
     if (temporal_) temporal_geometry_.initialize(cert_.free, cert_.rows, cert_.cols,
         [&] { check_deadline(preprocess_deadline, "temporal_preprocess"); });

@@ -472,7 +472,10 @@ def main():
                             ('noise','CGAR_FUTURE_NOISE',50),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
                         assert int(cfg[field])==int(case['environment'].get(key,str(default)))
                     regional_roots=int(case['environment'].get('CGAR_FUTURE_REGIONAL_ROOTS','0'));assert int(cfg.get('regional_roots','0'))==regional_roots
-                    assert cfg['seed']=='cgar' and cfg['protected']=='full_root_path' and cfg['objective']=='paid_plus_chain'
+                    crowd_cost=int(case['environment'].get('CGAR_FUTURE_CROWD_COST','0'))
+                    assert 0<=crowd_cost<=255 and int(cfg.get('crowd_cost','0'))==crowd_cost
+                    assert cfg['seed']=='cgar' and cfg['protected']=='full_root_path'
+                    assert cfg['objective']==('paid_plus_chain_plus_crowd' if crowd_cost else 'paid_plus_chain')
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
                     assert 1<=int(cfg['turn_cost'])<=255 and 1<=int(cfg['wait_cost'])<=255
@@ -483,6 +486,11 @@ def main():
                         assert int(x['calls'])==int(x['step']) and int(x['total_evaluations'])==evaluations*int(x['step'])
                         assert int(x['total_batches'])==batches*int(x['step']) and 0<=int(x['selected_root'])<future_roots
                         assert 0<=int(x['selected_cost'])<=int(x['incumbent_cost'])
+                        for which in ('incumbent','selected'):
+                            pairs=int(x.get(which+'_pairs','0'));base=int(x.get(which+'_base',x[which+'_cost']))
+                            assert 0<=pairs<=12*row['robots']*int(cfg['branches']) and base>=0
+                            assert int(x[which+'_cost'])==base+crowd_cost*pairs
+                            if not crowd_cost:assert pairs==0
                         assert 0<=int(x['changed_first'])<=row['robots']
                         assert 0<=int(x.get('regional_candidates','0'))<=future_roots-1
                         assert 0<=int(x.get('total_regional_candidates','0'))<=(future_roots-1)*int(x['step'])

@@ -413,3 +413,14 @@ full-action constraints. Bounded A*, retained-history validation and final joint
 validation enforce the cell constraint, and the next promise comes from the
 selected complete window. Both flags and a window are required. Default-off
 behavior and the previous rejection of implicit composition remain unchanged.
+
+
+`CGAR_FUTURE_CROWD_COST=0..255` optionally adds a terminal crowd penalty to
+common-future selection. It charges each unordered pair of robots whose forecast
+cells lie within a5x5box (Chebyshev distance2); all occupants count, including
+protected and goal-less robots. Cost0 is the original objective and does no pair
+counting. Positive cost requires enabled futures and uses routing cost units.
+Each declared continuation still completes before a root is selected; any deadline
+fails the whole entry. The counter takes O(grid cells +12*robots) work per forecast.
+Diagnostics reconcile base cost, pair count and total cost for the incumbent and
+selected root. This is a general optional objective; it is not implicit map tuning.

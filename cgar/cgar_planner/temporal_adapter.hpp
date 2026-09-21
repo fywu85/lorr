@@ -526,9 +526,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.future_batches += future.batches; stats_.future_changed_first += future.changed_first;
         stats_.future_regional_candidates += regional_candidates;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-future] step=%d complete=1 selected_root=%d regional_candidates=%d evaluations=%d batches=%d incumbent_cost=%lld selected_cost=%lld changed_first=%d orders_fnv1a64=%llu calls=%lld total_evaluations=%lld total_batches=%lld total_changed_first=%lld total_regional_candidates=%lld seconds=%.6f\n",
+            std::printf("[cgar-future] step=%d complete=1 selected_root=%d regional_candidates=%d evaluations=%d batches=%d incumbent_cost=%lld selected_cost=%lld incumbent_base=%lld selected_base=%lld incumbent_pairs=%lld selected_pairs=%lld changed_first=%d orders_fnv1a64=%llu calls=%lld total_evaluations=%lld total_batches=%lld total_changed_first=%lld total_regional_candidates=%lld seconds=%.6f\n",
                 env_->curr_timestep + 1, future.selected, regional_candidates, future.evaluations, future.batches,
-                static_cast<long long>(future.incumbent_cost), static_cast<long long>(future.selected_cost), future.changed_first,
+                static_cast<long long>(future.incumbent_cost), static_cast<long long>(future.selected_cost),
+                static_cast<long long>(future.incumbent_base), static_cast<long long>(future.selected_base),
+                static_cast<long long>(future.incumbent_pairs), static_cast<long long>(future.selected_pairs), future.changed_first,
                 static_cast<unsigned long long>(future.orders_fingerprint), stats_.future_calls, stats_.future_evaluations,
                 stats_.future_batches, stats_.future_changed_first, stats_.future_regional_candidates, std::chrono::duration<double>(Clock::now() - started).count());
     }
