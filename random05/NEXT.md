@@ -1,6 +1,6 @@
 # RANDOM-05: active 4,000-task goal
 
-Updated 2026-09-21 01:59 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
+Updated 2026-09-21 02:10 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
 combined run, then independently validate on fresh inputs. Best3,941, gap59.
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; other agents share
 main and GRID. No delegation. Public `fywu85/lorr` may be pushed. Preserve visibility.
@@ -45,6 +45,18 @@ Source78 is`6b40cd5`; source hashes and all fourteen new trajectories verified.
 Tool`audit_generalization.py --trick-source COMMIT` checks source/binary/input,
 allocation/deadline/RAM and independently replays every successful run.
 
+## Source79 general search extension
+
+`R05_MOVE_BIAS_FRACTION` defaults0.25, preserving source77's selected robots
+and preferred directions exactly. New values vary the fraction receiving a
+proposal; activation hash bits are independent of direction bits. Fraction0
+is neutral; actual rollout scoring and legal-movement checks are unchanged.
+Regression34.04s passes zero-fraction identity and cache/worker/checkpoint
+checks at1/8,1/2,1. All34compiled/test inputs match the frozen build.
+Build79 SHA5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6.
+Source79 is the commit containing this section; link future records using the
+verified commit, not the shared-tree HEAD saved when the build was submitted.
+
 ## Active batches
 
 Collect with`python3 random05/tools/split_grid.py collect --output runs/random05/BATCH`.
@@ -56,6 +68,10 @@ Collect with`python3 random05/tools/split_grid.py collect --output runs/random05
 - `generalization-nms-split-full`: all9done. Random01–04=649/1228/2359/2580;
   five large prep-timeout failures as above. All19attempts archived/audited;
   historicalNMS05=3172 inputs/allocation and independent replay also pass.
+- `move-bias-fraction-split-full-v79`: six strict cases, jobs8901206–11.
+  Bias3 atfractions.25(control)/.125/.5/1; bias2 atfractions.5/1.
+  AllB18/seed5/first7968/K16320, source79. Quarter control must reproduce3941
+  exactly in all six trajectory fields. Original source77 experiments continue.
 - `move-bias-refinement-split-full-v77`: six strict cases, jobs8901185–90.
   Bias3 seeds0/3/4, amplitudes2.5/3.5 seed5, and bias3/seed5 K24480 with
   unchanged first7968. Source77/build77; frozen full cases in experiments/.

@@ -146,6 +146,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.move_bias=real("R05_MOVE_BIAS",0);
     if(!std::isfinite(c.move_bias) || c.move_bias<0 || c.move_bias>4)
         throw std::invalid_argument("move proposal bias must be in [0,4]");
+    c.move_bias_fraction=real("R05_MOVE_BIAS_FRACTION",0.25f);
+    if(!std::isfinite(c.move_bias_fraction) || c.move_bias_fraction<0 || c.move_bias_fraction>1)
+        throw std::invalid_argument("move proposal fraction must be in [0,1]");
     c.mutation_decay=real("R05_MUTATION_DECAY",1);
     if(!std::isfinite(c.mutation_decay) || c.mutation_decay<=0 || c.mutation_decay>1)
         throw std::invalid_argument("mutation decay must be in (0,1]");
@@ -1067,11 +1070,15 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // Explore nearby routing alternatives as well as priority orders. The
     // deterministic root vector supplies proposal randomness, not score credit.
     // Keep cached rankings unbiased: mutate only this rollout's local copy.
-    if(cfg.move_bias>0)for(int a=0;a<n;++a) {
+    const uint64_t bias_cutoff=uint64_t(double(cfg.move_bias_fraction)*4294967296.0);
+    if(cfg.move_bias>0 && bias_cutoff>0)for(int a=0;a<n;++a) {
         uint32_t bits;std::memcpy(&bits,&offsets[a],sizeof(bits));
         uint32_t key=bits^(uint32_t(a)+1)*0x9e3779b9U;
         key^=key>>16;key*=0x7feb352dU;key^=key>>15;key*=0x846ca68bU;key^=key>>16;
-        if((key&3u)!=0)continue; // leave three quarters of agents unbiased
+        // Separate the activation bits from the preferred-direction bits.
+        // The default quarter exactly preserves the old low-two-bits test.
+        const uint32_t activation=((key&3u)<<30)|((key>>4)<<2);
+        if(uint64_t(activation)>=bias_cutoff)continue;
         const int preferred=int((key>>2)&3u);
         auto& cand=candidates[a];const int count=candidate_count[a];
         for(int k=0;k<count;++k)if(cand[k].v!=p[a] && cand[k].d==preferred)

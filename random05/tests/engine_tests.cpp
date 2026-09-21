@@ -825,8 +825,19 @@ void move_proposal_bias() {
     require(biased==simulate(cfg,12,5,5,true),"cached ranking or restore changed move proposal bias");
     cfg.threads=3;
     require(biased==simulate(cfg,12),"move proposal bias changed with worker count");
+    cfg.move_bias_fraction=0;
+    require(ordinary==simulate(cfg,12),"zero proposal fraction changed the original policy");
     cfg.move_bias=0;
     require(ordinary==simulate(cfg,12),"zero move proposal bias changed the original policy");
+    cfg.move_bias=.75;
+    for(float fraction:{.125f,.5f,1.0f}) {
+        cfg.move_bias_fraction=fraction;cfg.threads=1;
+        cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        const auto changed=simulate(cfg,12);
+        require(changed!=ordinary,"proposal fraction did not exercise alternative routing");
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(changed==simulate(cfg,12,5,5,true),"proposal fraction changed with cache, workers or restoration");
+    }
 }
 
 int main() {
