@@ -1,6 +1,6 @@
 # CGAR cross-instance selected throughput history
 
-Throughput is primary. These full runs use shared EPYC9354hosts,4physical cores per case,5s development deadlines and32decimalGB. All are seed0; selected maxima are not multi-seed means. Timestamps are the completed result-file mtime in UTC. Warehouse keeps its existing detailed [history](../../WAREHOUSE_PROGRESS.md).
+Throughput is primary. Resource limits, planner seeds, and deadlines vary by the explicitly recorded phase below. Current selected runs all enforce1000ms and32decimalGB; eight physical cores for WAREHOUSE/SORTATION and four for other instances. Selected maxima are not multi-seed means. Timestamps are the completed result-file mtime in UTC. Warehouse keeps its existing detailed [history](../../WAREHOUSE_PROGRESS.md).
 
 | Instance | Tasks | Completed UTC | Source | Profile | Evidence |
 |---|---:|---|---|---|---|
@@ -273,3 +273,85 @@ steps pass1s; selected maxima201.28/185.37/197.97ms. All whole controls reproduc
 Keep generic613/1084/1613 separately. These are one-seed selected configurations;
 published NMS639/1221/2334 remains ahead and is not a matched local comparison.
 [Selection and resources/waiting](sparse-search/field-interaction-selected.json).
+
+## CITY-01 reaches its historical target; SORTATION qualifies under one second
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| CITY-01 | 8423 | 0 | TRICK | 2026-09-21T03:44:40.064675+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_pickup12 |
+| CITY-02 | 16169 | 0 | TRICK | 2026-09-21T03:47:14.560995+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_pickup12_pickup_groups |
+| GAME | 15574 | 0 | TRICK | 2026-09-21T03:37:42.272217+00:00 | [a573aa5](https://github.com/fywu85/lorr/commit/a573aa5c0aae29de296c38ab1b679d5d8602800e) | trick_squared_adapted_dispatch |
+| RANDOM-03 | 1902 | 0 | TRICK | 2026-09-21T03:40:42.326525+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_global8m |
+| SORTATION | 150333 | 0 | TRICK | 2026-09-21T03:43:08.098400+00:00 | [df94a52](https://github.com/fywu85/lorr/commit/df94a520c77fcb3a73a4a8c74b5b13cab542d1d6) | trick_sortation_global2000000 |
+
+CITY01 reaches8423, three above published NMS8420; both pickup12 and16 score
+8423 on seed0. Select12 at the lower measured peak759.54ms. This is a historical
+threshold match, not a matched local superiority claim. CITY02 pickup grouping
+gives16169, only10 above16159 on one seed. GAME dispatch combined with squared
+chain ranks gives15574 vs14664 (+6.21%), max911.11ms. Native fields still lose
+10429/10471. Whole CITY/GAME controls are identical.
+
+RANDOM03 global8M gives1902 vs1890 (+0.63%);16M=1810 and four proposals=1868.
+This small seed0 record does not establish robust scaling. The separate1890
+bundle replicates as1763/1684 on seeds2/4, versus generic1794/1614; all-three
+means1779.00 vs1673.67 (+6.29%), two of three positive. Generic best1794seed2
+remains separately documented.
+
+SORTATION global2M with8physical cores finishes150333, mean452.13ms, max972.92ms,
+RSS12.46GB. Global1M finishes150284, max887.27ms. Both full5000-step cases pass
+strict1s. The previous150353 development maximum used5s and peaked1152ms; keep
+it as an unqualified development record. Select150333 for the strict profile,
+a20-task reduction (0.0133%) and1.56% below published NMS152714.
+[Exact selected records](latest-selected-20260921-0355.json).
+
+## More regional repair improves the RANDOM-05 best
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| RANDOM-05 | 2684 | 0 | TRICK | 2026-09-21T03:54:58.365892+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_region8m |
+
+Eight million regional candidates per batch improve the unchanged2574 control
+to2684 (+4.27%), above the previous2608 seed2 maximum. Full2000steps, strict1s,
+mean158.80ms, max227.23ms, four cores,0.193GB. More global work loses2544/2559.
+RANDOM04's regional/global expansions all lose its1622seed0 control. Replication
+and larger regional budgets are underway; no broad scaling claim yet.
+[Selected resources and exact control](fixed-work-scaling/random05-region-selected.json).
+
+## GAME fleet selection and further full-run gains
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| GAME | 21742 | 0 | TRICK | 2026-09-21T04:14:09.803081+00:00 | [f644acc](https://github.com/fywu85/lorr/commit/f644accc7e00ceda7a455b7a45ed6eee4f970f8d) | trick_uniform2750 |
+| RANDOM-05 | 2704 | 0 | TRICK | 2026-09-21T04:08:34.604466+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_region16m |
+| RANDOM-05 | 2805 | 0 | TRICK | 2026-09-21T04:16:40.222099+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_region32m |
+| RANDOM-05 | 2806 | 0 | TRICK | 2026-09-21T04:08:53.770216+00:00 | [acaf634](https://github.com/fywu85/lorr/commit/acaf634b537ff655715aae28ed43056e0c62a1de) | trick_region8m_rounds4 |
+| RANDOM-02 | 1188 | 0 | TRICK | 2026-09-21T04:10:03.556947+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | trick_budget4_cadence1 |
+| CITY-02 | 16315 | 0 | TRICK | 2026-09-21T04:21:34.227113+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | trick_budget2 |
+| CITY-01 | 8424 | 2 | TRICK | 2026-09-21T04:18:51.719140+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_pickup12 |
+| CITY-01 | 8427 | 2 | TRICK | 2026-09-21T04:18:56.359058+00:00 | [85c3f0f](https://github.com/fywu85/lorr/commit/85c3f0fff5acc76b1ec7db7155fa48ebb0cedf12) | trick_pickup16 |
+
+GAME uniform2750 raises15574 to21742 (+39.60%), compared with21648 for the
+KK-tabu2750 adaptation and17771 for tabu4000. Full5000steps, strict1s,
+max835.91ms, RSS10.562GB. All6500robots remain physically present;3750receive
+no new tasks. The independent mask and assignment audit passes. At1000steps
+this variant was15.46% worse; the full gain appears late. Do not screen this
+mechanism using that prefix. The disabled whole control is identical to its
+previous source. This is a fairness-affecting TRICK, not a generic gain.
+
+RANDOM05 additional regional work gives2704 at16M,2805 at32M, and2806 with
+8M across four rounds (max343.55ms). Finite repeated unopened-task matching
+separately gives2745/2723/2746 for budgets2/4/4+cadence1 versus2684control.
+RANDOM02 gets1188 with budget4+cadence1 versus1160. CITY02 budget2 gets16315
+versus16169. RANDOM04 all variants lose1622; retain1645seed2overall.
+General mechanisms were evaluated on explicit field/rank presets; these are
+not claims that every generic configuration improves. Entire controls match.
+
+CITY01 pickup12 scores8423/8424/8414/8422 on seeds0/2/4/6; pickup16 scores
+8423/8427/8425/8405. The8427seed2 is the selected maximum, only7tasks above
+historical NMS8420. No matched local superiority or20%margin claim.
+
+The first analysis attempts retained historical constants of one retarget and
+eight regional batches. Corrected checks use the frozen declared budgets,
+validate actual schedules and repeat cooldown, and retain the post-pickup
+ownership prohibition. Original failed attempts and corrected receipts remain.
+[Exact records and control checks](latest-selected-20260921-0425.json).

@@ -50,7 +50,7 @@ def distribution(values):
                 p90=v[int(.9 * (len(v)-1))] if v else None,
                 p99=v[int(.99 * (len(v)-1))] if v else None, max=v[-1] if v else None)
 
-def waiting_audit(path, metric):
+def waiting_audit(path, metric, retarget_budget=1):
     d = read(path); H = d['makespan']; tasks = {t[0]: t for t in d['tasks']}
     completed = {}; picked = {}; assigned = {}
     for tick, robot, task, stop in d['events']:
@@ -74,14 +74,16 @@ def waiting_audit(path, metric):
     assert ages['n'] == metric['outstanding_task_age']['n'] and ages['p90'] == metric['outstanding_task_age']['p90']
     changes = max((len(v)-1 for v in assigned.values()), default=0)
     after_pickup = sum(tick > picked[t] for t, values in assigned.items() if t in picked for tick in values)
-    assert changes <= 1 and after_pickup == 0
+    assert type(retarget_budget) is int and 1 <= retarget_budget <= 8
+    assert changes <= retarget_budget and after_pickup == 0
+    assert changes == metric['max_changes_per_task']
     return dict(tasks_completed=len(completed), outstanding_age=ages,
                 never_assigned_age=distribution([H-tasks[t][1] for t in never]),
                 initial_never_assigned=sum(tasks[t][1] == 0 for t in never),
                 first_half_revealed_still_incomplete=sum(tasks[t][1] <= H//2 for t in outstanding),
                 reveal_to_first_assignment=distribution([v[0]-1-tasks[t][1] for t, v in assigned.items()]),
                 unpicked_assignment_age=distribution([H-v[0]+1 for t, v in assigned.items() if t not in picked]),
-                max_reassignments=changes, assignments_after_pickup=after_pickup)
+                max_reassignments=changes, declared_retarget_budget=retarget_budget, assignments_after_pickup=after_pickup)
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)

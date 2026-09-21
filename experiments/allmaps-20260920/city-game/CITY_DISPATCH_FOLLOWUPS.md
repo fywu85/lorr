@@ -29,3 +29,8 @@ unchanged. Source inspection caps pickup weight at16. Before submission, declare
 CITY01 pickup8 control versus10/12/16; CITY02 pickup12 control versus16,
 16+short preference (oldest admissions OFF), and12+pickup-neighborhood grouping (same64group quota).
 Full3000steps, seed0, explicit trick, no known horizon. Source85c3f0f and the same binary retained.
+
+CITY01 pickup12 and16 both reach8423 at seed0, above published8420 by3tasks.
+Replicate both settings on plannerseeds2/4/6, six fully parallel cases with
+four distinct physical cores each. This measures stability and may set a new
+individual maximum; it is not a matched local NMS comparison.

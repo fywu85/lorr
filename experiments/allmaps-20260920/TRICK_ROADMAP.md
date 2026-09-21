@@ -1,67 +1,52 @@
 # General mechanisms and explicit instance tricks proceed together
 
-Updated2026-09-21UTC after the user's renewed instruction. Throughput is primary;
-waiting/ownership metrics are reported separately. All instance-specific
-configuration and assets require `--trick INSTANCE` and labelled commits/logs.
-A successful trick may update the overall best, including an individual seed.
-The independent RANDOM-05 agent's source and jobs are outside our edit scope.
+Updated 2026-09-21T04:30:40.141812+00:00. Throughput is primary; fairness is secondary. Every instance
+trick requires `--trick INSTANCE`, a labelled commit, and a declared configuration.
+Individual seeds can set best records. The independent RANDOM-05 solver remains
+read-only; no edits, builds, held-out-stream access, or job changes there.
 
-| Instance | Current record and next comparison |
-|---|---|
-| WAREHOUSE | Preserve155173 strict1s; no current retuning. |
-| SORTATION |150353 at5s. Strict full runs with1M/2Mglobal work and8cores underway. |
-| CITY-01 |8386 pickup8 seed6,34below published8420. Pickup10/12/16 factors underway. |
-| CITY-02 |16159 pickup12. Test16,16+short preference,12+pickup grouping. |
-| GAME |14664 adapted field+squared chain ranks. Native/adapted x dispatch full comparison underway. Study KK fleet selection separately. |
-| RANDOM-01 |621 NMS arrows+pickup4; generic613 remains. Replicate and inspect scheduler tradeoff. |
-| RANDOM-02 |1160 NMS arrows+pickup4; higher pickup8 and extra proposals lose. |
-| RANDOM-03 |1890 KK forward+general chain ranks+pickup4; generic1613. Replicate and measure fixed-work scaling. |
-| RANDOM-04 |1645 squared ranks, no field. NMS/KK fields lose the1622seed0 control. |
-| RANDOM-05 |2608 existing field/direct4/matching. New NMS arrows lose; squared ranks mixed. General joint-prefix or exact-chain ideas remain. |
+| Instance | Current selected full strict1s score | Next comparison |
+|---|---:|---|
+| WAREHOUSE |155173|Preserve validated8-core profile. |
+| SORTATION |150333|Preserve2Mglobal/8-core profile; future dispatch or lane factors. |
+| CITY-01 |8427|Four seed results near NMS8420; pickup16 seed2 selected, no large-margin claim. |
+| CITY-02 |16315|Budget2 unopened retarget improved seed0; replicate and test scheduling interactions. |
+| GAME |21742|Fleet2000/2250/2500/2750, plus paired control/2750 on seeds2/4, full5000steps. |
+| RANDOM-01 |621|Test matching cadence separately before adding complexity. |
+| RANDOM-02 |1188|Cadence1 budget1=1183, budget2/4/8=1188; most gain is cadence. Replicate. |
+| RANDOM-03 |1902|KK forward field plus chain ranks, pickup4, global8M. Exact oriented chain potential remains structural candidate. |
+| RANDOM-04 |1645|Map fields and repeated rematching lose. Test regional rounds/partitions; inspect rotation and multi-step coordination. |
+| RANDOM-05 |2806|Combine region4rounds with budget2/4 rematching; test16Mregional or8rounds. |
 
-Read-only source facts, with [frozen fingerprints](trick-review-source-hashes.json):
+General mechanisms with measured gains include construction-priority portfolios,
+regional repair, oriented pickup matching, and finite retarget budgets. Their
+benefits differ by map, so retain separate controls. The dense reference's exact
+remaining-chain orientation DP and coherent multi-step motion pipeline remain
+unimplemented structural candidates; current-goal or one-turn approximations
+are not those algorithms.
 
-* NMS uses `GraphGuidance(env)` for CITY/GAME and reads the first arrow layout
-  from `guidance_map_random.txt` for RANDOM. Its random graph is2 on preferred
-  forward edges and6 on other forward directions, with turn/wait2. This is not
-  the20/200 CITY/GAME field or the standalone RANDOM-05 field already borrowed.
-  Preserve those units or document any adaptation explicitly.
-* NMS squares rank-based robot power for GAME and RANDOM-04/05; CITY and sparse
-  RANDOM retain linear power. CGAR implements this explicit selector with full regression proof.
-  It improves RANDOM04 across three planner seeds and GAME on seed0,
-  but RANDOM05 replication is mixed; retain linear there.
-* KK's active planner selects the first config threshold with `n_agents >=
-  actual_agents`. RANDOM files therefore differ at100/200/400/700 robots.
-  Its800-robot selection is a different planner (`Shadocks`), not a guidance
-  change to borrow and relabel as CGAR.
-* KK's active GAME config caps agents in use at2750. That is a separate fleet
-  selection trick; it cannot be conflated with removing fairness alone, and its
-  behavior must be understood before adapting it around CGAR protections.
-* KK's `greedy_matching2` includes idle/unopened tasks and uses its planner's
-  oriented pickup metric plus the summed task-chain metric. CGAR's bounded local
-  rematching is not that full-pool scheduler. Full joint matching remains a
-  general mechanism to evaluate without silently dropping started ownership.
+Explicit tricks already tested include NMS arrows and squared ranks, KK forward
+fields, the standalone-derived RANDOM guidance field, and GAME fleet selection.
+Uniform2750 beats the KK-tabu2750 adaptation on seed0, but both beat the full
+fleet control by about39%. This deliberately withholds tasks from some robots;
+all robots remain in CGAR movement and no held task is dropped. GAME's1000-step
+prefix predicts the wrong sign, so use the full5000-step horizon.
 
-Known-horizon triage is allowed as a labelled trick, but CGAR's current horizon
-scheduler requires an unrestricted full core for its lower bound. RANDOM and
-irregular CITY/GAME have pockets. Do not bypass that check; construct a valid
-free-space bound or declare a separate heuristic first.
+Reference code facts and hashes are in[the source study](trick-review-source-hashes.json)
+and[the RANDOM transfer review](random-transfer/REVIEW.md). KK's GAME fleet limit
+can be exceeded by exempt starting locations; CGAR preserves this behavior when
+tabu is selected. The shuffle adaptation is documented and independently audited.
+KK's variable stay/turn fields are not reproduced by copying only forward edges.
+NMS/KK source-derived hypotheses count only after controlled CGAR measurements.
 
-No claim that a reference trick transfers successfully is made from source
-inspection alone. Keep individual ablations and full-run controls, including
-negative results. Dense after-turn promises reduced reversed turns but lost
-throughput, and short-task preference also lost that seed0 screen.
+Known-horizon triage is allowed as a labelled trick. Current CGAR spatial bounds
+require unrestricted full cores, which RANDOM/CITY/GAME do not have. Do not
+bypass that restriction: use a valid full-free-space bound or explicitly declared
+heuristic with independent tests. Current dense bests do not use horizon triage.
 
-Further KK inspection: the active GAME LNS/LaCAM2 path uses `tabu_locs`,
-not its separate top-level uniform selector. It excludes robots starting in
-`brc202d_tabu_locs.txt` from the random disabling pool, and disables at most
-N-2750 eligible robots once. Therefore the configured cap can leave more than
-2750 active if fewer candidates are available. Active input/source selection
-must be preserved when testing a corresponding CGAR trick.
-
-KK guidance arrays use E/S/W/N/stay order, the same physical directions as CGAR.
-RANDOM02 forward0.9/1.1 and uniform stay1 are a simple exact transfer candidate.
-RANDOM03/04 and CITY have location-varying stay/turn costs; CGAR's current constant
-turn oracle cannot reproduce those by copying forward costs alone. GAME forward
-weights include100000, requiring explicit handling beyond the current8-bit field.
-Any simplified adaptation must be labelled and compared separately.
+Higher regional budgets sometimes help but more global candidates and the narrow
+after-turn promise often lose. Certificate disabling lost on both dense RANDOM
+maps. Keep those negative findings instead of repeating the same hypotheses.
+Full raw outputs, source/binary hashes, resource limits, task ownership and waiting
+metrics remain recorded. Shared hosts are allowed, with exact physical bindings
+and new SMT-aware queue reservations; timeout is always failure.

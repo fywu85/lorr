@@ -31,7 +31,18 @@ deadline propagation, default-off action identity, stable selection after motion
 and 78000 valid production robot actions on the exact GAME map. Full build and
 benchmark proof will be recorded after execution.
 
-First full benchmark: selected rank-based GAME control, uniform2750, tabu2750,
+The complete regression suite passed at source f644acc. The first full benchmark
+uses the newer15574 adapted-field/squared-chain/dispatch control, uniform2750, tabu2750,
 and tabu4000, same seed0 and remaining settings. Use5000steps, strict1000ms,
 four bound physical cores per run, and32decimalGB RSS. The control must reproduce
-its prior whole trajectory. Keep losses and timeouts; never accept partial scores.
+its prior whole trajectory. The verifier independently reconstructs the exact
+mask from archived starts and the committed asset, and checks every actual
+schedule of excluded robots for zero positive assignments. Keep losses and timeouts; never accept partial scores.
+
+Full seed0 results: control15574, uniform2750=21742, tabu2750=21648,
+tabu4000=17771. All pass strict1s; uniform peak835.91ms and10.562GB RSS.
+Whole control matches the prior build. Uniform2750 disables3750 task recipients,
+but all robots remain movable. Independent masks and excluded schedules pass.
+The1000-step prefix incorrectly predicts a loss; full5000steps are needed.
+See[verification](../results/game-fleet-full-v1/verification.json).
+Nearby2000/2250/2500 sizes and paired planner seeds2/4 are now predeclared.

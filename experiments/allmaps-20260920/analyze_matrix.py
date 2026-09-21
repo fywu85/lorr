@@ -150,7 +150,9 @@ def main():
                 sampled=[fields(l) for l in logs if l.startswith('[cgar-regional-work] ')]
                 assert [int(x['step']) for x in sampled]==list(range(200,row['steps']+1,200))
                 assert all(int(x['candidate_limit'])==cap for x in sampled)
-                assert all(0<=int(x['limited_batches'])<=8 for x in sampled)
+                regional_batches=int(case['environment'].get('CGAR_TEMPORAL_REGIONS','4'))*int(case['environment'].get('CGAR_TEMPORAL_REGION_ROUNDS','2'))
+                assert regional_batches>=1
+                assert all(0<=int(x['limited_batches'])<=regional_batches for x in sampled)
                 assert all(not int(x['limited_batches']) or int(x['max_batch_candidates'])>=cap for x in sampled)
                 priority_noise=int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_NOISE','0'))
                 priority_samples=[fields(l) for l in logs if l.startswith('[cgar-priority-portfolio] ')]
@@ -175,6 +177,7 @@ def main():
                 else:
                     assert not rank_samples and not rank_config
                 retarget_budget=int(case['environment'].get('CGAR_REASSIGN_MATCH_TASK_BUDGET','1'))
+                assert m['declared_task_retarget_budget']==retarget_budget and m['max_changes_per_task']<=retarget_budget
                 retarget_config=[fields(l) for l in logs if l.startswith('[cgar-match-retarget-config] ')]
                 retarget_samples=[fields(l) for l in logs if l.startswith('[cgar-match-retarget] ')]
                 if retarget_budget!=1:
@@ -252,7 +255,7 @@ def main():
                     assert totals[-1]+resets[-1]<=row['robots']*row['steps']
                 else:
                     assert not promise_config and not promise_samples
-                fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
+                fairness[key]=waiting_audit(raw/label/(name+'.json'),m,retarget_budget=retarget_budget)
                 work[key]=dict(retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],

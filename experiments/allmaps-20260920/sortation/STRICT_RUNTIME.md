@@ -21,3 +21,9 @@ all regional work. This is a latency screen only: never compare its truncated
 task counts with full competition throughput. Select the largest budget that
 passes with useful deadline headroom, then run the complete5000steps. Lower
 fixed work is declared before each run; timeout behavior remains an error.
+
+The full strict runs are complete: global2M=150333, max972.92ms,mean452.13ms,
+RSS12.46GB; global1M=150284,max887.27ms,mean340.66ms. Both use8physical cores,
+full5000steps, no errors/timeouts and fixed regional work. Select2M for strict
+throughput; retain150353 as the slower5s development maximum.
+[Full verification](../results/sortation-global-strict-full-v1/verification.json).

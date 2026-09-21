@@ -12,3 +12,9 @@ Separately compare RANDOM03 generic chain-rank1613 versus KK-field/pickup4
 1890 configurations on seeds2/4. This is a bundle comparison, not attribution
 to each component. Sourceacaf634 and frozen reference buildv2. The independent
 RANDOM05 solver and its streams remain untouched.
+
+RANDOM05's8M regional cap reaches2684 at seed0 versus2574 (selected prior
+maximum2608 was seed2), max227.23ms. More global work2544/2559 loses.
+Next compare8M control with16M,32M, and8M x4rounds under the same strict1s
+limit. Replicate4M versus8M on seeds2/4. All fixed work must complete.
+RANDOM04 scaling loses:1622 control vs1556/1601/1582; keep1645seed2 overall.

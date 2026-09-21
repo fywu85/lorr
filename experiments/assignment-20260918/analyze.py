@@ -44,8 +44,25 @@ def get_metrics(item):
     lines=item[1].with_suffix('.log').read_text().splitlines()
     matches=[line for line in lines if line.startswith('[cgar-reassignment]')]
     result['last_reassignment_counters']={k:int(v) for k,v in (field.split('=',1) for field in matches[-1].split()[1:])} if matches else {}
+    # Match the frozen experiment declaration, not the historical default of one.
+    # A nondefault bound also needs the solver's independently emitted receipt.
+    metadata_path=item[1].parent/'metadata.json'
+    environment=json.loads(metadata_path.read_text()).get('environment',{}) if metadata_path.exists() else {}
+    budget=int(environment.get('CGAR_REASSIGN_MATCH_TASK_BUDGET','1'))
+    assert 1<=budget<=8,(item,budget)
+    receipts=[dict(field.split('=',1) for field in line.split()[1:])
+              for line in lines if line.startswith('[cgar-match-retarget-config] ')]
+    if budget!=1:
+        assert receipts==[dict(task_budget=str(budget),finite='1',cooldown='20',started='protected',
+                               primary='protected',recovery='protected',fair='protected',fixed_work='1')],(item,receipts)
+    else:
+        assert not receipts,(item,receipts)
+    result['declared_task_retarget_budget']=budget
+    retarget_gaps=[b[0]-a[0] for entries in assignments.values() for a,b in zip(entries[1:],entries[2:])]
+    result['min_repeat_retarget_gap']=min(retarget_gaps) if retarget_gaps else None
+    if budget!=1:assert all(gap>=20 for gap in retarget_gaps),(item,retarget_gaps)
     assert result['assignments_after_pickup']==0,(item,result['assignments_after_pickup'])
-    assert result['max_changes_per_task']<=1,(item,result['max_changes_per_task'])
+    assert result['max_changes_per_task']<=budget,(item,result['max_changes_per_task'],budget)
     return result
 
 

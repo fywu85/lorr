@@ -1,171 +1,71 @@
 # CGAR competition progress
 
-Updated 2026-09-21 UTC. The active research scope is all ten LoRR2024 instances;
-NMS is the primary target. Throughput comes first and fairness is a secondary,
-reported metric. The latest focused work transfers ideas from the independent
-RANDOM-05 solver into CGAR without modifying that solver's working tree.
+Updated 2026-09-21 04:28 UTC. We are improving CGAR across all ten LoRR2024
+instances, using both general mechanisms and explicitly enabled instance tricks.
+NMS is the target. Throughput is primary; fairness is measured as a secondary
+metric. The independent RANDOM-05 agent's code, jobs and held-out inputs are
+outside this campaign's edit scope.
 
-| Instance | Selected full-run tasks | Evidence status |
-|---|---:|---|
-| WAREHOUSE | 155173 | TRICK; strict1s seeds0/2, max945/958ms |
-| SORTATION | 150353 | TRICK; seed0,5s development, max1152ms; runtime work remains |
-| CITY-01 | 8386 | TRICK; adapted field +pickup8/matching, strict1s, max755ms, seed6 |
-| CITY-02 | 16159 | TRICK; adapted field +pickup12/matching, strict1s, max826ms, seed0 |
-| GAME | 14664 | TRICK; adapted field +squared chain ranks, strict1s, max897ms, seed0 |
-| RANDOM-01 | 621 | TRICK; NMS arrows +pickup4, strict1s, max202ms, seed0 |
-| RANDOM-02 | 1160 | TRICK; NMS arrows +pickup4, strict1s, max186ms, seed0 |
-| RANDOM-03 | 1890 | TRICK; KK forward +chain ranks +pickup4, strict1s, max198ms, seed0 |
-| RANDOM-04 | 1645 | TRICK; squared rank, lanes OFF, strict1s, max140ms, seed2 |
-| RANDOM-05 | 2608 | TRICK; strict1s, tuned field +direct pickup4 +matching, seed2 |
+All selected scores below are complete runs with enforced **1000 ms** entry
+limits and **32 decimal GB** process memory limits. Timeouts fail the run;
+the solver does not return reduced-quality partial work to meet a deadline.
+WAREHOUSE and SORTATION use eight physical cores; other rows use four.
 
-These are individual maxima with different explicit configurations, not one
-universal preset. [Timestamped best history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
-[exact selected records](experiments/allmaps-20260920/selected-full-results.json),
-[published NMS targets](experiments/allmaps-20260920/TARGETS.md),
-[Warehouse history](WAREHOUSE_PROGRESS.md). Published targets are not fresh matched
-local controls. RANDOM-05's selected2608 remains14.49% below the historical3050 target.
+| Instance | CGAR tasks | Published NMS | Difference | Seed | Max step (ms) |
+|---|---:|---:|---:|---:|---:|
+| WAREHOUSE | 155,173 | 154,795 | +0.24% | 0 | 944.77 |
+| SORTATION | 150,333 | 152,714 | -1.56% | 0 | 972.92 |
+| CITY-01 | 8,427 | 8,420 | +0.08% | 2 | 753.90 |
+| CITY-02 | 16,315 | 16,787 | -2.81% | 0 | 821.72 |
+| GAME | 21,742 | 23,274 | -6.58% | 0 | 835.91 |
+| RANDOM-01 | 621 | 639 | -2.82% | 0 | 201.28 |
+| RANDOM-02 | 1,188 | 1,221 | -2.70% | 0 | 183.45 |
+| RANDOM-03 | 1,902 | 2,334 | -18.51% | 0 | 298.41 |
+| RANDOM-04 | 1,645 | 2,547 | -35.41% | 2 | 139.87 |
+| RANDOM-05 | 2,806 | 3,050 | -8.00% | 0 | 343.55 |
 
-The dense-map transfers are measured, not inferred from the independent solver:
+Every current selected profile is a **TRICK**, enabled through `--trick INSTANCE`.
+These are best individual runs under different declared settings, not the mean
+of a universal solver. Published NMS scores are historical targets, not matched
+local runs. WAREHOUSE has exclusive-host qualification and independent action
+replay. The other rows use shared GRID hosts with disjoint bound physical cores,
+no CPU quota, simulator validation and complete movement/waiting accounting.
 
-* General priority portfolios improved both maps. Fresh priority noise helped
-  RANDOM-05 across three planner seeds; retaining old priority vectors was weaker.
-* The explicitly flagged integer guidance field improved RANDOM-05's mean from
-  2032.67 to2478.33 (+21.93%). It did not improve RANDOM-04's mean.
-* Direct pickup weighting plus existing unopened-task matching improved all
-  three tested pairs. RANDOM-04 scores1503/1480/1494, mean1492.33 versus1301.33
-  control (+14.68%). RANDOM-05 scores2574/2608/2528, mean2570 versus2478.33 field
-  control (+3.70%), or26.43% above the earlier generic mean2032.67.
+[Timestamped best history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
+[exact configurations and evidence for all ten rows](experiments/allmaps-20260920/selected-full-results.json),
+[published targets](experiments/allmaps-20260920/TARGETS.md),
+[Warehouse history](WAREHOUSE_PROGRESS.md).
 
-All these dense replications use full horizons, enforced1000ms decisions and
-four bound physical cores per process on shared EPYC9354 hosts. The selected
-profiles average about100ms, peak below171ms and use under0.2GB RAM. There were
-no solver timeouts or simulator errors in the reported accepted matrices.
-Planner seeds vary on the same archived task/start stream; they are not
-independent input streams. [Exact dense configurations and evidence](experiments/allmaps-20260920/random-transfer/BEST.md).
+The largest new improvement is GAME fleet selection: **15,574 → 21,742 (+39.6%)**.
+A fixed subset of 2,750 robots receives tasks, while all 6,500 remain in CGAR's
+movement system. No held or started task is dropped. This adapts a Kitty Knight
+idea and changes fairness: 3,750 robots receive no new assignments. The unchanged
+KK exemption asset scored slightly worse than uniform selection on seed0.
+The independent mask/assignment audit passed. The gain appears late; the same
+variant was worse after 1,000 steps, so full 5,000-step runs are required.
+[Measured fleet ablation](experiments/allmaps-20260920/results/game-fleet-full-v1/summary.md).
 
-CGAR's primary/recovery protections and complete-work timeout behavior remain.
-The motion kernel still includes the documented NMS-derived temporal PIBT code.
-The borrowed RANDOM field and scheduling settings do not replace CGAR with the
-standalone solver. All field use requires `--trick RANDOM-04` or `--trick RANDOM-05`.
-There is no implicit map dispatch or known-horizon rule in the dense selected profiles.
+General repair and scheduling changes also help on some maps. RANDOM-05 improves
+from 2,684 to **2,806** with four regional repair rounds, each with a fixed
+8M-candidate limit. Allowing a finite second reassignment before pickup separately
+improves CITY-02 from 16,169 to **16,315**. Faster matching with a four-change task
+budget improves RANDOM-02 from 1,160 to **1,188**. Started-task ownership, recovery,
+primary protection and the robot cooldown remain enforced. The same rematching
+experiments lose on RANDOM-04. These mechanisms contain no map lookup, but their
+measured combinations include explicitly flagged fields/ranks.
+[Full comparisons and unchanged controls](experiments/allmaps-20260920/latest-selected-20260921-0425.json).
 
-Fairness limitations remain explicit. In the2036-task RANDOM-05 control, the
-capacity policy permanently excludes427 of431 never-assigned tasks because
-one or more stops lie outside the certified core. Disabling that certificate
-reduced throughput on both maps; it remains enabled. The structural exclusion
-still exists in the selected configuration. [Certificate/event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json),
-[negative ablation](experiments/allmaps-20260920/results/dense-capacity-full-v1/summary.md).
+CITY-01 reaches 8,427 on seed2, seven above published NMS. Four tested seeds remain
+close to that threshold; this is not evidence of a substantial margin. SORTATION's
+strict profile scores 150,333; the older 150,353 development run exceeded one second
+and remains separately recorded. RANDOM-04 is the largest relative gap.
 
-The first general movement-promise prototype has now been tested in full runs.
-The2574-task run has105055 immediate inverse-turn pairs away from task/goal
-changes (18.22% of eligible turn transitions). A movement promise must yield to
-CGAR's protected paths and preserve collision validity; this diagnostic alone
-does not establish a throughput gain. [Source review and transfer roadmap](experiments/allmaps-20260920/random-transfer/REVIEW.md).
+The current CGAR family retains its primary/recovery framework and the documented
+NMS-derived temporal PIBT component. Guidance assets, scheduler adaptations and
+fleet selection do not replace it with either team's complete solver. Default-off
+controls are checked against prior whole-trajectory fingerprints.
 
-The after-turn promise prototype and the explicit removal of forced-oldest
-admissions both lost their paired seed0 controls. Generic RANDOM-04 changed
-1503->1388 with promises. Field-guided RANDOM-04 scored1481/1392/1346/1334
-(control/promises/short preference/both); RANDOM-05 scored2574/2548/2539/2546.
-All ten runs were valid under1s, and disabled controls preserved whole trajectories.
-Selected bests are unchanged. [Complete negative result](experiments/allmaps-20260920/random-transfer/MOVEMENT_PROMISE_DESIGN.md).
-
-The parallel trick track now includes explicit NMS CITY/GAME guidance providers,
-verified against the unchanged archived constructor and independent formulas.
-Their full CGAR tests/build and all twelve strict1s field/admission runs passed.
-They require `--trick CITY-01`, `--trick CITY-02` or `--trick GAME`; the adapted field wins on all three instances.
-[Declared CITY/GAME comparison](experiments/allmaps-20260920/city-game/README.md).
-
-The follow-up native service-tail scoring check also lost: RANDOM-04 1481->1398,
-RANDOM-05 2574->2542, both full seed0 pairs valid under1s. Best profiles remain
-unchanged. [Ablation](experiments/allmaps-20260920/random-transfer/NEUTRAL_SERVICE_CHECK.md).
-[Per-instance trick roadmap and NMS/KK source findings](experiments/allmaps-20260920/TRICK_ROADMAP.md).
-
-CITY-01 now improves7305->7755 (+6.16%) using the adapted4/16 NMS field, full3000
-steps at strict1s, four physical cores. All four field/short-preference variants
-were valid. Native20/200/pure-potential6815 and native+short6669 lost the7305
-control; the selected7755 retains HRRN and forced-oldest admission. It remains
-7.90% below published NMS8420. The complete control trajectory is unchanged.
-[Full result and resource/waiting evidence](experiments/allmaps-20260920/results/city-01-native-full-v1/summary.md).
-
-CITY-02 similarly improves14068->14851 (+5.57%) with the adapted field, strict1s,
-max807ms; full control trajectory unchanged. Native14185 and native+short14265
-also beat its control but remain below14851. The selected configuration retains
-HRRN and forced-oldest admission and is11.53% below published NMS16787.
-[Full result](experiments/allmaps-20260920/results/city-02-native-full-v1/summary.md).
-
-GAME improves6519->10080 (+54.62%) with the adapted field over5000 steps, strict1s,
-max905ms and10.51GB peak RSS on four physical cores. Its generic control trajectory
-is unchanged. Native6784 and native+short6758 are much weaker. This remains56.69%
-below published NMS23274, with outstanding-task age p90=5000steps; throughput has
-improved, but the long waiting tail remains.
-[Full result](experiments/allmaps-20260920/results/game-native-full-v1/summary.md).
-
-CITY-01 subsequently reaches**8213** with direct pickup4, HRRN0 and64-group
-unopened matching on the adapted field (+5.91% over7755, +12.43% over generic7305).
-Full3000steps, strict1s, max758ms,8.11GB, four cores. This is2.46% below published
-NMS8420. Remaining-chain rank alone7739 and rank+dispatch8204 lose their respective
-equal-weight profiles. Waiting age p90 worsens1134->2553steps; forced-oldest
-admission remains enabled. Two initial configuration failures are retained and
-excluded, and their corrected explicit-selector runs supply the dispatch scores.
-[Selection/control and failure evidence](experiments/allmaps-20260920/city-game/city-01-dispatch-selected.json).
-
-Explicit NMS squared-rank weighting raises RANDOM-04 to1622/1645/1512 on planner
-seeds0/2/4, compared with1503/1480/1494: mean1593.00 vs1492.33 (+6.75%). All three
-pairs improve; all full strict1s runs are valid. The selected best1645 uses
-`--trick RANDOM-04` with lanesOFF; generic1503 remains the best no-trick record.
-All control trajectories reproduce the previous source. The record is still
-35.41% below published NMS2547. RANDOM-05's seed0 comparison2574->2596 is positive
-but does not yet beat its selected2608; additional seeds are running.
-[Exact rank comparison and selection](experiments/allmaps-20260920/rank-trick/random04-selected.json).
-
-CITY-01 now reaches**8378** (+2.01% over8213), full3000steps at strict1s. The control
-trajectory is identical. It is0.50% below published NMS8420.
-[Full comparison](experiments/allmaps-20260920/results/city-01-dispatch-tuning-v1/summary.md).
-
-CITY-02 now reaches**15797** (+6.37% over14851), full3000steps at strict1s. The control
-trajectory is identical. It is5.90% below published NMS16787.
-[Full comparison](experiments/allmaps-20260920/results/city-02-adapted-scheduling-v1/summary.md).
-
-RANDOM-05 rank replication is mixed: linear2574/2608/2528 versus squared
-2596/2571/2583, mean+0.52%. Keep the existing linear2608 maximum; all six runs
-valid1s, whole controls unchanged.
-[Three-seed rank summary](experiments/allmaps-20260920/rank-trick/three-seed-summary.json).
-
-GAME reaches**11146** with direct pickup4/HRRN0/matching64 on adapted guidance
-(+10.58% over10080). The full control is identical. Short preference alone10540
-and direct pickup without matching10765 also improve10080, but remain weaker.
-Full5000steps at strict1s; selected max894ms. This remains52.11% below published
-NMS23274. [Full comparison](experiments/allmaps-20260920/results/game-adapted-scheduling-v1/summary.md).
-
-GAME's stronger priority weights improve the adapted-field10080 control to
-13314 with linear current-goal ranks,14471 with squared ranks, and**14664** with
-squared remaining-chain ranks. All four full5000-step runs pass1s, selected
-max897ms. Whole10080 control is unchanged; the new best is45.48% above that
-paired control and31.56% above the11146 scheduling branch, but the latter is a
-different configuration. The remaining published NMS gap is37.00%.
-[Rank comparison](experiments/allmaps-20260920/results/game-squared-rank-full-v1/summary.md).
-
-NMS/KK reference fields give new sparse maxima613/1123/1541, compared with
-generic611/1084/1484. Full strict1s and whole controls unchanged. The RANDOM01
-gain is just2tasks on one seed; RANDOM03 uses a KK forward-only adaptation.
-On RANDOM04, uniform1307, NMS1506 and KK1569 all lose the squared generic1622
-seed0 control; retain the1645 seed2 overall best.
-[Reference selections and caveats](experiments/allmaps-20260920/random-reference/sparse-selected.json).
-
-Latest CITY records are**8386** (pickup8, seed6) and**16159** (pickup12, seed0),
-strict1s. CITY01 is34tasks below published8420; CITY02 remains628below16787.
-General remaining-chain ranks improve RANDOM03 1484->**1613** (+8.69%), while
-losing slightly on RANDOM01/02. Generic RANDOM01 portfolio ties**613** with
-roughly half the mean latency of the field profile. Whole controls are unchanged.
-[Full general comparison](experiments/allmaps-20260920/sparse-search/full-comparison.json).
-
-The new NMS field loses the current RANDOM05 field2574->2337, or2377 with
-squared ranks. Uniform1980 also loses. RANDOM04 NMS/KK fields likewise lose
-the1622 seed0 control. Both whole controls are identical; retain existing dense
-bests. [Dense reference comparison](experiments/allmaps-20260920/random-reference/dense-reference-summary.json).
-
-Combining mechanisms gives**621/1160/1890** on RANDOM01/02/03. Pickup4 helps
-the NMS field on01/02; remaining-chain ranks plus the KK forward adaptation
-and pickup4 improve03 by17.17% over the generic1613 control. All full seed0
-cases pass1s and all whole controls reproduce. Generic613/1084/1613 remain
-separate. [Full selection evidence](experiments/allmaps-20260920/sparse-search/field-interaction-selected.json).
+In progress: GAME fleet-size tuning and paired seeds, RANDOM-05 combinations of
+regional work and finite rematching, RANDOM-04 region partitions/rounds, and a
+RANDOM-02 cadence ablation. [Next experiments](experiments/allmaps-20260920/TRICK_ROADMAP.md).
+Historical narrative is preserved in the [earlier progress snapshot](experiments/allmaps-20260920/CGAR_PROGRESS_20260921_0404.md).

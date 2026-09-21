@@ -1,0 +1,284 @@
+{
+  "reason": "Analyzer constants did not yet represent explicitly declared new configurations; corrected independent verification completed without changing solver outputs.",
+  "attempts": [
+    {
+      "raw": "runs/cgar-random-02-rematch-budget-full-v1-20260921",
+      "attempt": "factor-analysis",
+      "log_sha256": "f9689c1f463bb9b3f5c43dcd5ebb5594643418d92a00ae156753e22beeb8bc6e",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-02",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "02d9baa0abbbd775de70b6aedfc593d7f906ec0e240adcf99531fb980647eaf6",
+          "variants.json": "4b28b089256fd0cb16b4279732e168e5685c8531d329e7f43a672fdd5ccd4836",
+          "inputs.json": "287f2cfb1a7cf4ca3c6f25eb8252e26ec3f5c04e78eee8fb65e8e0559ba3481a",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "03dce8eb0113651cb9aa55068f1fc6e24b2d89fe1f22f49ba75149a996b60943",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "AssertionError: (('trick_budget4_cadence1-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-02-rematch-budget-full-v1-20260921/trick_budget4_cadence1-s0-r0/RANDOM-02.json')), 2)",
+        "AssertionError: (('trick_budget4_cadence1-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-02-rematch-budget-full-v1-20260921/trick_budget4_cadence1-s0-r0/RANDOM-02.json')), 2)"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random-02-rematch-budget-full-v1-20260921",
+      "attempt": "factor-analysis-r2",
+      "log_sha256": "7b46894c9661871090cc922eba309557e2607b5214b9e06b99bd6c81b112bd2d",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-02",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "ea461ad907ea5829ded08fb92de91966597587a9d33907d87a68771e16ca0e9d",
+          "variants.json": "4b28b089256fd0cb16b4279732e168e5685c8531d329e7f43a672fdd5ccd4836",
+          "inputs.json": "287f2cfb1a7cf4ca3c6f25eb8252e26ec3f5c04e78eee8fb65e8e0559ba3481a",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "4fe43548dc865f7064124d0b872283e52f5d291f41aa30123d9f5754e9522324",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "    assert changes <= 1 and after_pickup == 0",
+        "AssertionError"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random-04-rematch-budget-full-v2-20260921",
+      "attempt": "factor-analysis",
+      "log_sha256": "9bb5bdbc6b354414cba8c8d64d7d3662371352b8c07f72a6a1d525301cd1b7f7",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-04",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "d7e1159b76efb560e0c1657be87fe8fbb64900ae934621136843c81618093b6c",
+          "variants.json": "143100ae0670c7b2395bf2618385c140cd3903f5ee2130e9df699c3a0d530889",
+          "inputs.json": "6ed5f0af0ffd449b12a0dab3c65d2469530697f1e8d32adec4c21e98a9f4b283",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "03dce8eb0113651cb9aa55068f1fc6e24b2d89fe1f22f49ba75149a996b60943",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-rematch-budget-full-v2-20260921/trick_budget2-s0-r0/RANDOM-04.json')), 2)",
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-rematch-budget-full-v2-20260921/trick_budget2-s0-r0/RANDOM-04.json')), 2)"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random-04-rematch-budget-full-v2-20260921",
+      "attempt": "factor-analysis-r2",
+      "log_sha256": "212b9184ab109017f4c8052f0250d38902397f02ba757ec989fb21923afe8a21",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-04",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "ea461ad907ea5829ded08fb92de91966597587a9d33907d87a68771e16ca0e9d",
+          "variants.json": "143100ae0670c7b2395bf2618385c140cd3903f5ee2130e9df699c3a0d530889",
+          "inputs.json": "6ed5f0af0ffd449b12a0dab3c65d2469530697f1e8d32adec4c21e98a9f4b283",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "4fe43548dc865f7064124d0b872283e52f5d291f41aa30123d9f5754e9522324",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "    assert changes <= 1 and after_pickup == 0",
+        "AssertionError"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random-05-rematch-budget-full-v2-20260921",
+      "attempt": "factor-analysis",
+      "log_sha256": "a1e0df0f2d37148e258446b92eab2538fb0c6c6655a73b2a7a41580ab6d7e262",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-05",
+        "seeds": [
+          0
+        ],
+        "allow_random05": true,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "d7e1159b76efb560e0c1657be87fe8fbb64900ae934621136843c81618093b6c",
+          "variants.json": "8f1c863ab78bcb96e103237da09f2681e7d2cf0688a42d1a11530d24a9638738",
+          "inputs.json": "9c706fabf2a02b9297f6343d6ce4d1955e36e05c37c5f6953d2ff9c2e8cf9d74",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "03dce8eb0113651cb9aa55068f1fc6e24b2d89fe1f22f49ba75149a996b60943",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-05-rematch-budget-full-v2-20260921/trick_budget2-s0-r0/RANDOM-05.json')), 2)",
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-random-05-rematch-budget-full-v2-20260921/trick_budget2-s0-r0/RANDOM-05.json')), 2)"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random-05-rematch-budget-full-v2-20260921",
+      "attempt": "factor-analysis-r2",
+      "log_sha256": "6dafb5dc639db8bef7f2a7c8864da1a2e9ab43e109edc82f006b4fae74984a2a",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "RANDOM-05",
+        "seeds": [
+          0
+        ],
+        "allow_random05": true,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "ea461ad907ea5829ded08fb92de91966597587a9d33907d87a68771e16ca0e9d",
+          "variants.json": "8f1c863ab78bcb96e103237da09f2681e7d2cf0688a42d1a11530d24a9638738",
+          "inputs.json": "9c706fabf2a02b9297f6343d6ce4d1955e36e05c37c5f6953d2ff9c2e8cf9d74",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "4fe43548dc865f7064124d0b872283e52f5d291f41aa30123d9f5754e9522324",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "    assert changes <= 1 and after_pickup == 0",
+        "AssertionError"
+      ]
+    },
+    {
+      "raw": "runs/cgar-city-02-rematch-budget-full-v1-20260921",
+      "attempt": "factor-analysis",
+      "log_sha256": "729a920b184ed1767c02b9bca540ef2466027ae830ffec64d0b4822bfe130d42",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "CITY-02",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "02d9baa0abbbd775de70b6aedfc593d7f906ec0e240adcf99531fb980647eaf6",
+          "variants.json": "d9b28875a61c6427f7806b71ac66680877fbd9b31774155f5c24bb7ee14ad37f",
+          "inputs.json": "fd24af86727ad62e35ecc73443e2094370c12d7a5f8c8713d398fa1fc8bd8128",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "03dce8eb0113651cb9aa55068f1fc6e24b2d89fe1f22f49ba75149a996b60943",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-city-02-rematch-budget-full-v1-20260921/trick_budget2-s0-r0/CITY-02.json')), 2)",
+        "AssertionError: (('trick_budget2-s0-r0', PosixPath('/shared/share_mala/fw2449/lorr2024/runs/cgar-city-02-rematch-budget-full-v1-20260921/trick_budget2-s0-r0/CITY-02.json')), 2)"
+      ]
+    },
+    {
+      "raw": "runs/cgar-city-02-rematch-budget-full-v1-20260921",
+      "attempt": "factor-analysis-r2",
+      "log_sha256": "7d025afeff044aa3844f24fae755db5e095508c7341399b4e967642e7bc79fc1",
+      "request": {
+        "commit": "aad422ff1160e1daae02eccf575209da1e4edd3a",
+        "control": "trick_budget1_control",
+        "trick": "CITY-02",
+        "seeds": [
+          0
+        ],
+        "allow_random05": false,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "ea461ad907ea5829ded08fb92de91966597587a9d33907d87a68771e16ca0e9d",
+          "variants.json": "d9b28875a61c6427f7806b71ac66680877fbd9b31774155f5c24bb7ee14ad37f",
+          "inputs.json": "fd24af86727ad62e35ecc73443e2094370c12d7a5f8c8713d398fa1fc8bd8128",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "4fe43548dc865f7064124d0b872283e52f5d291f41aa30123d9f5754e9522324",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "    assert changes <= 1 and after_pickup == 0",
+        "AssertionError"
+      ]
+    },
+    {
+      "raw": "runs/cgar-random05-region-extension-full-v1-20260921",
+      "attempt": "factor-analysis",
+      "log_sha256": "9594136681b19c79696541bb79cb160a2b8a0fa5e298788d7c07d6048d5bc8ed",
+      "request": {
+        "commit": "acaf634b537ff655715aae28ed43056e0c62a1de",
+        "control": "trick_region8m_control",
+        "trick": "RANDOM-05",
+        "seeds": [
+          0
+        ],
+        "allow_random05": true,
+        "cpus_per_instance": 4,
+        "files": {
+          "analyze_matrix.py": "ed7b7a648da2a7e04c2cd35dba577c21157784282f77a715bac46c6d21465108",
+          "variants.json": "a72ef3e0db6dc953820d5f1bc468133b77a4fa2398bae7d6585d5e184d0c8312",
+          "inputs.json": "9c706fabf2a02b9297f6343d6ce4d1955e36e05c37c5f6953d2ff9c2e8cf9d74",
+          "cpu_resources.py": "925526048f3a99158a6ba36776177566e232cc7e7d2c16f872f9d83b7d36a727",
+          "warehouse_waiting.py": "358dade535133c6573ad818f8c34beb6ec80a9a9456fde978417cbbff6ab3016",
+          "experiments/sequences-20260918/analyze.py": "38aac8e0d38e95679dd7aaa1fc38d416fc4fc3680997c380db390d153fe82667",
+          "experiments/motion-20260918/analyze.py": "a435c3002d3ab5c1e9df8e6e984e662973293cb2e2ef8b3265b874314b41cd9c",
+          "experiments/assignment-20260918/analyze.py": "03dce8eb0113651cb9aa55068f1fc6e24b2d89fe1f22f49ba75149a996b60943",
+          "experiments/throughput-20260918-next/analyze_matrix.py": "cd69dd217cadcf9cf08f949e74f64914cdbad62ade6231b0ea9be7deb668b94b",
+          "experiments/throughput-20260918-strict/analyze.py": "d5ccf84a76997f4db3aaae7793b8ab642db0289dca611724c78a9b514f5c9b70"
+        }
+      },
+      "error_lines": [
+        "    assert all(0<=int(x['limited_batches'])<=8 for x in sampled)",
+        "AssertionError"
+      ]
+    }
+  ]
+}
