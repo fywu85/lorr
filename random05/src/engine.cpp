@@ -1233,9 +1233,9 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     auto& ranking_hits=scratch.ranking_hits;ranking_hits.assign(n,0);
     auto& kinematic_masks=scratch.kinematic_masks;
     if(cfg.kinematic_mask)kinematic_masks.resize(n);
-    // Push loss depends on another robot's state, so that optional policy uses
-    // the original path. All other ranking inputs are captured below; priorities
-    // and collision resolution are always recomputed for the current future.
+    // Cached push pricing adds state-dependent losses only after loading the
+    // static scores. The legacy uncached policy remains an exact reference.
+    // Priorities and collision resolution are recomputed for every future.
     CachedRanking* cache=cfg.candidate_cache && (cfg.push_price==0 || cfg.fast_push) && !candidate_rankings_.empty()
         && ranking_epoch_<=std::numeric_limits<uint32_t>::max()
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
@@ -1389,43 +1389,61 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         }
     }
     if(cfg.push_price>0 && cfg.fast_push) {
-        // Cache only static candidate scores. Compute each occupant's cheapest
-        // forced exit once, before adding any interaction-dependent prices.
-        // Two exits suffice when the requesting parent's cell is forbidden.
+        // The immutable cache holds unpriced scores. Compute occupant losses
+        // before mutating any local candidate, then rebuild directional ties.
         auto& first=scratch.push_best;first.assign(n,INF);
-        auto& second=scratch.push_second;second.assign(n,INF);
-        auto& destination=scratch.push_destination;destination.assign(n,-1);
-        for(int b=0;b<n;++b)for(int k=0;k<candidate_count[b];++k) {
-            const auto& move=candidates[b][k];
-            if(move.v==p[b] || !allowed(b,move.d))continue;
-            const float loss=move.score-base_cost[b];
-            if(loss<first[b]) {second[b]=first[b];first[b]=loss;destination[b]=move.v;}
-            else if(loss<second[b])second[b]=loss;
-        }
-        for(int a=0;a<n;++a) {
-            auto& moves=candidates[a];const int count=candidate_count[a];
-            for(int k=0;k<count;++k)if(moves[k].v!=p[a]) {
-                const int b=owner[moves[k].v];
-                if(b<0 || b==a || (cfg.push_idle_free && !active_chain[b]))continue;
-                const float loss=cfg.push_exclude_swap && destination[b]==p[a]?second[b]:first[b];
-                moves[k].score+=cfg.push_price*std::max(0.f,std::min(100.f,loss));
+        auto& second=scratch.push_second;
+        auto& destination=scratch.push_destination;
+        auto price_moves=[&](auto swap_tag) {
+            constexpr bool exclude_swap=decltype(swap_tag)::value;
+            if constexpr(exclude_swap){second.assign(n,INF);destination.assign(n,-1);}
+            for(int b=0;b<n;++b) {
+                if(cfg.push_idle_free && !active_chain[b])continue;
+                auto accept=[&](int k) {
+                    const auto& move=candidates[b][k];if(move.v==p[b])return;
+                    const float loss=move.score-base_cost[b];
+                    if constexpr(exclude_swap) {
+                        if(loss<first[b]) {second[b]=first[b];first[b]=loss;destination[b]=move.v;}
+                        else if(loss<second[b])second[b]=loss;
+                    } else first[b]=std::min(first[b],loss);
+                };
+                if(cfg.kinematic_mask) {
+                    for(unsigned int mask=kinematic_masks[b];mask;mask&=mask-1)accept(__builtin_ctz(mask));
+                } else for(int k=0;k<candidate_count[b];++k)
+                    if(candidates[b][k].v==p[b] || allowed(b,candidates[b][k].d))accept(k);
             }
-            // Start with the same directional order as the uncached policy,
-            // so newly equal priced scores retain its original tie-breaking.
-            std::sort(moves.begin(),moves.begin()+count,[&](const auto& x,const auto& y) {
-                const int dx=x.v==p[a]?4:x.d,dy=y.v==p[a]?4:y.d;return dx<dy;
-            });
-            for(int k=1;k<count;++k) {
-                const auto move=moves[k];int j=k;
-                while(j>0 && move.score<moves[j-1].score){moves[j]=moves[j-1];--j;}
-                moves[j]=move;
+            for(int a=0;a<n;++a) {
+                auto& moves=candidates[a];const int count=candidate_count[a];
+                std::array<MoveCandidate,5> directed;unsigned int directions=0;
+                for(int k=0;k<count;++k) {
+                    auto move=moves[k];const int direction=move.v==p[a]?4:move.d;
+                    if(direction!=4) {
+                        const int b=owner[move.v];
+                        if(b>=0 && b!=a && !(cfg.push_idle_free && !active_chain[b])) {
+                            float loss=first[b];
+                            if constexpr(exclude_swap)if(destination[b]==p[a])loss=second[b];
+                            move.score+=cfg.push_price*std::max(0.f,std::min(100.f,loss));
+                        }
+                    }
+                    // Unique outgoing directions let us restore the original
+                    // order by indexing, avoiding a second comparison sort.
+                    directed[direction]=move;directions|=1u<<direction;
+                }
+                int used=0;
+                for(unsigned int mask=directions;mask;mask&=mask-1)moves[used++]=directed[__builtin_ctz(mask)];
+                for(int k=1;k<count;++k) {
+                    const auto move=moves[k];int j=k;
+                    while(j>0 && move.score<moves[j-1].score){moves[j]=moves[j-1];--j;}
+                    moves[j]=move;
+                }
+                if(cfg.kinematic_mask) {
+                    unsigned int mask=0;
+                    for(int k=0;k<count;++k)if(moves[k].v==p[a] || allowed(a,moves[k].d))mask|=1u<<k;
+                    kinematic_masks[a]=mask;
+                }
             }
-            if(cfg.kinematic_mask) {
-                unsigned int mask=0;
-                for(int k=0;k<count;++k)if(moves[k].v==p[a] || allowed(a,moves[k].d))mask|=1u<<k;
-                kinematic_masks[a]=mask;
-            }
-        }
+        };
+        if(cfg.push_exclude_swap)price_moves(std::true_type{});else price_moves(std::false_type{});
     }
     // Explore nearby routing alternatives as well as priority orders. The
     // deterministic root vector supplies proposal randomness, not score credit.

@@ -56,7 +56,8 @@ void build_rankings(const Graph& g,const Config& cfg,const Chain& chain,bool ord
 void Engine::prepare_shared_rankings(int timestep) {
     // Shadow planners share Chain objects. Keep this prototype off in nested
     // forecasts and virtual matching, where independently built tables would
-    // otherwise need a different ownership protocol. Dynamic push costs bypass.
+    // otherwise need a different ownership protocol. Cached push pricing layers
+    // occupant-dependent losses over these immutable scores.
     if(!cfg.shared_rankings_mb || (cfg.push_price>0 && !cfg.fast_push) || cfg.rollout_match || cfg.replan_roots || cfg.operation_depth)return;
     const auto& g=*graph;
     // Biased routing needs actual scores. Keep its full exact entries even if
