@@ -5,7 +5,9 @@ source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9), plannerseed0.
 The explicit680active-order cap leaves all800robots movable; cutoffscale1
 replaces1.25 in the preceding4175profile. All2000steps pass strict timing/resource
 checks and independent replay. Mean569.038/max802.896ms, RSS490.828MB.
-Exact repetition and new-seed qualification of4197are pending. The preceding
+The exact repeat matches all six trajectory fields. Plannerseeds0/1/2/3 score
+4197/4168/4179/4143, all independently replayed, with largest entry870.036ms.
+[Qualification](results/random05-record4197-split-full-v132/audit.json). The preceding
 4175profile has exact repeats and four valid planner seeds. FrozenV6validates
 it at +31.99%against NMS and +5.25%against the previous solver on two new task/start
 inputs; that validation does not qualify4197.

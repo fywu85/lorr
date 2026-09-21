@@ -33,12 +33,12 @@ baselines. All prior fresh inputs50001–50012 and50015/50016 remain excluded fr
 
 The user resumed the campaign on2026-09-21 to push all five RANDOM instances
 as high as possible. The4,000 milestone remains completed. FrozenV6validates
-the4,175admission profile; the later4,197cutoff refinement below is still awaiting
-its own qualification and fresh-input check.
+the4,175admission profile. The later4,197cutoff refinement below now passes exact
+repetition and four planner seeds; it has not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 16:31 UTC.
+Updated: 2026-09-21 17:01 UTC.
 
 **Current selected archived best:4,197tasks**, +32.31% versus matched NMS32=3,172
 and +0.53% versus4,175. Source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9),
@@ -47,8 +47,11 @@ cutoffscale1.25to1 from the4175profile. The explicit `--trick RANDOM-05` flag
 covers admission, selected guidance and known horizon. FirstK7968/K16320,
 B18/depth8, movebias3 and directionalcutoffmix1 remain unchanged.
 All2000steps pass independent replay and strict resource/deadline checks:
-mean569.038ms/max802.896ms, peakRSS490.828MB. Exact repetition and additional
-planner seeds are pending. Longest completed order1977steps;150initial orders
+mean569.038ms/max802.896ms, peakRSS490.828MB. The exact repeat matches all six
+trajectory fields; seeds0/1/2/3 score4197/4168/4179/4143, with maximum870.036ms
+and RSS below491MB across all qualification runs. All four pass independent replay.
+[Qualification and trace proof](random05/results/random05-record4197-split-full-v132/audit.json).
+Longest completed order1977steps;150initial orders
 remain unfinished,113unopened; oldest unfinished age is censored at2000.
 [Full audit](random05/results/random05-record4175-coupling-split-full-v132/audit.json).
 

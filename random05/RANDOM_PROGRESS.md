@@ -20,8 +20,8 @@ Large maps are outside active development.
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
-| RANDOM-02 | 200 | 600 | 1390 | 1408 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
+| RANDOM-02 | 200 | 600 | 1397 | 1408 | 1228 |
+| RANDOM-03 | 400 | 800 | 1582 | 2606 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4197 | 3172 |
 
@@ -157,6 +157,10 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T16:00:46.717567+00:00 | RANDOM-02 | general | 1385 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random123-window-progress-split-full-v136/general-random-02-window-progress-early/summary.json) |
 | 2026-09-21T16:15:26.435917+00:00 | RANDOM-02 | general | 1390 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random02-window-progress-qualification-split-full-v136/general-random-02-record1385-seed4/summary.json) |
 | 2026-09-21T16:24:44.415657+00:00 | RANDOM-05 | trick | 4197 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json) |
+| 2026-09-21T16:52:42.436655+00:00 | RANDOM-03 | trick | 2606 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random03-field-price-split-full-v132/trick-random-03-field-price-physical0p25/summary.json) |
+| 2026-09-21T17:07:01.380356+00:00 | RANDOM-02 | general | 1394 | [611aa2a6](https://github.com/fywu85/lorr/commit/611aa2a6) | [Full run](results/random123-repair-orders-split-full-v141/general-random-02-repair-orders-morework/summary.json) |
+| 2026-09-21T17:14:39.399476+00:00 | RANDOM-02 | general | 1397 | [611aa2a6](https://github.com/fywu85/lorr/commit/611aa2a6) | [Full run](results/random02-repair1394-comparison-split-full-v141/general-random-02-repair1394-order2-seed0/summary.json) |
+
 
 ## September21: first development comparisons
 
@@ -883,3 +887,87 @@ not established by their algebra or the successful regression fixture.
 All fifteen source138matching runs now pass independent full replay and resource
 checks. Its five power1controls match729/1408/2602/2777/4175in all six fields.
 Default identity is preserved; neither nonlinear alternative improves throughput.
+
+### R04route-proposal transfer and forecast aging,16:44 UTC
+
+Five declared fullsource132cases test move-proposal bias1/2/3 on the current2777
+profile, a full-score cache control with bias0, and forecast age updates alone.
+R05uses movement bias3; R04currently uses0, and earlier frozen-density transfer
+used a different planner/search/admission combination. Biased ranking needs full
+scores, so the existing compact-cache setting falls back to its exact full-score
+representation. The bias0/full-score control isolates that storage change.
+No real timing deadline is relaxed and all fixed work remains complete-or-fail.
+
+R01planningwindow24/32gives727/722. R02window32fails its first entry at2007.141ms;
+preserve the original failure without a partial score or assumed host cause.
+The generalR02selected1390repeat completes; its independent audit is next.
+
+### R03guidance price decomposition,16:45 UTC
+
+The independent route diagnosis finds109,234extra loaded steps above the relaxed
+oriented bound in the2602trace, including substantial detours. Altering individual
+edge directions has not improved it. The prior R03manifests all kept the field's
+load multiplier at0.75. Seven new full source132cases therefore vary that multiplier
+0/0.25/0.5/1, or blend all action edges0.125/0.25/0.5 toward physical unit-action
+cost2. The latter recomputes exact shortest paths from the changed positive edges;
+it is not an inconsistent mixture of heuristic distance tables. The selected base
+layout, edge flip, seed, work and horizon stay fixed. Every case remains an explicit
+R03guidance trick. This tests routing prices separately from further layout search.
+
+Source139independent extra-edge seeds0–3 give2546/2589/2561/2556 onR03 and
+2746/2739/2756/2750 onR04, against controls2602/2777. No improvement; audits follow.
+R02window24scores1382; window32failed its first entry at2007.141ms. Keep window20.
+
+### Declared 2026-09-21 16:56 UTC: complete field-cost follow-ups
+
+R03 coherent physical-edge blend0.25 finished2606 versus2602; independent replay is underway. Freeze an exact repeat, plannerseeds0/3, and nearby mixes0.1875/0.3125/0.375 at unchanged full work. Transfer physical-edge mixes0.125/0.25 and traffic-assignment betweenness0.5/1 to the current R04=2777 and R05=4197 profiles. All other selected parameters, inputs, full horizons and strict resource budgets remain unchanged. These are explicit map/density tricks and development data, not fresh validation. Specs: `random03-record2606-full-v132.json`, `random45-record-field-cost-full-v132.json`. No new source is needed; source027df4d9/build132.
+
+### Completed follow-ups, 2026-09-21 17:01 UTC
+
+- R05=4197 repeats all six trajectory fields exactly. Plannerseeds0/1/2/3 score4197/4168/4179/4143; all four full runs independently replayed, largest entry870.036ms, RSS<491MB. Their aggregate16687 exceeds the preceding4175profile's16617 by0.421%, positive on each paired planner seed. This is development replication, not a fresh-input validation of the new cutoff.
+- GeneralR02=1390 repeats exactly in all six fields, mean321.415/max486.246ms. The source139 default controls exactly preserve2602/2777; extra independently flipped edges lose at both densities. All ten full runs replayed.
+- Longer windows do not improve sparse records: R01H24/H32=727/722; R02H24=1382; R02H32 fails the first-step deadline at2007.141ms. Preserve the failure, no partial score.
+- R03 current2606 uses coherent physical-edge blend0.25. Full800steps pass replay, mean504.663/max731.223ms. Load weights0/.25/.5/1 yield2537/2516/2542/2559; physical mixes.125/.5 yield2562/2572. The four-task record is provisional as an improvement until paired seeds complete; it is now correctly logged as a selected best.
+- R04 move-bias1/3 and forecast-age yield2760/2749/2737, all below2777. Full-score cache control and bias2 fail at timestep0,1050.888/1053.616ms. The measured startup cost includes512/522ms matching and471ms look-ahead. Do not infer a host cause from this alone. All successes/failures are archived and audited; keep these options off.
+
+### General repair-order experiment, 2026-09-21 17:01 UTC
+
+Sourcef0647771/build140 adds optional `R05_WINDOW_REPAIR_ORDERS=2`: repair each selected neighborhood in both the sampled priority order and its reverse, against identical outside reservations, then choose the better complete plan. Every declared order finishes or its bounded search fails and rolls back; no wall-clock truncation. Source611aa2a6/build141 preserves the original one-order fast path to avoid charging default controls for extra allocations/restoration. Both builds include legality, worker/cache/heap/storage independence, checkpoint, annealing, bounded-failure and configuration tests. Build/test results are pending; no throughput gain is claimed. This mechanism has no map/horizon dependency and needs no trick flag by itself. Evaluation will distinguish equal-work (half as many neighborhoods, twice the orders) from explicitly larger work.
+
+### Exact matching storage optimization, 2026-09-21 17:06 UTC
+
+Source1509f24e/build142 replaces packed `vector<bool>` visited flags with bytes and reuses the Hungarian scratch arrays across augmentations. Cost arithmetic, scan order, tie-breaking, dummy preconditions and matching policy are unchanged. Full regression passes, including an independent exhaustive rectangular-assignment optimum test and existing exact dummy-prefix equivalence tests. Five unchanged selected full profiles are frozen for six-field trace comparison; no speed improvement is claimed until measured. Binary SHAcdb9de68a67c8a2d1afed31398da44fc6a099c83d0b75ba8e075796832ff6da4.
+
+### Dense-search transfer declared 2026-09-21 17:07 UTC
+
+Prior manifests contain no R04 case with active admission and K>=16000. Freeze the complete R05=4197 depth8/B18/K16320/first7968 search on R04, using plannerseed4 and the1000-step horizon, at caps560/595/630 (595 preserves the selected85% active share). Separately transfer only that search to the current R04=2777 scheduler/guidance/cap560 profile, with movebias0/3 and shared rankings disabled. This tests a coordinated search-regime change, with five full original attempts, source027df4d9. All map/density/horizon choices remain explicitly trick-gated. No new task streams or new guidance layouts are used.
+
+### Follow-ups declared 2026-09-21 17:09 UTC
+
+The completed general R02 paired-order1536-neighborhood run reports1394 versus1390 at single-order2048; audit is pending. This uses50% more potential single-agent repair calls. To separate the effect of priority orders from more work, freeze all seven plannerseeds0..6 for one order/3072 neighborhoods and two orders/1536 neighborhoods, source611aa2a6. Same input, no guidance or horizon trick. In parallel, test R05=4197 with the earlier positive startup rank weighting (powers.125/.25, durations125/250) now combined with cap680. No prior admission-enabled R05 manifest included this feature. All four are source027df4d9, full2000steps, explicit `--trick RANDOM-05`; every other current setting stays frozen.
+
+### R03=2606 qualification completed 2026-09-21 17:12 UTC
+
+All six follow-ups pass independent replay/source/input/resource checks. Exact seed5 repetition matches all six trajectory fields. Paired seeds5/0/3 give2606/2572/2590 versus2602/2548/2566 (+0.674%, positive on all three); qualificationmax766.554ms. Nearby mixes.1875/.3125/.375 lose2576/2583/2601. This validates development replication only; V1fresh data applies to the preceding2602recipe. Proof: `results/random03-record2606-split-full-v132/control-equivalence.json`.
+
+### Repair-order first batch audited 2026-09-21 17:16 UTC
+
+All15original attempts are audited. Four successful default controls match all six full trace fields. R01 variants and R02trick variants lose; R03paired variants2594/2600 lose2606. Its unchanged source141control failed t0 at1073.309ms with exactly the source132search counters; preserve without attributing a cause. GeneralR02=1394 is promoted with full replay; seed0follow-up reports1397 and is awaiting its own audit. Freeze five horizon-transfer cases for that general seed0 profile: cutoff.5/.75/.875/1 plus cutoff.875with latepair4/idleprice32. They require explicit `--trick RANDOM-02`; no claim that the added trick helps yet.
+
+### General seed-component merging declared 2026-09-21 17:17 UTC
+
+Source3bb71976/build143 adds default-off `R05_WINDOW_SEED_MERGE=1`. Before LNS, combine independent collision components of the retained and fresh complete plans, choosing only components whose complete-path cost improves without increasing primary cost. This preserves potentially useful commitments while replacing stale routes elsewhere; both parents and the mixed plan are validated. No map/horizon dependency, no additional search iterations. Ten full on/off cases cover generalR01=726, generalR02selectedseed0=1397, tricksR01=729/R02=1408/R03=2606. Tests cover multi-start seeds, zero-repair plans, full simulator legality, worker/cache/heap/storage independence and checkpoint restoration. Build tests are still pending; no gain claimed.
+
+### Observed-progress horizon model declared 2026-09-21 17:27 UTC
+
+Source88551e69/build144, regression42.47s, binarydca1dcb14741e98eb0cebf8cd5393fa612667b9e0b6a3c7000fe7252b4fa1ccf. Optional `R05_TRIAGE_PROGRESS_MIX` redistributes the existing total remaining-work estimate using task-specific exponentially smoothed progress in the oriented chain potential. It requires a mature history, bounds relative speed corrections, falls back on the fleet prior with insufficient/nonpositive progress, and resets on task replacement. Known-horizon policy remains explicitly trick-gated; opened assignments remain locked. History is checkpointed and copied into shadow forecasts. Independent conservation/fast-vs-stalled/task-reset/legacy-replay/cache/worker/flag tests pass. Freeze R04control plus mixes.25/.5/.75 at spans32/64; R05control plus.25/.5 at spans32/64. All full horizons, unchanged selected profiles otherwise. This is a hypothesis, no throughput improvement claimed.
+
+### Audited checkpoint 2026-09-21 17:29 UTC
+
+Selected records729/1408/2606/2777/4197. General726/1397/1582/1558/2226. GeneralR02two-order/I1536 seeds0..6 score1397/1392/1385/1391/1394/1390/1390, versus one-order/I3072 at1382/1389/1387/1391/1382/1389/1384. Total9739vs9704 (+0.3607%, five positive/one tie/one negative); versus the prior one-order/I2048 recipe9665, +0.7657% and positive on all seven. Same potential agent searches do not imply identical actual expansions. All14audited; largest entry738.478ms. Selected1397repeats exactly in source143's default control; the earlier1394also repeats exactly.
+
+Source143seed-component mixing loses every profile: generalR01=718 vs726, trickR01=724 vs729, generalR02=1385vs1397, trickR02=1403vs1408, R03=2603vs2606. All10audited; all five defaults match all six fields. Leave seed merging off. Source142matching storage preserves all five selected traces exactly, not just scores. Means64.109/325.035/515.273/468.207/570.257ms; maxima109.036/484.837/786.174/739.297/768.160ms. All independently audited. These uncontrolled host timings do not establish a causal speedup.
+
+CurrentR04/R05field-cost transfer loses or ties: R04mix.125/.25 andload.5/1=2688/2669/2704/2777; R05=4088/3895/4080/3954. The second2777is a tie, not a record. CompleteR05search-to-R04 transfer caps560/595/630=2567/2577/2499; retaining the R04scheduler/field with broad shallow search andbias0/3=2716/2719. All13runs independently replayed; no new setting promoted.
+
+GeneralR02=1397with horizon cutoffs.5/.75/.875 gives1405 each; cutoff1=1400; latepair4/idleprice32=1399. All five audited, none beats the selected1408trick recipe. R05startup weighting is still running; power.25/duration250failed at t0,1097.496ms. Preserve the failed original. No new fresh-input or unseen-layout claim.

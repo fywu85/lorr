@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 16:39 UTC. The user explicitly resumed the campaign and expanded
+Updated 2026-09-21 17:29 UTC. The user explicitly resumed the campaign and expanded
 the active objective to maximum throughput on all five RANDOM instances.
 The RANDOM-05 4,000-task milestone is achieved and independently audited.
 The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
@@ -31,57 +31,30 @@ Any further fresh validation requires freezing protocol/config before generation
 
 ## Current resumed execution
 
-Selected audited records: **729 / 1408 / 2602 / 2777 / 4197**.
-General records:726/1390/1582/1558/2226. All selected records have complete
-independent replay, allocation, timing and waiting checks. R01=729andR02=1408
-have exact six-field repeats. R05=4197is a newly selected cutoff refinement;
-its exact repeat and seeds1/2/3 are running. Its originalmean569.038/max802.896ms,
-RSS490.828MB, longestcompleted1977steps,150initialordersunfinished/113unopened.
+Selected audited bests **729 / 1408 / 2606 / 2777 / 4197**; general **726 / 1397 / 1582 / 1558 / 2226**.
+R03=2606 source132/027df4d9 uses physical-edge mix0.25. Exact repeat and seeds5/0/3=2606/2572/2590 vs2602/2548/2566, +0.674% and each positive, max766.554ms. All audited. The old freshV1qualification applies to2602.
+R05=4197 source132/027df4d9 repeats all6fields; seeds0/1/2/3=4197/4168/4179/4143, each improves the preceding4175profile. All audited, max870.036ms, RAM<491MB. FreshV6applies to4175, not4197.
+GeneralR02=1397 source141/611aa2a6, paired repair orders2/I1536, earlyprogress tie1, seed0. Seven paired seeds beat oneorder/I3072 by+0.3607%aggregate(5positive/1tie/1negative); beat the prior I2048profile by+0.7657%(all7positive). All14audited,max738.478ms; selected1397repeats exactly onsource143default. Exactspec inrandom-frontiers.json.
 
-Frozen freshV6fully validates the preceding4175admission profile:4182/4177
-against baseline4001/3941 and NMS3154/3155,3178/3149. Aggregate+31.9912%against
-the stronger NMS repetitions and+5.2506%against the previous solver, positive
-on both inputs. All eight protocol/source/resource/timing/replay checks pass.
-Candidatefreshmax774/799ms, RSS<490MB. This does not qualify4197or unseen layouts.
-Protocol1502afa3was committed15:56:30UTC, before generation15:58:30.350635UTC.
-Seeds50015/50016join50001–50012as permanently held-out;50013/50014remain R04reserves.
+Only these GRID batches remain active:
+- random05-record4197-startup-split-full-v132: four startup-rank combinations powers.125/.25, durations125/250, jobs8903473–8903476, startedabout17:10UTC. Power.25/duration250failedt0at1097.496ms; three full runs pending. Preserve failure, audit after complete.
+- random45-progress-triage-split-full-v144: R04control plus mixes.25/.5/.75 at spans32/64; R05control plusmixes.25/.5 atspans32/64. Twelve jobs8903514–8903525, startedabout17:27UTC; source88551e69/build144. Fixed work and strict1s unchanged. Task-specific observed-progress history adjusts only the explicit horizon trick, conserves total predicted remaining work, clamps relative corrections, resets with task replacement, and is checkpointed/copied into forecasts. No performance claim yet.
 
-Active frozen full GRID batches:
-- random05-record4197-split-full-v132: exact repeat and plannerseeds1/2/3,
-  jobs8903336–8903339, source027df4d9/build132. Started about16:32UTC.
-- random34-extra-guidance-split-full-v139: controls2602/2777and one independently
-  selected extra edge, seeds0–3 per density, jobs8903342–8903351.
-  Sourcefd1a724d/build139, regression44.82s; started about16:35UTC.
-- random12-resume-windowlength-split-full-v132: planningwindow24/32onR01/R02,
-  same work/retained prefix/seed, jobs8903352–8903355; started about16:38UTC.
-- random02-general1390-repeat-split-full-v136: selectedseed4exactrepeat,
-  job8903356; source05fd4b76/build136, started about16:38UTC.
+All other batches through143completed and independently audited. Source142byte matching preserves all five selected full traces exactly; means64/325/515/468/570ms, maxima109/485/786/739/768ms. Do not claim a causal speedup from different shared-host runs. Source143seed mixing loses all5profiles, all5default controls exact; keep off. Source141paired orders lose all current tricks but improve generalR02with extra work. Its R03default failedt0at1073.309ms with identical initialsearch counters; preservecauseunknown.
+R04R05-search transfer and field-cost variants all lose or tie; all13audited. R02newgeneral+horizon variants max1405<1408, all5audited. Source139extra guidance flips and longerR01/R02windows lose. All previous failures/negative attempts remain preserved.
 
-Source132binary175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
-Source139binary3dcfbffe50b75d414c0d9c7db7029b7f04ad27e8e83c48e0eb39e79c9d90a6b7.
-Source136binary2b8345852259c9842525484d12613677976baefd43fb8ed741aec6c869fe277e.
+Builds:
+-140/f0647771 paired repair orders, tests41.53s; no benchmark uses this first version.
+-141/611aa2a6 default fastpath preserved, tests41.69s, SHA22ab6415fe3ce8e43e3cd52e7db2846b4f96aad99a14592be5c4d0ad3551f545.
+-142/1509f24e byte Hungarian flags/reused scratch, tests41.41s, SHAcdb9de68a67c8a2d1afed31398da44fc6a099c83d0b75ba8e075796832ff6da4.
+-143/3bb71976 optional seedcomponent merge, tests42.14s, SHA27437f6c86d9e66d50487b3620b47f7e5f42a087e6c17b5116c2754aed4c6de3.
+-144/88551e69 observed-progress cutoff, tests42.47s, SHAdca1dcb14741e98eb0cebf8cd5393fa612667b9e0b6a3c7000fe7252b4fa1ccf.
+All build metadata/logs archived underresults/build-vNN.
 
-All other resumed GRID batches have completed. Nonlinear matching138has completed
-its independent audit; all five controls match all six fields, and powers0.5/2
-lose at all five densities. Keep it off. Source137goal-local window prices lose
-on all sixR03variants, with an exact2602control. Source136early-progress ties
-improve only generalR02(1390selected); keep off in current trick1408profile.
-Source133components and135idle alignment do not improve selected records.
+FrozenV6validates4175:4182/4177vsbaseline4001/3941andstrongerNMS3155/3178, +31.9912%and+5.2506%. All8audited. Heldout50001–50012+50015/50016neverusedfortuning;50013/50014stillreserved/ungeneratedR04.
+All88 R05chronological frontier rows pass complete audit. The oriented-route diagnosis has R05profile4175and uses relaxed collision-free bounds, not recoverable throughput.
 
-R05shared ranking tables preserve4175/4135exactly but are slower and use1.3GB;
-keep off. HigherK19584/23040scores4073/4162. R04K10240/12288=2751/2754, and all
-root-mutation alternatives lose2777. Sparse admission also loses. Preserve every
-negative result and both earlier timeouts (R03uniform1313.366ms; R04component1075.667ms).
-
-All88R05chronological frontier rows pass full source/input/resource/waiting audit.
-The new standalone oriented-route lower-bound diagnosis covers all five selected
-PILOT/NMS pairs in results/oriented-efficiency-20260921. Its bound ignores collisions
-and zero-time repeated waypoints; do not claim the gap is recoverable throughput.
-
-The user explicitly resumed the campaign. The structured goal tool still stores
-the old R03/R04goal as paused and cannot resume/change that status through its API;
-that stale bookkeeping does not revoke the user's current authorization. Continue
-useful work, do not mark the unfinished goal complete or request authorization again.
+User explicitly resumed; stale structuredgoal remains paused and cannot be resumed via API. Continue authorized work without false completion/new-goal workaround or repeated approval. Fable providerusagecreditsstillfailed; do not retry unchanged condition. No newsource145started.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 

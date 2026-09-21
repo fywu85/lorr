@@ -11,7 +11,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,606 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,777 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB

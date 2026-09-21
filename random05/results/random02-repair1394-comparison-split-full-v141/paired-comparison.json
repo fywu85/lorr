@@ -1,0 +1,62 @@
+{
+  "checked_utc": "2026-09-21T17:26:33.980903+00:00",
+  "same_potential_agent_search_calls": true,
+  "paired": [
+    {
+      "seed": 0,
+      "one_order": 1382,
+      "two_orders": 1397
+    },
+    {
+      "seed": 1,
+      "one_order": 1389,
+      "two_orders": 1392
+    },
+    {
+      "seed": 2,
+      "one_order": 1387,
+      "two_orders": 1385
+    },
+    {
+      "seed": 3,
+      "one_order": 1391,
+      "two_orders": 1391
+    },
+    {
+      "seed": 4,
+      "one_order": 1382,
+      "two_orders": 1394
+    },
+    {
+      "seed": 5,
+      "one_order": 1389,
+      "two_orders": 1390
+    },
+    {
+      "seed": 6,
+      "one_order": 1384,
+      "two_orders": 1390
+    }
+  ],
+  "one_order_total": 9704,
+  "two_order_total": 9739,
+  "max_entry_seconds": 0.73847807,
+  "checks": [
+    {
+      "candidate": "runs/random05/random02-repair1394-comparison-split-full-v141/general-random-02-repair1394-order2-seed4/general-random-02-repair1394-order2-seed4/result.json",
+      "reference": "runs/random05/random123-repair-orders-split-full-v141/general-random-02-repair-orders-morework/general-random-02-repair-orders-morework/result.json",
+      "tasks": 1394,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "2c1d527ce5fe6ecb7947d2dc48caa426aa40cd7579b84192785f41b9c5995dba",
+      "reference_sha256": "af38409bd43cf0942f3c6985ac8b91233b41fb3e03a5a3dc21e3dad84a68003b"
+    }
+  ],
+  "caveat": "Seven development planner seeds, same task/start input; not fresh validation or unseen-layout transfer. Each order can terminate a bounded group repair on infeasibility, so equal potential calls does not imply equal actual expansions or runtime."
+}
