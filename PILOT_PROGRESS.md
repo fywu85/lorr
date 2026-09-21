@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 11:31 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 13:25 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -9,7 +9,9 @@ Current development covers RANDOM-01 through RANDOM-05. The other five
 competition instances remain placeholders for future work. NMS is the target;
 throughput is primary, with order waiting times tracked as a secondary metric.
 
-**Active target:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least
+**Paused at the user's request on 2026-09-21.** All PILOT jobs have finished.
+
+**Retained target:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least
 **2,838**, each 10% above matched local NMS, with robust subsecond runtime.
 Selected configurations must pass repeated full runs and fresh-input checks.
 [Campaign and qualification rules](random05/RANDOM34_CAMPAIGN.md).
@@ -20,22 +22,26 @@ These rows use **16 physical EPYC9354 cores / 32 SMT workers**, with bound
 affinity and no CPU quota on shared GRID hosts. A deadline overrun fails the
 run; PILOT completes its declared fixed work instead of returning a partial search.
 
-| Instance | PILOT tasks | Published NMS | Difference | Profile | Seed | Max step (ms) |
-|---|---:|---:|---:|---|---:|---:|
-| WAREHOUSE | — | 154,795 | — | Not evaluated | — | — |
-| SORTATION | — | 152,714 | — | Not evaluated | — | — |
-| CITY-01 | — | 8,420 | — | Not evaluated | — | — |
-| CITY-02 | — | 16,787 | — | Not evaluated | — | — |
-| GAME | — | 23,274 | — | Not evaluated | — | — |
-| RANDOM-01 | 726 | 639 | +13.62% | GENERAL | 4 | 98.23 |
-| RANDOM-02 | 1,376 | 1,221 | +12.69% | GENERAL | 5 | 451.06 |
-| RANDOM-03 | 2,602 | 2,334 | +11.48% | TRICK | 5 | 709.83 |
-| RANDOM-04 | 2,777 | 2,547 | +9.03% | TRICK | 4 | 779.60 |
-| RANDOM-05 | 4,011 | 3,050 | +31.51% | TRICK | 0 | 621.75 |
+| Instance | PILOT tasks | Published max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |
+|---|---:|---:|---|---:|---|---:|---:|
+| WAREHOUSE | — | 154,795 | NMS | — | Not evaluated | — | — |
+| SORTATION | — | 152,714 | NMS | — | Not evaluated | — | — |
+| CITY-01 | — | 8,445 | KK | — | Not evaluated | — | — |
+| CITY-02 | — | 16,997 | KK | — | Not evaluated | — | — |
+| GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
+| RANDOM-01 | 726 | 688 | KK | +5.52% | GENERAL | 4 | 98.23 |
+| RANDOM-02 | 1,376 | 1,260 | KK | +9.21% | GENERAL | 5 | 451.06 |
+| RANDOM-03 | 2,602 | 2,334 | NMS | +11.48% | TRICK | 5 | 709.83 |
+| RANDOM-04 | 2,777 | 2,547 | NMS | +9.03% | TRICK | 4 | 779.60 |
+| RANDOM-05 | 4,011 | 3,050 | NMS | +31.51% | TRICK | 0 | 621.75 |
 
-**Published NMS scores are historical targets, not matched local baselines.**
-Their reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved
-in the [target snapshot](random05/references/published-nms-combined-2024.json).
+**Published scores are historical targets, not matched local baselines.**
+This table uses the stronger published result from NMS and Kitty Knight.
+KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.
+NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved
+in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).
+Matched local Kitty Knight runs are not yet available; the retained qualification
+targets below continue to use matched local NMS.
 A dash means no valid PILOT throughput result, not zero completed tasks.
 The frozen large-map distance representation was estimated at 95–189 GB,
 so those maps are deferred; no large-map throughput is claimed.
@@ -95,7 +101,9 @@ The candidate stays below 701 ms on both fresh inputs; its archived exact
 repeat and two other planner seeds peak below 675 ms.
 RANDOM-04 currently reaches **2,777** (+7.64% above matched NMS),
 **61 tasks short** of 2,838. Its record peaks at 779.6 ms;
-new-record repetitions and planner-seed qualification are tracked in the campaign.
+The 2,777-task profile repeated exactly. Eight planner seeds score
+2,726–2,777; all original, repeat and seed checks peak below 791 ms.
+Fresh RANDOM-04 validation is still pending.
 The earlier 2,661-task configuration passed four planner seeds and exact
 repetitions below 491 ms; a later equivalent source control peaked at
 755.1 ms. That slower control remains in the timing evidence.

@@ -91,6 +91,10 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R04-2777-seed3 | 2742 | 443.1 | 461.4 | 485.0 | 771.9 | 691 | 30.4 |
 | R04-2777-seed5 | 2771 | 455.9 | 472.9 | 486.2 | 788.0 | 700 | 30.4 |
 | R04-2776-source125-control | 2776 | 462.0 | 475.9 | 481.7 | 655.0 | 563 | 31.0 |
+| R04-2777-seed1 | 2757 | 469.9 | 479.0 | 493.6 | 790.2 | 694 | 30.4 |
+| R04-2777-seed2 | 2766 | 443.6 | 461.8 | 485.0 | 767.5 | 696 | 30.4 |
+| R04-2777-seed6 | 2753 | 469.1 | 479.6 | 499.6 | 786.1 | 696 | 30.5 |
+| R04-2777-seed7 | 2753 | 438.9 | 456.2 | 467.7 | 769.4 | 699 | 30.4 |
 
 The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 
@@ -101,6 +105,8 @@ The 2,698-task admission profile is checked on seeds0/3/4/5:2701/2654/2698/2705.
 The 2,738-task profile (cap560, cutoff1) has an exact repetition and four seeds0/3/4/5:2718/2689/2738/2735. Original-source qualification peaks below671 ms; equivalent newer-source controls peak below685 ms. The 2,741-task cutoff0.875 record and its subsequent seed checks remain separately listed.
 
 The contrast2.2, dispersion0.4, cap560, cutoff0.875 profile has four seeds0/3/4/5:2730/2711/2776/2776, all maxima below630 ms. Its original-binary seed4 repetition preserves all six trace fields and peaks at622.264 ms; newer equivalent controls are separately listed. The preceding contrast2.4 profile has an exact repetition at729.537 ms; that slower observation is retained.
+
+The 2,777-task horizon-matching profile repeats exactly in all six trace fields. Seeds0/1/2/3/4/5/6/7 score2726/2757/2766/2742/2777/2771/2753/2753; original, repeat and all seven additional seed runs peak below791 ms. It still needs a higher throughput candidate and frozen fresh-input validation.
 
 The current throughput frontier and remaining target are maintained in [PILOT_PROGRESS.md](../../../PILOT_PROGRESS.md) and [the campaign](../../RANDOM34_CAMPAIGN.md). A higher score does not inherit the timing qualification of a different cutoff or admission profile.
 

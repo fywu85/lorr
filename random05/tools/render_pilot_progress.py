@@ -17,7 +17,7 @@ def read(path):
 
 def render():
     records = read('random05/random-frontiers.json')
-    published = read('random05/references/published-nms-combined-2024.json')
+    published = read('random05/references/published-nms-kk-combined-2024.json')
     selected = {}
     for instance, profiles in records.items():
         profile = max(('general', 'trick'), key=lambda key: profiles[key]['tasks'])
@@ -44,7 +44,8 @@ def render():
         'Current development covers RANDOM-01 through RANDOM-05. The other five',
         'competition instances remain placeholders for future work. NMS is the target;',
         'throughput is primary, with order waiting times tracked as a secondary metric.', '',
-        '**Active target:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least',
+        '**Paused at the user\'s request on 2026-09-21.** All PILOT jobs have finished.', '',
+        '**Retained target:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least',
         '**2,838**, each 10% above matched local NMS, with robust subsecond runtime.',
         'Selected configurations must pass repeated full runs and fresh-input checks.',
         '[Campaign and qualification rules](random05/RANDOM34_CAMPAIGN.md).', '',
@@ -53,22 +54,29 @@ def render():
         'These rows use **16 physical EPYC9354 cores / 32 SMT workers**, with bound',
         'affinity and no CPU quota on shared GRID hosts. A deadline overrun fails the',
         'run; PILOT completes its declared fixed work instead of returning a partial search.', '',
-        '| Instance | PILOT tasks | Published NMS | Difference | Profile | Seed | Max step (ms) |',
-        '|---|---:|---:|---:|---|---:|---:|']
+        '| Instance | PILOT tasks | Published max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |',
+        '|---|---:|---:|---|---:|---|---:|---:|']
     for instance in INSTANCES:
-        target = published['instances'][instance]['tasks']
+        nms_target = published['teams']["No Man's Sky"]['score_details'][instance]['my_metric']
+        kk_target = published['teams']['Kitty Knight']['score_details'][instance]['my_metric']
+        target = max(nms_target, kk_target)
+        reference = 'NMS' if nms_target >= kk_target else 'KK'
         if instance not in selected:
-            lines.append('| {} | — | {:,} | — | Not evaluated | — | — |'.format(instance, target))
+            lines.append('| {} | — | {:,} | {} | — | Not evaluated | — | — |'.format(instance, target, reference))
             continue
         profile, row, summary = selected[instance]
-        lines.append('| {} | {:,} | {:,} | {:+.2f}% | {} | {} | {:.2f} |'.format(
-            instance, row['tasks'], target, 100*(row['tasks']/target-1),
+        lines.append('| {} | {:,} | {:,} | {} | {:+.2f}% | {} | {} | {:.2f} |'.format(
+            instance, row['tasks'], target, reference, 100*(row['tasks']/target-1),
             'GENERAL' if profile == 'general' else 'TRICK', row['case']['env']['R05_SEED'],
             1000*summary['latency_seconds']['max']))
     lines += ['',
-        '**Published NMS scores are historical targets, not matched local baselines.**',
-        'Their reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved',
-        'in the [target snapshot](random05/references/published-nms-combined-2024.json).',
+        '**Published scores are historical targets, not matched local baselines.**',
+        'This table uses the stronger published result from NMS and Kitty Knight.',
+        'KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.',
+        'NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved',
+        'in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).',
+        'Matched local Kitty Knight runs are not yet available; the retained qualification',
+        'targets below continue to use matched local NMS.',
         'A dash means no valid PILOT throughput result, not zero completed tasks.',
         'The frozen large-map distance representation was estimated at 95–189 GB,',
         'so those maps are deferred; no large-map throughput is claimed.',
@@ -136,7 +144,9 @@ def render():
         'repeat and two other planner seeds peak below 675 ms.',
         'RANDOM-04 currently reaches **{:,}** ({:+.2f}% above matched NMS),'.format(selected['RANDOM-04'][1]['tasks'],100*(selected['RANDOM-04'][1]['tasks']/2580-1)),
         '**{} tasks short** of 2,838. Its record peaks at {:.1f} ms;'.format(max(0,2838-selected['RANDOM-04'][1]['tasks']),1000*selected['RANDOM-04'][2]['latency_seconds']['max']),
-        'new-record repetitions and planner-seed qualification are tracked in the campaign.',
+        'The 2,777-task profile repeated exactly. Eight planner seeds score',
+        '2,726–2,777; all original, repeat and seed checks peak below 791 ms.',
+        'Fresh RANDOM-04 validation is still pending.',
         'The earlier 2,661-task configuration passed four planner seeds and exact',
         'repetitions below 491 ms; a later equivalent source control peaked at',
         '755.1 ms. That slower control remains in the timing evidence.',

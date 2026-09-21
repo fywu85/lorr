@@ -1,5 +1,8 @@
 # PILOT RANDOM-03 and RANDOM-04: ten-percent campaign
 
+**Paused at the user's request, 2026-09-21 13:25 UTC.** All PILOT jobs have
+finished; the unfinished goal and evidence are preserved for a later resumption.
+
 Started 2026-09-21 05:17 UTC at the user's request. Throughput must be at least
 10% above matched local NMS on both instances, with runtime reliably below one
 second. This follows the completed RANDOM-05 4,000-task milestone; that record,
@@ -827,3 +830,150 @@ fixtures, trick rejection and dense checkpoint/cache/worker regressions pass
 in34.53seconds. Five full strict cases compare0/25/50/100/200 bonuses against
 the2776 profile, with displacement pricing off. Binary SHA
 47b27dfa400c9675ba0bdbad1e8a58c00622c080d308095baa2f9b4e1c7143e4.
+
+## September 21, 12:40 UTC: lower-work pricing closed; search interaction check
+
+All four lower-work K6144/first3072 push-price cases finish and independently
+replay:2736/2695/2723/2654. They do not improve2777; pricing stays off.
+The separate source119 search interaction batch keeps the2776 admission
+profile and tests depth12/20 or priority noise100/150/300/400. These knobs
+were chosen before reducing active demand, so the new six full strict runs
+check whether their optimum shifted. No held-out input is used.
+
+At 12:41 UTC, four additional full source119 comparisons were declared: turn
+cost0.5/0.75 or waitcost0.25/0.75, each on the2776 profile. Earlier coarse
+checks used turn0.4/1 and wait1; these bracket the current0.6/0.5 settings
+after admission changed the active traffic. All are explicit RANDOM-04
+configuration tricks, fixed work, strict1s, and archived input only.
+
+At 12:43 UTC, three source119 lower-work controls were declared: K4096/5120/6144
+with half-sized first-step work, all remaining2776 settings unchanged. This
+checks the throughput/runtime tradeoff after admission and guidance changes.
+Each completes its full declared work and1000-step horizon or fails; no
+deadline-based partial return is introduced.
+
+At 12:50 UTC, four additional planner seeds1/2/6/7 were declared for the
+unchanged2777 source124 configuration. This is explicit best-seed selection
+on the archived input, not a new algorithm or independent input validation.
+Previous seeds0/3/4/5 remain in the comparison; no task/start seeds are changed.
+All runs retain the full1000steps and strict1s/32GB resource checks.
+
+## September 21, 12:53 UTC: optional first-decision arrival proposals
+
+Source129's five full runs are independently audited: exact2776 control,
+bonuses25/50/100/200 score2764/2734/2745/2732. Across2482 common completed
+tasks, bonus200 reduces distance1–2 away moves2944->2045, but raises loaded
+steps beyond distance8 from265064to273456. Total loaded steps rise406317to
+408117. This is observational redistribution, not a causal recovered-work
+estimate. The mechanism changes its intended behavior but loses throughput.
+
+Source2c309720/build130 adds R05_ARRIVAL_ROOT_PERIOD. A positive period offers
+the arrival bonus only at the first decision for a declared fraction of roots;
+all continuation steps use ordinary priorities. The global forecast score
+therefore chooses whether to use that proposal. Period0 preserves source129's
+always-on behavior; default bonus0 preserves the selected solver. Fixed work,
+incumbent anchors, prefix sharing, screening, local refinement and finalist
+rescoring carry the root choice consistently. Component/replanning combinations
+are rejected. The explicit trick gate remains mandatory.
+
+Regression passes36.71s, including dense task turnover, checkpoint restore,
+worker/cache equivalence, shared/unshared futures, screening and rescoring.
+Six strict full cases compare2776/2764 controls, bonus25 at period2, and bonus200
+at periods1/2/4. Binary SHA32368f385bce8ff0a3c4f300b45d8f4e3549819383df7018eb4e0ccf0ef15373.
+
+## September 21, 13:01 UTC: a bounded coordinated-move proposal
+
+Source75048eed/build131 adds the general R05_JOINT_PROPOSALS option (default0,
+maximum2). It matches robots jointly to legal next cells on the exact promised
+occupancy, minimizes aggregate remaining cost, and cancels head-on two-cycles
+by making both endpoints wait. Other paths and longer cycles retain their
+collision-free destinations. Two declared cost models use zero or half the
+lane edge price. Idle robots prefer waiting unless displacement helps the
+joint assignment; all existing kinematic restrictions remain enforced.
+
+Each proposal is scored through every ordinary continuation from its fixed
+first decision and competes with the completed PIBT search result. This is a
+bounded additional candidate, not a replacement rollout policy. Total work
+is the original K plus10 or20 complete futures and1 or2 assignments; no elapsed
+time truncates it. Unsupported root-operator combinations are rejected.
+The colleague's negative joint-assignment toy result remains a caution, not
+evidence for this additional-candidate design. No throughput claim yet.
+
+Regression passes37.88s: explicit swap cancellation, a legal four-robot cycle,
+a push chain into a hole, promised-move rotation constraints, dense turnover,
+checkpoint replay, caches/workers, shared futures, screening and turn-reversal
+accounting. Four full strict cases compare2776 control,1/2 proposals, and2
+proposals at K6144. All selected map/horizon settings remain behind RANDOM-04's
+trick flag; the move-proposal mechanism itself uses no map-specific knowledge.
+Binary SHA8f7160fa2aecaa129316388db7619d4446357d664c85aa5dac6793bada77a10c.
+
+All source119 admission-search, kinematic-cost and lower-work batches are now
+independently replayed and closed. Depth12/20 gives2756/2753; noise100/150/300/400
+gives2707/2738/2724/2723; turn0.5/0.75 gives2739/2734; wait0.25/0.75 gives2754/2685.
+K4096/5120/6144 gives2661/2703/2757 at mean239/291/342ms and max517/593/687ms.
+The lower-work tradeoff is recorded, but throughput selects the existing profile.
+
+Source124's newly declared seeds1/2/6/7 give2757/2766/2753/2753. All independently
+replay; the maximum is790.204ms. The2777 configuration now has eight planner
+seeds plus its exact repetition, all below791ms. Earlier below789ms statements
+referred to the original four-seed qualification; the new slower observation
+is retained. No fresh task/start inputs were generated or tuned.
+
+## September 21, 13:10 UTC: bounded rematching before swap cancellation
+
+Source027df4d9/build132 adds R05_JOINT_REPAIR_ROUNDS (default0, max8). Each round
+forbids one lower-regret directed edge of every remaining head-on swap, then
+runs another complete matching. Each robot's own wait stays available, so the
+matching remains feasible. Every declared round completes; final unmatched
+swap conflicts still become paired waits. This changes only optional candidate
+generation, never the entry deadline or ordinary policy. Regression38.30s
+includes the blocked two-robot corridor and dense replay/worker/cache checks.
+Four full strict cases compare two-proposal control with1/2/4 repair rounds.
+Binary SHA175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
+
+Source130 arrival-root cases are closed and independently audited: exact2776
+and2764 controls; bonus25/period2 gives2727, bonus200/period1/2/4 gives2699/2728/2740.
+All lose. Both controls preserve all six trajectory/schedule/event/task fields.
+Keep arrival protection disabled. Source131's global joint proposals remain
+under full-run evaluation; sampled steps usually reject them and report many
+canceled two-cycles, motivating the rematching comparison without claiming a win.
+
+## September 21, 13:13 UTC: approved Fable request returned a credit error
+
+The user explicitly approved the prepared6022-byte results-only summary. Its
+original SHA was verified, and Claude Code resumed the existing Fable5.1/max
+session27a4316e-b79d-46cf-86b4-41b0f558938a with tools disabled and the prepared
+12USD cap. The provider returned an out-of-usage-credits error and no review.
+The earlier automatic approval rejection is resolved. The exact payload and
+original response remain in ignored runs/random05/fable-random04-diagnosis-02;
+they are not published or rerouted. Continue local work and do not retry the
+unchanged credit error. No new external feedback is claimed.
+
+## September 21, 13:24 UTC: closed joint proposals and user-requested checkpoint
+
+All build131 and build132 full runs are independently audited. Build131 gives
+2776 control,2775 with one proposal,2773 with two, and2721 at lowerK6144.
+The control preserves all six archived2776 trace fields. Build132 gives
+2773/2776/2776/2776 for0/1/2/4 repair rounds, with maximum entry times
+678.807/682.767/686.688/699.938ms. Zero repairs reproduces build131's2773
+exactly. The other three runs equal the old2776 score but differ in all six
+trace fields; equal throughput does not establish equivalent behavior.
+No record is promoted. Joint proposals and rematching remain default-off.
+[Joint proposal audit](results/random04-joint-moves-split-full-v131/audit.json),
+[repair audit](results/random04-joint-repair-split-full-v132/audit.json),
+[trajectory comparisons](results/random04-joint-repair-split-full-v132/control-equivalence.json).
+
+The user requested a comparison against max(NMS, KK). The dashboard now includes
+the frozen published team scores separately from matched local NMS. Selected
+PILOT726/1376/2602/2777/4011 versus published688/1260/2334/2547/3050 gives
++5.52%/+9.21%/+11.48%/+9.03%/+31.51%. KK supplies the first two references;
+NMS supplies the last three. There is no matched local KK evaluation yet, and
+the original matched-NMS qualification thresholds2595/2838 are unchanged.
+
+At the user's stop request, all PILOT simulation jobs have finished and all
+current result audits are closed. No new experiment or source133 was started.
+Current records remain726/1376/2602/2777/4011. RANDOM-04 still needs61tasks to
+reach2838; no fresh RANDOM-04 input exists. Preserve the eight-seed timing
+qualification, all strict deadline failures and held-out inputs50001–50012.
+Logs and small evidence artifacts are committed and pushed as the stopping
+checkpoint. Resume only at the user's request.

@@ -1,10 +1,11 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 12:35 UTC. The registered 4,000-task RANDOM-05 milestone is
-achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
->=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
-subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
-improvements and explicit tricks for RANDOM-01..05. Non-random maps are deferred.
+Updated 2026-09-21 13:25 UTC. The user requested a stop after finishing, logging,
+committing and pushing the current work. Resume improvement work only on request.
+The RANDOM-05 4,000-task milestone is achieved and independently audited.
+The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
+matched local NMS, with robust subsecond timing. RANDOM-03 is qualified;
+RANDOM-04 remains 61 tasks short. Non-random maps are deferred.
 Latest user correction: RANDOM05_PROGRESS.md remains the authoritative detailed
 RANDOM-05 history; the earlier request naming random05/RANDOM_PROGRESS.md was a
 typo. New root PILOT_PROGRESS.md mirrors CGAR_PROGRESS.md across all ten instances
@@ -28,16 +29,43 @@ work completes or the run fails; do not truncate work on a wall-clock deadline.
 All inputs 50001–50012 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
 Any further fresh validation requires freezing protocol/config before generation.
 
-## Current execution status (12:35 UTC)
+## Stopping checkpoint (2026-09-21 13:25 UTC)
 
-Source129/2fe1f366 built and passed regression34.53s. Active arrival-priority
-batch random04-arrival-priority-split-full-v129, jobs8902841–45, full1000steps,
-bonuses0/25/50/100/200 on2776 profile. Source128 low-work2559 control is6field
-exact, but full K8064push0.25 FAILED atstep1,1027.906ms/exit124. Lowerwork
-random04-displacement-k6144-split-full-v128 (jobs8902833–36) still active.
-Closed/audited127 displacement variants all lose2749/2762/2705/2744/2743/2686/2618;
-control2776 is6fieldexact. Source119 admission-route cases lose2771/2743/2731/2757.
-Current record2777 and qualification remain unchanged. No freshR04input yet.
+No PILOT GRID jobs are running or queued. All declared cases through build132
+have completed and their results are audited. Other agents' CGAR jobs are
+outside this session's scope and remain untouched. No source133 implementation,
+new experiment, or fresh RANDOM-04 input was started.
+
+Latest compiled source: 027df4d9 / build132, full regression passed in38.30s.
+Binary SHA175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
+Default-off joint proposals and rematching did not improve the selected profile:
+- build131: unchanged control2776; one/two proposals2775/2773; lowerK6144=2721.
+  The unchanged control matches the archived2776 run in all six trace fields.
+- build132: zero/one/two/four repair rounds2773/2776/2776/2776. Every run is
+  strict-valid and independently replayed; largest observed entry699.938ms.
+  Zero repairs matches build131's2773 in all six fields. The three2776 repair
+  runs differ from the original2776 trajectories despite matching its score.
+- build130: exact2776/2764 controls; first-decision arrival alternatives
+  2727/2699/2728/2740. Keep all arrival and joint-move options disabled.
+
+The source124 record2777 profile now has eight planner seeds0..7:
+2726/2757/2766/2742/2777/2771/2753/2753. All pass replay and strict timing,
+with the largest entry790.204ms; exact seed4 repetition is retained.
+
+Source119 depth12/20=2756/2753; noise100/150/300/400=2707/2738/2724/2723;
+turn0.5/0.75=2739/2734; wait0.25/0.75=2754/2685; K4096/5120/6144=2661/2703/2757.
+Source129 arrival bonuses all lose2764/2734/2745/2732; control2776 is exact.
+All completed results, lower-work alternatives and failures remain recorded.
+
+The approved Fable summary was submitted through the existing CLI session,
+but the provider returned a usage-credit error and no review. Approval is
+resolved. Do not retry without a change in the credit condition.
+
+If resumed, a possible next hypothesis is to combine independently legal local
+components from a joint proposal with the best PIBT plan. This is only an idea:
+no source, benchmark or performance claim exists for it. Reassess against the
+negative whole-proposal evidence before implementing. Fresh RANDOM-04 inputs
+50013/50014 stay reserved until a qualifying configuration is frozen.
 
 ## Current records and evidence
 
@@ -88,7 +116,7 @@ at05:07 UTC after the evidence and PILOT dashboard were committed/pushed in
 a87f097. Reproduce with tools/audit_4000_milestone.py. The broader RANDOM
 campaign remains authorized; the goal completion does not claim all maps solved.
 
-## Active RANDOM-03/04 ten-percent work
+## Retained RANDOM-03/04 goal and qualification
 
 R03 archived threshold and frozen fresh qualification are COMPLETE. Current
 record2602, source02bccaa7/build102, batchrandom03-merge-coupling-split-full-v102,
@@ -150,7 +178,7 @@ retainreportedmakespan,andrejectuneven/truncatedpaths. Sixhelpertests pass;
 all10existinggeneral/trickfrontierhorizonsremainunchanged. Thehelperisfrozen
 andhashedwithnewGRIDrunners. No benchmarkdata,binaryorinputwasrewritten.
 
-CURRENT SOURCEcaedcce7/build124, regression33.72s, SHAd43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237.
+CURRENT SELECTED RECORD SOURCEcaedcce7/build124, regression33.72s, SHAd43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237.
 Active-onlytravelratecalibrationdoesnotbeat2738control; leaveoff.
 Source118/ca22bb7c exact8byteordercache, fallback32Bwhenroutingbiasneedscores.
 Source119/487a35da exactdummy-prefixHungarianoptimization. All6cacheand3matching
@@ -207,28 +235,12 @@ causalwasteproof. IndependentPythonloaded-forward/awaycounts agreeexactly.
 Artifactsrandom04-goal-score-diagnosis-v126. Frozen126tools hashesverifiedagainst
 latercommit afterconcurrentgitindexlock; originalspecpreserved.
 
-ACTIVE:
-- random04-displacement-split-full-v127, jobs8902805–12: unchanged2776control;
-  cachedlegacyprices.1/.25/.5; idle-free.25/.5; idle-free+noswap.1/.25.
-  Source9ee387da/build127, regression34.69s,
-  SHA52d77c5532d9bbed5729204a85873aa1ce7ea86df11fb4ba5749aa3bc7e6ca6f.
-  Staticrankingscachedwithscores; occupantlossrecomputedthenlocalranksresorted
-  inoriginaldirectionaltieorder. Originalpolicyexactwhennewpricingflagsoff.
-  NewflagsR05_FAST_PUSH, R05_PUSH_IDLE_FREE, R05_PUSH_EXCLUDE_SWAP. Defaults off.
-- random04-push-cache-equivalence-split-full-v127 isCLOSED/AUDITED: both2559,
-  all6fieldsidentical. Slow/fastmean166.743/139.332,max531.368/550.214ms.
-  Separate lowworkcontrol; no newrecord. No freshR04inputs.
-- random04-push-cache-optimized-split-full-v128: lowerwork2559 exactcontrol and
-  K8064push.25. Source5ccd3828/build128,regression34.62s,
-  SHAc2f0e296b4226fa3533add85894c022df8fd4768357489ebb61ab2e01a84d4ac.
-  Reindexdirectionalties, eligibilitymaskexit scans, no unusedsecondbestexit.
-  Mustcompare6fields with127whenbothfullresultsavailable.
-- random04-admission-route-split-full-v119, jobs8902825–28:4fullcases atbase2776,
-  movebias.5/1/2fraction.125 andbias1fraction.25. Boundedproposal-classcheck
-  afteradmission; olduncappedtrialsfailed. Scoring unchanged, no newsource.
+CLOSED: source127 displacement trials and source119 route trials all lose.
+Source127 low-work slow/fast2559 controls match all six fields. Source128
+optimized2559 also matches; its fullK8064 push0.25 run failed at step1,
+1027.906ms/exit124. Preserve this real deadline failure. LowerK6144 pricing
+scores2736/2695/2723/2654, all valid but below the record. No pending audit.
 
-
-NootherPILOTsimulationjobsactive. Audit/commit sessionsmayneedclosing.
 RECENT NEGATIVE EVIDENCE:
 - Horizon matching108/d879feda weights.25/1/4/16:2602/2573/2575/2585 vs2661.
 - Startup priority109/7714e8ca (shorter remainingwork) all variants2522–2630
@@ -251,19 +263,20 @@ RECENT NEGATIVE EVIDENCE:
 - Older guidance reversal/field flips, replan forecasts, component crossover,
   score weighting, window scaling also lose; detailsinRANDOM34_CAMPAIGN.md.
 
-FABLE QUESTION PENDING: automatic approval review rejected sending a new6022byte
-results-only summary (no newsource) to the existing externalFable session.
-NOT SENT. Exactpreparedfile runs/random05/fable-random04-diagnosis-02/payload.txt;
-SHA inprepared.json. User wasasked throughrequest_user_input_async toapprove
-this payload/destination. Do notsendorchangeit unlessapprovalarrives. Continue
-localwork; this doesnotblockthegoal. LastactualFablecall21:55UTCpreviousday
-failedusagecredits. Prior79KB approvaldoesnot cover thisnewpayload according
-toautomaticreview. Preserve rejection explanation in any final response while
-unresolved. Readstatus.json inthatdirectoryforcontext.
+FABLE REVIEW APPROVAL RESOLVED at13:11UTC: user explicitly approved the unchanged
+6022-byte results summary at runs/random05/fable-random04-diagnosis-02/payload.txt.
+SHA493ff3fb8a05766e037127300fcf4489196c8bea2c506a2c00b0ed16d9a70bd5 was verified,
+then CLI resumed session27a4316e-b79d-46cf-86b4-41b0f558938a with Fable5.1/max,
+no tools and12USD cap. Provider returned OUT OF USAGE CREDITS; no review arrived.
+Status/response/completion are preserved in that ignored directory. This is now
+a provider-credit issue, not a pending approval or automatic-review rejection.
+Do not retry unchanged credit failure or send new unapproved payloads. The
+optional review does not block a future local continuation, once requested.
 
-Last verified public push c68ea978. Later owned commits/evidence need push. Only
-random05/,PILOT_PROGRESS.md,RANDOM05_PROGRESS.md may becommitted. Fablepayload
-stays inignoredruns; do not publish or reroute it to bypass the rejection.
+This stopping checkpoint is to be committed and pushed to public fywu85/lorr
+main, with the resulting hash reported to the user. Only random05/,
+PILOT_PROGRESS.md and RANDOM05_PROGRESS.md are in scope. Exact Fable payload
+and response remain in ignored runs; neither is published or rerouted.
 
 ## Rejected source experiments / tool notes
 
@@ -283,8 +296,8 @@ small direct/one-level spec/allocation/submission/summary/completion/batch JSON,
 never raw traces or NMScwd. Split raw traces live at BATCH/CASE/CASE/result.json.
 
 Fable persistent session27a4316e-b79d-46cf-86b4-41b0f558938a failed provider credits;
-no new feedback. Approved79KB payload is unchanged. Do not retry unchanged quota
-or send new unapproved payloads. Shell requires escalation due namespace failure.
+no new feedback. The new6022-byte payload was explicitly approved and submitted but also hit
+usage credits. Do not retry unchanged quota or send new unapproved payloads. Shell requires escalation due namespace failure.
 Python3.7; env/bin/python has NumPy. apply_patch unavailable; use safe heredocs.
 
 Only scoped git operations; never reset/amend others' work. Public push:
