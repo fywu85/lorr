@@ -729,3 +729,11 @@ Previous selected maximum 3130. Full 2000 steps; 4 physical cores, strict 1,000 
 | 3571 | 2026-09-21T12:09:07.898748+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise2, seed 10, `--trick RANDOM-05` | [verification](results/random05-move-promises-full-v1/verification.json) |
 
 Previous selected maximum 3391. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 712.32 ms. RANDOM-05 mode2 motion commitments reach3571 vs exact3065 uncapped control (+16.51%), max712.32ms. Published3355margin target cleared at selectedseed10 (+17.08% over3050). Seeds0/2 replication pending; no newtaskcap.
+
+## RANDOM-05 3610 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3610 | 2026-09-21T12:34:04.829181+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move2_cap700, seed 10, `--trick RANDOM-05` | [verification](results/random05-move-cap-composition-full-v3/verification.json) |
+
+Previous selected maximum 3571. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 729.83 ms. The RANDOM05 cap interaction gains39 tasks over a trajectory-identical3571control on seed10. Selected-seed evidence; cap interaction is not yet replicated. Both full2000-step runs satisfy strict1s/32decimalGB. Historical competitor target3050; no matched competitor or starvation-free claim.

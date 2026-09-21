@@ -1,0 +1,66 @@
+{
+  "checked_utc": "2026-09-21T12:36:14.043899+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_move2_control",
+      "seed": 10,
+      "tasks": 3571,
+      "valid": true,
+      "max_entry_seconds": 0.723899055,
+      "peak_rss_bytes": 239591424,
+      "trajectory_sha256": "bc4bb0a899f10d874d656f71e7d88d94728351037d938ecb8684af9c0c5af1ac",
+      "mean_entry_ms": 605.0127798364997,
+      "outstanding_age_p90": 2000,
+      "evidence": "results/random05-move-cap-composition-full-v3/verification.json",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_move2_cap700",
+      "seed": 10,
+      "tasks": 3610,
+      "valid": true,
+      "max_entry_seconds": 0.729825367,
+      "peak_rss_bytes": 239190016,
+      "trajectory_sha256": "ec96a6dc0cbc416b1ab46c37c223719297b51b8dd98f7409839356dfa6fad5b3",
+      "mean_entry_ms": 610.0478349820012,
+      "outstanding_age_p90": 2000,
+      "evidence": "results/random05-move-cap-composition-full-v3/verification.json",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
+      "random_task_cap": {
+        "configuration": {
+          "limit": "700",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "1800",
+          "limit": "700",
+          "checks": "1801",
+          "admitted": "3909",
+          "idle_robot_steps": "191421",
+          "peak_active": "700"
+        },
+        "independent_audit": {
+          "steps": 2000,
+          "peak_active": 700,
+          "min_active": 594,
+          "mean_active": 686.109,
+          "distinct_admitted_tasks": 4203,
+          "idle_robot_steps": 227782,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      }
+    }
+  ],
+  "control_trajectory_exact": true,
+  "decision": "Cap700 with mode2 improves selectedseed10 from3571 to3610 (+39,+1.0921%). Full2000, strict1s32GB. Single-seed cap interaction only; no consistent cap-gain or starvation-free claim."
+}

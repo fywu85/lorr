@@ -1,0 +1,53 @@
+{
+  "checked_utc": "2026-09-21T12:54:37.494556+00:00",
+  "evidence": "results/city01-stronger-lanes-full-v1/verification.json",
+  "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+  "control_trajectory_exact": true,
+  "rows": [
+    {
+      "instance": "CITY-01",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 8440,
+      "valid": true,
+      "max_entry_seconds": 0.756758519,
+      "peak_rss_bytes": 8093151232,
+      "trajectory_sha256": "705fb54e196dc9fd8e1c9706e77351d5182f1e087816865e3a0589c755defa2a",
+      "adapted_lane_price": 16
+    },
+    {
+      "instance": "CITY-01",
+      "variant": "trick_lane24",
+      "seed": 2,
+      "tasks": 8413,
+      "valid": true,
+      "max_entry_seconds": 0.753185197,
+      "peak_rss_bytes": 8089010176,
+      "trajectory_sha256": "42eb065a0a5e249908d72de4672eb981efb267850e438bce89ac5bf8aba46202",
+      "adapted_lane_price": 24
+    },
+    {
+      "instance": "CITY-01",
+      "variant": "trick_lane32",
+      "seed": 2,
+      "tasks": 8409,
+      "valid": true,
+      "max_entry_seconds": 0.751723694,
+      "peak_rss_bytes": 8109838336,
+      "trajectory_sha256": "5b5377b9f02b83a61413ba550c862295e8469a500b4de0f80735d49e4339c963",
+      "adapted_lane_price": 32
+    },
+    {
+      "instance": "CITY-01",
+      "variant": "trick_lane48",
+      "seed": 2,
+      "tasks": 8394,
+      "valid": true,
+      "max_entry_seconds": 0.745010522,
+      "peak_rss_bytes": 8105250816,
+      "trajectory_sha256": "6008c1b190b7b39fdde09fcf412a3e040d4b5abacfebf9167476f29966df2b03",
+      "adapted_lane_price": 48
+    }
+  ],
+  "decision": "CITY01 current16 gives8440; opposing24/32/48 give8413/8409/8394. Allfull valid. Retain16. CITY02 still pending."
+}

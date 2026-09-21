@@ -23,3 +23,7 @@ additional matched seeds. No throughput claim before completed verification.
 The shared benchmark runner must remain unchanged until all currently queued
 matrices have finished launching their cases; extend its allowed values before
 submitting these new profiles. No older run may mix runner hashes.
+
+CITY01 full results: 8,440 at the current price16; 8,413/8,409/8,394 at24/32/48.
+All valid within one second, with an exact control trajectory. Retain16. CITY02
+remains pending. The stronger settings are available but are not promoted.

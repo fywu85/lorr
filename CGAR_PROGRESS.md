@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T12:21:52.879061+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T12:54:37.569142+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -19,7 +19,7 @@ use eight physical cores; the other selected rows use four.
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
 | RANDOM-04 | 2,298 | 2,547 | 2,802 | 504 | 2 | 306.43 |
-| RANDOM-05 | 3,571 | 3,050 | 3,355 | 0 | 10 | 712.32 |
+| RANDOM-05 | 3,610 | 3,050 | 3,355 | 0 | 10 | 729.83 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
 are selected seed maxima, not averages of one universal configuration. The new
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-122152.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-125437.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -262,3 +262,9 @@ trajectories and all runs pass strict1s. Keep the sparse profiles unchanged.
 The new movement commitment remains useful on the crowded cases. Removing
 RANDOM04 futures loses22 tasks in aggregate across three seeds; retain H20.
 [Window results](experiments/allmaps-20260920/window-move-promises/first-results.json).
+
+2026-09-21T12:36:14.043899+00:00 — RANDOM05 selected maximum becomes **3610**, seed10, by adding
+explicit cap700 to mode2 movement commitments (3571matchedcontrol,+39). Bothfull
+2000-step runs pass strict1s; control is trajectory-identical. This cap interaction
+is single-seed evidence. No starvation-free claim.
+[Evidence](experiments/allmaps-20260920/move-promises/cap-composition-results.json).

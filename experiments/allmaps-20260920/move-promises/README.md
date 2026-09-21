@@ -80,3 +80,22 @@ on seeds0/2/4. Removing futures loses22 aggregate tasks; retain the selected H20
 profile. Terminal-chain and paid-chain interaction arms also lose:2231/2044
 versus2239control. All controls repeat exact prior trajectories; all full runs
 pass strict1s. See horizon-replication-results.json and chain-results.json.
+
+A bounded2x2 guidance interaction is declared on selectedseed2 with mode2: current
+KK-forward reference2/turn2, turn20 alone, existing PILOT-flow reference3 alone,
+and both. The field has already been imported and verified; no independent PILOT
+run output or new geometry is used. Earlier guidance comparisons preceded motion
+commitments. Full1000steps, strict1s,32decimalGB,4physicalcores; control2298.
+
+The seed10cap composition now verifies3571control versus3610withcap700 (+39,
++1.09%). Control repeats its entire archived trajectory. Both complete2000steps
+within1s and32decimalGB. This is the new selected maximum, with the cap explicitly
+marked as a trick; the cap interaction has not been replicated across seeds.
+See cap-composition-results.json and the updated best-random05.json.
+
+Field/turn interaction loses:2298control,1908turn20,2056PILOTflow,1987both.
+All full runs valid; retain KK-forward field with turn2. A separate three-arm
+seed2 comparison is now declared for rank weights under mode2: current squared
+weights, linear weights, and equal weights. New movement continuity may reduce
+the earlier need for strong priority weights. Primary CGAR protections stay in
+place; all other factors fixed. Full1000, strict1s32decimalGB,4physical/case.

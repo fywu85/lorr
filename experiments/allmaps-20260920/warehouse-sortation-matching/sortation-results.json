@@ -1,0 +1,27 @@
+{
+  "checked_utc": "2026-09-21T12:36:14.043899+00:00",
+  "evidence": "results/sortation-matching-width-full-v1/verification.json",
+  "source_commit": "311d04800c369f227407b63641c1c4f0a7102186",
+  "control_trajectory_exact": true,
+  "rows": [
+    {
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 150894,
+      "valid": true,
+      "max_entry_seconds": 0.981599747,
+      "peak_rss_bytes": 12394713088,
+      "trajectory_sha256": "3ad676f4f913f38a73824134aace6aff3400445fca743b0703fe347901eab001"
+    },
+    {
+      "variant": "trick_width64_groups32",
+      "seed": 0,
+      "tasks": 150863,
+      "valid": true,
+      "max_entry_seconds": 0.981179502,
+      "peak_rss_bytes": 12466778112,
+      "trajectory_sha256": "9207e58c4231c6c01ce46ea3fc4473da7544938148004865866ee2eaff9d0952"
+    }
+  ],
+  "decision": "Width64groups32 loses31tasks:150863 versus150894control. Bothfull5000 valid. Keep selected width32groups64."
+}

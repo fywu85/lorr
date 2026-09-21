@@ -1,26 +1,19 @@
 {
-  "updated_utc": "2026-09-21T12:21:52.879061+00:00",
+  "updated_utc": "2026-09-21T12:54:37.569142+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
       "suffix": "warehouse-matching-width-full-v1",
       "matrix_job": 8902771,
-      "verifier_job": 8902772,
+      "verifier_job": 8902892,
       "physical_cores_per_case": 8,
       "source_commit": "311d04800c369f227407b63641c1c4f0a7102186",
-      "analysis_tag": "factor-analysis",
+      "analysis_tag": "factor-analysis-r3",
       "raw": "runs/cgar-warehouse-matching-width-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/warehouse-matching-width-full-v1"
-    },
-    {
-      "suffix": "sortation-matching-width-full-v1",
-      "matrix_job": 8902773,
-      "verifier_job": 8902774,
-      "physical_cores_per_case": 8,
-      "source_commit": "311d04800c369f227407b63641c1c4f0a7102186",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-sortation-matching-width-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/sortation-matching-width-full-v1"
+      "report": "experiments/allmaps-20260920/results/warehouse-matching-width-full-v1",
+      "prior_verifier_job": 8902772,
+      "note": "Two parser failures preserved. Analysis-only retry requires absent diagnostics for disabled regional cap, matching compiled source; no solver rerun.",
+      "second_verifier_job": 8902876
     },
     {
       "suffix": "random05-move-promises-replicate-full-v2",
@@ -33,14 +26,34 @@
       "report": "experiments/allmaps-20260920/results/random05-move-promises-replicate-full-v2"
     },
     {
-      "suffix": "random05-move-cap-composition-full-v3",
-      "matrix_job": 8902817,
-      "verifier_job": 8902818,
+      "suffix": "city02-stronger-lanes-full-v1",
+      "matrix_job": 8902848,
+      "verifier_job": 8902849,
+      "physical_cores_per_case": 4,
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-city02-stronger-lanes-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/city02-stronger-lanes-full-v1"
+    },
+    {
+      "suffix": "random04-move-weights-full-v7",
+      "matrix_job": 8902877,
+      "verifier_job": 8902878,
       "physical_cores_per_case": 4,
       "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-move-cap-composition-full-v3-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-move-cap-composition-full-v3"
+      "raw": "runs/cgar-random04-move-weights-full-v7-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-move-weights-full-v7"
+    },
+    {
+      "suffix": "random04-future-crowd-full-v1",
+      "matrix_job": 8902880,
+      "verifier_job": 8902881,
+      "physical_cores_per_case": 4,
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random04-future-crowd-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-future-crowd-full-v1"
     }
   ],
   "builds": [
@@ -156,6 +169,18 @@
       "job": 8902789,
       "raw": "runs/cgar-window-move-promises-build-v1-20260921",
       "source_commit": "44986ddf54fc381f478ba5116b9660389c3fb693",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902839,
+      "raw": "runs/cgar-stronger-lanes-build-v1-20260921",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902875,
+      "raw": "runs/cgar-future-crowd-build-v1-20260921",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f",
       "status": "complete; all40source/test hashes, binary and full regression verified"
     }
   ]
