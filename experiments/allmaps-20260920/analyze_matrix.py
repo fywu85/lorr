@@ -195,7 +195,7 @@ def main():
                 assert summary['entry_compute_max_seconds']==m['max_decision_seconds']<=spec['time_limit_ms']/1000
                 assert m['movement_diagnostics']['complete']
                 assert sum(m['movement_phases'][str(k)][action] for k in range(3) for action in ['fw','cr','ccr','wait'])==row['robots']*row['steps']
-                cap=int(case['environment']['CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT'])
+                cap=int(case['environment'].get('CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT','0'))
                 sampled=[fields(l) for l in logs if l.startswith('[cgar-regional-work] ')]
                 assert [int(x['step']) for x in sampled]==list(range(200,row['steps']+1,200))
                 assert all(int(x['candidate_limit'])==cap for x in sampled)
@@ -203,6 +203,7 @@ def main():
                 assert regional_batches>=1
                 assert all(0<=int(x['limited_batches'])<=regional_batches for x in sampled)
                 assert all(not int(x['limited_batches']) or int(x['max_batch_candidates'])>=cap for x in sampled)
+                if not cap:assert all(int(x['limited_batches'])==0 for x in sampled)
                 priority_noise=int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_NOISE','0'))
                 priority_samples=[fields(l) for l in logs if l.startswith('[cgar-priority-portfolio] ')]
                 if priority_noise:

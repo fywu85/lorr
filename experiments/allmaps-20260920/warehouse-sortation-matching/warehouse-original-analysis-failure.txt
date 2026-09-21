@@ -1,0 +1,9 @@
+trick_current_control-s0-r0 WAREHOUSE 155173
+trick_width64_groups32-s0-r0 WAREHOUSE 154829
+ANALYSIS_COMPLETE 2 valid cases; failures 0
+Traceback (most recent call last):
+  File "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-matching-width-full-v1-20260921/factor-analysis-support/analyze_matrix.py", line 602, in <module>
+    if __name__=='__main__':main()
+  File "/shared/share_mala/fw2449/lorr2024/runs/cgar-warehouse-matching-width-full-v1-20260921/factor-analysis-support/analyze_matrix.py", line 198, in main
+    cap=int(case['environment']['CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT'])
+KeyError: 'CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT'
