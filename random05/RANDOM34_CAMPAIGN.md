@@ -8,7 +8,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
 | RANDOM-03 | 2,552 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,634 | 2,580 | 2,838 | 1,000 |
+| RANDOM-04 | 2,641 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -292,3 +292,18 @@ Source97's four-way heap repeats2551/2552 exactly in all six fields. Mean
 runtime494->459ms and489->471ms, while maxima917->759 and683->780ms.
 These single pairs support a mean-runtime improvement, not a uniform peak-time
 claim. Every listed run is complete and strict-valid.
+
+## September 21, 07:15 UTC: RANDOM-04 reaches 2,641
+
+Source96/fa98fd1d, keep bonus0, scores2641 (+2.36% versus local NMS2580),
+mean441/max498ms and1.55GB RSS. Full replay and order accounting passed.
+This is seven tasks above2634 and197 below the current2838 target; it is a
+single-seed best, not replicated ten-percent superiority. All other scheduler
+alignments and forecast completion rewards lose2391–2589.
+
+The next six source96 cases compare the2641 control against the existing
+motion-component optimizer at32/64/128 trials, four rounds, or minimum group4.
+Each hybrid commits whole collision-linked groups and evaluates all declared
+future branches. Earlier dense R05 results do not establish transfer toR04.
+Temporal blocker scanning on R03 gives2523–2535 versus2551; the controls and
+unsuccessful alternatives remain audited. Full window composition is running.

@@ -163,10 +163,16 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     // budget can reserve headroom without any elapsed-time early return.
     const int iterations=env.curr_timestep<cfg.window_initial_steps && cfg.window_first_iterations>0
         ?cfg.window_first_iterations:cfg.window_iterations;
+    auto agent_weight=[&](int a) {return score_weights_.empty()?1.0:score_weights_[a];};
+    auto agent_cost=[&](int a,const std::vector<int>& path) {
+        auto cost=path_cost(g,cfg,assigned_[a],initial.stage[a],path);
+        const double weight=agent_weight(a);cost.total*=weight;cost.remaining*=weight;
+        return cost;
+    };
     auto total_cost=[&](const Paths& paths) {
         Cost out;
         for(int a=0;a<n;++a) {
-            auto c=path_cost(g,cfg,assigned_[a],initial.stage[a],paths[a]);
+            auto c=agent_cost(a,paths[a]);
             out.total+=c.total;out.remaining+=c.remaining;
         }
         return out;
@@ -219,7 +225,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             int stage=initial.stage[a];
             for(int t=1;t<=h;++t) {
                 stage=arrived(assigned_[a],stage,paths[a][t]);
-                value+=assigned_[a]->cost(g,stage,paths[a][t]/4,paths[a][t]%4);
+                value+=agent_weight(a)*assigned_[a]->cost(g,stage,paths[a][t]/4,paths[a][t]%4);
             }
         }
         return value;
@@ -309,7 +315,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             search.expanded=0;
             for(int a=0;a<n;++a)reserve.set(a,island.paths[a],true);
             std::vector<Cost> costs(n);
-            for(int a=0;a<n;++a)costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
+            for(int a=0;a<n;++a)costs[a]=agent_cost(a,island.paths[a]);
             std::vector<int> group(n);std::vector<float> keys(n);
             const int count=std::min(cfg.window_neighborhood,n);
             std::vector<int> linked;linked.reserve(count);
@@ -325,7 +331,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 // explore uniformly. Neighbors follow current planned positions.
                 if(iteration%2)for(int k=0;k<3;++k) {
                     int a=int(random()%n);
-                    auto delay=[&](int b){return costs[b].total-(assigned_[b]?
+                    auto delay=[&](int b){return costs[b].total-agent_weight(b)*(assigned_[b]?
                         assigned_[b]->cost(g,initial.stage[b],initial.loc[b],initial.dir[b]):0);};
                     if(delay(a)>delay(pivot))pivot=a;
                 }
@@ -397,7 +403,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     int a=group[planned];
                     if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned]))break;
                     reserve.set(a,replacement[planned],true);
-                    auto cost=path_cost(g,cfg,assigned_[a],initial.stage[a],replacement[planned]);
+                    auto cost=agent_cost(a,replacement[planned]);
                     proposed.total+=cost.total;proposed.remaining+=cost.remaining;
                 }
                 const bool equal=std::abs(proposed.total-previous.total)<=1e-8 &&
@@ -417,7 +423,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     ++island.accepted;
                     for(int k=0;k<count;++k) {
                         int a=group[k];island.paths[a]=std::move(replacement[k]);
-                        costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
+                        costs[a]=agent_cost(a,island.paths[a]);
                     }
                     if(cfg.window_temperature>0) {
                         current_cost.total+=proposed.total-previous.total;
@@ -450,7 +456,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         Paths merged=islands[best].paths;
         const Cost before=islands[best].cost;
         std::vector<Cost> current(n);
-        for(int a=0;a<n;++a)current[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],merged[a]);
+        for(int a=0;a<n;++a)current[a]=agent_cost(a,merged[a]);
         for(int index=0;index<cfg.window_islands;++index)if(index!=best) {
             const auto& alternative=islands[index].paths;
             const auto groups=window_conflict_components(g,merged,alternative);
@@ -458,7 +464,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 Cost old_cost,new_cost;std::vector<Cost> replacement;replacement.reserve(group.size());
                 for(int a:group) {
                     old_cost.total+=current[a].total;old_cost.remaining+=current[a].remaining;
-                    replacement.push_back(path_cost(g,cfg,assigned_[a],initial.stage[a],alternative[a]));
+                    replacement.push_back(agent_cost(a,alternative[a]));
                     new_cost.total+=replacement.back().total;new_cost.remaining+=replacement.back().remaining;
                 }
                 // Never trade increased path cost for a secondary improvement:

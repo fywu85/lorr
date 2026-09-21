@@ -973,6 +973,11 @@ void window_reproducibility() {
     const auto merged=simulate(cfg,8,5,5,true);
     cfg.threads=1;cfg.window_heap4=false;
     require(merged==simulate(cfg,8),"window component merging changed with heap layout or worker scheduling");
+    cfg.score_rank_power=.5;cfg.score_rank_steps=51;
+    const auto weighted=simulate(cfg,8,5,5,true);
+    cfg.threads=2;cfg.cost_cache=false;
+    require(weighted==simulate(cfg,8),"weighted window scoring changed with workers or cost caching");
+    cfg.score_rank_power=0;cfg.score_rank_steps=0;
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

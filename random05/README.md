@@ -28,7 +28,10 @@ Started tasks remain assigned to their original robot.
 Map-tuned guidance, capped priority aging, and known-horizon abandonment require
 the matching `--trick RANDOM-01` through `--trick RANDOM-05`. Known-horizon abandonment suppresses a robot's planning goal;
 it does not illegally unassign its started task. These throughput-oriented choices
-are explicit experiments and carry no fairness claim.
+are explicit experiments and carry no fairness claim. Explicit task-progress
+rank weighting (`R05_SCORE_RANK_POWER`) applies to reactive look-ahead and
+windowed LNS costs. It favors shorter remaining chains and requires a trick flag;
+a declared `R05_SCORE_RANK_STEPS` can limit it to startup.
 
 Development uses a fixed number of complete futures (`R05_K`) of depth
 `R05_DEPTH`. An optional `R05_FIRST_K` declares a smaller fixed count for
