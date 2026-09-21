@@ -497,8 +497,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 path.push_back(state);
             }
         }
+        const int rollout_batches = window_options_.seed_rollout ?
+            extend_window_seed(problem, temporal_geometry_, order, temporal_budget_, window_rng_(), check) : 0;
         std::vector<uint64_t> seeds(window_options_.workers);
-        for (auto& seed : seeds) seed = temporal_rng_();
+        for (auto& seed : seeds) seed = window_rng_();
         WindowStats window;
         const auto paths = rolling_window_.solve(problem, window_options_, env_->curr_timestep, seeds, window, check);
         if (!window.completed) throw std::logic_error("CGAR exposed an incomplete rolling window");
@@ -511,8 +513,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.window_changed_first += window.changed_first;
         stats_.window_retained += window.retained; stats_.window_history_resets += window.history_resets;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-window] step=%d complete=1 attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
-                env_->curr_timestep + 1, window.attempts, window.accepted, window.improved, window.searches,
+            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, rollout_batches, window.attempts, window.accepted, window.improved, window.searches,
                 window.expanded, window.capped, window.failed, window.retained, window.history_resets,
                 static_cast<long long>(window.seed_cost), static_cast<long long>(window.initial_cost), static_cast<long long>(window.final_cost),
                 window.changed_first, window.protected_robots, window.selected_worker, stats_.window_calls,

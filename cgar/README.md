@@ -207,3 +207,15 @@ an imported alternative planner. Its production default remains off. Independent
 layered action search, protected paths, atomic rollback, task-history invalidation,
 deadline propagation and serial/parallel production decisions are regression-tested.
 Throughput promotion requires full strict one-second benchmark evidence.
+
+`CGAR_WINDOW_SEED_ROLLOUT=1` optionally extends the first five CGAR actions with
+complete joint temporal-PIBT chunks before window repair. It reserves all robots
+in each projected chunk, advances revealed task stages, and leaves protected tails
+fixed. This avoids initializing the remaining window as a wall of stationary
+robots. The original wait-extended seed remains available if its whole-window
+objective is lower. All chunks finish before selection; deadline failure propagates.
+The first five CGAR seed actions remain unchanged by this extension. Default 0.
+
+Window randomness has an independent seeded stream. A node-capped no-op overlay
+with history disabled therefore preserves the complete original CGAR trajectory,
+not just its immediate first action. This identity is tested in production.

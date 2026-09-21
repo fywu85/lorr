@@ -3,16 +3,18 @@
 // primary/recovery/support paths remain immutable. Longer ordinary paths are
 // forecasts, not claims about future CGAR primary or recovery decisions.
 #include "chain_potential.hpp"
+#include "temporal_geometry.hpp"
 #include <atomic>
 #include <memory>
 #include <numeric>
 #include <queue>
 #include <random>
+#include <tuple>
 
 namespace cgar {
 struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
-    int workers = 4, threads = 4, wait_cost = 0;
+    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0;
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -101,6 +103,81 @@ struct WindowProblem {
         }
     }
 };
+// Extend the validated first five actions with complete joint temporal-PIBT
+// chunks. This gives LNS coordinated future traffic instead of an artificial
+// stationary wall after slot five. Existing protected tails remain unchanged.
+template<class Check>
+int extend_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
+                       const std::vector<int>& order, int displacement_limit,
+                       uint64_t seed, Check check) {
+    p.validate(p.seed, check);
+    const auto before = p.seed; const int64_t before_cost = p.score(before);
+    const int robots = p.seed.size(), cells = p.free.size();
+    std::vector<size_t> stages(robots, 0);
+    auto advance = [&](int r, int cell) {
+        if (stages[r] < p.chains[r].goals.size() && cell == p.chains[r].goals[stages[r]]) ++stages[r];
+    };
+    for (int r = 0; r < robots; ++r)
+        for (int t = 1; t <= std::min(5, p.horizon); ++t) advance(r, p.seed[r][t] / 4);
+    std::mt19937_64 rng(seed); int batches = 0;
+    for (int offset = 5; offset < p.horizon; offset += 5) {
+        check(); const int length = std::min(5, p.horizon - offset);
+        std::vector<TemporalPath> waits(robots);
+        std::vector<std::vector<TemporalChoice>> choices(robots);
+        std::vector<double> power(robots, 1.0);
+        for (int r = 0; r < robots; ++r) {
+            check(); const int start = p.seed[r][offset];
+            auto cost = [&](const TemporalPath& path, int op) {
+                if (p.fixed[r]) return int64_t(0);
+                size_t stage = stages[r]; int state = start; int64_t paid = 0;
+                for (int t = 0; t < length; ++t) {
+                    const int a = TemporalGeometry::operations()[op][t];
+                    paid += p.step_cost(r, stage, state, a); state = p.next(state, a);
+                    if (stage < p.chains[r].goals.size() && state / 4 == p.chains[r].goals[stage]) ++stage;
+                }
+                const int64_t tail = p.oracle->value(p.chains[r], stage, state / 4, state % 4);
+                if (tail >= ChainPotential::infinity) throw std::logic_error("unreachable ordinary rolling seed tail");
+                return (paid + tail) * 1024 + op;
+            };
+            waits[r] = geometry.seed(start / 4, start % 4, 3);
+            choices[r].push_back({&waits[r], cost(waits[r], 0), 0});
+            if (p.fixed[r]) continue;
+            const auto& paths = geometry.paths(start / 4, start % 4);
+            for (int op = 1; op < 129; ++op) {
+                const auto& path = paths[op]; if (!path.valid) continue;
+                int from = start / 4; bool valid = true;
+                for (int to : path.cells) {
+                    if (!p.allowed[r][to] || (to != from && !p.entry_allowed[r][to])) { valid = false; break; }
+                    from = to;
+                }
+                if (valid) choices[r].push_back({&path, cost(path, op), op});
+            }
+            std::sort(choices[r].begin() + 1, choices[r].end(), [](const auto& a, const auto& b) {
+                return std::tie(a.cost, a.operation) < std::tie(b.cost, b.operation);
+            });
+        }
+        TemporalPibt projection(cells, choices, p.fixed, power, displacement_limit, rng());
+        projection.construct(order, check);
+        for (int r = 0; r < robots; ++r) {
+            const auto& choice = projection.choice(r); int state = p.seed[r][offset];
+            for (int t = 0; t < length; ++t) {
+                state = p.next(state, TemporalGeometry::operations()[choice.operation][t]);
+                if (state < 0 || state / 4 != choice.path->cells[t])
+                    throw std::logic_error("rolling seed projection disagrees with temporal geometry");
+                p.seed[r][offset + t + 1] = state; advance(r, state / 4);
+            }
+        }
+        ++batches;
+    }
+    // Validate against the original protected paths, not a self-referential
+    // modified fixed seed. Complete all chunks before selecting either plan.
+    for (int r = 0; r < robots; ++r)
+        if (p.fixed[r] && p.seed[r] != before[r]) throw std::logic_error("rolling projection changed a protected tail");
+    p.validate(p.seed, check); check();
+    if (p.score(p.seed) > before_cost) p.seed = before;
+    return batches;
+}
+
 struct WindowStats {
     bool completed = false;
     long long attempts = 0, accepted = 0, improved = 0, searches = 0, expanded = 0;

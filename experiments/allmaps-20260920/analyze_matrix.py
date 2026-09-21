@@ -243,6 +243,8 @@ def main():
                             ('group','CGAR_WINDOW_GROUP',4),('workers','CGAR_WINDOW_WORKERS',4),
                             ('threads','CGAR_WINDOW_THREADS',4),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
                         assert int(cfg[field])==int(case['environment'].get(key,str(default)))
+                    rollout=int(case['environment'].get('CGAR_WINDOW_SEED_ROLLOUT','0'))
+                    assert int(cfg.get('seed_rollout','0'))==rollout
                     assert cfg['seed']=='cgar' and cfg['protected']=='immutable' and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -253,6 +255,7 @@ def main():
                     attempts=int(cfg['iterations'])*int(cfg['workers'])
                     for x in window_samples:
                         assert x['complete']=='1' and int(x['attempts'])==attempts
+                        assert int(x.get('rollout_batches','0'))==((window_horizon-1)//5 if rollout else 0)
                         assert int(x['calls'])==int(x['step']) and int(x['total_attempts'])==attempts*int(x['step'])
                         assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
