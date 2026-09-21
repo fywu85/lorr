@@ -131,8 +131,11 @@ def render():
         'All eight fresh runs passed timing/resource checks and independent replay.',
         'The candidate stays below 701 ms on both fresh inputs; its archived exact',
         'repeat and two other planner seeds peak below 675 ms. RANDOM-04 remains',
-        'short of its throughput target, despite a five-seed timing check below',
-        '498 ms per step for the previous 2,641-task profile.',
+        'short of its throughput target. Its 2,661-task configuration has four',
+        'planner seeds and exact repetitions; the selected qualification runs',
+        'stay below 491 ms per step. A later equivalent source control peaked',
+        'at 756 ms; all observed controls still meet the one-second limit.',
+        '[Full timing evidence](random05/results/random34-runtime/REPORT.md).',
         '[Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).', '']
     lines += ['',
         '**RANDOM-05\'s 4,000-task milestone is independently verified.** The archived',

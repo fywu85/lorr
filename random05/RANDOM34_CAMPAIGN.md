@@ -412,7 +412,7 @@ per-instance experiments remain explicitly flagged. No fresh R04 input exists.
 ## September 21, 08:38 UTC: RANDOM-04 reaches 2,661; broad checks stay negative
 
 Guided cutoff mix0.75 instead of0.5 reaches2661 on the previous2641 profile,
-sourcefa98fd1d/build96, plannerseed4. Completed08:25UTC; mean430.374ms,
+sourcefa98fd1d/build96, plannerseed4. Completed08:24:36.112951UTC; mean430.374ms,
 max465.929ms. Full independent replay passed. This is+3.14% over2580, still
 177tasks short of2838; the new profile needs repetition and seed qualification.
 The other six cutoff refinements score2493–2640. All original runs are valid.
@@ -442,3 +442,63 @@ adds a soft cost for an unopened visible chain's estimated work beyond the
 declared end, preserves opened-task locks, and requires the explicit trick flag.
 Five full trials compare weights0/.25/1/4/16 on the2661 recipe. This tests
 whether matching can avoid assignments that planning immediately triages.
+
+## September 21, 09:00 UTC: qualify runtime; test execution and potential changes
+
+The2661 configuration has four complete runs with maxima below490ms. Its
+source108, source109 and repeated source96 controls preserve the same score;
+full trace-equivalence proofs are recorded separately. Additional plannerseeds
+3/5 are running; the selectedseed4 score is not a multiple-seed average.
+
+Horizon matching loses2573–2602. Bounded startup remaining-work priorities
+(source109/7714e8ca) lose2522–2630; all seven runs are valid. Loop thresholds,
+dispersion and priority-noise refinements lose2496–2601. The declared full-work
+layoutfinalists109/111/105/115 give2526/2490,2481/2490,2494/2567,2433/2489 on
+plannerseeds4/0 versus inherited2661/2542. The inherited field remains selected.
+These failures argue against relying on more compute or further small sweeps.
+
+Source111/17f978a4 instead tests optional immediate legal forward chains at the
+first forecast step. Some roots retain the ordinary pipeline; others add only
+already-facing moves into available cells or legal cycles. Later forecast steps
+return to the ordinary pipeline. Existing promises remain preserved and every
+selected actual/pending move is independently certified. Fixed evaluation counts
+remain unchanged. Periods1/2/4/8 and two gain thresholds are running alongside
+an exact control. This differs from always enabling the earlier early-fill rule.
+Regression covers checkpoint replay, worker/cache invariance, common-prefix and
+screened continuations, and independent rescoring. A missing rescoring mode was
+caught in local review of source110 before benchmarks and fixed in111.
+
+Source112 tests a second mechanism: blend oriented lane cost-to-go with physical
+action cost-to-go before constructing chained task potentials, while retaining
+lane edge prices. This can change both local move ranking and matching, unlike
+an earlier score-only blend. The resulting potential is approximate; windowed
+A* is explicitly excluded. Tests verify the any-heading cache, immutable lane
+prices, task turnover, checkpoint replay, cache/worker invariance and trick gate.
+Build/regression must pass before any full performance claim.
+
+Fable's new6022-byte results-only summary was prepared but NOT SENT. Automatic
+approval review rejected transmission as non-public research requiring exact
+payload/destination approval, despite general consultation authorization. The
+user question is pending; local research continues. This is separate from the
+previous CLI request that failed usage credits.
+
+## September 21, 09:23 UTC: completed repeats and physical-cost controls
+
+The original 2,661-task profile now has four planner seeds (0/3/4/5):
+2,542/2,576/2,661/2,605. Original-source qualification and repetition peak below
+490 ms. Equivalent controls from sources108/109/111 preserve all six trajectory,
+schedule, event and task fields. The later source113 control also repeats
+exactly, but peaks at755.061 ms (mean540.262); that slower observation is
+retained in the timing table. No host cause is inferred. All remain under1s.
+
+The immediate-root experiment111 loses: periods1/2/4/8 give2538/2569/2578/2543;
+half-root gain2 gives2611. The physical-distance mixture113 also loses:
+fractions.0625/.125/.25/.5/1 give2561/2510/2370/2112/1576 versus2661. Every run
+finishes all1000steps and passes independent replay. Source112's const-pointer
+compile failure is archived;113 fixes construction order before benchmarking.
+
+Source114/93746116 tests a coherent alternative: blend actual oriented edge
+prices toward physicalcost2, then solve exact distances. Regression checks the
+one-step Bellman relation, rotations, walls, checkpoint replay and worker/cache
+invariance. Six full trials are running with the same fractions and budget.
+Neither cost experiment changes the selected record or held-out inputs.
