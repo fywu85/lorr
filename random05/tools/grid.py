@@ -27,7 +27,14 @@ def submit(a):
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
         physical=4;slots=8
     elif a.kind=='build':
-        shutil.copytree(ROOT/'random05',out/'source',ignore=shutil.ignore_patterns('build','__pycache__'))
+        # Reports and experiment history grow with every iteration but are not
+        # build inputs. Keep complete source, tests, tools and runtime assets.
+        def build_ignores(directory,names):
+            ignored={name for name in names if name in ('build','__pycache__')}
+            if Path(directory)==ROOT/'random05':
+                ignored.update(name for name in names if name in ('results','experiments','review'))
+            return ignored
+        shutil.copytree(ROOT/'random05',out/'source',ignore=build_ignores)
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
         physical=4;slots=8
     else:

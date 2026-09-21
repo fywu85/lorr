@@ -141,6 +141,9 @@ Config Config::environment(const SharedEnvironment& env) {
     }
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+    c.move_bias=real("R05_MOVE_BIAS",0);
+    if(!std::isfinite(c.move_bias) || c.move_bias<0 || c.move_bias>4)
+        throw std::invalid_argument("move proposal bias must be in [0,4]");
     c.mutation_decay=real("R05_MUTATION_DECAY",1);
     if(!std::isfinite(c.mutation_decay) || c.mutation_decay<=0 || c.mutation_decay>1)
         throw std::invalid_argument("mutation decay must be in (0,1]");
@@ -179,6 +182,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.early_fill=integer("R05_EARLY_FILL",0);c.early_fill_gain=real("R05_EARLY_FILL_GAIN",0);
     if(c.early_fill_gain<0)throw std::invalid_argument("early-fill threshold must be nonnegative");
     c.operation_depth=integer("R05_OPERATIONS",0);
+    if(c.operation_depth && c.move_bias>0)
+        throw std::invalid_argument("move proposal bias is only implemented for the pipelined policy");
     c.operation_revisits=integer("R05_OPERATION_REVISITS",4);
     c.operation_inherit=integer("R05_OPERATION_INHERIT",1);
     c.operation_moving=integer("R05_OPERATION_MOVING",0);
@@ -1055,6 +1060,30 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             auto& entry=*ranking_slots[i];entry.count=count;
             if(cfg.kinematic_mask)entry.kinematic_mask=kinematic_masks[i];
             std::copy_n(cand.begin(),count,entry.candidates.begin());
+        }
+    }
+    // Explore nearby routing alternatives as well as priority orders. The
+    // deterministic root vector supplies proposal randomness, not score credit.
+    // Keep cached rankings unbiased: mutate only this rollout's local copy.
+    if(cfg.move_bias>0)for(int a=0;a<n;++a) {
+        uint32_t bits;std::memcpy(&bits,&offsets[a],sizeof(bits));
+        uint32_t key=bits^(uint32_t(a)+1)*0x9e3779b9U;
+        key^=key>>16;key*=0x7feb352dU;key^=key>>15;key*=0x846ca68bU;key^=key>>16;
+        if((key&3u)!=0)continue; // leave three quarters of agents unbiased
+        const int preferred=int((key>>2)&3u);
+        auto& cand=candidates[a];const int count=candidate_count[a];
+        for(int k=0;k<count;++k)if(cand[k].v!=p[a] && cand[k].d==preferred)
+            cand[k].score-=cfg.move_bias;
+        for(int k=1;k<count;++k) {
+            MoveCandidate value=cand[k];int j=k;
+            while(j>0 && value.score<cand[j-1].score){cand[j]=cand[j-1];--j;}
+            cand[j]=value;
+        }
+        if(cfg.kinematic_mask) {
+            unsigned int mask=0;
+            for(int k=0;k<count;++k)
+                if(cand[k].v==p[a] || allowed(a,cand[k].d))mask|=1u<<k;
+            kinematic_masks[a]=mask;
         }
     }
     mark_policy(1);

@@ -1029,3 +1029,36 @@ until weighted variance semantics are specified. No map-specific rule is added.
 ## Fixed mixture for finalist forecast scoring (2026-09-21 00:56 UTC)
 
 Build-v76 passes its regression suite (31.82 s; binary SHA256 `5332e1acf082031df3d6a56baadf526e15541427836b86cabb9b1bd65c330213`). The predeclared eight-case full strict batch fixes the R16B64/seed4 reference and tests constant-priority forecast weights -1 (legacy), 0, 0.05, 0.1 and 0.25, plus B128 at weights 1/64, 0.05 and 0.1. The legacy control must reproduce 3,906. Increasing samples previously also diluted the unchanged-priority branch; whether that explains any performance loss is unknown. This experiment separates those changes. No task/start validation inputs are used.
+
+
+## Future mutation after four-generation refinement (2026-09-21T01:01:42.252684+00:00)
+
+The old future-mutation check preceded the current G4/E8/P8 staged search. A selected root can now descend through several mutations, while simulated futures still reset 30% of priorities per later step. That is a plausible forecast mismatch, not a measured cause. The bounded new batch holds the main search fixed: B18/seed5 tests future mutation0.1/0.2/0.5/0.8 against the repeated3,928 control; B14/seed4 with R16B64 rescoring tests0.5/0.8 against3,906. The changed rate affects both ordinary futures and independent rescoring where enabled. All are full strict runs. Earlier failed rates and all new outcomes remain archived.
+
+
+## Optional routing preference inside priority search
+
+The current population varies priority vectors, while every robot ranks its
+moves using a fixed guidance cost. The new general `R05_MOVE_BIAS` experiment
+(default0, range0–4) lets a quarter of agents prefer one sampled compass direction
+by a small cost offset. A deterministic hash of the candidate's existing priority
+vector supplies the preference, so retained candidates retain their routing
+proposal. This couples the two proposal mechanisms; it is not an independent
+route optimizer. Spatial intent and executable PIBT see the same perturbed order.
+
+Candidate rollout scores, true goal costs, cycle gains and collision checks
+remain unchanged. Only local copies of cached rankings are perturbed; kinematic
+masks are recomputed after reordering. No map coordinates, task-stream knowledge
+or horizon dependence are introduced. The operation-based prototype rejects the
+option because it has a different action-ranking implementation. Dense checks
+must establish that the feature actually changes decisions while preserving
+cache, worker and checkpoint equivalence. Full zero-bias control and throughput
+runs follow only after the regression suite passes.
+
+
+Late-assignment diagnostic on the3,928 trace (`results/late-assignment-diagnosis-v76/audit.json`): atsteps1250/1500 every unlocked robot already gets a hop-estimated feasible task. Maximum-cardinality feasible matching adds only3/4/2 slots at1750/1850/1900, and zero at1950. Those counts use visible tasks and avoid counting one short task as multiple opportunities; they are not predicted throughput gains. This does not support making scheduler feasibility the main next change. The B18/seed5 R16B64 allocation repeat completes at3,704, so rescoring gains measured at B14 do not transfer to that selected B18 record.
+
+Build-v77 passes all regression tests (21.37 s). Compiled inputs match the workspace byte for byte. The declared full strict comparison uses B18/seed5 at move biases0/0.125/0.25/0.5/1/2, with zero required to reproduce3,928. Binary SHA256 `ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c`.
+
+
+The first bias0.5 attempt finishes step0 computation in1,066.438ms and correctly exits124. Allocation passed16-core/no-quota checks onresearch53. The cause of the slow step is unproved; other amplitudes pass step0. Preserve this failure. Two separately declared attempts use identical source, seed and fixed search work: a strict repeat and a5s diagnostic. Only a complete strict run can update the frontier.

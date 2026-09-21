@@ -1,6 +1,6 @@
 # RANDOM-05: active 4,000-task goal
 
-Updated 2026-09-21 01:03 UTC. The persistent goal is ACTIVE: reach at least
+Updated 2026-09-21 01:14 UTC. The persistent goal is ACTIVE: reach at least
 4,000 tasks in a full 2,000-step combined run, then validate the selected
 configuration on fresh inputs. The verified best is 3,928, leaving 72 tasks.
 The user explicitly accepts a selected planner seed. Do not mark the goal
@@ -46,13 +46,23 @@ have been generated. Freeze the next protocol, source and configuration first.
 
 ## Current source and tooling
 
+Build-v77 adds `R05_MOVE_BIAS` (default0): hash each candidate's priority offsets
+into a small preferred-direction bias for one quarter of agents. This changes
+proposal rankings only; rollout scoring and collision checks remain exact.
+Cached rankings stay unbiased; local kinematic masks are recomputed after
+reordering. Tests cover changed decisions, cache/worker/checkpoint equivalence.
+Binary SHA: `ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c`.
+Source77 will be committed with these notes. Future build snapshots now skip
+accumulated results, experiment manifests and reviews; all compiled inputs,
+tests, tools and assets remain included and hashed.
+
 Build-v76 adds optional `R05_RESCORE_STATIC_WEIGHT`: -1 preserves the original
 mean; [0,1] fixes the unchanged-priority branch's weight independently of the
 number of randomized futures. All declared branches finish. Nonzero risk with
 explicit weighting is rejected. Endpoint, duplicate-sample, worker, checkpoint
 and unchanged-decision tests pass (31.82 s). Binary SHA:
 `5332e1acf082031df3d6a56baadf526e15541427836b86cabb9b1bd65c330213`.
-The source and current evidence are being committed together; link a later
+Source76 and the current evidence are committed as `1ac8940`; link a later
 record to that source commit, not the old build-spec HEAD from the shared tree.
 Source75 is `e84533a`; source74 is `1e266b0`. The current overall frontier
 continues to use source69 `233f5bf`, with rescoring and startup weights off.
@@ -72,9 +82,14 @@ Collect with `python3 random05/tools/split_grid.py collect --output runs/random0
   cases, submitted around 00:57 UTC. B64 weights -1/0/.05/.1/.25 and B128
   weights 1/64/.05/.1. R16, B14 main search, planner seed4, no startup.
   Legacy control must reproduce 3,906 exactly.
-- `record-rescore-allocation-repeat-split-full-v75`, job 8901018: identical
-  B18/seed5 + R16B64 after a research58 preflight refusal. Original preserved.
-  Collect before assuming completion; this is a separately declared attempt.
+- `future-mutation-retune-split-full-v75`, jobs8901089–94: B18/seed5 future
+  rates0.1/0.2/0.5/0.8 and B14/rescore/seed4 rates0.5/0.8. Full strict.
+- `move-proposal-bias-split-full-v77`, jobs8901107–12: biases0/.125/.25/.5/1/2,
+  B18/seed5. Build-v77 regression passed21.37s; zero must reproduce3,928.
+  Bias0.5 failed strictly atstep0,1,066.438ms; retain the original failure.
+- `move-bias-half-timeout-followup-split-full-v77`, jobs8901118–19: identical
+  bias0.5 strict repeat and5s diagnostic. Only strict can update the frontier.
+
 
 All earlier batches through new-guidance-fields are complete and archived.
 
@@ -86,7 +101,8 @@ All earlier batches through new-guidance-fields are complete and archived.
   planner seeds on one input, not fresh task/start validation.
 - Startup + rescoring scores3,867 (R4B32) and3,769 (R16B64), below3,917.
   At B18/seed5, startup alone3,747; R4B32 alone3,898; both startup and
-  R16B64 give3,845. The R16B64-only case had an allocation refusal.
+  R16B64 give3,845. The R16B64-only case had an allocation refusal; its declared identical
+  strict repeat scores3,704, also a loss.
 - The sixteen predeclared B18 planner seeds9–24 produce15 valid full runs,
   best3,904 atseed24. Seed11 hits the strict deadline atstep1455,1,189ms;
   no claim about its unproved cause and no completed score. Preserve it.

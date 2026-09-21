@@ -1654,7 +1654,7 @@ input/binary hashes and allocation are linked in the audits.
   [Phase audit](random05/results/startup-rescore-phase-v75/audit.json).
 
 
-### 2026-09-21 01:03 UTC: replication and bounded forecast-scoring follow-up
+### 2026-09-21 00:59 UTC: replication and bounded forecast-scoring follow-up
 
 The verified frontier remains **3,928**, with 72 tasks left to reach 4,000.
 Source75 controls reproduce both 3,928 and 3,917 exactly in all six trajectory

@@ -812,7 +812,25 @@ void checkpoint_replay() {
     }
 }
 
+void move_proposal_bias() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.threads=1;
+    cfg.hungarian_limit=1000;cfg.guided_matching=true;
+    const auto ordinary=simulate(cfg,12);
+    cfg.move_bias=.75;
+    const auto biased=simulate(cfg,12);
+    require(biased!=ordinary,"dense fixture did not exercise move proposal bias");
+    cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    require(biased==simulate(cfg,12,5,5,true),"cached ranking or restore changed move proposal bias");
+    cfg.threads=3;
+    require(biased==simulate(cfg,12),"move proposal bias changed with worker count");
+    cfg.move_bias=0;
+    require(ordinary==simulate(cfg,12),"zero move proposal bias changed the original policy");
+}
+
 int main() {
+    move_proposal_bias();
     ranked_task_progress();
     independent_candidate_rescoring();
     waypoint_priority_retention();
