@@ -35,6 +35,7 @@
 #include "flow_guidance.hpp"
 #include "tricks.hpp"
 #include "game_fleet.hpp"
+#include "horizon_bound.hpp"
 #include "guide_routes.hpp"
 
 #include <array>
@@ -611,10 +612,12 @@ private:
     GameFleetSelection game_fleet_selection_;
     int known_horizon_ = 0;
     bool known_horizon_passed_ = false;
+    bool horizon_manhattan_ = false;
     bool horizon_margin_ = false;
     bool match_horizon_ = false;
     HorizonMargins horizon_margins_;
     void record_horizon_proposal(const std::vector<int>& proposed);
+    long long geometric_task_bound(int robot, const Task& task) const;
     bool repair_fallback_ = true;
     bool refine_chain_costs_ = false;
     bool scheduler_cache_peek_ = false;

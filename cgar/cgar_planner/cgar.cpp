@@ -754,6 +754,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     game_fleet_ready_ = false;
     game_fleet_selection_ = {};
     known_horizon_ = trick_options.known_horizon;
+    horizon_manhattan_ = trick_options.horizon_manhattan;
     horizon_margin_ = trick_options.horizon_margin;
     match_horizon_ = trick_options.match_horizon;
     horizon_margins_.configure_percentile(trick_options.horizon_margin_percentile);
@@ -1087,9 +1088,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     const double secs = std::chrono::duration<double>(Clock::now() - t0).count();
     // These spatial tables can exclude non-goal pockets. The configured-horizon
     // experiment is restricted to an unrestricted core so every cached distance
-    // is a lower bound on physical travel. No native lane cost enters this bound.
-    if (known_horizon_ && (cert_.core != cert_.free || refine_chain_costs_ || chain_flow_pricing_ || pickup_full_cost_key_))
-        throw std::invalid_argument("known horizon requires a full core, original spatial chain estimates and ordinary shortlist ordering");
+    // is a lower bound on physical travel. An explicit Manhattan bound instead
+    // ignores all obstacles and certificate exclusions, and is valid on pockets.
+    // No native lane cost enters either physical lower bound.
+    if (known_horizon_ && ((!horizon_manhattan_ && cert_.core != cert_.free) || refine_chain_costs_ || chain_flow_pricing_ || pickup_full_cost_key_))
+        throw std::invalid_argument("known horizon requires a full core or explicit Manhattan bound, original spatial chain estimates and ordinary shortlist ordering");
     if (match_horizon_ && (!hrrn_ || short_task_trick_))
         throw std::invalid_argument("matching horizon guard requires ordinary HRRN and short preference off");
     if (match_horizon_)
@@ -1106,7 +1109,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (trick_options.horizon_margin_percentile)
         std::printf("[CGAR_TRICK_HORIZON_PERCENTILE] percentile=%d rank=nearest samples=completed_single_holder fair=unchanged held=unchanged\n", trick_options.horizon_margin_percentile);
     if (known_horizon_)
-        std::printf("[CGAR_TRICK_HORIZON] known_horizon=%d assumption=configured lower_bound=spatial_plus_service core=full assignments=new_only fair=unchanged held=unchanged all_impossible=assign after_horizon=ordinary\n", known_horizon_);
+        std::printf("[CGAR_TRICK_HORIZON] known_horizon=%d assumption=configured lower_bound=%s core=%s assignments=new_only fair=unchanged held=unchanged all_impossible=assign after_horizon=ordinary\n", known_horizon_,
+                    horizon_manhattan_ ? "manhattan_plus_service" : "spatial_plus_service", horizon_manhattan_ ? "unrestricted_bound" : "full");
     oracle_.init(&cert_, table_mb << 20);
     if (orientation_guidance_) {
         const size_t mb = static_cast<size_t>(std::max(16, std::min(32768, env_int("CGAR_TURN_TABLE_MB", 512))));
@@ -1142,11 +1146,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
             const std::string fleet_components = game_active_limit_ ? " game_active_limit=" + std::to_string(game_active_limit_) + " game_tabu=" + std::to_string(game_tabu_) : "";
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s%s%s%s\n",
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s%s%s%s%s\n",
                 env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_,
                 tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "",
                 temporal_rank_squared_ ? " rank_squared=1" : "",
-                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : "", fleet_components.c_str());
+                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : "", fleet_components.c_str(), horizon_manhattan_ ? " horizon_manhattan=1" : "");
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
@@ -2625,6 +2629,7 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
     const bool guard_horizon = match_horizon_ && known_horizon_ && now < known_horizon_;
     const auto guard_model = guard_horizon ? horizon_margins_.snapshot() : HorizonMargins::Snapshot{};
     auto spatial_bound = [&](int from, int goal) {
+        if (horizon_manhattan_) return oracle_.manhattan(from, goal);
         const auto* table = oracle_.peek(goal);  // no construction or LRU mutation
         const int value = table ? oracle_.value(*table, from) : kInf;
         return value < kInf ? value : oracle_.manhattan(from, goal);
@@ -2832,6 +2837,7 @@ void Cgar::audit_fresh_pickup(const std::vector<int>& proposed, const std::vecto
         long long bound = std::max(1, spatial) + static_cast<long long>(chain_cost_.at(task_id));
         for (size_t k = 1; k < task.locations.size(); ++k)
             bound += task.locations[k] == task.locations[k - 1];
+        if (horizon_manhattan_) bound = geometric_task_bound(robot, task);
         const long long left = static_cast<long long>(known_horizon_) - now;
         return horizon_margin_ ? model.tier(bound, left) : (bound > left ? 2 : 0);
     };
@@ -2886,9 +2892,15 @@ void Cgar::audit_fresh_pickup(const std::vector<int>& proposed, const std::vecto
     check_deadline(deadline_, "fresh_pickup_audit_complete");
 }
 
+long long Cgar::geometric_task_bound(int robot, const Task& task) const {
+    return manhattan_service_bound(env_->curr_states.at(robot).location, task.locations,
+        task.idx_next_loc, env_->cols, [&] { check_deadline(deadline_, "horizon_geometric_bound"); });
+}
+
 void Cgar::record_horizon_proposal(const std::vector<int>& proposed) {
     if (!horizon_margin_) return;
     horizon_margins_.proposed(*env_, proposed, [&](int robot, int id) -> long long {
+        if (horizon_manhattan_) return geometric_task_bound(robot, env_->task_pool.at(id));
         const auto chain = chain_cost_.find(id);
         if (chain == chain_cost_.end()) return -1;  // unknown first admission cannot train
         const auto& task = env_->task_pool.at(id);
@@ -3090,7 +3102,8 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
             const auto* table = oracle_.peek(task.first);  // no builds or LRU mutation
             int spatial = table ? oracle_.value(*table, from) : oracle_.manhattan(from, task.first);
             if (spatial >= kInf) spatial = oracle_.manhattan(from, task.first);
-            const long long bound = std::max(1, spatial) + static_cast<long long>(task.chain) + task.repeated_stops;
+            const long long bound = horizon_manhattan_ ? geometric_task_bound(r, env_->task_pool.at(task.id)) :
+                std::max(1, spatial) + static_cast<long long>(task.chain) + task.repeated_stops;
             const long long remaining = static_cast<long long>(known_horizon_) - now;
             result.horizon_impossible = bound > remaining;
             result.horizon_tier = horizon_margin_ ? horizon_model.tier(bound, remaining) : (result.horizon_impossible ? 2 : 0);

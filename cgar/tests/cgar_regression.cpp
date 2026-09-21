@@ -5344,4 +5344,82 @@ void rematch_task_budget_regression() {
  std::cout<<"REMATCH_TASK_BUDGET passed default_identity=1 production_cycles=1 bounded_two_and_four=1 every_task_counted=1 primary_protected=1 started_protected=1 cooldown=1 valid_actions=1 malformed_rejected=1\n";
 }
 
-int main(){try{rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void geometric_horizon_regression() {
+ auto require=[](bool ok,const char* message){if(!ok)throw std::runtime_error(message);};
+ auto rejects=[&](auto run){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,"geometric horizon guard failed");};
+ const char* key="CGAR_TRICK_HORIZON_MANHATTAN";
+ setenv(key,"0",1);rejects([&]{tricks::options("");});
+ setenv(key,"1",1);rejects([&]{tricks::options("WAREHOUSE");});
+ setenv("CGAR_TRICK_KNOWN_HORIZON","100",1);
+ for(const char* bad:{"","-1","2","true","01"}){setenv(key,bad,1);rejects([&]{tricks::options("WAREHOUSE");});}
+ setenv(key,"1",1);require(tricks::options("WAREHOUSE").horizon_manhattan,"geometric option did not activate");
+ unsetenv(key);unsetenv("CGAR_TRICK_KNOWN_HORIZON");
+ // Exhaustive orientation-aware action BFS is independent of the geometric sum.
+ // Include a wall detour, multiple future stops, repeated stops and started chains.
+ std::vector<int> walls(25,0);for(int cell:{7,12,17})walls[cell]=1;
+ int cases=0;
+ for(const auto& stops:std::vector<std::vector<int>>{{13},{13,13},{0,24,0},{1,23,1},{4,20,4}})
+  for(int first=0;first<int(stops.size());++first)for(int from=0;from<25;++from)if(!walls[from])for(int heading=0;heading<4;++heading) {
+   auto encode=[](int cell,int h,int stop){return (stop*25+cell)*4+h;};
+   std::vector<int> distance((stops.size()+1)*100,-1),queue{encode(from,heading,first)};
+   distance[queue[0]]=0;int optimum=-1;
+   for(size_t q=0;q<queue.size()&&optimum<0;++q) {
+    const int id=queue[q],h=id%4,cell=(id/4)%25,stop=id/100;
+    if(stop==int(stops.size())){optimum=distance[id];break;}
+    for(int action=0;action<4;++action) {
+     int next=cell,orient=h;
+     if(action==0){const int row=cell/5+(h==1)-(h==3),col=cell%5+(h==0)-(h==2);
+      if(row<0||row>=5||col<0||col>=5||walls[row*5+col])continue;next=row*5+col;}
+     else if(action==1)orient=(h+1)%4;else if(action==2)orient=(h+3)%4;
+     const int progress=stop+(next==stops[stop]),target=encode(next,orient,progress);
+     if(distance[target]<0){distance[target]=distance[id]+1;queue.push_back(target);}
+    }
+   }
+   const auto lower=manhattan_service_bound(from,stops,first,5,[]{});
+   require(optimum>=0&&lower<=optimum,"geometric service bound exceeded physical action BFS");++cases;
+  }
+ require(manhattan_service_bound(13,{13,13,13},0,5,[]{})==3,"geometric bound lost repeated service ticks");
+ require(manhattan_service_bound(13,{13,13},2,5,[]{})==0,"completed chain has remaining geometric cost");
+ rejects([&]{manhattan_service_bound(0,{1},-1,5,[]{});});
+ rejects([&]{manhattan_service_bound(0,{1},2,5,[]{});});
+ rejects([&]{manhattan_service_bound(0,{1},0,0,[]{});});
+ bool timeout=false;try{manhattan_service_bound(0,{1,2},0,5,[]{throw Timeout("geometric_bound_fixture");});}catch(const Timeout&){timeout=true;}
+ require(timeout,"geometric bound swallowed deadline");
+ // Real RANDOM04 has pockets: the old spatial restriction must remain active,
+ // while the new geometric path permits it without changing any certificate.
+ SharedEnvironment base;base.rows=base.cols=32;base.num_of_agents=700;base.trick_instance="RANDOM-04";
+ std::vector<int> free;
+ for(int cell=0;cell<1024;++cell){base.map.push_back(tricks::random_masks[cell]=='x');if(!base.map.back())free.push_back(cell);}
+ base.curr_task_schedule.assign(700,-1);base.goal_locations.resize(700);
+ for(int r=0;r<700;++r)base.curr_states.emplace_back(free[(r*337)%819],0,r%4);
+ for(int id=0;id<800;++id){Task task;task.task_id=id;task.t_revealed=id?0:-5000;
+  const int pickup=free[(id*67+301)%819];task.locations={pickup,id%2?pickup:free[(id*71+600)%819]};
+  if(!id)for(int k=0;k<10;++k)task.locations.push_back(k%2?free.front():free.back());base.task_pool.emplace(id,task);}
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TRICK_LANES","0"},{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","32"},{"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_HRRN","1"}};
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ setenv("CGAR_TRICK_KNOWN_HORIZON","1000000",1);
+ rejects([&]{auto e=base;Cgar c;c.initialize(&e,30000);});
+ unsetenv("CGAR_TRICK_KNOWN_HORIZON");
+ std::vector<int> baseline;long long checked_actions=0;
+ for(int mode=0;mode<4;++mode) {
+  if(mode){setenv(key,mode==1?"0":"1",1);setenv("CGAR_TRICK_KNOWN_HORIZON",mode==1?"0":mode==2?"1000000":"8",1);}
+  auto e=base;Cgar c;c.initialize(&e,30000);std::vector<int> trace;
+  for(int tick=0;tick<8;++tick){e.curr_timestep=tick;std::vector<int> schedule;c.schedule(&e,30000,schedule);
+   for(int r=0;r<700;++r){const int before=e.curr_task_schedule[r];if(before>=0)require(schedule[r]==before,"geometric horizon redirected held or started task");
+    if(schedule[r]>=0){auto& task=e.task_pool.at(schedule[r]);require(task.agent_assigned==-1||task.agent_assigned==r,"geometric horizon duplicated an owner");task.agent_assigned=r;}}
+   e.curr_task_schedule=schedule;e.goal_locations.assign(700,{});
+   for(int r=0;r<700;++r)if(schedule[r]>=0){auto& task=e.task_pool.at(schedule[r]);e.goal_locations[r].push_back({task.locations[task.idx_next_loc],0});}
+   std::vector<Action> actions;c.plan(&e,30000,actions);auto next=step(e,e.curr_states,actions);require(!next.empty(),"geometric horizon production action collision");e.curr_states=next;
+   trace.insert(trace.end(),schedule.begin(),schedule.end());for(auto action:actions)trace.push_back(int(action));checked_actions+=actions.size();
+   for(int r=0;r<700;++r)if(schedule[r]>=0){auto& task=e.task_pool.at(schedule[r]);if(e.curr_states[r].location==task.locations[task.idx_next_loc]){
+    if(++task.idx_next_loc==task.locations.size()){e.task_pool.erase(schedule[r]);e.curr_task_schedule[r]=-1;e.goal_locations[r].clear();}}}
+  }
+  if(mode==0)baseline=trace;else if(mode<3)require(trace==baseline,"geometric horizon changed default-off or distant-horizon behavior");
+  else require(c.stats().horizon_pairs>0&&c.stats().horizon_impossible_pairs>0&&c.stats().horizon_rank_changes>0,"geometric short horizon fixture did not exercise tiers");
+  unsetenv(key);unsetenv("CGAR_TRICK_KNOWN_HORIZON");
+ }
+ for(auto setting:settings)unsetenv(setting.first);
+ std::cout<<"GEOMETRIC_HORIZON passed independent_action_bfs="<<cases<<" production_actions="<<checked_actions<<" pockets_allowed=1 legacy_guard=1 default_and_distant_horizon_identity=1 held_started_protected=1 repeated_service=1 deadline=1 explicit_cli=1\n";
+}
+
+int main(){try{geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

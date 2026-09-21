@@ -19,6 +19,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output',required=True,type=Path)
     p.add_argument('--memory-gib-per-slot',type=int,default=4)
+    p.add_argument('--scheduler-slots-per-core',type=int,choices=[1,2],default=1)
     p.add_argument('--shared-host',action='store_true',help='Allow a shared GRID host for compilation and functional tests')
     p.add_argument('--hosts',nargs='+',help='Optional GRID host allowlist for reliable binding')
     p.add_argument('--execute',action='store_true')
@@ -29,16 +30,17 @@ def main():
         sources={s:hashlib.sha256((ROOT/s).read_bytes()).hexdigest() for s in SOURCES+['cgar/tests/cgar_regression.cpp']}
         for name in sources:
             dest=out/'sources'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(ROOT/name,dest)
-        write(out/'requested.json',{'sources':sources,'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=str(ROOT),text=True).strip(), 'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=str(ROOT),text=True)), 'shared_build_host':args.shared_host})
+        write(out/'requested.json',{'sources':sources,'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=str(ROOT),text=True).strip(), 'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=str(ROOT),text=True)), 'shared_build_host':args.shared_host,'scheduler_slots_per_core':args.scheduler_slots_per_core})
         command=['/usr/bin/python3',str(Path(__file__).resolve()),'--execute','--output',str(out)]
         (out/'job.sh').write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(s) for s in command)+'\n')
-        submit=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','e','-cwd','-q',','.join('debian.q@'+h for h in args.hosts) if args.hosts else 'debian.q','-pe','threaded','4','-binding','linear:4','-l','exclusive='+('false' if args.shared_host else 'true')+',h_rt=00:20:00,h_vmem='+str(args.memory_gib_per_slot)+'G','-m','n','-N','lorr_build','-j','y','-o',str(out/'build.log'),'-S','/bin/bash',str(out/'job.sh')]
+        submit=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','e','-cwd','-q',','.join('debian.q@'+h for h in args.hosts) if args.hosts else 'debian.q','-pe','threaded',str(4*args.scheduler_slots_per_core),'-binding','linear:4','-l','exclusive='+('false' if args.shared_host else 'true')+',h_rt=00:20:00,h_vmem='+str(args.memory_gib_per_slot)+'G','-m','n','-N','lorr_build','-j','y','-o',str(out/'build.log'),'-S','/bin/bash',str(out/'job.sh')]
         r=subprocess.run(submit,cwd=str(ROOT),text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         write(out/'submission.json',{'command':submit,'returncode':r.returncode,'response':r.stdout});print(r.stdout,end='');return r.returncode
     spec=json.loads((out/'requested.json').read_text())
     def check_sources():
         for name,sha in spec['sources'].items(): assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==sha,name
     check_sources();resources=cpu_resources();write(out/'allocation.json',resources)
+    assert int(os.environ.get('NSLOTS','0')) >= 4*spec.get('scheduler_slots_per_core',1)
     if resources['physical_cores_visible'] != 4 or resources['effective_cpu_quota'] is not None:
         raise RuntimeError('build allocation rejected: require exactly four physical cores without quota')
     os.sched_setaffinity(0,resources['representative_cpus'])

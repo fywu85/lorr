@@ -186,6 +186,17 @@ def main():
                     counts=[int(s['repeated_moves']) for s in retarget_samples];assert counts==sorted(counts)
                 else:
                     assert not retarget_config and not retarget_samples
+                if int(case['environment'].get('CGAR_TRICK_HORIZON_MANHATTAN','0')):
+                    known=int(case['environment']['CGAR_TRICK_KNOWN_HORIZON'])
+                    assert known==row['steps'], 'known horizon must be the predeclared full run length'
+                    receipts=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_HORIZON] ')]
+                    assert receipts==[dict(known_horizon=str(known),assumption='configured',lower_bound='manhattan_plus_service',core='unrestricted_bound',assignments='new_only',fair='unchanged',held='unchanged',all_impossible='assign',after_horizon='ordinary')]
+                    horizon_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon] ')]
+                    assert horizon_samples and int(horizon_samples[-1]['pairs'])>0
+                    assert all(int(x['known_horizon'])==known and 0<=int(x['impossible_pairs'])<=int(x['pairs']) for x in horizon_samples)
+                    if int(case['environment'].get('CGAR_TRICK_HORIZON_MARGIN','0')):
+                        margin_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon-margin] ')]
+                        assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
                 fleet_audit=None
                 fleet_limit=int(case['environment'].get('CGAR_TRICK_GAME_ACTIVE_LIMIT','0'))
                 fleet=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_GAME_FLEET] ')]
