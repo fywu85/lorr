@@ -1220,3 +1220,16 @@ existing per-search epoch tags and private worker storage to avoid repeatedly
 allocating/clearing the state tables. Defaults preserve the old implementation.
 Dense turnover, worker count, cache choice, full checkpoint replay and mobility
 tests cover both. Neither feature is enabled based on map geometry.
+
+## Compact aligned ranking cache (source89)
+
+The previous CachedRanking entry occupies104 bytes: its40-byte header can
+cross a cache-line boundary, and an entry can span three64-byte lines. Its
+heading (0–3), candidate count (1–5), and five-bit kinematic mask fit in bytes.
+Store those fields compactly, align the candidate block to32 bytes, and make
+the whole entry96 bytes. Header lookup then stays in one line and the complete
+entry in two, while capacity in entries and all scores/keys remain unchanged.
+Compile-time layout checks enforce that representation. Existing uncached/cache,
+eviction, worker, dynamic-cost bypass, checkpoint and dense turnover tests are
+the semantic controls. No throughput or speed claim precedes full equivalence
+and measured timing comparisons. This is a general representation optimization.

@@ -3,6 +3,7 @@
 #include "ActionModel.h"
 #include <array>
 #include <cstdint>
+#include <cstddef>
 #include <memory>
 #include <random>
 #include <unordered_map>
@@ -127,14 +128,17 @@ struct OperationModel {
     explicit OperationModel(const Graph& graph);
     const std::array<int,horizon>& path(int state,int code) const {return paths[size_t(state)*count+code];}
 };
-struct CachedRanking {
+struct alignas(32) CachedRanking {
+    // The lookup header fits one half cache line. Aligning the candidate block
+    // keeps this entry at 96 bytes and prevents a hit from spanning three lines.
     uint64_t epoch=0,key=0;
     const Chain* chain=nullptr;
     float base_cost=0;
-    int idle_heading=0,count=0;
-    unsigned int kinematic_mask=0;
-    std::array<MoveCandidate,5> candidates{};
+    uint8_t idle_heading=0,count=0,kinematic_mask=0;
+    alignas(32) std::array<MoveCandidate,5> candidates{};
 };
+static_assert(offsetof(CachedRanking,candidates)==32,"ranking header exceeds half a cache line");
+static_assert(sizeof(CachedRanking)==96,"unexpected ranking-cache layout");
 struct alignas(64) PolicyTiming {
     uint64_t calls=0,samples=0;
     std::array<uint64_t,7> nanoseconds{};

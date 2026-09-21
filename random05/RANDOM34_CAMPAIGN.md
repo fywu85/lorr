@@ -71,3 +71,28 @@ matching trial was refused before solver launch on research40 (64 physical
 cores visible where16 were requested), so it has no algorithmic result. That
 original refusal is preserved; exclude research40 from subsequent submissions
 until its binding is understood. No cause is inferred from the resource record.
+
+## First results and next declared full batches
+
+Source86 exactly reproduces the2439 control in all six trajectory/schedule/
+event/task fields. I3072/I4096 with group8 give2452/2469; group4 atI4096/I8192
+gives2466/2479. The new2479 record has mean520/max733ms and is5.09% above
+NMS, still116 below the10% target. All five attempts independently replay.
+
+Source88 (49f9724) passes its regression suite, including cooperative-round
+mobility, worker scheduling and search-storage equivalence. Six full cases
+compare exact control/storage reuse, sharing rounds2/4/8, and the public KK400
+field under the stronger window budget. Earlier KK400 atI512/keep6 gave1797
+versus1839 for the flow field; the optimizer interaction is the reason to retest.
+
+RANDOM-04 cache128/cache512/cycle-mask all finish2565, with means826/849/853ms
+and maxima931/937/920ms. Lowering work toK11520 gives2500, mean722/max869ms.
+Neither larger caches nor the mask provides a compelling runtime gain. The
+source87 cache-fusion control and fused variant both time out atK14400
+(step1/84,1191/1083ms), so neither qualifies for robust timing. Their original
+failures remain preserved; the lower-work fused case is still running.
+
+The next eight RANDOM-04 cases use source80 andK8064/first4032 for runtime
+headroom. Compare18/6/8/10 forecasts per candidate, an8-forecast depth12 case,
+public NMS/KK guidance, and noise100. Complete branch groups are checked before
+submission. All are explicit RANDOM-04 presets and use the full1000-step run.
