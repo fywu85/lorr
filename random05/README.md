@@ -1,10 +1,12 @@
-# Independent RANDOM combined solver
+# PILOT: independent combined planner and scheduler
 
-[RANDOM-05 results](RESULTS.md) and [all five RANDOM cases](RANDOM_PROGRESS.md).
+[Competition dashboard](../PILOT_PROGRESS.md),
+[RANDOM-05 results](RESULTS.md), [all five RANDOM cases](RANDOM_PROGRESS.md),
+and the [completed 4,000-task audit](results/completion-audit-4000/audit.json).
 
 A new implementation guided by the colleague's development log supplied by the
-user. Their code and tuned traffic field are unavailable. The campaign now covers all five archived RANDOM densities while
-RANDOM-05 retains the 4,000-task target. Absolute scores are not directly
+user. Their code and tuned traffic field are unavailable. The campaign now covers all five archived RANDOM densities. RANDOM-05 has
+passed the 4,000-task target and frozen fresh-input validation. Absolute scores are not directly
 comparable to the colleague's private synthetic instances. Large maps are
 outside the current development scope.
 

@@ -59,6 +59,9 @@ def main():
         text = text.replace(old, new, 1)
     index_path.write_text(json.dumps(index, indent=2)+'\n')
     ledger_path.write_text(text)
+    if (ROOT / 'PILOT_PROGRESS.md').exists():
+        from render_pilot_progress import render
+        render()
 
 
 if __name__ == '__main__':

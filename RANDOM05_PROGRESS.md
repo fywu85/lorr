@@ -1,6 +1,8 @@
 # RANDOM-05 combined-track throughput progress
 
 [Current verified result summary](random05/RESULTS.md).
+[PILOT competition dashboard](PILOT_PROGRESS.md) covers all instances; this file
+continues as the detailed RANDOM-05 history.
 
 Goal (retargeted 2026-09-20): reach **4,000 completed tasks** on the full archived
 RANDOM-05 combined benchmark, then independently validate the selected improvement.
@@ -30,7 +32,7 @@ baselines. All prior fresh inputs 50001–50010 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 03:50 UTC.
+Updated: 2026-09-21 04:56 UTC (validation completed; record finished at 03:50 UTC).
 
 **Best single run on the archived input: 4,011 tasks on 32 workers / 16 physical cores**,
 or **+26.5% versus matched NMS32=3,172**. Source
@@ -42,9 +44,11 @@ Guidance and the known-horizon cutoff require `--trick RANDOM-05`.
 Mean534ms, maximum622ms, RSS559MB; all2,000steps independently replayed,
 with zero planner/scheduler errors or entry timeouts.
 This is21tasks above the previous3,990 record and crosses the archived4,000
-threshold. **The goal remains active:** the exact archived repeat passed; full frozen
-fresh-input validation is still pending. V5 compares this fixed configuration with
-its immediately previous3,990 parent and two NMS repetitions per fresh input.
+threshold. **The4,000 milestone is independently verified:** the archived repeat is exact
+and all eight frozen fresh-input comparisons pass. V5 compares this fixed configuration with
+its immediately previous3,990 parent and two NMS repetitions per fresh input:
+3912/4047 versus3901/4023 and stronger NMS3095/3190. The fresh gains are
++26.63%versusNMS and+0.442%versus the previous configuration.
 [Full evidence](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json),
 [independent replay](random05/results/record3990-coupling-split-full-v80/action_audit-4011.json),
 [frozen protocol](random05/experiments/fresh-validation-v5-protocol.json).
@@ -1762,3 +1766,28 @@ NMS repetitions are still running; the full predeclared validation remains
 pending and the goal stays ACTIVE. The fresh4047 count is a different task
 stream, not a new archived-input frontier.
 [Frozen validation](random05/FRESH_VALIDATION_V5.md).
+
+### 2026-09-21 04:40 UTC: all frozen validation criteria verified
+
+All eight original V5 runs pass the full protocol/source/input/resource audit
+and independent action/event replay. Candidate3912/4047 beats stronger NMS
+3095/3190 by26.40%/26.87%; aggregate7959/6285 is **+26.63%**. It also beats
+the immediately previous3990configuration3901/4023 by35tasks (+0.442%).
+Candidate maximum entry times are624/644ms, RSS below560MB. No retries or
+candidate substitutions were needed. The archived4011repeat is exact in all
+six fields. Recorded starts and every revealed chain match their input files.
+All ten held-out input bundles retain their original hashes;49unsuccessful
+benchmark attempts and6failed builds remain preserved. The4,000 milestone is
+verified, with the broader five-RANDOM campaign continuing separately.
+[Completed V5 report](random05/FRESH_VALIDATION_V5.md),
+[fresh waiting statistics](random05/results/fresh-validation-v5/WAITING.md).
+
+### 2026-09-21 04:56 UTC: 4,000-task completion audit passed
+
+The [final requirement matrix](random05/results/completion-audit-4000/audit.json)
+passes all ten checks. It ties the exact 4,011-task repeat and eight original
+fresh runs to frozen source/input/resource evidence, independently replayed
+traces, actual task definitions, and explicit trick flags. All 85 timestamped
+frontier records and their waiting metrics remain verified. Preserved failures
+and all ten held-out input bundles are included. The all-five campaign continues
+in [RANDOM_PROGRESS.md](random05/RANDOM_PROGRESS.md).

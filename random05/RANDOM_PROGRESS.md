@@ -1,7 +1,7 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-RANDOM-05 has crossed4,000 on the archived input; frozen fresh validation is pending.
+RANDOM-05 has reached 4,011 on the archived input, repeated exactly, and passed frozen fresh validation.
 Large maps are outside active development.
 
 ## Comparison rules
@@ -21,13 +21,44 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2439 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2516 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2551 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
 continues in [RANDOM05_PROGRESS.md](../RANDOM05_PROGRESS.md). Configurations,
 hashes and evidence are pinned in [random-frontiers.json](random-frontiers.json).
+
+## Current RANDOM-05 validation
+
+The **4,000 milestone is independently verified**. Archived record **4,011**,
+source [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2), finished
+2026-09-21T03:50:40.471914+00:00 and repeated exactly. It uses explicit
+`--trick RANDOM-05` guidance and horizon cutoff, planner seed0, K16320/B18,
+move bias3 and cutoff mix1. Mean534ms, maximum622ms, RSS559MB.
+
+| New task/start seed | Frozen candidate | Previous3,990 configuration | NMS repetitions | Gain over stronger NMS |
+|---|---:|---:|---|---:|
+| 50009 | 3,912 | 3,901 | 3,095 / 3,090 | +26.40% |
+| 50010 | 4,047 | 4,023 | 3,177 / 3,190 | +26.87% |
+
+Frozen protocol [e46f57b](https://github.com/fywu85/lorr/commit/e46f57b) preceded
+generation. Aggregate **+26.63% versus NMS**, and **+0.442% versus the previous
+configuration**, positive on both new inputs. All eight original runs pass the
+source/input/allocation/deadline/memory audit and independent full replay.
+Candidate means573/560ms, maxima624/644ms, RSS below560MB. The fresh4,047
+belongs to a different task stream and does not replace the archived4,011 record.
+
+The four-core record remains separately **3,770 versus NMS4's2,914**. The
+four-core V4 fresh comparison is+25.42%; it uses different inputs/configuration.
+The longest completed archived-record order is1944steps; fresh candidates'
+maxima are1961/1980. Every run still leaves initial orders unfinished at2000,
+so eventual maximum latency remains censored.
+
+[Milestone requirements audit](results/completion-audit-4000/audit.json),
+[complete validation](FRESH_VALIDATION_V5.md),
+[fresh waiting metrics](results/fresh-validation-v5/WAITING.md),
+[all RANDOM-05 commit/timestamp records](../RANDOM05_PROGRESS.md).
 
 ## First declared experiments
 
@@ -41,9 +72,8 @@ RANDOM-04 receives individual tests of contrast1.6, dispersion0.4, noise100,
 move bias2 and a larger K24480 search. Other settings are frozen. Each such
 run has its explicit instance flag. The RANDOM-05 move-bias experiments continue.
 
-Further work will consider a windowed multi-step optimizer for sparse/medium
-traffic if tuning the reactive policy leaves a structural gap. No such optimizer
-has been added yet.
+At this initial checkpoint a windowed multi-step optimizer had not yet been
+added. The later sections document its implementation and measured gains.
 
 ## Record evidence
 
@@ -65,8 +95,6 @@ has been added yet.
 | 2026-09-21T02:18:46.354333+00:00 | RANDOM-02 | general | 1106 | [9e9dbfa](https://github.com/fywu85/lorr/commit/9e9dbfa) | [Full run](results/random-density-first-split-full-v79/general-random-02-dispersion0/summary.json) |
 | 2026-09-21T02:24:01.656278+00:00 | RANDOM-01 | general | 651 | [9e9dbfa](https://github.com/fywu85/lorr/commit/9e9dbfa) | [Full run](results/random-operations-split-full-v79/general-random-01-operations-k512/summary.json) |
 | 2026-09-21T02:27:08.813026+00:00 | RANDOM-04 | trick | 2462 | [9e9dbfa](https://github.com/fywu85/lorr/commit/9e9dbfa) | [Full run](results/random-density-first-split-full-v79/trick-random-04-k24480/summary.json) |
-
-
 | 2026-09-21T02:43:54.755684+00:00 | RANDOM-01 | general | 664 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-iters24/summary.json) |
 | 2026-09-21T02:43:55.001681+00:00 | RANDOM-01 | general | 685 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-unit-cost/summary.json) |
 | 2026-09-21T02:46:48.999994+00:00 | RANDOM-01 | general | 699 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-01-window-iters128/summary.json) |
@@ -91,6 +119,7 @@ has been added yet.
 | 2026-09-21T04:01:59.631782+00:00 | RANDOM-03 | trick | 2439 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Full run](results/random-window2343-followup-split-full-v81/trick-random-03-window2343-keep14/summary.json) |
 | 2026-09-21T04:10:48.680394+00:00 | RANDOM-04 | trick | 2505 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed0/summary.json) |
 | 2026-09-21T04:11:29.934441+00:00 | RANDOM-04 | trick | 2516 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed3/summary.json) |
+| 2026-09-21T04:28:57.667303+00:00 | RANDOM-04 | trick | 2551 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-field-depth-split-full-v80/trick-random-04-depth16-k14400/summary.json) |
 
 
 ## September21: first development comparisons
@@ -338,3 +367,64 @@ comparison are now declared separately. No new source change is involved.
 
 RANDOM-05 repeats4011exactly. Fresh frozen candidate/baseline results are
 3912/3901 and4047/4023; NMS and the final protocol audit remain pending.
+
+### 2026-09-21: frozen RANDOM-05 validation passed; RANDOM-04 reaches2,551
+
+All eight V5 attempts are complete and independently replayed. The frozen
+candidate beats the stronger NMS repeat on each input and the previous
+configuration in aggregate, satisfying the declared criteria. See the current
+RANDOM-05 section above for the full comparison and resource/waiting metrics.
+
+RANDOM-04 reaches **2,551** atdepth16/K14400/seed5, mean831/max902ms and436MB
+RSS, with all1,000steps independently replayed. NMS remains29tasks ahead. Four
+alternate guidance-pattern seeds0–3 atdepth12 score2304/2302/2395/2361, below
+the existing field; all attempts remain recorded. The new depth16 follow-ups
+test loop gain thresholds2/3, scheduling length weight0.5, and rank-weighted
+look-ahead0.25, all explicitly flagged RANDOM-04 tricks. The R05 candidate is
+unchanged.
+[Field/depth audit](results/random04-field-depth-split-full-v80/audit.json).
+
+## September21 04:51UTC: RANDOM-04 follow-up and declared next batch
+
+The four depth16 follow-ups finish2523/2526/2546/2531 tasks for loop
+threshold2/3, scheduler length0.5 and rank power0.25. All runs complete strictly;
+all four also pass independent replay. None exceeds the audited 2,551 record.
+The candidate remains unchanged.
+
+The next batch freezes four additional planner seeds0/3/4/6 for the selected
+depth16/K14400 configuration, and depth18/K13056 plus depth20/K12240 atseed5.
+This tests seed sensitivity and longer look-ahead under a similar work budget.
+It is development on the archived input, not fresh-input validation. Every run
+uses explicit `--trick RANDOM-04`, sourcea2ff2b2 and the full1000-step horizon.
+The completed RANDOM-05 fresh comparison remains frozen.
+
+### 2026-09-21 04:56 UTC: final 4,000-task milestone audit
+
+All ten requirement checks pass: archived record and exact repeat, frozen
+fresh comparisons, full independent replay, actual input/trace consistency,
+source and test provenance, strict timing and resources, explicit trick gates,
+separate four-core records, waiting metrics, and preservation of failed attempts
+and held-out inputs. The audit verifies all 85 timestamped frontier rows against
+the already audited history. Each of the ten selected record/repeat/fresh runs
+has 2,000 timing samples; NMS uses its native `plannerTimes` field and our
+simulator uses `entryComputeTimes`.
+
+[Final requirement matrix](results/completion-audit-4000/audit.json),
+[reproducible audit](tools/audit_4000_milestone.py),
+[completed RANDOM-04 follow-ups](results/random04-throughput-followup-split-full-v80/audit.json).
+
+### 2026-09-21 05:03 UTC: PILOT naming and timing failures
+
+The family is now named **PILOT**, Pipelined Look-ahead with Task matching.
+The user's authoritative RANDOM-05 history remains root `RANDOM05_PROGRESS.md`;
+the earlier request for this internal density log was a typo. New
+[`PILOT_PROGRESS.md`](../PILOT_PROGRESS.md) provides the general competition
+overview, including five non-RANDOM placeholders, matched local NMS comparisons,
+and source/timestamp links. This file retains the detailed density experiments.
+
+Three original RANDOM-04 follow-ups fail: depth16 seed0 times out at step1
+(1197ms), seed3 at step217 (1007ms), and depth20/K12240 is rejected during
+initialization because the work count is not divisible into complete screening
+groups (K must be a multiple of96 here). These are retained unsuccessful attempts
+and do not change the frontier. The other three runs remain pending. Timing
+variation is observed, but a host or algorithmic cause has not been established.

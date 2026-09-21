@@ -1,0 +1,44 @@
+{
+  "checked_utc": "2026-09-21T04:25:19.554070+00:00",
+  "source_commit": "a2ff2b2",
+  "binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+  "cases": [
+    {
+      "name": "guidance-without-flag",
+      "environment": {
+        "R05_GUIDANCE": "flow",
+        "R05_HORIZON": "0"
+      },
+      "arguments": [],
+      "exit": 125,
+      "expected_message": "guidance experiments require",
+      "properly_rejected": true
+    },
+    {
+      "name": "horizon-without-flag",
+      "environment": {
+        "R05_GUIDANCE": "none",
+        "R05_HORIZON": "2000"
+      },
+      "arguments": [],
+      "exit": 125,
+      "expected_message": "known-horizon triage requires",
+      "properly_rejected": true
+    },
+    {
+      "name": "wrong-instance-flag",
+      "environment": {
+        "R05_GUIDANCE": "none",
+        "R05_HORIZON": "0"
+      },
+      "arguments": [
+        "--trick",
+        "RANDOM-04"
+      ],
+      "exit": 2,
+      "expected_message": "requires the 32x32 / 700-agent instance",
+      "properly_rejected": true
+    }
+  ],
+  "positive_control": "random05/results/record4011-repeat-split-full-v80/audit.json"
+}

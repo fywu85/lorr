@@ -1,10 +1,13 @@
 # RANDOM-05 results
 
-The previous “reasonably close” performance level is reached locally. A frozen
-candidate improves on the stronger NMS repetition by **25.42% across two untouched
-task/start inputs**, close to the colleague's reported27–28%. Their private code
-and inputs remain unavailable, so this is a reproduction of the performance
-level rather than their exact experiment.
+The **4,000-task milestone is independently verified**:4,011 on the full archived
+RANDOM-05 combined benchmark, reproduced exactly. On two untouched task/start
+inputs, the frozen candidate scores3,912/4,047 and beats the stronger NMS repeat
+by **26.63% in aggregate**. It improves on the immediately previous configuration
+by0.442%, positive on both inputs. All eight original validation runs pass strict
+timing, resource and independent trajectory/event audits.
+[Completed frozen validation](FRESH_VALIDATION_V5.md),
+[final milestone audit](results/completion-audit-4000/audit.json).
 
 ## Selected development records
 
@@ -16,14 +19,12 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
 | 16 physical cores / 32 workers | 4,011 | 3,172 | +26.5% | 534 / 622ms | 559MB |
 
-The archived4,000 threshold is crossed at4,011. Raising the explicit cutoff's
-directional mix from0.75 to1 adds21tasks atK16320 on planner seed0. Full action
-and task-event replay passes, and the archived repeat is exact. Fresh V5 runs
-score3912/4047 versus3901/4023 for the previous3990configuration (+0.442%
-aggregate). NMS repetitions and the final eight-run audit remain pending.
-The goal stays active. Candidate settings,
-previous3,990 baseline, two NMS repeats per input, and acceptance criteria are
-[frozen before generation](experiments/fresh-validation-v5-protocol.json).
+Raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
+selected archived planner seed0. The archived repeat is exact. Frozen V5 results
+are3912/4047 versus3901/4023 for the previous3990configuration, and stronger
+NMS3095/3190. Candidate means573/560ms, maxima624/644ms, RSS below560MB.
+All predeclared validation criteria pass. These are new starts/tasks on the same
+map; they do not establish transfer to unseen layouts.
 
 AtK16320/mix0.5, move bias3 has a1.61% higher aggregate across eight paired
 development planner seeds (five positive, including the selection seed). More
@@ -37,7 +38,7 @@ are in [best-four-cores.json](best-four-cores.json) and
 [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
-## Frozen independent-input comparison
+## Earlier four-core frozen independent-input comparison
 
 Protocol[a7bad0c](https://github.com/fywu85/lorr/commit/a7bad0c) precedes generation.
 Candidate settings and planner seed3 stayed fixed through all six original runs.
@@ -55,7 +56,7 @@ Candidate means are796/791ms, maxima859/852ms, with RSS below499MB.
 
 Earlier frozenV3 measured+25.46% on different inputs with an older configuration.
 This corroborates the broad performance level; it is not a paired estimate of
-improvement fromV3 toV4. All input seeds50001–50008 remain excluded from tuning.
+improvement fromV3 toV4. All input seeds50001–50010 remain excluded from tuning.
 
 ## What depends on the horizon trick
 
@@ -97,7 +98,8 @@ versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.
 [Current comparison](results/task-waiting-frontiers-20260920T1612/REPORT.md),
-[fresh-input waiting metrics](results/fresh-validation-v4/WAITING.md),
+[current fresh-input waiting metrics](results/fresh-validation-v5/WAITING.md),
+[earlier four-core waiting metrics](results/fresh-validation-v4/WAITING.md),
 [history](WAITING_PROGRESS.md).
 
 ## Frozen transfer to other instances
