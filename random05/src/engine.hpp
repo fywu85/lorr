@@ -18,6 +18,7 @@ struct Config {
     int replan_threads=1;
     bool replan_policy=false;
     int score_rank_steps=0;
+    int window=0, window_keep=6, window_islands=32, window_iterations=24, window_neighborhood=8, window_expansions=20000;
     int rescore_roots=0, rescore_branches=64;
     float rescore_blend=0, rescore_static_weight=-1;
     int snapshot_interval=0, snapshot_candidates=8;
@@ -179,6 +180,8 @@ private:
     std::unique_ptr<Graph> score_graph_;
     std::unique_ptr<OperationModel> operation_model_;
     std::vector<int> operations_;
+    std::vector<std::vector<int>> window_paths_;
+    void window_plan(const Frame& frame,const SharedEnvironment& env,std::vector<Action>& plan);
     std::vector<const Chain*> assigned_, score_assigned_, future_tasks_, future_plain_;
     std::vector<float> future_lengths_;
     std::vector<double> score_weights_;

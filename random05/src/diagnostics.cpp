@@ -17,6 +17,7 @@ json Engine::checkpoint(const SharedEnvironment& env) const {
         {"predicted_dir",predicted_dir_},{"operations",operations_},
         {"total_forward",total_forward_},{"total_agent_steps",total_agent_steps_}
     };
+    if(cfg.window)state["window_paths"]=window_paths_;
     state["states"]=json::array();
     for(const auto& robot:env.curr_states)
         state["states"].push_back({robot.location,robot.timestep,robot.orientation});
@@ -66,6 +67,7 @@ void Engine::restore(const json& state,SharedEnvironment& env) {
     predicted_loc_=state.at("predicted_loc").get<std::vector<int>>();
     predicted_dir_=state.at("predicted_dir").get<std::vector<int>>();
     operations_=state.at("operations").get<std::vector<int>>();
+    window_paths_=state.value("window_paths",std::vector<std::vector<int>>{});
     total_forward_=state.at("total_forward");total_agent_steps_=state.at("total_agent_steps");
     std::istringstream random(state.at("rng").get<std::string>());random>>rng_;
     if(!random)throw std::invalid_argument("invalid checkpoint RNG state");

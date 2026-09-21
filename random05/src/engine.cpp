@@ -141,6 +141,16 @@ Config Config::environment(const SharedEnvironment& env) {
         if(first_roots<c.generations || first_finalists<std::max(c.elites,c.persist_elites))
             throw std::invalid_argument("first-step K needs enough complete finalists");
     }
+    c.window=integer("R05_WINDOW",0);
+    c.window_keep=integer("R05_WINDOW_KEEP",6);
+    c.window_islands=integer("R05_WINDOW_ISLANDS",32);
+    c.window_iterations=integer("R05_WINDOW_ITERS",24);
+    c.window_neighborhood=integer("R05_WINDOW_NEIGHBORHOOD",8);
+    c.window_expansions=integer("R05_WINDOW_EXPANSIONS",20000);
+    if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
+       c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>2048 ||
+       c.window_neighborhood<1 || c.window_neighborhood>64 || c.window_expansions<1)
+        throw std::invalid_argument("invalid windowed search configuration");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.move_bias=real("R05_MOVE_BIAS",0);
@@ -252,6 +262,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.window && (c.operation_depth || c.rollout_match || c.replan_roots || c.rescore_roots ||
+       c.component_trials || c.snapshot_interval || c.reverse_penalty || c.plain_score || c.score_rank_power))
+        throw std::invalid_argument("windowed search requires fixed-chain costs without other experimental search modes");
     if(c.futures<1 || c.generations<1 || c.generations>c.futures || c.depth<1 || c.threads<1 || c.depth>64 || c.turn_cost<=0 ||
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
@@ -1593,6 +1606,12 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     mark(1);
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
+    if(cfg.window) {
+        if(forced_candidate>=0)throw std::invalid_argument("forced root is unavailable for windowed search");
+        window_plan(frame,*env,plan);
+        total_agent_steps_+=n;total_forward_+=std::count(plan.begin(),plan.end(),FW);
+        return;
+    }
     // Initialization of the first task pool has extra matching/cost work.
     // A declared first-step budget can reserve room for that work. Every
     // configured rollout is still completed; elapsed time never changes K.

@@ -1,12 +1,12 @@
 # Order latency at the current RANDOM-05 throughput frontiers
 
-Audited 2026-09-21T01:55:55.530324+00:00. Throughput selects these runs. Durations are simulation steps; completion latency includes queueing and service, from release to the final waypoint.
+Audited 2026-09-21T02:31:20.247042+00:00. Throughput selects these runs. Durations are simulation steps; completion latency includes queueing and service, from release to the final waypoint.
 
 | Allocation / solver | Tasks | Completed mean | Completed p95 | Completed max | Oldest unfinished | Initial unfinished / unopened |
 |---|---:|---:|---:|---:|---:|---|
 | Four cores / ours, 5f81613 | 3770 | 421.8 | 1065 | 1941 | 2000 | 137 / 96 |
 | Four cores / NMS | 2914 | 418.0 | 1296 | 1997 | 2000 | 219 / 102 |
-| 32 workers / ours, acdbfd7 | 3941 | 414.4 | 1052 | 1956 | 2000 | 124 / 90 |
+| 32 workers / ours, acdbfd7 | 3978 | 410.4 | 1045 | 1959 | 2000 | 130 / 92 |
 | 32 workers / NMS | 3172 | 389.6 | 1273 | 1976 | 2000 | 206 / 91 |
 
 Both solvers have step-zero orders unfinished at step 2,000. Their eventual maximum latency is unknown and at least 2,000 steps. Completed-only statistics omit that censored tail and cannot establish a fairness bound. Our records use explicit known-horizon triage.
@@ -14,7 +14,7 @@ Both solvers have step-zero orders unfinished at step 2,000. Their eventual maxi
 All runs start with the same 1,200 orders. Unopened means no first-waypoint event, even if the task has been assigned. Completing orders reveals replacements, so later release times depend on throughput and every final backlog contains 1,200 orders. Initial-cohort counts avoid that release-time comparison problem.
 
 Four cores / ours, 5f81613: 41 initial orders started but unfinished. The longest completed order is 279 (release 0, finish 1941): 1941 steps.
-32 workers / ours, acdbfd7: 34 initial orders started but unfinished. The longest completed order is 999 (release 0, finish 1956): 1956 steps.
+32 workers / ours, acdbfd7: 38 initial orders started but unfinished. The longest completed order is 807 (release 0, finish 1959): 1959 steps.
 
 Earlier frontiers remain in [the full audit](audit.json) and [per-frontier latency history](../../WAITING_PROGRESS.md). Raw traces stay in ignored `runs/`; the manifest and audit retain exact paths, raw-result hashes and event-accounting checks.
 

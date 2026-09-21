@@ -14,16 +14,16 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,941 | 3,172 | +24.2% | 514 / 590ms | 561MB |
+| 16 physical cores / 32 workers | 3,978 | 3,172 | +25.4% | 617 / 786ms | 560MB |
 
-The current goal is4,000 tasks,59 above the record. A small randomized
-preference in move proposals reaches3,941 on plannerseed5, eight above the
-previous3,933. Independent replay passed. Checks on other planner seeds are
-pending, so this is a selected maximum, not an established mean improvement.
-Bias2 has a1.84% higher aggregate across four development planner seeds
-(three positive, including the seed used to select it). This is not independent-input
-validation. The earlier B18-versus-B14 seven-seed comparison had a0.27% lower aggregate
-despite its higher maximum. Startup weighting and finalist rescoring are off.
+The current goal is4,000 tasks,22 above the record. A small randomized
+preference in move proposals reaches3,978 on planner seed0,37 above3,941.
+Independent replay passed. Bias3 has a2.60% higher aggregate across four paired
+development planner seeds (three positive, including the seed that selected it).
+Bias2's corresponding aggregate gain is1.84%. These comparisons use one archived
+input; fresh task/start validation remains pending. The earlier B18-versus-B14
+seven-seed comparison had a0.27% lower aggregate despite its higher maximum.
+Startup weighting and finalist rescoring are off.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
@@ -81,7 +81,7 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All81 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All82 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [completed-goal audit](results/completion-audit.json).
 

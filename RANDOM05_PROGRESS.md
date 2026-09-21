@@ -30,21 +30,21 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 01:50 UTC.
+Updated: 2026-09-21 02:16 UTC.
 
-**Best single run on the archived input: 3,941 tasks on 32 workers / 16 physical cores**,
-or **+24.2% versus matched NMS32=3,172**. Source
-[acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7), planner seed5,
+**Best single run on the archived input: 3,978 tasks on 32 workers / 16 physical cores**,
+or **+25.4% versus matched NMS32=3,172**. Source
+[acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7), planner seed0,
 firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias3.
 Guidance and the directional horizon cutoff remain explicit tricks;
 startup weighting and finalist rescoring are off.
-Mean514ms, maximum590ms, RSS561MB; all2,000steps valid and independently replayed.
-This is eight tasks above3,933. It is a selected maximum; bias3 has no paired
-seed result yet. Bias2 averages1.84% higher across four development planner
-seeds (three positive), including the seed that selected that setting. This is
-not independent task/start validation. The4,000 target remains59tasks away.
-[Full evidence](random05/results/move-bias-followup-split-full-v77/32-move-bias3-b18-seed5/summary.json),
-[independent replay](random05/results/move-bias-followup-split-full-v77/action_audit-3941.json).
+Mean617ms, maximum786ms, RSS560MB; all2,000steps valid and independently replayed.
+This is37tasks above3,941. Bias3 averages2.60% higher across four paired development
+planner seeds (three positive), including the seed used to select the setting.
+This is a selected maximum, not independent task/start validation. The4,000
+target remains22tasks away.
+[Full evidence](random05/results/move-bias-refinement-split-full-v77/32-move-bias3-b18-seed0/summary.json),
+[independent replay](random05/results/move-bias-refinement-split-full-v77/action_audit-3978.json).
 
 The3,933 intermediate record used move bias2; the same source's zero-bias
 control exactly reproduces3,928 in all six trajectory fields.
@@ -312,6 +312,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T01:28:12.433277+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; move bias2; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3933 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +24.0% | [Full evidence](random05/results/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json) |
 
 | 2026-09-21T01:50:46.795715+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3941 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +24.2% | [Full evidence](random05/results/move-bias-followup-split-full-v77/32-move-bias3-b18-seed5/summary.json) |
+
+| 2026-09-21T02:16:03.845916+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3978 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.4% | [Full evidence](random05/results/move-bias-refinement-split-full-v77/32-move-bias3-b18-seed0/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1687,3 +1689,19 @@ weight from the number of random futures. Eight full strict tests are declared
 in [the preset](random05/experiments/rescore-static-mixture-full-v76.json).
 The legacy setting must reproduce3,906. No new fresh task/start inputs have been
 generated, and all previous validation inputs remain excluded from tuning.
+
+
+### 2026-09-21 02:16 UTC: 3,978 selected record and broader RANDOM campaign
+
+- Bias3, planner seed0 gives3,978; seeds3/4 give3,839/3,782. Together withseed5's
+  3,941, the paired aggregate is15,540 versus15,146 for bias0 (+2.60%,3/4positive).
+  Independent replay passes for the new maximum. Completed maximum wait1,959;
+  initial unfinished130/unopened92. Same development input, not fresh validation.
+- Amplitudes2.5/3.5 atseed5 give3,890/3,835. Bias3 with K24480 gives3,945;
+  it completed after3,978 and is therefore not a frontier record.
+- Source79 introduces a configurable proposal fraction. Quarter control3,941
+  reproduces all six trajectory fields exactly. Bias3 fractions1/8,1/2,1 give
+  3,904/3,909/3,900; bias2 fractions1/2,1 give3,898/3,897. All six strict;
+  retain the quarter default. New bias3 planner seeds6/7/8/24 remain pending.
+- User expanded active development to all five RANDOM cases. See the separate
+  [all-density ledger](random05/RANDOM_PROGRESS.md). Large maps are deferred.

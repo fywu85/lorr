@@ -1087,3 +1087,41 @@ Bias2 follow-up complete: seeds0/3/4/5 score3798/3909/3785/3933 against3666/3675
 Source79 regression passes34.04s. Build SHA256 `5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6`; all compiled source and test files match the working tree. Freeze six strict full cases: bias3 at fractions0.25(control),0.125,0.5,1; bias2 at fractions0.5,1. Same B18/seed5 settings and first7968/K16320. The quarter control must reproduce3941 exactly. No elapsed-time stopping, new task/start inputs, or map retuning.
 
 The paired phase audit sums bias0 versus bias2 over plannerseeds0/3/4/5. At500/1000/1500/2000 steps the gains are+27/+4/+148/+279 tasks. Thus131 of the279 aggregate gain accrues in the final500 steps; gains are not confined to that final interval. This does not separate horizon interactions from routing improvements, because trajectories and task sets diverge. Onseed5, bias3 is+42 at500, -48 at1000, -27 at1500 and+13 at2000, another warning against ranking variants from short prefixes. Evidence: results/move-bias-phase-v77/.
+
+## Expanded RANDOM campaign
+
+2026-09-21T02:17:27.230561+00:00: user requests general improvements and explicit tricks for all five RANDOM cases, while preservingRandom05 4k priority. The first23 cases are frozen in experiments/random-density-first-full-v79.json and described in RANDOM_PROGRESS.md. General noise/dispersion choices are applied across all five cases; per-instance choices are separately flagged tricks. No large-map port is planned.
+
+### Further declared comparisons, 2026-09-21 02:23 UTC
+
+Source77 bias3 reaches3978 on plannerseed0; seed3/4 give3839/3782 andseed5 gives3941. Relative to matched bias0 baselines3666/3675/3877/3928, total15540 versus15146 (+2.601%,3/4positive). A bounded follow-up tests plannerseeds6/7/8/24, with existing bias0 references3832/3851/3876/3904. Seed24 was the best earlier expanded-seed result; this is explicitly selected development search, not independent validation. No fresh task/start inputs are generated.
+
+For RANDOM01–03, test the existing three-action operation policy at fixedK128 andK512, four generations/eight elites, no continuation branches. Use64 revisits and protect successful inherited chains, the stronger old operation variant. This failed at RANDOM05 but removes the pipelined policy's turn/move restrictions, so it is a bounded architecture check at lower density before a new windowed optimizer. No guidance or horizon trick; all32workers/1s/32GB and full horizons. Source79; other baseline settings remain fixed.
+
+
+## General windowed-search prototype (source80, September21)
+
+Lower-density frozen transfer and the operation-policy trial leave a substantial
+RANDOM-02/03 gap. Add an optional `R05_WINDOW` mode, disabled by default. It uses
+our existing matching scheduler and exact oriented task-chain costs, compares a
+fresh pipelined seed with a short retained prefix plus regenerated tail, and runs
+independent deterministic LNS islands. Each repair removes a small nearby group
+and plans it with time-space A* against the remaining vertex and reverse-edge
+reservations. All islands perform their declared number of iterations. Failed
+bounded repairs restore the complete incumbent; elapsed time never truncates the
+search, and the existing strict entry deadline still raises a failure.
+
+This is an independent implementation of the windowed/LNS pattern inspected in
+the archived Kitty Knight WPPL planner, including its parallel local optimizer.
+No participant source is copied. There is no map name or geometry-specific rule
+in the planner. Instance-specific selection or guidance still requires the
+matching `--trick` flag. Full runs, independent replay and repeated comparisons
+will decide whether this mode is useful; it is not yet a performance claim.
+
+Settings: `R05_WINDOW` (0/off, otherwise at most32), `R05_WINDOW_KEEP` (6),
+`R05_WINDOW_ISLANDS` (32), `R05_WINDOW_ITERS` (24),
+`R05_WINDOW_NEIGHBORHOOD` (8), `R05_WINDOW_EXPANSIONS` (20,000 per A* repair).
+Actual threads use the existing `R05_THREADS`. Island RNG streams depend only on
+planner seed, step and island index. Checkpoints retain the complete prior window.
+Tests cover repeated task stops, immediate legal motion, dense task turnover,
+worker/cache equivalence, checkpoint replay and restoration after failed repairs.

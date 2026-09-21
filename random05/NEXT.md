@@ -1,21 +1,41 @@
 # RANDOM-05: active 4,000-task goal
 
-Updated 2026-09-21 02:10 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
-combined run, then independently validate on fresh inputs. Best3,941, gap59.
+Updated 2026-09-21 02:41 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
+combined run, then independently validate on fresh inputs. Best3,978, gap22.
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; other agents share
 main and GRID. No delegation. Public `fywu85/lorr` may be pushed. Preserve visibility.
 Throughput primary; waiting secondary. Tricks require explicit instance flags.
 Keep32GB/1s/30s strict frontier checks. Preserve failed attempts. Fresh task/start
 seeds50001–50008 are excluded from tuning; none later have been generated.
 
+## User expansion: all five RANDOM instances
+
+Latest user asks for general improvements AND declared tricks onRandom01–04
+while continuingRandom05 toward4k. Large-map work is deferred. All edits remain
+inside random05/ and RANDOM05_PROGRESS.md. New ledger:RANDOM_PROGRESS.md;
+configuration/evidence index:random-frontiers.json. Keep this expanded task
+through automatic goal continuations; do not let the original4k goal hide it.
+
+Initial matchedNMS01..05=649/1228/2359/2580/3172. General starts647/1079/1582/
+1558/2226; trick starts592/1122/2171/2456/3941. All successful starting traces
+have independent replay. No density-specific winning configuration chosen yet.
+
+`random-density-first-split-full-v79` has23 full cases: general noise50,
+dispersion0, both, applied across all five densities; horizon-only tricks on
+01–03; R04 one-change tests contrast1.6/dispersion.4/noise100/movebias2/K24480.
+All use source79=9e9dbfa and explicit instance flags when appropriate. Use full
+horizons and compare each case with its matching starting profile and NMS.
+
 ## Verified records
 
-- **3,941**: source`acdbfd7`, build77, B18/first7968/K16320/s2/q4/G4/E8/P8,
-  seed5, move bias3; field15/flip5, triage mix.5/scale1.25. Full configuration
-  in`best-32-workers.json`; startup/rescoring OFF. Finished01:50:46UTC Sep21.
-  Mean513.765/max589.633ms, RSS547440KiB, +24.2% versus NMS32=3172.
-  Replay passed, all81 frontier rows audited; max completed wait1956,
-  initial unfinished124/unopened90, eventual maximum censored>=2000.
+- **3,978**: source`acdbfd7`, build77, B18/first7968/K16320/s2/q4/G4/E8/P8,
+  seed0, move bias3; field15/flip5, triage mix.5/scale1.25. Full configuration
+  in`best-32-workers.json`; startup/rescoring OFF. Finished02:16:03UTC Sep21.
+  Mean616.646/max785.890ms, RSS546628KiB, +25.4% versus NMS32=3172.
+  Replay passed, all82 frontier rows audited; max completed wait1959,
+  initial unfinished130/unopened92, eventual maximum censored>=2000.
+  Bias3 paired seeds0/3/4/5:3978/3839/3782/3941 versus3666/3675/3877/3928,
+  +2.601%,3/4positive. Includes selectedseed5; not fresh input validation.
 - Previous3928 source`233f5bf`, build69, same settings with bias0. Source77
   zero-bias control reproduces all six trajectory fields exactly.
   Seven B18/B14 planner pairs aggregate26705/26778 (-.273%), 4/7 positive.
@@ -54,8 +74,8 @@ is neutral; actual rollout scoring and legal-movement checks are unchanged.
 Regression34.04s passes zero-fraction identity and cache/worker/checkpoint
 checks at1/8,1/2,1. All34compiled/test inputs match the frozen build.
 Build79 SHA5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6.
-Source79 is the commit containing this section; link future records using the
-verified commit, not the shared-tree HEAD saved when the build was submitted.
+Source79 is`9e9dbfa`; link records to that verified source, not the shared-tree
+HEAD saved when the build was submitted.
 
 ## Active batches
 
@@ -142,3 +162,22 @@ unproved causes. Never alter other jobs. Newhostlist excludes34/42/53/58.
 
 Push helper: `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
 Commit only owned paths with`git commit --only ... -- random05 RANDOM05_PROGRESS.md`.
+
+## Current expansion status
+
+All29 source79 trials complete and independently audited by audit_random_cases.py.
+Best general01=651(action K512),02=1106(dispersion0),03/04/05 unchanged.
+Best trick01=628(horizon-only),02=1122,03=2171,04=2462(K24480),05=3978.
+New source80 optional rolling-window LNS in window.cpp is building (job8901261,
+outputbuild-v80). It has deterministic independent islands, time-space A*, full
+reservations, short-prefix/pipeline initialization, and checkpoint support.
+New tests cover immediate motion, repeated stops, dense safety, worker/cache
+identity and restoration after failed repairs. Do not benchmark/promote until
+build/regression passes; source80 not committed yet.
+
+Source79 fraction batch all6done:3941control(exact sixfields),3904/3909/3900,
+3898/3897. No gain. Source77 refinement all6done:3978/3839/3782,3890/3835/3945.
+Source77 new bias3 seeds6/7/8/24 running jobs8901242–45, batch
+move-bias-seeds-split-full-v77. Keep originals, collect and audit any record.
+
+Build80 completed successfully02:40:32UTC; regression passed and all35 compiled/test inputs match the frozen snapshot. BinarySHA2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232. Full windowed benchmarks are next.

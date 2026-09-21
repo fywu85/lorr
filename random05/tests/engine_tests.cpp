@@ -840,7 +840,47 @@ void move_proposal_bias() {
     }
 }
 
+void window_single_agent() {
+    // Repeated waypoints consume separate simulator ticks. LNS can also move
+    // immediately, instead of inheriting the pipeline's initial idle action.
+    auto e=environment(1,7,1);e.curr_states[0].orientation=0;
+    Task task;task.task_id=1;task.locations={3,3,4};e.task_pool[1]=task;
+    Config cfg;cfg.window=12;cfg.window_islands=2;cfg.window_iterations=4;
+    cfg.window_neighborhood=1;cfg.threads=2;cfg.cost_cache=true;cfg.wait_cost=0.5;
+    Engine engine(cfg);engine.initialize(&e);int completed=-1;
+    for(int t=0;t<10;++t) {
+        e.curr_timestep=t;std::vector<Action> plan;std::vector<int> schedule;
+        engine.compute(&e,plan,schedule);
+        if(t==0)require(plan[0]==FW,"window repair retained unnecessary initial idle");
+        auto& state=e.curr_states[0];
+        if(plan[0]==FW)state.location=engine.graph->next[state.location][state.orientation];
+        else if(plan[0]==CR)state.orientation=(state.orientation+1)%4;
+        else if(plan[0]==CCR)state.orientation=(state.orientation+3)%4;
+        e.curr_task_schedule=schedule;
+        auto& active=e.task_pool.at(1);
+        if(active.locations[active.idx_next_loc]==state.location) {
+            ++active.idx_next_loc;
+            if(active.idx_next_loc==int(active.locations.size())){completed=t+1;break;}
+        }
+    }
+    require(completed==5,"window task-chain planner mishandled repeated waypoints");
+}
+void window_reproducibility() {
+    Config cfg;cfg.window=8;cfg.window_keep=3;cfg.window_islands=4;
+    cfg.window_iterations=3;cfg.window_neighborhood=5;cfg.window_expansions=800;
+    cfg.futures=4;cfg.threads=1;cfg.cost_cache=true;cfg.scratch_reuse=true;
+    const auto reference=simulate(cfg,8,5,5,true);
+    cfg.threads=2;require(reference==simulate(cfg,8),"parallel window repairs changed the full trajectory");
+    cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
+    cfg.window_expansions=1;cfg.window_iterations=3;
+    const auto failed_repairs=simulate(cfg,8);
+    cfg.window_iterations=0;
+    require(failed_repairs==simulate(cfg,8),"failed window repairs damaged the complete fallback plan");
+}
+
 int main() {
+    window_single_agent();
+    window_reproducibility();
     move_proposal_bias();
     ranked_task_progress();
     independent_candidate_rescoring();
