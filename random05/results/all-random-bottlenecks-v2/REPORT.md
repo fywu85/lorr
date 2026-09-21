@@ -33,3 +33,33 @@ RANDOM-04 is tied at2,417 completed tasks after900steps; the selected133-task le
 Next bounded experiment: briefly raise the task-admission cap at startup on the two crowded cases, then restore the current cap while protecting already-opened tasks. Earlier source148 startup tests reduced caps; the opposite direction is untested. This is explicitly a `--trick RANDOM-04/05` preset, uses only visible tasks, and cannot be credited before full replay and strict timing checks. Sparse/medium prefix-search comparisons continue separately.
 
 All ten source trajectories were independently replayed before this read-only analysis. Existing distance-table hash and source provenance are preserved. [Oriented bounds and common-task cohorts](oriented.json), [100-step phase counts](phases.json), [input trace manifest](manifest.json), [distance generation](distance-generation.json).
+
+## Conservative deadline feasibility
+
+The following counts use only each currently assigned visible chain, current
+pose and the declared final step. The lower bound ignores collisions and later
+repeated-waypoint service; exceeding the remaining time proves impossibility.
+Planner suppression state is absent from traces. Waiting or moving while holding
+an impossible task can still help other robots, so these are not wasted-work or
+recoverable-throughput estimates.
+
+| Trace | Last200 assigned robot-steps on provably late tasks | Of those: waits | Newly assigned provably late pairs |
+|---|---:|---:|---:|
+| RANDOM-01-PILOT | 4349 | 3429 | 263 |
+| RANDOM-01-KK | 4962 | 153 | 299 |
+| RANDOM-02-PILOT | 1323 | 1174 | 14 |
+| RANDOM-02-KK | 9441 | 683 | 689 |
+| RANDOM-03-PILOT | 19522 | 18048 | 969 |
+| RANDOM-03-NMS | 23170 | 3640 | 634 |
+| RANDOM-04-PILOT | 8497 | 5329 | 0 |
+| RANDOM-04-NMS | 56105 | 13079 | 868 |
+| RANDOM-05-PILOT | 43545 | 21549 | 764 |
+| RANDOM-05-NMS | 57702 | 17928 | 580 |
+
+The source161 experiment tests a physical lower-bound gate for unopened matching,
+separately from the older approximate lateness penalties and planner triage.
+Opened tasks remain locked. With no configured idle preference, complete joint
+matching prioritizes feasible assignment cardinality; impossible pairs receive
+idle alternatives. It is explicitly gated by --trick INSTANCE and a known horizon.
+There is no measured improvement yet. [Full diagnostic](deadline-feasibility.json),
+[standalone read-only analyzer](../../tools/audit_deadline_feasibility.py).
