@@ -40,6 +40,7 @@ def main():
     p.add_argument('--variants', type=Path, required=True)
     p.add_argument('--inputs', type=Path, required=True)
     p.add_argument('--control', required=True)
+    p.add_argument('--seeds',type=int,nargs='+',default=[0])
     p.add_argument('--trick', choices=['WAREHOUSE','SORTATION'])
     p.add_argument('--allow-random05', action='store_true', help='Explicitly include CGAR runs on RANDOM-05 without modifying the separate solver')
     p.add_argument('--hold-job')
@@ -56,23 +57,25 @@ def main():
             copies['experiments/'+name]=ROOT/'experiments'/name
         for name,source in copies.items():
             target=support/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
-        write(raw/'factor-analysis-request.json',dict(commit=a.commit,control=a.control,trick=a.trick,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
+        write(raw/'factor-analysis-request.json',dict(commit=a.commit,control=a.control,trick=a.trick,seeds=a.seeds,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
         command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--execute']
         if a.trick:command+=['--trick',a.trick]
         if a.allow_random05:command+=['--allow-random05']
+        command+=['--seeds']+list(map(str,a.seeds))
         job=raw/'factor-analysis.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
-        submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q','-pe','threaded','1','-binding','linear:1',
+        submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research43.grid.gsb,debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','1','-binding','linear:1',
                 '-l','exclusive=false,h_rt=00:45:00,h_vmem=12G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/'factor-analysis.log'),'-S','/bin/bash']
         if a.hold_job:submit+=['-hold_jid',a.hold_job]
         submit.append(str(job));r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
         write(raw/'factor-analysis-submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout))
         r.check_returncode();assert re.fullmatch(r'\d+\s*',r.stdout);print(r.stdout,end='',flush=True)
         subprocess.run(['qrls',r.stdout.strip()],check=True);return
-    request=read(raw/'factor-analysis-request.json');assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05
+    request=read(raw/'factor-analysis-request.json');assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05 and request.get('seeds',[0])==a.seeds
     for name,expected in request['files'].items():assert sha(support/name)==expected,name
     sys.path.insert(0,str(support));from cpu_resources import cpu_resources
     from warehouse_waiting import waiting_audit
-    resources=cpu_resources();assert resources['effective_cpu_quota'] is None and resources['physical_cores_visible']==1
+    resources=cpu_resources();write(raw/'factor-analysis-allocation.json',resources)
+    assert resources['effective_cpu_quota'] is None and resources['physical_cores_visible']==1,resources
     os.sched_setaffinity(0,resources['representative_cpus'])
     build,spec,allocation=(read(raw/name) for name in ['build.json','spec.json','allocation.json'])
     source=dict(build['sources'],**build['test_sources'])
@@ -82,10 +85,12 @@ def main():
     profiles=read(support/'variants.json');inputs=read(support/'inputs.json')
     for path,expected in inputs['sha256'].items():assert sha(Path(path))==expected,path
     assert set(spec['instances'])==set(inputs['instances']) and (a.allow_random05 or 'RANDOM-05' not in spec['instances'])
-    assert len(spec['cases'])==len(profiles) and a.control in profiles
+    assert len(spec['cases'])==len(profiles)*len(a.seeds) and a.control in profiles
+    assert len(set(a.seeds))==len(a.seeds)
+    assert {(c['variant'],c['seed'],c['repeat']) for c in spec['cases']}=={(v,seed,0) for v in profiles for seed in a.seeds}
     track='TRICK' if a.trick else 'GENERIC'
     assert spec['trick']==a.trick and spec['experiment_track']==track
-    assert spec['time_limit_ms']==5000 and spec['cpus_per_instance']==4
+    assert spec['time_limit_ms'] in (1000,5000) and spec['cpus_per_instance']==4
     assert not spec['exclusive_host'] and spec['benchmark_mode']=='relaxed_development'
     core_count=spec['parallel_suites']*spec['jobs_per_suite']*spec['cpus_per_instance']
     assert len(allocation['selected_cpus'])==core_count and len(set(allocation['selected_cpus']))==core_count
@@ -97,10 +102,10 @@ def main():
     rows=[];fairness={};work={};suite_intervals=[]
     for case in spec['cases']:
         label=case['name'];meta=metadata[label]
-        assert case['environment']==profiles[case['variant']] and case['seed']==case['repeat']==0
-        assert meta['environment']==dict(case['environment'],CGAR_SEED='0') and meta['build_provenance']==build
+        assert case['environment']==profiles[case['variant']] and case['seed'] in a.seeds and case['repeat']==0
+        assert meta['environment']==dict(case['environment'],CGAR_SEED=str(case['seed'])) and meta['build_provenance']==build
         assert meta['binary_sha256']==build['binary_sha256'] and meta['max_process_memory_bytes']==32000000000
-        assert meta['plan_time_limit_ms']==5000 and meta['preprocess_time_limit_ms']==30000
+        assert meta['plan_time_limit_ms']==spec['time_limit_ms'] and meta['preprocess_time_limit_ms']==30000
         assert meta['trick']==a.trick and meta['trick_argv']==(['--trick',a.trick] if a.trick else []) and meta['experiment_track']==track
         cpu=meta['cpu_resources'];assert cpu['effective_cpu_quota'] is None
         assert cpu['cpu_model']=='AMD EPYC 9354 32-Core Processor'
@@ -124,7 +129,7 @@ def main():
             else:
                 assert not any(l.startswith('[CGAR_TRICK') for l in logs)
             usage=summary['process_resources']
-            row=dict(case=label,variant=case['variant'],instance=name,seed=0,steps=horizons[name],
+            row=dict(case=label,variant=case['variant'],instance=name,seed=case['seed'],steps=horizons[name],
                      robots=inputs['instances'][name]['team_size'],valid=summary['valid'],outcome=summary['outcome'],tasks=None,
                      peak_rss_bytes=summary['peak_process_rss_bytes'],wall_seconds=summary['wall_seconds'],
                      mean_cpu_cores=(usage['user_seconds']+usage['system_seconds'])/usage['wall_seconds'],reserved_physical_cores=4,
@@ -134,7 +139,7 @@ def main():
                 assert m['steps']==summary['makespan']==summary['entry_compute_samples']==horizons[name]
                 assert summary['after']==m['tasks'] and all(summary[k]==0 for k in ['planner_errors','schedule_errors','timeouts','internal_timeouts','exit'])
                 assert summary['memory_valid'] and summary['peak_process_rss_bytes']<32000000000 and summary['entry_timing_valid']
-                assert summary['entry_compute_max_seconds']==m['max_decision_seconds']<=5
+                assert summary['entry_compute_max_seconds']==m['max_decision_seconds']<=spec['time_limit_ms']/1000
                 assert m['movement_diagnostics']['complete']
                 assert sum(m['movement_phases'][str(k)][action] for k in range(3) for action in ['fw','cr','ccr','wait'])==row['robots']*row['steps']
                 cap=int(case['environment']['CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT'])
@@ -171,17 +176,17 @@ def main():
     report=dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),source_commit=a.commit,
                 source_and_test_files=len(source),binary_sha256=build['binary_sha256'],rows=rows,
                 valid_runs=sum(r['valid'] for r in rows),failed_runs=sum(not r['valid'] for r in rows),
-                disjoint_physical_core_groups=True,no_cpu_quota=True,decision_limit_ms=5000,
+                disjoint_physical_core_groups=True,no_cpu_quota=True,decision_limit_ms=spec['time_limit_ms'],strict_one_second_limit=spec['time_limit_ms']==1000,
                 competition_budget_confirmed=False,random05_excluded='RANDOM-05' not in spec['instances'],independent_random05_solver_untouched=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,
-                scope='Archived inputs, one planner seed, frozen predeclared factor profiles. Throughput comparisons require full horizons. Shared-host5s development,32decimalGB. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim.')
+                scope='Archived inputs and declared planner seeds, frozen factor profiles. Throughput comparisons require full horizons. Shared hosts and32decimalGB; exact enforced entry limit is recorded above. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim.')
     write(out/'verification.json',report);write(out/'fairness.json',fairness);write(out/'regional-work.json',work)
     for name in ['completion.json','submission.json','factor-analysis-request.json','factor-analysis-submission.json']:
         shutil.copy2(raw/name,out/name)
-    lines=['# Controlled CGAR factor matrix','',report['scope'],'',
-           '| Instance / variant | Tasks | Mean ms | Max ms | RSS GB | Outstanding age p90 |',
+    lines=['# Controlled CGAR factor matrix','',report['scope'],'','Enforced entry limit: '+str(spec['time_limit_ms'])+'ms. Planner seeds: '+str(a.seeds)+'.','',
+           '| Instance / variant / seed | Tasks | Mean ms | Max ms | RSS GB | Outstanding age p90 |',
            '|---|---:|---:|---:|---:|---:|']
     for r in rows:
-        lines.append('| {} / {} | {} | {} | {} | {:.3f} | {} |'.format(r['instance'],r['variant'],r['tasks'] if r['valid'] else r['outcome'],round(r['mean_entry_ms'],2) if r['valid'] else 'n/a',round(r['max_entry_seconds']*1000,2) if r['valid'] else 'n/a',r['peak_rss_bytes']/1e9,r.get('outstanding_age_p90','n/a')))
+        lines.append('| {} / {} | {} | {} | {} | {:.3f} | {} |'.format(r['instance'],r['variant']+' / seed'+str(r['seed']),r['tasks'] if r['valid'] else r['outcome'],round(r['mean_entry_ms'],2) if r['valid'] else 'n/a',round(r['max_entry_seconds']*1000,2) if r['valid'] else 'n/a',r['peak_rss_bytes']/1e9,r.get('outstanding_age_p90','n/a')))
     lines+=['','Throughput is primary; fairness is a secondary reported metric. The separate RANDOM-05 solver is untouched.','',
             '[Verification](verification.json), [paired effects](paired-results.json), [waiting](fairness.json), [regional work](regional-work.json).']
     (out/'summary.md').write_text('\n'.join(lines)+'\n')
