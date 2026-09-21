@@ -3567,7 +3567,7 @@ void city_game_trick_regression() {
   }
   {
    setenv("CGAR_FLOW_COST_SCALE","20",1);setenv("CGAR_TRICK_LANES","1",1);setenv("CGAR_TRICK_NATIVE_METRIC","1",1);setenv("CGAR_TRICK_REMAINING_FLOW","1",1);
-   auto active=base;active.trick_instance=name;Cgar planner;planner.initialize(&active,30000);
+   auto active=base;active.trick_instance=name;active.curr_timestep=10;Cgar planner;planner.initialize(&active,30000);
    std::vector<int> schedule;planner.schedule(&active,30000,schedule);require(planner.stats().pickup_full_fields>0,"CITY/GAME native pickup metric inactive");install(active,schedule);
    std::vector<Action> actions;planner.plan(&active,30000,actions);
    require(step(active,active.curr_states,actions).size()==size_t(base.num_of_agents)&&!planner.stats().flow_publications,"CITY/GAME native action invalid or field overwritten");native_actions+=actions.size();
