@@ -1055,6 +1055,63 @@ void active_task_admission() {
     if(present)setenv("R05_ACTIVE_TASK_CAP",saved.c_str(),1);else unsetenv("R05_ACTIVE_TASK_CAP");
 }
 
+void deferred_task_admission_credit() {
+    auto initial=environment(3,3,3);
+    Task a;a.task_id=7;a.locations={0,8};a.idx_next_loc=1;initial.task_pool[7]=a;
+    Task b;b.task_id=8;b.locations={1,6};b.idx_next_loc=1;initial.task_pool[8]=b;
+    Task c;c.task_id=9;c.locations={2,2};initial.task_pool[9]=c;
+    initial.curr_task_schedule={7,8,-1};
+    Config cfg;cfg.active_task_cap=2;cfg.horizon=2;cfg.triage_scale=1;
+    cfg.hungarian_limit=1000;cfg.futures=1;cfg.depth=2;
+    for(float fraction:{0.f,.5f,1.f}) {
+        cfg.active_cap_triage_credit=fraction;auto env=initial;
+        Engine engine(cfg);engine.initialize(&env);std::vector<Action> plan;std::vector<int> schedule;
+        engine.compute(&env,plan,schedule);
+        require(schedule==std::vector<int>({7,8,-1}),"credit guessed deferred work before planning it");
+        require(engine.triaged()==2,"credit fixture did not defer both opened orders");
+        env.curr_task_schedule=schedule;
+        for(int i=0;i<3;++i) {
+            if(plan[i]==FW)env.curr_states[i].location=engine.graph->next[env.curr_states[i].location][env.curr_states[i].orientation];
+            if(plan[i]==CR)env.curr_states[i].orientation=(env.curr_states[i].orientation+1)%4;
+            if(plan[i]==CCR)env.curr_states[i].orientation=(env.curr_states[i].orientation+3)%4;
+            ++env.curr_states[i].timestep;
+        }
+        env.curr_timestep=1;engine.match(&env,schedule);
+        require(schedule[0]==7 && schedule[1]==8,"admission credit released an opened order");
+        require(schedule[2]==(fraction>0?9:-1),"deferred orders did not release the expected admission slot");
+        const auto checkpoint=engine.checkpoint(env);auto restored_env=env;
+        Engine restored(cfg);restored.restore(checkpoint,restored_env);std::vector<int> again;
+        restored.match(&restored_env,again);require(schedule==again,"admission credit disappeared after checkpoint restore");
+        if(fraction>0) {
+            auto replaced=env;replaced.task_pool[17]=replaced.task_pool[7];replaced.task_pool[17].task_id=17;
+            replaced.task_pool[18]=replaced.task_pool[8];replaced.task_pool[18].task_id=18;
+            replaced.curr_task_schedule={17,18,-1};replaced.task_pool.erase(7);replaced.task_pool.erase(8);
+            engine.match(&replaced,again);require(again==std::vector<int>({17,18,-1}),"new tasks inherited stale robot admission credits");
+        }
+    }
+    cfg=Config{};cfg.active_task_cap=22;cfg.active_cap_triage_credit=1;
+    cfg.horizon=120;cfg.triage_scale=1;cfg.hungarian_limit=1000;cfg.fast_admission=true;
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.random_by_step=true;cfg.share_prefix=true;cfg.cost_cache=true;
+    const auto serial=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(serial==simulate(cfg,12,5,5,true),"admission credit changed across workers or checkpoints");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting cap("R05_ACTIVE_TASK_CAP","22"),credit("R05_ACTIVE_CAP_TRIAGE_CREDIT","1"),horizon("R05_HORIZON","120");
+    SharedEnvironment gate;bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"triage admission credit escaped the explicit trick gate");
+    gate.trick_instance="RANDOM-04";require(Config::environment(gate).active_cap_triage_credit==1,"valid admission credit was rejected");
+    setenv("R05_ACTIVE_CAP_TRIAGE_CREDIT","1.1",1);rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"admission credit accepted a fraction above one");
+}
+
 void nonlinear_progress_objective() {
     // Equal movement competes for one cell; one chain finishes there and the
     // other has more work. Smooth utility must prefer the nearer completion.
@@ -1498,6 +1555,7 @@ int main() {
     active_task_admission();
     priced_task_admission();
     nonlinear_progress_objective();
+    deferred_task_admission_credit();
     blocker_priority_mutations();
     physical_guidance_edges();
     mixed_guidance_potentials();

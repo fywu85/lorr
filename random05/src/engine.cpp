@@ -212,6 +212,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
+    c.active_cap_triage_credit=real("R05_ACTIVE_CAP_TRIAGE_CREDIT",0);
     c.fast_admission=integer("R05_FAST_ADMISSION",0);
     c.admission_price=real("R05_ADMISSION_PRICE",-1);
     c.admission_price_steps=integer("R05_ADMISSION_PRICE_STEPS",0);
@@ -289,6 +290,10 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    if(!std::isfinite(c.active_cap_triage_credit) || c.active_cap_triage_credit<0 ||
+       c.active_cap_triage_credit>1 || (c.active_cap_triage_credit>0 &&
+       (!random_trick || c.horizon<=0 || c.active_task_cap<=0)))
+        throw std::invalid_argument("triaged-task admission credit requires a fraction in [0,1], a cap, a horizon and explicit trick instance");
     c.active_travel_rate=integer("R05_ACTIVE_TRAVEL_RATE",0);
     if(c.active_travel_rate && (!random_trick || c.horizon<=0))
         throw std::invalid_argument("active travel calibration requires a declared horizon and explicit trick instance");
@@ -926,18 +931,24 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         ?cfg.admission_price:-1;
     const float length_weight=cfg.initial_length_weight>=0 && env->curr_timestep<cfg.initial_length_steps
         ?cfg.initial_length_weight:cfg.length_weight;
-    std::vector<int> agents, tasks;std::unordered_set<int> locked;
+    std::vector<int> agents, tasks;std::unordered_set<int> locked;int suppressed_opened=0;
     for(int i=0;i<n;++i) {
         int id=schedule[i];
         bool started=id>=0 && env->task_pool.at(id).idx_next_loc>0;
-        if(started || (!cfg.matching && id>=0)) { locked.insert(id);continue; }
+        if(started || (!cfg.matching && id>=0)) {
+            locked.insert(id);
+            if(cfg.active_cap_triage_credit>0 && suppressed_tasks_.size()==size_t(n) && suppressed_tasks_[i]==id)
+                ++suppressed_opened;
+            continue;
+        }
         agents.push_back(i);schedule[i]=-1;
     }
     const bool capped=cfg.active_task_cap>0 &&
         (!cfg.active_cap_steps || env->curr_timestep<cfg.active_cap_steps);
     // Opened tasks remain protected even if they temporarily exceed the cap.
     // All robots remain in the collision planner and may yield or be pushed.
-    const int capacity=capped?std::min(int(agents.size()),std::max(0,cfg.active_task_cap-int(locked.size()))):int(agents.size());
+    const int credited_opened=capped?int(std::floor(cfg.active_cap_triage_credit*suppressed_opened)):0;
+    const int capacity=capped?std::min(int(agents.size()),std::max(0,cfg.active_task_cap-int(locked.size())+credited_opened)):int(agents.size());
     for(const auto& kv:env->task_pool)if(!locked.count(kv.first))tasks.push_back(kv.first);
     std::sort(tasks.begin(),tasks.end());
     std::vector<float> length(tasks.size(),0);
@@ -1050,8 +1061,8 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 admitted_costs.push_back(matrix[row*columns+selected[row]]);
             std::sort(admitted_costs.begin(),admitted_costs.end());
             auto quantile=[&](double q){return admitted_costs.empty()?0.f:admitted_costs[size_t(q*(admitted_costs.size()-1))];};
-            std::fprintf(stderr,"R05_ADMISSION_PROFILE t=%d locked=%zu admitted=%zu capacity=%d cost_p50=%.3f cost_p90=%.3f cost_max=%.3f\n",
-                env->curr_timestep,locked.size(),admitted_costs.size(),capacity,quantile(.5),quantile(.9),quantile(1));
+            std::fprintf(stderr,"R05_ADMISSION_PROFILE t=%d locked=%zu admitted=%zu capacity=%d credited=%d cost_p50=%.3f cost_p90=%.3f cost_max=%.3f\n",
+                env->curr_timestep,locked.size(),admitted_costs.size(),capacity,credited_opened,quantile(.5),quantile(.9),quantile(1));
         }
         report_match();return;
     }
@@ -1937,6 +1948,14 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 assigned_[a]=nullptr;++triaged_;
             }
         }
+    }
+    // Remember actual deferred task IDs, not robot flags: a completed or
+    // reassigned task must never inherit an old admission credit. This is a
+    // one-step-delayed admission estimate; opened assignments remain locked.
+    suppressed_tasks_.clear();
+    if(cfg.active_cap_triage_credit>0) {
+        suppressed_tasks_.assign(n,-1);
+        for(int a=0;a<n;++a)if(schedule[a]>=0 && !assigned_[a])suppressed_tasks_[a]=schedule[a];
     }
     score_weights_.clear();progress_normalization_=1;
     if(cfg.progress_softcap>0) {

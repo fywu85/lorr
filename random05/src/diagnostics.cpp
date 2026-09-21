@@ -12,6 +12,7 @@ json Engine::checkpoint(const SharedEnvironment& env) const {
         {"schedule",env.curr_task_schedule},{"new_tasks",env.new_tasks},
         {"new_freeagents",env.new_freeagents},{"goal_locations",env.goal_locations},
         {"age",age_},{"previous_task",previous_task_},{"previous_stage",previous_stage_},
+        {"suppressed_tasks",suppressed_tasks_},
         {"pending",pending_},{"best_offsets",best_offsets_},{"past_offsets",past_offsets_},
         {"last_actions",last_actions_},{"predicted_loc",predicted_loc_},
         {"predicted_dir",predicted_dir_},{"operations",operations_},
@@ -61,6 +62,7 @@ void Engine::restore(const json& state,SharedEnvironment& env) {
     age_=state.at("age").get<std::vector<int>>();
     previous_task_=state.at("previous_task").get<std::vector<int>>();
     previous_stage_=state.at("previous_stage").get<std::vector<int>>();
+    suppressed_tasks_=state.value("suppressed_tasks",std::vector<int>{});
     pending_=state.at("pending").get<std::vector<int>>();
     best_offsets_=state.at("best_offsets").get<std::vector<float>>();
     past_offsets_=state.at("past_offsets").get<std::vector<std::vector<float>>>();
