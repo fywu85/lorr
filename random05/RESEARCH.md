@@ -1309,3 +1309,13 @@ checkpoint regressions and full exact controls precede timing claims.
 Raise only the explicit WINDOW_ITERS ceiling8192->16384 for subsequent scaling
 if the optimization creates enough headroom. Default work is unchanged, every
 configured repair finishes, and the strict deadline still rejects overruns.
+
+## Shared-cache nested-forecast bypass correction (source95)
+
+Review found that clearing an inner planner's replan_roots flag would also
+remove the shared-cache bypass in that inner planner, letting parallel shadows
+try to populate Chain tables they share. Explicitly disable shared table
+construction in inner configurations. A nested-worker/checkpoint trajectory
+comparison now enables the outer cache flag and verifies the private-cache
+control is preserved. Every full source92cache benchmark has replan_roots0
+and never enters this branch, so those completed controls are unaffected.

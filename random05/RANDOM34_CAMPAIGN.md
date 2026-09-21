@@ -198,3 +198,27 @@ alllose2478–2533. Next eight source91 cases keep temperature0 and probe the
 cooperative planner's window: H16/keep10or12, H24/keep16or18, H28/keep20,
 H32/keep22, H20/keep12or16. Use8192repairs except6144forH28/H32 to retain
 time margin. These are full800step evaluations; no partial-prefix score.
+
+Source92 exactly reproduces2634 in all six trace fields for all four controls.
+Shared1024/2048MiB givesmean449/447ms versus489ms, maxima480/485 versus540ms,
+withRSS1.57/1.56GB. Withoutprivatecache mean441/max593ms,RSS1.48GB.
+These are observed single full runs on shared allocations; no universal timing
+guarantee. The1024/2048cases give useful headroom within32GB.
+
+Source94/0ca9413c passes regression. Nine full R03 controls test exact2551
+with fastgroups off/on, then fixed first4096, work12288/16384, H24 keep16/18,
+H28keep20 andH32keep22. The two largest windows use6144regular/2048first;
+all others use8192regular/4096first unless stated. Higherwork is declared,
+not time-adaptive; any overrun remains an unsuccessful attempt.
+
+Themutation0.1follow-up yields2448/2535/2529/2482 at0.02/0.05/0.15/0.2;
+G8/G16 give2622/2632, B18/K11520=2603, seed0/3=2584/2530. B10/K11520
+fails atstep264=1071ms. The selected2634 is not a replicated10% gain.
+
+Eleven source92 full cases use the exact2048MiB-cache2634 profile and change
+one setting: E/P1,4,16; noise100/400; discounted progress0.95/0.98; all-run
+remaining-task rankpower1/2; depth12/20. The rank preferences are explicit
+tricks and may increase waiting for long tasks. NMS's local source squares
+remaining-task rank on both RANDOM04/05, but its different search means this
+is only a hypothesis, not an expected transferable gain. All other controls
+are general mechanisms evaluated in the flagged R04profile.

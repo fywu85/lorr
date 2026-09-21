@@ -760,6 +760,8 @@ void replanning_forecast() {
     require(serial==simulate(cfg,12,5,5,true),"replanning forecast changed after checkpoint restoration");
     cfg.threads=4;cfg.replan_threads=2;
     require(serial==simulate(cfg,12),"nested forecast workers changed fixed-work decisions");
+    cfg.shared_rankings_mb=1;
+    require(serial==simulate(cfg,12,5,5,true),"nested forecasts failed to bypass shared mutable table construction");
     cfg.replan_policy=true;
     const auto faithful=simulate(cfg,12);cfg.replan_threads=1;
     require(faithful==simulate(cfg,12),"multi-generation forecast changed with nested worker count");

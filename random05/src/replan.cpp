@@ -69,6 +69,9 @@ int Engine::rank_replanned(const SharedEnvironment& env,const std::vector<int>& 
     const int count=int(roots.size())*cfg.replan_futures;
     while(int(replan_engines_.size())<count)replan_engines_.push_back(std::make_unique<Engine>(Config{}));
     Config inner=cfg;inner.replan_roots=0;inner.component_trials=0;inner.first_futures=0;
+    // Shadows share Chain ownership. Their current-task updates must not race
+    // while lazily populating shared task tables; retain private ranking caches.
+    inner.shared_rankings_mb=0;
     inner.futures=cfg.replan_k;inner.continuations=cfg.replan_continuations;
     inner.generations=1;inner.elites=1;inner.persist_elites=1;inner.screen_branches=0;
     if(cfg.replan_policy) {
