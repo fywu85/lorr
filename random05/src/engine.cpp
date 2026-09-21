@@ -202,6 +202,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(!std::isfinite(c.window_completion_price) || c.window_completion_price<0 || c.window_completion_price>8 ||
        (c.window_completion_price>0 && (!c.window || !random_trick)))
         throw std::invalid_argument("window completion price needs an enabled window, price0..8 and an explicit trick");
+    c.window_heuristic_weight=real("R05_WINDOW_HEURISTIC_WEIGHT",1);
+    if(!std::isfinite(c.window_heuristic_weight) || c.window_heuristic_weight<1 || c.window_heuristic_weight>4 ||
+       (c.window_heuristic_weight!=1 && !c.window))
+        throw std::invalid_argument("window heuristic priority weight requires an enabled window and weight1..4");
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);

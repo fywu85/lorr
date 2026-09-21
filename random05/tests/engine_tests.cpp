@@ -2110,6 +2110,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"query cache accepted an invalid capacity");
     }
+    {
+        Setting weight("R05_WINDOW_HEURISTIC_WEIGHT","1.05"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_heuristic_weight==1.05f,"general weighted search was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"weighted search accepted a missing window");
+    }
+    for(const char* value:{"0.9","4.01","nan","inf"}) {
+        Setting weight("R05_WINDOW_HEURISTIC_WEIGHT",value);auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"weighted search accepted an invalid weight");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2381,6 +2394,14 @@ void window_reproducibility() {
     require(completion_weighted==simulate(cfg,8,5,5,true),"unchanged-path cost reuse changed completion weighting");
     cfg.window_query_cache=512;
     require(completion_weighted==simulate(cfg,8,5,5,true),"query replay changed completion-weighted repairs");
+    for(float weight:{1.01f,1.05f,1.2f,4.f}) {
+        cfg.window_heuristic_weight=weight;cfg.window_query_cache=0;cfg.threads=1;
+        const auto weighted_search=simulate(cfg,8,5,5,true);
+        cfg.window_query_cache=512;cfg.threads=3;
+        require(weighted_search==simulate(cfg,8),"weighted proposal search changed with query reuse or workers");
+        require(weighted_search==simulate(cfg,8,5,5,true),"weighted proposal search changed checkpoint replay");
+    }
+    cfg.window_heuristic_weight=1;
     cfg.window_query_cache=0;cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_query_cache=512;

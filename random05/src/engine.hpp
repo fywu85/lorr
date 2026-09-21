@@ -70,7 +70,7 @@ struct Config {
     int window_repair_orders=1, window_query_cache=0;
     bool window_reuse=false, window_fast_groups=false, window_heap4=false, window_merge=false;
     bool window_progress_tie=false, window_seed_merge=false, window_group_mix=false, window_path_reuse=false, window_cost_reuse=false;
-    float window_temperature=0, window_completion_price=0;
+    float window_temperature=0, window_completion_price=0, window_heuristic_weight=1;
     bool window_blockers=false, window_equal=false;
     int rescore_roots=0, rescore_branches=64;
     float rescore_blend=0, rescore_static_weight=-1;

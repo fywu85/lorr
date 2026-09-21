@@ -1466,3 +1466,22 @@ and query checks. Regression covers exhaustive single-agent finite-horizon
 optima, repeated waypoints, changed reservations, cache overflow, bounded failure,
 multiple repair orders, parallel execution and checkpoint replay. Complete-run
 trajectory identity and runtime measurements are required before enabling it.
+
+
+## Heuristic priority in window repair (source153 experiment)
+
+Exact query replay reuses only3–5% of RANDOM-03 search expansions in its first
+sampled steps, with many extra query checks. Separately test whether a small
+heuristic priority inflation produces useful complete repair proposals much
+faster. `R05_WINDOW_HEURISTIC_WEIGHT` (default1, supported1..4) changes the A*
+queue key to cost-so-far plus weight times remaining heuristic. The original
+unweighted complete-window cost still governs group acceptance and island
+selection, so an inferior group cannot enter by changing this queue key.
+
+This is a general search-policy change, not an exact runtime optimization or a
+claimed weighted-A* approximation bound: terminal states retain a cost-to-go
+outside the window. All declared iterations and bounded searches still finish,
+and failed repairs restore the original complete legal plan. Full comparisons
+must measure both throughput and latency; no gain follows from fewer expansions
+alone. Regression checks configuration bounds, dense legal motion, query-cache
+and worker equivalence, checkpoints, and unchanged failure handling.

@@ -201,7 +201,12 @@ struct Search {
             int id=(time*stages+k)*g.states+s;
             if(seen[id]==epoch && costs[id]<=cost)return;
             seen[id]=epoch;costs[id]=cost;parent[id]=previous;
-            float h=estimate(k,s,time);insert({cost+h,h,cost,id,time,s,k},cfg.window_heap4);
+            const float h=estimate(k,s,time);
+            // This changes only proposal search priority. Whole-group acceptance
+            // still compares the original unweighted complete-window objective.
+            // At weight1 preserve the exact arithmetic of the reference search.
+            const float priority=cfg.window_heuristic_weight==1?cost+h:cost+cfg.window_heuristic_weight*h;
+            insert({priority,h,cost,id,time,s,k},cfg.window_heap4);
         };
         push(0,stage,state,0,-1);int count=0;
         while(!heap.empty() && count<cfg.window_expansions) {
