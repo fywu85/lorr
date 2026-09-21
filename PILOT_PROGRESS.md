@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 23:33 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 23:42 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -31,7 +31,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | CITY-01 | — | 8,445 | KK | — | Not evaluated | — | — |
 | CITY-02 | — | 16,997 | KK | — | Not evaluated | — | — |
 | GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
-| RANDOM-01 | 732 | 688 | KK | +6.40% | TRICK | 4 | 115.32 |
+| RANDOM-01 | 733 | 688 | KK | +6.54% | TRICK | 1 | 119.03 |
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
 | RANDOM-03 | 2,620 | 2,334 | NMS | +12.25% | TRICK | 3 | 642.81 |
 | RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% | TRICK | 4 | 739.55 |
@@ -59,7 +59,7 @@ assignment and task-event replay checks.
 
 | Instance | PILOT | Local NMS32 | Local KK32 | Matched max(NMS, KK) | Difference |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 732 | 649 | 692 | 692 | +5.78% |
+| RANDOM-01 | 733 | 649 | 692 | 692 | +5.92% |
 | RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
 | RANDOM-03 | 2,620 | 2,359 | 2,110 | 2,359 | +11.06% |
 | RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
@@ -82,7 +82,7 @@ not unseen-map validation.
 | CITY-01 | — | — | — | — | — |
 | CITY-02 | — | — | — | — | — |
 | GAME | — | — | — | — | — |
-| RANDOM-01 | 727 | +5.06% | 732 | +5.78% | 692 |
+| RANDOM-01 | 727 | +5.06% | 733 | +5.92% | 692 |
 | RANDOM-02 | 1,397 | +11.23% | 1,408 | +12.10% | 1,256 |
 | RANDOM-03 | 1,634 | -30.73% | 2,620 | +11.06% | 2,359 |
 | RANDOM-04 | 1,616 | -39.00% | 2,782 | +5.02% | 2,649 |
@@ -92,7 +92,7 @@ Current selected records are pinned to their completion timestamps and source co
 
 | Instance | Completed UTC | Source | Full-run evidence |
 |---|---|---|---|
-| RANDOM-01 | 2026-09-21T23:30:21.892751+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random12345-physical-deadline-split-full-v162/trick-random-01-physical-deadline1/summary.json) |
+| RANDOM-01 | 2026-09-21T23:35:12.917204+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random01-record732-split-full-v162/trick-random-01-record732-seed1-feasible1/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | RANDOM-03 | 2026-09-21T19:27:34.092146+00:00 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Run](random05/results/random03-record2614-split-full-v153/trick-random-03-record2614-seed3/summary.json) |
 | RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |

@@ -1752,3 +1752,17 @@ floor. Source162 corrects only that fixture's horizon to150. No production sourc
 assertion or threshold is changed, and no benchmark uses failed build161. The
 original failure and binary identity remain in results/build-v161; the complete
 suite must pass in the new frozen build before any throughput measurement.
+
+
+## Source162 sparse repair acceptance follow-up (2026-09-21 23:47 UTC)
+
+After all-five coordination tests, give RANDOM-01/02 a separate bounded search
+experiment. The existing complete-plan annealer has been tested on03, but no
+archived01/02 experiment enables it. Freeze temperatures0/0.25/1/4 on both
+general and selected trick profiles, preserving work budgets, inputs and seeds.
+The walk may accept worse complete legal repairs while cooling by iteration;
+it publishes its best complete incumbent. It never truncates work by wall time.
+The audited source162 binary and existing regression are reused. Four disabled
+controls must reproduce all six trace fields; full600steps,1second,32GB limits
+remain. No fresh streams or new algorithmic source are involved. The separate
+RANDOM-01 exact733 repeat is also frozen before launch. No gain is presumed.
