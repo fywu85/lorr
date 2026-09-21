@@ -14,6 +14,14 @@ baselines. All prior fresh inputs50001–50012 and50015/50016 remain excluded fr
 
 ## Comparison rules
 
+Headline comparisons now use **max(NMS, Kitty Knight)** per instance. Published
+RANDOM-05 max is3,050; the4,242 development record is+39.08% above that historical
+target. Inputs/hardware differ. The matched local max is **3,172** (NMS; KK=2,085),
+so the selected **4,242 is +33.73%**. Both KK allocator-only repeats pass full
+replay and strict limits; source and algorithm are unchanged. Older fresh-input
+protocols that measured only NMS remain NMS-only comparisons.
+See [comparison policy](random05/COMPARISON_POLICY.md).
+
 - RANDOM-05: 800 robots, 2,000 simulation steps, combined planner and scheduler.
 - Compare both solvers on the same input hashes, horizon and CPU allocation.
 - The 32-worker allocation means 16 physical cores with two SMT threads each,

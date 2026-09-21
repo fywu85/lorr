@@ -1,18 +1,19 @@
 # PILOT competition progress
 
-Updated 2026-09-21 19:22 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 21:04 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
 
 Current development covers RANDOM-01 through RANDOM-05. The other five
-competition instances remain placeholders for future work. NMS is the target;
+competition instances remain placeholders for future work. The reference is
+**max(NMS, Kitty Knight)** for each instance;
 throughput is primary, with order waiting times tracked as a secondary metric.
 
 **Resumed on 2026-09-21:** push throughput across all five RANDOM instances.
 
-**Qualification milestones:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least
-**2,838**, each 10% above matched local NMS, with robust subsecond runtime.
+**Current qualification milestones:** RANDOM-03 at least **2,595** tasks and RANDOM-04
+at least **2,914**, each 10% above matched max(NMS,KK), with robust subsecond runtime.
 Selected configurations must pass repeated full runs and fresh-input checks.
 [Campaign and qualification rules](random05/RANDOM34_CAMPAIGN.md).
 
@@ -31,7 +32,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
 | RANDOM-01 | 729 | 688 | KK | +5.96% | TRICK | 4 | 100.09 |
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
-| RANDOM-03 | 2,614 | 2,334 | NMS | +12.00% | TRICK | 5 | 640.10 |
+| RANDOM-03 | 2,620 | 2,334 | NMS | +12.25% | TRICK | 3 | 642.81 |
 | RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% | TRICK | 4 | 739.55 |
 | RANDOM-05 | 4,242 | 3,050 | NMS | +39.08% | TRICK | 0 | 780.49 |
 
@@ -40,24 +41,28 @@ This table uses the stronger published result from NMS and Kitty Knight.
 KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.
 NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved
 in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).
-Matched local Kitty Knight runs are not yet available; the retained qualification
-targets below continue to use matched local NMS.
+Matched local comparisons now include both teams on all five RANDOM instances.
+RANDOM-05 KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`;
+both allocator-only repeats score2,085 and pass strict limits and replay.
+Original virtual-address exhaustion failures remain in the [baseline audit](random05/NMS_KK_COMPARISON.md).
+Retain the strongest historical and new valid baseline; a missing team is never zero.
+[Comparison policy](random05/COMPARISON_POLICY.md).
 A dash means no valid PILOT throughput result, not zero completed tasks.
 The frozen large-map distance representation was estimated at 95–189 GB,
 so those maps are deferred; no large-map throughput is claimed.
 [Capacity assessment](random05/GENERALIZATION.md#large-map-limits).
 
-The primary local comparison uses identical archived inputs and matched CPU
+The local comparisons use identical archived inputs and matched CPU
 allocations. All selected runs pass independent movement, collision,
 assignment and task-event replay checks.
 
-| Instance | PILOT | Matched local NMS32 | Difference |
-|---|---:|---:|---:|
-| RANDOM-01 | 729 | 649 | +12.33% |
-| RANDOM-02 | 1,408 | 1,228 | +14.66% |
-| RANDOM-03 | 2,614 | 2,359 | +10.81% |
-| RANDOM-04 | 2,782 | 2,580 | +7.83% |
-| RANDOM-05 | 4,242 | 3,172 | +33.73% |
+| Instance | PILOT | Local NMS32 | Local KK32 | Matched max(NMS, KK) | Difference |
+|---|---:|---:|---:|---:|---:|
+| RANDOM-01 | 729 | 649 | 692 | 692 | +5.35% |
+| RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
+| RANDOM-03 | 2,620 | 2,359 | 2,110 | 2,359 | +11.06% |
+| RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
+| RANDOM-05 | 4,242 | 3,172 | 2,085 | 3,172 | +33.73% |
 
 These are selected individual bests, not an average or one universal preset.
 GENERAL means no map-specific guidance or known-horizon rule was enabled;
@@ -69,18 +74,18 @@ Selected task-admission caps: RANDOM-04=560, RANDOM-05=680. Opened tasks remain 
 All five RANDOM cases share one layout: this is density transfer,
 not unseen-map validation.
 
-| Instance | General best | Explicit-trick best |
-|---|---:|---:|
-| WAREHOUSE | — | — |
-| SORTATION | — | — |
-| CITY-01 | — | — |
-| CITY-02 | — | — |
-| GAME | — | — |
-| RANDOM-01 | 726 | 729 |
-| RANDOM-02 | 1,397 | 1,408 |
-| RANDOM-03 | 1,582 | 2,614 |
-| RANDOM-04 | 1,558 | 2,782 |
-| RANDOM-05 | 2,226 | 4,242 |
+| Instance | General best | General vs max | Explicit-trick best | Trick vs max | Matched max(NMS, KK) |
+|---|---:|---:|---:|---:|---:|
+| WAREHOUSE | — | — | — | — | — |
+| SORTATION | — | — | — | — | — |
+| CITY-01 | — | — | — | — | — |
+| CITY-02 | — | — | — | — | — |
+| GAME | — | — | — | — | — |
+| RANDOM-01 | 727 | +5.06% | 729 | +5.35% | 692 |
+| RANDOM-02 | 1,397 | +11.23% | 1,408 | +12.10% | 1,256 |
+| RANDOM-03 | 1,634 | -30.73% | 2,620 | +11.06% | 2,359 |
+| RANDOM-04 | 1,577 | -40.47% | 2,782 | +5.02% | 2,649 |
+| RANDOM-05 | 2,226 | -29.82% | 4,242 | +33.73% | 3,172 |
 
 Current selected records are pinned to their completion timestamps and source commits:
 
@@ -88,14 +93,15 @@ Current selected records are pinned to their completion timestamps and source co
 |---|---|---|---|
 | RANDOM-01 | 2026-09-21T15:05:19.829832+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
-| RANDOM-03 | 2026-09-21T19:18:56.863316+00:00 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Run](random05/results/random123-heuristic-weight-split-full-v153/trick-random-03-heuristic-weight1p2/summary.json) |
+| RANDOM-03 | 2026-09-21T19:27:34.092146+00:00 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Run](random05/results/random03-record2614-split-full-v153/trick-random-03-record2614-seed3/summary.json) |
 | RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 | RANDOM-05 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Run](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 
 **RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
-2,359 matched NMS (+10.30%). The frozen fresh-input comparison gives
+2,359 matched max(NMS,KK) (+10.30%). Its original NMS-only fresh comparison gives
 2,599/2,557 versus the stronger NMS repetitions 2,327/2,343:
 **+10.41% aggregate**, with individual gains +11.69% and +9.13%.
+KK was not measured on those V1 streams; this is not a fresh two-team maximum.
 All eight fresh runs passed timing/resource checks and independent replay.
 The candidate stays below 701 ms on both fresh inputs; its archived exact
 repeat and two other planner seeds peak below 675 ms.
@@ -104,17 +110,25 @@ the preceding fresh-input validation does not qualify that change.
 The 2,606 profile repeats exactly. Paired seeds5/0/3 score2,606/2,572/2,590
 versus2,602/2,548/2,566, +0.674% in aggregate and positive on each;
 all pass full replay and peak below767ms.
-The later heuristic-priority search reaches **2,614**, mean/max439/640ms,
-with complete independent replay. Exact repetition and other planner
-seeds are in progress; the earlier fresh validation does not qualify it.
-RANDOM-04 currently reaches **2,782** (+7.83% above matched NMS),
-**56 tasks short** of 2,838. Its record peaks at 739.6 ms;
+The later heuristic-priority search reaches **2,620** and repeats exactly.
+Five paired development seeds total13,016 versus12,974 (+0.324%), with
+three gains and two losses. The new same-source seed3 weight1 control
+failed at1046.391ms; its earlier valid source132 baseline is separately
+identified in the [paired report](random05/results/random03-record2620-split-full-v153/paired-comparison.json).
+Frozen fresh V2 finishes2,617/2,609 versus the previous search2,612/2,620:
+**-0.115% aggregate versus the previous search**, with improved mean
+latency455.6/480.2ms versus553.1/545.7ms. The supplemented fresh
+max(NMS,KK) comparison is **+8.852%**, below10%. NMS is stronger on both
+streams; the four later unmodified KK repeats also pass replay and timing.
+[Fresh V2 report](random05/RANDOM03_FRESH_VALIDATION_V2.md).
+RANDOM-04 currently reaches **2,782** (+5.02% above matched max(NMS,KK)),
+**132 tasks short** of2,914. Its record peaks at739.6ms;
 The earlier 2,777-task profile repeated exactly. Eight planner seeds score
 2,726–2,777; all original, repeat and seed checks peak below 791 ms.
-New frozen task/start checks on RANDOM-01 and RANDOM-02 also pass:
-selected profiles beat the stronger NMS repeats by11.53% and13.23% in
-aggregate; general profiles are ahead by10.98% and12.57%. Every individual
-input is positive, and all16full runs pass timing/resource/replay checks.
+Frozen RANDOM-01/02 task/start checks are supplemented with KK repeats.
+The frozen selected profiles beat **max(NMS,KK) by4.37% and10.17%** in
+aggregate; their frozen general controls are ahead by3.86% and9.52%.
+Every input is positive. The later general R01record727 is not yet fresh-validated.
 These two streams per density use the same layout, not unseen maps.
 [RANDOM-01](random05/RANDOM01_FRESH_VALIDATION_V1.md),
 [RANDOM-02](random05/RANDOM02_FRESH_VALIDATION_V1.md).
@@ -139,6 +153,7 @@ All eight runs pass strict timing/resource checks and independent replay;
 candidate maxima are 774/799 ms. Its archived exact repeat and four
 planner seeds also pass. This validates the frozen 4,175 profile,
 not the later cutoff/startup refinements or unseen layouts.
+KK was not measured on those V6 streams; the31.99% is NMS-only.
 [Frozen V6 comparison](random05/FRESH_VALIDATION_V6.md).
 The 4,197 profile now repeats exactly in all six trajectory fields;
 planner seeds0/1/2/3 score4,197/4,168/4,179/4,143. All full qualification

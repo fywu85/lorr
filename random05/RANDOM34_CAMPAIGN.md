@@ -5,14 +5,20 @@ RANDOM instances. The earlier stopping checkpoint remains in the history;
 this RANDOM-03/04 qualification is a retained milestone within the broader work.
 
 Started 2026-09-21 05:17 UTC at the user's request. Throughput must be at least
-10% above matched local NMS on both instances, with runtime reliably below one
-second. This follows the completed RANDOM-05 4,000-task milestone; that record,
+10% above the reference on both instances, with runtime reliably below one
+second. Updated at the user's request: always use matched **max(NMS, Kitty Knight)**. This follows the completed RANDOM-05 4,000-task milestone; that record,
 its four-core counterpart, and all held-out inputs remain preserved.
 
-| Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
+| Instance | Current selected best | Matched max(NMS, KK) | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,614 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,620 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,782 | 2,580 | 2,838 | 1,000 |
+
+The new valid NMS maximum2,649 raises the RANDOM-04 target to2,914:132 tasks
+remain. RANDOM-03 passes its archived target, but the latest fresh comparison
+is +8.852% against matched max(NMS,KK), below the10% aggregate milestone.
+[Updated baseline audit](NMS_KK_COMPARISON.md). Historical entries below retain
+the references available when they were written.
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -32,8 +38,9 @@ Any overrun invalidates the attempt; no wall-clock-truncated portfolio is return
   A configuration with qualification timeouts is not called robust.
 - Freeze selected source, configuration, planner seed, comparison protocol and
   new input seeds in a commit before generation. Use two fresh task/start inputs
-  per density, each with two unmodified NMS repetitions. Report the advantage
-  over the stronger NMS repetition on each input and in aggregate; seek at least
+  per density, each with two repetitions of both unmodified NMS and Kitty Knight.
+  Report the advantage over max(NMS,KK), retaining each team's stronger valid
+  repetition, on each input and in aggregate; seek at least
   10% aggregate on each density. No substitution or tuning on these inputs.
 - Keep general mechanisms separate from explicit `--trick RANDOM-03` and
   `--trick RANDOM-04` guidance/horizon choices. Per-instance presets are selected

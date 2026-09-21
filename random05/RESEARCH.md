@@ -1584,3 +1584,36 @@ Reference: [Bertsekas,1990 tutorial](https://www.mit.edu/~dimitrib/Auction_Inter
 Regression compares810 rectangular, tied and negative-price fixtures with
 Hungarian optima, verifies admission and additive cost tolerance, and checks
 turnover replay across workers, caches and checkpoint restoration.
+
+
+## Matched two-team references and auction outcomes (2026-09-21 21:02 UTC)
+
+The complete reference audit now compares every archived RANDOM case with
+max(NMS, Kitty Knight). Selected729/1408/2620/2782/4242 exceed local
+692/1256/2359/2649/3172 by5.35%/12.10%/11.06%/5.02%/33.73%.
+KK is stronger on01/02. New NMS2649 raises the04 ten-percent threshold to2914.
+KK05 original and monitored attempts exhaust virtual address space at step35;
+allocator-only arena2 repeats both pass at2085 with unchanged binary and limits.
+Full provenance and the fresh01/02/03 supplements are in NMS_KK_COMPARISON.md.
+
+Source157's40 full auction cases all pass independent replay and strict checks.
+Ten disabled controls reproduce all six full trace fields exactly. Epsilon
+0.01/0.125/0.5 do not improve any selected trick profile. The general03 baseline
+1582 improves to1589/1634/1585; general04 baseline1558 gives1567/1577/1560.
+General05 gives2147/2093/2207 versus2226. Thus the mechanism is not a broad
+improvement across densities. The general03/04 selected maxima are promoted
+with timestamps, source f80f7caa and full evidence; no fresh qualification.
+
+The next bounded18-case manifest random34-general-auction-check-full-v157.json
+freezes exact repetitions of both new maxima (seed5) and paired seeds0/1/2/3
+with epsilon0 versus0.125. Same source, input, fixed work, budgets and allocation.
+These are planner-seed checks on development inputs; held-out streams remain
+excluded. More general trials will depend on whether this modest gain repeats.
+
+Source156 general01 component salvage reaches727 (+5.06% versus localmax692),
+repeats in all six trace fields, and totals3604 versus3593 over five paired
+planner seeds (+0.306%,four gains/one loss). It is not fresh-input validated.
+The selected trick729 remains stronger. Budget256/768/1024 variants lose.
+All source154 field jitter,155 next-pickup hints,153 extra-budget weighted search,
+and144 Hungarian-threshold results are audited and remain negative; original
+deadline failures are retained. No failed run receives a score.

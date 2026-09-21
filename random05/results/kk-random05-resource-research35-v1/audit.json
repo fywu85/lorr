@@ -1,0 +1,60 @@
+{
+  "checked_utc": "2026-09-21T20:57:14.653892+00:00",
+  "protocol_commit": "4ef1942df5eb4027c825e1c7fcc6ea67346f6de2",
+  "manifest": "random05/experiments/kk-random05-resource-research35-full-v1.json",
+  "complete": true,
+  "all_attempts_valid": false,
+  "rows": [
+    {
+      "name": "random-05-kk-resource-research35",
+      "team": "kk",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      },
+      "valid": false,
+      "summary_valid": false,
+      "exit": 134,
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "finished_utc": "2026-09-21T20:25:13.587403+00:00",
+      "evidence": "random05/results/kk-random05-resource-research35-v1/runs/summary.json",
+      "usage": {
+        "user_seconds": 24.720867,
+        "system_seconds": 0.277055,
+        "peak_rss_kib": 89332,
+        "wall_seconds": 11.150489777326584,
+        "exit": 134
+      },
+      "latency_seconds": null,
+      "failure_log_tail": "assignable_agents_indices.size() 23\nassignable_tasks_indices.size() 423\nusing Shadocks\n### Timestep 35 ###\n-- First agents: a391:0 a540:0 a223:0 a97:1 a570:1 a275:1 a143:1 a8:1... a746:61\n-1/1\n-- shot(-1): 0.146871;680;345;19857\n-- First agents: a428:0 a540:0 a391:0 a223:0 a275:1 a570:1 a773:1 a143:1... a334:10000\n<t:35(35); tasks:894; 10.3507s>\nm_time_bound: 0.95\n-- Time: 0.250082 ; agents planned: 680 (successful: 345)\nstart greedy matching2\nassignable_agents_indices.size() 22\nassignable_tasks_indices.size() 422\n\nlibgomp: Thread creation failed: Resource temporarily unavailable\nterminate called after throwing an instance of 'std::system_error'\n  what():  Resource deadlock avoided",
+      "note": "Original failed or invalid attempt retained; excluded from throughput comparisons.",
+      "process_peaks": {
+        "487987": {
+          "name": "prlimit",
+          "peaks": {
+            "VmPeak": 19824,
+            "VmSize": 19824,
+            "VmHWM": 10296,
+            "VmRSS": 10296,
+            "Threads": 1
+          }
+        },
+        "487988": {
+          "name": "lifelong",
+          "peaks": {
+            "VmPeak": 31248752,
+            "VmSize": 31248748,
+            "VmHWM": 89332,
+            "VmRSS": 89276,
+            "Threads": 33
+          }
+        }
+      }
+    }
+  ],
+  "pending": [],
+  "interpretation": "Use max(NMS,KK) only with valid measured results for both teams on the same input/allocation. Keep published scores separate."
+}

@@ -1,107 +1,109 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 19:25 UTC. The user explicitly resumed the campaign and expanded
-the active objective to maximum throughput on all five RANDOM instances.
-The RANDOM-05 4,000-task milestone is achieved and independently audited.
-The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
-matched local NMS, with robust subsecond timing. RANDOM-03 is qualified;
-RANDOM-04 remains 56 tasks short. Non-random maps are deferred.
-Latest user correction: RANDOM05_PROGRESS.md remains the authoritative detailed
-RANDOM-05 history; the earlier request naming random05/RANDOM_PROGRESS.md was a
-typo. New root PILOT_PROGRESS.md mirrors CGAR_PROGRESS.md across all ten instances
-with non-RANDOM placeholders. The accepted family name is PILOT (Pipelined
-Look-ahead with Task matching). Directory and executable names are unchanged.
-The internal random05/RANDOM_PROGRESS.md remains supporting density history.
+Updated 2026-09-21 21:02 UTC. The user resumed full-speed optimization across all five
+RANDOM instances. The active reporting rule is **always max(NMS, Kitty Knight)**
+per instance. Keep matched local and published comparisons separate.
+RANDOM-05 4,000 is independently achieved; further optimization remains active.
+Non-random maps are deferred. The family name is PILOT.
 
 ## Boundaries
 
-Edit/stage/commit only random05/, RANDOM05_PROGRESS.md, and the newly authorized
-root PILOT_PROGRESS.md. Raw jobs remain in the
-ignored runs/random05/ workspace. Public fywu85/lorr pushes are authorized;
-preserve visibility. Other agents share main and GRID; leave their files/jobs
-alone. No subagent delegation. Every map-specific choice needs the matching
---trick RANDOM-0N. Throughput is primary; track completed and censored waits.
+Edit/stage/commit only random05/, RANDOM05_PROGRESS.md and PILOT_PROGRESS.md.
+Raw jobs stay in ignored runs/random05/. Public fywu85/lorr pushes are authorized;
+preserve visibility. Shared main/GRID: leave other agents' files, jobs and index
+locks alone. No subagents. Every map-specific rule requires --trick RANDOM-0N.
+Throughput is primary; completed and censored waits are secondary.
 
-Full horizons: 600 / 600 / 800 / 1000 / 2000. Strict 1s entry / 30s preprocessing,
-32 decimal GB process guard. EPYC9354 allocation: 16 physical cores / 32 SMT
-workers, actual binding and no-quota checks. Shared hosts are allowed. Fixed
-work completes or the run fails; do not truncate work on a wall-clock deadline.
-All inputs50001–50012,50015/50016 and50017/50018 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
-Any further fresh validation requires freezing protocol/config before generation.
+Full horizons600/600/800/1000/2000, strict1s entries/30s preprocessing,
+32 decimal GB process guard. Allocate16 physical EPYC9354 cores/32 SMT workers,
+verify binding and no quota. Shared hosts allowed. Finish declared fixed work
+or fail; no wall-clock-truncated partial portfolio. Preserve every failure.
+Held-out50001–50012 and50015–50020 are excluded from tuning at every density.
+50013/14 remain reserved and ungenerated for RANDOM-04. Freeze any new fresh
+protocol/configuration/source/seed before generating inputs.
 
-## Current resumed execution
+Do not retry Fable without a change in its provider usage-credit error.
+User approvals are resolved. The active goal continuation reconfirms the full RANDOM-03/04 qualification
+objective. Keep working; completion is not established. The latest user reporting
+rule requires the stronger measured NMS/KK reference, including R04 target2914.
 
-Updated 2026-09-21 19:25 UTC. The all-five optimization campaign is active.
-Continue across compactions. No subagents. Do not retry Fable without a change
-in its usage-credit failure. Latest successful push: e3215efe4326c4415e28185c3488dacf3c555f91.
+## Current audited results
 
-Selected audited records: **729 / 1408 / 2614 / 2782 / 4242**.
-General records: **726 / 1397 / 1582 / 1558 / 2226**.
-RANDOM-04 remains56 tasks below its retained matched-NMS target2838.
+Selected729/1408/2620/2782/4242. General727/1397/1634/1577/2226.
+Matched max(NMS,KK)=692/1256/2359/2649/3172; selected margins
++5.35%/+12.10%/+11.06%/+5.02%/+33.73%. Published maxima remain
+688/1260/2334/2547/3050 on different inputs/hardware. Reference manifests,
+original attempts, allocator diagnosis and fresh supplements:
+NMS_KK_COMPARISON.md and references/matched-nms-kk-combined.json.
+R04 needs2914 for10%,132 above2782. R03 meets archived2595, but latest freshV2
+is only+8.852% againstmax(NMS,KK), so full current qualification is not achieved.
 
-Recent qualification:
-- R05/source144/88551e69:4242 exact repetition; seeds0/1/2/3 give
-  4242/4028/4183/4128, +0.157% against the previous4236 profile (3positive,
-  1negative), but -0.635% against the more consistent4197 profile. Largest
-  entry782.280ms. All90 chronological frontier rows audited. No fresh
-  qualification of4242; frozenV6 still applies only to4175.
-- R04/source144:2782 exact repetition. Paired seeds0..7 give
-  2749/2773/2781/2741/2782/2781/2750/2763 against
-  2726/2757/2766/2742/2777/2771/2753/2753: +0.3402%,6positive/2negative.
-  Extended seeds8/9/10 give2718/2777/2742; seed11 fails first entry1050.759ms.
-  No fresh R04 input has been generated.
-- R03/source132:2606 exact repetition; seeds5/0/3 give2606/2572/2590,
-  +0.674% versus2602/2548/2566. FreshV1 qualifies2602, not2606.
-- GeneralR02/source141:1397 two-order repair with1536 iterations and progress
-  ties. Seven paired planner seeds beat one-order3072 by0.361% aggregate.
+- GeneralR01/source156/353f09e6:727 with component repair2. Exact repeat;
+  five paired seeds4/0/1/2/3=727/718/720/719/720 versus726/717/721/715/714:
+  +0.306%,four gains/one loss. No fresh validation of727.
+- R02/source132:1408 exact repeat; general1397/source141. General two-order
+  repair beats one-order doubled-work baseline by0.361% across seven seeds.
+- R03/source153/1a307642:2620, weight1.2/seed3. Exact all-six repeat. Five
+  paired seeds give+0.324%,three gains/two losses. New same-source weight1
+  seed3 control fails1046.391ms; separately proven earlier source132 control2590
+  is retained. FreshV2 (protocolce650a6d)2617/2609 versus2612/2620=-0.115%,
+  but mean455.6/480.2ms versus553.1/545.7ms. New KK supplement leavesNMSstronger
+  on both streams. No new generalization claim. FreshV1 qualifies2602 only
+  and its original comparison remains NMS-only (KK not run on V1 inputs).
+- R04/source144/88551e69:2782 exact repeat; observed-progress cutoffmix.25/span32.
+  Paired seeds0..7 total+0.340%,six gains/two losses. Seeds8/9/10=2718/2777/2742;
+  seed11 fails1050.759ms first entry. No fresh R04 input generated.
+- R05/source144:4242 exact all-six repeat. Seeds0..3=4242/4028/4183/4128;
+  +0.157% over4236 profile but-0.635% versus more consistent4197 profile.
+  Max782.280ms across record qualification. All90 chronological records audited.
+  FreshV6 qualifies4175 only (+31.99% overNMS, KK not measured on those streams).
 
-Fresh RANDOM-01/02 V1 is complete, audited and pushed. Protocolf74286e6 was
-committed before generating50017/50018. All16 full runs pass replay and strict
-resource/time checks. R01 selected730/702, general727/698 versus strongest
-NMS654/630: +11.526%/+10.981% aggregate. R02 selected1382/1348,
- general1376/1338 versus1213/1198: +13.231%/+12.567%. Every input is positive.
-These are new task/start streams on the same layout, not tuning data or unseen
-geometry. Do not promote fresh730 over the archived-input729 record.
+Fresh R01/02 V1 original frozen source/protocol preserved; later KK supplement
+is independently frozen/audited. Selected gains over matchedmax4.37%/10.17%,
+general3.86%/9.52%. These are two new task/start streams, one shared geometry.
+Do not promote fresh730 over the archived729 record.
 
-Active GRID work (2026-09-21 19:25 UTC):
-- random03-record2614-split-full-v153, source1a3076420bc245d5f56839936d7814eb9087b050,
-  ten full runs, jobs8903878–8903887, started19:21. Exact repeat, seeds0/3,
-  weights1.1/1.15/1.3/1.5/2, and I7168/8192 (fixed startup6144).
-- random45-smooth-field-split-full-v154, sourcea1f66070ee2d42eba95408564e2d3ebec48eded6,
- 22 full runs, jobs8903889 onward, started19:22. R04 strength.025/.05/.1 and
-  R05 strength.05/.1, seeds0..3 each, plus controls. R04 compact_idle=1 is
-  exact in six-field checks from151; other selected settings retained.
-  Build154 regression49.56s, binary71cfd49dcab7dad56c620e83274cb66865841b900f811072a338235ce80d8251.
-  Submission65594 was drained. No audit sessions active. No source155 started.
+## Completed current experiments
 
-All earlier batches are complete and independently audited, including150–153.
-New R03 selected record2614 is promoted to random-frontiers and PILOT_PROGRESS.
-Source153 heuristic weight1.2, full800steps, mean438.994/max640.097ms,RSS432MB;
-record repetition/seed qualification pending above. Original weight1 gives2606;
-1.01/1.05 give2583/2603. Sparse profiles preserve selected scores at1.01/1.05;
-weight1.2 loses. Default controls and every fully equal trace are archived via
-new reusable audit_exact_controls.py; trajectory-comparison.json also keeps
-all changed trajectories, including equal-score cases if any.
+- Source154/a1f66070/build154,22 smooth-field cases: all negative, controls
+ 2782/4242 exact in all six fields; independent full audit complete.
+- Source155/a2114586/build155,15 next-pickup cases: every hint loses; five
+ off controls exact, full audit complete. Feature stays off.
+- Source153 extra weighted-budget batch12cases: no record; R02generalI2560
+ fails1191.068ms, R03W1.5/I12288 fails1080.396ms. Audit retains all attempts.
+- Source144 matching-threshold batch6cases: R04 threshold0/256/512 gives
+ 2754/2767/2766; R05=4090/4164/4159. All replay-valid, below selected records.
+- Source156 component batch15: onlygeneralR01 improves. R02generalmode2 fails
+ atstep508=1034.193ms. All five off controls exact; full audit complete.
+- Source157/f80f7caa/build157: bounded capacitated auction, regression52.77s,
+ SHA3e5043135255284e77d88b6ab7adfd2a8b3e67fc5e7b37cba58438ae5557650f.
+ All40 full cases complete/replay-valid/strict-valid; all10 offcontrols exact.
+ General03/04 improve to1634/1577 at epsilon.125; no trick record improves.
+ Feature remains defaultoff, no wall-time partial matching; bounded failure
+ uses complete Hungarian fallback. General records are selected, not qualified.
+-32-case NMS/KK baseline protocol8b620cdb complete:30successes audited; original
+ KK05two failures retained. Monitored repeats on35/36 prove32GBvirtualAS
+ exhaustion with90MBRSS/33threads. Arena2 protocol135897e1 preserves source,
+ binary and limits; both full repeats2085, max477/481ms,RSS~207MB.
+ Reference refresh tool permanently includes both allocator-only audits.
 
-Source151 exact idle-column compression: all six full runs audited. R02off/on
-1408;R04seed4off/on2782,seed0off/on2749. Matching startup522->477ms. Full
-maxima838->777ms and814->767ms, but means mixed. Keep unmeasured universal
-runtime claims out of the logs. Source150ties has12 successful exact full traces
-and R03/R04on failures1080.753/1043.654ms. Default free-tie flag remains off.
-Source152query cache preserves all10 successful traces but slowsR03mean555->
-580/592ms at512/2048queries. GeneralR02cache fails t2 at1003.501ms. Keep it off.
+## Next bounded check
 
-The source144 dense progress-coupling batch is fully audited, all16 attempts:
-no improvement. R04contrast2.3/cutoff.8125 fail first entries1028.486/1025.277ms.
-R05best variants4235/4236 remain below4242. All source145–149 failures/negative
-results remain archived. The current-dense-blocked-fronts diagnostic reports
-only observational adjacency; it does not imply intended movement or recoverable
-throughput. Idle robots are not overrepresented in the counted front obstacles.
+random34-general-auction-check-full-v157.json:18full cases, exactseed5record
+repeats and pairedseeds0..3, epsilon0 versus.125, general03/04 only. Same source
+and fixed budgets. Frozen in ecd79f32 before launch. Jobs8904200–8904217 are submitted; inspect
+runs/random05/random34-general-auction-check-split-full-v157/batch.json and GRID
+for current execution state.
+Audit with build-v157/sourcef80f7caa when complete; compare exactcontrols, pair
+all five seeds including selectingseed5, preserve failures. Promote only audited
+improvements. No source158 started. Existing move-bias/mode features already
+implement sampled action-ranking perturbations: read RESEARCH.md before
+proposing them again. Current record improvements are small; do not claim a
+breakthrough from selected-seed changes.
 
-Held-out50001–50012,50015/50016,50017/50018 are excluded from tuning at every
-density;50013/50014 remain reserved and ungenerated for R04. Existing structured
-goal is stale-paused and cannot be resumed through the API. Continue the user's
-authorized work without falsely completing it or creating a workaround goal.
+All prior audit sessions are drained except any newly launched tool calls.
+Latest successful push before this checkpoint wasbe489655; update from git
+once this reporting/evidence commit is pushed. Continue authorized work.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 

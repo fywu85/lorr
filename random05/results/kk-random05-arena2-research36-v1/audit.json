@@ -1,0 +1,185 @@
+{
+  "checked_utc": "2026-09-21T20:47:14.319782+00:00",
+  "protocol_commit": "135897e18105d625362e9ea5380d630c2efa6520",
+  "manifest": "random05/experiments/kk-random05-arena2-research36-full-v1.json",
+  "complete": true,
+  "all_attempts_valid": true,
+  "rows": [
+    {
+      "name": "random-05-kk-arena2-research36",
+      "team": "kk",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      },
+      "valid": true,
+      "summary_valid": true,
+      "exit": 0,
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "finished_utc": "2026-09-21T20:41:01.529979+00:00",
+      "evidence": "random05/results/kk-random05-arena2-research36-v1/runs/summary.json",
+      "usage": {
+        "user_seconds": 1221.165794,
+        "system_seconds": 14.717872,
+        "peak_rss_kib": 202496,
+        "wall_seconds": 559.1712316926569,
+        "exit": 0
+      },
+      "latency_seconds": {
+        "mean": 0.27787289659500003,
+        "max": 0.480589267
+      },
+      "timing_valid": true,
+      "memory_valid": true,
+      "observed_tasks": 2085,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/kk-random05-arena2-research36-full-v1/random-05-kk-arena2-research36/result.json",
+        "result_sha256": "26c0161c74b79e3901cb8beb5a29a285752635542654df7d328ffd20e0556a18",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2085,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "W": 11862,
+            "R": 4685,
+            "C": 7640,
+            "F": 15626
+          },
+          "loaded": {
+            "C": 320100,
+            "W": 561742,
+            "R": 189597,
+            "F": 488748
+          },
+          "idle": {}
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 8109,
+              "R": 3072,
+              "F": 10443,
+              "C": 5078
+            },
+            "loaded": {
+              "C": 191223,
+              "F": 308655,
+              "R": 115553,
+              "W": 327072
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "W": 3753,
+              "F": 5183,
+              "C": 2562,
+              "R": 1613
+            },
+            "loaded": {
+              "C": 128877,
+              "W": 234670,
+              "F": 180093,
+              "R": 74044
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 86329,
+        "completed_loaded_detour_cells": 222326,
+        "completed_loaded_mean_steps": 452.0398081534772,
+        "completed_chain_lengths": {
+          "2": 711,
+          "3": 625,
+          "4": 453,
+          "5": 296
+        },
+        "unopened_reassignments": 6852,
+        "task_starts": 2869,
+        "waiting_streaks": {
+          "count": 316910,
+          "p50": 1,
+          "p90": 3,
+          "p99": 9,
+          "maximum": 657
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/kk-random05-arena2-research36-full-v1/random-05-kk-arena2-research36/result.json",
+        "result_sha256": "26c0161c74b79e3901cb8beb5a29a285752635542654df7d328ffd20e0556a18",
+        "horizon_steps": 2000,
+        "tasks_finished": 2085,
+        "tasks_revealed": 3285,
+        "completed_latency": {
+          "count": 2085,
+          "mean_steps": 503.9755395683453,
+          "p50_steps": 352,
+          "p95_steps": 1495,
+          "p99_steps": 1860
+        },
+        "maximum_release_to_completion": {
+          "steps": 2000,
+          "task_id": 643,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1995,
+          "task_id": 694,
+          "released_at": 0,
+          "observed_at": 1995
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1193,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 416,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 1028.4358333333332,
+        "initial_still_unfinished": 329,
+        "initial_still_unopened": 139,
+        "initial_started_unfinished": 190,
+        "event_accounting_valid": true
+      },
+      "tasks": 2085,
+      "process_peaks": {
+        "204931": {
+          "name": "prlimit",
+          "peaks": {
+            "VmPeak": 19404,
+            "VmSize": 19404,
+            "VmHWM": 10048,
+            "VmRSS": 10048,
+            "Threads": 1
+          }
+        },
+        "204932": {
+          "name": "lifelong",
+          "peaks": {
+            "VmPeak": 339260,
+            "VmSize": 339260,
+            "VmHWM": 202496,
+            "VmRSS": 202496,
+            "Threads": 33
+          }
+        }
+      }
+    }
+  ],
+  "pending": [],
+  "interpretation": "Use max(NMS,KK) only with valid measured results for both teams on the same input/allocation. Keep published scores separate."
+}

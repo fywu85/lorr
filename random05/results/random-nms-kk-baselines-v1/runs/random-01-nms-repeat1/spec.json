@@ -1,0 +1,40 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T20:11:10.352034+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "8b620cdbd748f9aed6d232995af7dd8d3bd67a9b",
+  "hosts": "research32|research33|research35|research36|research37|research39|research41|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "interprocedural_optimization": false,
+  "cases": [
+    {
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 600,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "team": "nms",
+      "name": "random-01-nms-repeat1",
+      "env": {},
+      "trick": false,
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json": "c09782a2d79e7779b82457095f8881b9fd5a08a6a6e4c68035a5e56a12445302",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_100.agents": "deb1d777f37f2307aa6c0437ae9b3daa60178141f789a2062cc967e7f2cf1634",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/random-nms-kk-baselines-split-full-v1/random-01-nms-repeat1.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1,
+  "runner_dependencies": {
+    "result_horizon.py": "1827e5afb1ab40875c72139fc73ba09667de854800e7389608cadbed3a83ea7c"
+  }
+}

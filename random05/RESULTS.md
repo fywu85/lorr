@@ -1,6 +1,8 @@
 # RANDOM-05 results
 
-**Current selected archived best: 4,242 tasks** (+33.73% versus matched NMS32),
+The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+39.08%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
+
+**Current selected archived best: 4,242 tasks** (+33.73% versus matched max(NMS, Kitty Knight)),
 source[88551e69](https://github.com/fywu85/lorr/commit/88551e69), plannerseed0.
 Observed-progress horizon correction0.125/span32 adds six tasks to the4,236
 startup-weighted profile. Full2,000steps pass independent replay and strict
@@ -25,12 +27,13 @@ timing, resource and independent trajectory/event audits.
 ## Selected development records
 
 All runs use800 robots,2,000 steps, strict1s entry limits and a32GB process guard.
-NMS comparisons use the same archived input and matched EPYC9354 allocations.
+Comparisons use the same archived input and matched EPYC9354 allocations.
+The 32-worker reference includes both teams; the older four-core reference is NMS-only.
 
-| Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
+| Allocation | Our best | Reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
-| Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,242 | 3,172 | +33.7% | 589 / 780ms | 490MB |
+| Four physical cores / four workers | 3,770 | 2,914 (NMS only) | +29.4% | 788 / 845ms | 485MB |
+| 16 physical cores / 32 workers | 4,242 | 3,172 (max NMS, KK) | +33.7% | 589 / 780ms | 490MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results

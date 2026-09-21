@@ -1,29 +1,35 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-RANDOM-05 now reaches4,175 on the archived input; the preceding4,011 configuration
-repeated exactly and passed frozen fresh validation. New validation is pending.
+Current selected records are729/1408/2620/2782/4242. Fresh validation qualifies
+specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
 ## Comparison rules
 
 - Full archived horizons600/600/800/1000/2000;32 workers on16 physical EPYC9354 cores,1s entry,30s preprocessing,32GB guard.
+- Headline reference: **max(NMS, Kitty Knight)** per instance. Published scores are historical; matched maxima require both teams. See [comparison policy](COMPARISON_POLICY.md).
 - Throughput primary; retain completed/unfinished waiting statistics for promoted records.
 - Keep general algorithm/configuration trials separate from instance-specific tricks. Every trick needs the matching `--trick RANDOM-0N`.
 - Apply general variants across all five densities before claiming broad benefit. Selecting different settings by instance name counts as a trick. Geometry-independent density rules remain hypotheses until tested.
 - Preserve all original failures. Selected maxima, paired planner-seed means and fresh task/start validation are distinct.
 - The five cases share one layout; improvements across densities do not establish transfer to unseen geometry.
-- Inputs50001–50012 remain excluded from tuning. Future fresh-input protocols must precede generation.
+- Inputs50001–50012,50015–50020 remain excluded from tuning;50013/14 are reserved for RANDOM-04. Future fresh-input protocols must precede generation.
 
 ## Current records
 
-| Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
-|---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
-| RANDOM-02 | 200 | 600 | 1397 | 1408 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2614 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2782 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3172 |
+| Instance | Robots | Steps | General profile | Trick profile | Published max(NMS, KK) | Best vs published max |
+|---|---:|---:|---:|---:|---:|---:|
+| RANDOM-01 | 100 | 600 | 727 | 729 | 688 | +5.96% |
+| RANDOM-02 | 200 | 600 | 1397 | 1408 | 1260 | +11.75% |
+| RANDOM-03 | 400 | 800 | 1634 | 2620 | 2334 | +12.25% |
+| RANDOM-04 | 700 | 1000 | 1577 | 2782 | 2547 | +9.23% |
+| RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3050 | +39.08% |
+
+Published rows are historical targets on different inputs/hardware, not matched
+comparisons. Both local baselines are now complete: matched maxima are
+692/1256/2359/2649/3172. Selected-best gains are
++5.35%/+12.10%/+11.06%/+5.02%/+33.73%. See [matched evidence](NMS_KK_COMPARISON.md).
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -165,6 +171,12 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T17:35:31.545879+00:00 | RANDOM-04 | trick | 2782 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 | 2026-09-21T18:11:42.053845+00:00 | RANDOM-05 | trick | 4242 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Full run](results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 | 2026-09-21T19:18:56.863316+00:00 | RANDOM-03 | trick | 2614 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Full run](results/random123-heuristic-weight-split-full-v153/trick-random-03-heuristic-weight1p2/summary.json) |
+| 2026-09-21T19:27:17.690073+00:00 | RANDOM-03 | trick | 2615 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Full run](results/random03-record2614-split-full-v153/trick-random-03-record2614-weight1p3/summary.json) |
+| 2026-09-21T19:27:34.092146+00:00 | RANDOM-03 | trick | 2620 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Full run](results/random03-record2614-split-full-v153/trick-random-03-record2614-seed3/summary.json) |
+| 2026-09-21T20:04:17.853489+00:00 | RANDOM-01 | general | 727 | [353f09e6bdf2909aef1df9b26463c97f05b9497f](https://github.com/fywu85/lorr/commit/353f09e6bdf2909aef1df9b26463c97f05b9497f) | [Full run](results/random123-component-repair-split-full-v156/general-random-01-component-repair-mode2/summary.json) |
+| 2026-09-21T20:31:22.937556+00:00 | RANDOM-03 | general | 1634 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random12345-auction-split-full-v157/general-random-03-auction-eps0p125/summary.json) |
+| 2026-09-21T20:35:51.119225+00:00 | RANDOM-04 | general | 1567 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random12345-auction-split-full-v157/general-random-04-auction-eps0p01/summary.json) |
+| 2026-09-21T20:35:53.375565+00:00 | RANDOM-04 | general | 1577 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random12345-auction-split-full-v157/general-random-04-auction-eps0p125/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1099,3 +1111,73 @@ both directional costs in proportion and restoring their mean before any optiona
 physical-edge mixture. Twenty-two fullR04/R05comparisons freeze strengths.025/.05/.1
 onR04 and.05/.1 onR05, seeds0..3, with controls. R04uses the verified exact compact
 idle-column option to reduce startup cost. No field-search gain is claimed yet.
+
+
+### 2026-09-21 19:40 UTC: revisit matching policy on the current dense profiles
+
+Six source144 full comparisons change only `R05_HUNGARIAN`:0 for global greedy
+matching,256 or512 to use exact matching once the eligible robot set is small.
+The selected R04/R05 profiles use1000 throughout. Earlier greedy observations
+predate the current task-admission caps and progress correction. This tests both
+assignment behavior and the half-second startup matching cost without new source.
+All pair costs, admission rules and opened-task locks are preserved; greedy is
+not assumed to optimize the same total pairing cost as Hungarian. No improvement
+is claimed before complete strict runs and independent replay.
+
+
+## 2026-09-21 20:03 UTC: component salvage experiment
+
+Source353f09e6/build156 passes the complete regression suite in52.25s.
+Binarybc972cde1cc51754fa6aa79752068f71bec8d6825aa62cab98d8e28517f88358.
+The15 declared full runs compare modes0/1/2 on selected general/trick R01/R02
+and trick R03. Each preserves its scheduler, field, work budget and planner seed.
+Mode1 selects independently improving components after a complete repair;
+mode2 also recovers compatible components when a later repair fails. Every
+returned group remains complete and legal. Results pending; feature default off.
+
+
+## 2026-09-21 20:06 UTC: qualification and negative results
+
+R03record2620 repeats in all six trace fields. Five paired planner seeds total
+13016versus12974 (+0.324%,three gains/two losses), tempering the earlier
+three-seed+1.03% observation. FreshV2 gives2617/2609 versus2612/2620 for the
+previous search (-0.115%aggregate). All eight full runs are independently audited.
+Its mean runtime improves, but these inputs do not establish a throughput gain
+versus the previous search. Kitty Knight is missing from that fresh protocol;
+see [V2 report](RANDOM03_FRESH_VALIDATION_V2.md) for the NMS-only controls.
+
+All22source154smooth-field trials are audited; both controls reproduce2782/4242
+in all six fields and no perturbation improves either record. All15source155
+next-pickup trials are audited; all five disabled controls are exact and every
+forecast variant loses. All12source153weighted-budget attempts are audited;
+none sets a record, and the R02I2560 first-entry1191.068ms and R03W1.5/I12288
+timestep1entry1080.396ms failures remain preserved. Keep these options off.
+
+The six source144 matching-threshold runs finish2754/2767/2766 onR04 and
+4090/4164/4159 onR05, below current2782/4242. Independent audit is finishing.
+The comparison policy now always usesmax(NMS,KK) for headline references;
+legacy NMS-only measurements retain their explicit historical meaning.
+
+
+## 2026-09-21 20:12 UTC: general RANDOM-01 reaches727
+
+All15source156component-repair attempts are audited. Mode2 improves the general
+R01record726->727 (publishedmax(NMS,KK)688: +5.67%). The selected trick record729
+is unchanged. All five mode0 controls reproduce their complete archived traces.
+R02/R03variants lose; R02general mode2 fails at t508,1034.193ms, and is excluded.
+The new general727is a selected development run, not a cross-seed mean claim.
+Declare its exact seed4repeat and four paired seeds0..3, plusI256/768/1024
+alternatives. All12runs remain600steps/strict1s/32workers without tricks.
+
+
+## 2026-09-21 20:27 UTC: all-density auction experiment
+
+Sourcef80f7caa/build157 passes the full regression suite in52.77s. Binary
+3e5043135255284e77d88b6ab7adfd2a8b3e67fc5e7b37cba58438ae5557650f.
+Declare40 full cases: general and trick profiles at each RANDOM density,
+epsilon0/.01/.125/.5,128bids per eligible row, preserving every other selected
+setting. Default0 is the exact Hungarian control. Grouped optional/mandatory
+idle objects preserve slot capacities; completed assignments certify their
+price tolerance. Fixed-bid exhaustion invokes complete Hungarian fallback.
+No gain is assumed. Publishedmax(NMS,KK) remains the headline reference until
+new matched local baselines are fully audited.

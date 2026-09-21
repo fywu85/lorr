@@ -15,6 +15,7 @@ def main():
     index_path = ROOT / 'random05/random-frontiers.json'
     ledger_path = ROOT / 'random05/RANDOM_PROGRESS.md'
     index = json.loads(index_path.read_text())
+    published = json.loads((ROOT/'random05/references/published-nms-kk-combined-2024.json').read_text())
     text = ledger_path.read_text()
     candidates = []
     for path in args.audits:
@@ -56,7 +57,9 @@ def main():
         prefix = '| {} | {} | {} | '.format(instance, robots, steps)
         old = next(line for line in text.splitlines() if line.startswith(prefix))
         row = index[instance]
-        new = prefix+'{} | {} | {} |'.format(row['general']['tasks'], row['trick']['tasks'], row['nms32_tasks'])
+        target = max(team['score_details'][instance]['my_metric'] for team in published['teams'].values())
+        best = max(row['general']['tasks'],row['trick']['tasks'])
+        new = prefix+'{} | {} | {} | {:+.2f}% |'.format(row['general']['tasks'], row['trick']['tasks'], target,100*(best/target-1))
         text = text.replace(old, new, 1)
     index_path.write_text(json.dumps(index, indent=2)+'\n')
     ledger_path.write_text(text)
