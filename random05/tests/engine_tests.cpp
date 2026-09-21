@@ -1420,7 +1420,11 @@ void joint_assignment_semantics() {
      Task x;x.task_id=0;x.locations={1};Task y;y.task_id=1;y.locations={0};
      Chain a(g,x,false),b(g,y,false);
      auto move=joint_move_assignment(g,cfg,f,{&a,&b},0);
-     require(move.targets==f.loc && move.canceled_swaps==1,"joint assignment executed a head-on swap");}
+     require(move.targets==f.loc && move.canceled_swaps==1,"joint assignment executed a head-on swap");
+     cfg.joint_repair_rounds=4;move=joint_move_assignment(g,cfg,f,{&a,&b},0);
+     require(move.targets==f.loc && move.canceled_swaps==0 && move.repaired_swaps==1,
+             "joint repair failed to forbid an unavoidable swap while keeping both waits");
+     cfg.joint_repair_rounds=0;}
     {auto env=environment(2,2,4);Graph g(env,cfg);Frame f;
      f.loc={0,1,3,2};f.pending=f.loc;f.dir={0,1,2,3};f.stage.assign(4,0);
      std::vector<std::unique_ptr<Chain>> storage;std::vector<const Chain*> tasks;
@@ -1449,6 +1453,12 @@ void joint_assignment_semantics() {
     };
     auto env=environment(3,3,1);Setting proposal("R05_JOINT_PROPOSALS","1");
     require(Config::environment(env).joint_proposals==1,"general joint proposal option rejected");
+    {Setting repair("R05_JOINT_REPAIR_ROUNDS","9");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"joint repair escaped its bounded matching work");}
+    {Setting repair("R05_JOINT_REPAIR_ROUNDS","2");
+     require(Config::environment(env).joint_repair_rounds==2,"valid joint repair rejected");}
+
     {Setting value("R05_JOINT_PROPOSALS","3");bool rejected=false;
      try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
      require(rejected,"joint proposal budget escaped its declared bound");}
@@ -1462,7 +1472,7 @@ void joint_assignment_futures() {
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
     cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
     for(int count:{1,2}) {
-        cfg.joint_proposals=count;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        cfg.joint_proposals=count;cfg.joint_repair_rounds=count==2?4:0;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
         cfg.reverse_penalty=count==2?.2f:0.f;
         const auto selected=simulate(cfg,12,5,5,true);
         cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;

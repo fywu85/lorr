@@ -50,6 +50,29 @@ JointMoves joint_move_assignment(const Graph& g,const Config& cfg,const Frame& f
         if(v<0 || v>=g.cells || matrix[size_t(a)*g.cells+v]>=1e11f)
             throw std::runtime_error("joint movement assignment used a forbidden edge");
     }
+    // A bounded sequence of complete matchings can reroute a swap component
+    // instead of immediately freezing both endpoints. Forbid its lower-regret
+    // directed edge; every robot's own wait remains feasible. Every declared
+    // round runs even when no additional forbidden edge is necessary.
+    for(int round=0;round<cfg.joint_repair_rounds;++round) {
+        for(int a=0;a<n;++a) {
+            const int b=owner[result.targets[a]];
+            if(b<=a || result.targets[b]!=p[a])continue;
+            auto regret=[&](int robot) {
+                const auto* row=matrix.data()+size_t(robot)*g.cells;
+                float alternative=1e12f;
+                for(int v=0;v<g.cells;++v)if(v!=result.targets[robot])alternative=std::min(alternative,row[v]);
+                return alternative-row[result.targets[robot]];
+            };
+            const int loser=regret(a)<=regret(b)?a:b;
+            matrix[size_t(loser)*g.cells+result.targets[loser]]=1e12f;
+            ++result.repaired_swaps;
+        }
+        result.targets=hungarian_assignment(matrix,n,g.cells);
+        for(int a=0;a<n;++a)if(result.targets[a]<0 || result.targets[a]>=g.cells ||
+            matrix[size_t(a)*g.cells+result.targets[a]]>=1e11f)
+            throw std::runtime_error("joint repair used a forbidden edge");
+    }
     // The matching consists of disjoint paths to holes and directed cycles.
     // Canceling a two-cycle frees neither endpoint to another component, so
     // replacing both moves by waits preserves every other assignment.

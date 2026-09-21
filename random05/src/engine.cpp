@@ -69,6 +69,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.screen_keep=integer("R05_SCREEN_KEEP",4);
     c.component_trials=integer("R05_COMPONENT_TRIALS",0);
     c.joint_proposals=integer("R05_JOINT_PROPOSALS",0);
+    c.joint_repair_rounds=integer("R05_JOINT_REPAIR_ROUNDS",0);
+    if(c.joint_repair_rounds<0 || c.joint_repair_rounds>8 || (c.joint_repair_rounds && !c.joint_proposals))
+        throw std::invalid_argument("joint repair rounds require proposals and a bound of zero to eight");
     if(c.joint_proposals<0 || c.joint_proposals>2)
         throw std::invalid_argument("joint movement proposals must be zero, one or two");
     c.component_rounds=integer("R05_COMPONENT_ROUNDS",2);
@@ -2315,7 +2318,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
     if(cfg.joint_proposals) {
-        const Rollout anchor=results[best];int accepted=0,canceled=0,branches=0;
+        const Rollout anchor=results[best];int accepted=0,canceled=0,repaired=0,branches=0;
         for(int proposal_id=0;proposal_id<cfg.joint_proposals;++proposal_id) {
             const auto joint=joint_move_assignment(g,cfg,frame,assigned_,proposal_id?.5f:0.f);
             Rollout proposal=anchor;proposal.first.pending=joint.targets;
@@ -2335,7 +2338,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             }
             certify(g,frame.loc,proposal.first.loc);certify(g,proposal.first.loc,proposal.first.pending);
             Rollout candidate=evaluate(frame,anchor.offsets,continuations,anchor.cycle_moves,nullptr,&proposal);
-            branches+=candidate.evaluated_branches;canceled+=joint.canceled_swaps;
+            branches+=candidate.evaluated_branches;canceled+=joint.canceled_swaps;repaired+=joint.repaired_swaps;
             if(candidate.actions!=proposal.actions || candidate.first.pending!=proposal.first.pending ||
                candidate.first.dir!=proposal.first.dir)
                 throw std::runtime_error("joint proposal changed during forecast evaluation");
@@ -2347,8 +2350,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         if(branches!=cfg.joint_proposals*cfg.continuations)
             throw std::runtime_error("joint proposals changed declared continuation work");
         if(!quiet_ && env->curr_timestep%100==0)
-            std::fprintf(stderr,"R05_JOINT t=%d proposals=%d branches=%d accepted=%d canceled_swaps=%d\n",
-                         env->curr_timestep,cfg.joint_proposals,branches,accepted,canceled);
+            std::fprintf(stderr,"R05_JOINT t=%d proposals=%d branches=%d accepted=%d canceled_swaps=%d repaired_swaps=%d repair_rounds=%d\n",
+                         env->curr_timestep,cfg.joint_proposals,branches,accepted,canceled,repaired,cfg.joint_repair_rounds);
     }
     if(cfg.component_trials) {
         // Freeze several distinct first decisions from the completed portfolio.
