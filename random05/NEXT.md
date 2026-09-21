@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 11:35 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 12:35 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -27,6 +27,17 @@ workers, actual binding and no-quota checks. Shared hosts are allowed. Fixed
 work completes or the run fails; do not truncate work on a wall-clock deadline.
 All inputs 50001–50012 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
 Any further fresh validation requires freezing protocol/config before generation.
+
+## Current execution status (12:35 UTC)
+
+Source129/2fe1f366 built and passed regression34.53s. Active arrival-priority
+batch random04-arrival-priority-split-full-v129, jobs8902841–45, full1000steps,
+bonuses0/25/50/100/200 on2776 profile. Source128 low-work2559 control is6field
+exact, but full K8064push0.25 FAILED atstep1,1027.906ms/exit124. Lowerwork
+random04-displacement-k6144-split-full-v128 (jobs8902833–36) still active.
+Closed/audited127 displacement variants all lose2749/2762/2705/2744/2743/2686/2618;
+control2776 is6fieldexact. Source119 admission-route cases lose2771/2743/2731/2757.
+Current record2777 and qualification remain unchanged. No freshR04input yet.
 
 ## Current records and evidence
 
@@ -183,18 +194,39 @@ CLOSED/AUDITED: pairing124, original2776repeat119 and unifiedR03/R05controls124.
 All6pairingvariantslose2705–2760. Exact2777repeat max770.041ms; original2776repeat
 max622.264ms; R03/R05currentengine max671.719/572.148ms. All4controls exact6fields.
 
+CLOSED/AUDITED: all7goal-local125cases and3additional2777seeds124.
+Localradius2mix.25/.5/1=2753/2725/2692; radius4=2719/2713/2665. Control2776
+is6fieldexact. Keepgoal-localoff: no reductioninnear-goalawaymoves oncommonorders.
+2777profile seeds0/3/4/5=2726/2742/2777/2771; everyoriginal/repeat/seed max<789ms.
+Still61shortof2838. No freshR04input has been generated.
+
+CLOSED DIAGNOSIS: build126/source1c9c8b95 read-only goal_probe replayspasses.
+First700steps near-goalaway:2781total,102staticmin,203kinematic-onlyminimum,
+2476(89.03%)nonminimumeligible. Interaction/cycles/suppressedgoalspossible, not
+causalwasteproof. IndependentPythonloaded-forward/awaycounts agreeexactly.
+Artifactsrandom04-goal-score-diagnosis-v126. Frozen126tools hashesverifiedagainst
+latercommit afterconcurrentgitindexlock; originalspecpreserved.
+
 ACTIVE:
-- random04-goal-local-split-full-v125: control2776; radii2/4 andmixes.25/.5/1.
-  Source4dea3bc0/build125, regression34.04s,
-  SHA41cd19ae90ba487163b96f5cfa215086a5ccd852dc0bb80772cb796e330f5726.
-  Goal-relative forward prices blend toward2 near the currentwaypoint. Oriented
-  distances/chains/policy/sharedcache alluseconsistentedgecosts. Explicittrick,
-  defaultoff; unsupportedwindow/operations rejected. SemanticBellman,cache,
-  densemovement,checkpoint,workersandtrickgatespassed. No throughputclaimyet.
-  Diagnosticshowsroughly2xnear-goalawaymoves oncommoncompletedorders versusNMS;
-  observational, differenthistories. See goal-approach.json. Sevenfull1000steps.
-- random04-record2777-seeds-split-full-v124: plannerseeds0/3/5, same2777profile;
-  runtimequalification foroptionalprice+horizonpairing. No freshinputgenerated.
+- random04-displacement-split-full-v127, jobs8902805–12: unchanged2776control;
+  cachedlegacyprices.1/.25/.5; idle-free.25/.5; idle-free+noswap.1/.25.
+  Source9ee387da/build127, regression34.69s,
+  SHA52d77c5532d9bbed5729204a85873aa1ce7ea86df11fb4ba5749aa3bc7e6ca6f.
+  Staticrankingscachedwithscores; occupantlossrecomputedthenlocalranksresorted
+  inoriginaldirectionaltieorder. Originalpolicyexactwhennewpricingflagsoff.
+  NewflagsR05_FAST_PUSH, R05_PUSH_IDLE_FREE, R05_PUSH_EXCLUDE_SWAP. Defaults off.
+- random04-push-cache-equivalence-split-full-v127 isCLOSED/AUDITED: both2559,
+  all6fieldsidentical. Slow/fastmean166.743/139.332,max531.368/550.214ms.
+  Separate lowworkcontrol; no newrecord. No freshR04inputs.
+- random04-push-cache-optimized-split-full-v128: lowerwork2559 exactcontrol and
+  K8064push.25. Source5ccd3828/build128,regression34.62s,
+  SHAc2f0e296b4226fa3533add85894c022df8fd4768357489ebb61ab2e01a84d4ac.
+  Reindexdirectionalties, eligibilitymaskexit scans, no unusedsecondbestexit.
+  Mustcompare6fields with127whenbothfullresultsavailable.
+- random04-admission-route-split-full-v119, jobs8902825–28:4fullcases atbase2776,
+  movebias.5/1/2fraction.125 andbias1fraction.25. Boundedproposal-classcheck
+  afteradmission; olduncappedtrialsfailed. Scoring unchanged, no newsource.
+
 
 NootherPILOTsimulationjobsactive. Audit/commit sessionsmayneedclosing.
 RECENT NEGATIVE EVIDENCE:
@@ -229,7 +261,7 @@ failedusagecredits. Prior79KB approvaldoesnot cover thisnewpayload according
 toautomaticreview. Preserve rejection explanation in any final response while
 unresolved. Readstatus.json inthatdirectoryforcontext.
 
-Lastverifiedpublicpush311d0480. Laterownedcommits/evidence needpush. Only
+Last verified public push c68ea978. Later owned commits/evidence need push. Only
 random05/,PILOT_PROGRESS.md,RANDOM05_PROGRESS.md may becommitted. Fablepayload
 stays inignoredruns; do not publish or reroute it to bypass the rejection.
 

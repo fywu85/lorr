@@ -87,6 +87,10 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R04-2776-original-repeat | 2776 | 428.9 | 445.2 | 452.3 | 622.3 | 532 | 31.2 |
 | R04-2777-original-repeat | 2777 | 442.6 | 457.9 | 477.4 | 770.0 | 694 | 30.4 |
 | R03-2602-source124-control | 2602 | 474.0 | 517.9 | 539.0 | 671.7 | 432 | 31.1 |
+| R04-2777-seed0 | 2726 | 469.2 | 478.5 | 485.9 | 780.2 | 694 | 30.4 |
+| R04-2777-seed3 | 2742 | 443.1 | 461.4 | 485.0 | 771.9 | 691 | 30.4 |
+| R04-2777-seed5 | 2771 | 455.9 | 472.9 | 486.2 | 788.0 | 700 | 30.4 |
+| R04-2776-source125-control | 2776 | 462.0 | 475.9 | 481.7 | 655.0 | 563 | 31.0 |
 
 The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 

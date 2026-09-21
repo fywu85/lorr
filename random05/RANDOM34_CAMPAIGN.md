@@ -719,3 +719,111 @@ equivalence, checkpoint restore, dense legal movement and public trick gates.
 Seven full1000-step cases compare the2776default control and radii2/4 with
 mixes0.25/0.5/1. Binary SHA41cd19ae90ba487163b96f5cfa215086a5ccd852dc0bb80772cb796e330f5726.
 All fixed work must finish under1s; no performance improvement is claimed yet.
+
+## September 21, 12:05 UTC: timing qualification and a rejected local-field change
+
+The2777 profile completes plannerseeds0/3/4/5 at2726/2742/2777/2771. Original,
+repeat and all seed checks peak below789ms. Every full action/schedule/task
+trace independently replays; runtime has measured headroom on these inputs.
+Throughput still falls61tasks short of2838, so the goal remains active.
+
+Goal-local radius2 atmixes0.25/0.5/1 gives2753/2725/2692; radius4 gives
+2719/2713/2665. All full1000-step runs are valid; maxima592–742ms. The disabled
+control preserves2776 exactly in all six fields. Keep local guidance off.
+The [follow-up motion audit](results/random04-admission-diagnosis/goal-local-outcome.json)
+does not show fewer near-goal away moves on the common completed orders: at
+distance1, control/r2mix0.5/r4mix1 give1391/1417/1396 versus648forNMS; at
+distance2 they give1622/1592/1765 versus668. The common task set differs from
+the preceding two-solver diagnostic. These observations do not identify which
+move was forced by another robot.
+
+Source1c9c8b95 adds a read-only trace diagnostic, with the planner unchanged.
+It reconstructs the directed, oriented cost of each loaded forward action and
+compares it with uncongested and kinematically eligible alternatives, including
+waiting. A nonminimum move can arise from collision handling, loop completion
+or a suppressed goal; it is not automatically an error. First700-step counts
+limit late-horizon confounding. Exact static costs and legal action/event replay
+are checked on the frozen trace. This will separate route-cost hypotheses from
+collision-policy hypotheses before the next throughput change.
+
+## September 21, 12:14 UTC: most nearby detours are not static-cost minima
+
+The [read-only cost diagnostic](results/random04-goal-score-diagnosis-v126/diagnostic.json)
+replays the2776trace. In its first700steps, loaded robots make2781moves away
+from a waypoint1–2cells away. Only102are minimum static-score moves;203are
+minimum only after imposing the previous pipeline heading restriction. The
+remaining2476(89.03%) have a cheaper kinematically eligible alternative before
+accounting for other robots. Collision handling, loop completion or suppressed
+goals can explain such choices; the classification does not prove wasted work.
+Independent Python loaded-forward and away counts agree exactly with the C++
+diagnostic. [Accounting and input hashes](results/random04-goal-score-diagnosis-v126/accounting-check.json).
+
+Source9ee387da/build127 caches static candidate scores while charging displacement
+loss dynamically. Without the two new optional pricing rules it must preserve
+the original push-cost policy exactly, including tied directional order. Shared
+caches retain scores when push pricing is enabled; the compact order-only cache
+continues to serve the ordinary policy. One optional rule exempts robots without
+a current goal; the other excludes an impossible immediate swap when estimating
+the displaced robot's cheapest exit. Both default off. Legality remains enforced
+by the original joint planner and simulator.
+
+Regression passes34.69s. Legacy push prices0.25/1/2 preserve dense trajectories
+with caches and workers; corrected pricing also passes checkpoint/worker/cache
+checks. A direct fixture checks that an opened order can push an idle robot when
+idle-goal loss is exempted, without releasing the opened assignment.
+
+Eight full1000-step cases compare unchanged2776control, cached legacy prices
+0.1/0.25/0.5, idle-free prices0.25/0.5, and idle-free/swap-excluding prices
+0.1/0.25. Separate full K1024/first512 slow/fast controls test exact production
+trace equivalence; they are not compared to the higher-work throughput record.
+All use strict1s, fixed completed work and the verified32-worker allocation.
+No new performance claim yet. Build SHA52d77c5532d9bbed5729204a85873aa1ce7ea86df11fb4ba5749aa3bc7e6ca6f.
+
+## September 21, 12:21 UTC: cached push pricing is exact; reduce its hot-loop work
+
+At fixed K1024/first512 and pushprice0.25, the uncached and cached implementations
+both finish2559tasks and preserve all six action/schedule/event/task fields.
+Independent full replay passes. Observed mean time drops166.743to139.332ms,
+while maxima are531.368/550.214ms; this pair alone is not a universal speedup
+or a new throughput record. The larger K8064 experiments remain running.
+Their sampled steps take roughly0.8seconds, so extra runtime headroom matters.
+
+Source5ccd3828/build128 removes a redundant directional comparison sort by
+indexing the five unique move directions. It also scans only eligible exits
+when masks are available and avoids computing unused second-best exits.
+Costs, tie order and work budgets stay the same. Regression passes34.62s.
+A full2559control and a K8064push0.25case compare exact behavior and timing.
+Build SHAc2f0e296b4226fa3533add85894c022df8fd4768357489ebb61ab2e01a84d4ac.
+
+Four separate full source119 trials revisit small routing proposals after
+admission changed active demand: biases0.5/1/2 on one eighth of robots, and
+bias1ononequarter. These alter which alternatives the rollout policy can
+propose; its scoring stays unbiased. Earlier larger routing proposals lost
+on the uncapped profile, so these are a bounded interaction check, not an
+assumed transfer. All keep the2776profile, strict1s and full1000steps.
+
+## September 21, 12:35 UTC: displacement pricing loses; protect near arrivals directly
+
+The eight source127 runs are independently audited. Exact default control2776
+matches all six archived trajectory/schedule/event/task fields. Cached legacy
+push prices0.1/0.25/0.5 score2749/2762/2705; idle-free0.25/0.5 score2744/2743;
+idle-free plus swap-exclusion0.1/0.25 score2686/2618. All finish1000steps, but
+priced runs reach887–954ms peaks and lose throughput. Leave pricing off.
+The four source119 small routing proposals also lose:2771/2743/2731/2757.
+
+Source128's low-work control reproduces2559 in all six fields, mean127.287ms,
+max541.035ms. Its K8064 full-work attempt fails the real deadline at step1:
+1027.906ms, exit124. This is not an allocation refusal; no score is promoted
+and no host cause is inferred. Preserve the original failed artifacts.
+Four K6144/first3072 pricing runs test a lower fixed workload; still pending.
+
+Source2fe1f366/build129 adds optional R05_ARRIVAL_PRIORITY (default0, requires
+explicit trick). A robot gets a bounded priority bonus when its next waypoint
+is its current projected cell or an adjacent cell reachable under the pipeline
+heading constraint. Aging, dead-end precedence, costs, search work and legal
+joint-move checks stay intact. The hypothesis follows the observed near-goal
+forced detours; it is not yet an improvement claim. Direct heading/arrival
+fixtures, trick rejection and dense checkpoint/cache/worker regressions pass
+in34.53seconds. Five full strict cases compare0/25/50/100/200 bonuses against
+the2776 profile, with displacement pricing off. Binary SHA
+47b27dfa400c9675ba0bdbad1e8a58c00622c080d308095baa2f9b4e1c7143e4.
