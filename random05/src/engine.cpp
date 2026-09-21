@@ -191,6 +191,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(path_reuse<0 || path_reuse>1 || (path_reuse && !c.window))
         throw std::invalid_argument("window path reuse needs an enabled window and a boolean value");
     c.window_path_reuse=path_reuse;
+    const int cost_reuse=integer("R05_WINDOW_COST_REUSE",0);
+    if(cost_reuse<0 || cost_reuse>1 || (cost_reuse && !c.window))
+        throw std::invalid_argument("window cost reuse needs an enabled window and a boolean value");
+    c.window_cost_reuse=cost_reuse;
     c.window_completion_price=real("R05_WINDOW_COMPLETION_PRICE",0);
     if(!std::isfinite(c.window_completion_price) || c.window_completion_price<0 || c.window_completion_price>8 ||
        (c.window_completion_price>0 && (!c.window || !random_trick)))

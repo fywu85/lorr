@@ -179,7 +179,7 @@ struct Search {
         return false;
     }
 };
-struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0,skipped_sorts=0; };
+struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0,skipped_sorts=0,cost_hits=0; };
 }
 
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
@@ -339,7 +339,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         }
     }
     std::vector<Island> islands(cfg.window_islands);
-    int best=0;uint64_t expanded=0;int accepted=0,skipped_sorts=0;
+    int best=0;uint64_t expanded=0;int accepted=0,skipped_sorts=0,cost_hits=0;
     // Optional fixed rounds share the best complete plan between islands.
     // Total repair attempts per island remain window_iterations, independent
     // of wall time and worker scheduling. One round is the original control.
@@ -348,7 +348,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int index=0;index<cfg.window_islands;++index) {
         try {
-            auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;island.skipped_sorts=0;
+            auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;island.skipped_sorts=0;island.cost_hits=0;
             Paths incumbent_paths;
             Cost current_cost=base_cost,incumbent_cost=base_cost;
             if(cfg.window_temperature>0)incumbent_paths=island.paths;
@@ -467,7 +467,12 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         int a=group[planned];
                         if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned]))break;
                         reserve.set(a,replacement[planned],true);
-                        auto cost=agent_cost(a,replacement[planned]);
+                        const bool unchanged=cfg.window_cost_reuse && replacement[planned]==old[planned];
+                        // Assignment, start stage and scoring weights are fixed
+                        // throughout this window call, so an identical route has
+                        // exactly the already-stored cost, including tie fields.
+                        const auto cost=unchanged?costs[a]:agent_cost(a,replacement[planned]);
+                        island.cost_hits+=unchanged;
                         proposed.total+=cost.total;proposed.remaining+=cost.remaining;proposed.integral+=cost.integral;
                     }
                 } else {
@@ -486,7 +491,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         }
                         Cost candidate_cost;
                         if(built==count)for(int k=0;k<count;++k) {
-                            const auto cost=agent_cost(group[k],candidate[k]);
+                            const bool unchanged=cfg.window_cost_reuse && candidate[k]==old[k];
+                            const auto cost=unchanged?costs[group[k]]:agent_cost(group[k],candidate[k]);
+                            island.cost_hits+=unchanged;
                             candidate_cost.total+=cost.total;candidate_cost.remaining+=cost.remaining;candidate_cost.integral+=cost.integral;
                         }
                         // Restore the exact outside-only reservation table before
@@ -548,7 +555,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     best=0;
     for(int k=0;k<cfg.window_islands;++k) {
         if(errors[k])std::rethrow_exception(errors[k]);
-        expanded+=islands[k].expansions;accepted+=islands[k].accepted;skipped_sorts+=islands[k].skipped_sorts;
+        expanded+=islands[k].expansions;accepted+=islands[k].accepted;skipped_sorts+=islands[k].skipped_sorts;cost_hits+=islands[k].cost_hits;
         if(better(islands[k].cost,islands[best].cost))best=k;
     }
     if(cfg.window_merge) {
@@ -594,8 +601,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),accepted,skipped_sorts,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d cost_reused=%d expansions=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),accepted,skipped_sorts,cost_hits,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }

@@ -2005,6 +2005,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"path reuse accepted a non-boolean value");
     }
+    {
+        Setting reuse("R05_WINDOW_COST_REUSE","1"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_cost_reuse,"general unchanged-path cost reuse was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"unchanged-path cost reuse accepted a missing window");
+    }
+    {
+        Setting reuse("R05_WINDOW_COST_REUSE","2");auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"unchanged-path cost reuse accepted a non-boolean value");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2250,6 +2263,9 @@ void window_reproducibility() {
         cfg.window_path_reuse=true;cfg.threads=3;
         require(original_buffers==simulate(cfg,8),"path-buffer reuse changed repairs across group sizes/orders/workers");
         require(original_buffers==simulate(cfg,8,5,5,true),"path-buffer reuse changed checkpoint replay");
+        cfg.window_cost_reuse=true;
+        require(original_buffers==simulate(cfg,8,5,5,true),"unchanged-path cost reuse changed groups/orders/workers/checkpoints");
+        cfg.window_cost_reuse=false;
     }
     cfg.window_completion_price=.5;cfg.window_neighborhood=5;
     cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
@@ -2257,6 +2273,8 @@ void window_reproducibility() {
     cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
     require(completion_weighted==simulate(cfg,8),"completion weighting depends on workers, caches, heap or storage");
     require(completion_weighted==simulate(cfg,8,5,5,true),"completion weighting changed after checkpoint restoration");
+    cfg.window_cost_reuse=true;
+    require(completion_weighted==simulate(cfg,8,5,5,true),"unchanged-path cost reuse changed completion weighting");
     cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
