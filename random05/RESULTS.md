@@ -14,21 +14,20 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,917 | 3,172 | +23.5% | 488 / 532ms | 579MB |
+| 16 physical cores / 32 workers | 3,928 | 3,172 | +23.8% | 499 / 555ms | 559MB |
 
-The current goal is4,000 tasks,83 above the record. A mild short-chain progress
-preference during the first250steps reaches3,917, then switches back to equal
-progress scoring. It adds45tasks over the exact3,872 control and40 over the prior
-record. Stronger preferences lose. This is an explicit startup trick and a
-selected-seed gain; paired seed checks are running. Independent replay passed.
+The current goal is4,000 tasks,72 above the record. B18 averaging reaches3,928
+on plannerseed5. Across seven paired seeds it has a0.27% lower aggregate than
+B14, despite four positive pairs. This is a higher selected maximum, not a
+replicated mean improvement. Independent replay passed. The previous3,917
+startup-trick result remains in the history; startup weighting is off in this record.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[1e266b0](https://github.com/fywu85/lorr/commit/1e266b0). Both use declared map-specific
-guidance and known-horizon triage enabled by `--trick RANDOM-05`; the32-worker
-record also uses the startup preference.
+[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf). Both use declared map-specific
+guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Frozen independent-input comparison
 

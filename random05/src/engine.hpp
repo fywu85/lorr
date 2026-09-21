@@ -19,7 +19,7 @@ struct Config {
     bool replan_policy=false;
     int score_rank_steps=0;
     int rescore_roots=0, rescore_branches=64;
-    float rescore_blend=0;
+    float rescore_blend=0, rescore_static_weight=-1;
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
@@ -50,6 +50,7 @@ struct Config {
     std::string guidance="none", weights;
     static Config environment(const SharedEnvironment& env);
 };
+double weighted_static_future_score(const std::vector<double>& scores,double static_weight);
 std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power);
 std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix=false);
 struct CycleWordMask { size_t word;uint64_t bits; };

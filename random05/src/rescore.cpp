@@ -1,6 +1,7 @@
 #include "engine.hpp"
 #include <algorithm>
 #include <cstdio>
+#include <cmath>
 #include <exception>
 #include <stdexcept>
 
@@ -10,6 +11,16 @@ uint64_t mix(uint64_t x) {
     x+=0x9e3779b97f4a7c15ULL;x=(x^(x>>30))*0xbf58476d1ce4e5b9ULL;
     x=(x^(x>>27))*0x94d049bb133111ebULL;return x^(x>>31);
 }
+}
+
+// Branch zero preserves the current priority vector. Its mixture probability
+// can be fixed independently of how many randomized future samples are taken.
+double weighted_static_future_score(const std::vector<double>& scores,double static_weight) {
+    if(scores.size()<2 || !std::isfinite(static_weight) || static_weight<0 || static_weight>1)
+        throw std::invalid_argument("invalid static/random future mixture");
+    double random_sum=0;
+    for(size_t b=1;b<scores.size();++b)random_sum+=scores[b];
+    return static_weight*scores[0]+(1-static_weight)*random_sum/(scores.size()-1);
 }
 
 // Search reuses common continuation samples across many generations. Recheck
@@ -52,7 +63,11 @@ int Engine::rescore_candidates(const SharedEnvironment& env,const Frame& frame,
     for(int j=0;j<int(finalists.size());++j) {
         try {
             const auto& old=results[finalists[j]];
-            checked[j]=evaluate(frame,old.offsets,futures,old.cycle_moves);
+            std::vector<double> branch_scores;
+            checked[j]=evaluate(frame,old.offsets,futures,old.cycle_moves,
+                                cfg.rescore_static_weight>=0?&branch_scores:nullptr);
+            if(cfg.rescore_static_weight>=0)
+                checked[j].score=weighted_static_future_score(branch_scores,cfg.rescore_static_weight);
             const auto& fresh=checked[j];
             if(fresh.actions!=old.actions || fresh.first.loc!=old.first.loc ||
                fresh.first.dir!=old.first.dir || fresh.first.pending!=old.first.pending ||
@@ -74,9 +89,9 @@ int Engine::rescore_candidates(const SharedEnvironment& env,const Frame& frame,
         throw std::runtime_error("independent rescoring changed its complete work count");
     stats.selected_rank=int(std::find(ranking.begin(),ranking.end(),finalists[selected])-ranking.begin());
     if(!quiet_ && env.curr_timestep%100==0)std::fprintf(stderr,
-        "R05_RESCORE t=%d roots=%d branches=%d evaluations=%d rank=%d score=%.3f old_score=%.3f blend=%.3f\n",
+        "R05_RESCORE t=%d roots=%d branches=%d evaluations=%d rank=%d score=%.3f old_score=%.3f blend=%.3f static_weight=%.3f\n",
         env.curr_timestep,stats.roots,stats.branches,stats.evaluations,stats.selected_rank,
-        scores[selected],scores[0],cfg.rescore_blend);
+        scores[selected],scores[0],cfg.rescore_blend,cfg.rescore_static_weight);
     // Preserve ordinary parent ranking, while retaining the chosen root first.
     // Mixing old/new sample scores in the search history would change two things.
     return finalists[selected];

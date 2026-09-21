@@ -82,6 +82,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.rescore_roots=integer("R05_RESCORE_ROOTS",0);
     c.rescore_branches=integer("R05_RESCORE_BRANCHES",64);
     c.rescore_blend=real("R05_RESCORE_BLEND",0);
+    c.rescore_static_weight=real("R05_RESCORE_STATIC_WEIGHT",-1);
+    if(!std::isfinite(c.rescore_static_weight) ||
+       (c.rescore_static_weight!=-1 && (c.rescore_static_weight<0 || c.rescore_static_weight>1)))
+        throw std::invalid_argument("static future weight must be -1 or in [0,1]");
     if(c.rescore_roots<0 || c.rescore_roots>128 || c.rescore_branches<2 || c.rescore_branches>1024 ||
        !std::isfinite(c.rescore_blend) || c.rescore_blend<0 || c.rescore_blend>1 ||
        (c.rescore_roots>0 && (c.replan_roots || c.component_trials || c.continuation_start<1 || c.continuation_start>=c.depth)))
@@ -104,6 +108,8 @@ Config Config::environment(const SharedEnvironment& env) {
        (c.future_elite_blend>0 && c.persist_elites<2))
         throw std::invalid_argument("future elite blend must be in [0,1] and needs at least two retained vectors");
     c.continuation_risk=real("R05_CONTINUATION_RISK",0);
+    if(c.rescore_static_weight>=0 && c.continuation_risk!=0)
+        throw std::invalid_argument("weighted static rescoring currently requires mean-only future scoring");
     if(!std::isfinite(c.continuation_risk))
         throw std::invalid_argument("continuation coefficient must be finite");
     c.share_prefix=integer("R05_SHARE_PREFIX",0);

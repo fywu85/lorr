@@ -948,3 +948,84 @@ strict runs: powers.125/.375 for250; power.25for125/375/500; the selected
 .25/250 with B18 instead ofB14; and its plannerseeds0/3/5/6. Baseline B14
 seeds0/3 already exist and5/6 are running. All task/start inputs remain the
 same development instance; no held-out input is consulted.
+
+
+## Combine two measured directions and repeat generic rescoring
+
+The independent-future batch is complete: controls3872exact; R4B32=3885,
+R16B64=3906,R16B128=3659,R16B64blend.5=3819,R32B128=3867. All valid.
+The best generic evaluator change adds34tasks to its exact3872control but
+remains below the3917 startup-trick record. Next compare the source75 startup
+control with3917, then combine its.25/250startup setting with R4B32 orR16B64.
+Also repeat generic R16B64 without startup preference on plannerseeds0/3.
+All five are full strict runs on the development input. No additive gain assumed.
+
+The startup.25/125 original was refused before solver launch on research42
+(expected16bound cores, observed64). Preserve that attempt and declare an
+identical solver/configuration allocation repeat, excluding42 and34.
+
+
+## Selected-seed objective and follow up3,928
+
+B18 seed5 reaches3,928 while the seven paired seeds0/3/4/5/6/7/8 have a
+slightly lower aggregate than B14. This is a selected-seed record, not an
+average algorithmic improvement. The user explicitly permits selected seeds
+to meet the target. Declare an additional fixed set of plannerseeds9–24 at
+the unchanged B18configuration; retain all16outcomes, including failures, and
+separate the selected maximum from the distribution. This is search over
+planner randomness on the same development input, not held-out validation.
+
+In parallel test source75's exact3928control, its startup.25/250 variant,
+independent rescoring R4B32 orR16B64, and startup.25 plusR16B64, all at B18
+andseed5. These five fullstrict runs test measured directions and their
+interaction; the individual gains are not assumed additive. Fresh task/start
+inputs will be generated only after freezing a selected qualifying candidate.
+
+
+## GRID allocation refusal is separate from solver performance
+
+The installed manual /opt/n1ge/man/man1/submit.1 (binding section, lines430–521)
+confirms that binding is advisory and can be omitted when the requested cores
+are unavailable. The installed m_topology_inuse complex is RESTRING and not
+consumable. These facts explain why resource eligibility alone is insufficient
+to certify a process allocation; the specific causes of our three refusals are
+not proved. Keep the existing actual-affinity/quota guard, which refuses any
+incorrect allocation before launching the solver. Retry in a separate named
+case with unchanged solver settings and preserve each original refusal.
+No scheduler configuration or other user's allocation is modified.
+
+
+## Trick: new guidance patterns at the current planning budget
+
+Earlier layout-seed searches through48 used much smaller planning budgets.
+The current-budget local retunes of field15 all lost, which rules out those
+settings but not other layouts. Predeclare eight new field seeds49–56 with
+plannerseed5/B18 and every other3928setting fixed, including the existing
+one-edge flip from flipseed5. This isolates generated field choice within the
+selected configuration. All use explicit --trick RANDOM-05, full2000steps,
+strict1s/30s/32GB, and the same development input. No gain is assumed and
+all eight outcomes will be retained. This is a map-specific layout search,
+separate from generic planner changes and planner RNG-seed selection.
+
+
+## Separate static-continuation weight from sample count
+
+Independent rescoring R16B64 improves all three checked planner seeds0/3/4:
+3805/3893/3906 versus3778/3845/3872 (+109total, +0.948%). These are planner
+seeds on one input, not independent task/start validation. B128 nonetheless
+loses strongly on seed4. Variance alone is not the only difference: the current
+mean gives the constant-priority branch weight1/B, so increasing sample count
+also reduces that branch's influence. Whether this explains the loss is unknown.
+
+R05_RESCORE_STATIC_WEIGHT (default-1, preserve the legacy mean exactly) optionally
+sets the constant-priority branch's weight explicitly, with remaining mass
+spread over the random-future mean. This separates mixture choice from sample
+count. Every declared branch is still evaluated, including at weights0 or1.
+The ordinary search objective stays unchanged; this affects only finalist
+rescoring. Nonzero variance coefficients are rejected with explicit weights
+until weighted variance semantics are specified. No map-specific rule is added.
+
+
+## Fixed mixture for finalist forecast scoring (2026-09-21 00:56 UTC)
+
+Build-v76 passes its regression suite (31.82 s; binary SHA256 `5332e1acf082031df3d6a56baadf526e15541427836b86cabb9b1bd65c330213`). The predeclared eight-case full strict batch fixes the R16B64/seed4 reference and tests constant-priority forecast weights -1 (legacy), 0, 0.05, 0.1 and 0.25, plus B128 at weights 1/64, 0.05 and 0.1. The legacy control must reproduce 3,906. Increasing samples previously also diluted the unchanged-priority branch; whether that explains any performance loss is unknown. This experiment separates those changes. No task/start validation inputs are used.

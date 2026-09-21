@@ -30,19 +30,20 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 00:05 UTC.
+Updated: 2026-09-21 00:19 UTC.
 
-**Best single run on the archived input: 3,917 tasks on 32 workers / 16 physical cores**,
-or **+23.5% versus matched NMS32=3,172**. Source
-[1e266b0](https://github.com/fywu85/lorr/commit/1e266b0), planner seed4,
-firstK8000 thenK16320/B14/s2/q4/G4/E8/P8. It uses an explicit startup trick:
-rank-weighted short-chain progress with power0.25 for the first250steps, then
-ordinary equal scoring. Guidance and the directional horizon cutoff remain enabled.
-Mean488ms, maximum532ms, RSS579MB; all2,000steps valid and independently replayed.
-This is45tasks above its unchanged3,872 control and40above the preceding3,877
-record. It remains a selected seed; paired seed checks are running.
-The4,000 target remains83tasks away.
-[Full evidence](random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json).
+**Best single run on the archived input: 3,928 tasks on 32 workers / 16 physical cores**,
+or **+23.8% versus matched NMS32=3,172**. Source
+[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf), planner seed5,
+firstK7968 thenK16320/B18/s2/q4/G4/E8/P8. Guidance and the directional horizon
+cutoff remain explicit tricks; startup weighting and finalist rescoring are off.
+Mean499ms, maximum555ms, RSS559MB; all2,000steps valid and independently replayed.
+This is11tasks above3,917. Across seven paired planner seeds, B18's aggregate
+is0.27% lower than B14, with four positive pairs. This is a selected maximum,
+not an established mean improvement.
+The4,000 target remains72tasks away.
+[Full evidence](random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json),
+[paired outcomes](random05/results/branch-seeds-split-full-v69/paired-outcomes.json).
 
 The previous3,852 record used scale1.5. A new diagnostic build reproduces its
 entire trajectory while recording exact pre-decision snapshots. Four of that
@@ -297,6 +298,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T22:49:18.963497+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3872 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.1% | [Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json) |
 | 2026-09-20T23:58:38.632599+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3877 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.2% | [Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json) |
 | 2026-09-21T00:05:35.106669+00:00 | [1e266b0](https://github.com/fywu85/lorr/commit/1e266b0) | Startup rank power0.25 for250steps; K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; `--trick RANDOM-05` | 3917 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.5% | [Full evidence](random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json) |
+| 2026-09-21T00:19:49.212073+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3928 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.8% | [Full evidence](random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1624,3 +1626,51 @@ input/binary hashes and allocation are linked in the audits.
   Allocation rejection tests pass; the original frozenV4 result remains exactly
   +25.42%. It additionally verifies simulator source/headers and protocol-commit
   order. No new validation inputs have been generated or candidate frozen yet.
+
+- B18 plannerseed5 gives **3,928**, source233f5bf, finished00:19:49.212073UTC.
+  Mean499.181ms/max554.944ms/RSS546252KiB. Independent replay passed.
+  Maxcompletedwait1952steps; initialunfinished130/unopened88. The seven-seed
+  B18total26,705 is0.27% below B14's26,778, despite four positive pairs and
+  the higher selected maximum. Both facts are retained.
+  [Paired evidence](random05/results/branch-seeds-split-full-v69/paired-outcomes.json).
+- Predeclare additional plannerseeds9–24 at the unchanged B18configuration,
+  retaining all16outcomes. The user permits selected seeds to meet the target;
+  this search is not claimed as a new algorithmic or mean improvement. Also
+  test the selectedseed5control with startup preference and/or independent
+  rescoring in five full runs. No new task/start inputs are used.
+
+- Startup follow-up results are complete except the separately named allocation
+  repeat: power.125/.375for250 gives3,800/3,926; power.25for375/500 gives
+ 3,724/3,881; B18coupling onseed4 gives3,754. The original125step case was
+  refused before launch on research42 and is preserved beside its repeat.
+  The.25/250 paired check on seeds0/3/4/5/6 totals19,155 versus19,182
+  (-0.14%, two positive pairs). Its selected3,917 is not a mean improvement.
+- The last heavy closed-loop diagnostic finishes3,682 (R4F2K256,5s cap).
+  R4F4K128 gives3,723. Both lose, like the smaller forecasts; keep this
+  feature disabled. All strict failures remain in the archive.
+- Phase counts do not imply additive gains: startup3,917 is behind baseline
+  by29 atstep500, then recovers later. Independent-rescore3,906 also gains
+  most in later blocks. The combination experiments test their interaction.
+  [Phase audit](random05/results/startup-rescore-phase-v75/audit.json).
+
+
+### 2026-09-21 01:03 UTC: replication and bounded forecast-scoring follow-up
+
+The verified frontier remains **3,928**, with 72 tasks left to reach 4,000.
+Source75 controls reproduce both 3,928 and 3,917 exactly in all six trajectory
+fields. The selected B18 configuration's sixteen additional planner seeds9–24
+produce fifteen valid runs (best3,904) and one strict deadline failure atstep1455;
+the failed attempt is retained. Eight new guidance patterns top out at3,899.
+Neither sweep changes the record.
+
+Independent R16B64 rescoring on the B14 configuration improves all three checked
+planner seeds0/3/4: 3,805/3,893/3,906 versus3,778/3,845/3,872. Aggregate gain is
+**0.948%** on this development input. Startup weighting and rescoring together
+lose; there is no evidence their individual gains add. These comparisons are
+not fresh-input validation. [Paired evidence](random05/results/startup-rescore-coupling-split-full-v75/paired-rescore-seeds.json).
+
+Build-v76 passes regression tests and separates the unchanged-priority forecast's
+weight from the number of random futures. Eight full strict tests are declared
+in [the preset](random05/experiments/rescore-static-mixture-full-v76.json).
+The legacy setting must reproduce3,906. No new fresh task/start inputs have been
+generated, and all previous validation inputs remain excluded from tuning.

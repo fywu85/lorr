@@ -662,6 +662,12 @@ void ranked_task_progress() {
 }
 
 void independent_candidate_rescoring() {
+    const std::vector<double> scores{-10,-4,-8};
+    require(weighted_static_future_score(scores,0)==-6 && weighted_static_future_score(scores,1)==-10 &&
+            weighted_static_future_score(scores,.5)==-8,"static future mixture has wrong endpoint/scale semantics");
+    // Duplicating random samples must not dilute the separately weighted anchor.
+    require(weighted_static_future_score(scores,.25)==weighted_static_future_score({-10,-4,-8,-4,-8},.25),
+            "static future weight depends on random sample count");
     Config cfg;cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
     cfg.share_prefix=true;cfg.cost_cache=true;cfg.candidate_cache=true;
@@ -673,7 +679,12 @@ void independent_candidate_rescoring() {
     cfg.rescore_blend=0;
     const auto serial=simulate(cfg,12,5,5,true);cfg.threads=2;
     require(serial==simulate(cfg,12),"independent rescoring changed across worker counts");
-    cfg.rescore_blend=.5;cfg.score_rank_power=.5;cfg.score_rank_steps=51;
+    cfg.rescore_static_weight=.1;cfg.threads=1;
+    const auto weighted=simulate(cfg,12,5,5,true);cfg.threads=2;
+    require(weighted==simulate(cfg,12),"weighted independent futures changed across workers");
+    cfg.rescore_roots=1;cfg.rescore_static_weight=.25;cfg.threads=1;
+    require(ordinary==simulate(cfg,12,5,5,true,true),"one weighted finalist changed the live decision or state");
+    cfg.rescore_roots=4;cfg.rescore_blend=.5;cfg.score_rank_power=.5;cfg.score_rank_steps=51;
     simulate(cfg,12,5,5,true);
 }
 

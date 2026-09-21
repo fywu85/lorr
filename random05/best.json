@@ -1,8 +1,8 @@
 {
-  "source_commit": "1e266b0",
-  "evidence": "random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json",
+  "source_commit": "233f5bf",
+  "evidence": "random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json",
   "case": {
-    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v74/build/lifelong_random05",
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v69/build/lifelong_random05",
     "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
     "cores": 16,
     "smt": 2,
@@ -10,7 +10,7 @@
     "limit_ms": 1000,
     "preprocess_ms": 30000,
     "trick": true,
-    "name": "32-startup-rank-power.25-steps250-seed4",
+    "name": "32-branch-seed-b18-seed5",
     "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
@@ -35,10 +35,10 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "4",
+      "R05_SEED": "5",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
-      "R05_CONTINUATIONS": "14",
+      "R05_CONTINUATIONS": "18",
       "R05_CONTINUATION_START": "2",
       "R05_SHARE_PREFIX": "1",
       "R05_PACKED_ORDER": "1",
@@ -51,7 +51,7 @@
       "R05_ELITES": "8",
       "R05_PERSIST_ELITES": "8",
       "R05_FUTURE_ELITE_BLEND": "0",
-      "R05_FIRST_K": "8000",
+      "R05_FIRST_K": "7968",
       "R05_CYCLE_MASK": "0",
       "R05_KINEMATIC_MASK": "1",
       "R05_BRANCH_DIAGNOSTICS": "0",
@@ -60,12 +60,10 @@
       "R05_CACHE_SLOTS": "64",
       "R05_SCREEN_BRANCHES": "2",
       "R05_SCREEN_KEEP": "4",
-      "R05_TRIAGE_GUIDED_MIX": "0.5",
-      "R05_SCORE_RANK_POWER": ".25",
-      "R05_SCORE_RANK_STEPS": "250"
+      "R05_TRIAGE_GUIDED_MIX": "0.5"
     },
-    "binary_sha256": "4c2f9b78b10e0f83d30d4b71bf4a12f3d70b2fc07f558e5d70649598acd65e13",
-    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v74/build/lifelong_random05",
+    "binary_sha256": "b2d044351e254b40e6dddab7828f2de32defd60470edaa3fcaa6f8b7f9335746",
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v69/build/lifelong_random05",
     "input_hashes": {
       "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
       "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
