@@ -33,3 +33,7 @@ endif()
 # Offline counterfactual evaluator: never used by the competition entry.
 add_executable(random05_decision_probe tools/decision_probe.cpp simulator/src/States.cpp)
 target_link_libraries(random05_decision_probe PRIVATE random05_engine)
+
+# Read-only guided-cost classification for independently replayed traces.
+add_executable(random05_goal_probe tools/goal_probe.cpp simulator/src/States.cpp)
+target_link_libraries(random05_goal_probe PRIVATE random05_engine)
