@@ -45,12 +45,37 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R04-2661-control115 | 2661 | 464.9 | 484.3 | 489.5 | 502.2 | 2082 | 31.6 |
 | R04-2661-control116 | 2661 | 462.5 | 481.7 | 486.0 | 506.1 | 2084 | 31.6 |
 | R04-record2698 | 2698 | 448.0 | 468.7 | 473.9 | 654.1 | 1733 | 30.3 |
+| R04-2698-seed0 | 2701 | 469.3 | 490.3 | 499.8 | 668.5 | 1729 | 30.3 |
+| R04-2698-seed3 | 2654 | 445.0 | 467.0 | 476.2 | 655.9 | 1707 | 30.3 |
+| R04-2698-seed5 | 2705 | 469.0 | 490.0 | 500.2 | 670.6 | 1724 | 30.3 |
+| R04-record2738 | 2738 | 462.7 | 478.7 | 489.3 | 670.9 | 1736 | 30.3 |
+| R04-2661-v117-32byte | 2661 | 439.7 | 458.5 | 462.2 | 497.6 | 1180 | 31.6 |
+| R04-2698-v117-32byte | 2698 | 463.1 | 483.5 | 491.2 | 667.7 | 1020 | 30.3 |
+| R04-2661-v118-32byte | 2661 | 453.6 | 471.7 | 475.0 | 483.7 | 1177 | 31.6 |
+| R04-2698-v118-32byte | 2698 | 462.8 | 481.7 | 491.1 | 674.7 | 1032 | 30.3 |
+| R04-2661-v118-8byte | 2661 | 439.4 | 455.3 | 458.7 | 477.4 | 604 | 31.6 |
+| R04-2698-v118-8byte | 2698 | 435.6 | 457.4 | 466.9 | 656.9 | 567 | 30.2 |
+| R04-2698-v119-slowmatch | 2698 | 456.2 | 478.9 | 486.2 | 656.0 | 558 | 30.2 |
+| R04-2698-v119-fastmatch | 2698 | 427.0 | 445.4 | 451.7 | 618.7 | 553 | 31.1 |
+| R04-2661-v119-fastmatch | 2661 | 455.3 | 473.7 | 475.7 | 513.7 | 602 | 31.6 |
+| R04-record2741 | 2741 | 450.1 | 464.8 | 479.7 | 649.1 | 1683 | 30.3 |
+| R04-2738-repeat116 | 2738 | 482.4 | 500.7 | 508.6 | 665.5 | 1702 | 30.3 |
+| R04-2738-seed0 | 2718 | 459.6 | 474.6 | 481.8 | 661.2 | 1752 | 30.3 |
+| R04-2738-seed3 | 2689 | 450.4 | 467.6 | 477.2 | 651.9 | 1743 | 30.3 |
+| R04-2738-seed5 | 2735 | 452.9 | 469.6 | 487.1 | 654.3 | 1764 | 30.3 |
+| R04-2738-fast119 | 2738 | 432.0 | 451.4 | 454.9 | 684.3 | 566 | 31.1 |
+| R04-2738-extra-control119 | 2738 | 455.1 | 468.8 | 472.7 | 625.5 | 565 | 31.1 |
+| R04-2738-control120 | 2738 | 448.5 | 463.2 | 467.8 | 631.7 | 572 | 31.1 |
 
 The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 
 The 2,661-task RANDOM-04 recipe has exact repetitions and four planner seeds (0/3/4/5): 2,542/2,576/2,661/2,605 tasks. Across the listed originals, repetitions and equivalent controls, the maximum is below 756 ms. The original build96 record and its seed checks peak below 490 ms; newer source controls are listed separately. Runtime has measured margin; throughput remains 177 tasks short of the 2,838 target. The older 2,641-task profile and its five-seed qualification are retained above as history.
 
-The newer 2,698-task record uses the explicit 560-task admission cap. Its first full run averages448.0 ms and peaks654.1 ms; repetition and planner-seed checks follow in the campaign. This is +4.57% against matched NMS, still140 tasks below target.
+The 2,698-task admission profile is checked on seeds0/3/4/5:2701/2654/2698/2705. All original-source qualification runs peak below671 ms. Every seed improves over the corresponding uncapped profile; initial unfinished orders increase on the record seed. The exact8byte-cache and fast-matching controls are listed separately.
+
+The 2,738-task profile (cap560, cutoff1) has an exact repetition and four seeds0/3/4/5:2718/2689/2738/2735. Original-source qualification peaks below671 ms; equivalent newer-source controls peak below685 ms. The 2,741-task cutoff0.875 record is listed separately and still needs its own seed qualification.
+
+The current throughput frontier and remaining target are maintained in [PILOT_PROGRESS.md](../../../PILOT_PROGRESS.md) and [the campaign](../../RANDOM34_CAMPAIGN.md). A higher score does not inherit the timing qualification of a different cutoff or admission profile.
 
 CPU averages count occupied logical CPUs over the process lifetime, including initialization and OpenMP waiting. Each allocation contains 16 physical cores / 32 logical CPUs. RAM is peak RSS in decimal MB.
 

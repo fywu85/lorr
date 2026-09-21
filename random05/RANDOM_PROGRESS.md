@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2698 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2741 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -136,6 +136,9 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T07:48:41.498854+00:00 | RANDOM-03 | trick | 2602 | [02bccaa7](https://github.com/fywu85/lorr/commit/02bccaa7) | [Full run](results/random03-merge-coupling-split-full-v102/trick-random-03-merge-coupling-triage0875/summary.json) |
 | 2026-09-21T08:24:36.112951+00:00 | RANDOM-04 | trick | 2661 | [fa98fd1d](https://github.com/fywu85/lorr/commit/fa98fd1d) | [Full run](results/random04-triage-refine-split-full-v96/trick-random-04-triage-refine-mix075/summary.json) |
 | 2026-09-21T09:40:28.766893+00:00 | RANDOM-04 | trick | 2698 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-admission-split-full-v116/trick-random-04-admission-cap560/summary.json) |
+| 2026-09-21T09:58:17.479292+00:00 | RANDOM-04 | trick | 2701 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-admission-refine-split-full-v116/trick-random-04-admission-refine-cap580/summary.json) |
+| 2026-09-21T09:58:25.614128+00:00 | RANDOM-04 | trick | 2738 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-admission-refine-split-full-v116/trick-random-04-admission-refine-triage1/summary.json) |
+| 2026-09-21T10:14:35.787464+00:00 | RANDOM-04 | trick | 2741 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-active-cutoff-split-full-v116/trick-random-04-active-cutoff-scalep875/summary.json) |
 
 
 ## September21: first development comparisons

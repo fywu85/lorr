@@ -2,6 +2,7 @@
 """Refresh the general PILOT progress dashboard from verified record manifests."""
 import datetime
 import json
+import re
 from pathlib import Path
 from result_horizon import summary_steps
 
@@ -190,6 +191,17 @@ def render():
         'Refresh this dashboard after promoting a verified record with',
         '`python3 random05/tools/render_pilot_progress.py`. Evidence and historical',
         'failures stay in the detailed logs; missing map results remain placeholders.', '']
+    campaign_path=ROOT/'random05/RANDOM34_CAMPAIGN.md'
+    if campaign_path.exists():
+        campaign=campaign_path.read_text()
+        for instance in ('RANDOM-03','RANDOM-04'):
+            nms=records[instance]['nms32_tasks'];threshold=(11*nms+9)//10
+            record=selected[instance][1]
+            row='| {} | {:,} | {:,} | {:,} | {:,} |'.format(instance,record['tasks'],nms,threshold,record['case']['steps'])
+            pattern=r'^\| '+re.escape(instance)+r' \| [0-9,]+ \| [0-9,]+ \| [0-9,]+ \| [0-9,]+ \|$'
+            campaign,count=re.subn(pattern,row,campaign,count=1,flags=re.MULTILINE)
+            assert count==1,'missing campaign status row'
+        campaign_path.write_text(campaign)
     (ROOT / 'PILOT_PROGRESS.md').write_text('\n'.join(lines))
     print('Updated PILOT_PROGRESS.md: {} evaluated instances, {} placeholders.'.format(len(selected), len(INSTANCES)-len(selected)))
 

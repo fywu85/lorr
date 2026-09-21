@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Freeze, build and evaluate the independent Random05 campaign on GRID."""
-import argparse, datetime, hashlib, json, os, resource, shlex, shutil, subprocess, sys, time
+import argparse, datetime, hashlib, json, os, re, resource, shlex, shutil, subprocess, sys, time
 from pathlib import Path
 from result_horizon import executed_steps
 ROOT=Path(__file__).resolve().parents[2]
@@ -13,8 +13,27 @@ def write(p,x):
     p.write_text(json.dumps(x,indent=2)+'\n')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def validate_r05_case(case):
+    if case.get('team') == 'nms':
+        return
+    requested = {key for key in case.get('env', {}) if key.startswith('R05_')}
+    if not requested:
+        return
+    source = Path(case['binary']).resolve().parent.parent / 'source/src'
+    if not (source / 'engine.cpp').exists():
+        raise ValueError('PILOT option validation needs the frozen build source: ' + str(source))
+    known = set()
+    for path in source.glob('*.cpp'):
+        known.update(re.findall(r'"(R05_[A-Z0-9_]+)"', path.read_text()))
+    unknown = requested - known
+    if unknown:
+        raise ValueError('{} has unknown options in its frozen solver: {}'.format(case['name'], ', '.join(sorted(unknown))))
+
+
 def submit(a):
     if a.ipo and a.kind!='build':raise ValueError('--ipo is only valid for a PILOT build')
+    if a.kind=='benchmark':
+        for case in json.loads(a.cases.read_text()):validate_r05_case(case)
     out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec={'kind':a.kind,'created_utc':now(),'repo':str(ROOT),
           'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),

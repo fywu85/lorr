@@ -8,7 +8,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
 | RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,661 | 2,580 | 2,838 | 1,000 |
+| RANDOM-04 | 2,741 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -541,3 +541,33 @@ prioritywithscoreweightsalso loses2457–2614; allfulltracesare independently
 replayed andallcontrolsrepeat2661exactly. Sources117/118 nowtest exact32byte
 scoredrankings andoptional8byte order-onlyrankings. Fullregressionpassed; six
 full2661/2698controlsare running before any speedclaim or runtimepromotion.
+
+## September 21, 10:33 UTC: admission reaches 2,741; timing improvements are exact
+
+The cap560/triage1 profile reaches2738 and improves every tested planner seed:
+0/3/4/5 give2718/2689/2738/2735, versus2542/2576/2661/2605 without admission.
+Its original-source runs, including exact repetition, peak below671ms.
+Lowering the cutoff scale to0.875 gives the new **2741** record at10:14:35.787464UTC,
+sourceaa171530/build116, mean450.058/max649.058ms. Full action/schedule/event replay
+passes; the archived10%target remains97tasks away. Longest completed order997steps;
+178initial orders remain unfinished,134unopened. Throughput gains carry this fairness cost.
+
+Source118's 8byte order cache and119's dummy-prefix matching optimization preserve
+all six full trace fields in nine comparisons. The2698 profile's RAM falls from
+1.73GB to about0.57GB; fast matching gives mean427/max619ms on its full control.
+This is measured evidence, not a universal speedup. The2738 controls on119/120
+also preserve all six fields, with mean432–455/max626–684ms. Runtime rows retain
+original builds, repetitions, seed checks and the older755ms observation.
+
+Active-only travel calibration120 gives2733/2737/2714/2659 versus2738; keep it off.
+Matching length weights0/.5/1/2 give2297/2691/2712/2693. Correct predictive matching
+gives2715. The first predictive manifest used an unrecognized environment key;
+its2738 run is preserved and classified as an extra control, with a separate
+corrected experiment. New pre-submission validation rejects unknown R05 keys
+against each frozen binary's source (three regression checks pass).
+
+The next eight full trials keep the2741 admission profile and test its interaction
+with dispersion, turn/wait costs and exact chained matching. They include a full
+runtime-control repetition. Cost-sensitive admission is the next separate mechanism:
+leave expensive unopened pairings unassigned instead of always filling the cap.
+No fresh RANDOM-04 inputs have been generated or used for tuning.
