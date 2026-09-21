@@ -96,7 +96,8 @@ struct Config {
     bool fast_admission=false, active_travel_rate=false, idle_align=false, match_free_ties=false, compact_idle=false;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
-    int flow_extra_flips=0, flow_extra_flip_seed=1;
+    int flow_extra_flips=0, flow_extra_flip_seed=1, field_jitter_seed=0;
+    float field_jitter=0;
     float flow_penalty=1.6, flow_output_penalty=-1, flow_normalize_ref=-1;
     int goal_local_radius=0;
     float goal_local_mix=0;

@@ -360,6 +360,56 @@ void retained_guidance_flips() {
     require(rejected,"extra field flips accepted a missing retained prefix");
 }
 
+void smooth_guidance_jitter() {
+    auto env=environment(5,5,4);Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;
+    cfg.flow_normalize=true;cfg.flow_flips=1;cfg.flow_flip_seed=3;cfg.threads=1;
+    Graph original(env,cfg);cfg.field_jitter=.1;cfg.field_jitter_seed=7;
+    Graph jittered(env,cfg),repeat(env,cfg);
+    require(jittered.next==original.next && jittered.weight==repeat.weight && jittered.weight!=original.weight,
+            "field jitter changed topology or failed reproducible perturbation");
+    double before=0,after=0;
+    for(int v=0;v<original.cells;++v) {
+        require(jittered.weight[v][4]==original.weight[v][4],"field jitter changed rotation cost");
+        for(int d=0;d<4;++d) {
+            const int u=original.next[v][d];if(u<0)continue;const int opposite=(d+2)%4;
+            const float price=jittered.weight[v][d];require(std::isfinite(price) && price>0,"field jitter made a nonpositive edge");
+            before+=original.weight[v][d];after+=price;
+            require(std::abs(price/jittered.weight[u][opposite]-original.weight[v][d]/original.weight[u][opposite])<1e-5,
+                    "field jitter changed directional contrast");
+        }
+    }
+    require(std::abs(after-before)<1e-5*before,"field jitter changed mean forward cost");
+    cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.cost_cache=true;
+    const auto serial=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.candidate_cache=true;
+    cfg.shared_rankings_mb=16;cfg.shared_orders=true;
+    require(serial==simulate(cfg,12,5,5,true),"field jitter depends on workers, ranking caches or checkpoint replay");
+    cfg.plain_score=.5;
+    const auto physical=simulate(cfg,12);cfg.threads=1;
+    require(physical==simulate(cfg,12),"field jitter leaked into physical-cost scoring or depends on workers");
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting guidance("R05_GUIDANCE","flow"),jitter("R05_FIELD_JITTER",".1"),seed("R05_FIELD_JITTER_SEED","7");
+    auto gate=environment(3,3,2);gate.trick_instance="RANDOM-04";
+    require(Config::environment(gate).field_jitter==.1f && Config::environment(gate).field_jitter_seed==7,
+            "declared field jitter was not parsed");
+    gate.trick_instance.clear();bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"field jitter escaped its explicit trick gate");gate.trick_instance="RANDOM-04";
+    for(const char* value:{"-0.1","0.51","nan","inf"}) {
+        Setting invalid("R05_FIELD_JITTER",value);rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid field jitter was accepted");
+    }
+    Setting no_guidance("R05_GUIDANCE","none");rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"field jitter accepted a missing weighted field");
+}
+
 void idle_pocket_eviction() {
     auto e=environment(3,4,1);e.map[3]=e.map[11]=1;
     e.curr_states[0].location=7;e.curr_states[0].orientation=0;
@@ -2557,7 +2607,7 @@ int main() {
     require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");
     require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");
     guidance_scale_reference();
-    retained_guidance_flips();
+    retained_guidance_flips();smooth_guidance_jitter();
     idle_pocket_eviction();
     validation();
     scheduling();

@@ -1485,3 +1485,22 @@ and failed repairs restore the original complete legal plan. Full comparisons
 must measure both throughput and latency; no gain follows from fewer expansions
 alone. Regression checks configuration bounds, dense legal motion, query-cache
 and worker equivalence, checkpoints, and unchanged failure handling.
+
+
+## Trick: smooth field-price perturbations (source154 experiment)
+
+Whole direction reversals and nearby field-scale changes have not improved the
+selected dense profiles. Test a different neighborhood: retain every chosen
+street direction and its contraflow price ratio, but multiply each undirected
+edge pair by exp(U[-s,s]). Restore the original mean forward-edge price afterward;
+rotation/wait costs stay unchanged. `R05_FIELD_JITTER=s` defaults to0 and supports
+0..0.5, with declared `R05_FIELD_JITTER_SEED`. Any nonzero setting requires the
+matching explicit RANDOM trick and weighted guidance. Fields are generated only
+from the public map and declared seed before tasks appear.
+
+This is an explicitly labeled map-tuning experiment, not a claimed general
+improvement. Compare full runs with the selected fields at fixed planner seeds,
+then replicate any winner before promotion. No held-out input may select the
+perturbation. Regression checks topology, positive costs, directional ratios,
+mean-cost preservation, physical-score separation, worker/cache/checkpoint
+reproduction and the flag gate.

@@ -430,6 +430,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.flow_extra_flip_seed=integer("R05_FLOW_EXTRA_FLIP_SEED",1);
     if(c.flow_extra_flips<0 || (c.flow_extra_flips>0 && (!random_trick || c.flow_flips<=0 || c.guidance!="flow")))
         throw std::invalid_argument("additional field flips require retained base flips, flow guidance and an explicit trick instance");
+    c.field_jitter=real("R05_FIELD_JITTER",0);c.field_jitter_seed=integer("R05_FIELD_JITTER_SEED",0);
+    if(!std::isfinite(c.field_jitter) || c.field_jitter<0 || c.field_jitter>.5f ||
+       (c.field_jitter>0 && (!random_trick || c.guidance=="none")))
+        throw std::invalid_argument("field jitter requires strength0..0.5, weighted guidance and an explicit trick instance");
     c.flow_reverse=integer("R05_FLOW_REVERSE",0);
     if(c.flow_reverse && (!random_trick || c.guidance=="none"))
         throw std::invalid_argument("guidance reversal requires weighted guidance and an explicit trick instance");
@@ -576,6 +580,9 @@ int Graph::nearby_pairs(const std::vector<int>& locations) const {
 }
 
 Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
+    if(!std::isfinite(cfg.field_jitter) || cfg.field_jitter<0 || cfg.field_jitter>.5f ||
+       (cfg.field_jitter>0 && cfg.guidance=="none"))
+        throw std::invalid_argument("invalid weighted-field jitter");
     goal_local_radius=cfg.goal_local_radius;goal_local_mix=cfg.goal_local_mix;
     rows=env.rows;cols=env.cols;from_grid.assign(env.map.size(),-1);
     for(int i=0;i<int(env.map.size());++i) if(!env.map[i]) {
@@ -778,6 +785,25 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             if(u>v)std::swap(weight[v][d],weight[u][(d+2)%4]);
         }
     }
+    if(cfg.field_jitter>0) {
+        // Perturb relative road prices without reversing any selected street.
+        // Both directed edges receive the same factor. Restore the original
+        // mean forward-edge price so turn/wait and scheduling scales stay fixed.
+        std::mt19937 random(cfg.field_jitter_seed);
+        std::uniform_real_distribution<float> noise(-cfg.field_jitter,cfg.field_jitter);
+        double before=0,after=0;
+        for(int v=0;v<cells;++v)for(int d=0;d<4;++d) {
+            const int u=next[v][d];if(u<=v)continue;const int opposite=(d+2)%4;
+            before+=double(weight[v][d])+weight[u][opposite];
+            const float factor=std::exp(noise(random));
+            weight[v][d]*=factor;weight[u][opposite]*=factor;
+            after+=double(weight[v][d])+weight[u][opposite];
+        }
+        if(after>0) {
+            const float scale=float(before/after);
+            for(int v=0;v<cells;++v)for(int d=0;d<4;++d)if(next[v][d]>=0)weight[v][d]*=scale;
+        }
+    }
     if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");
     if(cfg.guidance_edge_mix>0) {
         // Coherent alternative to blending two distance tables: price each
@@ -959,7 +985,7 @@ void Engine::initialize(SharedEnvironment* env) {
         // Physical action costs may inform only evaluation, or optionally the
         // policy's distance potential. Both are built before any tasks appear.
         Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
-        metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;metric.guidance_edge_mix=0;
+        metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;metric.guidance_edge_mix=0;metric.field_jitter=0;
         auto physical=std::make_unique<Graph>(*env,metric);
         if(cfg.guidance_distance_mix>0)prepared_graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
         if(cfg.plain_score>0)score_graph_=std::move(physical);
