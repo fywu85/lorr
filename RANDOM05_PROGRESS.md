@@ -33,33 +33,35 @@ baselines. All prior fresh inputs50001–50012 and50015/50016 remain excluded fr
 
 The user resumed the campaign on2026-09-21 to push all five RANDOM instances
 as high as possible. The4,000 milestone remains completed. FrozenV6validates
-the4,175admission profile. The later4,197cutoff refinement below now passes exact
-repetition and four planner seeds; it has not received a fresh-input check.
+the4,175admission profile; later cutoff and startup-priority refinements have
+separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 17:01 UTC.
+Updated: 2026-09-21 18:01 UTC.
 
-**Current selected archived best:4,197tasks**, +32.31% versus matched NMS32=3,172
-and +0.53% versus4,175. Source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9),
-plannerseed0, maximum680active orders, all800robots movable. This changes only
-cutoffscale1.25to1 from the4175profile. The explicit `--trick RANDOM-05` flag
-covers admission, selected guidance and known horizon. FirstK7968/K16320,
-B18/depth8, movebias3 and directionalcutoffmix1 remain unchanged.
+**Current selected archived best:4,236tasks**, +33.54% versus matched NMS32=3,172
+and +0.93% versus4,197. Source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9),
+plannerseed0. This adds rankpower0.125 for the first250steps to the4197profile;
+all other settings remain unchanged: cap680, all800robots movable, cutoffscale1/mix1,
+firstK7968/K16320, B18/depth8, movebias3 and selected guidance. Admission,
+startup task preference, guidance and known horizon require `--trick RANDOM-05`.
 All2000steps pass independent replay and strict resource/deadline checks:
-mean569.038ms/max802.896ms, peakRSS490.828MB. The exact repeat matches all six
-trajectory fields; seeds0/1/2/3 score4197/4168/4179/4143, with maximum870.036ms
-and RSS below491MB across all qualification runs. All four pass independent replay.
-[Qualification and trace proof](random05/results/random05-record4197-split-full-v132/audit.json).
-Longest completed order1977steps;150initial orders
-remain unfinished,113unopened; oldest unfinished age is censored at2000.
-[Full audit](random05/results/random05-record4175-coupling-split-full-v132/audit.json).
+mean563.658ms/max817.827ms, peakRSS490.156MB. Exact repetition passes; four
+planner seeds score4236/4051/4172/4096, aggregate0.791% below the preceding
+profile. This remains a selected-seed record; no fresh-input qualification is
+claimed for4236. Longest completed
+order1994steps;148initial orders remain unfinished,107unopened; oldest
+unfinished age is censored at2000.
+[Full audit](random05/results/random05-record4197-startup-split-full-v132/audit.json).
 
-The preceding4175profile has exact six-field repeats and seeds0/1/2/3 scores
-4175/4151/4171/4120, qualificationmax816.066ms. Frozen freshV6tests that exact
-4175configuration, not the new4197cutoff. All eightV6runs pass independent audits:
-fresh4182/4177 versus strongerNMS3155/3178, +31.99%aggregate and +5.25%versus the
-preceding4011recipe. Candidatefreshmax774/799ms.
+The preceding4197profile repeats exactly in all six trajectory fields. Planner
+seeds0/1/2/3 score4197/4168/4179/4143, all independently replayed, max870.036ms.
+[Qualification](random05/results/random05-record4197-split-full-v132/audit.json).
+The4175profile has exact repeats and seeds4175/4151/4171/4120. FrozenV6tests
+that4175configuration, not the later4197/4236refinements. All eightV6runs pass:
+fresh4182/4177 versus strongerNMS3155/3178, +31.99%aggregate and +5.25%versus
+the preceding4011recipe. Candidatefreshmax774/799ms.
 [Frozen V6evidence](random05/FRESH_VALIDATION_V6.md).
 
 **Previous validated milestone:4,011tasks on32workers/16physical cores**,
@@ -365,6 +367,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T15:23:12.914641+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; active-order cap760; all800robots movable; explicit `--trick RANDOM-05` | 4090 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +28.9% | [Full evidence](random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap760/summary.json) |
 | 2026-09-21T15:23:22.109240+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; active-order cap680; all800robots movable; explicit `--trick RANDOM-05` | 4175 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +31.6% | [Full evidence](random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
 | 2026-09-21T16:24:44.415657+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoffscale1/mix1; explicit `--trick RANDOM-05` | 4197 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +32.3% | [Full evidence](random05/results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json) |
+
+| 2026-09-21T17:28:48.985827+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; explicit `--trick RANDOM-05` | 4236 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.5% | [Full evidence](random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1891,3 +1895,7 @@ movement/assignment/event replay. Candidate means558.4/556.5ms, maxima774.0/798.
 RAMbelow490MB. This validates admission at the frozen4175settings, not the later
 4197cutoff. These fresh scores never replace the archived-input frontier.
 [Complete frozen comparison](random05/FRESH_VALIDATION_V6.md).
+
+### 2026-09-21 17:57 UTC: startup record repeats, but the seed mean falls
+
+The selected4236 run repeats in all six trajectory/scheduling/task fields. Planner seeds0/1/2/3 score4236/4051/4172/4096, total16555, versus4197/4168/4179/4143, total16687: **-0.791%**, one positive and three negative. All four full2000step runs pass independent replay, source/input/resource checks, with maximum entry827.104ms. Keep4236 as the requested selected-seed frontier and preserve4197 as the better four-seed aggregate. FreshV6 qualifies4175 only. Evidence: [paired comparison](random05/results/random05-record4236-split-full-v132/paired-comparison.json).

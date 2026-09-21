@@ -22,8 +22,8 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2606 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 4197 | 3172 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2782 | 2580 |
+| RANDOM-05 | 800 | 2000 | 2226 | 4236 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -160,6 +160,9 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T16:52:42.436655+00:00 | RANDOM-03 | trick | 2606 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random03-field-price-split-full-v132/trick-random-03-field-price-physical0p25/summary.json) |
 | 2026-09-21T17:07:01.380356+00:00 | RANDOM-02 | general | 1394 | [611aa2a6](https://github.com/fywu85/lorr/commit/611aa2a6) | [Full run](results/random123-repair-orders-split-full-v141/general-random-02-repair-orders-morework/summary.json) |
 | 2026-09-21T17:14:39.399476+00:00 | RANDOM-02 | general | 1397 | [611aa2a6](https://github.com/fywu85/lorr/commit/611aa2a6) | [Full run](results/random02-repair1394-comparison-split-full-v141/general-random-02-repair1394-order2-seed0/summary.json) |
+| 2026-09-21T17:28:48.985827+00:00 | RANDOM-05 | trick | 4236 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
+| 2026-09-21T17:35:08.379917+00:00 | RANDOM-04 | trick | 2778 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp5-span64/summary.json) |
+| 2026-09-21T17:35:31.545879+00:00 | RANDOM-04 | trick | 2782 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 
 
 ## September21: first development comparisons
@@ -971,3 +974,43 @@ Source143seed-component mixing loses every profile: generalR01=718 vs726, trickR
 CurrentR04/R05field-cost transfer loses or ties: R04mix.125/.25 andload.5/1=2688/2669/2704/2777; R05=4088/3895/4080/3954. The second2777is a tie, not a record. CompleteR05search-to-R04 transfer caps560/595/630=2567/2577/2499; retaining the R04scheduler/field with broad shallow search andbias0/3=2716/2719. All13runs independently replayed; no new setting promoted.
 
 GeneralR02=1397with horizon cutoffs.5/.75/.875 gives1405 each; cutoff1=1400; latepair4/idleprice32=1399. All five audited, none beats the selected1408trick recipe. R05startup weighting is still running; power.25/duration250failed at t0,1097.496ms. Preserve the failed original. No new fresh-input or unseen-layout claim.
+
+### R05new4236 follow-ups declared 2026-09-21 17:31 UTC
+
+Startup rankpower.125 for250steps finishes4236, mean563.658/max817.827ms, versus4197. Independent audit is in progress. Freeze exactrepeat and seeds1/2/3; separately nearby powers.0625/.1875 at250steps and durations375/500 atpower.125. All source027df4d9/build132; identical full2000step input and strict resources. These are explicit task-priority/horizon/guidance/admission tricks. FreshV6remains validation only of4175. The failed.25/250 original remains retained, no partial score.
+
+### Audited R05frontier4236, 2026-09-21 17:33 UTC
+
+Full2000steps independently replayed, mean563.658/max817.827ms, peakRSS490.156MB. New best+39tasks versus4197, +33.54%versusmatchedNMS3172; startup rankpower.125/250steps combined withcap680. Completed waitmax1994, initial unfinished148/unopened107, oldest unfinished censored2000. Exactrepeat/three plannerseeds and four nearby startup variants are running. No fresh-input claim. Source027df4d9; binary175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
+
+### Sparse initial plans and R04startup weighting declared 2026-09-21 17:37 UTC
+
+Freeze starts4/16withnoise30 on both general/trick currentR01/R02profiles, plusR01trick retained-prefix0/2/10/14. The oldv83R01starts tests usedseed5 (control718), not currentseed4; oldR02starts tests used I512/keep6/seed5, unlike currentI1536pairedorders orI2048/keep10. Prior negative starts16/64 remain recorded. Separately test R04selectedcap560 with startup rankpowers.0625/.125 for125/250steps, motivated by the positive R05admission+startup combination; the previous broad-shallow search transfer failed. All source1509f24e/build142, strict full horizons and existing explicit trick gates.
+
+### R04observed-progress first records, 2026-09-21 17:40 UTC
+
+All seven R04rows are independently audited; the same mixed batch still has five pending R05runs. The first audit invocation saved the valid seven-row partial report then exited because I omitted `--allow-pending`; no benchmark check failed. Re-run the full audit when R05completes. R04first improves2777->2778(mix.5/span64,17:35:08.379917UTC), then2782(mix.25/span32,17:35:31.545879UTC), mean478.686/max739.553ms. Both chronological selected records are retained. Source144off-control matches the old2777 in all six fields. Freeze exact2782repeat/seeds0/3/5, nearby mixes.125/.375 and spans16/48, plus R03control/mixtures.125/.25 atspan32. No freshR04inputs have been generated; target2838still56tasks away.
+
+### 2026-09-21 17:49 UTC: sparse initialization trials close
+
+All12 current-profile starts/prefix cases are independently audited. GeneralR01 starts4/16=726/722, trick=729/728; generalR02=1391/1396, trick=1408/1388. RANDOM-01 retained prefixes0/2/10/14=719/722/722/725. None exceeds its selected reference; keep the existing settings. These are full600step comparisons, not prefix estimates. Evidence: results/random12-current-starts-split-full-v142/.
+
+### 2026-09-21 17:52 UTC: progress correction and startup separation
+
+All12 source144progress cases and all4 R04startup cases are fully audited. Both144off-controls reproduce the preceding2777/4197 trajectories in all six fields. R05progress mixtures .25/span32,.25/span64,.5/span32,.5/span64 score4205/4199/4189/4190 on the preceding4197profile. They do not displace the already earlier4236selected record. R04startup ranks .0625/.125 x125/250 all lose2738/2719/2727/2747. Freeze four full2000step cases combining4236startup with progress correction: exactdefaultcontrol, mixes.125/.25 span32 and.25 span64. Explicit RANDOM-05trick, same fixed work, source144. No gain is assumed.
+
+### 2026-09-21 17:56 UTC: RANDOM-04 progress replication and mixed repair groups
+
+RANDOM-04 progress-correction seeds0/3/4/5 score2749/2741/2782/2781 versus2726/2742/2777/2771: aggregate+0.336%, three positive and one negative. All11 follow-up runs pass full replay and resource/time checks. Selected2782 repeats in all six fields; the RANDOM-03 off-control also exactly reproduces2606. Four nearby R04 settings all lose2766/2761/2768/2775; progress correction on R03 loses2605/2601. Keep R03 off. Evidence: results/random34-progress-followup-split-full-v144/.
+
+Source2ab87ed9/build145 introduces optional general `R05_WINDOW_GROUP_MIX=1`: cycle floor(N/2),ceil(N/2),N,2N robot groups across four repairs. The mean requested group size equals N before team-size clipping. Iteration count is fixed; actual search expansions can differ. Larger groups can change interacting routes together, with small repairs between them. No map or horizon information enters this mechanism. Tests cover worker/cache/heap/storage/checkpoint determinism, team-size clipping, bounded failed repairs and configuration validation. Build/regression pending, no performance claim.
+
+### 2026-09-21 17:57 UTC: startup record repeats, but the seed mean falls
+
+The selected4236 run repeats in all six trajectory/scheduling/task fields. Planner seeds0/1/2/3 score4236/4051/4172/4096, total16555, versus4197/4168/4179/4143, total16687: **-0.791%**, one positive and three negative. All four full2000step runs pass independent replay, source/input/resource checks, with maximum entry827.104ms. Keep4236 as the requested selected-seed frontier and preserve4197 as the better four-seed aggregate. FreshV6 qualifies4175 only. Evidence: [paired comparison](results/random05-record4236-split-full-v132/paired-comparison.json).
+
+### 2026-09-21 18:01 UTC: completion-time objective declared
+
+Source5cb554e5e60fb07130b630a1e4a2361548a1cb8e/build146 adds optional `R05_WINDOW_COMPLETION_PRICE`. Each action while an assigned visible chain remains unfinished incurs the declared price; completed agents do not. The planner still scores the complete fixed window and exact terminal route potential. A horizon-clipped remaining-hop bound supplies an admissible heuristic for the extra charge; repeated waypoints can weaken but cannot invalidate the bound. This task-priority change requires an explicit --trick RANDOM-0N. Tests compare with exhaustive dynamic programming on complete/incomplete/repeated chains and check worker/cache/heap/checkpoint/failure invariants. Build pending; no benchmark gain claimed.
+
+All four4236startup refinements are audited and lose: power.0625/.1875 for250steps=3961/4142, power.125 for375/500steps=4153/4075. Full original runs and failures remain retained.

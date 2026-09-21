@@ -1,18 +1,19 @@
 # RANDOM-05 results
 
-**Current selected archived best:4,197tasks** (+32.31% versus matched NMS32),
+**Current selected archived best:4,236tasks** (+33.54% versus matched NMS32),
 source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9), plannerseed0.
-The explicit680active-order cap leaves all800robots movable; cutoffscale1
-replaces1.25 in the preceding4175profile. All2000steps pass strict timing/resource
-checks and independent replay. Mean569.038/max802.896ms, RSS490.828MB.
-The exact repeat matches all six trajectory fields. Plannerseeds0/1/2/3 score
-4197/4168/4179/4143, all independently replayed, with largest entry870.036ms.
-[Qualification](results/random05-record4197-split-full-v132/audit.json). The preceding
-4175profile has exact repeats and four valid planner seeds. FrozenV6validates
-it at +31.99%against NMS and +5.25%against the previous solver on two new task/start
-inputs; that validation does not qualify4197.
-[Fresh admission comparison](FRESH_VALIDATION_V6.md).
-[Current full audit](results/random05-record4175-coupling-split-full-v132/audit.json).
+A mild startup preference (rankpower.125 for250steps) adds39tasks to the4197profile.
+The explicit680active-order cap leaves all800robots movable; cutoffscale1/mix1,
+selected guidance and fixed search work remain unchanged. All2000steps pass
+independent replay, strict1s limits and resource checks. Mean563.658/max817.827ms,
+RSS490.156MB. Exact repetition passes. Seeds0/1/2/3 score4236/4051/4172/4096;
+their aggregate is0.791% below the previous4197profile, so this is a selected
+record rather than a replicated mean improvement.
+[Paired seeds](results/random05-record4236-split-full-v132/paired-comparison.json).
+The preceding4197profile has an exact repeat and four valid planner seeds.
+FrozenV6validates the still-earlier4175profile at+31.99%againstNMS, not4236.
+[Current audit](results/random05-record4197-startup-split-full-v132/audit.json),
+[fresh admission comparison](FRESH_VALIDATION_V6.md).
 
 The **4,000-task milestone is independently verified**:4,011 on the full archived
 RANDOM-05 combined benchmark, reproduced exactly. On two untouched task/start
@@ -31,7 +32,7 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,197 | 3,172 | +32.3% | 569 / 803ms | 491MB |
+| 16 physical cores / 32 workers | 4,236 | 3,172 | +33.5% | 564 / 818ms | 490MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
@@ -42,8 +43,8 @@ map; they do not establish transfer to unseen layouts.
 
 AtK16320/mix0.5, move bias3 has a1.61% higher aggregate across eight paired
 development planner seeds (five positive, including the selection seed). More
-search is not monotonic: K24480/mix0.5 gives3,872. The windowed planner is off
-in the record; startup weighting and finalist rescoring remain off.
+search is not monotonic: K24480/mix0.5 gives3,872. The windowed planner and finalist rescoring remain off
+in the current record; startup weighting is now enabled for250steps.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
@@ -107,7 +108,7 @@ restored. Larger work budgets do not reliably improve throughput.
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,977 steps,
+The current four-core/32-worker records' longest completed orders take1,941/1,994 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

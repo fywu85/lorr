@@ -1,11 +1,11 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 17:29 UTC. The user explicitly resumed the campaign and expanded
+Updated 2026-09-21 18:01 UTC. The user explicitly resumed the campaign and expanded
 the active objective to maximum throughput on all five RANDOM instances.
 The RANDOM-05 4,000-task milestone is achieved and independently audited.
 The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
 matched local NMS, with robust subsecond timing. RANDOM-03 is qualified;
-RANDOM-04 remains 61 tasks short. Non-random maps are deferred.
+RANDOM-04 remains 56 tasks short. Non-random maps are deferred.
 Latest user correction: RANDOM05_PROGRESS.md remains the authoritative detailed
 RANDOM-05 history; the earlier request naming random05/RANDOM_PROGRESS.md was a
 typo. New root PILOT_PROGRESS.md mirrors CGAR_PROGRESS.md across all ten instances
@@ -31,30 +31,28 @@ Any further fresh validation requires freezing protocol/config before generation
 
 ## Current resumed execution
 
-Selected audited bests **729 / 1408 / 2606 / 2777 / 4197**; general **726 / 1397 / 1582 / 1558 / 2226**.
-R03=2606 source132/027df4d9 uses physical-edge mix0.25. Exact repeat and seeds5/0/3=2606/2572/2590 vs2602/2548/2566, +0.674% and each positive, max766.554ms. All audited. The old freshV1qualification applies to2602.
-R05=4197 source132/027df4d9 repeats all6fields; seeds0/1/2/3=4197/4168/4179/4143, each improves the preceding4175profile. All audited, max870.036ms, RAM<491MB. FreshV6applies to4175, not4197.
-GeneralR02=1397 source141/611aa2a6, paired repair orders2/I1536, earlyprogress tie1, seed0. Seven paired seeds beat oneorder/I3072 by+0.3607%aggregate(5positive/1tie/1negative); beat the prior I2048profile by+0.7657%(all7positive). All14audited,max738.478ms; selected1397repeats exactly onsource143default. Exactspec inrandom-frontiers.json.
+Updated 2026-09-21 18:01 UTC. Selected audited bests **729 / 1408 / 2606 / 2782 / 4236**; general **726 / 1397 / 1582 / 1558 / 2226**. RANDOM-04 is 56 tasks below the retained 2838 target. Root PILOT_PROGRESS.md and RANDOM05_PROGRESS.md contain the current selected records. Older sections below are historical; do not overwrite the current manifests with them.
 
-Only these GRID batches remain active:
-- random05-record4197-startup-split-full-v132: four startup-rank combinations powers.125/.25, durations125/250, jobs8903473–8903476, startedabout17:10UTC. Power.25/duration250failedt0at1097.496ms; three full runs pending. Preserve failure, audit after complete.
-- random45-progress-triage-split-full-v144: R04control plus mixes.25/.5/.75 at spans32/64; R05control plusmixes.25/.5 atspans32/64. Twelve jobs8903514–8903525, startedabout17:27UTC; source88551e69/build144. Fixed work and strict1s unchanged. Task-specific observed-progress history adjusts only the explicit horizon trick, conserves total predicted remaining work, clamps relative corrections, resets with task replacement, and is checkpointed/copied into forecasts. No performance claim yet.
+R03=2606 source132/027df4d9 uses physical-edge mix0.25. Exact repeat and seeds5/0/3=2606/2572/2590 vs2602/2548/2566, +0.674% and each positive, max766.554ms. All audited. FreshV1 qualifies the preceding2602 configuration only.
+R04=2782 source144/88551e69 adds progress-triage mix0.25/span32 to2777. Original mean478.686/max739.553ms, independently replayed. The interim2778(mix0.5/span64) remains in chronological history. Exact repeat and seeds0/3/5 pass; no fresh R04 input exists.
+R05=4236 source132/027df4d9 adds startup score-rank power0.125 for250steps to4197. Original mean563.658/max817.827ms, RAM490.156MB; independently replayed. Longest completed wait1994steps,148initialordersunfinished/107unopened, oldestunfinishedcensored2000. Exact repeat/seeds1/2/3 and four refinements are audited; the four-seed aggregate falls0.791%. All89 chronological R05 rows pass full audit. FreshV6 qualifies4175 only, not4197 or4236.
+GeneralR02=1397 source141/611aa2a6, paired repair orders2/I1536, earlyprogress tie1, seed0. Seven paired seeds beat oneorder/I3072 by+0.3607%aggregate(5positive/1tie/1negative), and the previous I2048profile by+0.7657%(all7positive). All14audited,max738.478ms; selected1397repeats exactly onsource143default. Exact specifications are inrandom-frontiers.json.
 
-All other batches through143completed and independently audited. Source142byte matching preserves all five selected full traces exactly; means64/325/515/468/570ms, maxima109/485/786/739/768ms. Do not claim a causal speedup from different shared-host runs. Source143seed mixing loses all5profiles, all5default controls exact; keep off. Source141paired orders lose all current tricks but improve generalR02with extra work. Its R03default failedt0at1073.309ms with identical initialsearch counters; preservecauseunknown.
-R04R05-search transfer and field-cost variants all lose or tie; all13audited. R02newgeneral+horizon variants max1405<1408, all5audited. Source139extra guidance flips and longerR01/R02windows lose. All previous failures/negative attempts remain preserved.
+Current batches (2026-09-21 18:01 UTC):
+- random05-startup-progress-split-full-v144: four full R05 cases,4236control and progressmixes.125/.25 span32,.25 span64, jobs8903586–8903589. Frozen source144. Expectedabout18:12UTC.
+- random123-group-mix-split-full-v145: ten on/off full comparisons on general/trickR01/R02andtrickR03. Source2ab87ed9, binary48f17693551438bd401a89cbebcaeafb40b7c1092eb710a968afa4d304c3a748. Regression43.47s. Jobs8903602–8903608,8903610–8903612, started17:57UTC. Cyclehalf/half/base/double groups, meanrequestedsize unchanged overcompletecycles; actualexpansionsmaychange.
+- build-v146: optional trick-gated completion-time pricing in window repairs. Job8903614. Adds per-unfinished-step price plus admissible horizon-clipped hop bound; independent exhaustive dynamic-program comparison includes repeated and incomplete chains. Tests/build pending; no146benchmarks yet.
 
-Builds:
--140/f0647771 paired repair orders, tests41.53s; no benchmark uses this first version.
--141/611aa2a6 default fastpath preserved, tests41.69s, SHA22ab6415fe3ce8e43e3cd52e7db2846b4f96aad99a14592be5c4d0ad3551f545.
--142/1509f24e byte Hungarian flags/reused scratch, tests41.41s, SHAcdb9de68a67c8a2d1afed31398da44fc6a099c83d0b75ba8e075796832ff6da4.
--143/3bb71976 optional seedcomponent merge, tests42.14s, SHA27437f6c86d9e66d50487b3620b47f7e5f42a087e6c17b5116c2754aed4c6de3.
--144/88551e69 observed-progress cutoff, tests42.47s, SHAdca1dcb14741e98eb0cebf8cd5393fa612667b9e0b6a3c7000fe7252b4fa1ccf.
-All build metadata/logs archived underresults/build-vNN.
+All source144 progress/replication, source142startup, source1324236repeat/seeds/refinements are now fully audited. R04=2782exactrepeat, pairedseeds0/3/4/5=2749/2741/2782/2781 (+0.3359%aggregate,3positive/1negative),max846.852ms. R05=4236exactrepeat, seeds0/1/2/3=4236/4051/4172/4096 vs4197/4168/4179/4143 (-0.7910%,1positive/3negative),max827.104ms; nearbyvariants3961/4142/4153/4075 all lose. Keep4236selectedrecord and4197betterseedaggregate distinct. Source144off-controls andR03repeat match all6tracefields.
 
-FrozenV6validates4175:4182/4177vsbaseline4001/3941andstrongerNMS3155/3178, +31.9912%and+5.2506%. All8audited. Heldout50001–50012+50015/50016neverusedfortuning;50013/50014stillreserved/ungeneratedR04.
-All88 R05chronological frontier rows pass complete audit. The oriented-route diagnosis has R05profile4175and uses relaxed collision-free bounds, not recoverable throughput.
+Completed/audited sparse initialization trials: random12-current-starts-split-full-v142, all12valid, none improves. GeneralR01starts4/16=726/722, trick=729/728; generalR02=1391/1396,trick=1408/1388;R01keep0/2/10/14=719/722/722/725.
+Completed/audited R05startup:0.125/125=4161,0.125/250=4236,0.25/125=4057;0.25/250failedt0at1097.496ms (matching502.796ms/lookahead569.794ms), preserved with no causal host claim.
+Source142 exact byte-matching preserves all five selected complete traces. Source143 seedcomponent merge loses all5profiles; default controls exact, keep off. Source141 paired orders help generalR02, not current trickprofiles; its R03default failedt0at1073.309ms with matching first-step counters. All other completed batches through143 are audited.
 
-User explicitly resumed; stale structuredgoal remains paused and cannot be resumed via API. Continue authorized work without false completion/new-goal workaround or repeated approval. Fable providerusagecreditsstillfailed; do not retry unchanged condition. No newsource145started.
+Latest source144/88551e69: task-specific observed-progress correction to explicit horizon trick, total estimated work conserved, task history reset/checkpoint/shadow-copy tested. Regression42.47s; binarydca1dcb14741e98eb0cebf8cd5393fa612667b9e0b6a3c7000fe7252b4fa1ccf. Sources141/142/143 regressions41.69/41.41/42.14s. Build metadata archived inresults/build-vNN, raw logs ignored.
+Last push99858233cfeeba9e6c400cf104d89a7c62a250cb includes source144 and audits through143. New4236/2782 frontiers and subsequent results are not yet committed. Source145 group mixing is tested and under full benchmark; source146 completion pricing is building.
+FrozenV6:4175candidate scores4182/4177 vsbaseline4001/3941 andstrongerNMS3155/3178, +31.9912% and+5.2506%. All8audited. Heldout50001–50012+50015/50016neverusedfortuning;50013/50014stillreserved/ungeneratedR04.
+User explicitly resumed; stale structuredgoal remains paused and cannot be resumed through the API. Continue authorized work without false completion/new-goal workaround or repeated approval. Fable providerusagecreditsstillfailed; do not retry unchanged condition. No subagents.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
