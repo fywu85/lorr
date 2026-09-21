@@ -27,3 +27,10 @@ RSS12.46GB; global1M=150284,max887.27ms,mean340.66ms. Both use8physical cores,
 full5000steps, no errors/timeouts and fixed regional work. Select2M for strict
 throughput; retain150353 as the slower5s development maximum.
 [Full verification](../results/sortation-global-strict-full-v1/verification.json).
+
+Next full strict experiment transfers the two useful scheduling patterns:
+age/HRRN pickup8 plus64-group matching (Warehouse-like), and direct pickup4/8
+plus64-group matching (CITY/RANDOM-like). The150333 control retains identical
+settings. Four runs in parallel, eight physical cores each,64scheduler slots
+for32physicalcores and128GiB total reservation; each process still32decimalGB.
+Any step timeout is failure, never an accepted partial throughput score.

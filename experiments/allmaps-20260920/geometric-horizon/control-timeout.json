@@ -1,0 +1,24 @@
+{
+  "recorded_utc": "2026-09-21T04:58:20.659040+00:00",
+  "failure": {
+    "case": "trick_selected_control-s0-r0",
+    "variant": "trick_selected_control",
+    "instance": "RANDOM-05",
+    "seed": 0,
+    "steps": 2000,
+    "robots": 800,
+    "valid": false,
+    "outcome": "timeout",
+    "tasks": null,
+    "peak_rss_bytes": 49168384,
+    "wall_seconds": 1.105,
+    "mean_cpu_cores": 0.989276169770356,
+    "reserved_physical_cores": 4,
+    "raw_result": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random-05-geometric-horizon-full-v1-20260921/trick_selected_control-s0-r0/RANDOM-05.json",
+    "failure_lines": [
+      "CGAR_TIMEOUT timestep=0 elapsed_ms=1000.365 stage=temporal_region_repair"
+    ],
+    "trick_receipt_valid": true
+  },
+  "interpretation": "A first-entry timeout, not an accepted partial score. Cause is not established by the receipt. Retry the identical frozen binary/settings/deadline in a separate four-core allocation; keep this failure visible."
+}

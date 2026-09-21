@@ -1,92 +1,115 @@
 # Continue CGAR across all ten competition instances
 
-Updated 2026-09-21T04:30:40.141812+00:00. Actual user scope supersedes obsolete formal Warehouse160k
+Updated 2026-09-21T05:21:45.750662+00:00. Actual user scope supersedes the obsolete formal Warehouse160k
 goal: all10instances, NMS target, throughput primary, fairness secondary. Pursue
 general improvements and explicit instance tricks together. Individual seeds
-may set bests. Default-off tricks require --trick INSTANCE and labelled commits.
+may set bests. Tricks require --trick INSTANCE and labelled commits/logs.
 
 Ownership: never edit/stage/build/collect/interrupt random05/, RANDOM05_PROGRESS.md,
-that agent's jobs or held-out streams50001..50008. Our CGAR runs use runs/cgar-*.
-No internal subagents. Persistent Fable CLI session1ebb1075-3538-49d1-93d1-a00c94fa256a
-is authorized, but turn46 lacked credits; do not retry without availability change.
+PILOT_PROGRESS.md, that agent's jobs or held-out streams50001..50008. Our CGAR
+runs use runs/cgar-*. No internal subagents. Persistent Fable CLI session
+1ebb1075-3538-49d1-93d1-a00c94fa256a is authorized; turn46 lacked credits,
+so do not retry without an availability change.
 
-All shell calls need require_escalated. Python3.7; quoted Python edits instead of
-apply_patch. Heavy builds/tests/raw analysis on GRID. Shared main/index: explicit
-owned paths and git commit --only. Never remove locks, amend, force, or stage
-others. Commit/push authorized; public repository remains public.
+All shell calls need require_escalated; Python3.7; use quoted Python edits.
+Heavy builds/tests/raw analysis on GRID. Shared main/index: explicit owned paths,
+git commit --only. Never remove locks, amend, force, or stage other work.
+Commit/push authorized; public repository remains public.
 
-Canonical CGAR_PROGRESS.md now concise, selected-full-results.json has all10rows
-with exact environment/source/binary/evidence, BEST_HISTORY.md preserves gains.
-Warehouse155173; Sortation150333; City01=8427; City02=16315; GAME21742;
-R01=621; R02=1188; R03=1902; R04=1645; R05=2806. All full strict1000ms,
-32decimalGB. Warehouse/Sortation8cores, others4. OnlyWarehouse has exclusive-host
-qualification and independent action replay; others simulator validation plus
-complete movement/waiting audits. Published NMS thresholds are not local matches.
+## Current selected full strict1000ms records
 
-## Current source and resource tools
+WAREHOUSE155173; SORTATION150333; CITY01=8427; CITY02=16315; GAME23977;
+R01=621; R02=1188; R03=1902; R04=1947; R05=2877. All below32decimalGB.
+Warehouse/Sortation8physicalcores, others4. Warehouse has exclusive-host
+qualification and independent action replay; other rows have simulator validation
+and complete movement/waiting reconciliation. Published NMS is a historical target,
+not a matched local comparison. All current selected profiles are TRICK.
 
-General finite retarget source aad422ff1160e1daae02eccf575209da1e4edd3a,
-complete regression passed; runs/cgar-rematch-budget-build-v1-20260921,
-binarydfec054298b7eff48c1634e70df377ae95542f08f5ddd07ec2990afcb4478997.
-Default budget1 whole controls match. Budget1..8, matching required, horizon
-matching guard incompatible. Started/primary/recovery/fair/cooldown protected.
+Canonical selected-full-results.json contains exact configurations/source/binary/
+seed/timestamps/evidence for all10. CGAR_PROGRESS.md is the concise overview,
+BEST_HISTORY.md preserves records, TRICK_ROADMAP.md contains next ideas.
 
-GAME fleet sourcef644accc7e00ceda7a455b7a45ed6eee4f970f8d, complete regression,
-binary0a83dc762511ea924c6433b634007bfd3e5227cb5a2ef9ea491f3794c6a0a30f,
-runs/cgar-game-fleet-build-v1-20260921 uses build-attested.json, notbuild.json.
-Original request raced another agent's index lock; all36frozen source/test hashes
-matchf644acc. Preserve original request and attestation, never rewrite history.
+## Recent results
 
-RANDOM reference frozenbuild runs/cgar-random-reference-build-v2-20260921,
-sourceacaf634b537ff655715aae28ed43056e0c62a1de,
-binary17b4f7054cec52f665abad5abb04291369983281ece30a479910e10f0f3835f2.
-CITY dispatch build runs/cgar-promise-guard-build-v1-20260921 source85c3f0f,
-binary726eedf767129d409fad5d869e124368b6048fa74adbb5b5ae37fc4939d600f7.
+GAME uniform2750/3000/3250/3500 seed0=21742/23010/23977/22556. 23977 beats
+published23274 by3.02%, max842.09ms, RSS10.556GB. Whole2750 control matches earlier.
+Only3250robots get new tasks, all6500remain movable. Independentmask/auditpasses;
+this deliberate fairness tradeoff is not starvation-free. Earlier2750 improves
+all3seeds by37.75%mean versusfullfleet; finer3250 replication is running.
 
-Research44/57 physical64/logical128 queues count logical slots. All new matrices
-use --scheduler-slots-per-core2 --memory-gib-per-slot4: physical16 reserves32slots,
-binding still16. Verifiers2slots/1physical/6G per slot. Exact binding and no-quota
-checks stay. Factor2 is now exercised successfully. Keep failed oldallocations.
+R04 KKturn6/2/4/8/12=1801/1947/1795/1741/1340. Turn2 vs6 onseed0/2/4:
+1947/1904/1796 vs1801/1803/1935; two gains one loss, +1.95%mean.
+Temperature1000/0/100/5000 atturn6=1801/1768/1636/1885. Atturn2,
+temperature1000/0/5000/10000=1947/1793/1924/1828. Controlwholehashesmatch.
+R03turn20/6/12/32=1902/1779/1774/1674. R01cadence1 loses617vs621.
+R02cadence1budgets1/2/4/8=1183/1188/1188/1188. Keep selected profiles.
+R05round4vs8 seed0/2/4:2806/2809/2718 ->2877/2865/2836, allpositive.
 
-Analyzer oldconstants(one retarget/eightregionalbatches) caused failed reports.
-Fixed assignment checker reads frozen declaration plus solver receipt, checks
-actual per-taskchanges<=budget and repeatgap>=20; independentwaiting checker
-takes same declaredbound(default1forlegacy), started-task reassignment still0.
-Regionalbatchbound derivesparts*rounds. Originalr1/r2attempts retained; r3passed
-all4rematchmatrices. R05regionalextensionr2passed. Proofrematch-budget/.
+Geometric known-horizon source51aab58 tested1056independent BFS chains plus22400
+realR04actions. R04control1743/bound1740/mean1755/p901693; R05controlFAILEDstep0,
+bound2806/mean2806/p902819. Identicalcontrolretry2806 exactoldwholetrajectory,
+max509.50ms. Keeporiginalfailure; causeunresolved. Crossmatrixaudit17matrices,
+22overlapping-timehostpairs, no overlappingboundphysicalgroups. Not proofabout
+unrelatedjobs/cache/OS; don't claim contention caused timeout.
 
-## Completed since previous checkpoint
+## New general mechanism, code currently frozen for build
 
-GAME fleet: control15574, uniform2750=21742, tabu2750=21648, tabu4000=17771;
-maxbest835.91ms,RSS10.562GB. Independentmask+excludedassignmentaudit passes,
-controlwholetraceidentical.1000stepprefixwasworse, final+39.6%. This is deliberate
-robot task-admission exclusion, not starvation-free. All6500remain movable.
+Optional CGAR_TEMPORAL_REGION_KEEP_PEAK=1, defaultOFF. Finish complete prescribed
+repair work, then restore strictly better visited complete plan. Searchcontinues
+fromcurrentannealingstate; no earlyreturns, timeoutalwaysfailure. Mapindependent.
+Source90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638 (after96b1037 implementation).
+Build job8901628 runs/cgar-regional-peak-build-v2-20260921 completed allregressions.
+All37source/testhashes match90df94f; binary92595db9fcfea8cbe89e5e65950578c8837128a97a5f0c63d7912c540120f0a5. Earlier buildv1 passed
+fullsuite; v2corrects lost_improvements to compare returned state, preservinglegacy
+behavior. Analytical64seedsrestore18knownpeaks; same300attemptsandcandidatework,
+128disabledRNGcontinuations, timeoutafterpeakfails,4800parallelproductionactions,
+regionmergesindependentlyreconstructed. Proofregional-search/build-v2/checks.json.
 
-R05regional8Mcontrol2684;16M2704;32M2805;8M*4rounds2806(max343.55ms).
-R05eightmillionreplicationseed0/2/4:2684/2647/2684vs2574/2608/2528,+3.96%mean.
-Rematchbudget1/2/4/4cadence1: R02 1160/1160/1160/1188;
-R04 1622/1587/1562/1615; R05 2684/2745/2723/2746; CITY02 16169/16315/16103/16029.
-Allvalidstrict1s, defaultwholecontrolsmatch. R02cadencefollowup1/2/4/8budgets
-atcadence1=1183/1188/1188/1188; mostgaincadence, inspectactualequaltraces.
-CITY01pickup12seeds0/2/4/6=8423/8424/8414/8422;
-pickup16=8423/8427/8425/8405. Best8427seed2, only7abovehistoricNMS8420.
+Frozenfullpeakprofiles regional-search/random-03/04/05-peak-v1.json. R04fourarms
+turn2temperature1000/5000 xkeep0/1; R03andR05twoarms keep0/1 at1000. Auditenabledall.
+Submitted withmatching source. Fourcoresstrict1s; R03full800,R04full1000,
+R05full2000. Analyzer nowverifies keep-peak config/counters; do notassume higher
+localpeakscoremeanshigherthroughput. Comparecontrolwholetrajectorybeforepromotion.
 
-## Active full matrices (check before repeating)
+## Active matrices
 
-All suffixes runs/cgar-SUFFIX-20260921; reports allmaps/results/SUFFIX.
+| Suffix (runs/cgar-SUFFIX-20260921) | Matrix | Verifier |
+|---|---|---|
+| random03-regional-peak-full-v1 | 8901648 | 8901649 |
+| random04-regional-peak-full-v1 | 8901650 | 8901651 |
+| random05-regional-peak-full-v1 | 8901652 | 8901653 |
+| sortation-dispatch-full-v1 | 8901586 | 8901587 |
+| game-fleet-fine-full-v1 | 8901622 | 8901623 |
+| game-fleet3250-seeds-full-v1 | 8901624 | 8901625 |
+| random05-rounds-fine-full-v1 | 8901626 | 8901627 |
 
-| Suffix | Matrix | Verifier | Details |
-|---|---|---|---|
-|game-fleet-tuning-full-v1|8901556|8901557|seed0 uniform2750control/2000/2250/2500, sourcef644acc attested |
-|game-fleet-seeds-full-v1|8901558|8901559|seeds2/4 nofleetcontrolvsuniform2750, sourcef644acc attested |
-|random05-region-combined-full-v1|8901561|8901562|fiveprofiles: round4control2806,16Mround4,8Mround8,budget2,budget4cad1; sourceaad422f |
-|random04-region-rounds-full-v1|8901563|8901564|round2control1622,round4,round8,parts2round4; sourceaad422f |
-|random02-rematch-cadence-full-v1|8901565|8901566|completed1188/1183/1188/1188, collect/record; sourceaad422f |
+New GAME usesf644acc/build-attested, R05roundsfine usesaad422f. SORTATION uses51aab58.
+Reports live experiments/allmaps-20260920/results/SUFFIX. Collect only our reports.
 
-GAME started04:23UTC onresearch44, others04:26onresearch57. No pending toolcalls
-at handoff unless stated in conversation. Preserve sharedindex and rawfailures.
+## Provenance and GRID recipes
 
-Next: collect these, promote onlyfullverifiedgainswithcontrolhashchecks, replicate
-usefulprofiles; inspect real coordinated-prefix/exactchain designs forR04 gap.
-Knownhorizonlowerbound restriction mustnotbe bypassed. Generalpriority,fields,
-schedulingandfixedwork alreadymeasured; read TRICK_ROADMAP andnegativeevidence.
+GAME frozenbuild runs/cgar-game-fleet-build-v1-20260921, build-attested.json;
+sourcef644accc7e00ceda7a455b7a45ed6eee4f970f8d, binary
+0a83dc762511ea924c6433b634007bfd3e5227cb5a2ef9ea491f3794c6a0a30f.
+Originalrequest raced otheragentindexlock; frozen36hashes match f644acc; preserve
+originalreceipts andattestation. Never claim requestedcommitmatchedunmodified.
+
+Finite retarget/frozen tuning build runs/cgar-rematch-budget-build-v1-20260921,
+sourceaad422ff1160e1daae02eccf575209da1e4edd3a, binary
+ dfec054298b7eff48c1634e70df377ae95542f08f5ddd07ec2990afcb4478997.
+Geometricbuild runs/cgar-geometric-horizon-build-v1-20260921 source51aab58,
+binary263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400.
+
+research44/57 queues countlogicalslots: --scheduler-slots-per-core2 mandatory
+fornewmatrices/builds. Fourcorecase8slots*4GiB/slot; eightcorecase16slots*2GiB/slot.
+Physicalbindingremainsactualcount; noquota. Verifiers2slots/bind1physical/6GiBslot.
+Exactguardsstay. Fullrawanalysisrunsviaanalyze_matrix.py onGRID; originalfailed
+analysisattempts preserved. Analyzer nowreadsdeclaredretargetbudgetandregional
+parts*rounds (notobsolete1/8constants). Newselectorsverifiedviaindependentreceipts.
+
+Checkpointexplicitownedpaths only: CGAR_PROGRESS.md, allmaps/, thisNEXT, changed
+ownedanalysis/buildhelpers. Onlystagecompletedresultdirswithverification.json+
+summary.md, full_horizonstrue. FailedcompletecasesretainedwithtasksNone. Do notstage
+activepartialreports or otheragent files. `git diff --check` then commit --only.
+Push with GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 and credentialhelper
+!/user/fw2449/.local/bin/gh auth git-credential, noforce/amend.

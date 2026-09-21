@@ -1,0 +1,63 @@
+{
+  "started_utc": "2026-09-21T04:58:21.658575+00:00",
+  "resources": {
+    "hostname": "research44",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      1,
+      2,
+      3,
+      24,
+      65,
+      66,
+      67,
+      88
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        1,
+        65
+      ],
+      [
+        2,
+        66
+      ],
+      [
+        3,
+        67
+      ],
+      [
+        24,
+        88
+      ]
+    ],
+    "address_space_limit_bytes": [
+      34359738368,
+      34359738368
+    ],
+    "physical_cores_visible": 4,
+    "representative_cpus": [
+      1,
+      2,
+      3,
+      24
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "selected_cpus": [
+    1,
+    2,
+    3,
+    24
+  ],
+  "job_id": "8901606",
+  "scheduler_slots": 8,
+  "scheduler_slots_per_core": 2
+}

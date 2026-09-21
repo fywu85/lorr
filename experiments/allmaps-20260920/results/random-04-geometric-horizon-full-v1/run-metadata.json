@@ -1,0 +1,1259 @@
+{
+  "trick_selected_control-s0-r0": {
+    "started_utc": "2026-09-21T04:44:11.674949+00:00",
+    "experiment_track": "TRICK",
+    "trick": "RANDOM-04",
+    "trick_argv": [
+      "--trick",
+      "RANDOM-04"
+    ],
+    "expected_trick_field_sha256": "none",
+    "expected_trick_components": {
+      "lanes": 0,
+      "short_tasks": 0,
+      "hrrn": 0,
+      "oldest_admission": 1,
+      "matching": 1,
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "rank_squared": 1,
+      "horizon_manhattan": 0,
+      "random_uniform": 0,
+      "random_reference": 0
+    },
+    "jobs": 1,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "log_detail_level": 1,
+    "max_process_memory_bytes": 32000000000,
+    "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400",
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+      "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+      "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+      "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+      "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+      "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+      "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+      "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+      "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+      "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+      "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+      "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+      "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+      "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+      "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+      "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+      "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+      "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+      "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+      "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+      "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+      "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+      "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "build_provenance": {
+      "source_commit": "51aab5868457000c376560ba8f0166fc684df7b5",
+      "source_dirty": true,
+      "sources": {
+        "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+        "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+        "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+        "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+        "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+        "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+        "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+        "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+        "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+        "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+        "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+        "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+        "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+        "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+        "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+        "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+        "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+        "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+        "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+        "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+        "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+        "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+        "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+        "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+        "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+        "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+        "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+        "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+        "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+        "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+        "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+        "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+        "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "ef62e78f55102fd30a217c8aaa9f83fa7c3da8a3e201bc7da6deb0b19d2c9663"
+      },
+      "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "1",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_TURN_TABLE_MB": "8192",
+      "CGAR_TEMPORAL": "1",
+      "CGAR_TEMPORAL_STEPS": "1000000",
+      "CGAR_TEMPORAL_ORDER": "2",
+      "CGAR_TEMPORAL_EQUAL_WEIGHT": "0",
+      "CGAR_TURN_COMPACT": "1",
+      "CGAR_TEMPORAL_CANDIDATE_LIMIT": "500000",
+      "CGAR_FLOW_STRENGTH": "4",
+      "CGAR_FLOW_WARMUP": "128",
+      "CGAR_FLOW_MIN_SAMPLES": "8",
+      "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+      "CGAR_TEMPORAL_PREP_THREADS": "4",
+      "CGAR_FLOW_REFRESH_INTERVAL": "512",
+      "CGAR_TEMPORAL_WORKERS": "8",
+      "CGAR_TEMPORAL_THREADS": "4",
+      "CGAR_TEMPORAL_BRANCH_WORK": "0",
+      "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+      "CGAR_TURN_BUILD_LIMIT": "128",
+      "CGAR_FLOW_COST_SCALE": "4",
+      "CGAR_HRRN": "0",
+      "CGAR_PICKUP_WEIGHT": "4",
+      "CGAR_PICKUP_FLOW": "1",
+      "CGAR_PICKUP_FLOW_NODES": "8192",
+      "CGAR_PICKUP_FULL_ROBOTS": "64",
+      "CGAR_PICKUP_FULL_THREADS": "4",
+      "CGAR_PICKUP_FULL_COST_KEY": "0",
+      "CGAR_TURN_SURCHARGE": "0",
+      "CGAR_TEMPORAL_WARM_START": "0",
+      "CGAR_TEMPORAL_MIXED_START": "0",
+      "CGAR_TEMPORAL_REGIONS": "4",
+      "CGAR_TEMPORAL_REGION_THREADS": "4",
+      "CGAR_TEMPORAL_REGION_STEPS": "25000",
+      "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+      "CGAR_TEMPORAL_REGION_ROUNDS": "4",
+      "CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT": "4000000",
+      "CGAR_TEMPORAL_PRIORITY_NOISE": "50",
+      "CGAR_TEMPORAL_PRIORITY_PERSIST": "0",
+      "CGAR_REASSIGN_MATCH_GROUPS": "64",
+      "CGAR_TRICK_LANES": "0",
+      "CGAR_TRICK_UNOPENED_MATCH": "1",
+      "CGAR_TRICK_RANK_SQUARED": "1",
+      "CGAR_REASSIGN_MATCH_TASK_BUDGET": "1",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research57",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "logical_cpu_affinity": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59,
+        97,
+        98,
+        99,
+        100,
+        104,
+        105,
+        106,
+        107,
+        112,
+        113,
+        114,
+        115,
+        120,
+        121,
+        122,
+        123
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          33,
+          97
+        ],
+        [
+          34,
+          98
+        ],
+        [
+          35,
+          99
+        ],
+        [
+          36,
+          100
+        ],
+        [
+          40,
+          104
+        ],
+        [
+          41,
+          105
+        ],
+        [
+          42,
+          106
+        ],
+        [
+          43,
+          107
+        ],
+        [
+          48,
+          112
+        ],
+        [
+          49,
+          113
+        ],
+        [
+          50,
+          114
+        ],
+        [
+          51,
+          115
+        ],
+        [
+          56,
+          120
+        ],
+        [
+          57,
+          121
+        ],
+        [
+          58,
+          122
+        ],
+        [
+          59,
+          123
+        ]
+      ],
+      "address_space_limit_bytes": [
+        137438953472,
+        137438953472
+      ],
+      "physical_cores_visible": 16,
+      "representative_cpus": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      33,
+      34,
+      35,
+      36
+    ],
+    "cpus_per_instance": 4,
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-geometric-horizon-full-v1-20260921/lifelong",
+    "instances": {
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      }
+    },
+    "finished_utc": "2026-09-21T04:49:21.910670+00:00"
+  },
+  "trick_geometric_bound-s0-r0": {
+    "started_utc": "2026-09-21T04:44:11.674201+00:00",
+    "experiment_track": "TRICK",
+    "trick": "RANDOM-04",
+    "trick_argv": [
+      "--trick",
+      "RANDOM-04"
+    ],
+    "expected_trick_field_sha256": "none",
+    "expected_trick_components": {
+      "lanes": 0,
+      "short_tasks": 0,
+      "hrrn": 0,
+      "oldest_admission": 1,
+      "matching": 1,
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "rank_squared": 1,
+      "horizon_manhattan": 1,
+      "random_uniform": 0,
+      "random_reference": 0
+    },
+    "jobs": 1,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "log_detail_level": 1,
+    "max_process_memory_bytes": 32000000000,
+    "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400",
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+      "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+      "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+      "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+      "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+      "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+      "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+      "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+      "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+      "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+      "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+      "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+      "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+      "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+      "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+      "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+      "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+      "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+      "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+      "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+      "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+      "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+      "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "build_provenance": {
+      "source_commit": "51aab5868457000c376560ba8f0166fc684df7b5",
+      "source_dirty": true,
+      "sources": {
+        "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+        "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+        "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+        "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+        "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+        "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+        "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+        "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+        "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+        "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+        "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+        "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+        "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+        "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+        "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+        "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+        "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+        "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+        "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+        "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+        "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+        "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+        "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+        "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+        "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+        "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+        "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+        "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+        "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+        "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+        "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+        "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+        "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "ef62e78f55102fd30a217c8aaa9f83fa7c3da8a3e201bc7da6deb0b19d2c9663"
+      },
+      "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "1",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_TURN_TABLE_MB": "8192",
+      "CGAR_TEMPORAL": "1",
+      "CGAR_TEMPORAL_STEPS": "1000000",
+      "CGAR_TEMPORAL_ORDER": "2",
+      "CGAR_TEMPORAL_EQUAL_WEIGHT": "0",
+      "CGAR_TURN_COMPACT": "1",
+      "CGAR_TEMPORAL_CANDIDATE_LIMIT": "500000",
+      "CGAR_FLOW_STRENGTH": "4",
+      "CGAR_FLOW_WARMUP": "128",
+      "CGAR_FLOW_MIN_SAMPLES": "8",
+      "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+      "CGAR_TEMPORAL_PREP_THREADS": "4",
+      "CGAR_FLOW_REFRESH_INTERVAL": "512",
+      "CGAR_TEMPORAL_WORKERS": "8",
+      "CGAR_TEMPORAL_THREADS": "4",
+      "CGAR_TEMPORAL_BRANCH_WORK": "0",
+      "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+      "CGAR_TURN_BUILD_LIMIT": "128",
+      "CGAR_FLOW_COST_SCALE": "4",
+      "CGAR_HRRN": "0",
+      "CGAR_PICKUP_WEIGHT": "4",
+      "CGAR_PICKUP_FLOW": "1",
+      "CGAR_PICKUP_FLOW_NODES": "8192",
+      "CGAR_PICKUP_FULL_ROBOTS": "64",
+      "CGAR_PICKUP_FULL_THREADS": "4",
+      "CGAR_PICKUP_FULL_COST_KEY": "0",
+      "CGAR_TURN_SURCHARGE": "0",
+      "CGAR_TEMPORAL_WARM_START": "0",
+      "CGAR_TEMPORAL_MIXED_START": "0",
+      "CGAR_TEMPORAL_REGIONS": "4",
+      "CGAR_TEMPORAL_REGION_THREADS": "4",
+      "CGAR_TEMPORAL_REGION_STEPS": "25000",
+      "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+      "CGAR_TEMPORAL_REGION_ROUNDS": "4",
+      "CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT": "4000000",
+      "CGAR_TEMPORAL_PRIORITY_NOISE": "50",
+      "CGAR_TEMPORAL_PRIORITY_PERSIST": "0",
+      "CGAR_REASSIGN_MATCH_GROUPS": "64",
+      "CGAR_TRICK_LANES": "0",
+      "CGAR_TRICK_UNOPENED_MATCH": "1",
+      "CGAR_TRICK_RANK_SQUARED": "1",
+      "CGAR_REASSIGN_MATCH_TASK_BUDGET": "1",
+      "CGAR_TRICK_HORIZON_MANHATTAN": "1",
+      "CGAR_TRICK_KNOWN_HORIZON": "1000",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research57",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "logical_cpu_affinity": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59,
+        97,
+        98,
+        99,
+        100,
+        104,
+        105,
+        106,
+        107,
+        112,
+        113,
+        114,
+        115,
+        120,
+        121,
+        122,
+        123
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          33,
+          97
+        ],
+        [
+          34,
+          98
+        ],
+        [
+          35,
+          99
+        ],
+        [
+          36,
+          100
+        ],
+        [
+          40,
+          104
+        ],
+        [
+          41,
+          105
+        ],
+        [
+          42,
+          106
+        ],
+        [
+          43,
+          107
+        ],
+        [
+          48,
+          112
+        ],
+        [
+          49,
+          113
+        ],
+        [
+          50,
+          114
+        ],
+        [
+          51,
+          115
+        ],
+        [
+          56,
+          120
+        ],
+        [
+          57,
+          121
+        ],
+        [
+          58,
+          122
+        ],
+        [
+          59,
+          123
+        ]
+      ],
+      "address_space_limit_bytes": [
+        137438953472,
+        137438953472
+      ],
+      "physical_cores_visible": 16,
+      "representative_cpus": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      40,
+      41,
+      42,
+      43
+    ],
+    "cpus_per_instance": 4,
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-geometric-horizon-full-v1-20260921/lifelong",
+    "instances": {
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      }
+    },
+    "finished_utc": "2026-09-21T04:47:36.382787+00:00"
+  },
+  "trick_geometric_mean-s0-r0": {
+    "started_utc": "2026-09-21T04:44:11.674386+00:00",
+    "experiment_track": "TRICK",
+    "trick": "RANDOM-04",
+    "trick_argv": [
+      "--trick",
+      "RANDOM-04"
+    ],
+    "expected_trick_field_sha256": "none",
+    "expected_trick_components": {
+      "lanes": 0,
+      "short_tasks": 0,
+      "hrrn": 0,
+      "oldest_admission": 1,
+      "matching": 1,
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "rank_squared": 1,
+      "horizon_manhattan": 1,
+      "random_uniform": 0,
+      "random_reference": 0
+    },
+    "jobs": 1,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "log_detail_level": 1,
+    "max_process_memory_bytes": 32000000000,
+    "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400",
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+      "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+      "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+      "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+      "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+      "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+      "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+      "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+      "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+      "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+      "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+      "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+      "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+      "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+      "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+      "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+      "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+      "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+      "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+      "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+      "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+      "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+      "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "build_provenance": {
+      "source_commit": "51aab5868457000c376560ba8f0166fc684df7b5",
+      "source_dirty": true,
+      "sources": {
+        "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+        "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+        "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+        "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+        "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+        "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+        "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+        "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+        "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+        "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+        "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+        "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+        "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+        "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+        "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+        "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+        "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+        "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+        "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+        "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+        "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+        "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+        "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+        "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+        "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+        "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+        "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+        "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+        "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+        "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+        "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+        "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+        "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "ef62e78f55102fd30a217c8aaa9f83fa7c3da8a3e201bc7da6deb0b19d2c9663"
+      },
+      "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "1",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_TURN_TABLE_MB": "8192",
+      "CGAR_TEMPORAL": "1",
+      "CGAR_TEMPORAL_STEPS": "1000000",
+      "CGAR_TEMPORAL_ORDER": "2",
+      "CGAR_TEMPORAL_EQUAL_WEIGHT": "0",
+      "CGAR_TURN_COMPACT": "1",
+      "CGAR_TEMPORAL_CANDIDATE_LIMIT": "500000",
+      "CGAR_FLOW_STRENGTH": "4",
+      "CGAR_FLOW_WARMUP": "128",
+      "CGAR_FLOW_MIN_SAMPLES": "8",
+      "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+      "CGAR_TEMPORAL_PREP_THREADS": "4",
+      "CGAR_FLOW_REFRESH_INTERVAL": "512",
+      "CGAR_TEMPORAL_WORKERS": "8",
+      "CGAR_TEMPORAL_THREADS": "4",
+      "CGAR_TEMPORAL_BRANCH_WORK": "0",
+      "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+      "CGAR_TURN_BUILD_LIMIT": "128",
+      "CGAR_FLOW_COST_SCALE": "4",
+      "CGAR_HRRN": "0",
+      "CGAR_PICKUP_WEIGHT": "4",
+      "CGAR_PICKUP_FLOW": "1",
+      "CGAR_PICKUP_FLOW_NODES": "8192",
+      "CGAR_PICKUP_FULL_ROBOTS": "64",
+      "CGAR_PICKUP_FULL_THREADS": "4",
+      "CGAR_PICKUP_FULL_COST_KEY": "0",
+      "CGAR_TURN_SURCHARGE": "0",
+      "CGAR_TEMPORAL_WARM_START": "0",
+      "CGAR_TEMPORAL_MIXED_START": "0",
+      "CGAR_TEMPORAL_REGIONS": "4",
+      "CGAR_TEMPORAL_REGION_THREADS": "4",
+      "CGAR_TEMPORAL_REGION_STEPS": "25000",
+      "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+      "CGAR_TEMPORAL_REGION_ROUNDS": "4",
+      "CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT": "4000000",
+      "CGAR_TEMPORAL_PRIORITY_NOISE": "50",
+      "CGAR_TEMPORAL_PRIORITY_PERSIST": "0",
+      "CGAR_REASSIGN_MATCH_GROUPS": "64",
+      "CGAR_TRICK_LANES": "0",
+      "CGAR_TRICK_UNOPENED_MATCH": "1",
+      "CGAR_TRICK_RANK_SQUARED": "1",
+      "CGAR_REASSIGN_MATCH_TASK_BUDGET": "1",
+      "CGAR_TRICK_HORIZON_MANHATTAN": "1",
+      "CGAR_TRICK_KNOWN_HORIZON": "1000",
+      "CGAR_TRICK_HORIZON_MARGIN": "1",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research57",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "logical_cpu_affinity": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59,
+        97,
+        98,
+        99,
+        100,
+        104,
+        105,
+        106,
+        107,
+        112,
+        113,
+        114,
+        115,
+        120,
+        121,
+        122,
+        123
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          33,
+          97
+        ],
+        [
+          34,
+          98
+        ],
+        [
+          35,
+          99
+        ],
+        [
+          36,
+          100
+        ],
+        [
+          40,
+          104
+        ],
+        [
+          41,
+          105
+        ],
+        [
+          42,
+          106
+        ],
+        [
+          43,
+          107
+        ],
+        [
+          48,
+          112
+        ],
+        [
+          49,
+          113
+        ],
+        [
+          50,
+          114
+        ],
+        [
+          51,
+          115
+        ],
+        [
+          56,
+          120
+        ],
+        [
+          57,
+          121
+        ],
+        [
+          58,
+          122
+        ],
+        [
+          59,
+          123
+        ]
+      ],
+      "address_space_limit_bytes": [
+        137438953472,
+        137438953472
+      ],
+      "physical_cores_visible": 16,
+      "representative_cpus": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      48,
+      49,
+      50,
+      51
+    ],
+    "cpus_per_instance": 4,
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-geometric-horizon-full-v1-20260921/lifelong",
+    "instances": {
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      }
+    },
+    "finished_utc": "2026-09-21T04:47:35.903902+00:00"
+  },
+  "trick_geometric_p90-s0-r0": {
+    "started_utc": "2026-09-21T04:44:11.674956+00:00",
+    "experiment_track": "TRICK",
+    "trick": "RANDOM-04",
+    "trick_argv": [
+      "--trick",
+      "RANDOM-04"
+    ],
+    "expected_trick_field_sha256": "none",
+    "expected_trick_components": {
+      "lanes": 0,
+      "short_tasks": 0,
+      "hrrn": 0,
+      "oldest_admission": 1,
+      "matching": 1,
+      "remaining_flow": 0,
+      "native_metric": 0,
+      "native_bands": 0,
+      "rank_squared": 1,
+      "horizon_manhattan": 1,
+      "random_uniform": 0,
+      "random_reference": 0
+    },
+    "jobs": 1,
+    "plan_time_limit_ms": 1000,
+    "preprocess_time_limit_ms": 30000,
+    "log_detail_level": 1,
+    "max_process_memory_bytes": 32000000000,
+    "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400",
+    "sources": {
+      "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+      "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+      "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+      "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+      "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+      "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+      "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+      "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+      "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+      "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+      "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+      "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+      "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+      "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+      "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+      "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+      "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+      "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+      "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+      "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+      "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+      "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+      "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+      "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+      "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+      "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+      "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+      "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+      "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+      "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+      "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+      "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+      "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+      "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+      "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+      "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+    },
+    "build_provenance": {
+      "source_commit": "51aab5868457000c376560ba8f0166fc684df7b5",
+      "source_dirty": true,
+      "sources": {
+        "cgar/CMakeLists.txt": "11947b57d527c6a3fdc4ea154860f4ebbaf7df13eed9fc35637d48e374bff742",
+        "cgar/inc/Entry.h": "8d239a5ad402a6b7050494c14fec69ea3b2f21e83116b74975a3caf0f484164f",
+        "cgar/inc/CompetitionSystem.h": "83503c4bc40b78221f5b25383911303f67bae713792d9c3e84a498ac1c8a8eb6",
+        "cgar/src/driver.cpp": "a5c092caa10cc8dde677d5ee53ffcad4074019f38ef8c017ccbb31926a862583",
+        "cgar/inc/SharedEnv.h": "a3f4c5bfdffefc4ef12d5b68fd9d11b00ce1f415d537da74bbf5ca876e5bc57b",
+        "cgar/src/CompetitionSystem.cpp": "44f9a78f17bac177a5b101a11104ff2f45987ceedeae382bc952ee72c1c167d8",
+        "cgar/cgar_planner/cgar.cpp": "9949bb2f961556051e1a829c171c3936948f424acc90741d35fc5b5b682c189a",
+        "cgar/cgar_planner/assignment_permutation.hpp": "3fbf37bde215ea18027c58ee4187a7359018cfcc4f7aa7feec10160d81f2e054",
+        "cgar/cgar_planner/cgar.hpp": "6397bd6a551714bd7d1168d31fb7d300824ec358dd759fbcc51d5cecf0f1d05d",
+        "cgar/cgar_planner/flow_guidance.hpp": "b93b819bbf8a1ad793bff191ae4bccac6729869650d653b4befea5b05fea4ff4",
+        "cgar/cgar_planner/game_fleet.hpp": "c099bf1afce911e2750cb8714ef19a5aa2255c4ed82b17acce7801034ea19fa0",
+        "cgar/cgar_planner/guide_routes.hpp": "95a95acdf132a486b74eb28bda79bb7174aefe89f72fdbe277149a5748186a87",
+        "cgar/cgar_planner/horizon_bound.hpp": "99642bdd09b6ddf322e562cc8665a0d4e412503a52355efdef271f3fe57349b0",
+        "cgar/cgar_planner/pibt_kernel.hpp": "623c9bea57b20163fc956f6a5c56c9e202a4534b8a07d9d35b302b80ebfada61",
+        "cgar/cgar_planner/pickup_full.hpp": "35f8da2a9aea60de75a456eee32ff1f54eaf3f448550a14e15faa0efbbdde035",
+        "cgar/cgar_planner/pickup_search.hpp": "ba06f1daad20e78c36c2006aa4e7a982378c480b9cde2b22154778b041dbbfc0",
+        "cgar/cgar_planner/temporal_adapter.hpp": "af08d86d4bab6d0dac52b25e8eb7e94748cb1c71a6631f93fcaacfde3b2991b2",
+        "cgar/cgar_planner/temporal_geometry.hpp": "450997b24201437656c2d7668fa79a058f22b19e8b4a9f5986f3496136ebf8f9",
+        "cgar/cgar_planner/temporal_pibt.hpp": "8f2ab6150fb09282efb9b7e740beb3d1ef637602a146ff231c813497b09f9a9d",
+        "cgar/cgar_planner/temporal_prepare.hpp": "24330b0f87fafbec1c9299e8835fe6d5342b081f718e5c7e64461de5c3a40b1a",
+        "cgar/cgar_planner/temporal_priorities.hpp": "d4b68753dd1237ef4c52e20b0a586a647d2d3a7fd6c9f14e18ea4142b398189e",
+        "cgar/cgar_planner/temporal_regions.hpp": "d23c6e437c0b6cde7d4da8753f66c0c2ecedc6e8406c2b461106702c7abbd123",
+        "cgar/cgar_planner/temporal_transactions.hpp": "557e36f5e694316efd2d624d5c18b6e8699ef17a11a4858c3b2da7cff927a009",
+        "cgar/cgar_planner/temporal_warm_start.hpp": "9f247980dc9346ecc5352db4ac8136d981653b25cf3cb4a11e8f22e67ef5bb3e",
+        "cgar/cgar_planner/tricks.hpp": "3437ae2a7cf632ee4453941c135339ea70bbd0b7491741883f346999c3ca038d",
+        "cgar/tricks/city_native.hpp": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+        "cgar/tricks/game_fleet_tabu.hpp": "d9951ac9c022c912d7acbf9c671d5fab7b657870ef218526d0f352b9ccc2479d",
+        "cgar/tricks/game_native.hpp": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+        "cgar/tricks/random_native.hpp": "6c3ce0bbd65150350c3afa1e55dcd0928b71586a9de114893773e84b001c1010",
+        "cgar/tricks/random_reference.hpp": "b45ab5b4041f74acbbc78bf6bacc1d9fdf7389b9c2bdfb5925ed75bd46f26c5d",
+        "cgar/tricks/sortation_native.hpp": "948023bfba045faadcc6553d0b18354e5efbff8c15c335451215607e864e2ece",
+        "cgar/tricks/warehouse_lanes.hpp": "fdc9f2808a0b21571ba94ce0d42fe2ea99d55fb5180e11531c327d33687d0bd6",
+        "cgar/tricks/warehouse_native.hpp": "094eae666570c6ef832508b5a7be6f08855587863ef8a7c0a7969d5d3ad34745",
+        "cgar/src/MAPFPlanner.cpp": "a763d060172d2609e6f07e5816ad0e150c304158d3c3e938ceaf9cc021cf811d",
+        "cgar/src/TaskScheduler.cpp": "45fe043b6ff2e3506145b48956307d7d350651ef81342231b4ec22a5d47e399d",
+        "cgar/src/Entry.cpp": "bd39623faadd1e3ccf004b14b30bf9e293fc326fac07aaf3bac196b24473e763"
+      },
+      "test_sources": {
+        "cgar/tests/cgar_regression.cpp": "ef62e78f55102fd30a217c8aaa9f83fa7c3da8a3e201bc7da6deb0b19d2c9663"
+      },
+      "binary_sha256": "263610c6cb4b41794fa036263eca900b2aaa2c180878a60cc62c658cf3457400"
+    },
+    "environment": {
+      "CGAR_DIAGNOSTICS": "1",
+      "CGAR_ORIENTATION_GUIDANCE": "1",
+      "CGAR_TURN_FIRST": "1",
+      "CGAR_TURN_TABLE_MB": "8192",
+      "CGAR_TEMPORAL": "1",
+      "CGAR_TEMPORAL_STEPS": "1000000",
+      "CGAR_TEMPORAL_ORDER": "2",
+      "CGAR_TEMPORAL_EQUAL_WEIGHT": "0",
+      "CGAR_TURN_COMPACT": "1",
+      "CGAR_TEMPORAL_CANDIDATE_LIMIT": "500000",
+      "CGAR_FLOW_STRENGTH": "4",
+      "CGAR_FLOW_WARMUP": "128",
+      "CGAR_FLOW_MIN_SAMPLES": "8",
+      "CGAR_FLOW_MIN_MARGIN_PERCENT": "25",
+      "CGAR_TEMPORAL_PREP_THREADS": "4",
+      "CGAR_FLOW_REFRESH_INTERVAL": "512",
+      "CGAR_TEMPORAL_WORKERS": "8",
+      "CGAR_TEMPORAL_THREADS": "4",
+      "CGAR_TEMPORAL_BRANCH_WORK": "0",
+      "CGAR_TEMPORAL_BRANCH_OWNERS": "2",
+      "CGAR_TURN_BUILD_LIMIT": "128",
+      "CGAR_FLOW_COST_SCALE": "4",
+      "CGAR_HRRN": "0",
+      "CGAR_PICKUP_WEIGHT": "4",
+      "CGAR_PICKUP_FLOW": "1",
+      "CGAR_PICKUP_FLOW_NODES": "8192",
+      "CGAR_PICKUP_FULL_ROBOTS": "64",
+      "CGAR_PICKUP_FULL_THREADS": "4",
+      "CGAR_PICKUP_FULL_COST_KEY": "0",
+      "CGAR_TURN_SURCHARGE": "0",
+      "CGAR_TEMPORAL_WARM_START": "0",
+      "CGAR_TEMPORAL_MIXED_START": "0",
+      "CGAR_TEMPORAL_REGIONS": "4",
+      "CGAR_TEMPORAL_REGION_THREADS": "4",
+      "CGAR_TEMPORAL_REGION_STEPS": "25000",
+      "CGAR_TEMPORAL_REGION_TEMPERATURE_PPM": "1000",
+      "CGAR_TEMPORAL_REGION_ROUNDS": "4",
+      "CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT": "4000000",
+      "CGAR_TEMPORAL_PRIORITY_NOISE": "50",
+      "CGAR_TEMPORAL_PRIORITY_PERSIST": "0",
+      "CGAR_REASSIGN_MATCH_GROUPS": "64",
+      "CGAR_TRICK_LANES": "0",
+      "CGAR_TRICK_UNOPENED_MATCH": "1",
+      "CGAR_TRICK_RANK_SQUARED": "1",
+      "CGAR_REASSIGN_MATCH_TASK_BUDGET": "1",
+      "CGAR_TRICK_HORIZON_MANHATTAN": "1",
+      "CGAR_TRICK_KNOWN_HORIZON": "1000",
+      "CGAR_TRICK_HORIZON_MARGIN": "1",
+      "CGAR_TRICK_HORIZON_MARGIN_PERCENTILE": "90",
+      "CGAR_SEED": "0"
+    },
+    "cpu_resources": {
+      "hostname": "research57",
+      "cpu_model": "AMD EPYC 9354 32-Core Processor",
+      "logical_cpu_affinity": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59,
+        97,
+        98,
+        99,
+        100,
+        104,
+        105,
+        106,
+        107,
+        112,
+        113,
+        114,
+        115,
+        120,
+        121,
+        122,
+        123
+      ],
+      "logical_cpus_by_physical_core": [
+        [
+          33,
+          97
+        ],
+        [
+          34,
+          98
+        ],
+        [
+          35,
+          99
+        ],
+        [
+          36,
+          100
+        ],
+        [
+          40,
+          104
+        ],
+        [
+          41,
+          105
+        ],
+        [
+          42,
+          106
+        ],
+        [
+          43,
+          107
+        ],
+        [
+          48,
+          112
+        ],
+        [
+          49,
+          113
+        ],
+        [
+          50,
+          114
+        ],
+        [
+          51,
+          115
+        ],
+        [
+          56,
+          120
+        ],
+        [
+          57,
+          121
+        ],
+        [
+          58,
+          122
+        ],
+        [
+          59,
+          123
+        ]
+      ],
+      "address_space_limit_bytes": [
+        137438953472,
+        137438953472
+      ],
+      "physical_cores_visible": 16,
+      "representative_cpus": [
+        33,
+        34,
+        35,
+        36,
+        40,
+        41,
+        42,
+        43,
+        48,
+        49,
+        50,
+        51,
+        56,
+        57,
+        58,
+        59
+      ],
+      "cgroup_cpu_limits": [
+        {
+          "path": "/sys/fs/cgroup/cpu,cpuacct",
+          "quota_us": -1,
+          "period_us": 100000
+        }
+      ],
+      "effective_cpu_quota": null
+    },
+    "cpu_binding": [
+      56,
+      57,
+      58,
+      59
+    ],
+    "cpus_per_instance": 4,
+    "source_binary": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random-04-geometric-horizon-full-v1-20260921/lifelong",
+    "instances": {
+      "RANDOM-04": {
+        "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+        "steps": 1000
+      }
+    },
+    "finished_utc": "2026-09-21T04:47:36.334047+00:00"
+  }
+}

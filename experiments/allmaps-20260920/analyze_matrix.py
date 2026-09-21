@@ -197,6 +197,24 @@ def main():
                     if int(case['environment'].get('CGAR_TRICK_HORIZON_MARGIN','0')):
                         margin_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon-margin] ')]
                         assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
+                peak_samples=[fields(l) for l in logs if l.startswith('[cgar-regional-peaks] ')]
+                if int(case['environment'].get('CGAR_TEMPORAL_REGION_PEAK_AUDIT','0')):
+                    assert [int(x['step']) for x in peak_samples]==list(range(200,row['steps']+1,200))
+                    assert all(0<=int(x['lost_improvements'])<=int(x['lost_peaks'])<=int(x['batches']) for x in peak_samples)
+                    assert all(float(x['discarded_gain'])>=0 for x in peak_samples)
+                else:assert not peak_samples
+                keep_peak=int(case['environment'].get('CGAR_TEMPORAL_REGION_KEEP_PEAK','0'))
+                retention_config=[fields(l) for l in logs if l.startswith('[cgar-regional-keep-peak-config] ')]
+                retention_samples=[fields(l) for l in logs if l.startswith('[cgar-regional-keep-peak] ')]
+                if keep_peak:
+                    assert retention_config==[dict(enabled='1',fixed_work='1',timeout_is_failure='1')]
+                    assert [int(x['step']) for x in retention_samples]==list(range(200,row['steps']+1,200))
+                    assert all(0<=int(x['restored_batches'])<=regional_batches for x in retention_samples)
+                    counts=[int(x['total_restored_batches']) for x in retention_samples]
+                    assert counts==sorted(counts)
+                    assert all(0<=int(x['total_restored_batches'])<=regional_batches*int(x['step']) for x in retention_samples)
+                else:
+                    assert not retention_config and not retention_samples
                 fleet_audit=None
                 fleet_limit=int(case['environment'].get('CGAR_TRICK_GAME_ACTIVE_LIMIT','0'))
                 fleet=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_GAME_FLEET] ')]
@@ -267,7 +285,7 @@ def main():
                 else:
                     assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m,retarget_budget=retarget_budget)
-                work[key]=dict(retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(regional_peak_retention=retention_samples,regional_peaks=peak_samples,retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)

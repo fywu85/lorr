@@ -355,3 +355,59 @@ eight regional batches. Corrected checks use the frozen declared budgets,
 validate actual schedules and repeat cooldown, and retain the post-pickup
 ownership prohibition. Original failed attempts and corrected receipts remain.
 [Exact records and control checks](latest-selected-20260921-0425.json).
+
+## RANDOM-04 regional round comparison
+
+| Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---:|---:|---|---|---|---|
+| 1743 |0|TRICK|2026-09-21T04:29:10.811360+00:00|[aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a)|trick_round4|
+
+Four rounds give1743 versus1622 with two (+7.46%). Eight rounds give1656;
+two parts/four rounds1610. Full1000steps, strict1s; max231.06ms.
+The whole control is identical. This is the new seed0maximum, above1645seed2.
+[Verification](results/random04-region-rounds-full-v1/verification.json).
+
+## RANDOM-05 eight regional rounds
+
+| Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---:|---:|---|---|---|---|
+| 2877 |0|TRICK|2026-09-21T04:44:57.007159+00:00|[aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a)|trick_round8_region8m|
+
+Eight rounds of8M give2877 versus2806 with four (+2.53%), mean553.99ms,
+max628.73ms, RSS0.194GB.16M/four rounds2810; two-retarget/four rounds2778;
+four-retarget/cadence1/four rounds2815. All five complete2000-step runs pass
+strict1s and the unchanged control matches. Current best is5.67%below historical
+NMS3050. [Verification](results/random05-region-combined-full-v1/verification.json).
+
+## Replicated GAME fleet and RANDOM-04 field interaction
+
+| Instance | Tasks | Seed | Track | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|---|
+| GAME | 21752 | 4 | TRICK | 2026-09-21T04:44:47.638620+00:00 | [f644acc](https://github.com/fywu85/lorr/commit/f644accc7e00ceda7a455b7a45ed6eee4f970f8d) | trick_uniform2750 |
+| RANDOM-04 | 1801 | 0 | TRICK | 2026-09-21T04:48:05.260731+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | trick_kk_turn6 |
+
+GAME fleet2750 scores21742/21720/21752 versus15574/15822/15947, all three
+planner seeds improve. Mean gain is37.75%. Smaller fleets2000/2250/2500 lose with
+17341/18910/20392. Higher fleet sizes3000/3250/3500 are now predeclared.
+The new GAME maximum21752 uses seed4; source f644acc still has the preserved
+build attestation. RANDOM04 KK forward field plus uniform turn6 and four regions
+reaches1801, while standalone field turns6/12 lose1568/1449. This is a CGAR
+adaptation, not KK's exact variable stay costs. RANDOM03 turn6/12/32 all lose its
+1902 turn20control, so keep20. Every changed factor retains its full control.
+[New records](latest-selected-20260921-0455.json), [GAME replication](game-fleet/three-seed-summary.json).
+
+## RANDOM-04 lower turn price on the KK forward field
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1947 | 2026-09-21T04:54:00.188843+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | TRICK, turn2, seed0 | [verification](results/random04-kk-turn-tuning-full-v1/verification.json) |
+
+The turn6 control reproduces the earlier whole trajectory (1801); turn2 gains8.11%. Turn4/8/12 score1795/1741/1340. Full1000steps, four physical cores, enforced1000ms; mean187.04ms, max245.83ms, RSS0.117GB. The read-only regional peak audit also reproduces the complete1801control trajectory. This is a single-seed maximum, not a matched NMS result.
+
+## GAME exceeds its published NMS throughput target
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 23977 | 2026-09-21T05:11:35.079941+00:00 | [f644acc](https://github.com/fywu85/lorr/commit/f644accc7e00ceda7a455b7a45ed6eee4f970f8d) | TRICK, uniform3250, seed0 | [verification](results/game-fleet-higher-full-v1/verification.json) |
+
+Full5000steps, four physical cores, strict1000ms; max842.09ms. Uniform2750 control21742 is trajectory-identical to its earlier run. Limits3000/3250/3500 score23010/23977/22556. The selected score is3.02% above the historical NMS23274 target, not a matched local comparison. The independent fleet-mask and assignment audit passes. 3250 of6500robots receive new tasks; all remain movable. This deliberate fairness tradeoff is reported, not described as starvation-free.
