@@ -150,8 +150,8 @@ def main():
     if reference not in ('0','1','2','3'):
         parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1, 2 or 3')
     lane_cost = environment.get('CGAR_TRICK_LANE_COST', '16')
-    if lane_cost not in ('4','8','12','16'):
-        parser.error('CGAR_TRICK_LANE_COST must be 4, 8, 12 or 16')
+    if lane_cost not in ('4','8','12','16','24','32','48','64'):
+        parser.error('CGAR_TRICK_LANE_COST must be 4, 8, 12, 16, 24, 32, 48 or 64')
     if 'CGAR_TRICK_LANE_COST' in environment and (args.trick not in ('CITY-01','CITY-02','GAME') or
             environment.get('CGAR_TRICK_LANES','1') != '1' or environment.get('CGAR_TRICK_NATIVE_METRIC','0') != '0'):
         parser.error('lane cost requires explicit CITY/GAME adapted lanes')
