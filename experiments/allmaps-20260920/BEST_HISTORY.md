@@ -25,3 +25,13 @@ CITY-01 reconfirms the previous7305score; the other rows improve or supply a com
 | 1847 | 2026-09-21T00:06:57.808224+00:00 | [eb99380](https://github.com/fywu85/lorr/commit/eb9938090d7cfb331fdc124ce19b475626356502) | generic_chain_rank | [verification](results/random05-baseline-full-v1/verification.json) |
 
 These are CGAR runs in separate directories. The independent RANDOM-05 solver and its records are untouched.
+
+## Dense priority portfolio, first full seed
+
+| Instance | Tasks | Completed UTC | Source | Profile | Evidence |
+|---|---:|---|---|---|---|
+| RANDOM-04 | 1330 | 2026-09-21T00:08:40.438857+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_chain_rank_8workers | [verification](results/priority-portfolio-dense-full-v1/verification.json) |
+| RANDOM-05 | 1989 | 2026-09-21T00:10:19.069986+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_chain_rank_8workers | [verification](results/priority-portfolio-dense-full-v1/verification.json) |
+| RANDOM-05 | 2036 | 2026-09-21T00:13:41.663822+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_noise50_cold | [verification](results/priority-portfolio-dense-full-v1/verification.json) |
+
+Persistence itself did not beat the selected controls. RANDOM-04 favors the eight-worker control; RANDOM-05 favors noise50without retention on this seed. Full strict1sseed0/2/4replication is predeclared and pending. Both objective changes (remaining potential and partial next errand) lost and stay off.
