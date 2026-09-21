@@ -31,11 +31,12 @@ def execute(out):
         raise RuntimeError('GRID binding unavailable: requested %d physical cores, affinity exposes %d' %
                            (count, resources['physical_cores_visible']))
     cpus = resources['representative_cpus'][:count]
-    assert len(cpus) == count and int(os.environ['NSLOTS']) >= count, resources
+    assert len(cpus) == count and int(os.environ['NSLOTS']) >= count * spec.get('scheduler_slots_per_core', 1), resources
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota'] >= count, resources
     assert hashlib.sha256((out / 'lifelong').read_bytes()).hexdigest() == spec['build']['binary_sha256']
     write(out / 'allocation.json', {'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-          'resources': resources, 'selected_cpus': cpus, 'job_id': os.environ.get('JOB_ID')})
+          'resources': resources, 'selected_cpus': cpus, 'job_id': os.environ.get('JOB_ID'),
+          'scheduler_slots': int(os.environ['NSLOTS']), 'scheduler_slots_per_core': spec.get('scheduler_slots_per_core', 1)})
     if spec.get('expected_cpu_model'):
         assert resources['cpu_model'] == spec['expected_cpu_model'], resources
     groups = queue.Queue()
@@ -93,6 +94,7 @@ def main():
     parser.add_argument('--log-detail-level', type=int, choices=[1, 2, 3], default=1)
     parser.add_argument('--cpus-per-instance', type=int, default=1, help='Reserved physical cores per process')
     parser.add_argument('--memory-gib-per-slot', type=int, default=8)
+    parser.add_argument('--scheduler-slots-per-core', type=int, choices=[1, 2], default=1, help='Scheduler accounting only: use2 on hosts whose queue counts SMT threads; physical binding and per-process cores stay unchanged')
     parser.add_argument('--runtime', default='01:00:00', help='Grid Engine wall-time limit; distinct from the per-decision limit')
     parser.add_argument('--hosts', nargs='+', help='Optional scheduler host allowlist for hardware-controlled comparisons')
     parser.add_argument('--expected-cpu-model', help='Fail before benchmarking if the allocated CPU model differs')
@@ -147,14 +149,14 @@ def main():
         write(out / 'horizons.json', horizons)
     spec = {'exclusive_host': not args.shared_host, 'benchmark_mode': 'relaxed_development' if args.shared_host or args.time_limit_ms != 1000 else 'competition_budget', 'trick': args.trick, 'experiment_track': 'TRICK' if args.trick else 'GENERIC', 'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
             'parallel_suites': min(args.parallel_suites, len(cases)), 'jobs_per_suite': min(args.jobs_per_suite, len(instances)),
-            'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'runtime': args.runtime,
+            'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'scheduler_slots_per_core': args.scheduler_slots_per_core, 'runtime': args.runtime,
             'hosts': args.hosts, 'expected_cpu_model': args.expected_cpu_model, 'hold_job': args.hold_job}
     write(out / 'spec.json', spec)
     command = ['/usr/bin/python3', str(Path(__file__).resolve()), '--execute', '--output', str(out)]
     (out / 'job.sh').write_text('#!/bin/bash\nset -eu\nexec ' + ' '.join(shlex.quote(x) for x in command) + '\n')
     cores = spec['parallel_suites'] * spec['jobs_per_suite'] * spec['cpus_per_instance']
     queue_selector = ','.join('debian.q@' + host for host in args.hosts) if args.hosts else 'debian.q'
-    submit = ['/opt/n1ge/bin/lx24-amd64/qsub', '-terse', '-w', 'e', '-cwd', '-q', queue_selector, '-pe', 'threaded', str(cores),
+    submit = ['/opt/n1ge/bin/lx24-amd64/qsub', '-terse', '-w', 'e', '-cwd', '-q', queue_selector, '-pe', 'threaded', str(cores * args.scheduler_slots_per_core),
               '-binding', 'linear:' + str(cores), '-l', 'exclusive=' + ('false' if args.shared_host else 'true') + ',h_rt=' + args.runtime + ',h_vmem=' + str(args.memory_gib_per_slot) + 'G', '-m', 'n', '-N', 'lorr_matrix',
               '-j', 'y', '-o', str(out / 'scheduler.log'), '-S', '/bin/bash', str(out / 'job.sh')]
     if args.hold_job:

@@ -67,8 +67,8 @@ def main():
         if a.allow_random05:command+=['--allow-random05']
         command+=['--seeds']+list(map(str,a.seeds))
         job=raw/(tag+'.sh');job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
-        submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research43.grid.gsb,debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','1','-binding','linear:1',
-                '-l','exclusive=false,h_rt=00:45:00,h_vmem=12G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/(tag+'.log')),'-S','/bin/bash']
+        submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research43.grid.gsb,debian.q@research44.grid.gsb,debian.q@research57.grid.gsb','-pe','threaded','2','-binding','linear:1',
+                '-l','exclusive=false,h_rt=00:45:00,h_vmem=6G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/(tag+'.log')),'-S','/bin/bash']
         if a.hold_job:submit+=['-hold_jid',a.hold_job]
         submit.append(str(job));r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
         write(raw/(tag+'-submission.json'),dict(command=submit,returncode=r.returncode,response=r.stdout))
