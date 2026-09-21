@@ -8,7 +8,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
 | RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,641 | 2,580 | 2,838 | 1,000 |
+| RANDOM-04 | 2,661 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -408,3 +408,37 @@ retains the incumbent and excludes incomplete candidates. A semantic fixture
 checks selection; dense simulations check collisions, task locks, checkpoint
 replay and worker independence. These general options default to old behavior;
 per-instance experiments remain explicitly flagged. No fresh R04 input exists.
+
+## September 21, 08:38 UTC: RANDOM-04 reaches 2,661; broad checks stay negative
+
+Guided cutoff mix0.75 instead of0.5 reaches2661 on the previous2641 profile,
+sourcefa98fd1d/build96, plannerseed4. Completed08:25UTC; mean430.374ms,
+max465.929ms. Full independent replay passed. This is+3.14% over2580, still
+177tasks short of2838; the new profile needs repetition and seed qualification.
+The other six cutoff refinements score2493–2640. All original runs are valid.
+
+Source104's four cache controls preserve2641 in every trace field; timings
+vary and do not establish a compelling alignment/lazy-row gain. Destination
+prices1/4/16/64 score2540/2515/2543/2566 versus2641. Source106 restart/diversity
+variants2447–2605 and source107 feasible-edge/wait proposals2531–2615 also
+lose. Both default controls preserve2641 exactly in all six trace fields.
+
+More complete work with the shared cache and IPO gives2615/2592/2615 at
+K11520/13824/16128 versus2641 atK8064. These full runs meet1s, but additional
+compute does not help throughput. The existing three-step operation backend
+scores1733–1936 on five valid R04 transfers; K256 times out atstep74 after
+18562.600ms. Preserve that original failure without attributing it to a host.
+This backend is not a competitive replacement here under the tested settings.
+
+The declared layout-search protocol tests32 new fields101–132 atK1024 over
+all1000steps, then verifies the topfour atK8064 on plannerseeds4and0 alongside
+inherited controls. All screens lose the inherited2361 control. Per the frozen
+selection rule, fields109/111/105/115 (2324/2307/2286/2285) proceed anyway;
+low-work ordering does not establish full-work superiority. This is explicitly
+map-specific layout selection; held-out inputs are untouched.
+
+Source108/d879feda passes regression for optional horizon-aware matching. It
+adds a soft cost for an unopened visible chain's estimated work beyond the
+declared end, preserves opened-task locks, and requires the explicit trick flag.
+Five full trials compare weights0/.25/1/4/16 on the2661 recipe. This tests
+whether matching can avoid assignments that planning immediately triages.

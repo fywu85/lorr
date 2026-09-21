@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2602 / 2641 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2602 / 2661 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +2.4% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +3.1% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -78,6 +78,32 @@ a87f097. Reproduce with tools/audit_4000_milestone.py. The broader RANDOM
 campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Active RANDOM-03/04 ten-percent work
+
+LATEST OVERRIDE (08:38UTC): R04 **2661**, sourcefa98fd1d/build96, batch
+random04-triage-refine-split-full-v96, case trick-random-04-triage-refine-mix075.
+Same2641 configuration below exceptR05_TRIAGE_GUIDED_MIX=0.75. Mean430.374/
+max465.929ms, full1000/replayed/promoted. 177short of2838; qualificationpending.
+R03 frozenfresh qualification remainscompleteat+10.41%aggregate.
+
+Source109 startupremaining-workpriority build pending; source108/d879feda
+horizonmatching build passed. Source107/ae18871e feasiblemoveproposal modes
+passedtestsbutall6fullvariantslost2531-2615; exactdefault2641. Source106 all
+rootdiversityvariantslost2447-2605, exactdefault2641. Sources104/105 fully
+closed/audited/exactcontrols. No new runtime optimization selected from104.
+
+ACTIVE at08:38UTC:
+- random04-horizon-match-split-full-v108 (5), sourced879feda,2661control and
+  weights0/.25/1/4/16. Jobs8902265-69.
+- random04-layout-finalists-split-full-v96 (10), sourcefa98fd1d. Fields109/111/
+  105/115 andinherited control, eachplannerseeds4/0. Jobs8902307onward.
+- build-v109 startuppriority preference; recovercommitwithgitlogsrc.
+Full33-case layoutscreen allvalid, bestnew2324vscontrol2361;audit session2130
+pending. Selection follows predeclaredprotocol andisnotchangedbasedonnewdata.
+Sharedwork3casesallvalid2615/2592/2615, audit session4748pending. Operations6
+closed/audited: onegenuine18562.600ms timeout atstep74, fivevalid1733-1936.
+Feasibleproposals7closed/audited. Exactproofsfor106/107written. The priorstatus
+below describes earlierqualificationandprofiles; use thisoverrideforcurrentjobs.
+Lastverifiedpublicpush43572e0f; laterownedcommitsandevidence needpush.
 
 R03 **2602**, source02bccaa7/build102, batchrandom03-merge-coupling-split-full-v102,
 case trick-random-03-merge-coupling-triage0875. H20/keep14/I6144/group6,

@@ -132,7 +132,7 @@ def render():
         'The candidate stays below 701 ms on both fresh inputs; its archived exact',
         'repeat and two other planner seeds peak below 675 ms. RANDOM-04 remains',
         'short of its throughput target, despite a five-seed timing check below',
-        '498 ms per step for its current profile.',
+        '498 ms per step for the previous 2,641-task profile.',
         '[Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).', '']
     lines += ['',
         '**RANDOM-05\'s 4,000-task milestone is independently verified.** The archived',

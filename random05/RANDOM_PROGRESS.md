@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2641 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2661 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -134,6 +134,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T07:18:46.167813+00:00 | RANDOM-03 | trick | 2562 | [db2d9bc5](https://github.com/fywu85/lorr/commit/db2d9bc5) | [Full run](results/random03-window-merge-split-full-v99/trick-random-03-window-merge-merge4/summary.json) |
 | 2026-09-21T07:19:24.927145+00:00 | RANDOM-03 | trick | 2580 | [db2d9bc5](https://github.com/fywu85/lorr/commit/db2d9bc5) | [Full run](results/random03-window-merge-split-full-v99/trick-random-03-window-merge-merge6/summary.json) |
 | 2026-09-21T07:48:41.498854+00:00 | RANDOM-03 | trick | 2602 | [02bccaa7](https://github.com/fywu85/lorr/commit/02bccaa7) | [Full run](results/random03-merge-coupling-split-full-v102/trick-random-03-merge-coupling-triage0875/summary.json) |
+| 2026-09-21T08:24:36.112951+00:00 | RANDOM-04 | trick | 2661 | [fa98fd1d](https://github.com/fywu85/lorr/commit/fa98fd1d) | [Full run](results/random04-triage-refine-split-full-v96/trick-random-04-triage-refine-mix075/summary.json) |
 
 
 ## September21: first development comparisons
