@@ -1,6 +1,6 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-21 22:26 UTC following the user's explicit scope and baseline corrections.
+Updated 2026-09-21 22:56 UTC following the user's explicit scope and baseline corrections.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04 and RANDOM-05. Make a substantial, evidence-driven effort on every instance, developing general improvements and separately labelled instance tricks. Always compare each instance with max(NMS, Kitty Knight).**
 
@@ -28,6 +28,6 @@ The table's10% values are useful yardsticks for all instances. Only RANDOM-03/04
 
 ## Current next work
 
-Qualify the general auction gains on RANDOM-03/04, complete stronger-baseline reporting, and start another five-instance planner/scheduler hypothesis with meaningful low-density and crowded-regime tests. The current selected records remain729/1408/2620/2782/4242. None of the new general auction results changes those selected records.
+The general auction gains now have five paired planner seeds: +1.85% on RANDOM-03 and +4.31% on RANDOM-04, positive in every pair. They leave the selected bests unchanged. Two new general coordination mechanisms are undergoing full comparisons on all five densities (32 face-cycle cases and30 failed-wait retry cases). A separate14-case prefix-progress search experiment targets both general and trick RANDOM-01/02 profiles plus the windowed RANDOM-03 profile. Build, regression, full replay and strict runtime checks precede any promotion. Current selected records remain729/1408/2620/2782/4242.
 
 The campaign remains active. Further increases in selected maxima are useful evidence; they do not alone establish a repeatable gain, fresh-input transfer or that performance cannot be improved.

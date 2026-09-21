@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 21:02 UTC. The user resumed full-speed optimization across all five
+Updated 2026-09-21 22:56 UTC. The user resumed full-speed optimization across all five
 RANDOM instances. [ACTIVE_GOAL.md](ACTIVE_GOAL.md) is the current full objective;
 RANDOM-03/04 are retained milestones, not the entire scope. The active reporting rule is **always max(NMS, Kitty Knight)**
 per instance. Keep matched local and published comparisons separate.
@@ -24,13 +24,13 @@ Held-out50001–50012 and50015–50020 are excluded from tuning at every density
 protocol/configuration/source/seed before generating inputs.
 
 Do not retry Fable without a change in its provider usage-credit error.
-User approvals are resolved. The active goal continuation reconfirms the full RANDOM-03/04 qualification
-objective. Keep working; completion is not established. The latest user reporting
+User approvals are resolved. The latest user steering requires substantial effort on every RANDOM instance;
+RANDOM-03/04 qualification remains one milestone inside that broader objective. Keep working; completion is not established. The latest user reporting
 rule requires the stronger measured NMS/KK reference, including R04 target2914.
 
 ## Current audited results
 
-Selected729/1408/2620/2782/4242. General727/1397/1634/1577/2226.
+Selected729/1408/2620/2782/4242. General727/1397/1634/1595/2226.
 Matched max(NMS,KK)=692/1256/2359/2649/3172; selected margins
 +5.35%/+12.10%/+11.06%/+5.02%/+33.73%. Published maxima remain
 688/1260/2334/2547/3050 on different inputs/hardware. Reference manifests,
@@ -88,23 +88,49 @@ Do not promote fresh730 over the archived729 record.
  binary and limits; both full repeats2085, max477/481ms,RSS~207MB.
  Reference refresh tool permanently includes both allocator-only audits.
 
-## Next bounded check
+## Active experiments and immediate work
 
-random34-general-auction-check-full-v157.json:18full cases, exactseed5record
-repeats and pairedseeds0..3, epsilon0 versus.125, general03/04 only. Same source
-and fixed budgets. Frozen in ecd79f32 before launch. Jobs8904200–8904217 are submitted; inspect
-runs/random05/random34-general-auction-check-split-full-v157/batch.json and GRID
-for current execution state.
-Audit with build-v157/sourcef80f7caa when complete; compare exactcontrols, pair
-all five seeds including selectingseed5, preserve failures. Promote only audited
-improvements. No source158 started. Existing move-bias/mode features already
-implement sampled action-ranking perturbations: read RESEARCH.md before
-proposing them again. Current record improvements are small; do not claim a
-breakthrough from selected-seed changes.
+Source157 auction qualification is complete and independently audited. Both
+selected seed5 runs exactly repeat all six trace fields. Five paired seeds give
+R03 +1.854% (all five positive) and R04 +4.312% (all five positive), including the
+audited replacement for one research54 allocation refusal before solver launch.
+The original refusal remains in the audit. General R04 record1595 usesseed1.
+Evidence:results/random34-general-auction-check-split-full-v157/paired-comparison.json.
+These are planner-seed repeats on archived inputs, not fresh-input qualification.
 
-All prior audit sessions are drained except any newly launched tool calls.
-Latest successful push is2fea39064c7433bf56e7fb1a9e396c3e1d7ab40c. The user
-reconfirmed all-five optimization and updating the working goal after that push. Continue authorized work.
+- Source158/1bd28feed8368b2a61b2fc9a08867a518b2d0c9f: bounded planar face-cycle
+  proposals, defaultoff. Regression52.91s. build158SHA9152e4d6801e657f0195582f9c0c50fd246a84a0cfa554e4ed0e1f5eeb06527c.
+  random12345-face-cycles-split-full-v158:32 full cases, all five general/trick
+  profiles. Jobs8904324–8904355. At22:55UTC28 complete. General04candidate1616
+  is not audited/promoted yet. Other completed candidates do not beat selected
+  profiles. R04length32 and R05length8/16/32 fail the first-step strict bound;
+  preserve all failures. Four R05 controls/general cases remain pending.
+- Source159/307d5cc94595433ef133392cc713398c94429058: bounded failed-wait PIBT
+  retry passes, defaultoff. Regression56.13s. build159SHA6a4346d5600610bfd912c53cf435cada0ab35a70894c513b627e2cd585cec425.
+  random12345-pibt-revisits-split-full-v159:30 full cases, all five general/trick
+  profiles. Jobs8904366–8904395. At22:55UTC15 complete; completed R01/02/general03
+  candidates lose. Others pending. No throughput claim.
+- Source160/20c9cb5ddf95c9745ad42f634ffef32fa47c4747: optional prefix-integral
+  labels in window A*, defaultoff and requires progress-tie objective. Build/test
+  job8904768 running on research35. Source committed; regression outcome pending.
+  Manifestrandom123-search-progress-full-v160.json has14 cases, targeting general
+  and trickR01/02 plus trickR03; do not submit before build/test/source audit passes.
+  Compare current versus progress-only versus prefix search (general02 already
+  enables progress-only). There is no source160 performance result.
+
+Audit every completed full batch with its frozen source/build. Verify offcontrols
+against the matching experiments/*-references.json in all six fields. Promote only
+independently audited records; qualify new records with exact repeats and paired
+seeds. Keep pushing selected profiles across all five, without claiming a sparse
+or crowded-regime change generalizes before its corresponding full runs finish.
+
+Avoid research54 after its binding preflight refusal; current list is
+35/36/37/39/46/47/48/49/50/51/52/55/56, modelEPYC9354. Leave other agents' GRID
+jobs alone. No source161 started. No fresh R04input generated.
+
+Latest successful push2fea39064c7433bf56e7fb1a9e396c3e1d7ab40c; later scoped
+source/manifest/goal commits exist locally. Commit and push verified audit/report
+updates within the authorized scope after the current checks.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
