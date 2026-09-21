@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 06:13 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 06:22 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -29,8 +29,8 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | GAME | — | 23,274 | — | Not evaluated | — | — |
 | RANDOM-01 | 726 | 639 | +13.62% | GENERAL | 4 | 98.23 |
 | RANDOM-02 | 1,376 | 1,221 | +12.69% | GENERAL | 5 | 451.06 |
-| RANDOM-03 | 2,551 | 2,334 | +9.30% | TRICK | 5 | 698.35 |
-| RANDOM-04 | 2,565 | 2,547 | +0.71% | TRICK | 4 | 948.62 |
+| RANDOM-03 | 2,552 | 2,334 | +9.34% | TRICK | 5 | 760.83 |
+| RANDOM-04 | 2,634 | 2,547 | +3.42% | TRICK | 4 | 532.30 |
 | RANDOM-05 | 4,011 | 3,050 | +31.51% | TRICK | 0 | 621.75 |
 
 **Published NMS scores are historical targets, not matched local baselines.**
@@ -49,8 +49,8 @@ assignment and task-event replay checks.
 |---|---:|---:|---:|
 | RANDOM-01 | 726 | 649 | +11.86% |
 | RANDOM-02 | 1,376 | 1,228 | +12.05% |
-| RANDOM-03 | 2,551 | 2,359 | +8.14% |
-| RANDOM-04 | 2,565 | 2,580 | -0.58% |
+| RANDOM-03 | 2,552 | 2,359 | +8.18% |
+| RANDOM-04 | 2,634 | 2,580 | +2.09% |
 | RANDOM-05 | 4,011 | 3,172 | +26.45% |
 
 These are selected individual bests, not an average or one universal preset.
@@ -71,8 +71,8 @@ not unseen-map validation.
 | GAME | — | — |
 | RANDOM-01 | 726 | 628 |
 | RANDOM-02 | 1,376 | 1,122 |
-| RANDOM-03 | 1,582 | 2,551 |
-| RANDOM-04 | 1,558 | 2,565 |
+| RANDOM-03 | 1,582 | 2,552 |
+| RANDOM-04 | 1,558 | 2,634 |
 | RANDOM-05 | 2,226 | 4,011 |
 
 Current selected records are pinned to their completion timestamps and source commits:
@@ -81,8 +81,8 @@ Current selected records are pinned to their completion timestamps and source co
 |---|---|---|---|
 | RANDOM-01 | 2026-09-21T02:53:18.408890+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random-window-followup-split-full-v80/general-random-01-window-selected-seed4/summary.json) |
 | RANDOM-02 | 2026-09-21T04:01:36.001191+00:00 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Run](random05/results/random-window2343-followup-split-full-v81/general-random-02-window-h20-i2048-keep10/summary.json) |
-| RANDOM-03 | 2026-09-21T06:01:05.809867+00:00 | [dabfcc7](https://github.com/fywu85/lorr/commit/dabfcc7) | [Run](random05/results/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage100/summary.json) |
-| RANDOM-04 | 2026-09-21T05:05:35.466739+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random04-depth16-validation-split-full-v80/trick-random-04-depth16-k14400-seed4/summary.json) |
+| RANDOM-03 | 2026-09-21T06:14:53.457614+00:00 | [de0b763](https://github.com/fywu85/lorr/commit/de0b763) | [Run](random05/results/random03-anneal-split-full-v91/trick-random-03-anneal-temperature4/summary.json) |
+| RANDOM-04 | 2026-09-21T06:18:03.840528+00:00 | [ac5cbc9](https://github.com/fywu85/lorr/commit/ac5cbc9) | [Run](random05/results/random04-forecast-split-full-v90/trick-random-04-forecast-mutation01/summary.json) |
 | RANDOM-05 | 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
 
 **RANDOM-05's 4,000-task milestone is independently verified.** The archived

@@ -15,7 +15,7 @@ def read(path):
     return json.loads(path.read_text())
 
 
-def verify_allocation(case, resources, declared):
+def verify_allocation(case, resources, declared, expected_steps=2000):
     """Use the frozen protocol allocation; old protocols retain four-core rules."""
     cores = declared.get('physical_cores', 4)
     smt = declared.get('smt', 1)
@@ -23,7 +23,7 @@ def verify_allocation(case, resources, declared):
     assert cores > 0 and smt in (1, 2) and workers == cores * smt
     assert resources['cpu_model'] == declared.get('cpu_model', 'AMD EPYC 9354 32-Core Processor')
     assert resources['physical_cores_visible'] == case['cores'] == cores
-    assert case['smt'] == smt and case['steps'] == 2000 and case['limit_ms'] == 1000
+    assert case['smt'] == smt and case['steps'] == expected_steps and case['limit_ms'] == 1000
     assert case.get('preprocess_ms', 30000) == 30000
     quota = resources['effective_cpu_quota']
     assert quota is None or quota >= workers
@@ -62,6 +62,11 @@ def main():
         reference = read(ROOT / 'random05/results/nms4-repeats-full-v3/summary.json')[0]['binary_sha256']
         candidate = read(ROOT / 'random05/results/guidance-local-validation-split-full-v31/flips1-seed5-four/summary.json')[0]['binary_sha256']
         candidate_source = 'b824f5d'
+    instance = protocol.get('instance', 'RANDOM-05')
+    expected_steps = {'RANDOM-01':600, 'RANDOM-02':600, 'RANDOM-03':800,
+                      'RANDOM-04':1000, 'RANDOM-05':2000}[instance]
+    assert generation.get('instance', 'RANDOM-05') == instance
+    assert all(Path(r['input']).stem == instance for r in generation['records'])
     records = {str(Path(r['input']).parent): r for r in generation['records']}
     baseline = protocol.get('baseline_binary_sha256')
     assert bool(baseline) == bool(protocol.get('baseline_source_commit')), 'incomplete baseline provenance'
@@ -97,7 +102,7 @@ def main():
         for key, value in expected.items():
             assert case[key] == value, (name, 'changed frozen configuration', key)
         allocation = read(directory / 'allocation.json')['resources']
-        declared_allocation = verify_allocation(case, allocation, protocol.get('allocation', {}))
+        declared_allocation = verify_allocation(case, allocation, protocol.get('allocation', {}), expected_steps)
         generated = records[str(Path(case['input']).parent)]
         for filename, digest in generated['hashes'].items():
             path = Path(case['input']).parent / filename
@@ -107,7 +112,8 @@ def main():
         expected_binary = candidate if name.endswith('-ours') else baseline if name.endswith('-baseline') else reference
         assert case['binary_sha256'] == summary['binary_sha256'] == expected_binary, name
         assert summary['valid'] and summary['exit'] == 0, name
-        assert summary['result']['makespan'] == 2000, name
+        assert summary['result']['makespan'] == expected_steps, name
+        assert summary['result']['entryComputeSamples'] == expected_steps, name
         for key in ('numPlannerErrors', 'numScheduleErrors', 'numEntryTimeouts'):
             assert summary['result'][key] == 0, (name, key)
         assert summary['usage']['peak_rss_kib'] * 1024 < 32000000000, name
@@ -130,7 +136,7 @@ def main():
     ratio = sum(c['ours'] for c in comparisons) / sum(c['stronger_nms'] for c in comparisons)
     result = dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   protocol_commit=args.protocol_commit, candidate_source_commit=candidate_source,
-                  all_valid=True, allocation=declared_allocation, source_checks=source_checks, comparisons=comparisons,
+                  all_valid=True, instance=instance, steps=expected_steps, allocation=declared_allocation, source_checks=source_checks, comparisons=comparisons,
                   aggregate_gain_percent=(ratio-1)*100, runs=runs,
                   caveat='Frozen held-out task/start inputs on the same map and the stated allocation. These are not the colleague\'s private inputs.')
     if baseline:

@@ -175,3 +175,26 @@ recipe fixed: contrast2/2.2/2.6, turn1.5/2.5, wait1.5/3. Earlier broad contrast
 1.6/3.2 and simultaneous unit turn/wait tests lost at lower work; these finer
 one-change tests probe the stronger optimizer without silently combining
 settings. All are explicit tricks, full800steps, with strict timing preserved.
+
+## Smaller root mutations improve RANDOM-04
+
+At B10/K8064, rootmutation0.1 reaches2634 (mean495/max532ms), versus2501
+for0.3. This is a133-task paired development gain at unchanged declared work;
+independent replay precedes promotion. Other forecasting controls give
+2380–2497. These are per-instance settings of a general search mechanism.
+
+Ten source90 follow-ups test mutation0.02/0.05/0.15/0.2, generations8/16
+atK8192/first4096 (work counts divisible in every generation), K11520 with
+B10/B18, and plannerseeds0/3. Source92/b4b4abe passes its regression suite.
+Four full source92 controls compare exact2634 with shared immutable rankings
+at1024/2048MiB, and2048MiB without the private cache. Search budgets unchanged;
+compare full traces before crediting runtime savings. All strict1s/32GB.
+
+Source91annealing reaches2552 attemperature4, onlyone task over2551, so this
+is a selected record rather than evidence of a substantial generic gain.
+Temperatures0.25/1 give2499/2519; groups3/6 give2481/2550. The2551profile
+on plannerseeds0/3 gives2522/2516; all8strict/replayed. Finer R03cost changes
+alllose2478–2533. Next eight source91 cases keep temperature0 and probe the
+cooperative planner's window: H16/keep10or12, H24/keep16or18, H28/keep20,
+H32/keep22, H20/keep12or16. Use8192repairs except6144forH28/H32 to retain
+time margin. These are full800step evaluations; no partial-prefix score.

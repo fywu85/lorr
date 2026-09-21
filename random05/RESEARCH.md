@@ -1280,3 +1280,15 @@ Dense7x7 regression comparisons cover cost-cache off, prospective wait, disabled
 intent rotation, dynamic bypass, move-bias proposals, partial/full memory caps,
 worker counts, task turnover and full checkpoint replay. The32GB process guard
 remains; source92 has no speed claim before regression and full paired controls.
+
+## Explicit startup LNS budget (source93 experiment)
+
+All four larger-window R03 attempts time out on the first call: H24/I8192
+uses1055/1048ms, H28/I6144uses1216ms, H32/I6144uses1578ms. Initial search
+expands180/204/281million states, before any retained plan exists. Preserve
+these failures. Optional R05_WINDOW_FIRST_ITERS declares a smaller fixed count
+for timestep0, analogous to the reactive planner's existing FIRST_K. Zero
+(default) retains the regular count. Positive counts must fit the regular budget
+and divide evenly across sharing rounds. All attempts still complete, and
+any later overrun still fails. Worker/checkpoint/dense-turnover tests exercise
+the smaller first budget without weakening timing or movement checks.

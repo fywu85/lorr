@@ -25,6 +25,15 @@ class AllocationTests(unittest.TestCase):
         with self.assertRaises(AssertionError):verify_allocation(self.case, limited, self.protocol)
         with self.assertRaises(AssertionError):verify_allocation(self.case, self.resources, {})
 
+    def test_explicit_other_full_horizons(self):
+        for steps in (600, 800, 1000):
+            case = dict(self.case, steps=steps)
+            self.assertEqual(verify_allocation(case, self.resources, self.protocol, steps)['workers'], 32)
+            with self.assertRaises(AssertionError):
+                verify_allocation(dict(case, steps=steps-1), self.resources, self.protocol, steps)
+            with self.assertRaises(AssertionError):
+                verify_allocation(case, self.resources, self.protocol)
+
     def test_legacy_four_core_default(self):
         case = dict(self.case, cores=4, smt=1, env={'R05_THREADS': '4'})
         resources = dict(self.resources, physical_cores_visible=4)

@@ -906,7 +906,10 @@ void window_reproducibility() {
     const auto annealed=simulate(cfg,8,5,5,true);
     cfg.threads=2;require(annealed==simulate(cfg,8),"annealed window repairs depend on worker scheduling");
     cfg.cost_cache=false;require(annealed==simulate(cfg,8),"annealed window repairs depend on cost caching");
-    cfg.window_temperature=0;
+    cfg.window_temperature=0;cfg.window_first_iterations=3;
+    const auto first_budget=simulate(cfg,8,5,5,true);
+    cfg.threads=1;require(first_budget==simulate(cfg,8),"fixed startup repair budget depends on worker count");
+    cfg.window_first_iterations=0;
     cfg.window_rounds=1;cfg.window_iterations=3;cfg.threads=2;
     cfg.window_blockers=true;cfg.window_equal=true;cfg.window_starts=4;cfg.cost_cache=true;
     const auto linked=simulate(cfg,8,5,5,true);

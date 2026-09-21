@@ -120,6 +120,10 @@ struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0; };
 
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
     const auto& g=*graph;const int n=int(initial.loc.size()),h=cfg.window;
+    // The first call has no previous plan to warm-start repairs. Its declared
+    // fixed budget can reserve headroom without any elapsed-time early return.
+    const int iterations=env.curr_timestep==0 && cfg.window_first_iterations>0
+        ?cfg.window_first_iterations:cfg.window_iterations;
     auto total_cost=[&](const Paths& paths) {
         Cost out;
         for(int a=0;a<n;++a) {
@@ -268,7 +272,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             std::vector<Cost> costs(n);
             for(int a=0;a<n;++a)costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
             std::vector<int> group(n);std::vector<float> keys(n);
-            for(int iteration=0;iteration<cfg.window_iterations/cfg.window_rounds;++iteration) {
+            for(int iteration=0;iteration<iterations/cfg.window_rounds;++iteration) {
                 int pivot=int(random()%n),time=int(random()%(h+1));
                 // Half the neighborhoods emphasize delayed routes; the rest
                 // explore uniformly. Neighbors follow current planned positions.
@@ -327,7 +331,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     // Explore complete legal repairs above the incumbent, then
                     // return the best complete plan visited, never this walk's
                     // possibly worse endpoint. Cooling uses iteration count.
-                    const double fraction=1-double(iteration)/std::max(1,cfg.window_iterations/cfg.window_rounds);
+                    const double fraction=1-double(iteration)/std::max(1,iterations/cfg.window_rounds);
                     const double temperature=cfg.window_temperature*fraction;
                     const double increase=std::max(0.0,proposed.total-previous.total);
                     accept=std::generate_canonical<double,32>(random)<std::exp(-increase/temperature);
@@ -381,7 +385,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
         std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,cfg.window_iterations,cfg.window_rounds,accepted,
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,accepted,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }
