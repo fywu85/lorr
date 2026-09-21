@@ -17,8 +17,8 @@ RANDOM-05 still targets4,000. Large maps are outside active development.
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 685 | 628 | 649 |
-| RANDOM-02 | 200 | 600 | 1106 | 1122 | 1228 |
+| RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
+| RANDOM-02 | 200 | 600 | 1370 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2171 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2462 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 3978 | 3172 |
@@ -68,6 +68,17 @@ has been added yet.
 
 | 2026-09-21T02:43:54.755684+00:00 | RANDOM-01 | general | 664 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-iters24/summary.json) |
 | 2026-09-21T02:43:55.001681+00:00 | RANDOM-01 | general | 685 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-unit-cost/summary.json) |
+| 2026-09-21T02:46:48.999994+00:00 | RANDOM-01 | general | 699 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-01-window-iters128/summary.json) |
+| 2026-09-21T02:46:51.882986+00:00 | RANDOM-02 | general | 1172 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-02-window-iters128/summary.json) |
+| 2026-09-21T02:47:02.214642+00:00 | RANDOM-01 | general | 714 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-01-window-cost2-iters512/summary.json) |
+| 2026-09-21T02:47:12.974653+00:00 | RANDOM-02 | general | 1314 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-02-window-cost2-iters512/summary.json) |
+| 2026-09-21T02:47:18.203032+00:00 | RANDOM-01 | general | 718 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-work-split-full-v80/general-random-01-window-h20-cost2-iters512/summary.json) |
+| 2026-09-21T02:53:12.803104+00:00 | RANDOM-02 | general | 1323 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-selected-seed0/summary.json) |
+| 2026-09-21T02:53:13.881987+00:00 | RANDOM-02 | general | 1325 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-selected-seed4/summary.json) |
+| 2026-09-21T02:53:18.408890+00:00 | RANDOM-01 | general | 726 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-01-window-selected-seed4/summary.json) |
+| 2026-09-21T02:54:29.136533+00:00 | RANDOM-02 | general | 1351 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-h15-iters2048/summary.json) |
+| 2026-09-21T02:56:07.783992+00:00 | RANDOM-02 | general | 1370 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-h20-iters2048/summary.json) |
+
 
 ## September21: first development comparisons
 
@@ -130,3 +141,46 @@ The first RANDOM-04 horizon-off case failed configuration validation because its
 directional triage mix was still0.5. Preserve that original exit125. A separately
 named `no-horizon-configfix` attempt sets the inactive mix to0; no solver fix or
 outcome substitution is involved.
+
+
+### Stronger window search and planner-seed checks
+
+All12 work-scaling runs and11 follow-ups passed independent replay and strict
+resource checks. Forward moves cost2 in the unguided graph; “turn/wait1” and
+“turn/wait2” below refer to those two action types specifically.
+
+| General window variant | RANDOM-01 | RANDOM-02 | RANDOM-03 |
+|---|---:|---:|---:|
+| H15,128iterations,turn/wait1 | 699 | 1172 | 145 |
+| H15,512iterations,turn/wait1 | 710 | 1289 | 149 |
+| H15,512iterations,turn/wait2 | 714 | 1314 | 1237 |
+| H20,512iterations,turn/wait2 | 718 | 1314 | 1270 |
+| H15,2048iterations,turn/wait2 | 717 | 1351 | not run |
+| H20,2048iterations,turn/wait2 | 722 | 1370 | 1372 |
+
+Fixed512-iteration configurations on planner seeds5/0/3/4 give718/717/714/726
+on RANDOM-01 (H20,mean718.75) and1314/1323/1319/1325 on RANDOM-02
+(H15,mean1320.25). These are repeated planner seeds on the same archived input,
+not fresh tasks/starts. Their selected maxima are726 and1370, respectively,
+versus matched NMS649/1228 (+11.9%/+11.6%). The1370 record uses2048iterations.
+No horizon cutoff or map-tuned guidance is enabled in these runs.
+[Audited work scaling](results/random-window-work-split-full-v80/audit.json),
+[audited follow-ups](results/random-window-followup-split-full-v80/audit.json),
+[exact repeated settings](results/random-window-followup-split-full-v80/repeated-configurations.json).
+
+RANDOM-03 window guidance (H20/512iterations,cutoff off) gives1149 with simple
+lanes,1797 with archived KK400 weights,1809 with flow contrast1.6 and1839 with
+flow contrast2.4. All have explicit `--trick RANDOM-03`; all are below the frozen
+reactive solver's2171. The unmodified KK asset and its MIT notice are retained.
+Further reactive guidance experiments include an unchanged2171control, six
+flow seeds and KK/NMS fields. These are declared trick searches.
+
+RANDOM-04 cutoff scales0.75/1.5 and hop-only give2428/2452/2447 versus2456
+at scale1.25/directional mix0.5. Correctly disabling the cutoff gives2298,
+so it accounts for158 tasks in this pair (+6.9%). The original incompatible
+configuration failure remains archived. Broader root portfolios (B4/8/10/14)
+and depths6/10 are now under full evaluation with the same frozen guidance.
+
+Source81 adds optional general blocker-based repair groups and equal-cost path
+exploration. Both default off; regression passed34.67s. Its full comparisons
+will include exact source80 controls before any performance promotion.

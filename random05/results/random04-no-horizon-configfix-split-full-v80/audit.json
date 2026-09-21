@@ -1,0 +1,184 @@
+{
+  "checked_utc": "2026-09-21T02:55:35.840127+00:00",
+  "source": {
+    "commit": "a2ff2b2",
+    "binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+    "checked_files": [
+      "CMakeLists.txt",
+      "simulator/inc/Logger.h",
+      "simulator/inc/Evaluation.h",
+      "simulator/inc/TaskManager.h",
+      "simulator/inc/common.h",
+      "simulator/inc/States.h",
+      "simulator/inc/SharedEnv.h",
+      "simulator/inc/Tasks.h",
+      "simulator/inc/Simulator.h",
+      "simulator/inc/CompetitionSystem.h",
+      "simulator/inc/ActionModel.h",
+      "simulator/inc/Grid.h",
+      "simulator/inc/Entry.h",
+      "simulator/inc/nlohmann/json_fwd.hpp",
+      "simulator/inc/nlohmann/json.hpp",
+      "simulator/src/Grid.cpp",
+      "simulator/src/CompetitionSystem.cpp",
+      "simulator/src/ActionModel.cpp",
+      "simulator/src/States.cpp",
+      "simulator/src/driver.cpp",
+      "simulator/src/Logger.cpp",
+      "simulator/src/TaskManager.cpp",
+      "simulator/src/common.cpp",
+      "simulator/src/Simulator.cpp",
+      "simulator/src/Evaluation.cpp",
+      "src/operations.cpp",
+      "src/engine.hpp",
+      "src/rescore.cpp",
+      "src/replan.cpp",
+      "src/engine.cpp",
+      "src/diagnostics.cpp",
+      "src/Entry.cpp",
+      "src/components.cpp",
+      "src/window.cpp"
+    ]
+  },
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triage-no-horizon-configfix",
+      "valid": true,
+      "source_commit": "a2ff2b2",
+      "finished_utc": "2026-09-21T02:54:04.837784+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-no-horizon-configfix-split-full-v80/trick-random-04-triage-no-horizon-configfix/summary.json",
+      "peak_rss_bytes": 443498496,
+      "latency_seconds": {
+        "mean": 0.41520747163600047,
+        "max": 0.440593642
+      },
+      "tasks": 2298,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-no-horizon-configfix-split-full-v80/trick-random-04-triage-no-horizon-configfix/trick-random-04-triage-no-horizon-configfix/result.json",
+        "result_sha256": "618677abe718ca9de1169738e3aea0f23fd3a9fb174cdbedf27cda023685644f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2298,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "R": 9529,
+            "W": 13596,
+            "C": 6330,
+            "F": 18296
+          },
+          "loaded": {
+            "F": 270811,
+            "R": 112100,
+            "W": 188680,
+            "C": 80658
+          },
+          "idle": {}
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "R": 6849,
+              "W": 9401,
+              "F": 13160,
+              "C": 4555
+            },
+            "loaded": {
+              "C": 65282,
+              "F": 221910,
+              "W": 152223,
+              "R": 90362
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 2680,
+              "F": 5136,
+              "W": 4195,
+              "C": 1775
+            },
+            "loaded": {
+              "W": 36457,
+              "F": 48901,
+              "C": 15376,
+              "R": 21738
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 102280,
+        "completed_loaded_detour_cells": 119630,
+        "completed_loaded_mean_steps": 230.53829416884247,
+        "completed_chain_lengths": {
+          "2": 759,
+          "3": 701,
+          "4": 517,
+          "5": 321
+        },
+        "unopened_reassignments": 4616,
+        "task_starts": 2945,
+        "waiting_streaks": {
+          "count": 124416,
+          "p50": 1,
+          "p90": 3,
+          "p99": 8,
+          "maximum": 78
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-no-horizon-configfix-split-full-v80/trick-random-04-triage-no-horizon-configfix/trick-random-04-triage-no-horizon-configfix/result.json",
+        "result_sha256": "618677abe718ca9de1169738e3aea0f23fd3a9fb174cdbedf27cda023685644f",
+        "horizon_steps": 1000,
+        "tasks_finished": 2298,
+        "tasks_revealed": 3348,
+        "completed_latency": {
+          "count": 2298,
+          "mean_steps": 271.92515230635337,
+          "p50_steps": 234,
+          "p95_steps": 642,
+          "p99_steps": 908
+        },
+        "maximum_release_to_completion": {
+          "steps": 993,
+          "task_id": 957,
+          "released_at": 0,
+          "observed_at": 993
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 958,
+          "task_id": 279,
+          "released_at": 0,
+          "observed_at": 958
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1037,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 403,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 395.1714285714286,
+        "initial_still_unfinished": 147,
+        "initial_still_unopened": 100,
+        "initial_started_unfinished": 47,
+        "event_accounting_valid": true
+      }
+    }
+  ],
+  "pending": [],
+  "complete": true,
+  "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
+}

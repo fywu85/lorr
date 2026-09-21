@@ -872,6 +872,10 @@ void window_reproducibility() {
     const auto reference=simulate(cfg,8,5,5,true);
     cfg.threads=2;require(reference==simulate(cfg,8),"parallel window repairs changed the full trajectory");
     cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
+    cfg.window_blockers=true;cfg.window_equal=true;cfg.cost_cache=true;
+    const auto linked=simulate(cfg,8,5,5,true);
+    cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");
+    cfg.cost_cache=false;require(linked==simulate(cfg,8),"blocker guides depend on cost caching");
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

@@ -175,6 +175,31 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         Paths shifted=seed(true);Cost cost=total_cost(shifted);
         if(better(cost,base_cost)){base=std::move(shifted);base_cost=cost;}
     }
+    // Unconstrained task-chain routes identify actual reservation blockers.
+    // They depend only on visible tasks, current states and the ordinary cost
+    // field. The spatial policy remains available as the exact old control.
+    Paths guides;
+    if(cfg.window_blockers) {
+        guides.assign(n,std::vector<int>(h+1));
+        for(int a=0;a<n;++a) {
+            int stage=initial.stage[a],state=initial.loc[a]*4+initial.dir[a];
+            guides[a][0]=state;const Chain* chain=assigned_[a];
+            for(int t=1;t<=h;++t) {
+                int cell=state/4,dir=state%4,forward=g.next[cell][dir],selected=state;
+                float best=std::numeric_limits<float>::infinity(),best_h=best;
+                const std::array<int,4> options={forward<0?-1:forward*4+dir,cell*4+(dir+1)%4,cell*4+(dir+3)%4,state};
+                for(int next:options)if(next>=0) {
+                    int k=arrived(chain,stage,next);
+                    float remaining=chain?chain->cost(g,k,next/4,next%4):0;
+                    float cost=remaining+action_cost(g,cfg,state,next,chain && stage<int(chain->goals.size()));
+                    if(cost<best || (cost==best && remaining<best_h)) {
+                        best=cost;best_h=remaining;selected=next;
+                    }
+                }
+                state=selected;stage=arrived(chain,stage,state);guides[a][t]=state;
+            }
+        }
+    }
     std::vector<Island> islands(cfg.window_islands);
     std::vector<std::exception_ptr> errors(cfg.window_islands);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
@@ -208,6 +233,22 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 std::partial_sort(group.begin(),group.begin()+count,group.end(),[&](int a,int b){
                     return keys[a]!=keys[b]?keys[a]<keys[b]:a<b;
                 });
+                if(cfg.window_blockers) {
+                    std::vector<int> linked{pivot};std::vector<unsigned char> marked(n,0);marked[pivot]=1;
+                    auto add=[&](int a) {
+                        if(a>=0 && !marked[a] && int(linked.size())<count){marked[a]=1;linked.push_back(a);}
+                    };
+                    for(size_t k=0;k<linked.size() && int(linked.size())<count;++k) {
+                        const auto& route=guides[linked[k]];
+                        for(int t=1;t<=h && int(linked.size())<count;++t) {
+                            add(reserve.owner(t,route[t]/4));
+                            const int crossing=reserve.owner(t-1,route[t]/4);
+                            if(crossing>=0 && reserve.owner(t,route[t-1]/4)==crossing)add(crossing);
+                        }
+                    }
+                    for(int a:group)add(a);
+                    std::copy(linked.begin(),linked.end(),group.begin());
+                }
                 std::shuffle(group.begin(),group.begin()+count,random);
                 std::vector<std::vector<int>> old(count),replacement(count);
                 Cost previous,proposed;
@@ -223,7 +264,10 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     auto cost=path_cost(g,cfg,assigned_[a],initial.stage[a],replacement[planned]);
                     proposed.total+=cost.total;proposed.remaining+=cost.remaining;
                 }
-                bool accept=planned==count && better(proposed,previous);
+                const bool equal=std::abs(proposed.total-previous.total)<=1e-8 &&
+                                 std::abs(proposed.remaining-previous.remaining)<=1e-8;
+                bool accept=planned==count && (better(proposed,previous) ||
+                    (cfg.window_equal && equal && replacement!=old));
                 if(accept) {
                     ++island.accepted;
                     for(int k=0;k<count;++k) {

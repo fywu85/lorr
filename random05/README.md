@@ -1,11 +1,12 @@
-# Independent RANDOM-05 combined solver
+# Independent RANDOM combined solver
 
-[Verified results and reproduction evidence](RESULTS.md).
+[RANDOM-05 results](RESULTS.md) and [all five RANDOM cases](RANDOM_PROGRESS.md).
 
 A new implementation guided by the colleague's development log supplied by the
-user. Their code and tuned traffic field are unavailable. This campaign uses the
-archived 800-robot RANDOM-05 input, so its absolute scores are not directly
-comparable to the colleague's private synthetic instances.
+user. Their code and tuned traffic field are unavailable. The campaign now covers all five archived RANDOM densities while
+RANDOM-05 retains the 4,000-task target. Absolute scores are not directly
+comparable to the colleague's private synthetic instances. Large maps are
+outside the current development scope.
 
 [Throughput history](../RANDOM05_PROGRESS.md) records each verified best with a
 UTC timestamp, source commit, settings, and linked benchmark evidence. Published
@@ -23,7 +24,7 @@ static traffic fields, local search, cycle coordination, and pocket evacuation.
 Started tasks remain assigned to their original robot.
 
 Map-tuned guidance, capped priority aging, and known-horizon abandonment require
-`--trick RANDOM-05`. Known-horizon abandonment suppresses a robot's planning goal;
+the matching `--trick RANDOM-01` through `--trick RANDOM-05`. Known-horizon abandonment suppresses a robot's planning goal;
 it does not illegally unassign its started task. These throughput-oriented choices
 are explicit experiments and carry no fairness claim.
 
@@ -131,3 +132,28 @@ This checks waypoint visits and locked-task assignments as well as collisions.
 A current waiting report can be regenerated after its event audit with
 `python3 random05/tools/render_waiting_report.py`; it selects the runs in the
 best manifests and validates their raw-result hashes.
+
+
+## General windowed planner
+
+`R05_WINDOW=15` or20 enables fixed-work rolling-window LNS using the existing
+combined scheduler and exact oriented task-chain costs. A short prefix of the
+previous plan and pipelined tail supply a complete collision-free starting plan.
+Independent parallel searches repair small groups with time-space A*. Every
+configured iteration finishes; deadline overruns still fail the entry.
+
+`R05_WINDOW_KEEP`, `R05_WINDOW_ISLANDS`, `R05_WINDOW_ITERS`,
+`R05_WINDOW_NEIGHBORHOOD` and `R05_WINDOW_EXPANSIONS` declare the search budget.
+The windowed mode uses these counts instead of the reactive `R05_K` portfolio.
+`R05_WINDOW_BLOCKERS=1` selects repair groups from route/reservation conflicts;
+`R05_WINDOW_EQUAL=1` permits changed paths with equal objective values. Both
+options are experimental and default off. All instance-specific guidance and
+horizon rules retain their explicit trick flag.
+
+[Per-case configurations and evidence](random-frontiers.json) distinguish
+geometry-independent variants from declared tricks. They are selected records,
+not an automatic instance-to-configuration dispatcher. Selecting configurations
+by instance name must be exposed as a trick. Verify new batches with
+`tools/audit_random_cases.py`; promote audited RANDOM-01..04 improvements with
+`tools/promote_random_records.py`. RANDOM-05 also requires its main frontier
+and waiting-history audits.

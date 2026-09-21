@@ -147,6 +147,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_iterations=integer("R05_WINDOW_ITERS",24);
     c.window_neighborhood=integer("R05_WINDOW_NEIGHBORHOOD",8);
     c.window_expansions=integer("R05_WINDOW_EXPANSIONS",20000);
+    c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
+    c.window_equal=integer("R05_WINDOW_EQUAL",0);
     if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
        c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>2048 ||
        c.window_neighborhood<1 || c.window_neighborhood>64 || c.window_expansions<1)

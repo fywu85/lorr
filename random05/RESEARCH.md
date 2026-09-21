@@ -1125,3 +1125,17 @@ Actual threads use the existing `R05_THREADS`. Island RNG streams depend only on
 planner seed, step and island index. Checkpoints retain the complete prior window.
 Tests cover repeated task stops, immediate legal motion, dense task turnover,
 worker/cache equivalence, checkpoint replay and restoration after failed repairs.
+
+
+## Windowed repair neighborhoods (source81, pending evaluation)
+
+Optional `R05_WINDOW_BLOCKERS=1` follows each selected robot's unconstrained
+oriented task-chain route, collecting the robots whose actual reservations block
+it, recursively up to the neighborhood limit. Nearby robots fill unused slots.
+This directly targets interactions instead of choosing all neighbors by distance
+at one sampled time. `R05_WINDOW_EQUAL=1` separately permits changed full paths
+with identical total and terminal costs, allowing exploration on score plateaus.
+Both are disabled by default. All full-plan reservation and collision checks,
+fixed work counts, and strict entry deadlines remain in force. Dense turnover,
+worker/cache equivalence and checkpoint restoration tests cover the new modes.
+No map-specific rule or future task is used.
