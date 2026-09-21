@@ -1,6 +1,6 @@
 # CGAR cross-instance selected throughput history
 
-Throughput is primary. Resource limits, planner seeds, and deadlines vary by the explicitly recorded phase below. Current selected runs all enforce1000ms and32decimalGB; eight physical cores for WAREHOUSE/SORTATION and four for other instances. Selected maxima are not multi-seed means. Timestamps are the completed result-file mtime in UTC. Warehouse keeps its existing detailed [history](../../WAREHOUSE_PROGRESS.md).
+Throughput is primary. Resource limits, planner seeds, and deadlines vary by the explicitly recorded phase below. Current selected runs all enforce1000ms and32decimalGB; eight physical cores for WAREHOUSE/SORTATION and four for other instances. Selected maxima are not multi-seed means. Timestamps are UTC completion times: earlier entries use result-file mtime; newer entries use suite metadata `finished_utc`, as recorded in the selected-result JSON. Warehouse keeps its existing detailed [history](../../WAREHOUSE_PROGRESS.md).
 
 | Instance | Tasks | Completed UTC | Source | Profile | Evidence |
 |---|---:|---|---|---|---|
@@ -411,3 +411,59 @@ The turn6 control reproduces the earlier whole trajectory (1801); turn2 gains8.1
 | 23977 | 2026-09-21T05:11:35.079941+00:00 | [f644acc](https://github.com/fywu85/lorr/commit/f644accc7e00ceda7a455b7a45ed6eee4f970f8d) | TRICK, uniform3250, seed0 | [verification](results/game-fleet-higher-full-v1/verification.json) |
 
 Full5000steps, four physical cores, strict1000ms; max842.09ms. Uniform2750 control21742 is trajectory-identical to its earlier run. Limits3000/3250/3500 score23010/23977/22556. The selected score is3.02% above the historical NMS23274 target, not a matched local comparison. The independent fleet-mask and assignment audit passes. 3250 of6500robots receive new tasks; all remain movable. This deliberate fairness tradeoff is reported, not described as starvation-free.
+
+## RANDOM-04 full-run improvement
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1999 | 2026-09-21T05:26:11.060867+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_temperature5000_peak1, seed0 | [verification](results/random04-regional-peak-full-v1/verification.json) |
+
+Prior control whole trajectory matches. Strict1000ms, max238.42ms, RSS0.117GB. Peak retention at1000ppm lost1947->1589; at5000ppm gained1924->1999. This interaction is experimental, not a general win. All four cases complete.
+
+## SORTATION full-run improvement
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 150894 | 2026-09-21T05:26:25.237738+00:00 | [51aab58](https://github.com/fywu85/lorr/commit/51aab5868457000c376560ba8f0166fc684df7b5) | TRICK, trick_age_pickup8_match64, seed0 | [verification](results/sortation-dispatch-full-v1/verification.json) |
+
+Prior control whole trajectory matches. Strict1000ms, max993.90ms, RSS12.423GB. Matching64 improves150333->150894. Another dispatch arm timed out at step0 and has no accepted score; the failure is retained. The selected run has little timing margin and needs replication/runtime work.
+
+## RANDOM-02 scheduling replication
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1197 | 2026-09-21T05:29:31.471043+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | TRICK, cadence1/budget4, seed4 | [verification](results/random02-rematch-seeds-full-v1/verification.json) |
+
+Same frozen configuration as1188seed0. Control versus candidate on seeds0/2/4:1160/1113/1135 versus1188/1189/1197. All positive; full600steps, strict1000ms, four physical cores. [Paired summary](rematch-budget/random02-three-seed-summary.json).
+
+## RANDOM-05 full-run improvement
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2898 | 2026-09-21T05:43:30.815484+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_temperature1000_peak1, seed0 | [verification](results/random05-regional-peak-full-v1/verification.json) |
+
+Exact prior control trajectory reproduced. Full horizon, four physical cores, strict1000ms. Max 672.45ms, RSS0.194GB. Peak retention improves2877 to2898 at the same prescribed work. This is one seed; the prior8round gain has separate three-seed support.
+
+## RANDOM-01 full-run improvement
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 626 | 2026-09-21T05:42:58.012467+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_geometric_mean, seed0 | [verification](results/random01-geometric-horizon-full-v1/verification.json) |
+
+Exact prior control trajectory reproduced. Full horizon, four physical cores, strict1000ms. Max 200.44ms, RSS0.058GB. Geometric horizon bound / mean margin / p90 score625/626/623 versus621control. The known600-step end is explicitly a trick; started tasks are preserved.
+
+## RANDOM-05 twelve repair rounds
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2915 | 2026-09-21T05:44:08.636849+00:00 | [aad422f](https://github.com/fywu85/lorr/commit/aad422ff1160e1daae02eccf575209da1e4edd3a) | TRICK, round12, seed0 | [verification](results/random05-rounds-fine-full-v1/verification.json) |
+
+Exact eight-round control repeats2877. Six/ten/twelve rounds score2741/2861/2915. The selected maximum passes strict1000ms, max895.64ms, four physical cores. Higher work is not monotonically better. This run does not use peak retention.
+
+## RANDOM-01 seed replication exceeds the horizon candidate
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 635 | 2026-09-21T05:49:17.842678+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, no horizon, seed2 | [verification](results/random01-geometric-horizon-seeds-full-v1/verification.json) |
+
+The original profile scores621/635/631 on seeds0/2/4; the horizon mean-margin candidate scores626/633/633. The best selected run therefore has no known-horizon trick. Other existing field/scheduler tricks remain explicitly enabled. This is seed variation, not a new algorithmic gain.

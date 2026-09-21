@@ -1,6 +1,6 @@
 # General mechanisms and explicit instance tricks proceed together
 
-Updated 2026-09-21T05:19:34.033105+00:00. Throughput is primary; fairness is secondary. Every instance
+Updated 2026-09-21T05:43:46.143142+00:00. Throughput is primary; fairness is secondary. Every instance
 trick requires `--trick INSTANCE`, a labelled commit and declared settings. Individual
 seeds may set records. The independent RANDOM-05 solver/code/jobs/held-out streams
 remain outside this campaign's edit scope.
@@ -8,21 +8,24 @@ remain outside this campaign's edit scope.
 | Instance | Selected full strict1s | Next comparison |
 |---|---:|---|
 | WAREHOUSE |155173|Preserve qualified eight-core profile. |
-| SORTATION |150333|Dispatch HRRN and pickup weights running. |
+| SORTATION |150894|Dispatch matching64 reaches150894. Test reduced global work and optional peak retention for timing margin. |
 | CITY-01 |8427|Four seeds near published8420; retain, no large-margin claim. |
-| CITY-02 |16315|Replicate finite second reassignment; scheduling interactions. |
-| GAME |23977|Above published23274. Replicate3250 vs2750; test3125/3375/3625. |
-| RANDOM-01 |621|Cadence1 lost617. Retain selected profile. |
-| RANDOM-02 |1188|Cadence1 budgets2/4/8 tie; replicate scheduling gain. |
-| RANDOM-03 |1902|KKturn20 beats6/12/32. Test general peak retention next. |
-| RANDOM-04 |1947|KKturn2, four rounds. Two of three seeds improve. Test peak retention and stronger coordination. |
-| RANDOM-05 |2877|Eight rounds improves all three seeds. Test6/10/12 rounds and peak retention. |
+| CITY-02 |16315|Finite second reassignment improves all3seeds. Geometric horizon/margins running. |
+| GAME |23977|3250 active fleet exceeds published NMS on all3seeds. Horizon and dispatch matrices running. |
+| RANDOM-01 |635|Horizon gains small/mixed; best is no-horizon seed2. Declared16-seed scan running. |
+| RANDOM-02 |1197|Cadence1/budget4 improves all3seeds. Best1197seed4; test horizon/margins. |
+| RANDOM-03 |1902|Peak retention loses1902->1898. Preserve turn20 profile; exact oriented-chain potential is structural candidate. |
+| RANDOM-04 |1999|Best1999 with turn2/temp5000/retention, but hot no-retention has better3seedmean. Extra workers lost. |
+| RANDOM-05 |2915|Twelve rounds wins seed0. Eight-core regional partitions, diversity and retention replication running. |
 
 General regional peak retention is implemented default-off. Every regional batch
 finishes prescribed candidate/attempt work before restoring a strictly better
 visited complete plan. Timeout remains failure. Analytic peak, fixed-work, disabled
 RNG, strict-parser and serial/parallel reservation tests accompany full regression.
 Local score improvements must earn adoption through full throughput comparisons.
+The first retention matrix loses on RANDOM03. RANDOM04 retention yields the best
+individual hot run but lowers the three-seed mean versus hot no-retention. Keep
+it optional; no universal default promotion.
 
 The dense reference's exact remaining-chain orientation DP and coherent multi-step
 motion pipeline remain structural candidates. The failed one-turn promise and

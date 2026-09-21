@@ -46,3 +46,18 @@ but all robots remain movable. Independent masks and excluded schedules pass.
 The1000-step prefix incorrectly predicts a loss; full5000steps are needed.
 See[verification](../results/game-fleet-full-v1/verification.json).
 Nearby2000/2250/2500 sizes and paired planner seeds2/4 are now predeclared.
+
+## Full follow-ups after the 3,250-robot result
+
+The selected fleet reaches 23,977 / 23,917 / 23,888 tasks on planner seeds 0/2/4.
+All complete the full 5,000 steps below one second per entry and exceed the
+published NMS target of 23,274. This is not a matched local NMS comparison.
+Fleet limits 3,125 / 3,375 / 3,625 score 23,556 / 23,938 / 19,642 on seed0; the
+3,250 control repeats its exact earlier trajectory. Keep the selected limit.
+
+Two separate matrices now use this stronger base. One tests geometric horizon
+admission, with no margin / measured mean / p90 margin, against no known horizon.
+The explicit 5,000-step horizon is a trick; bounds come only from revealed tasks,
+and held/started tasks are preserved. The other tests pickup weights8/12 and
+matching every step separately. Both retain full horizons, fixed search work,
+four bound physical cores and strict1000ms; verify the exact control trajectory.

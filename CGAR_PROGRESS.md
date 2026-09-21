@@ -1,68 +1,79 @@
 # CGAR competition progress
 
-Updated 2026-09-21T05:19:34.033105+00:00. Throughput is primary; fairness is a secondary metric.
-We are developing general CGAR mechanisms and explicit instance-specific tricks
-across all ten LoRR2024 instances. The independent RANDOM-05 solver remains untouched.
+Updated 2026-09-21T05:54:40.459053+00:00. We are developing general CGAR improvements and
+explicit instance tricks across all ten LoRR2024 instances. Throughput is primary;
+fairness is reported separately. The independent RANDOM-05 solver is untouched.
 
-All selected scores below are complete runs with enforced **1000 ms** entry
-limits and **32 decimal GB** process memory limits. A timeout fails the run.
-WAREHOUSE and SORTATION use eight physical cores; other rows use four.
+All selected scores below are complete runs with enforced **1,000 ms** entry limits
+and **32 decimal GB** memory limits. A timeout fails the run. WAREHOUSE and
+SORTATION use eight physical cores; the other selected rows use four.
 
 | Instance | CGAR tasks | Published NMS | Difference | Seed | Max step (ms) |
 |---|---:|---:|---:|---:|---:|
 | WAREHOUSE | 155,173 | 154,795 | +0.24% | 0 | 944.77 |
-| SORTATION | 150,333 | 152,714 | -1.56% | 0 | 972.92 |
+| SORTATION | 150,894 | 152,714 | -1.19% | 0 | 993.90 |
 | CITY-01 | 8,427 | 8,420 | +0.08% | 2 | 753.90 |
 | CITY-02 | 16,315 | 16,787 | -2.81% | 0 | 821.72 |
 | GAME | 23,977 | 23,274 | +3.02% | 0 | 842.09 |
-| RANDOM-01 | 621 | 639 | -2.82% | 0 | 201.28 |
-| RANDOM-02 | 1,188 | 1,221 | -2.70% | 0 | 183.45 |
+| RANDOM-01 | 635 | 639 | -0.63% | 2 | 194.20 |
+| RANDOM-02 | 1,197 | 1,221 | -1.97% | 4 | 183.38 |
 | RANDOM-03 | 1,902 | 2,334 | -18.51% | 0 | 298.41 |
-| RANDOM-04 | 1,947 | 2,547 | -23.56% | 0 | 245.83 |
-| RANDOM-05 | 2,877 | 3,050 | -5.67% | 0 | 628.73 |
+| RANDOM-04 | 1,999 | 2,547 | -21.52% | 0 | 238.42 |
+| RANDOM-05 | 2,915 | 3,050 | -4.43% | 0 | 895.64 |
 
-Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`.
-These are best individual runs under declared settings, not the mean of a universal
-solver. Published NMS scores are historical targets, not matched local comparisons.
-WAREHOUSE has exclusive-host qualification and independent action replay. Other rows
-use shared GRID hosts with disjoint bound physical cores, no CPU quota, simulator
-validation and complete movement/waiting accounting.
+Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
+are best individual runs under declared settings, not the mean of one universal
+configuration. Published NMS scores are historical targets, not matched local runs.
+WAREHOUSE has exclusive-host qualification and independent action replay. The other
+rows use shared GRID hosts with disjoint bound physical cores, no CPU quota,
+simulator validation and complete movement/waiting accounting.
 
 [Timestamped best history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
-[exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[published targets](experiments/allmaps-20260920/TARGETS.md),
-[Warehouse history](WAREHOUSE_PROGRESS.md).
+[exact configurations and evidence](experiments/allmaps-20260920/selected-full-results.json),
+[all-ten record checks](experiments/allmaps-20260920/selected-results-checks-20260921-0550.json),
+[published targets](experiments/allmaps-20260920/TARGETS.md).
 
-GAME reaches **23,977**, 3.02% above the published NMS target. Uniform task admission
-to 3,250 robots beats the earlier 2,750-robot profile (21,742) on seed0. All 6,500
-robots remain in the movement system; held/started tasks are preserved. This adapts
-a Kitty Knight idea and deliberately changes fairness: half the robots get no new
-tasks. The independent mask/assignment audit passes. Full 5,000-step runs are needed:
-the earlier 2,750-robot variant was worse at 1,000 steps but improved the full run.
-[Fleet-size comparison](experiments/allmaps-20260920/results/game-fleet-higher-full-v1/summary.md).
+GAME reaches **23,977 / 23,917 / 23,888** on seeds 0/2/4, all above published NMS.
+A fixed subset of 3,250 robots receives new tasks while all 6,500 remain in CGAR
+movement. This adapts a Kitty Knight idea and deliberately changes fairness: half
+the robots receive no new assignments. Held and started tasks are preserved.
+The independent fleet-mask and assignment audit passes. Nearby fleet sizes lost.
+[Three-seed evidence](experiments/allmaps-20260920/game-fleet/uniform3250-three-seed-summary.json).
 
-RANDOM-04 reaches **1,947** using KK forward guidance, turn price2 and four repair
-rounds. Against turn6, seeds0/2/4 change1801/1803/1935 to1947/1904/1796: two gains
-and one loss, +1.95% in the mean. Higher annealing temperature helps the turn6
-profile but does not improve turn2. The single-seed record is not a robust large gain.
-[Turn comparison](experiments/allmaps-20260920/results/random04-kk-turn-tuning-full-v1/summary.md).
+RANDOM-04 reaches **1,999** with KK forward guidance, turn price 2, higher regional
+search temperature and peak retention. Retention is a general, default-off option:
+complete the prescribed search work, then choose the best complete plan visited.
+Timeout remains failure. It produced the best individual hot run, but reduced the
+three-seed mean against the hot control without retention. At the colder setting it
+lost substantially; RANDOM-03 also lost four tasks. Extra construction candidates
+did not improve the RANDOM-04 record. This is an optional combination, not a new
+universal default. [Measured interaction](experiments/allmaps-20260920/regional-search/random04-three-seed-summary.json).
 
-RANDOM-05 gains consistently from eight repair rounds: seeds0/2/4 change
-2806/2809/2718 to2877/2865/2836 (+2.94% in the mean). CITY-02 gains from allowing
-a finite second pre-pickup reassignment; RANDOM-02 gains from matching every step.
-Faster matching loses on RANDOM-01, so its621 profile stays selected.
+RANDOM-05 reaches **2,915** with twelve repair rounds and no peak retention. Eight
+rounds improved all three tested seeds over four rounds; twelve rounds is currently
+a single-seed result. Eight rounds plus retention separately scored 2,898. A wider
+regional partition on eight physical cores is queued to test useful work per second.
 
-The geometric known-horizon trick gives small, mixed gains on dense RANDOM.
-One unchanged RANDOM-05 control failed at step0; an identical retry completed2806
-with the exact prior trajectory. The original failure is preserved and its cause
-remains unresolved. No partial result is promoted.
+RANDOM-02's scheduling change improves all three tested seeds and reaches **1,197**.
+CITY-02's finite second reassignment also improves all three seeds; its best remains
+**16,315**. RANDOM-01 reaches **635** on seed2 using the earlier profile without
+known-horizon admission. The horizon candidate has small, mixed three-seed gains.
+Started-task ownership and CGAR primary/recovery safeguards remain enforced.
 
-The current solver retains CGAR primary/recovery mechanisms and its documented
-NMS-derived temporal PIBT component. Guidance, scheduler and fleet adaptations do
-not replace it with either team's complete solver. Generic regional peak retention
-is now implemented behind a default-off option: finish fixed work, then choose
-the best visited complete plan. Full regressions pass; throughput A/B is next.
+SORTATION reaches **150,894** with matching across 64 groups. Its 993.90 ms maximum
+leaves little timing margin; reduced-work comparisons are running. A separate
+dispatch variant timed out at step 0 and has no accepted score. An earlier RANDOM-05
+control also timed out, then passed an identical retry with the exact prior
+trajectory. Both failures are preserved; their causes are unresolved.
 
-Running: finer GAME fleet sizes and seed replication, SORTATION dispatch,
-RANDOM-05 round counts. [Next experiments](experiments/allmaps-20260920/TRICK_ROADMAP.md).
-The earlier narrative is preserved in the [progress snapshot](experiments/allmaps-20260920/CGAR_PROGRESS_20260921_0404.md).
+The full regression suite passes, including analytic peak restoration, unchanged
+disabled RNG trajectories, timeout-after-peak failure, and serial/parallel action
+validation. The frozen 37 source/test files match commit `90df94f`; the solver
+retains CGAR primary/recovery mechanisms and its documented NMS-derived temporal
+PIBT component. Guidance, scheduling and fleet adaptations do not replace it with
+either competitor's complete solver.
+
+Running: GAME horizon and dispatch tricks, CITY-02 horizon admission, SORTATION
+runtime comparisons, RANDOM-05 diversity/retention/parallel repair, and RANDOM-01
+horizon replication. [Next experiments](experiments/allmaps-20260920/TRICK_ROADMAP.md).
+The earlier narrative remains in the [progress snapshot](experiments/allmaps-20260920/CGAR_PROGRESS_20260921_0404.md).

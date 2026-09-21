@@ -1,0 +1,52 @@
+{
+  "checked_utc": "2026-09-21T05:36:10.370173+00:00",
+  "source": "results/random04-regional-peak-full-v1/metrics.json",
+  "rows": [
+    {
+      "case": "trick_temperature1000_peak0-s0-r0",
+      "tasks": 1947,
+      "loaded_actions": 587225,
+      "loaded_forward_percent": 37.74226233556133,
+      "loaded_rotation_percent": 36.03916726978586,
+      "loaded_wait_percent": 26.218570394652815,
+      "loaded_forward_farther_percent": 29.613954663586487,
+      "expired_commitments": 392,
+      "loaded_primary_recovery_commitment_pocket_context_sum_percent": 1.0966835540040019
+    },
+    {
+      "case": "trick_temperature1000_peak1-s0-r0",
+      "tasks": 1589,
+      "loaded_actions": 590077,
+      "loaded_forward_percent": 34.54023796894304,
+      "loaded_rotation_percent": 37.069399417364174,
+      "loaded_wait_percent": 28.39036261369279,
+      "loaded_forward_farther_percent": 32.515430735867014,
+      "expired_commitments": 962,
+      "loaded_primary_recovery_commitment_pocket_context_sum_percent": 1.9212746811009411
+    },
+    {
+      "case": "trick_temperature5000_peak0-s0-r0",
+      "tasks": 1924,
+      "loaded_actions": 585811,
+      "loaded_forward_percent": 37.359831071796194,
+      "loaded_rotation_percent": 36.768172670024974,
+      "loaded_wait_percent": 25.871996258178832,
+      "loaded_forward_farther_percent": 29.73891747160259,
+      "expired_commitments": 417,
+      "loaded_primary_recovery_commitment_pocket_context_sum_percent": 1.2894943932428717
+    },
+    {
+      "case": "trick_temperature5000_peak1-s0-r0",
+      "tasks": 1999,
+      "loaded_actions": 580474,
+      "loaded_forward_percent": 37.926246481323886,
+      "loaded_rotation_percent": 36.62145074542529,
+      "loaded_wait_percent": 25.452302773250825,
+      "loaded_forward_farther_percent": 29.068098404738546,
+      "expired_commitments": 206,
+      "loaded_primary_recovery_commitment_pocket_context_sum_percent": 1.1714564304344381
+    }
+  ],
+  "context_counts_overlap": true,
+  "interpretation": "Cold peak retention associates with more loaded waiting/rotation, more movement away from the current goal, and more expired commitments. This does not isolate causality or indirect effects of primary/recovery protection. Local score maximization is not sufficient for throughput."
+}
