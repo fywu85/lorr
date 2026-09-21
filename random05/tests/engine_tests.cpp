@@ -2202,7 +2202,8 @@ void physical_deadline_matching() {
         const auto priced=match(cfg);
         require(priced[0]==-1 && (priced[1]==20 || priced[1]==-1),"deadline matching overrode the declared optional idle price");
     }
-    Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.horizon=18;
+    // The shared replay harness executes150steps; its declared horizon must agree.
+    Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.horizon=150;
     cfg.match_feasible=true;cfg.hungarian_limit=1000;cfg.guidance="lanes";cfg.turn_cost=.6;
     cfg.threads=1;cfg.active_task_cap=18;cfg.fast_admission=true;
     const auto serial=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.cost_cache=true;cfg.goal_cache=true;

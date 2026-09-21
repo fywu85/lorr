@@ -1743,3 +1743,12 @@ opened-task protection, all-infeasible idling, capacity and configured idle-pric
 semantics, maximum feasible cardinality, auction/greedy/Hungarian paths, workers,
 caches, checkpoints, shadow forecasts and window repairs. Source161 is an
 unmeasured hypothesis until regression and all-five full comparisons pass.
+
+
+Source161 build/regression failed in the newly added window interaction fixture:
+it declared an18step end while the shared harness simulates150steps. The resulting
+intentional late idling produced106moves, below the existing unchanged mobility
+floor. Source162 corrects only that fixture's horizon to150. No production source,
+assertion or threshold is changed, and no benchmark uses failed build161. The
+original failure and binary identity remain in results/build-v161; the complete
+suite must pass in the new frozen build before any throughput measurement.
