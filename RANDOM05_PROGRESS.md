@@ -46,9 +46,9 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 18:18 UTC.
+Updated: 2026-09-21 23:27 UTC.
 
-**Current selected archived best: 4,242 tasks**, +33.73% versus matched NMS32=3,172.
+**Current selected archived best: 4,242 tasks**, +33.73% versus matched max(NMS,KK)=3,172.
 Source [88551e69](https://github.com/fywu85/lorr/commit/88551e69), planner seed0.
 The previous4,236 startup profile gains six tasks with observed-progress
 horizon correction at mix0.125/span32. All2,000steps pass independent replay,
@@ -1912,3 +1912,33 @@ The selected4236 run repeats in all six trajectory/scheduling/task fields. Plann
 ### 2026-09-21 18:44 UTC:4,242 qualification complete
 
 All four full runs are independently audited. Exact repetition matches all six fields. Seeds0/1/2/3=4242/4028/4183/4128, total16581, versus the previous4236profile16555 (+0.157%,three positive/one negative); versus4197profile16687 (-0.635%). Largest entry782.28ms. The selected best remains4242; no fresh qualification is implied. [Paired comparison](random05/results/random05-record4242-split-full-v144/paired-comparison.json).
+
+
+### 2026-09-21 23:27 UTC: all-density coordination tests retain4,242
+
+The full source158 face-cycle experiment and source159 failed-wait retry
+experiment are independently audited across all five densities. Their unchanged
+RANDOM-05 controls repeat4,242 in all six trajectory/schedule/event/task fields.
+Added face cycles8/16/32 all fail the first-step1s bound on the tunedR05 profile;
+no score is assigned. One retry pass completes4,180; two passes fail the strict
+bound. GeneralR05 remains2,226 (faces8/16:2,189/2,172; retries1/2:2,084/2,111).
+No new selected or general RANDOM-05 record is promoted.
+[Face-cycle audit](random05/results/random12345-face-cycles-split-full-v158/audit.json),
+[retry audit](random05/results/random12345-pibt-revisits-split-full-v159/audit.json).
+
+The current4,242 selected run is33.73% above matched max(NMS,KK)=3,172.
+A read-only comparison with each density's stronger team showsR05's lead grows
+after its initial100steps, whileR04 is tied with NMS atstep900 before its final
+100step advantage. The physical deadline audit identifies764R05 assignment
+changes in the final200steps to visible chains with impossible collision-free
+completion lower bounds. Those robots may already be suppressed or helping
+traffic; this is not a recoverable-task estimate.
+[All-five diagnosis](random05/results/all-random-bottlenecks-v2/REPORT.md).
+
+Two explicitly gated follow-ups are in progress: higher startup task admission
+on04/05, and physical known-horizon feasibility in unopened matching on all five.
+The latter's first new regression fixture used a mismatched18step horizon in a
+150step harness; failed build161 is preserved and no benchmark uses it. Build162
+corrects only that fixture's horizon and must pass the full suite before launch.
+The chronological frontier remains4,242 and its earlier seed/fresh qualifications
+retain their stated limits. No pending case is reported as an improvement.
