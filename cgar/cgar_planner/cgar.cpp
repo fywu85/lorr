@@ -872,6 +872,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_transaction_options_.distance_scale = temporal_distance_scale_;
     temporal_transaction_options_.unit_cost = flow_cost_scale_;
     temporal_equal_weight_ = env_int("CGAR_TEMPORAL_EQUAL_WEIGHT", 0) != 0;
+    temporal_rank_squared_ = trick_options.rank_squared;
+    if (temporal_rank_squared_ && (!temporal_ || temporal_equal_weight_))
+        throw std::invalid_argument("squared rank requires temporal planning and unequal rank weights");
+    if (temporal_rank_squared_)
+        std::printf("[CGAR_TRICK_RANK] squared=1 base=linear rank=base_order protected=unchanged candidates=unchanged\n");
     temporal_workers_ = std::max(1, std::min(32, env_int("CGAR_TEMPORAL_WORKERS", 1)));
     temporal_threads_ = std::max(1, std::min(temporal_workers_, env_int("CGAR_TEMPORAL_THREADS", temporal_workers_)));
     const int mixed_start = env_int("CGAR_TEMPORAL_MIXED_START", 0);
@@ -1113,9 +1118,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s\n",
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s%s\n",
                 env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_,
-                tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "");
+                tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "",
+                temporal_rank_squared_ ? " rank_squared=1" : "");
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),

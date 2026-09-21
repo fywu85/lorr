@@ -244,8 +244,16 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         return std::tie(priorities[a], a) < std::tie(priorities[b], b);
     });
     std::vector<double> power(n_, 0);
-    for (int rank = 0; rank < n_; ++rank) if (agents_[order[rank]].goal >= 0)
-        power[order[rank]] = temporal_equal_weight_ ? 1.0 : static_cast<double>(n_ + 1 - rank) / (n_ + 1);
+    for (int rank = 0; rank < n_; ++rank) if (agents_[order[rank]].goal >= 0) {
+        double weight = temporal_equal_weight_ ? 1.0 : static_cast<double>(n_ + 1 - rank) / (n_ + 1);
+        // Explicit NMS-derived instance tuning. Use the same objective for all
+        // worker proposals and repairs; protected seeds remain fixed separately.
+        if (temporal_rank_squared_) {
+            stats_.temporal_rank_squared_robots += weight > 0 && weight < 1;
+            weight *= weight;
+        }
+        power[order[rank]] = weight;
+    }
     TemporalWarmStats warm_stats, promise_stats;
     std::vector<int> initial, promised_first;
     if (temporal_warm_start_) {
@@ -530,6 +538,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 guide_options_.reconnect_steps, guide_stats.reconnect_attempts, guide_stats.reconnected, guide_stats.reconnect_actions, guide_stats.reconnect_expanded,
                 guide_options_.refine_batch, guide_stats.refine_attempted, guide_stats.refined, guide_stats.refine_limited,
                 guide_stats.refine_expanded, guide_stats.refine_cost_saved);
+        if (temporal_rank_squared_)
+            std::printf("[cgar-trick-rank] step=%d squared=1 changed_total=%lld\n",
+                env_->curr_timestep + 1, stats_.temporal_rank_squared_robots);
         if (temporal_promise_after_turn_)
             std::printf("[cgar-temporal-promise] step=%d after_turn=1 history=%d retained=%d initial_resets=%d collision_resets=%d calls=%lld retained_total=%lld collision_resets_total=%lld\n",
                 env_->curr_timestep + 1, int(promise_stats.history_valid), promise_stats.retained,

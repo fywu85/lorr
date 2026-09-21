@@ -508,3 +508,12 @@ The asset generator and rounding proof live in
 `experiments/allmaps-20260920/random-transfer/guidance/`. No quality claim follows
 from installing the field. CGAR primary/recovery commitments and complete-worker
 deadline behavior remain unchanged.
+
+`CGAR_TRICK_RANK_SQUARED=1` is a separate NMS-derived tuning option for explicit
+`--trick GAME`, `RANDOM-04` or `RANDOM-05`. It squares the ordinary linear rank
+weights in the shared temporal objective, emphasizing the highest-ranked robots.
+Temporal mode and unequal weights are required. It changes neither candidate
+paths nor protected primary/recovery reservations, and all workers and repair
+stages use the same weights. Lanes can remain OFF for an isolated rank comparison.
+The default is OFF; even an explicit zero requires the CLI trick gate. This is
+an experimental score preference, not a demonstrated improvement or liveness proof.

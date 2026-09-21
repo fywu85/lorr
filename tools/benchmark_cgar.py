@@ -50,7 +50,7 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
             return False
         actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
         # Legacy binaries predate these explicit components; absent means OFF.
-        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands'):
+        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands', 'rank_squared'):
             if key in expected_components:
                 actual.setdefault(key, '0')
         valid = valid and actual == dict(instance=instance, started_tasks='protected',
@@ -121,7 +121,7 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
-    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM']
+    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED']
     explicit_components = any(k in environment for k in component_keys)
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick <instance>')
@@ -138,6 +138,7 @@ def main():
         expected_components['remaining_flow'] = int(environment.get('CGAR_TRICK_REMAINING_FLOW', '0'))
         expected_components['native_metric'] = int(environment.get('CGAR_TRICK_NATIVE_METRIC', '0'))
         expected_components['native_bands'] = int(environment.get('CGAR_TRICK_NATIVE_BANDS', '0'))
+        expected_components['rank_squared'] = int(environment.get('CGAR_TRICK_RANK_SQUARED', '0'))
     if args.trick in ('RANDOM-04', 'RANDOM-05') and expected_components is not None:
         expected_components['random_uniform'] = int(environment.get('CGAR_TRICK_RANDOM_UNIFORM', '0'))
     expected_trick_field = 'none' if args.trick else None

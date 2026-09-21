@@ -24,7 +24,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -43,8 +43,9 @@ inline Options options(const std::string& instance) {
     const char* native_turn_cost = std::getenv("CGAR_TRICK_NATIVE_TURN_COST");
     const char* prewarm_threads = std::getenv("CGAR_TRICK_NATIVE_PREWARM_THREADS");
     const char* random_uniform = std::getenv("CGAR_TRICK_RANDOM_UNIFORM");
+    const char* rank_squared = std::getenv("CGAR_TRICK_RANK_SQUARED");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -55,6 +56,9 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    const bool squared = boolean(rank_squared, false);
+    if (rank_squared && instance != "GAME" && !random_instance(instance))
+        throw std::invalid_argument("squared rank selector requires --trick GAME, RANDOM-04 or RANDOM-05");
     const bool uniform = boolean(random_uniform, false);
     if (random_uniform && (!random_instance(instance) || !boolean(lanes, true) || !boolean(native_metric, false)))
         throw std::invalid_argument("random uniform control requires RANDOM-04/05, static lanes and native metric");
@@ -114,7 +118,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:

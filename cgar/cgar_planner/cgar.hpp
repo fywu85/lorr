@@ -269,6 +269,7 @@ struct Stats {
     long long temporal_wait_seeds = 0, temporal_seed_rotations = 0, temporal_tied_seed_rotations = 0;
     long long temporal_planned_rotations = 0, temporal_protected_rotations = 0;
     long long temporal_warm_calls = 0, temporal_warm_retained = 0, temporal_warm_collision_resets = 0;
+    long long temporal_rank_squared_robots = 0;
     long long temporal_promise_calls = 0, temporal_promise_retained = 0, temporal_promise_collision_resets = 0;
     long long temporal_warm_worker_runs = 0, temporal_cold_worker_runs = 0, temporal_selected_warm_runs = 0;
     long long guide_attempts = 0, guide_solved = 0, guide_robot_steps = 0, guide_expanded = 0, guide_reconnections = 0, guide_refinements = 0;
@@ -551,7 +552,7 @@ private:
     std::mt19937_64 temporal_rng_{0};
     TemporalPriorityPortfolio temporal_priority_portfolio_;
     int temporal_priority_noise_ = 0;
-    bool temporal_ = false, temporal_equal_weight_ = false;
+    bool temporal_ = false, temporal_equal_weight_ = false, temporal_rank_squared_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
     int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0, temporal_conflict_audit_stride_ = 0;
     int temporal_group_snapshot_count_ = 0;

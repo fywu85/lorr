@@ -161,6 +161,18 @@ def main():
                     assert all(int(x['reused'])==int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_PERSIST','0')) for x in priority_samples)
                 else:
                     assert not priority_samples
+                squared=int(case['environment'].get('CGAR_TRICK_RANK_SQUARED','0'))
+                rank_samples=[fields(l) for l in logs if l.startswith('[cgar-trick-rank] ')]
+                rank_config=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_RANK] ')]
+                if squared:
+                    assert a.trick in ('GAME','RANDOM-04','RANDOM-05') and case['environment']['CGAR_TEMPORAL_EQUAL_WEIGHT']=='0'
+                    assert rank_config==[dict(squared='1',base='linear',rank='base_order',protected='unchanged',candidates='unchanged')]
+                    assert [int(x['step']) for x in rank_samples]==list(range(200,row['steps']+1,200))
+                    totals=[int(x['changed_total']) for x in rank_samples]
+                    assert totals==sorted(totals) and totals[-1]>0
+                    assert all(int(x['squared'])==1 and 0<=int(x['changed_total'])<=row['robots']*int(x['step']) for x in rank_samples)
+                else:
+                    assert not rank_samples and not rank_config
                 after_turn=int(case['environment'].get('CGAR_TEMPORAL_PROMISE_AFTER_TURN','0'))
                 promise_samples=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise] ')]
                 promise_config=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise-config] ')]
@@ -176,7 +188,7 @@ def main():
                 else:
                     assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
-                work[key]=dict(after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)
