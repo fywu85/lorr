@@ -7,7 +7,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,580 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,641 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
@@ -362,3 +362,17 @@ I10240 with a declared eight-step4096 startup budget. These use complete fixed
 repair counts; a deadline overrun still fails the run. This specifically tests
 whether extra work benefits component merging, after the old independent
 optimizer showed weak scaling. No claim of a gain precedes the full results.
+
+## September 21, 07:54 UTC: RANDOM-03 crosses the archived ten-percent target
+
+Triage scale0.875 on the merged group6 recipe reaches2602 versus NMS2359
+(+10.30%), above the2595 threshold. Source102/02bccaa7, full800 steps,
+mean507/max710ms,434MB RSS. Finished07:48:41.498854 UTC; independent full
+replay and order accounting passed. This is an archived seed-specific crossing.
+The overall goal remains active: fresh validation and R04>=2838 remain open.
+
+Freeze the first crossing in random03-fresh-validation-v1-protocol.json before
+generating task/start seeds50011/50012. Compare candidate2602, previous2580
+with identical source, and two unmodified NMS repetitions on each input.
+Archived exact repetition and seeds0/3 are also declared. Other development
+results cannot change this frozen configuration or its validation seeds.

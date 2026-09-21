@@ -1,0 +1,30 @@
+{
+  "declared_utc": "2026-09-21T07:54:54.932599+00:00",
+  "instance": "RANDOM-03",
+  "candidate_source_commit": "02bccaa7",
+  "candidate_binary_sha256": "8850d55b76e9814ac3d5a1c90492925019f44f2ea8f9a31f5f9d177b761bba62",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "baseline_source_commit": "02bccaa7",
+  "baseline_binary_sha256": "8850d55b76e9814ac3d5a1c90492925019f44f2ea8f9a31f5f9d177b761bba62",
+  "manifest": "random05/experiments/random03-fresh-validation-v1-full.json",
+  "generation": "random05/results/random03-fresh-validation-v1/generation.json",
+  "seeds": [
+    50011,
+    50012
+  ],
+  "candidate_development_tasks": 2602,
+  "baseline_development_tasks": 2580,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "archived_reproduction": "Repeat2602 exactly in all six trajectory/schedule/event/task fields; planner seeds0/3 also complete strictly. Target maximum below900ms; every qualifying run must remain below1000ms.",
+    "fresh_validation": "Report performance against the stronger of two unmodified NMS repetitions on each fresh input and in aggregate. Seek at least10% aggregate; report each input separately. Compare the immediately previous2580 recipe on both inputs.",
+    "timing": "Full800 steps; strict1-second entries and30-second preprocessing;32GB process guard; all declared fixed work completed.",
+    "integrity": "Freeze before generating50011/50012. No tuning on50001-50012. Preserve original failures and distinguish allocation refusals from solver failures. Independently replay every successful full trajectory."
+  },
+  "description": "Freeze the first audited archived RANDOM-03 threshold crossing. Candidate differs from the previous2580 recipe only in known-horizon triage scale1->0.875. Both use source102 and the four-way heap. Other in-flight development trials cannot change this frozen comparison."
+}
