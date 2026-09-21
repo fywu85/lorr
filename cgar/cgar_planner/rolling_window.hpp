@@ -27,9 +27,10 @@ struct WindowProblem {
     std::vector<std::array<int, 4>> forward;
     std::vector<std::vector<char>> allowed, entry_allowed;
     std::vector<ChainPotential::Chain> chains;
-    std::vector<int> tasks, locked_prefix;
+    std::vector<int> tasks, locked_prefix, first_cells;
     std::vector<WindowPath> seed;
     int prefix(int r) const { return locked_prefix.empty() ? 0 : locked_prefix[r]; }
+    int first_cell(int r) const { return first_cells.empty() ? -1 : first_cells[r]; }
     int neighbor(int cell, int d) const {
         if (d == 0) return cell % cols + 1 < cols ? cell + 1 : -1;
         if (d == 1) return cell / cols + 1 < rows ? cell + cols : -1;
@@ -88,13 +89,15 @@ struct WindowProblem {
             horizon < 1 || fixed.size() != seed.size() || allowed.size() != seed.size() || entry_allowed.size() != seed.size() ||
             chains.size() != seed.size() || tasks.size() != seed.size() || paths.size() != seed.size() ||
             forward.size() != free.size() || turn_cost < 1 || wait_cost < 1 ||
-            (!locked_prefix.empty() && locked_prefix.size() != seed.size()))
+            (!locked_prefix.empty() && locked_prefix.size() != seed.size()) ||
+            (!first_cells.empty() && first_cells.size() != seed.size()))
             throw std::invalid_argument("invalid rolling-window problem");
         std::vector<int> owners(cells, -1);
         for (int r = 0; r < robots; ++r) {
             if (seed[r].size() != size_t(horizon + 1) || paths[r].size() != seed[r].size() ||
                 paths[r][0] != seed[r][0] || allowed[r].size() != free.size() || entry_allowed[r].size() != free.size() ||
-                prefix(r) < 0 || prefix(r) > horizon || (fixed[r] && paths[r] != seed[r]))
+                prefix(r) < 0 || prefix(r) > horizon || first_cell(r) < -1 || first_cell(r) >= cells ||
+                (first_cell(r) >= 0 && paths[r][1] / 4 != first_cell(r)) || (fixed[r] && paths[r] != seed[r]))
                 throw std::logic_error("rolling-window seed or protected path changed");
             for (int t = 0; t <= prefix(r); ++t)
                 if (paths[r][t] != seed[r][t]) throw std::logic_error("rolling-window protected prefix changed");
@@ -320,7 +323,8 @@ public:
             for (int a = 0; a < 4; ++a) {
                 const int next = p_.next(node.state, a), time = node.time + 1;
                 if (!p_.permits(r, node.state, next) || owner(time, next / 4) >= 0 ||
-                    (time <= p_.prefix(r) && next != p_.seed[r][time])) continue;
+                    (time <= p_.prefix(r) && next != p_.seed[r][time]) ||
+                    (time == 1 && p_.first_cell(r) >= 0 && next / 4 != p_.first_cell(r))) continue;
                 const int other = owner(time, node.state / 4);
                 if (other >= 0 && paths_[other][time - 1] / 4 == next / 4) continue;
                 const int stage = node.stage + (node.stage < int(p_.chains[r].goals.size()) &&
@@ -514,7 +518,8 @@ public:
                 for (int t = 1; t <= p.horizon; ++t) {
                     candidate[r][t] = history_[r][std::min(t + 1, options.keep + 1)];
                     valid = valid && p.permits(r, candidate[r][t - 1], candidate[r][t]) &&
-                        (t > p.prefix(r) || candidate[r][t] == p.seed[r][t]);
+                        (t > p.prefix(r) || candidate[r][t] == p.seed[r][t]) &&
+                        (t != 1 || p.first_cell(r) < 0 || candidate[r][t] / 4 == p.first_cell(r));
                 }
                 if (valid) retained[r] = true;
                 else candidate[r] = p.seed[r];

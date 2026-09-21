@@ -378,6 +378,13 @@ def main():
                     assert int(chain_paid_samples[-1]['paid_cost'])>0
                     row['chain_paid_cost']=dict(configuration=chain_paid_config[0],last_sample=chain_paid_samples[-1])
                 else:assert not chain_paid_config and not chain_paid_samples
+                window_move=int(case['environment'].get('CGAR_WINDOW_MOVE_PROMISES','0'))
+                window_move_config=[fields(l) for l in logs if l.startswith('[cgar-window-move-promises-config] ')]
+                if window_move:
+                    assert window_move==1 and move_mode and int(case['environment'].get('CGAR_WINDOW','0'))
+                    assert window_move_config==[dict(enabled='1',first_cell='immutable',wait_rotation='free',next_promise='selected_window',protected_priority='1',fixed_work='1',timeout_is_failure='1')]
+                    row['window_move_promises']=window_move_config[0]
+                else:assert not window_move_config
                 window_horizon=int(case['environment'].get('CGAR_WINDOW','0'))
                 window_config=[fields(l) for l in logs if l.startswith('[cgar-window-config] ')]
                 window_samples=[fields(l) for l in logs if l.startswith('[cgar-window] ')]

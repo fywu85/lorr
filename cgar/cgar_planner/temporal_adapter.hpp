@@ -593,6 +593,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             }
         }
     }
+    std::vector<int> move_pending;
+    if (temporal_move_promises_) {
+        move_pending.resize(n_);
+        for (int r = 0; r < n_; ++r) move_pending[r] = search.choice(r).path->cells[1];
+    }
     if (window_options_.horizon) {
         const auto started = Clock::now();
         auto check = [&] { check_deadline(deadline_, "rolling_window"); };
@@ -602,6 +607,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         problem.wait_cost = window_options_.wait_cost ? window_options_.wait_cost : flow_cost_scale_;
         problem.oracle = &chain_potential_; problem.free = cert_.free; problem.fixed = pinned;
         problem.locked_prefix.assign(n_, 0);
+        if (window_move_promises_) problem.first_cells = move_promised;
         problem.forward.resize(cells);
         for (int u = 0; u < cells; ++u) for (int d = 0; d < 4; ++d)
             problem.forward[u][d] = turn_oracle_.forward_cost(u, d);
@@ -655,6 +661,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const Action selected = static_cast<Action>(problem.action(paths[r][0], paths[r][1]));
             if ((pinned[r] || problem.fixed[r]) && selected != actions[r]) throw std::logic_error("rolling window changed a protected first action");
             if (!pinned[r] && !problem.fixed[r]) { actions[r] = selected; next_[r] = paths[r][1] / 4; }
+            if (window_move_promises_) move_pending[r] = paths[r][2] / 4;
         }
         ++stats_.window_calls; stats_.window.merge(window);
         stats_.window_changed_first += window.changed_first;
@@ -674,8 +681,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     if (temporal_move_promises_) {
         std::vector<int> expected(n_), headings = ori_, pending(n_);
         for (int r = 0; r < n_; ++r) {
-            expected[r] = search.choice(r).path->cells[0];
-            pending[r] = search.choice(r).path->cells[1];
+            expected[r] = actions[r] == Action::FW ? neighbor(loc_[r], ori_[r]) : loc_[r];
+            pending[r] = move_pending[r];
             if (move_promised[r] >= 0 && next_[r] != move_promised[r])
                 throw std::logic_error("temporal search broke a one-action motion promise");
             if (actions[r] == Action::CR) headings[r] = (ori_[r] + 1) % 4;

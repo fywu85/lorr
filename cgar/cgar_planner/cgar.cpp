@@ -964,6 +964,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     window_options_.history_rollout = priority_setting("CGAR_WINDOW_HISTORY_ROLLOUT", 0, 1);
     window_options_.delay_samples = priority_setting("CGAR_WINDOW_DELAY_SAMPLES", 0, 16);
     window_options_.temperature = priority_setting("CGAR_WINDOW_TEMPERATURE", 0, 65536);
+    window_move_promises_ = priority_setting("CGAR_WINDOW_MOVE_PROMISES", 0, 1) != 0;
+    if (window_move_promises_ && (!window_options_.horizon || !temporal_move_promises_))
+        throw std::invalid_argument("window move-promise composition requires an enabled window and one-action motion commitments");
+    if (window_move_promises_)
+        std::printf("[cgar-window-move-promises-config] enabled=1 first_cell=immutable wait_rotation=free next_promise=selected_window protected_priority=1 fixed_work=1 timeout_is_failure=1\n");
     window_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0xa0761d6478bd642fULL);
     window_history_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0x8ebc6af09c88c6e3ULL);
     rolling_window_ = RollingWindow();
@@ -973,7 +978,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             !window_options_.iterations || !window_options_.nodes || !window_options_.group ||
             !window_options_.workers || !window_options_.threads || window_options_.threads > window_options_.workers ||
             !temporal_ || !orientation_guidance_ || guide_enabled_ || temporal_next_errand_ ||
-            native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ || temporal_move_promises_ ||
+            native_neutral_tail_ || temporal_warm_start_ || temporal_promise_after_turn_ || (temporal_move_promises_ && !window_move_promises_) ||
             (flow_strength_ && !static_trick_metric_))
             throw std::invalid_argument("rolling window requires static temporal guidance, horizon6-32, keep<horizon and positive fixed work; guide/next-errand/neutral-tail/legacy-history are incompatible");
     } else if (window_options_.keep != 6 || window_options_.iterations != 128 || window_options_.nodes != 2048 ||

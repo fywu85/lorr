@@ -573,6 +573,7 @@ private:
     ChainPotential chain_potential_;
     bool scheduler_chain_potential_ = false;
     WindowOptions window_options_;
+    bool window_move_promises_ = false;
     FutureOptions future_options_;
     std::mt19937_64 future_rng_{0};
     RollingWindow rolling_window_;

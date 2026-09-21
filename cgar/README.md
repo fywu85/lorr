@@ -401,7 +401,15 @@ old promises. Resetting one conflicting move cancels every dependent move before
 new search. Complete safe seeds and all searchable alternatives retain surviving
 promises, including fallback index0. Every declared search still finishes or
 throws its deadline failure. Default0 consumes no history or extra RNG draws.
-Legacy warm/after-turn history and rolling-window repair are incompatible.
+Legacy warm/after-turn history is incompatible. Rolling-window composition requires the separate explicit switch below.
 Common-future scoring, regional repair and bounded branch transactions retain
 these one-action constraints. This is a CGAR commitment transfer, not a replacement
 with PILOT's separate pipelined policy, and has no measured throughput claim yet.
+
+`CGAR_WINDOW_MOVE_PROMISES=1` composes the enabled window with enabled one-action
+movement promises. It constrains only each promised first occupied cell; a
+stationary promise can still rotate. Protected CGAR actions keep their existing
+full-action constraints. Bounded A*, retained-history validation and final joint
+validation enforce the cell constraint, and the next promise comes from the
+selected complete window. Both flags and a window are required. Default-off
+behavior and the previous rejection of implicit composition remain unchanged.
