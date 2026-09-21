@@ -920,6 +920,28 @@ void rollout_elite_diversity() {
     }
 }
 
+void physical_guidance_edges() {
+    auto env=environment(5,5,4);env.map[12]=1;
+    Config cfg;cfg.guidance="lanes";cfg.turn_cost=.6f;cfg.goal_cache=true;
+    Graph original(env,cfg);cfg.guidance_edge_mix=.25f;Graph mixed(env,cfg);
+    for(int v=0;v<mixed.cells;++v)for(int d=0;d<5;++d)
+        require(mixed.weight[v][d]==.75f*original.weight[v][d]+.5f,"physical edge mixture changed a price incorrectly");
+    // The mixed edge model must still obey the exact one-step Bellman relation,
+    // including required rotations, walls and prescribed arrival headings.
+    for(int target=0;target<mixed.states;++target)for(int source=0;source<mixed.states;++source) {
+        if(target==source){require(mixed.dist(target,source)==0,"nonzero diagonal distance");continue;}
+        int v=source/4,d=source%4;float best=1e30f;
+        int u=mixed.next[v][d];
+        if(u>=0)best=std::min(best,mixed.weight[v][d]+mixed.dist(target,u*4+d));
+        for(int q:{(d+1)%4,(d+3)%4})best=std::min(best,mixed.weight[v][4]+mixed.dist(target,v*4+q));
+        require(std::abs(best-mixed.dist(target,source))<1e-4f,"mixed edge distance violates Bellman consistency");
+    }
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.random_by_step=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;cfg.guided_matching=true;
+    const auto base=simulate(cfg,12,5,5,true);cfg.cost_cache=true;cfg.candidate_cache=true;cfg.shared_rankings_mb=4;cfg.threads=3;
+    require(base==simulate(cfg,12),"physical edge mixtures changed with caches or workers");
+}
+
 void mixed_guidance_potentials() {
     auto env=environment(5,5,4);env.map[12]=1;
     Config cfg;cfg.guidance="lanes";cfg.turn_cost=.6f;cfg.goal_cache=true;
@@ -1218,6 +1240,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    physical_guidance_edges();
     mixed_guidance_potentials();
     optional_immediate_moves();
     remaining_work_priorities();

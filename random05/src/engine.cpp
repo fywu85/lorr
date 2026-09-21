@@ -216,6 +216,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
     c.plain_score=real("R05_PLAIN_SCORE",0);
     c.guidance_distance_mix=real("R05_GUIDANCE_DISTANCE_MIX",0);
+    c.guidance_edge_mix=real("R05_GUIDANCE_EDGE_MIX",0);
+    if(!std::isfinite(c.guidance_edge_mix) || c.guidance_edge_mix<0 || c.guidance_edge_mix>1 ||
+       (c.guidance_edge_mix>0 && c.guidance_distance_mix>0))
+        throw std::invalid_argument("edge mixture must be in [0,1] and separate from potential interpolation");
     if(!std::isfinite(c.guidance_distance_mix) || c.guidance_distance_mix<0 || c.guidance_distance_mix>1)
         throw std::invalid_argument("guidance distance mixture must be in [0,1]");
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
@@ -302,6 +306,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("guidance reversal requires weighted guidance and an explicit trick instance");
     if(c.flow_flips<0 || (c.flow_flips && c.guidance!="flow"))
         throw std::invalid_argument("field flips require flow guidance and a nonnegative count");
+    if(c.guidance_edge_mix>0 && c.guidance=="none")
+        throw std::invalid_argument("edge/action mixture requires weighted guidance");
     if(c.guidance_distance_mix>0 && (c.guidance=="none" || c.window))
         throw std::invalid_argument("mixed guidance potentials require weighted guidance and a non-windowed policy");
     if(c.guidance!="none" && !random_trick)
@@ -611,6 +617,14 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         }
     }
     if(cfg.loop_extent<2 || cfg.loop_extent>8)throw std::invalid_argument("cycle extent must be 2..8");
+    if(cfg.guidance_edge_mix>0) {
+        // Coherent alternative to blending two distance tables: price each
+        // forward/quarter-turn edge, then solve exact oriented shortest paths.
+        // Every physical edge remains present; positive contrast keeps the
+        // original preferred direction unless the mixture is entirely physical.
+        const float fraction=cfg.guidance_edge_mix;
+        for(auto& prices:weight)for(float& price:prices)price=(1-fraction)*price+fraction*2;
+    }
     if(cfg.loops)for(int height=2;height<=cfg.loop_extent;++height)
     for(int width=2;width<=cfg.loop_extent;++width)
     for(int y=0;y+height<=rows;++y)for(int x=0;x+width<=cols;++x) {
@@ -783,7 +797,7 @@ void Engine::initialize(SharedEnvironment* env) {
         // Physical action costs may inform only evaluation, or optionally the
         // policy's distance potential. Both are built before any tasks appear.
         Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
-        metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;
+        metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;metric.guidance_edge_mix=0;
         auto physical=std::make_unique<Graph>(*env,metric);
         if(cfg.guidance_distance_mix>0)prepared_graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
         if(cfg.plain_score>0)score_graph_=std::move(physical);
