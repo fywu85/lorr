@@ -86,10 +86,10 @@
       "audit": "random05/results/random123-component-repair-split-full-v156/audit.json"
     },
     "trick": {
-      "source_commit": "027df4d9",
-      "evidence": "random05/results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/summary.json",
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-01-physical-deadline1/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
         "cores": 16,
         "smt": 2,
@@ -97,7 +97,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-01",
-        "name": "trick-random-01-resume-horizon-0p75",
+        "name": "trick-random-01-physical-deadline1",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -154,10 +154,11 @@
           "R05_WINDOW_NEIGHBORHOOD": "8",
           "R05_WINDOW_EXPANSIONS": "5000",
           "R05_OPERATIONS": "0",
-          "R05_MOVE_BIAS": "0"
+          "R05_MOVE_BIAS": "0",
+          "R05_MATCH_FEASIBLE": "1"
         },
-        "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
+        "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json": "c09782a2d79e7779b82457095f8881b9fd5a08a6a6e4c68035a5e56a12445302",
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
@@ -165,9 +166,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 729,
-      "finished_utc": "2026-09-21T15:05:19.829832+00:00",
-      "audit": "random05/results/random12-resume-horizon-split-full-v132/audit.json"
+      "tasks": 732,
+      "finished_utc": "2026-09-21T23:30:21.892751+00:00",
+      "audit": "random05/results/random12345-physical-deadline-split-full-v162/audit.json"
     },
     "nms32_tasks": 649
   },
