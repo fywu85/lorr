@@ -29,4 +29,40 @@ std::vector<std::vector<int>> decision_components(const Graph& graph,const Rollo
     }
     return result;
 }
+// Connect exactly the cross-parent vertex and reverse-edge conflicts. Choosing
+// either complete parent's paths for each component cannot introduce a conflict
+// between components, since both unchanged parents are already feasible.
+std::vector<std::vector<int>> window_conflict_components(const Graph& graph,
+    const std::vector<std::vector<int>>& left,const std::vector<std::vector<int>>& right) {
+    const int n=int(left.size());
+    if(right.size()!=left.size())throw std::invalid_argument("window component team mismatch");
+    if(n==0)return {};
+    const int steps=int(left[0].size());
+    if(steps==0)throw std::invalid_argument("empty window component path");
+    for(int a=0;a<n;++a)if(int(left[a].size())!=steps || int(right[a].size())!=steps || left[a][0]!=right[a][0])
+        throw std::invalid_argument("window components require common starts and horizons");
+    std::vector<int> parent(n),owner(graph.cells,-1);
+    std::iota(parent.begin(),parent.end(),0);
+    auto root=[&](int a) {while(parent[a]!=a){parent[a]=parent[parent[a]];a=parent[a];}return a;};
+    auto unite=[&](int a,int b) {a=root(a);b=root(b);if(a!=b)parent[a]=b;};
+    for(int t=1;t<steps;++t) {
+        std::fill(owner.begin(),owner.end(),-1);
+        for(int a=0;a<n;++a)owner.at(left[a][t]/4)=a;
+        for(int b=0;b<n;++b) {
+            int a=owner.at(right[b][t]/4);
+            if(a>=0)unite(a,b);
+            // A left path ends where the right path started, and vice versa.
+            a=owner.at(right[b][t-1]/4);
+            if(a>=0 && left[a][t-1]/4==right[b][t]/4)unite(a,b);
+        }
+    }
+    std::vector<std::vector<int>> groups(n),result;
+    for(int a=0;a<n;++a)groups[root(a)].push_back(a);
+    for(auto& group:groups) {
+        bool changed=false;for(int a:group)changed|=left[a]!=right[a];
+        if(changed)result.push_back(std::move(group));
+    }
+    return result;
+}
+
 }

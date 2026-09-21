@@ -446,6 +446,34 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         expanded+=islands[k].expansions;accepted+=islands[k].accepted;skipped_sorts+=islands[k].skipped_sorts;
         if(better(islands[k].cost,islands[best].cost))best=k;
     }
+    if(cfg.window_merge) {
+        Paths merged=islands[best].paths;
+        const Cost before=islands[best].cost;
+        std::vector<Cost> current(n);
+        for(int a=0;a<n;++a)current[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],merged[a]);
+        for(int index=0;index<cfg.window_islands;++index)if(index!=best) {
+            const auto& alternative=islands[index].paths;
+            const auto groups=window_conflict_components(g,merged,alternative);
+            for(const auto& group:groups) {
+                Cost old_cost,new_cost;std::vector<Cost> replacement;replacement.reserve(group.size());
+                for(int a:group) {
+                    old_cost.total+=current[a].total;old_cost.remaining+=current[a].remaining;
+                    replacement.push_back(path_cost(g,cfg,assigned_[a],initial.stage[a],alternative[a]));
+                    new_cost.total+=replacement.back().total;new_cost.remaining+=replacement.back().remaining;
+                }
+                // Never trade increased path cost for a secondary improvement:
+                // tiny accepted increases could otherwise accumulate by group.
+                if(new_cost.total<=old_cost.total && better(new_cost,old_cost)) {
+                    for(size_t k=0;k<group.size();++k) {
+                        const int a=group[k];merged[a]=alternative[a];current[a]=replacement[k];
+                    }
+                }
+            }
+        }
+        const Cost after=total_cost(merged);validate(merged);
+        if(better(before,after))throw std::runtime_error("window component merge worsened its incumbent");
+        if(better(after,before)){islands[best].paths=std::move(merged);islands[best].cost=after;}
+    }
     if(better(base_cost,islands[best].cost))throw std::runtime_error("window sharing round worsened its complete seed");
     if(round+1<cfg.window_rounds) {
         base=islands[best].paths;base_cost=islands[best].cost;

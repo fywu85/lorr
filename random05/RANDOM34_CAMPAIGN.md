@@ -259,3 +259,14 @@ fixed work, verified allocation and strict1s. No held-out input is generated.
 
 Source94 control and fast groups reproduce all six fields of2551 exactly.
 Runtime observations are consolidated in [the timing report](results/random34-runtime/REPORT.md).
+
+## September 21, 07:04 UTC: scheduler and forecast alignment
+
+Nine declared full source96 RANDOM-04 trials keep the2634 planner budget and
+shared ranking cache. Compare matching on committed next positions, oriented
+whole-chain assignment, keep bonuses0/2, length weights0/0.5, aging inside
+forecasts, and terminal completion rewards2/8. The ordinary policy ignores
+new assignments after forecast completions, which may undervalue finishing;
+these are tests of that hypothesis. No unpublished future tasks are consulted.
+The new pending-position and chain-cost settings already exist as general
+options; the density-specific selected combinations remain explicit tricks.

@@ -158,6 +158,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_reuse=integer("R05_WINDOW_REUSE",0);
     c.window_fast_groups=integer("R05_WINDOW_FAST_GROUPS",0);
     c.window_heap4=integer("R05_WINDOW_HEAP4",0);
+    c.window_merge=integer("R05_WINDOW_MERGE",0);
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);

@@ -866,6 +866,38 @@ void move_proposal_bias() {
     }
 }
 
+void window_components() {
+    auto e=environment(3,5,3);Config cfg;Graph g(e,cfg);
+    using Paths=std::vector<std::vector<int>>;
+    auto certify_mix=[&](const Paths& left,const Paths& right) {
+        auto groups=window_conflict_components(g,left,right);
+        require(groups.size()<8,"unexpected component count in small fixture");
+        for(unsigned mask=0;mask<(1u<<groups.size());++mask) {
+            Paths paths=left;
+            for(size_t k=0;k<groups.size();++k)if(mask&(1u<<k))
+                for(int a:groups[k])paths[a]=right[a];
+            for(size_t t=1;t<paths[0].size();++t) {
+                std::vector<int> from,to;
+                for(const auto& path:paths){from.push_back(path[t-1]/4);to.push_back(path[t]/4);}
+                Engine::certify(g,from,to);
+            }
+        }
+        return groups;
+    };
+    // Two route choices compete for a cell only near the end of the window;
+    // a third robot's improvement remains independently composable.
+    Paths left={{0,4,8},{18,18,14},{40,40,40}};
+    Paths right={{0,0,4},{18,14,10},{40,44,48}};
+    const auto groups=certify_mix(left,right);
+    require(groups==std::vector<std::vector<int>>({{0,1},{2}}),"late vertex conflict or independent route was grouped incorrectly");
+    // No cross-parent vertex conflict, but mixing these two individually legal
+    // plans would exchange cells6 and7 in opposite directions at timestep2.
+    left={{24,24,28},{30,31,11}};right={{24,25,45},{30,30,26}};
+    require(certify_mix(left,right)==std::vector<std::vector<int>>({{0,1}}),
+            "cross-parent reverse edge was split across components");
+    require(window_conflict_components(g,left,left).empty(),"identical windows produced changed components");
+}
+
 void window_single_agent() {
     // Repeated waypoints consume separate simulator ticks. LNS can also move
     // immediately, instead of inheriting the pipeline's initial idle action.
@@ -937,6 +969,10 @@ void window_reproducibility() {
     const auto mixed=simulate(cfg,8,5,5,true);
     cfg.threads=2;cfg.window_fast_groups=true;
     require(mixed==simulate(cfg,8),"mixed blocker neighborhoods depend on worker scheduling");
+    cfg.window_merge=true;cfg.window_rounds=3;cfg.window_iterations=12;
+    const auto merged=simulate(cfg,8,5,5,true);
+    cfg.threads=1;cfg.window_heap4=false;
+    require(merged==simulate(cfg,8),"window component merging changed with heap layout or worker scheduling");
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
@@ -944,6 +980,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    window_components();
     window_single_agent();
     window_reproducibility();
     move_proposal_bias();
