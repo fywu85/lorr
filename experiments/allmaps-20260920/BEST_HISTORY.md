@@ -35,3 +35,12 @@ These are CGAR runs in separate directories. The independent RANDOM-05 solver an
 | RANDOM-05 | 2036 | 2026-09-21T00:13:41.663822+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_noise50_cold | [verification](results/priority-portfolio-dense-full-v1/verification.json) |
 
 Persistence itself did not beat the selected controls. RANDOM-04 favors the eight-worker control; RANDOM-05 favors noise50without retention on this seed. Full strict1sseed0/2/4replication is predeclared and pending. Both objective changes (remaining potential and partial next errand) lost and stay off.
+
+## Explicit SORTATION native lanes
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 149321 | 2026-09-21T00:32:05.568136+00:00 | [df94a52](https://github.com/fywu85/lorr/commit/df94a520c77fcb3a73a4a8c74b5b13cab542d1d6) | trick_sortation_native_bands0 | [verification](results/sortation-native-full-v1/verification.json) |
+| 150353 | 2026-09-21T00:34:06.943933+00:00 | [df94a52](https://github.com/fywu85/lorr/commit/df94a520c77fcb3a73a4a8c74b5b13cab542d1d6) | trick_sortation_native_bands1 | [verification](results/sortation-native-full-v1/verification.json) |
+
+Both are **TRICK**, seed0, full 5000 steps, four physical cores and enforced 5s development deadlines. The 150353 result is 2.66% above the unchanged 146460 control and 1.55% below the historical NMS target 152714. Mean/max decision time 524.64/1151.94 ms; it is not yet qualified at 1s. The control whole trajectory matches the previous generic source exactly.

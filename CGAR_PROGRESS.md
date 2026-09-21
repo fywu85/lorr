@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-20. The active goal is to carry the CGAR framework across all ten
+Updated 2026-09-21 UTC. The active goal is to carry the CGAR framework across all ten
 2024 instances after finishing Warehouse's strict one-second validation.
 NMS remains the primary reference. Matching or exceeding throughput is the first
 milestone; +20%per instance is a stretch goal. Fairness is secondary under the
@@ -15,7 +15,7 @@ them a veto on a throughput improvement.
 | Instance | Current selected full CGAR result | Status |
 |---|---:|---|
 | WAREHOUSE |155173|TRICK; full strict1s seeds0/2 confirmed, max945/958ms|
-| SORTATION |146460|Generic; full shared5s development, generic_regions_4m|
+| SORTATION |150353|TRICK; full shared5s development, max1152ms; strict1s work remains|
 | CITY-01 |7305|Generic; full shared5s development, generic_regions_4m|
 | CITY-02 |14068|Generic; full shared5s development, generic_regions_4m|
 | GAME |6519|Generic; full shared5s development, generic_regions_4m|
@@ -38,8 +38,8 @@ source[3e319f1](https://github.com/fywu85/lorr/commit/3e319f175859396b91f97364b3
 [verified10000entries and100millionactions](experiments/construction-20260918/results/strict-runtime-full-v123/summary.md).
 The original155173record timestamp/source remain in the Warehouse history.
 The two-budget/eight-instance matrix and the six-factor RANDOM-01..04 matrix
-are complete: all40full runs verified, no failed runs. The selected current
-results above come from sourceeb99380. [Timestamped history and configurations](experiments/allmaps-20260920/BEST_HISTORY.md).
+are complete: all40full runs verified, no failed runs. Those original regional/factor
+results come from sourceeb99380; later selected records have their own source links. [Timestamped history and configurations](experiments/allmaps-20260920/BEST_HISTORY.md).
 RANDOM-04 remaining-chain ordering and rank weights reach1249versus842under the
 same bounded control, one seed. Direct-cost assignment with local matching gives
 611/1084/1484on RANDOM-01/02/03. Fairness remains recorded as secondary.
@@ -50,8 +50,10 @@ The first optional persistent-priority implementation passed the full regression
 suite and its ten full dense-map runs. The eight-worker control scores1330/1989;
 noise50without retention scores1306/2036. Retention itself was weaker. Selected
 maxima remain one-seed results; strict1sseed0/2/4replication is pending. It preserves CGAR's existing kernel and
-protections. SORTATION's explicit native field passed all regressions and its
-full three-way comparison is running; no new trick score yet.
+protections. SORTATION's full explicit-trick comparison is complete: control146460,
+native lanes149321, native lanes with outer-band costs150353. The control's whole
+trajectory is unchanged. The selected trick is still above1s on its slowest steps.
+[Full SORTATION evidence](experiments/allmaps-20260920/results/sortation-native-full-v1/summary.md).
 
 The first full CGAR RANDOM-05 comparison completed with1534(control) and
 1847(remaining-chain rank); mean123/124ms, maximum183/178ms,191MBRAM.
@@ -67,3 +69,8 @@ Both existing scoring alternatives lost in the six full dense-map checks;
 [all outcomes](experiments/allmaps-20260920/results/dense-objectives-full-v1/summary.md).
 An analysis allocation preflight failed before reading results; its unchanged
 retry succeeded. This was not a solver failure.
+
+The standalone RANDOM field has been exported reproducibly and installed behind
+explicit `--trick RANDOM-04` / `--trick RANDOM-05` gates, including exact occupancy
+and team-size checks. An integer adaptation and uniform-cost control are declared;
+there is no throughput claim before the new full comparisons finish.
