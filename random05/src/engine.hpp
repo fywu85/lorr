@@ -113,6 +113,8 @@ struct Config {
     bool operation_inherit=true, operation_moving=false, operation_protect=false, operation_finish_move=false;
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, guidance_distance_mix=0, guidance_edge_mix=0, reverse_penalty=0, completion_bonus=0;
+    int triage_progress_window=32;
+    float triage_progress_mix=0;
     float triage_scale=0.45, triage_guided_mix=0, waypoint_age_retain=0, score_rank_power=0, progress_softcap=0;
     bool accept_equal=false;
     std::string guidance="none", weights;
@@ -122,6 +124,8 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int rows,
                                       int dummy_columns=0,bool fast_dummy_prefix=false);
 double weighted_static_future_score(const std::vector<double>& scores,double static_weight);
 std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power);
+std::vector<double> progress_time_factors(const std::vector<double>& work,
+    const std::vector<double>& rates,const std::vector<int>& samples,int warmup,float fraction);
 std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix=false);
 struct CycleWordMask { size_t word;uint64_t bits; };
 struct Graph {
@@ -291,7 +295,9 @@ private:
     uint64_t total_forward_=0,total_agent_steps_=0,active_forward_=0,active_agent_steps_=0;
     double travel_steps_per_cell() const;
     void record_travel(const std::vector<Action>& actions);
-    int triaged_=0;
+    int triaged_=0, progress_timestep_=-1;
+    std::vector<double> progress_remaining_,progress_rates_;
+    std::vector<int> progress_samples_;
     std::unordered_map<int,std::shared_ptr<Chain>> chains_, score_chains_;
     std::unique_ptr<Graph> score_graph_;
     std::unique_ptr<OperationModel> operation_model_;

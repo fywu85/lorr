@@ -20,6 +20,10 @@ json Engine::checkpoint(const SharedEnvironment& env) const {
         {"active_forward",active_forward_},{"active_agent_steps",active_agent_steps_}
     };
     if(cfg.window)state["window_paths"]=window_paths_;
+    if(cfg.triage_progress_mix>0) {
+        state["progress_timestep"]=progress_timestep_;state["progress_remaining"]=progress_remaining_;
+        state["progress_rates"]=progress_rates_;state["progress_samples"]=progress_samples_;
+    }
     state["states"]=json::array();
     for(const auto& robot:env.curr_states)
         state["states"].push_back({robot.location,robot.timestep,robot.orientation});
@@ -63,6 +67,13 @@ void Engine::restore(const json& state,SharedEnvironment& env) {
     previous_task_=state.at("previous_task").get<std::vector<int>>();
     previous_stage_=state.at("previous_stage").get<std::vector<int>>();
     suppressed_tasks_=state.value("suppressed_tasks",std::vector<int>{});
+    progress_timestep_=state.value("progress_timestep",-1);
+    progress_remaining_=state.value("progress_remaining",std::vector<double>{});
+    progress_rates_=state.value("progress_rates",std::vector<double>{});
+    progress_samples_=state.value("progress_samples",std::vector<int>{});
+    if(progress_remaining_.size()!=progress_samples_.size() || progress_rates_.size()!=progress_samples_.size() ||
+       (!progress_samples_.empty() && progress_samples_.size()!=size_t(env.num_of_agents)))
+        throw std::invalid_argument("checkpoint progress history dimensions differ");
     pending_=state.at("pending").get<std::vector<int>>();
     best_offsets_=state.at("best_offsets").get<std::vector<float>>();
     past_offsets_=state.at("past_offsets").get<std::vector<std::vector<float>>>();

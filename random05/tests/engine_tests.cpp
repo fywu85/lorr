@@ -1181,6 +1181,90 @@ void active_travel_calibration() {
     require(reference==simulate(cfg,12,5,5,true,true),"single-root forecast changed active travel accounting");
 }
 
+void observed_progress_triage() {
+    // Equal remaining work with fast versus stalled observed progress must
+    // redistribute time, preserve total predicted work, and survive negatives.
+    const std::vector<double> work{4,4,0},rates{2,0,-100};
+    const std::vector<int> mature{32,32,32};
+    const auto factors=progress_time_factors(work,rates,mature,32,1);
+    require(factors[0]<1 && factors[1]>1 && std::abs(4*factors[0]+4*factors[1]-8)<1e-12,
+            "progress calibration did not redistribute a fixed work total");
+    require(progress_time_factors(work,rates,{0,32,32},32,1)==std::vector<double>({1,1,1}),
+            "immature progress history affected the forecast");
+    require(progress_time_factors(work,{-2,-1,0},mature,32,1)==std::vector<double>({1,1,1}),
+            "nonpositive fleet progress lost its global fallback");
+    require(progress_time_factors(work,rates,mature,32,0)==std::vector<double>({1,1,1}),
+            "zero progress mix was not an exact identity");
+    auto env=environment(3,3,2);env.curr_states[0].location=0;env.curr_states[1].location=6;
+    for(auto& state:env.curr_states)state.orientation=0;
+    for(int a=0;a<2;++a) {
+        Task task;task.task_id=7+a;task.locations={a*6,a*6+2};task.idx_next_loc=1;
+        env.task_pool[task.task_id]=task;env.curr_task_schedule[a]=task.task_id;
+    }
+    env.curr_timestep=40;Config cfg;cfg.futures=1;cfg.depth=3;cfg.horizon=45;cfg.triage_scale=1;
+    Engine ordinary(cfg);ordinary.initialize(&env);auto snapshot=ordinary.checkpoint(env);
+    snapshot["previous_task"]={7,8};snapshot["previous_stage"]={1,1};
+    snapshot["progress_timestep"]=39;snapshot["progress_remaining"]={4,4};
+    snapshot["progress_rates"]={2,0};snapshot["progress_samples"]={32,32};
+    std::vector<Action> plan;std::vector<int> schedule;
+    ordinary.restore(snapshot,env);ordinary.compute(&env,plan,schedule);
+    require(ordinary.triaged()==0,"global forecast fixture unexpectedly deferred a task");
+    cfg.triage_progress_mix=1;Engine calibrated(cfg);calibrated.initialize(&env);
+    calibrated.restore(snapshot,env);calibrated.compute(&env,plan,schedule);
+    require(calibrated.triaged()==1 && schedule==std::vector<int>({7,8}),
+            "observed progress did not distinguish the stalled task or changed opened assignments");
+    const auto tracked=calibrated.checkpoint(env);
+    require(tracked.at("progress_timestep")==40 && tracked.at("progress_samples").at(0)==32,
+            "progress history did not advance with a real timestep");
+    auto replacement=snapshot;replacement["schedule"]={9,8};replacement["tasks"][0]["id"]=9;
+    calibrated.restore(replacement,env);calibrated.compute(&env,plan,schedule);
+    const auto reset=calibrated.checkpoint(env);
+    require(reset.at("progress_samples").at(0)==0 && reset.at("progress_rates").at(0)==0,
+            "task reassignment inherited the previous task's speed");
+    auto legacy=snapshot;
+    for(const char* key:{"progress_timestep","progress_remaining","progress_rates","progress_samples"})legacy.erase(key);
+    calibrated.restore(legacy,env);calibrated.compute(&env,plan,schedule);
+    require(calibrated.triaged()==0,"legacy checkpoint did not start with the global progress prior");
+    cfg=Config{};cfg.horizon=150;cfg.triage_scale=.8;cfg.triage_progress_mix=.5;cfg.triage_progress_window=8;
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;cfg.hungarian_limit=1000;
+    cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.cost_cache=true;cfg.random_by_step=true;
+    for(float guided:{0.f,.75f}) {
+        cfg.triage_guided_mix=guided;cfg.threads=1;cfg.candidate_cache=false;
+        const auto serial=simulate(cfg,12,5,5,true);
+        cfg.threads=3;cfg.candidate_cache=true;
+        require(serial==simulate(cfg,12),"progress-calibrated triage changed with workers or cached policy");
+        cfg.replan_roots=1;cfg.replan_futures=1;cfg.replan_steps=2;cfg.replan_k=1;cfg.replan_continuations=1;
+        require(serial==simulate(cfg,12,5,5,true,true),"shadow forecasting changed observed-progress history");
+        cfg.replan_roots=0;
+    }
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting horizon("R05_HORIZON","150"),mix("R05_TRIAGE_PROGRESS_MIX",".5"),span("R05_TRIAGE_PROGRESS_WINDOW","32");
+    auto gate=environment(3,3,2);gate.trick_instance="RANDOM-04";
+    require(Config::environment(gate).triage_progress_mix==.5f,"valid progress calibration was rejected");
+    gate.trick_instance.clear();bool refused=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){refused=true;}
+    require(refused,"progress-calibrated horizon bypassed the trick gate");gate.trick_instance="RANDOM-04";
+    for(const char* value:{"-0.1","1.1","nan"}) {
+        Setting invalid("R05_TRIAGE_PROGRESS_MIX",value);refused=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){refused=true;}
+        require(refused,"invalid observed-progress mix was accepted");
+    }
+    for(const char* value:{"7","257"}) {
+        Setting invalid("R05_TRIAGE_PROGRESS_WINDOW",value);refused=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){refused=true;}
+        require(refused,"invalid observed-progress span was accepted");
+    }
+    Setting unknown_horizon("R05_HORIZON","0");refused=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){refused=true;}
+    require(refused,"observed-progress cutoff accepted an unknown end");
+}
+
 void rectangular_matching_optimality() {
     // Independent enumeration of injective assignments checks the optimum,
     // including rectangular pools, negative keep bonuses and extensive ties.
@@ -2101,6 +2185,7 @@ int main() {
     bounded_order_rankings();
     compact_prepared_rankings();
     active_travel_calibration();
+    observed_progress_triage();
     rectangular_matching_optimality();
     exact_dummy_prefix();
     active_task_admission();

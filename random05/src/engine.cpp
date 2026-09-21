@@ -344,6 +344,12 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     c.triage_guided_mix=real("R05_TRIAGE_GUIDED_MIX",0);
+    c.triage_progress_mix=real("R05_TRIAGE_PROGRESS_MIX",0);
+    c.triage_progress_window=integer("R05_TRIAGE_PROGRESS_WINDOW",32);
+    if(!std::isfinite(c.triage_progress_mix) || c.triage_progress_mix<0 || c.triage_progress_mix>1 ||
+       c.triage_progress_window<8 || c.triage_progress_window>256 ||
+       (c.triage_progress_mix>0 && (!random_trick || c.horizon<=0)))
+        throw std::invalid_argument("observed-progress triage requires mix [0,1], span8..256, a horizon and an explicit trick");
     if(!std::isfinite(c.triage_guided_mix) || c.triage_guided_mix<0 || c.triage_guided_mix>1 ||
        (c.triage_guided_mix>0 && c.horizon<=0))
         throw std::invalid_argument("guided triage mix must be in [0,1] and requires a declared horizon");
@@ -941,6 +947,32 @@ void Engine::initialize(SharedEnvironment* env) {
                  n,graph->cells,cfg.futures,cfg.depth,cfg.threads,cfg.guidance.c_str(),cfg.seed,
                  graph->distance.size()*sizeof(float)/1e6);
 }
+std::vector<double> progress_time_factors(const std::vector<double>& work,
+    const std::vector<double>& rates,const std::vector<int>& samples,int warmup,float fraction) {
+    if(work.size()!=rates.size() || work.size()!=samples.size() || warmup<1 ||
+       !std::isfinite(fraction) || fraction<0 || fraction>1)
+        throw std::invalid_argument("invalid observed-progress calibration");
+    std::vector<double> factors(work.size(),1);double mean=0;int mature=0;
+    for(size_t a=0;a<work.size();++a) {
+        if(!std::isfinite(work[a]) || work[a]<0 || !std::isfinite(rates[a]) || samples[a]<0)
+            throw std::invalid_argument("nonfinite or negative progress calibration state");
+        if(work[a]>0 && samples[a]>=warmup){mean+=rates[a];++mature;}
+    }
+    if(!fraction || mature<2 || mean<=1e-8)return factors;
+    mean/=mature;double original=0,adjusted=0;
+    for(size_t a=0;a<work.size();++a) {
+        if(work[a]>0 && samples[a]>=warmup) {
+            const double inverse_speed=std::clamp(mean/std::max(rates[a],mean*.125),.5,2.0);
+            factors[a]=1+fraction*(inverse_speed-1);
+        }
+        original+=work[a];adjusted+=work[a]*factors[a];
+    }
+    // Redistribute the existing estimate rather than changing its aggregate
+    // calibration. Immature tasks retain the global prior before normalization.
+    if(adjusted>0)for(auto& factor:factors)factor*=original/adjusted;
+    return factors;
+}
+
 double Engine::travel_steps_per_cell() const {
     const uint64_t forward=cfg.active_travel_rate?active_forward_:total_forward_;
     const uint64_t steps=cfg.active_travel_rate?active_agent_steps_:total_agent_steps_;
@@ -2072,9 +2104,12 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         if(!env->task_pool.count(it->first))it=score_chains_.erase(it);else ++it;
     }
     assigned_.assign(n,nullptr);score_assigned_.assign(n,nullptr);triaged_=0;
+    if(cfg.triage_progress_mix>0 && progress_samples_.size()!=size_t(n)) {
+        progress_remaining_.assign(n,0);progress_rates_.assign(n,0);progress_samples_.assign(n,0);progress_timestep_=-1;
+    }
     std::vector<double> triage_hops,triage_guided;
     double total_triage_hops=0,total_triage_guided=0;
-    if(cfg.horizon>0 && cfg.triage_guided_mix>0) {
+    if(cfg.horizon>0 && (cfg.triage_guided_mix>0 || cfg.triage_progress_mix>0)) {
         triage_hops.resize(n);triage_guided.resize(n);
     }
     for(int a=0;a<n;++a) {
@@ -2087,6 +2122,18 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 age_[a]=int(age_[a]*cfg.waypoint_age_retain);
             auto& chain=chains_[id];if(!chain)chain=std::make_shared<Chain>(g,task,cfg.cost_cache);
             assigned_[a]=chain.get();
+            if(cfg.triage_progress_mix>0) {
+                const double current=chain->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
+                if(id!=previous_task_[a] || (progress_timestep_!=env->curr_timestep-1 && progress_timestep_!=env->curr_timestep)) {
+                    progress_rates_[a]=0;progress_samples_[a]=0;
+                } else if(progress_timestep_==env->curr_timestep-1) {
+                    const double delta=progress_remaining_[a]-current;
+                    const double alpha=2.0/(cfg.triage_progress_window+1);
+                    progress_rates_[a]=progress_samples_[a]?(1-alpha)*progress_rates_[a]+alpha*delta:delta;
+                    progress_samples_[a]=std::min(cfg.triage_progress_window,progress_samples_[a]+1);
+                }
+                progress_remaining_[a]=current;
+            }
             if(score_graph_) {
                 auto& score_chain=score_chains_[id];
                 if(!score_chain)score_chain=std::make_shared<Chain>(*score_graph_,task,cfg.cost_cache);
@@ -2097,7 +2144,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 for(int k=task.idx_next_loc;k<int(chain->goals.size());++k) {
                     remaining+=g.hop(chain->goals[k],p);p=chain->goals[k];
                 }
-                if(cfg.triage_guided_mix>0) {
+                if(cfg.triage_guided_mix>0 || cfg.triage_progress_mix>0) {
                     triage_hops[a]=remaining;total_triage_hops+=remaining;
                     triage_guided[a]=chain->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
                     total_triage_guided+=triage_guided[a];
@@ -2109,18 +2156,31 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 }
             }
         }
+        if(cfg.triage_progress_mix>0 && id<0) {
+            progress_remaining_[a]=0;progress_rates_[a]=0;progress_samples_[a]=0;
+        }
         previous_task_[a]=id;previous_stage_[a]=frame.stage[a];
     }
+    if(cfg.triage_progress_mix>0)progress_timestep_=env->curr_timestep;
     if(!triage_hops.empty()) {
         // Keep the total estimated work equal to the hop-based baseline, while
         // allowing direction and remaining turns to redistribute it across tasks.
         // These are currently assigned, visible chains only; no future stream.
         const double normalization=total_triage_guided>0?total_triage_hops/total_triage_guided:0;
         const double steps_per_cell=travel_steps_per_cell();
+        std::vector<double> factors;
+        if(cfg.triage_progress_mix>0) {
+            std::vector<double> work(n,0);
+            for(int a=0;a<n;++a)if(assigned_[a])work[a]=(1-cfg.triage_guided_mix)*triage_hops[a]+
+                cfg.triage_guided_mix*normalization*triage_guided[a];
+            factors=progress_time_factors(work,progress_rates_,progress_samples_,cfg.triage_progress_window,cfg.triage_progress_mix);
+        }
         for(int a=0;a<n;++a)if(assigned_[a]) {
             const double remaining=(1-cfg.triage_guided_mix)*triage_hops[a]+
                 cfg.triage_guided_mix*normalization*triage_guided[a];
-            if(remaining*steps_per_cell*cfg.triage_scale>cfg.horizon-env->curr_timestep) {
+            double estimate=remaining*steps_per_cell*cfg.triage_scale;
+            if(!factors.empty())estimate*=factors[a];
+            if(estimate>cfg.horizon-env->curr_timestep) {
                 assigned_[a]=nullptr;++triaged_;
             }
         }

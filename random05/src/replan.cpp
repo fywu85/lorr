@@ -29,6 +29,8 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
     target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();target.score_weights_.clear();target.progress_normalization_=1;
     target.age_=age_;target.previous_task_=previous_task_;target.previous_stage_=previous_stage_;
     target.suppressed_tasks_=suppressed_tasks_;
+    target.progress_timestep_=progress_timestep_;target.progress_remaining_=progress_remaining_;
+    target.progress_rates_=progress_rates_;target.progress_samples_=progress_samples_;
     target.pending_=pending_;target.best_offsets_=best_offsets_;target.past_offsets_=past_offsets_;
     target.last_actions_=last_actions_;target.predicted_loc_=predicted_loc_;target.predicted_dir_=predicted_dir_;
     if(config.candidate_cache && config.push_price==0) {
