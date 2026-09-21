@@ -1,7 +1,8 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-RANDOM-05 has reached 4,011 on the archived input, repeated exactly, and passed frozen fresh validation.
+RANDOM-05 now reaches4,175 on the archived input; the preceding4,011 configuration
+repeated exactly and passed frozen fresh validation. New validation is pending.
 Large maps are outside active development.
 
 ## Comparison rules
@@ -18,18 +19,18 @@ Large maps are outside active development.
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
-| RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
+| RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
+| RANDOM-02 | 200 | 600 | 1376 | 1401 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
+| RANDOM-05 | 800 | 2000 | 2226 | 4175 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
 continues in [RANDOM05_PROGRESS.md](../RANDOM05_PROGRESS.md). Configurations,
 hashes and evidence are pinned in [random-frontiers.json](random-frontiers.json).
 
-## Current RANDOM-05 validation
+## Earlier RANDOM-05 4,000-task milestone validation
 
 The **4,000 milestone is independently verified**. Archived record **4,011**,
 source [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2), finished
@@ -143,6 +144,15 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T10:43:18.044735+00:00 | RANDOM-04 | trick | 2772 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-dispersion-split-full-v119/trick-random-04-admission-dispersion-seed5/summary.json) |
 | 2026-09-21T10:45:33.558405+00:00 | RANDOM-04 | trick | 2776 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-guidance-split-full-v119/trick-random-04-admission-guidance-contrast2p2/summary.json) |
 | 2026-09-21T11:26:13.386904+00:00 | RANDOM-04 | trick | 2777 | [caedcce7](https://github.com/fywu85/lorr/commit/caedcce7) | [Full run](results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/summary.json) |
+| 2026-09-21T15:05:17.296885+00:00 | RANDOM-01 | trick | 698 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-1p25/summary.json) |
+| 2026-09-21T15:05:18.281354+00:00 | RANDOM-01 | trick | 726 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-1/summary.json) |
+| 2026-09-21T15:05:19.829832+00:00 | RANDOM-01 | trick | 729 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/summary.json) |
+| 2026-09-21T15:07:45.778090+00:00 | RANDOM-02 | trick | 1383 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-horizon-split-full-v132/trick-random-02-resume-horizon-1/summary.json) |
+| 2026-09-21T15:07:51.607813+00:00 | RANDOM-02 | trick | 1392 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-horizon-split-full-v132/trick-random-02-resume-horizon-0p75/summary.json) |
+| 2026-09-21T15:13:35.509421+00:00 | RANDOM-02 | trick | 1395 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-scheduling-split-full-v132/trick-random-02-resume-scheduling-late4/summary.json) |
+| 2026-09-21T15:20:50.685874+00:00 | RANDOM-02 | trick | 1401 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-validation-split-full-v132/trick-random-02-resume-validation-seed2/summary.json) |
+| 2026-09-21T15:23:12.914641+00:00 | RANDOM-05 | trick | 4090 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap760/summary.json) |
+| 2026-09-21T15:23:22.109240+00:00 | RANDOM-05 | trick | 4175 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
 
 
 ## September21: first development comparisons
@@ -535,3 +545,138 @@ complete declared work atK8064/8000/8064. RANDOM-05 tests active-order caps600/6
 (all robots stay movable), and dispersion0.4. None is a performance claim.
 The28full runs are independent GRID jobs, selected before outcomes. No held-out
 input is used and no map-specific behavior bypasses its explicit trick flag.
+
+### Sparse scheduling follow-up declared before outcomes
+
+The original726-task RANDOM-01 trace spends1118of60000robot-steps waiting
+(1.86%); completed orders incur1224extra loaded forward cells above the unweighted
+shortest-path bound. More window repairs alone has not improved its first results.
+RANDOM-02 has4994waits of120000steps (4.16%) and4970completed loaded detour cells.
+These are observations, not fully recoverable-throughput estimates.
+
+Twelve further strict full source132 cases keep the horizon0.75 windowed
+configuration on RANDOM-01/02. Each density tests matching length weights0/0.5/1/2,
+and late-horizon pairing weights4/16 with optional idle price32. This tests task
+selection and end-of-run feasibility independently of movement work. All remain
+explicit tricks. No new independent input or geometry is used.
+
+### Pairing model and first-step work follow-ups
+
+Eight full source132 cases keep the horizon0.75 windowed profile on RANDOM-01/02
+and separately test oriented whole-chain matching, predicted positions, or keep
+bonus0/2. These are existing bounded mechanisms, not new source changes. They
+retain the explicit horizon trick and default task-length weight0.25.
+
+Source133's one-proposal16-component repaired run exceeded the real first-step
+deadline:1075.667ms, including514.920ms assignment and452.253ms look-ahead.
+The original failure is retained without attributing a host cause. A separate
+full case declares FIRST_K2048 instead of4032, with unchanged laterK8064; every
+step still completes all its declared work or fails. Other component cases continue.
+
+### First audited resumed records and declared planner-seed checks
+
+The full replay audit confirms RANDOM-01=729 with horizon600/cutoff0.75,
+mean64.557ms/max100.085ms, and RANDOM-02=1395 after adding late pairing weight4
+and optional idle price32. These are selected individual trick records; the
+original general records726/1376 stay separate. All six initial horizon cases
+and twelve scheduling follow-ups pass strict full-run replay. Other matching
+length weights lose. Exact trace comparisons confirm unchanged726/1376controls
+and their fast-storage/heap versions; equal1376 group4/cooperative variants
+follow different trajectories.
+
+Fourteen new full runs declare an exact repeat plus six other planner seeds
+per selected profile. RANDOM-01 seeds0/1/2/3/5/6 supplement selected4;
+RANDOM-02 seeds0/1/2/3/4/6 supplement selected5. This is planner-seed selection
+and timing qualification on the same archived input, not fresh-input validation.
+
+All eight sparse general trials are audited. RANDOM-01 more-work/group4/cooperative
+scores720/721/722, versus exact726. RANDOM-02 group4/cooperative both1376;
+its4096-repair/group8 run fails at step348,1037.377ms/exit124. No partial score.
+RANDOM-03's8192-repair and24-step-window cases give2578/2533; RANDOM-04's6/14/18
+future cases give2691/2732/2763. All five latter runs replay and pass strict timing,
+but none replaces2602/2777. Preserve all failures and lower-scoring alternatives.
+
+### RANDOM-03 guidance follow-up declared before outcomes
+
+The selected2602trace completes129071shortest-path loaded cells but travels
+187609loaded forward cells on those completed orders (58538detour cells,45.35%).
+Congestion avoidance and turns make this an observational route gap, not a
+recoverable upper bound. More repairs and a longer window just lost, so nine
+full source132 cases test routing with the same mature window solver:
+flow seeds1/7/15/19/31 with no local edge flips; opposing-direction contrasts
+0.6/1.2/1.8 on the selected field; and one general uniform-cost, horizon-off
+case. The15/no-flip case distinguishes layout choice from the selected edge
+mutation. All tuned guidance/horizon cases use --trick RANDOM-03. No test input
+50001–50012 is accessed. Full1000ms limits and800-step runs remain mandatory.
+
+### RANDOM-05 admission transfer reaches4,175
+
+Caps600/680/760 give4104/4175/4090, all independently replayed and strict-valid.
+The680cap record has mean559.233/max872.171ms and peakRSS491.549MB. The4,090 and
+4,175 chronological records are added to RANDOM05_PROGRESS.md and both best
+manifests. Dispersion0.4 loses at3878. Exact repeats and additional planner seeds
+are next; no fresh-input performance is attributed to this new configuration.
+
+### Lower-density admission transfer and continued crowded checks
+
+Seven full source132 cases test the active-order mechanism below the crowded
+regime. RANDOM-01 caps80/90 and RANDOM-02 caps160/180 apply only for the first150
+steps, then restore full admission. RANDOM-03 tests persistent caps340/360/380.
+All robots remain movable and opened assignments remain protected; each case
+uses its explicit instance trick flag. These are new density-transfer hypotheses,
+not assumed gains from the successful RANDOM-04/05 results.
+
+The4,175profile receives an exact repeat and seeds1/2/3, nearby caps640/660/700/720,
+and a separately declared FIRST_K6144runtime variant. Source1acea28a/build135
+passes39.87s of full regression for idle alignment, with direct two-quarter-turn,
+no-invented-order, active-goal-preservation and dense cache/worker/restore checks.
+Ten full cases compare alignment off/on at all five selected profiles. Source134
+failed to compile its new test because it called a nonexistent accessor; the
+corrected test reads the existing checkpoint API. Preserve that failure; no
+source134 benchmark was launched. The engine binary is identical after the
+135test-only fix. No performance claim is made for alignment before full audit.
+
+### Retaining the selected guidance mutation and refining current admission
+
+On the matured RANDOM-03 solver, removing its selected single edge reversal
+reduces2602to2550. The first five alternative layouts and three weaker contrast
+values all lose. A nested search therefore keeps that first reversed edge and
+adds the next1/2/3/4 edges from the same deterministic shuffle (total flips2–5),
+on RANDOM-03 and RANDOM-04. This is an explicit map-specific guidance trick,
+selected by archived-input performance; no claim of unseen-layout transfer.
+
+RANDOM-04 also retests active caps540/550/570/580 on the current2777 combination
+of contrast2.2,dispersion0.4,horizon pairing16 and price32. Older cap sweeps used
+different guidance/scoring combinations. These four current-profile interaction
+checks remain full strict runs, with no changed work budget or selected seed.
+
+### Resumed experiment closures and audit checkpoint, 15:45 UTC
+
+All seven lower-density admission cases lose: RANDOM-01 cap80/90 until150
+scores690/708 against729; RANDOM-02 cap160/180 until150 scores1334/1361
+against1401; RANDOM-03 persistentcap340/360/380 scores2467/2536/2546 against2602.
+Every result completes its full horizon and passes independent replay/timing.
+
+RANDOM-03 alternate fieldseeds1/7/15/19/31 without flips score2435/2506/2550/2422/2489;
+contrasts0.6/1.2/1.8 score2551/2584/2581. Its general uniform-field/horizon-off
+case fails the first entry at1313.366ms. This is preserved as a timeout, with
+no truncated performance score or inferred host cause.
+
+Source133 components give control2777; two-proposal/groups16/repair0=2760;
+groups32/repair0=2777; groups32/repair1=2723. The equal2777 component run follows
+different trajectories. One-proposal/groups16/repair1 fails timestep0 at1075.667ms;
+its separately declared FIRST_K2048 alternative completes2739. Legacy zero-component
+2773 and default-off2777 controls are identical in all six trace fields to their
+archived references. Keep the new component feature disabled.
+
+Twelve trace comparisons are archived in results/resume-control-equivalence-v135.
+Unchanged source132 controls2602/2777/4011, source133 controls2777/2773, resumed
+729/1395 repeats, and source135 controls729/1401/2602/2777 match all six fields.
+The newly selected1401 therefore has an exact full repeat. Source135 idle alignment
+loses719/1395/2545/2756 onR01–04; finalR05 results and full batch audit are pending.
+
+The full RANDOM-05 progress audit passes87historical frontier rows. Its reader
+now obtains executed steps from the original full trace when an early summary
+lacks actual_path_steps; it never substitutes makespan. Original summaries remain
+unchanged. All six existing horizon tests pass, and the root PILOT dashboard and
+waiting report are regenerated from audited evidence.

@@ -1,5 +1,12 @@
 # RANDOM-05 results
 
+**Current selected archived best:4,175tasks** (+31.62% versus matched NMS32),
+source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9), plannerseed0.
+The explicit680active-order cap leaves all800robots movable. All2000steps pass
+strict timing/resource checks and independent replay. Repetition and fresh-input
+validation of this new configuration are pending.
+[Admission-transfer audit](results/random05-resume-transfer-split-full-v132/audit.json).
+
 The **4,000-task milestone is independently verified**:4,011 on the full archived
 RANDOM-05 combined benchmark, reproduced exactly. On two untouched task/start
 inputs, the frozen candidate scores3,912/4,047 and beats the stronger NMS repeat
@@ -17,9 +24,9 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,011 | 3,172 | +26.5% | 534 / 622ms | 559MB |
+| 16 physical cores / 32 workers | 4,175 | 3,172 | +31.6% | 559 / 872ms | 492MB |
 
-Raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
+For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
 are3912/4047 versus3901/4023 for the previous3990configuration, and stronger
 NMS3095/3190. Candidate means573/560ms, maxima624/644ms, RSS below560MB.
@@ -35,7 +42,7 @@ These are selected single-seed maxima. Exact configurations and executable hashe
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2). Both use declared map-specific
+[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Earlier four-core frozen independent-input comparison
@@ -87,17 +94,17 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All85 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[Timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [previous goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,944 steps,
+The current development records' longest completed orders take1,941/1,964 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.
-[Current comparison](results/task-waiting-frontiers-20260920T1612/REPORT.md),
+[Earlier comparison](results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [current fresh-input waiting metrics](results/fresh-validation-v5/WAITING.md),
 [earlier four-core waiting metrics](results/fresh-validation-v4/WAITING.md),
 [history](WAITING_PROGRESS.md).

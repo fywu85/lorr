@@ -10,7 +10,7 @@ Status: **achieved and independently validated on 2026-09-21**.
 Keep separate four-core and 32-worker records under the existing comparison rules.
 The previous target of approaching the colleague's 27–28% matched NMS gain was
 met at +25.42% on fresh inputs. Their private absolute counts are not matched
-baselines. All prior fresh inputs 50001–50010 remain excluded from tuning.
+baselines. All prior fresh inputs 50001–50012 remain excluded from tuning.
 
 ## Comparison rules
 
@@ -31,11 +31,27 @@ baselines. All prior fresh inputs 50001–50010 remain excluded from tuning.
   alongside its source commit/hash and UTC timestamp. Distinguish that best from
   replicated improvements across seeds.
 
+The user resumed the campaign on2026-09-21 to push all five RANDOM instances
+as high as possible. The4,000 milestone remains completed; the new admission
+configuration below has not yet received fresh-input validation.
+
 ## Verified local frontier
 
-Updated: 2026-09-21 04:56 UTC (validation completed; record finished at 03:50 UTC).
+Updated: 2026-09-21 15:28 UTC.
 
-**Best single run on the archived input: 4,011 tasks on 32 workers / 16 physical cores**,
+**Current selected archived best:4,175tasks**, +31.62% versus matched NMS32=3,172
+and +4.09% versus the preceding4,011. Source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9),
+plannerseed0, all800robots movable, maximum680active orders, firstK7968/K16320,
+B18/depth8 and the prior guidance/move-bias/cutoff settings. Opened orders remain
+locked. The explicit `--trick RANDOM-05` flag covers admission as well as guidance
+and known horizon. Mean559.233ms/max872.171ms, peakRSS491.549MB; all2000steps
+pass independent replay and strict resource/deadline checks. Exact repetition,
+additional planner seeds and new frozen-input validation are still pending.
+Longest completed order1964steps;147initial orders remain unfinished,117unopened;
+oldest unfinished age remains censored at2000. Throughput selected this result.
+[Full audit](random05/results/random05-resume-transfer-split-full-v132/audit.json).
+
+**Previous validated milestone:4,011tasks on32workers/16physical cores**,
 or **+26.5% versus matched NMS32=3,172**. Source
 [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2), planner seed0,
 firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias3,
@@ -334,6 +350,9 @@ fix. Neither removes combined-track features.
 | 2026-09-21T03:26:06.798792+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.75; `--trick RANDOM-05` | 3990 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.8% | [Full evidence](random05/results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json) |
 | 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed0; move bias3; triage1.25/mix1; `--trick RANDOM-05` | 4011 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +26.5% | [Full evidence](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
 
+
+| 2026-09-21T15:23:12.914641+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; active-order cap760; all800robots movable; explicit `--trick RANDOM-05` | 4090 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +28.9% | [Full evidence](random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap760/summary.json) |
+| 2026-09-21T15:23:22.109240+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; active-order cap680; all800robots movable; explicit `--trick RANDOM-05` | 4175 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +31.6% | [Full evidence](random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1803,3 +1822,13 @@ pass. This is an equivalent-source control, not a new throughput record.
 The original4,011 frontier, frozen fresh validation and held-out inputs remain
 unchanged. [Full audit](random05/results/random35-unified-control-split-full-v124/audit.json),
 [exact trace proof](random05/results/random35-unified-control-split-full-v124/control-equivalence.json).
+
+## September21 resumed admission transfer
+
+RANDOM-04's active-order cap transfers successfully to RANDOM-05 on the first
+archived planner seed. Caps600/680/760 finish4104/4175/4090; dispersion0.4instead
+of0.8 loses at3878. All four strict full runs independently replay. All800robots
+remain in the planner; only new order admissions are limited. This changes the
+unfinished-order tail and is an explicit throughput/fairness tradeoff. It is not
+a starvation-free claim. Retain the previous4,011 fresh-validation evidence as
+historical evidence for its frozen configuration, not validation of4,175.

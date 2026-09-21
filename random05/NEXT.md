@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 15:03 UTC. The user explicitly resumed the campaign and expanded
+Updated 2026-09-21 15:45 UTC. The user explicitly resumed the campaign and expanded
 the active objective to maximum throughput on all five RANDOM instances.
 The RANDOM-05 4,000-task milestone is achieved and independently audited.
 The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
@@ -31,12 +31,47 @@ Any further fresh validation requires freezing protocol/config before generation
 
 ## Current resumed execution
 
-First wave:28full source132 cases in random-all-resume-controls,
-random12-resume-general, random12-resume-horizon, random03-resume-search,
-random04-resume-futures and random05-resume-transfer (all suffix full-v132).
-See RANDOM_PROGRESS.md for hypotheses and experiments/ for frozen manifests.
-Source027df4d9, binary175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
-No new source implementation yet. Preserve historical paused records below.
+Selected audited records are now **729 / 1401 / 2602 / 2777 / 4175**.
+General records remain726/1376/1582/1558/2226. The new sparse records add explicit
+horizon tricks; RANDOM-05 adds an active-order cap680 while all800robots remain
+movable. Independent full replay, allocation, timing and waiting checks pass.
+RANDOM-01=729 and RANDOM-02=1401 have exact six-field repeats. RANDOM-05=4175
+is still awaiting its exact repeat, additional seeds and fresh-input validation.
+The earlier4011fresh validation does not qualify this new configuration.
+
+Source132/027df4d9 is the current selected R01/R02/R05 binary,
+SHA175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
+Source133/bddcfda7 adds optional joint-proposal components; regression39.19s.
+Its full experiments do not improve2777; leave the feature off.
+Source135/1acea28a adds optional idle alignment; regression39.87s. Its controls
+match729/1401/2602/2777 in all six trace fields. Alignment loses onR01–04;
+the twoR05runs are still pending. Source134's test compilation failure is retained.
+
+Active frozen full batches (all runs use strict1000ms entries):
+- random05-record4175-split-full-v132: exact repeat, seeds1/2/3, caps640/660/700/720,
+  and FIRST_K6144 fixed-work runtime alternative; jobs8903147–8903155.
+- random-all-idle-alignment-split-full-v135: selected-profile off/on pairs across
+  all five densities; jobs8903156–8903165; onlyR05remains pending.
+- random03-resume-nested-guidance-split-full-v132: totalflips2–5 retaining the
+  selected first edge mutation; jobs8903178–8903181.
+- random04-resume-nested-guidance-split-full-v132: same nested experiment on2777;
+  jobs8903182–8903185.
+- random04-record2777-cap-refine-split-full-v132: caps540/550/570/580;
+  jobs8903186–8903189.
+
+All other resumed batches through random123-resume-admission are complete and
+audited. Lower-density admission, extra window work, alternate matching and
+idle alignment have not improved their corresponding selected controls.
+Source132 uniformR03failed at timestep0,1313.366ms; no partial score. The
+source133 one-proposal component case failed at timestep0,1075.667ms; its
+separately declared smaller startup budget completes2739 and still loses.
+Preserve failures without inferring host causes. Raw outputs remain ignored.
+
+See RANDOM_PROGRESS.md for predeclared hypotheses and full closures, experiments/
+for frozen manifests, and results/resume-control-equivalence-v135 for twelve
+six-field comparisons. Equal2777 joint-component score has different trajectories.
+All87RANDOM-05 frontier rows pass the full progress audit; legacy summaries
+without path lengths are checked against their original full traces.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
@@ -79,21 +114,23 @@ negative whole-proposal evidence before implementing. Fresh RANDOM-04 inputs
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2602 / 2777 / 4011.
+Trick RANDOM-01..05: 729 / 1401 / 2602 / 2777 / 4175.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +7.64% / +26.5%.
-All records have full source/input/resource, independent replay and waiting
-checks. One archived layout at five densities is not unseen-layout transfer.
-Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
+Published max(NMS,KK):688/1260/2334/2547/3050. Selected gains versus that
+published orientation reference are5.96%/11.19%/11.48%/9.03%/36.89%; these are
+not matched-machine comparisons. All records have independent full replay and
+resource/waiting checks. One layout at five densities is not unseen-layout transfer.
+Exact cases:random-frontiers.json. Consolidated ledger:RANDOM_PROGRESS.md.
 
-RANDOM-05: source a2ff2b2 / build-v80, case 32-record3990-mix1,
-batch record3990-coupling-split-full-v80, finished 03:50:40.471914 UTC.
-Seed0, first7968/K16320/B18/s2/q4/G4/E8/P8, move bias3/fraction0.25,
-field15/flip5/contrast2.4, triage1.25/mix1, turn0.6/wait0.5.
-Windowed search, startup weighting, and finalist rescoring are off.
-Mean534/max622ms; RSS559MB. Archived record4011 repeated exactly in all six
-trajectory/schedule/event/task fields. Longest completed order1944 steps;
-130 initial orders unfinished, 86 unopened; oldest unfinished censored2000.
+RANDOM-05: source027df4d9/build132, case trick-random-05-resume-cap680,
+batchrandom05-resume-transfer-split-full-v132, finished2026-09-21T15:23:22.109240Z.
+Seed0, activecap680/fastadmission1, first7968/K16320/B18/s2/q4/G4/E8/P8,
+movebias3/fraction0.25, field15/flipseed5/oneflip/contrast2.4,
+triage1.25/mix1,turn0.6/wait0.5. Mean559.233/max872.171ms; peakRSS491.549MB.
+Longest completed order1964steps;147initial orders unfinished,117unopened;
+oldest unfinished censored2000. Repeat and seed checks are pending.
+Previous4011sourcea2ff2b2/build80 remains archived with exact repeats and
+its own freshV5qualification. That qualification does not transfer to4175.
 
 Four-core record3770 stays separate: source5f81613/build65, seed3,
 first4608/K5760/B12/cache512/triage1.5, mean788/max845ms, RSS485MB.
@@ -122,7 +159,7 @@ builds. results/trick-gates-v80/audit.json tests the actual frozen executable.
 All 85 main frontier rows and waiting metrics are checked; separate manifests
 and all user-facing logs are current. The registered goal was marked COMPLETE
 at05:07 UTC after the evidence and PILOT dashboard were committed/pushed in
-a87f097. Reproduce with tools/audit_4000_milestone.py. The broader RANDOM
+a87f097. Reproduce the historical milestone auditor at its archived commit; its checks pin the then-current best manifests. The broader RANDOM
 campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Retained RANDOM-03/04 goal and qualification

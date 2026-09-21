@@ -978,3 +978,36 @@ reach2838; no fresh RANDOM-04 input exists. Preserve the eight-seed timing
 qualification, all strict deadline failures and held-out inputs50001–50012.
 Logs and small evidence artifacts are committed and pushed as the stopping
 checkpoint. Resume only at the user's request.
+
+## September 21, 15:10 UTC: local components from a joint proposal
+
+Sourcebddcfda7/build133 adds R05_JOINT_GROUPS, default0 and bounded at128.
+Each joint donor is decomposed with the ordinary best plan into independent
+motion components. A hybrid substitutes one whole component, ranked by static
+remaining-cost decrease, then scores every ordinary continuation. The final
+forecast objective stays unchanged; the static ranking only chooses proposals.
+If fewer components exist than declared, unchanged anchors fill the workload.
+All declared futures complete: baseK + proposals*(1+groups)*branches.
+
+Full regression passes39.19s, including positive component budgets, checkpoint
+replay, worker/cache equivalence, shared futures, screening, and reverse-turn
+accounting. Unsupported root operators remain rejected. This uses no map-specific
+knowledge; selected guidance/horizon/admission still require the explicit flag.
+Six full RANDOM-04 cases compare2777 control,1x16 repaired components,2x16/32
+unrepaired components,2x32 repaired components, and a legacy2773 control.
+No performance improvement is claimed before complete-run replay and timing.
+Binary SHAe92518b8a8e42298687451e4579bacf76a46c1c5f80aebdffecad4e07bb8fe10.
+
+### 2026-09-21 15:45 UTC — resumed campaign checkpoint
+
+The broader all-five objective is active. Source133 component proposals close
+without a record:2760/2777/2723 versus2777; the equal score is a different trace.
+The first-step1075.667ms failure remains recorded; its smaller fixed startup-work
+variant completes2739. Source135 idle alignment currently loses2545/2756 onR03/04,
+while controls reproduce2602/2777 in all six fields. Source132 alternate R03 fields
+and weaker contrast all lose; uniform guidance fails its first entry at1313.366ms.
+PersistentR03caps340/360/380 score2467/2536/2546 and do not transfer the R05gain.
+
+Active full tests retain the selected first guidance flip while adding1–4 further
+flips on both densities. R04also tests caps540/550/570/580 on its current2777
+combination. These are explicitly flagged tricks; no held-out input is used.

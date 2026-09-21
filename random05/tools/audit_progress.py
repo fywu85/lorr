@@ -5,7 +5,7 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
-from result_horizon import summary_steps
+from result_horizon import summary_steps, executed_steps
 import re
 import subprocess
 from audit_task_waits import audit as audit_task_waits
@@ -19,6 +19,43 @@ def read(path):
 
 
 def audit():
+    raw_spec_index = None
+
+    def raw_result(spec, result, evidence):
+        nonlocal raw_spec_index
+        raw_path = ROOT / 'runs/random05' / Path(evidence).relative_to('random05/results').parent / result['name'] / 'result.json'
+        if not raw_path.exists():
+            # Early archived batch names differ from their original run paths.
+            # Resolve by the complete frozen specification, never by makespan.
+            if raw_spec_index is None:
+                raw_spec_index = {}
+                run_root = ROOT / 'runs/random05'
+                for candidate in list(run_root.glob('*/spec.json')) + list(run_root.glob('*/*/spec.json')):
+                    raw_spec = read(candidate)
+                    if raw_spec.get('kind') == 'benchmark':
+                        key = raw_spec['created_utc']
+                        assert key not in raw_spec_index, ('ambiguous frozen specification', key)
+                        raw_spec_index[key] = candidate
+            raw_spec_path = raw_spec_index[spec['created_utc']]
+            assert read(raw_spec_path) == spec, (evidence, 'archived/raw specification mismatch')
+            raw_path = raw_spec_path.parent / result['name'] / 'result.json'
+        assert read(raw_path.parent / 'summary.json') == result, (evidence, 'archived/raw summary mismatch')
+        return raw_path
+
+    def horizon(result, spec, evidence):
+        if 'actual_path_steps' in result:
+            return summary_steps(result)
+        # Preserve historical summaries verbatim. Their original full trace
+        # supplies the horizon metadata absent from the early runner schema.
+        data = read(raw_result(spec, result, evidence))
+        steps = executed_steps(data)
+        assert result.get('steps', steps) == steps
+        assert data['numTaskFinished'] == result['result']['numTaskFinished']
+        times = data.get('entryComputeTimes', data.get('plannerTimes'))
+        if times is not None:
+            assert len(times) == steps, 'legacy timing horizon mismatch'
+        return steps
+
     builds = {}
     for path in (ROOT / 'runs/random05').glob('build-*/completion.json'):
         completion = read(path)
@@ -29,12 +66,11 @@ def audit():
         directory = ROOT / 'random05/results' / name
         specification = read(directory / 'spec.json')
         for reference in read(directory / 'summary.json'):
-            assert reference['valid'] and summary_steps(reference) == 2000
+            assert reference['valid'] and horizon(reference, specification, str((directory / 'summary.json').relative_to(ROOT))) == 2000
             reference_case = next(c for c in specification['cases'] if c['name'] == reference['name'])
             references[reference['result']['numTaskFinished']] = (reference_case, read(directory / 'allocation.json'), name)
     report = []
     waiting_cache = {}
-    raw_spec_index = None
     text = (ROOT / 'RANDOM05_PROGRESS.md').read_text()
     table = text.split('| Completed UTC', 1)[1].split('## Reference evidence supplied', 1)[0]
     for row in table.splitlines():
@@ -50,7 +86,8 @@ def audit():
         assert len(matches) == 1, (utc, evidence, 'missing or ambiguous result')
         result = matches[0]
         assert result['valid'] and result['exit'] == 0, (utc, 'invalid run')
-        assert summary_steps(result) == 2000, (utc, 'partial run')
+        spec = read((ROOT / evidence).parent / 'spec.json')
+        assert horizon(result, spec, evidence) == 2000, (utc, 'partial run')
         for key in ('numPlannerErrors', 'numScheduleErrors', 'numEntryTimeouts'):
             assert result['result'][key] == 0, (utc, key)
         spec = read((ROOT / evidence).parent / 'spec.json')
@@ -84,27 +121,12 @@ def audit():
         # The archived summary mirrors the raw runner directory. Keep waiting
         # metrics tied to this exact throughput-selected result, including the
         # unfinished tail rather than only orders that managed to finish.
-        raw_path = ROOT / 'runs/random05' / Path(evidence).relative_to('random05/results').parent / result['name'] / 'result.json'
-        if not raw_path.exists():
-            # Some early archives shortened the batch name. Resolve through
-            # the frozen specification, not a guess based on the case label.
-            if raw_spec_index is None:
-                raw_spec_index = {}
-                run_root = ROOT / 'runs/random05'
-                for candidate in list(run_root.glob('*/spec.json')) + list(run_root.glob('*/*/spec.json')):
-                    raw_spec = read(candidate)
-                    if raw_spec.get('kind') == 'benchmark':
-                        key = raw_spec['created_utc']
-                        assert key not in raw_spec_index, ('ambiguous frozen specification', key)
-                        raw_spec_index[key] = candidate
-            raw_spec_path = raw_spec_index[spec['created_utc']]
-            assert read(raw_spec_path) == spec, (utc, 'archived/raw specification mismatch')
-            raw_path = raw_spec_path.parent / result['name'] / 'result.json'
-        assert read(raw_path.parent / 'summary.json') == result, (utc, 'archived/raw summary mismatch')
+        raw_path = raw_result(spec, result, evidence)
         if raw_path not in waiting_cache:
             waiting, raw_data = audit_task_waits(raw_path)
             trajectory = hashlib.sha256(json.dumps(raw_data['actualPaths'], separators=(',', ':')).encode()).hexdigest()
-            assert trajectory == result['trajectory_sha256'], (utc, 'raw trajectory mismatch')
+            if 'trajectory_sha256' in result:
+                assert trajectory == result['trajectory_sha256'], (utc, 'raw trajectory mismatch')
             waiting_cache[raw_path] = waiting
         waiting = waiting_cache[raw_path]
         assert waiting['tasks_finished'] == int(tasks) and waiting['horizon_steps'] == 2000
