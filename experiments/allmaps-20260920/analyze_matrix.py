@@ -427,6 +427,7 @@ def main():
                     history_rollout=int(case['environment'].get('CGAR_WINDOW_HISTORY_ROLLOUT','0'));assert int(cfg.get('history_rollout','0'))==history_rollout
                     delay_samples=int(case['environment'].get('CGAR_WINDOW_DELAY_SAMPLES','0'));assert int(cfg.get('delay_samples','0'))==delay_samples and 0<=delay_samples<=16
                     temperature=int(case['environment'].get('CGAR_WINDOW_TEMPERATURE','0'));assert int(cfg.get('temperature','0'))==temperature and 0<=temperature<=65536
+                    merge=int(case['environment'].get('CGAR_WINDOW_MERGE','0'));assert int(cfg.get('merge','0'))==merge and merge in (0,1)
                     assert cfg['seed']=='cgar' and cfg['protected'] in ('immutable','immutable_first_action') and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -453,6 +454,14 @@ def main():
                         assert 0<=int(x.get('total_uphill_accepted','0'))<=int(x['total_attempts'])
                         assert 0<=int(x.get('total_incumbent_updates','0'))<=int(x['total_attempts'])
                         if not temperature:assert uphill==updates==restores==int(x.get('total_uphill_accepted','0'))==int(x.get('total_incumbent_updates','0'))==0
+                        donors=int(x.get('merge_donors','0'));components=int(x.get('merge_components','0'))
+                        merged=int(x.get('merge_accepted','0'));robots=int(x.get('merge_robots','0'));gain=int(x.get('merge_gain','0'))
+                        assert donors==(int(cfg['workers'])-1 if merge else 0)
+                        assert 0<=merged<=components<=donors*row['robots'] and 0<=robots<=donors*row['robots']
+                        assert gain>=0 and int(x.get('pre_merge_cost',x['final_cost']))==int(x['final_cost'])+gain<=int(x['initial_cost'])
+                        assert int(x.get('total_merge_donors','0'))==donors*int(x['step'])
+                        assert 0<=int(x.get('total_merge_accepted','0'))<=donors*row['robots']*int(x['step'])
+                        if not merge:assert merged==components==robots==gain==int(x.get('total_merge_gain','0'))==0
                         assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
                         assert int(x['capped'])+int(x['failed'])<=int(x['searches'])
@@ -464,12 +473,13 @@ def main():
                         assert 0<=int(x['selected_worker'])<int(cfg['workers'])
                         assert 0<=int(x['changed_first'])<=row['robots']-int(x['protected'])
                         assert 0<=int(x['retained'])<=row['robots'] and 0<=int(x['history_resets'])<=row['robots']
-                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets','total_delay_draws','total_delay_replacements','total_uphill_accepted','total_incumbent_updates'):
+                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets','total_delay_draws','total_delay_replacements','total_uphill_accepted','total_incumbent_updates','total_merge_donors','total_merge_accepted','total_merge_gain'):
                         counts=[int(x.get(counter,'0')) for x in window_samples];assert counts==sorted(counts)
                     row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
                 else:
                     assert not window_config and not window_samples
                     assert not int(case['environment'].get('CGAR_WINDOW_CHAIN_SEED','0'))
+                    assert not int(case['environment'].get('CGAR_WINDOW_MERGE','0'))
                 future_roots=int(case['environment'].get('CGAR_FUTURE_ROOTS','0'))
                 future_config=[fields(l) for l in logs if l.startswith('[cgar-future-config] ')]
                 future_samples=[fields(l) for l in logs if l.startswith('[cgar-future] ')]

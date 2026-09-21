@@ -433,3 +433,13 @@ with half ties upward. Strength100 is the original field. Turn costs, physical
 action duration and field topology do not change; routing and pickup oracles
 share the transformed field. Every field has an immutable SHA256/FNV identity.
 This is an explicitly labelled instance trick, not an implicit density switch.
+
+`CGAR_WINDOW_MERGE=1` optionally combines compatible whole paths from completed
+window workers. It starts with the ordinary best worker and visits every other
+worker in index order, connecting all cross-parent vertex and head-on conflicts
+through the full horizon. A component adopts donor paths only for lower total
+cost, or equal cost with lower remaining-chain cost when progress ties are on.
+Primary/recovery paths, protected prefixes, permissions and promised occupied
+cells remain enforced. Default0 preserves old choices and RNG; all workers and
+all donor merges finish before actions or history are published. Deadline errors
+fail the entire entry. Diagnostics reconcile the before/after cost and donor count.

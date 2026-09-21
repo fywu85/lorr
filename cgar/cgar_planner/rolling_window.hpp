@@ -18,6 +18,7 @@ struct WindowOptions {
     int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0, history_rollout = 0;
     int delay_samples = 0;  // extra candidates on half the repair attempts; zero preserves the old random stream
     int temperature = 0;  // initial cost units; cooling is by completed iteration count
+    int merge = 0;  // combine compatible paths only after every worker completes
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -213,6 +214,8 @@ struct WindowStats {
     long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0, history_batches = 0;
     long long delay_draws = 0, delay_replacements = 0;
     long long uphill_accepted = 0, incumbent_updates = 0, incumbent_restores = 0;
+    long long merge_donors = 0, merge_components = 0, merge_accepted = 0, merge_robots = 0;
+    int64_t merge_gain = 0, pre_merge_cost = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
     int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
     int changed_first = 0, protected_robots = 0, selected_worker = 0;
@@ -221,8 +224,65 @@ struct WindowStats {
         searches += other.searches; expanded += other.expanded; capped += other.capped; failed += other.failed; partial_rollbacks += other.partial_rollbacks; history_batches += other.history_batches;
         delay_draws += other.delay_draws; delay_replacements += other.delay_replacements;
         uphill_accepted += other.uphill_accepted; incumbent_updates += other.incumbent_updates; incumbent_restores += other.incumbent_restores;
+        merge_donors += other.merge_donors; merge_components += other.merge_components;
+        merge_accepted += other.merge_accepted; merge_robots += other.merge_robots; merge_gain += other.merge_gain;
     }
 };
+
+// Both parents must be complete, valid plans for the same CGAR problem. Connect
+// every cross-parent vertex and head-on conflict. A component can then take one
+// parent's whole paths without colliding with another component's choice.
+template<class Check>
+std::vector<std::vector<int>> window_merge_components(const WindowProblem& p,
+        const std::vector<WindowPath>& current, const std::vector<WindowPath>& donor, Check check) {
+    p.validate(current, check); p.validate(donor, check);
+    const int robots = current.size();
+    std::vector<int> parent(robots), owner(p.free.size(), -1);
+    std::iota(parent.begin(), parent.end(), 0);
+    auto root = [&](int r) { while (parent[r] != r) { parent[r] = parent[parent[r]]; r = parent[r]; } return r; };
+    auto join = [&](int a, int b) { a = root(a); b = root(b); if (a != b) parent[std::max(a, b)] = std::min(a, b); };
+    for (int t = 1; t <= p.horizon; ++t) {
+        check(); std::fill(owner.begin(), owner.end(), -1);
+        for (int r = 0; r < robots; ++r) owner[current[r][t] / 4] = r;
+        for (int r = 0; r < robots; ++r) {
+            int other = owner[donor[r][t] / 4];
+            if (other >= 0) join(r, other);
+            other = owner[donor[r][t - 1] / 4];
+            if (other >= 0 && current[other][t - 1] / 4 == donor[r][t] / 4) join(r, other);
+        }
+    }
+    std::vector<std::vector<int>> groups(robots), result;
+    for (int r = 0; r < robots; ++r) groups[root(r)].push_back(r);
+    for (auto& group : groups) {
+        bool changed = false;
+        for (int r : group) changed = changed || current[r] != donor[r];
+        if (changed) result.push_back(std::move(group));
+    }
+    return result;
+}
+
+template<class Check>
+void merge_window_donor(const WindowProblem& p, std::vector<WindowPath>& current,
+        const std::vector<WindowPath>& donor, bool progress_ties, WindowStats& stats, Check check) {
+    const auto groups = window_merge_components(p, current, donor, check);
+    const int64_t before = p.score(current), previous_gain = stats.merge_gain;
+    ++stats.merge_donors;
+    for (const auto& group : groups) {
+        check(); ++stats.merge_components;
+        int64_t old_cost = 0, new_cost = 0, old_remaining = 0, new_remaining = 0;
+        for (int r : group) if (!p.fixed[r]) {
+            old_cost += p.cost(r, current[r]); new_cost += p.cost(r, donor[r]);
+            if (progress_ties) { old_remaining += p.remaining(r, current[r]); new_remaining += p.remaining(r, donor[r]); }
+        }
+        if (new_cost < old_cost || (progress_ties && new_cost == old_cost && new_remaining < old_remaining)) {
+            ++stats.merge_accepted; stats.merge_gain += old_cost - new_cost;
+            for (int r : group) if (current[r] != donor[r]) { current[r] = donor[r]; ++stats.merge_robots; }
+        }
+    }
+    p.validate(current, check); check();
+    if (p.score(current) + stats.merge_gain - previous_gain != before)
+        throw std::logic_error("rolling-window merged objective does not reconcile");
+}
 
 // Reused dense labels plus immutable predecessor records. Updating a state label
 // cannot silently rewrite a previously queued path's ancestry.
@@ -496,7 +556,7 @@ public:
             options.keep < 0 || options.keep >= p.horizon || options.iterations < 1 || options.nodes < 1 ||
             options.group < 1 || options.workers < 1 || options.workers > 32 || options.threads < 1 ||
             options.threads > options.workers || options.delay_samples < 0 || options.delay_samples > 16 ||
-            options.temperature < 0 || options.temperature > 65536 ||
+            options.temperature < 0 || options.temperature > 65536 || options.merge < 0 || options.merge > 1 ||
             seeds.size() != size_t(options.workers))
             throw std::invalid_argument("invalid rolling-window work declaration");
         if (options.history_rollout < 0 || options.history_rollout > 1 ||
@@ -592,7 +652,15 @@ public:
                 best = id; best_cost = cost; best_remaining = remaining;
             }
         }
-        auto result = results[best]->paths(); p.validate(result, check); check();
+        auto result = results[best]->paths(); stats.pre_merge_cost = best_cost;
+        if (options.merge) {
+            for (int id = 0; id < options.workers; ++id) if (id != best)
+                merge_window_donor(p, result, results[id]->paths(), options.progress_ties, stats, check);
+            best_cost = p.score(result); best_remaining = p.remaining_score(result);
+            if (stats.merge_donors != options.workers - 1 || best_cost + stats.merge_gain != stats.pre_merge_cost)
+                throw std::logic_error("rolling-window merge did not complete its declared donors");
+        }
+        p.validate(result, check); check();
         if (best_cost > stats.initial_cost) throw std::logic_error("rolling-window objective regressed");
         if (options.progress_ties && best_cost == stats.initial_cost && best_remaining > stats.initial_remaining)
             throw std::logic_error("rolling-window tie regressed terminal progress");

@@ -1,0 +1,59 @@
+{
+  "review_started_utc": "2026-09-21T13:28:00.152950+00:00",
+  "authorization": "User explicitly requested latest PILOT solver reference on 2026-09-21; source-only frozen snapshot, independent working files and live outcomes untouched.",
+  "commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+  "previous_reference": "d51bdbf2c4e6830f8cabacb52ac9cfa8234aa663",
+  "files": [
+    {
+      "path": "random05/src/engine.cpp",
+      "sha256": "523951a82d67c1d4223a310fb1915f25238d341eb24e6fc95389c19a0269f3b7",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/engine.cpp"
+    },
+    {
+      "path": "random05/src/engine.hpp",
+      "sha256": "039d05c7638d645a1f2f92ec82af6cea61afdd7a5a14188d2c78f207372d484c",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/engine.hpp"
+    },
+    {
+      "path": "random05/src/window.cpp",
+      "sha256": "6e1dbb52553c779088bccd8c930ad6041deba8bfcbbc1225a2aebd8efadb00db",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/window.cpp"
+    },
+    {
+      "path": "random05/src/joint_moves.cpp",
+      "sha256": "0c34de46117ea10e8f62d3e4e458fe71bfaf901cd0c27837cd4b5ee6f72d5f60",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/joint_moves.cpp"
+    },
+    {
+      "path": "random05/src/shared_rankings.cpp",
+      "sha256": "5b4af81d539ab4fc15067215c7e1e242c28ef0d1c9b841e9c41163126f030df4",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/shared_rankings.cpp"
+    },
+    {
+      "path": "random05/src/rescore.cpp",
+      "sha256": "6fcc2fa15ca0749942ba370b570680c6593a16f333accfb0f0fc40f975beeb86",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/rescore.cpp"
+    },
+    {
+      "path": "random05/src/operations.cpp",
+      "sha256": "7ae55794a7ada286e0c156481844340d38b72cc87a710d04dd38aa922f3fa4a2",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/operations.cpp"
+    },
+    {
+      "path": "random05/src/replan.cpp",
+      "sha256": "8903f4acc1ecf43153dcbf2d54f79db664410fa96b830e57c8a62554d6c774de",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/replan.cpp"
+    },
+    {
+      "path": "random05/src/components.cpp",
+      "sha256": "8fd1f74c4d7bb969648474fa568cd84cb1a0d212d471a2510170f9a9de124875",
+      "local_snapshot": "/tmp/cgar-pilot-readonly-027df4d9/components.cpp"
+    }
+  ],
+  "review_findings": [
+    "Sparse rolling windows have unchanged source since previous snapshot, but their independent-worker conflict-component merging has not been transferred into CGAR. It can combine compatible whole paths without changing protected CGAR decisions.",
+    "Recent crowded changes include cached displacement losses excluding head-on swaps, optional goal-local lane prices, and fully evaluated joint-movement proposals with bounded swap repair. No performance claim inferred from presence in source.",
+    "Prioritize bounded generic window merge for RANDOM02/03 while preserving current RANDOM04 motion commitments; evaluate dense joint/displacement ideas separately."
+  ],
+  "reviewed_utc": "2026-09-21T13:38:01.460006+00:00"
+}
