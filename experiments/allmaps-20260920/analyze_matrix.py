@@ -247,6 +247,7 @@ def main():
                     assert int(cfg.get('seed_rollout','0'))==rollout
                     progress_ties=int(case['environment'].get('CGAR_WINDOW_PROGRESS_TIES','0'));assert int(cfg.get('progress_ties','0'))==progress_ties
                     assert int(cfg.get('protected_prefix','0'))==int(case['environment'].get('CGAR_WINDOW_PROTECTED_PREFIX','0'))
+                    history_rollout=int(case['environment'].get('CGAR_WINDOW_HISTORY_ROLLOUT','0'));assert int(cfg.get('history_rollout','0'))==history_rollout
                     assert cfg['seed']=='cgar' and cfg['protected'] in ('immutable','immutable_first_action') and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -258,6 +259,10 @@ def main():
                     for x in window_samples:
                         assert x['complete']=='1' and int(x['attempts'])==attempts
                         assert int(x.get('rollout_batches','0'))==((window_horizon-1)//5 if rollout else 0)
+                        history_batches=int(x.get('history_batches','0'));expected_history=(window_horizon-int(cfg['keep'])+4)//5
+                        assert history_batches in ((0,expected_history) if history_rollout else (0,))
+                        if history_rollout:assert 0<=int(x.get('total_history_batches','0'))<=expected_history*int(x['step'])
+                        else:assert int(x.get('total_history_batches','0'))==0
                         assert int(x['calls'])==int(x['step']) and int(x['total_attempts'])==attempts*int(x['step'])
                         assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])

@@ -14,7 +14,7 @@
 namespace cgar {
 struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
-    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0;
+    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0, history_rollout = 0;
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -118,13 +118,14 @@ struct WindowProblem {
         }
     }
 };
-// Extend the validated first five actions with complete joint temporal-PIBT
-// chunks. This gives LNS coordinated future traffic instead of an artificial
+// Extend a validated prefix (five actions by default) with complete joint
+// temporal-PIBT chunks. This gives LNS coordinated future traffic instead of an artificial
 // stationary wall after slot five. Existing protected tails remain unchanged.
 template<class Check>
 int extend_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
                        const std::vector<int>& order, int displacement_limit,
-                       uint64_t seed, Check check) {
+                       uint64_t seed, Check check, int begin = 5) {
+    if (begin < 5 || begin > p.horizon) throw std::invalid_argument("invalid joint continuation prefix length");
     p.validate(p.seed, check);
     const auto before = p.seed; const int64_t before_cost = p.score(before);
     const int robots = p.seed.size(), cells = p.free.size();
@@ -133,9 +134,9 @@ int extend_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
         if (stages[r] < p.chains[r].goals.size() && cell == p.chains[r].goals[stages[r]]) ++stages[r];
     };
     for (int r = 0; r < robots; ++r)
-        for (int t = 1; t <= std::min(5, p.horizon); ++t) advance(r, p.seed[r][t] / 4);
+        for (int t = 1; t <= begin; ++t) advance(r, p.seed[r][t] / 4);
     std::mt19937_64 rng(seed); int batches = 0;
-    for (int offset = 5; offset < p.horizon; offset += 5) {
+    for (int offset = begin; offset < p.horizon; offset += 5) {
         check(); const int length = std::min(5, p.horizon - offset);
         std::vector<TemporalPath> waits(robots);
         std::vector<std::vector<TemporalChoice>> choices(robots);
@@ -193,16 +194,23 @@ int extend_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
     return batches;
 }
 
+struct WindowRollout {
+    const TemporalGeometry* geometry = nullptr;
+    const std::vector<int>* order = nullptr;
+    int displacement_limit = 8192;
+    uint64_t seed = 0;
+};
+
 struct WindowStats {
     bool completed = false;
     long long attempts = 0, accepted = 0, improved = 0, searches = 0, expanded = 0;
-    long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0;
+    long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0, history_batches = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
     int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
     int changed_first = 0, protected_robots = 0, selected_worker = 0;
     void merge(const WindowStats& other) {
         attempts += other.attempts; accepted += other.accepted; improved += other.improved;
-        searches += other.searches; expanded += other.expanded; capped += other.capped; failed += other.failed; partial_rollbacks += other.partial_rollbacks;
+        searches += other.searches; expanded += other.expanded; capped += other.capped; failed += other.failed; partial_rollbacks += other.partial_rollbacks; history_batches += other.history_batches;
     }
 };
 
@@ -392,13 +400,16 @@ class RollingWindow {
 public:
     template<class Check>
     std::vector<WindowPath> solve(const WindowProblem& p, const WindowOptions& options, int tick,
-                                 const std::vector<uint64_t>& seeds, WindowStats& stats, Check check) {
+                                 const std::vector<uint64_t>& seeds, WindowStats& stats, Check check, const WindowRollout& rollout = {}) {
         stats = {};
         if (options.horizon != p.horizon || options.horizon < 1 || options.horizon > 32 ||
             options.keep < 0 || options.keep >= p.horizon || options.iterations < 1 || options.nodes < 1 ||
             options.group < 1 || options.workers < 1 || options.workers > 32 || options.threads < 1 ||
             options.threads > options.workers || seeds.size() != size_t(options.workers))
             throw std::invalid_argument("invalid rolling-window work declaration");
+        if (options.history_rollout < 0 || options.history_rollout > 1 ||
+            (options.history_rollout && (options.keep < 5 || !options.seed_rollout || !rollout.geometry || !rollout.order || rollout.displacement_limit < 1)))
+            throw std::invalid_argument("history rollout requires a kept prefix of at least five actions and complete joint continuation context");
         p.validate(p.seed, check);
         auto initial = p.seed;
         stats.seed_cost = p.score(initial); stats.seed_remaining = p.remaining_score(initial);
@@ -448,6 +459,14 @@ public:
                 stats.history_resets += count; if (!count) break;
             }
             p.validate(candidate, check);
+            if (options.history_rollout && std::count(retained.begin(), retained.end(), true)) {
+                auto forecast = p; forecast.seed = candidate;
+                stats.history_batches = extend_window_seed(forecast, *rollout.geometry, *rollout.order,
+                    rollout.displacement_limit, rollout.seed, check, options.keep);
+                for (size_t r = 0; r < candidate.size(); ++r) for (int t = 0; t <= options.keep; ++t)
+                    if (forecast.seed[r][t] != candidate[r][t]) throw std::logic_error("history continuation changed a retained prefix");
+                p.validate(forecast.seed, check); candidate = std::move(forecast.seed);
+            }
             const int64_t cost = p.score(candidate), remaining = p.remaining_score(candidate);
             if (cost < stats.seed_cost || (cost == stats.seed_cost && (!options.progress_ties || remaining <= stats.seed_remaining))) {
                 initial = std::move(candidate); stats.retained = std::count(retained.begin(), retained.end(), true);

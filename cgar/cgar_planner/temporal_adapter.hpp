@@ -593,7 +593,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         std::vector<uint64_t> seeds(window_options_.workers);
         for (auto& seed : seeds) seed = window_rng_();
         WindowStats window;
-        const auto paths = rolling_window_.solve(problem, window_options_, env_->curr_timestep, seeds, window, check);
+        WindowRollout history_rollout;
+        if (window_options_.history_rollout) history_rollout = {&temporal_geometry_, &order, temporal_budget_, window_history_rng_()};
+        const auto paths = rolling_window_.solve(problem, window_options_, env_->curr_timestep, seeds, window, check, history_rollout);
         if (!window.completed) throw std::logic_error("CGAR exposed an incomplete rolling window");
         for (int r = 0; r < n_; ++r) {
             const Action selected = static_cast<Action>(problem.action(paths[r][0], paths[r][1]));
@@ -604,13 +606,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.window_changed_first += window.changed_first;
         stats_.window_retained += window.retained; stats_.window_history_resets += window.history_resets;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld seed_remaining=%lld initial_remaining=%lld final_remaining=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
-                env_->curr_timestep + 1, rollout_batches, window.attempts, window.accepted, window.improved, window.searches,
+            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d history_batches=%lld attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld seed_remaining=%lld initial_remaining=%lld final_remaining=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld total_history_batches=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, rollout_batches, window.history_batches, window.attempts, window.accepted, window.improved, window.searches,
                 window.expanded, window.capped, window.failed, window.retained, window.history_resets,
                 static_cast<long long>(window.seed_cost), static_cast<long long>(window.initial_cost), static_cast<long long>(window.final_cost),
                 static_cast<long long>(window.seed_remaining), static_cast<long long>(window.initial_remaining), static_cast<long long>(window.final_remaining),
                 window.changed_first, window.protected_robots, window.selected_worker, stats_.window_calls,
-                stats_.window.attempts, stats_.window_changed_first, stats_.window_retained, stats_.window_history_resets,
+                stats_.window.attempts, stats_.window_changed_first, stats_.window_retained, stats_.window_history_resets, stats_.window.history_batches,
                 std::chrono::duration<double>(Clock::now() - started).count());
     }
     if (temporal_priority_noise_) {

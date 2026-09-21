@@ -588,3 +588,18 @@ trajectory when disabled or configured with one root. The forecast is a heuristi
 it holds current protected paths stationary after their five-action prefix and
 does not predict future CGAR primary/recovery decisions. A lower forecast cost is
 not itself evidence of greater competition throughput. Full benchmarks decide.
+
+
+`CGAR_WINDOW_HISTORY_ROLLOUT=1` optionally completes the joint forecast after the
+retained prefix before comparing it with the fresh seed. It requires an enabled
+window, seed rollout and `5 <= KEEP < WINDOW`. Histories must first pass the same
+pose/task/service/permission/protection checks and conflict resets. The kept
+prefix and fixed paths remain unchanged. Complete temporal-PIBT chunks extend the
+joint candidate from `KEEP` to the horizon; the repaired whole-window objective
+must still beat or tie the fresh seed before history is accepted. If no compatible
+history survives, no extra forecast is required. The declared maximum is
+`ceil((WINDOW-KEEP)/5)` complete chunks. Diagnostics count the actual chunks.
+A separate random stream leaves existing fresh seeds and repair seeds unchanged.
+Any deadline failure propagates before a new persistent history is published.
+This is a general default-off experiment; it has no map lookup or throughput
+claim until full comparisons finish.

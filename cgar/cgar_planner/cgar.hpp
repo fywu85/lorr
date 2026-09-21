@@ -568,7 +568,7 @@ private:
     FutureOptions future_options_;
     std::mt19937_64 future_rng_{0};
     RollingWindow rolling_window_;
-    std::mt19937_64 window_rng_{0};
+    std::mt19937_64 window_rng_{0}, window_history_rng_{0};
     int temporal_chain_mode_ = 0, temporal_chain_mb_ = 512, temporal_chain_threads_ = 1;
     std::mt19937_64 temporal_rng_{0};
     TemporalPriorityPortfolio temporal_priority_portfolio_;
