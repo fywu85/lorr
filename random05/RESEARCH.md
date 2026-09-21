@@ -1636,3 +1636,5 @@ Test geometry, ring legality, masks, deterministic workers and checkpoint replay
 before full all-five general/trick comparisons. Current selected profiles and
 all frozen held-outs remain unchanged. Existing rectangular-loop expansions
 were already tested earlier; this specifically adds nonrectangular boundaries.
+
+Source158/1bd28fee passes52.91s regression; binary9152e4d6801e657f0195582f9c0c50fd246a84a0cfa554e4ed0e1f5eeb06527c. Thirty-two full general/trick comparisons test face length0/8/16 at all five densities, plus32 on crowded trickR04/R05. Off controls must match all six trace fields. All profiles keep their previous fixed budgets and strict limits. No result is presumed.
