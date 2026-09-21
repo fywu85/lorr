@@ -197,6 +197,13 @@ Config Config::environment(const SharedEnvironment& env) {
     c.mutation_decay=real("R05_MUTATION_DECAY",1);
     if(!std::isfinite(c.mutation_decay) || c.mutation_decay<=0 || c.mutation_decay>1)
         throw std::invalid_argument("mutation decay must be in (0,1]");
+    c.blocker_mutation_size=integer("R05_BLOCKER_MUTATION_SIZE",0);
+    c.blocker_mutation_period=integer("R05_BLOCKER_MUTATION_PERIOD",2);
+    c.blocker_mutation_edges=integer("R05_BLOCKER_MUTATION_EDGES",1);
+    if(c.blocker_mutation_size<0 || c.blocker_mutation_size>512 ||
+       c.blocker_mutation_period<1 || c.blocker_mutation_period>64 ||
+       c.blocker_mutation_edges<1 || c.blocker_mutation_edges>4)
+        throw std::invalid_argument("invalid blocker-directed priority mutation settings");
     c.mutation_radius=integer("R05_MUTATION_RADIUS",0);
     if(c.mutation_radius<0)throw std::invalid_argument("mutation radius must be nonnegative");
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
@@ -312,6 +319,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("mixed guidance potentials require weighted guidance and a non-windowed policy");
     if(c.guidance!="none" && !random_trick)
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
+    if(c.blocker_mutation_size && (c.window || c.operation_depth || c.mutation_radius))
+        throw std::invalid_argument("blocker-directed mutations require the ordinary pipeline without spatial mutation");
     if(c.early_root_period && (c.early_fill || c.operation_depth || c.window || c.component_trials || c.replan_roots))
         throw std::invalid_argument("optional immediate moves require the ordinary pipelined portfolio");
     if(c.component_trials && (c.early_fill || c.operation_depth))
@@ -1629,6 +1638,59 @@ void Engine::evaluate_until(const Frame& frame,const std::vector<float>& offsets
 
 // Select distinct evaluated vectors with the chosen incumbent first. Reused
 // across generations and between real steps; scores never cross a real step.
+std::vector<std::vector<int>> priority_dependencies(const Graph& g,const Frame& f,
+    const std::vector<const Chain*>& assigned,int preferred_edges) {
+    const int n=int(f.loc.size());
+    if(preferred_edges<1 || preferred_edges>4 || int(f.pending.size())!=n ||
+       int(f.stage.size())!=n || int(assigned.size())!=n)
+        throw std::invalid_argument("invalid priority dependency frame");
+    std::vector<int> owner(g.cells,-1);
+    for(int a=0;a<n;++a) {
+        int v=f.pending[a];
+        if(v<0 || v>=g.cells || owner[v]>=0)throw std::invalid_argument("invalid promised occupancy");
+        owner[v]=a;
+    }
+    std::vector<std::vector<int>> edges(n);
+    for(int a=0;a<n;++a) {
+        const auto* chain=assigned[a];if(!chain)continue;
+        int stage=f.stage[a],v=f.pending[a];
+        if(stage<int(chain->goals.size()) && v==chain->goals[stage])++stage;
+        if(stage>=int(chain->goals.size()))continue;
+        std::array<std::pair<float,int>,4> choices{};int count=0;
+        // Include intended routes before rotation constraints, as in the
+        // spatial intent policy. This is a mutation graph, never a move plan.
+        for(int d=0;d<4;++d) {
+            const int u=g.next[v][d];if(u<0)continue;
+            choices[count++]={chain->cost(g,stage,u,d)+g.weight[v][d],d};
+        }
+        std::sort(choices.begin(),choices.begin()+count);
+        for(int k=0;k<std::min(count,preferred_edges);++k) {
+            const int b=owner[g.next[v][choices[k].second]];
+            if(b<0 || b==a)continue;
+            edges[a].push_back(b);edges[b].push_back(a);
+        }
+    }
+    for(auto& neighbors:edges) {
+        std::sort(neighbors.begin(),neighbors.end());
+        neighbors.erase(std::unique(neighbors.begin(),neighbors.end()),neighbors.end());
+    }
+    return edges;
+}
+
+std::vector<int> dependency_neighborhood(const std::vector<std::vector<int>>& edges,
+    int center,int limit) {
+    if(center<0 || center>=int(edges.size()) || limit<1)
+        throw std::invalid_argument("invalid priority mutation neighborhood");
+    std::vector<unsigned char> seen(edges.size(),0);seen[center]=1;
+    std::vector<int> group{center};
+    for(size_t i=0;i<group.size() && int(group.size())<limit;++i)
+        for(int b:edges[group[i]]) {
+            if(b<0 || b>=int(edges.size()))throw std::invalid_argument("invalid priority dependency");
+            if(!seen[b]){seen[b]=1;group.push_back(b);if(int(group.size())==limit)break;}
+        }
+    return group;
+}
+
 std::vector<int> select_rollout_elites(const std::vector<Rollout>& results,int used,
                                       int best,int limit,bool accept_equal,float decision_distance) {
     std::vector<int> parents{best};
@@ -1788,6 +1850,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         frame.free_tasks.assign(future_tasks_.size(),1);
     }
     prepare_shared_rankings(env->curr_timestep);
+    const auto mutation_dependencies=cfg.blocker_mutation_size>0?
+        priority_dependencies(g,frame,assigned_,cfg.blocker_mutation_edges):std::vector<std::vector<int>>{};
     mark(1);
     frame.age=age_;
     if(cfg.reverse_penalty>0)frame.last_actions=last_actions_;
@@ -1862,7 +1926,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             // the incumbent first preserves the same unmodified anchor.
             parents=select_rollout_elites(results,begin,best,cfg.elites,cfg.accept_equal,cfg.elite_decision_distance);
         }
-        int exploitation=0,history_children=0;
+        int exploitation=0,history_children=0,local_mutations=0;
         for(int k=begin;k<end;++k) {
             const bool global=k>begin && cfg.restart_period>0 && k%cfg.restart_period==0;
             int parent=best;
@@ -1888,6 +1952,13 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 offsets[k]=past_offsets_[history_children++%past_offsets_.size()];
             }
             if(k>begin && !history_anchor) {
+                if(cfg.blocker_mutation_size>0 && !global &&
+                   local_mutations++%cfg.blocker_mutation_period==0) {
+                    const int center=std::uniform_int_distribution<int>(0,n-1)(global_rng);
+                    for(int a:dependency_neighborhood(mutation_dependencies,center,cfg.blocker_mutation_size))
+                        offsets[k][a]=noise(global_rng);
+                    continue;
+                }
                 // Keep the declared restart share global. Other futures can
                 // change one spatial neighborhood while preserving its context.
                 int center=-1;

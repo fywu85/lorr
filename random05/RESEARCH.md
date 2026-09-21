@@ -1336,3 +1336,20 @@ R05_WINDOW_INITIAL_STEPS (default1) to declare how many initial calls use the
 smaller FIRST_ITERS budget. This is a predetermined iteration schedule, not a
 clock-based cutoff. Test warmup8 separately; the subsequent strict deadline is
 unchanged and later failures remain failures.
+
+## Priority changes along route dependencies
+
+`R05_BLOCKER_MUTATION_SIZE` (default0) selects an optional bounded group of robots
+connected through occupied cells on their preferred task routes. The graph uses
+exact promised occupancy and advances errands reached by the current promise;
+its edges are undirected so both a requester and its blocker can be changed.
+`R05_BLOCKER_MUTATION_EDGES` selects the best1..4 outgoing route alternatives.
+Every declared `R05_BLOCKER_MUTATION_PERIOD` local proposal replaces the offsets
+of one breadth-first group; other local proposals and fully random restarts
+remain available. The unchanged incumbent and retained history anchors survive.
+
+This tests a different neighborhood from the earlier geometric radius: robots
+are grouped by possible route interference rather than their coordinates alone.
+Only priorities change; each whole forecast is recomputed and certified normally,
+with exactly the same declared number of branch evaluations. No throughput gain
+is assumed. The general mechanism has no map name, task ID or horizon rule.

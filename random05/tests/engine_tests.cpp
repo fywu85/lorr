@@ -920,6 +920,36 @@ void rollout_elite_diversity() {
     }
 }
 
+void blocker_priority_mutations() {
+    auto env=environment(5,5,4);Config cfg;Graph graph(env,cfg);
+    Task task;task.locations={4};Chain chain(graph,task,true);
+    Frame frame;frame.loc={0,1,2,24};frame.pending=frame.loc;frame.dir={0,0,0,0};frame.stage={0,0,0,0};
+    std::vector<const Chain*> assigned{&chain,&chain,&chain,nullptr};
+    auto edges=priority_dependencies(graph,frame,assigned,1);
+    require(dependency_neighborhood(edges,0,10)==std::vector<int>({0,1,2}),
+            "route dependency neighborhood crossed an empty cell or missed a blocking robot");
+    require(dependency_neighborhood(edges,0,2)==std::vector<int>({0,1}),
+            "route dependency neighborhood exceeded its declared size");
+    require(dependency_neighborhood(edges,3,10)==std::vector<int>({3}),
+            "unrelated idle robot was attached to a mutation group");
+    Task chained;chained.locations={0,4};Chain arrival(graph,chained,true);assigned[0]=&arrival;
+    frame.loc[0]=5;
+    require(priority_dependencies(graph,frame,assigned,1)==edges,
+            "dependency graph ignored promised occupancy or failed to advance a reached errand");
+    cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=4;cfg.persist_elites=4;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto ordinary=simulate(cfg,12);
+    for(int degree:{1,2}) {
+        cfg.blocker_mutation_size=8;cfg.blocker_mutation_period=2;cfg.blocker_mutation_edges=degree;
+        cfg.threads=1;cfg.candidate_cache=false;cfg.shared_rankings_mb=0;
+        const auto changed=simulate(cfg,12,5,5,true);
+        require(changed!=ordinary,"dependency mutation fixture did not exercise different priorities");
+        cfg.threads=3;cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.shared_rankings_mb=4;
+        require(changed==simulate(cfg,12),"dependency mutation changed with caches or workers");
+    }
+}
+
 void physical_guidance_edges() {
     auto env=environment(5,5,4);env.map[12]=1;
     Config cfg;cfg.guidance="lanes";cfg.turn_cost=.6f;cfg.goal_cache=true;
@@ -1240,6 +1270,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    blocker_priority_mutations();
     physical_guidance_edges();
     mixed_guidance_potentials();
     optional_immediate_moves();

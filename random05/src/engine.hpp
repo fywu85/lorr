@@ -47,6 +47,7 @@ struct Config {
     bool fuse_cache_hits=false, lazy_cost_rows=false;
     int shared_rankings_mb=0;
     int restart_period=4;
+    int blocker_mutation_size=0, blocker_mutation_period=2, blocker_mutation_edges=1;
     float elite_decision_distance=0, priority_remaining_weight=0;
     int priority_remaining_steps=0, early_root_period=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
@@ -116,6 +117,11 @@ struct Frame {
     std::vector<const Chain*> active_chains, plain_chains;
     std::vector<unsigned char> free_tasks;
 };
+// Undirected interactions through the occupied cells on preferred goal routes.
+std::vector<std::vector<int>> priority_dependencies(const Graph& graph,const Frame& frame,
+    const std::vector<const Chain*>& assigned,int preferred_edges);
+std::vector<int> dependency_neighborhood(const std::vector<std::vector<int>>& dependencies,
+    int center,int limit);
 struct PriorityChange { int agent;float offset; };
 using Continuation = std::vector<std::vector<PriorityChange>>;
 struct Rollout {
