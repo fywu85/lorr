@@ -348,6 +348,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.age_cap>0 && !random_trick)
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
+    const int free_ties=integer("R05_MATCH_FREE_TIES",0);
+    if(free_ties<0 || free_ties>1 || (free_ties && c.hungarian_limit<=0))
+        throw std::invalid_argument("free-column matching ties need exact matching and a boolean value");
+    c.match_free_ties=free_ties;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     if(!std::isfinite(c.active_cap_triage_credit) || c.active_cap_triage_credit<0 ||
        c.active_cap_triage_credit>1 || (c.active_cap_triage_credit>0 &&
@@ -1010,9 +1014,10 @@ void Engine::record_travel(const std::vector<Action>& actions) {
 }
 
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
-    int dummy_columns,bool fast_dummy_prefix) {
+    int dummy_columns,bool fast_dummy_prefix,bool prefer_free_ties,uint64_t* augment_scans) {
     if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
         throw std::invalid_argument("invalid rectangular matching problem");
+    if(augment_scans)*augment_scans=0;
     std::vector<double> u(nr+1),v(nc+1);
     std::vector<int> owner(nc+1),previous(nc+1);
     int first_row=1;
@@ -1042,11 +1047,17 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
         std::fill(distance.begin(),distance.end(),1e30);
         std::fill(visited.begin(),visited.end(),0);
         do {
+            if(augment_scans)++*augment_scans;
             visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
             for(int j=1;j<=nc;++j)if(!visited[j]) {
                 double reduced=matrix[size_t(active-1)*nc+j-1]-u[active]-v[j];
                 if(reduced<distance[j]){distance[j]=reduced;previous[j]=column;}
-                if(distance[j]<delta){delta=distance[j];next_column=j;}
+                // Any minimum reduced-distance column is valid. Prefer a free
+                // one only on exact ties, avoiding unnecessary zero-cost tree
+                // expansion. This preserves optimal cost, but may change which
+                // optimal assignment is selected; it is an explicit option.
+                if(distance[j]<delta || (prefer_free_ties && distance[j]==delta &&
+                   owner[j]==0 && owner[next_column]!=0)){delta=distance[j];next_column=j;}
             }
             for(int j=0;j<=nc;++j) {
                 if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
@@ -1211,7 +1222,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
     };
     if(exact) {
-        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission);
+        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties);
         for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
             schedule[agents[row]]=tasks[selected[row]];
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {

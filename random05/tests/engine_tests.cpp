@@ -1280,7 +1280,8 @@ void rectangular_matching_optimality() {
                 self(self,row+1,used|(1u<<column),cost+matrix[size_t(row)*columns+column]);
         };
         enumerate(enumerate,0,0,0);
-        const auto chosen=hungarian_assignment(matrix,rows,columns);
+        for(bool prefer_free:{false,true}) {
+        const auto chosen=hungarian_assignment(matrix,rows,columns,0,false,prefer_free);
         require(int(chosen.size())==rows,"rectangular matching lost a row");
         unsigned used=0;double actual=0;
         for(int row=0;row<rows;++row) {
@@ -1289,10 +1290,47 @@ void rectangular_matching_optimality() {
             used|=1u<<column;actual+=matrix[size_t(row)*columns+column];
         }
         require(actual==optimum,"rectangular matching differs from exhaustive optimum");
+        }
     }
     require(hungarian_assignment({},0,0).empty(),"empty matching was not empty");
     require(hungarian_assignment(std::vector<float>(15,0),3,5)==std::vector<int>({0,1,2}),
             "equal-price matching changed its stable column ties");
+}
+
+void free_matching_ties() {
+    // A large flat optimum has no reason to revisit occupied columns. Count
+    // augmenting scans rather than making a hardware-dependent timing assertion.
+    std::vector<float> matrix(32*48,0);uint64_t original=0,preferred=0;
+    const auto a=hungarian_assignment(matrix,32,48,0,false,false,&original);
+    const auto b=hungarian_assignment(matrix,32,48,0,false,true,&preferred);
+    require(a==b && preferred==32 && original>preferred*8,
+            "free-column ties failed to eliminate redundant augmenting scans");
+    Config cfg;cfg.match_free_ties=true;cfg.hungarian_limit=1000;
+    cfg.active_task_cap=18;cfg.fast_admission=true;cfg.futures=8;cfg.depth=6;
+    cfg.random_by_step=true;cfg.threads=1;
+    const auto reference=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.cost_cache=true;cfg.goal_cache=true;
+    require(reference==simulate(cfg,12,5,5,true),"free-column matching depends on workers/caches/checkpoints");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* name,const char* value):key(name),present(std::getenv(name)!=nullptr) {
+            if(present)old=std::getenv(name);
+            require(setenv(name,value,1)==0,"could not set matching fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting free_ties("R05_MATCH_FREE_TIES","1"),exact("R05_HUNGARIAN","1000");
+    auto env=environment(5,5,4);
+    require(Config::environment(env).match_free_ties,"general free-column matching option was rejected");
+    {
+        Setting off("R05_HUNGARIAN","0");bool rejected=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"free-column matching accepted greedy mode");
+    }
+    {
+        Setting invalid("R05_MATCH_FREE_TIES","2");bool rejected=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"free-column matching accepted a non-boolean value");
+    }
 }
 
 void exact_dummy_prefix() {
@@ -1311,10 +1349,12 @@ void exact_dummy_prefix() {
             }
             for(int row=0;row<rows;++row)for(int j=real;j<columns;++j)
                 matrix[size_t(row)*columns+j]=minimum-1;
-            require(hungarian_assignment(matrix,rows,columns,dummies,false)==
-                    hungarian_assignment(matrix,rows,columns,dummies,true),
-                    "dummy-prefix shortcut changed an exact assignment");
-            ++comparisons;
+            for(bool prefer_free:{false,true}) {
+                require(hungarian_assignment(matrix,rows,columns,dummies,false,prefer_free)==
+                        hungarian_assignment(matrix,rows,columns,dummies,true,prefer_free),
+                        "dummy-prefix shortcut changed an exact assignment");
+                ++comparisons;
+            }
         }
     }
     std::vector<float> malformed{0,1,0,1};bool rejected=false;
@@ -2332,7 +2372,7 @@ int main() {
     compact_prepared_rankings();
     active_travel_calibration();
     observed_progress_triage();
-    rectangular_matching_optimality();
+    rectangular_matching_optimality();free_matching_ties();
     exact_dummy_prefix();
     active_task_admission();initial_task_admission();
     priced_task_admission();
