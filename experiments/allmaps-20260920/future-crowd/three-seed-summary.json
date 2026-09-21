@@ -1,0 +1,96 @@
+{
+  "checked_utc": "2026-09-21T13:13:58.770458+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 2298,
+      "valid": true,
+      "max_entry_seconds": 0.311621955,
+      "peak_rss_bytes": 173891584,
+      "trajectory_sha256": "0d41f08fab4641d1c8fd2c9f6f82768a0528a3e05528042965302419eff5fb92",
+      "evidence": "results/random04-future-crowd-full-v1/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_terminal_pairs16",
+      "seed": 2,
+      "tasks": 2304,
+      "valid": true,
+      "max_entry_seconds": 0.304050904,
+      "peak_rss_bytes": 173883392,
+      "trajectory_sha256": "ed4ab0dcb67fc18b3b6af92b27cb10e1f99eb80d47336d23158e5bb458ece1d5",
+      "evidence": "results/random04-future-crowd-full-v1/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 2237,
+      "valid": true,
+      "max_entry_seconds": 0.303802371,
+      "peak_rss_bytes": 174039040,
+      "trajectory_sha256": "a529669db8370bb01fd2d2683fbfd24c17e714c7882715f886d8b4fd7371d01d",
+      "evidence": "results/random04-future-crowd-replicate-full-v2/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_terminal_pairs16",
+      "seed": 0,
+      "tasks": 2176,
+      "valid": true,
+      "max_entry_seconds": 0.305102054,
+      "peak_rss_bytes": 173871104,
+      "trajectory_sha256": "2e317d313f68f6b1c1e6250a29bf08a3130e9027ccd80f83e4df9288e99f7cc7",
+      "evidence": "results/random04-future-crowd-replicate-full-v2/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 4,
+      "tasks": 2215,
+      "valid": true,
+      "max_entry_seconds": 0.304967273,
+      "peak_rss_bytes": 174100480,
+      "trajectory_sha256": "0838aa93081f07387efcd2cc786ef27a8a7d6f88565049f0cd1bc2c5eacff3d6",
+      "evidence": "results/random04-future-crowd-replicate-full-v2/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_terminal_pairs16",
+      "seed": 4,
+      "tasks": 2321,
+      "valid": true,
+      "max_entry_seconds": 0.302952193,
+      "peak_rss_bytes": 174174208,
+      "trajectory_sha256": "1f2823149d7cddd0a3c332de788f7db6c0bfba842f32714597a27e953def5398",
+      "evidence": "results/random04-future-crowd-replicate-full-v2/verification.json",
+      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f"
+    }
+  ],
+  "control_trajectories_exact": true,
+  "seeds": [
+    0,
+    2,
+    4
+  ],
+  "control_tasks": [
+    2237,
+    2298,
+    2215
+  ],
+  "candidate_tasks": [
+    2176,
+    2304,
+    2321
+  ],
+  "aggregate_gain_percent": 0.7555555555555538,
+  "all_positive": false,
+  "decision": "Pairprice16 yields2176/2304/2321 vs2237/2298/2215. Two gains, one loss; +0.7556% aggregate, selected maximum2321seed4. Modest seed-sensitive evidence, not consistent improvement."
+}

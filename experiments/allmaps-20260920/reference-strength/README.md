@@ -19,7 +19,9 @@ checks compact/wide oracles, production pickup/planning, omitted/100 action and
 assignment identity, corrupt assets and strict configuration gates.
 
 After complete source qualification: full RANDOM02seed2, RANDOM03seed2 and
-RANDOM04seed2 matrices compare their selected controls with25/50/75. RANDOM04
+RANDOM04seed4 matrices compare their selected controls with25/50/75. RANDOM04
 retains its newly selected crowd16 and motion commitments; RANDOM02/03 retain
 current windows. Four bound physical cores per case, strict1000ms,32decimalGB,
 full600/800/1000steps. Replicate positive signals, keep all failures.
+
+Pre-submission amendment 2026-09-21T13:21:23.684948+00:00: an independent crowd-cost replication promoted RANDOM04 to2321seed4 before any reference-strength jobs were submitted. The declared RANDOM04 control now uses seed4 and the same crowd16 profile. RANDOM02seed2 and RANDOM03seed2 remain unchanged. Source6fc0cc50 passed all41 source/test hashes and full GRID regression before submission.

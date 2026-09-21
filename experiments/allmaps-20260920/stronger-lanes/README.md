@@ -32,3 +32,5 @@ CITY02 full results:16=16,315;24=16,830;32=16,526;48=16,615. All valid;
 control repeats its entire selected trajectory. Price24 gains515 (+3.16%) on
 seed0, max809.83ms. This is a selected-seed gain; a matched16/24 comparison on
 seeds2/4 is declared next. Other settings remain fixed.
+
+Replication completed 2026-09-21T13:21:23.684948+00:00: CITY02 controls16315/16199/16117 versus price24 16830/16754/16839 on seeds0/2/4; all three positive, aggregate +3.6849%. Selected maximum16839seed4. Full strict one-second runs; see city02-three-seed-summary.json.

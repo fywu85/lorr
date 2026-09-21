@@ -1,6 +1,6 @@
 # Continue CGAR across ten instances
 
-Updated 2026-09-21T13:02:09.256814+00:00. The user is asleep and explicitly requests continued iteration.
+Updated 2026-09-21T13:24:01.461718+00:00. The user requested a ten-instance summary; continue the authorized all-map iteration.
 
 Targets: +10% over max(published NMS, KK) on RANDOM-01 through RANDOM-05; stretch +5% on the other five. Throughput is primary, fairness secondary. Selected-seed maxima count, but distinguish those from replicated gains. The old formal Warehouse160k goal text is obsolete; continue the latest all-map scope. No internal subagents.
 
@@ -21,17 +21,17 @@ All shell calls require_escalated (default bwrap fails); Python3.7. Heavy builds
 | WAREHOUSE | 155173 | 0 | 944.766 |
 | SORTATION | 150894 | 0 | 993.898 |
 | CITY-01 | 8440 | 2 | 752.710 |
-| CITY-02 | 16830 | 0 | 809.831 |
+| CITY-02 | 16839 | 4 | 804.542 |
 | GAME | 24447 | 4 | 826.520 |
 | RANDOM-01 | 693 | 4 | 488.915 |
 | RANDOM-02 | 1215 | 2 | 359.375 |
 | RANDOM-03 | 1982 | 2 | 662.922 |
-| RANDOM-04 | 2304 | 2 | 304.051 |
+| RANDOM-04 | 2321 | 4 | 302.952 |
 | RANDOM-05 | 3610 | 10 | 729.825 |
 
 All are full-horizon TRICK profiles. Warehouse and Sortation reserve8 physical cores; others4. GAME and RANDOM05 meet the selected-seed margin target. Published baselines are historical targets, not matched competitor reruns. No starvation-free claim. RANDOM05 parks31 capacity robots and its best now adds cap700. GAME restricts the active fleet. Warehouse has exclusive qualification and100M-action replay; other results have simulator plus complete movement/wait audits.
 
-Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-130003.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, future-crowd/best-random04.json, move-promises/best-random05.json and stronger-lanes/best-city02.json.
+Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-132145.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, future-crowd/best-random04.json, move-promises/best-random05.json and stronger-lanes/best-city02.json.
 
 Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on seeds0/2/4, +16.319% aggregate, all positive. Forward-only gains11.529%. RANDOM05 seed10:3065 ->3391mode1 ->3571mode2, then3610 with cap700. Cap composition adds39 (+1.09%) on one seed; no replicated cap claim. R05 uncapped replication is complete:3532/3531/3571 versus3043/3015/3065 on seeds0/2/10, +16.5625% aggregate, all positive. All three mode1 scores also exceed3355. Cap composition remains single-seed evidence.
 
@@ -42,13 +42,17 @@ Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on s
 - New window/scheduler2x2 also loses: R01 693/691/685/686, R02 1215/1212, R03 1982/1982/1872/1883 (control/horizon mean/more rematching/both). All controls reproduce full trajectories.
 - Cap700 without commitments gives +1.129% aggregate over seeds0/2/10, one loss. Nearby caps625/650/675 lose to700. Superseded by current commitment+cap profile.
 - Sortation wider matching gives150863 versus150894 control; both valid. Warehouse155173control/154829wider is fully verified; current width32 remains.
-- CITY01 stronger lane prices16/24/32/48 give8440/8413/8409/8394, all valid. Lower prices also lost earlier. Keep16. CITY02 price24 improves16315 to16830 (+515,+3.16%);32=16526 and48=16615. Replication on seeds2/4 is pending.
+- CITY01 stronger lane prices16/24/32/48 give8440/8413/8409/8394, all valid. Lower prices also lost earlier. Keep16. CITY02 price24 improves all three seeds:16830/16754/16839 versus16315/16199/16117, +3.6849% aggregate. Selected16839seed4. Prices32/48 on seed0 were16526/16615. All control trajectories reproduce exactly.
 
 Older exact assignment, sparse action prices, regional-future roots, and various window/history/annealing changes lost. Consult feature logs before repeating unchanged arms. Earlier replicated sparse gains: R01 uniform field +2.69%, refreshedkeep10 +1.88%; R03 delay3 +3.293%, each across three seeds.
 
 ## Builds and source
 
-No active build and no production source edits pending. Latest production source b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f is fully qualified (all40 source/test hashes, binary, full regression). Raw: runs/cgar-future-crowd-build-v1-20260921; binary9efc77eac135d4632736adefc99f0e8f6774299b4e0df4b3ce1add1c861969e9. Proof: future-crowd/build-v1.
+No active build and no production source edits pending. Latest production source6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0 is fully qualified: all41 source/test hashes, binary and full regression. Raw runs/cgar-reference-strength-build-v1-20260921; binary403f7463edd7f75ebf99cd97398d5c21b48acd8614242d428c29cbba8bd677bf. Proof reference-strength/build-v1.
+
+CGAR_TRICK_RANDOM_REFERENCE_STRENGTH25/50/75/100 blends installed forward costs toward20 with independent half-up rounding. Explicit RANDOM native static NMS/KK reference1/2 only; incompatible providers/uniform mode fail. Default100 and original base assets stay identical. Independent all-field identities, oriented heap and production regressions pass. New derived identity header adds one source file; runner verifies both base and contrast headers against the frozen manifest.
+
+Earlier crowd sourceb6d526fcf4d1e39b102b1083bdf30ac0c7e6962f is fully qualified in future-crowd/build-v1. Its frozen binary is9efc77eac135d4632736adefc99f0e8f6774299b4e0df4b3ce1add1c861969e9.
 
 CGAR_FUTURE_CROWD_COST0..255 adds pairprice times terminal Chebyshev2 unordered pairs across all robots to each completed forecast. Default0 does not count pairs and preserves RNG/actions. All branches complete or throw timeout. Counter O(cells+12*robots). Independent490-layout geometry tests; analytically known stay/separate root costs;14400 production actions,2001 services, serial/parallel identity, protection and movement-promise composition. Diagnostics reconcile base+pair cost. New first_cells equality guard also included in common-future roots.
 
@@ -58,15 +62,17 @@ Earlier qualified source44986ddf54fc381f478ba5116b9660389c3fb693 composes window
 
 ## Pending jobs
 
-- city02-stronger-lanes-replicate-full-v2: matrix 8902894, verifier 8902895, source 59c73dc8, 4 physical cores/case.
-- random04-future-crowd-replicate-full-v2: matrix 8902896, verifier 8902897, source b6d526fc, 4 physical cores/case.
+- random02-reference-strength-full-v1: matrix8902909, verifier8902910, source6fc0cc50, 4 physical cores/case.
+- random03-reference-strength-full-v1: matrix8902911, verifier8902912, source6fc0cc50, 4 physical cores/case.
+- random04-reference-strength-full-v1: matrix8902913, verifier8902914, source6fc0cc50, 4 physical cores/case.
 
 Warehouse verification is complete after two preserved parser failures: missing cap defaults to0, and the compiled solver emits no cap diagnostics at0. The third analysis verifies both unchanged solver outputs. No solver was rerun. Evidence and failures are in warehouse-sortation-matching.
 
 ## Next bounded work
 
-1. Collect CITY02 lane24 replication (seeds2/4) and RANDOM04 crowd16 replication (seeds0/4). R04 crowd16 selectedseed2 improves2298 to2304 (+6 only); weaker priority weights lose1974/1535. Promote only verified full records; tiny selected-seed gains are not robust claims.
-2. Prepare explicit RANDOM reference-strength interpolation toward uniform20. This is NOT implemented yet. Existing NMS costs20/60; KK03 ranges2..62; KK04 ranges6..64. Low-cost routes can favor long detours. Hypothesis: 25/50/75% of the existing field contrast may improve physical throughput. Keep turns fixed and masks/topology unchanged; default100 byte-identical. Reference1/2 only, explicit --trick RANDOM instance, native static metric, reject simultaneous uniform mode. Generate immutable hashes/FNV from verified base assets. All oracles/pickup remain on the same transformed metric. Need parser, runner, diagnostic identities and independent oracle/integration tests. Prior whole-PILOT-field substitution lost; this is a different contrast factor.
+1. Collect full reference-strength comparisons on RANDOM02seed2, RANDOM03seed2 and RANDOM04seed4: selected controls versus25/50/75. Four arms each, strict1s,32decimalGB, four physical cores/case. Default controls must reproduce full trajectories. RANDOM04seed4 was declared before submission because the independent crowd replication changed its selected maximum; no strength results were available then.
+2. CITY02 price24 replicates with +3.6849% across seeds0/2/4. Consider a separately declared nearby20/28 comparison, but those two additional prices are NOT implemented. Current prices are4/8/12/16/24/32/48/64. Preserve source/header/runner freezing while jobs launch.
+3. RANDOM04 crowd16 has mixed replication:2176/2304/2321 versus2237/2298/2215, +0.7556% aggregate, one loss and two gains. Keep selected2321seed4 per authorized best-seed goal, with this caveat; do not call it consistently beneficial.
 
 Immutable PILOT source copies: /tmp/cgar-pilot-readonly-d51/engine.cpp and engine.hpp, commitd51bdbf2c4e6830f8cabacb52ac9cfa8234aa663; source review proof pilot-transfer/source-review-20260921-1112.json. Do not inspect independent current results.
 
@@ -79,6 +85,6 @@ Immutable PILOT source copies: /tmp/cgar-pilot-readonly-d51/engine.cpp and engin
 
 Authorized push: GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 git -c 'credential.helper=!/user/fw2449/.local/bin/gh auth git-credential' push origin main
 
-Frozen benchmark runner now has SHA5c322b1ca675ed8c0bb8b2a1732be409106e465734461401753a1ab59f61f8eb. Previous runnerf504... boundary recorded in stronger-lanes/runner-upgrade-boundary.json: every old case had loaded its old runner before the change. Do not edit the live runner while any queued matrix still has an unlaunched case. Metadata.json appears after runner code/hash and assets load; remaining running processes retain those originals.
+Frozen benchmark runner now has SHA3a2cdab99e18397a02819305726afdd7c07c3269b9f4862891b92ff844dec8d4. Previous runner5c322... boundary is recorded in reference-strength/runner-upgrade-boundary.json: every preexisting case had loaded its old runner before the change. Do not edit the live runner while any queued matrix still has an unlaunched case. Metadata.json appears after runner code/hash and assets load; remaining running processes retain those originals.
 
 NFS negative cache: list parent and retry; do not rerun a solver merely for visibility. Local log spool archives full logs after every exit including failures. Strict entry time still includes logging. Earlier2632ms timeout is retained; its cause is unproven.

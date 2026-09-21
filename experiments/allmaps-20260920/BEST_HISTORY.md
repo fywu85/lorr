@@ -753,3 +753,19 @@ Previous selected maximum 16315. Full 3000 steps; 4 physical cores, strict 1,000
 | 2304 | 2026-09-21T12:55:08.457466+00:00 | [b6d526fc](https://github.com/fywu85/lorr/commit/b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f) | trick_terminal_pairs16, seed 2, `--trick RANDOM-04` | [verification](results/random04-future-crowd-full-v1/verification.json) |
 
 Previous selected maximum 2298. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 304.05 ms. Full matched controls repeat their exact prior trajectories. CITY02 price24 gains515 onseed0; RANDOM04 crowd price16 gains6 onseed2. Both new selected maxima require the separately declared replication before consistent-gain claims. All complete runs pass strict1s/32decimalGB.
+
+## RANDOM-04 2321 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2321 | 2026-09-21T13:05:28.803877+00:00 | [b6d526fc](https://github.com/fywu85/lorr/commit/b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f) | trick_terminal_pairs16, seed 4, `--trick RANDOM-04` | [verification](results/random04-future-crowd-replicate-full-v2/verification.json) |
+
+Previous selected maximum 2304. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 302.95 ms. Crowd16 three-seed result2176/2304/2321 versus2237/2298/2215: +0.7556% aggregate with one loss. Selected-seed record, modest and seed-sensitive; all full controls repeat exact trajectories.
+
+## CITY-02 16839 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 16839 | 2026-09-21T13:16:54.972282+00:00 | [59c73dc8](https://github.com/fywu85/lorr/commit/59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe) | trick_lane24, seed 4, `--trick CITY-02` | [verification](results/city02-stronger-lanes-replicate-full-v2/verification.json) |
+
+Previous selected maximum 16830. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 804.54 ms. Lane price24 improves all three tested seeds: 16830/16754/16839 versus 16315/16199/16117, +3.6849% aggregate. Controls reproduce earlier full trajectories exactly; selected maximum16839seed4.

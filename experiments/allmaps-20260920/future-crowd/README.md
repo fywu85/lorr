@@ -31,3 +31,8 @@ First full RANDOM04 results: control2298; pairprice8=2268,16=2304,32=2292.
 All valid and the control repeats its exact full trajectory. The six-task gain
 at16 is a selected-seed record, not a robust improvement. A matched control/16
 comparison on seeds0/4 is declared next. Max entry304.05ms for2304.
+
+Replication: control2237/2298/2215 versus crowd16 2176/2304/2321 on seeds0/2/4.
+Two gains and one loss; aggregate+0.756%. The selected maximum becomes2321seed4
+(max302.95ms), but this is a modest seed-sensitive effect. All runs valid; controls
+repeat full prior trajectories. See three-seed-summary.json.

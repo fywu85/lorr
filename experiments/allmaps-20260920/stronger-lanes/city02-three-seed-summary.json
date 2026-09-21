@@ -1,0 +1,139 @@
+{
+  "checked_utc": "2026-09-21T13:21:23.684948+00:00",
+  "rows": [
+    {
+      "instance": "CITY-02",
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 16315,
+      "valid": true,
+      "max_entry_seconds": 0.82175001,
+      "peak_rss_bytes": 8510607360,
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-full-v1/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "variant": "trick_lane24",
+      "seed": 0,
+      "tasks": 16830,
+      "valid": true,
+      "max_entry_seconds": 0.809830842,
+      "peak_rss_bytes": 10284240896,
+      "trajectory_sha256": "9441baff140238264ceae52cab26db936cb2aa30145c5e553914282f8925584e",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-full-v1/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 16199,
+      "valid": true,
+      "max_entry_seconds": 0.836873766,
+      "peak_rss_bytes": 8551002112,
+      "trajectory_sha256": "f0c7fb335f2fe52e03a9b1a15b37e9515ec8e9292f45338437bb5b41caad2d82",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "variant": "trick_lane24",
+      "seed": 2,
+      "tasks": 16754,
+      "valid": true,
+      "max_entry_seconds": 0.810426361,
+      "peak_rss_bytes": 8525127680,
+      "trajectory_sha256": "c513635a87d5ccdb8301d74b9402f732ed02b0cc078cebb4a4c53572534d4954",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "variant": "trick_current_control",
+      "seed": 4,
+      "tasks": 16117,
+      "valid": true,
+      "max_entry_seconds": 0.813989136,
+      "peak_rss_bytes": 8495845376,
+      "trajectory_sha256": "1c89bd1676e188324d6be78cb3106298554f30e2ee597a8b00e14455cd67694b",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "variant": "trick_lane24",
+      "seed": 4,
+      "tasks": 16839,
+      "valid": true,
+      "max_entry_seconds": 0.804542185,
+      "peak_rss_bytes": 8501800960,
+      "trajectory_sha256": "428f947d7d182e5a1b47fddcf5a666750c346a8496a706493bbc007cabf168c0",
+      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "evidence": "results/city02-stronger-lanes-replicate-full-v2/verification.json"
+    }
+  ],
+  "control_trajectory_matches": [
+    {
+      "seed": 0,
+      "prior": "experiments/allmaps-20260920/results/city02-geometric-horizon-full-v1/verification.json",
+      "case": "trick_selected_control-s0-r0",
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd"
+    },
+    {
+      "seed": 0,
+      "prior": "experiments/allmaps-20260920/results/city02-lane-contrast-full-v1/verification.json",
+      "case": "trick_lane16_control-s0-r0",
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd"
+    },
+    {
+      "seed": 0,
+      "prior": "experiments/allmaps-20260920/results/city02-objective-priority-full-v1/verification.json",
+      "case": "trick_adapted_control-s0-r0",
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd"
+    },
+    {
+      "seed": 2,
+      "prior": "experiments/allmaps-20260920/results/city02-rematch-seeds-full-v1/verification.json",
+      "case": "trick_budget2-s2-r0",
+      "trajectory_sha256": "f0c7fb335f2fe52e03a9b1a15b37e9515ec8e9292f45338437bb5b41caad2d82"
+    },
+    {
+      "seed": 4,
+      "prior": "experiments/allmaps-20260920/results/city02-rematch-seeds-full-v1/verification.json",
+      "case": "trick_budget2-s4-r0",
+      "trajectory_sha256": "1c89bd1676e188324d6be78cb3106298554f30e2ee597a8b00e14455cd67694b"
+    },
+    {
+      "seed": 0,
+      "prior": "experiments/allmaps-20260920/results/city02-matching-width-full-v1/verification.json",
+      "case": "trick_current_control-s0-r0",
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd"
+    },
+    {
+      "seed": 0,
+      "prior": "experiments/allmaps-20260920/results/city02-matching-width-full-v1/verification.json",
+      "case": "trick_width64-s0-r0",
+      "trajectory_sha256": "26ca96ab2f6e73adee0973ff458ea59d1278938498d399132cc9c53a4f03fcdd"
+    }
+  ],
+  "seeds": [
+    0,
+    2,
+    4
+  ],
+  "control_tasks": [
+    16315,
+    16199,
+    16117
+  ],
+  "candidate_tasks": [
+    16830,
+    16754,
+    16839
+  ],
+  "aggregate_gain_percent": 3.684892352614577,
+  "all_positive": true,
+  "decision": "Price24 improves all three seeds; selected maximum16839seed4. No new latency failures. Retain this profile and investigate nearby costs with separately declared comparisons."
+}

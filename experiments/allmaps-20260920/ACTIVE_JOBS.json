@@ -1,26 +1,36 @@
 {
-  "updated_utc": "2026-09-21T13:00:57.935570+00:00",
+  "updated_utc": "2026-09-21T13:22:35.966983+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
-      "suffix": "city02-stronger-lanes-replicate-full-v2",
-      "matrix_job": 8902894,
-      "verifier_job": 8902895,
+      "suffix": "random02-reference-strength-full-v1",
+      "matrix_job": 8902909,
+      "verifier_job": 8902910,
       "physical_cores_per_case": 4,
-      "source_commit": "59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe",
+      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-city02-stronger-lanes-replicate-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/city02-stronger-lanes-replicate-full-v2"
+      "raw": "runs/cgar-random02-reference-strength-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random02-reference-strength-full-v1"
     },
     {
-      "suffix": "random04-future-crowd-replicate-full-v2",
-      "matrix_job": 8902896,
-      "verifier_job": 8902897,
+      "suffix": "random03-reference-strength-full-v1",
+      "matrix_job": 8902911,
+      "verifier_job": 8902912,
       "physical_cores_per_case": 4,
-      "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f",
+      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random04-future-crowd-replicate-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/random04-future-crowd-replicate-full-v2"
+      "raw": "runs/cgar-random03-reference-strength-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random03-reference-strength-full-v1"
+    },
+    {
+      "suffix": "random04-reference-strength-full-v1",
+      "matrix_job": 8902913,
+      "verifier_job": 8902914,
+      "physical_cores_per_case": 4,
+      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random04-reference-strength-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-reference-strength-full-v1"
     }
   ],
   "builds": [
@@ -149,6 +159,12 @@
       "raw": "runs/cgar-future-crowd-build-v1-20260921",
       "source_commit": "b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f",
       "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902907,
+      "raw": "runs/cgar-reference-strength-build-v1-20260921",
+      "source_commit": "6fc0cc5069f54baa4d8c183b9567e782fbc7c0c0",
+      "status": "complete; all41source/test hashes, binary and full regression verified"
     }
   ]
 }

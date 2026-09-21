@@ -1,21 +1,21 @@
 # CGAR next experiments across ten instances
 
-Updated 2026-09-21T12:21:40.759210+00:00
+Updated 2026-09-21T13:24:01.461718+00:00
 Targets: +10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on the other
 five. Throughput first, fairness secondary. These are historical targets rather
 than matched competitor runs. Every selected profile requires --trick INSTANCE.
 
 | Instance | Selected full strict1s | Next work |
 |---|---:|---|
-| WAREHOUSE | 155173 | Qualified eight-core profile; bounded wider assignment comparison running. +5% remains a stretch. |
-| SORTATION | 150894 | Bounded wider assignment comparison running; runtime alternative150865 retains more deadline headroom. |
+| WAREHOUSE | 155173 | Wider matching loses154829 versus155173; keep the qualified eight-core profile. +5% remains a stretch. |
+| SORTATION | 150894 | Wider matching loses150863 versus150894; keep current profile. Deadline headroom remains narrow. |
 | CITY-01 | 8440 | Wider matching, horizon selection, lower and higher lane prices all lose; keep price16. |
-| CITY-02 | 16830 | Opposing lane price24 gains515 on seed0; seeds2/4 replication running. |
+| CITY-02 | 16839 | Price24 gains3.6849% across three seeds; selected16839seed4. Nearby price comparison remains a possible next step. |
 | GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
 | RANDOM-01 | 693 | Retained-tail refresh replicates; exact assignment and turn/wait price interactions lose. |
-| RANDOM-02 | 1215 | Delay, tail refresh, annealing, wider matching and exact chain assignment lose. |
-| RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment and turn/wait price interactions lose. |
-| RANDOM-04 | 2304 | Motion commitments replicate; terminal pairprice16 adds6 on seed2, replication running. Keep squared priority weights. |
+| RANDOM-02 | 1215 | Guidance strengths25/50/75 versus100 are running on selectedseed2. Earlier window and scheduling changes lose. |
+| RANDOM-03 | 1982 | Delay3 gains3.29% across three seeds; guidance strengths25/50/75 versus100 now running on selectedseed2. |
+| RANDOM-04 | 2321 | Motion commitments replicate. Crowd16 adds0.76% aggregate with one losing seed; selected2321seed4. Guidance-strength comparison running. |
 | RANDOM-05 | 3610 | Margin target met on seed10 with movement commitments and cap700; uncapped commitments gain16.56% over three seeds. Cap interaction gains39 on one seed. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
