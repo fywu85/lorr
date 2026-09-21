@@ -1638,3 +1638,23 @@ all frozen held-outs remain unchanged. Existing rectangular-loop expansions
 were already tested earlier; this specifically adds nonrectangular boundaries.
 
 Source158/1bd28fee passes52.91s regression; binary9152e4d6801e657f0195582f9c0c50fd246a84a0cfa554e4ed0e1f5eeb06527c. Thirty-two full general/trick comparisons test face length0/8/16 at all five densities, plus32 on crowded trickR04/R05. Off controls must match all six trace fields. All profiles keep their previous fixed budgets and strict limits. No result is presumed.
+
+
+## Source159: retry failed waits after an ancestor retreats
+
+Code inspection identifies a concrete missed opportunity in ordinary PIBT:
+a recursive child can commit to waiting because its parent's tentative request
+blocks its only escape; the parent can then choose a different cell, but the
+child's failed wait is never reconsidered. `R05_PIBT_REVISITS` (default0, fixed
+0..4 complete passes) releases only waiting robots after the initial complete
+assignment and reruns their inheritance in the same priority order. Every
+accepted move and any forced cycle heading stays committed. The existing
+expansion cap spans all passes. Spatial intent and kinematic planning each
+use their existing legality rules. This is a general option without a map flag.
+
+An explicit two-robot cul-de-sac fixture must demonstrate the released escape,
+while dense task-turnover/checkpoint/worker/mask cases retain collision safety
+and deterministic behavior. This is a proposal change with no throughput claim.
+It also affects the pipelined seeds used by windowed LNS. After regression,
+compare off/one/two passes on all five general and trick profiles, preserving
+full fixed budgets, deadlines, source controls and held-out exclusions.

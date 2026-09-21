@@ -103,7 +103,7 @@ struct Config {
     float goal_local_mix=0;
     float flow_turn=0, flow_power=1, flow_alpha=1, flow_betweenness=0, flow_confidence_power=0;
     bool flow_average=false, flow_normalize=false, flow_reverse=false;
-    int loop_extent=2, face_cycle_length=0;
+    int loop_extent=2, face_cycle_length=0, pibt_revisits=0;
     bool predict_matching=false, rollout_age=false, rollout_match=false, cost_cache=false, pocket_components=false;
     int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0, auction_bids_per_row=128;
     float auction_epsilon=0;

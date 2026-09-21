@@ -747,6 +747,55 @@ void continuation_risk() {
     }
 }
 
+void released_push_revisits() {
+    // The first robot tries to push the second out of a cul-de-sac. That push
+    // fails because a swap is illegal. The first robot then retreats into the
+    // empty branch, making its old cell available to the previously failed
+    // child. A complete second pass can now move that child without changing
+    // the parent's accepted retreat or creating a swap.
+    auto env=environment(2,2,2);env.map[3]=1;
+    env.curr_states[0].location=0;env.curr_states[0].orientation=0;
+    env.curr_states[1].location=1;env.curr_states[1].orientation=2;
+    for(int a=0;a<2;++a) {
+        Task task;task.task_id=a;task.locations={a?2:1};
+        env.task_pool[a]=task;env.curr_task_schedule[a]=a;
+    }
+    Config cfg;cfg.futures=1;cfg.depth=1;cfg.seed=2;cfg.noise=0;
+    cfg.matching=false;cfg.loops=false;cfg.deadends=false;cfg.intent_rotation=false;cfg.wait_cost=20;
+    for(int passes:{0,1,2}) {
+        cfg.pibt_revisits=passes;Engine engine(cfg);engine.initialize(&env);
+        std::vector<Action> actions;std::vector<int> schedule;engine.compute(&env,actions,schedule);
+        const auto pending=engine.checkpoint(env).at("pending").get<std::vector<int>>();
+        require(pending==std::vector<int>({2,passes?0:1}),"failed push was not retried after the ancestor retreat");
+        Engine::certify(*engine.graph,{0,1},pending);
+    }
+    Config dense;dense.futures=16;dense.depth=6;dense.continuations=4;
+    dense.continuation_start=2;dense.share_prefix=true;dense.random_by_step=true;
+    dense.guidance="lanes";dense.cost_cache=true;dense.scratch_reuse=true;
+    for(int passes:{1,2})for(int cycle_mode:{0,3}) {
+        dense.pibt_revisits=passes;dense.pre_cycles=cycle_mode;dense.threads=1;
+        dense.candidate_cache=false;dense.kinematic_mask=false;
+        const auto reference=simulate(dense,12,5,5,true);
+        dense.candidate_cache=true;dense.kinematic_mask=true;dense.threads=2;
+        require(reference==simulate(dense,12),"PIBT retries changed with cache/mask/workers");
+        require(reference==simulate(dense,12,5,5,true),"PIBT retries changed checkpoint replay");
+    }
+    dense.pre_cycles=0;dense.pibt_revisits=1;dense.window=8;dense.window_keep=3;
+    dense.window_islands=4;dense.window_iterations=8;dense.threads=1;
+    const auto window=simulate(dense,10,5,5,true);dense.threads=2;
+    require(window==simulate(dense,10),"retried window seed depends on worker count");
+    auto gate=environment(2,2,1);const char* prior=std::getenv("R05_PIBT_REVISITS");
+    const bool present=prior;const std::string old=prior?prior:"";
+    for(const char* value:{"-1","5"}) {
+        setenv("R05_PIBT_REVISITS",value,1);bool rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid PIBT retry work accepted");
+    }
+    setenv("R05_PIBT_REVISITS","2",1);
+    require(Config::environment(gate).pibt_revisits==2,"general PIBT retries require a trick flag");
+    if(present)setenv("R05_PIBT_REVISITS",old.c_str(),1);else unsetenv("R05_PIBT_REVISITS");
+}
+
 void topology_face_cycles() {
     auto canonical=[](std::vector<int> ring) {
         std::rotate(ring.begin(),std::min_element(ring.begin(),ring.end()),ring.end());
@@ -2676,6 +2725,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    released_push_revisits();
     topology_face_cycles();
     arrival_priority_semantics();
     optional_arrival_proposals();

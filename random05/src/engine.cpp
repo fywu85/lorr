@@ -273,6 +273,9 @@ Config Config::environment(const SharedEnvironment& env) {
     if((c.push_idle_free || c.push_exclude_swap) && (!c.fast_push || c.push_price<=0))
         throw std::invalid_argument("corrected displacement prices require positive push cost and its cached policy");
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
+    c.pibt_revisits=integer("R05_PIBT_REVISITS",0);
+    if(c.pibt_revisits<0 || c.pibt_revisits>4)
+        throw std::invalid_argument("PIBT revisits must be zero to four fixed passes");
     c.face_cycle_length=integer("R05_FACE_CYCLE_LENGTH",0);
     if(c.face_cycle_length!=0 && (c.face_cycle_length<4 || c.face_cycle_length>32))
         throw std::invalid_argument("face-cycle length must be zero or4..32");
@@ -478,6 +481,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.pibt_revisits && c.operation_depth)
+        throw std::invalid_argument("PIBT revisits require the pipelined policy");
     if(c.face_cycle_length && (!c.loops || c.operation_depth))
         throw std::invalid_argument("face cycles require loop completion in the pipelined policy");
     if(c.idle_align && c.operation_depth)
@@ -1810,6 +1815,17 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         return false;
     };
     for(int a:order)if(chosen[a]<0)pibt(pibt,a);
+    // A failed recursive push can leave a child committed to waiting even
+    // after its requesting ancestor retreats elsewhere. Retry only waits,
+    // preserving every accepted move and any prepared cycle orientation.
+    // Each declared pass is complete; the same expansion cap spans all passes.
+    for(int pass=0;pass<cfg.pibt_revisits;++pass) {
+        for(int a=0;a<n;++a)if(chosen[a]==p[a] && forced_heading[a]<0) {
+            if(reserve[p[a]]!=a)throw std::runtime_error("waiting PIBT agent lost its reservation");
+            chosen[a]=-1;reserve[p[a]]=-1;
+        }
+        for(int a:order)if(chosen[a]<0)pibt(pibt,a);
+    }
     expansion_count+=expansions;
     };
     auto& intent=scratch.intent;intent.clear();
