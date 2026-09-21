@@ -12,20 +12,20 @@ them a veto on a throughput improvement.
 [Warehouse best history](WAREHOUSE_PROGRESS.md).
 [RANDOM-05 independent campaign, read-only](RANDOM05_PROGRESS.md).
 
-| Instance | Latest full CGAR evidence | Status |
+| Instance | Current selected full CGAR result | Status |
 |---|---:|---|
 | WAREHOUSE |155173|TRICK; full strict1s seeds0/2 confirmed, max945/958ms|
-| SORTATION |146147|Generic; shared5s development|
-| CITY-01 |7305|Generic; shared5s development|
-| CITY-02 |13922|Generic; shared5s development|
-| GAME |No accepted score|Generic transfer timeout|
-| RANDOM-01 |588|Generic; shared5s development|
-| RANDOM-02 |982|Generic; shared5s development|
-| RANDOM-03 |1409|Generic; shared5s development|
-| RANDOM-04 |997|Generic; shared5s development|
-| RANDOM-05 |No accepted CGAR transfer score|Separate agent owns standalone work|
+| SORTATION |146460|Generic; full shared5s development, generic_regions_4m|
+| CITY-01 |7305|Generic; full shared5s development, generic_regions_4m|
+| CITY-02 |14068|Generic; full shared5s development, generic_regions_4m|
+| GAME |6519|Generic; full shared5s development, generic_regions_4m|
+| RANDOM-01 |611|Generic; full shared5s development, generic_match64_direct|
+| RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
+| RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
+| RANDOM-04 |1249|Generic; full shared5s development, generic_chain_rank|
+| RANDOM-05 |No accepted CGAR transfer score yet|Separate CGAR baseline queued; standalone agent untouched|
 
-The nine-instance transfer uses sourceabbe36b and one planner seed, before later
+The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
 Warehouse matching/trick work; it is a starting measurement, not each instance's
 best possible configuration. Full evidence and source hashes are linked in the
 [campaign inventory](experiments/allmaps-20260920/baseline-inventory.json).
@@ -37,5 +37,16 @@ Warehouse strict confirmation completed2026-09-20T23:23:25.627892+00:00,
 source[3e319f1](https://github.com/fywu85/lorr/commit/3e319f175859396b91f97364b320c6794a85cbb7),
 [verified10000entries and100millionactions](experiments/construction-20260918/results/strict-runtime-full-v123/summary.md).
 The original155173record timestamp/source remain in the Warehouse history.
-The two-budget/eight-instance generic matrix8900861 and its verifier8900862
-are still running; no cross-instance frontier is promoted before analysis.
+The two-budget/eight-instance matrix and the six-factor RANDOM-01..04 matrix
+are complete: all40full runs verified, no failed runs. The selected current
+results above come from sourceeb99380. [Timestamped history and configurations](experiments/allmaps-20260920/BEST_HISTORY.md).
+RANDOM-04 remaining-chain ordering and rank weights reach1249versus842under the
+same bounded control, one seed. Direct-cost assignment with local matching gives
+611/1084/1484on RANDOM-01/02/03. Fairness remains recorded as secondary.
+
+The user requested a deeper read of the separate RANDOM-05 algorithm for transfer
+into CGAR on RANDOM-04/05. [Frozen source study and next experiments](experiments/allmaps-20260920/random-transfer/REVIEW.md).
+The first optional persistent-priority implementation is awaiting full build
+verification; no gain is claimed. It preserves CGAR's existing kernel and
+protections. SORTATION's explicit native field passed all regressions and its
+full three-way comparison is running; no new trick score yet.
