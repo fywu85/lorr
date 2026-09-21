@@ -46,6 +46,8 @@ struct Config {
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
     bool fuse_cache_hits=false, lazy_cost_rows=false;
     int shared_rankings_mb=0;
+    int restart_period=4;
+    float elite_decision_distance=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2, destination_load=0;
@@ -123,6 +125,8 @@ struct Rollout {
     int evaluated_branches=1;
     uint64_t expansions=0;
 };
+std::vector<int> select_rollout_elites(const std::vector<Rollout>& results,int used,
+                                      int best,int limit,bool accept_equal,float decision_distance=0);
 // Connected by either proposed motion or a shared destination, including holes.
 std::vector<std::vector<int>> decision_components(const Graph& graph,
                                                   const Rollout& left,const Rollout& right);

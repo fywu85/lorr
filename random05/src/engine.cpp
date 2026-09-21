@@ -175,6 +175,11 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("invalid windowed search configuration");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+    c.restart_period=integer("R05_RESTART_PERIOD",4);
+    c.elite_decision_distance=real("R05_ELITE_DECISION_DISTANCE",0);
+    if(c.restart_period<0 || !std::isfinite(c.elite_decision_distance) ||
+       c.elite_decision_distance<0 || c.elite_decision_distance>1)
+        throw std::invalid_argument("invalid restart period or elite decision distance");
     c.move_bias=real("R05_MOVE_BIAS",0);
     if(!std::isfinite(c.move_bias) || c.move_bias<0 || c.move_bias>4)
         throw std::invalid_argument("move proposal bias must be in [0,4]");
@@ -1539,8 +1544,8 @@ void Engine::evaluate_until(const Frame& frame,const std::vector<float>& offsets
 
 // Select distinct evaluated vectors with the chosen incumbent first. Reused
 // across generations and between real steps; scores never cross a real step.
-static std::vector<int> elite_indices(const std::vector<Rollout>& results,int used,
-                                      int best,int limit,bool accept_equal) {
+std::vector<int> select_rollout_elites(const std::vector<Rollout>& results,int used,
+                                      int best,int limit,bool accept_equal,float decision_distance) {
     std::vector<int> parents{best};
     if(limit==1)return parents;
     std::vector<int> ranked(used);std::iota(ranked.begin(),ranked.end(),0);
@@ -1551,7 +1556,18 @@ static std::vector<int> elite_indices(const std::vector<Rollout>& results,int us
     for(int candidate:ranked) {
         if(!results[candidate].fully_evaluated)continue;
         bool duplicate=false;
-        for(int old:parents)if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
+        for(int old:parents) {
+            if(results[candidate].offsets==results[old].offsets){duplicate=true;break;}
+            if(decision_distance>0) {
+                const auto& a=results[candidate].first.pending;
+                const auto& b=results[old].first.pending;
+                if(a.size()!=b.size())throw std::logic_error("incompatible elite decisions");
+                const int minimum=int(std::ceil(decision_distance*a.size()));
+                int different=0;
+                for(size_t i=0;i<a.size() && different<minimum;++i)different+=a[i]!=b[i];
+                if(different<minimum){duplicate=true;break;}
+            }
+        }
         if(!duplicate)parents.push_back(candidate);
         if(int(parents.size())>=limit)break;
     }
@@ -1754,32 +1770,32 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             // Retain several distinct evaluated priority vectors instead of
             // making every later mutation descend from one incumbent. Keeping
             // the incumbent first preserves the same unmodified anchor.
-            parents=elite_indices(results,begin,best,cfg.elites,cfg.accept_equal);
+            parents=select_rollout_elites(results,begin,best,cfg.elites,cfg.accept_equal,cfg.elite_decision_distance);
         }
         int exploitation=0,history_children=0;
         for(int k=begin;k<end;++k) {
+            const bool global=k>begin && cfg.restart_period>0 && k%cfg.restart_period==0;
             int parent=best;
             if(!parents.empty()) {
                 // Fully random candidates have no inherited values. Do not
                 // let their every-fourth positions starve one elite of trials.
-                const bool global=k>begin && k%4==0;
                 parent=parents[global?0:exploitation++%parents.size()];
             }
             offsets[k]=generation?results[parent].offsets:best_offsets_;
             bool history_anchor=false;
             if(!generation && cfg.persist_elites>1 && !past_offsets_.empty() &&
-               !(k>begin && k%4==0)) {
+               !global) {
                 // Try each retained vector unchanged once, then mutate parents
-                // in rotation. Every fourth fully random candidate is retained.
+                // in rotation. Declared fully random restarts are retained.
                 // All candidates are evaluated again from the current frame.
                 history_anchor=history_children<int(past_offsets_.size());
                 offsets[k]=past_offsets_[history_children++%past_offsets_.size()];
             }
             if(k>begin && !history_anchor) {
-                // Keep one quarter of the portfolio global. Other futures can
+                // Keep the declared restart share global. Other futures can
                 // change one spatial neighborhood while preserving its context.
                 int center=-1;
-                if(cfg.mutation_radius>0 && k%4!=0)
+                if(cfg.mutation_radius>0 && !global)
                     center=g.to_grid[frame.loc[std::uniform_int_distribution<int>(0,n-1)(global_rng)]];
                 for(int a=0;a<n;++a) {
                     if(center>=0) {
@@ -1787,7 +1803,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                         if(std::abs(p/g.cols-center/g.cols)>cfg.mutation_radius ||
                            std::abs(p%g.cols-center%g.cols)>cfg.mutation_radius)continue;
                     }
-                    if(k%4==0 || unit(global_rng)<generation_mutation)offsets[k][a]=noise(global_rng);
+                    if(global || unit(global_rng)<generation_mutation)offsets[k][a]=noise(global_rng);
                 }
             }
         }
@@ -1983,7 +1999,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     }
     if(cfg.persist_elites>1) {
         past_offsets_.clear();
-        for(int parent:elite_indices(results,roots,best,cfg.persist_elites,cfg.accept_equal))
+        for(int parent:select_rollout_elites(results,roots,best,cfg.persist_elites,cfg.accept_equal,cfg.elite_decision_distance))
             past_offsets_.push_back(results[parent].offsets);
     }
     auto& selected=results[best];

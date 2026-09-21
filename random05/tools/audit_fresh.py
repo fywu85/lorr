@@ -113,14 +113,26 @@ def main():
         assert case['binary_sha256'] == summary['binary_sha256'] == expected_binary, name
         assert summary['valid'] and summary['exit'] == 0, name
         assert summary['result']['makespan'] == expected_steps, name
-        assert summary['result']['entryComputeSamples'] == expected_steps, name
+        # The unchanged NMS simulator reports wall time for the full combined
+        # entry in plannerTimes; PILOT also exposes entryComputeTimes. Validate
+        # the actual per-step series for both, rather than requiring a PILOT-
+        # specific summary field from the reference executable.
+        raw = read(directory / name / 'result.json')
+        timing_field = 'plannerTimes' if case.get('team') == 'nms' else 'entryComputeTimes'
+        samples = raw[timing_field]
+        assert len(samples) == expected_steps, (name, 'incomplete timing series')
+        assert all(0 <= value < 1 for value in samples), (name, 'entry deadline')
+        assert max(samples) == summary['latency_seconds']['max'], name
+        if case.get('team') != 'nms':
+            assert summary['result']['entryComputeSamples'] == expected_steps, name
         for key in ('numPlannerErrors', 'numScheduleErrors', 'numEntryTimeouts'):
             assert summary['result'][key] == 0, (name, key)
         assert summary['usage']['peak_rss_kib'] * 1024 < 32000000000, name
         assert summary['latency_seconds']['max'] < 1, name
         runs[name] = dict(tasks=summary['result']['numTaskFinished'],
                           finished_utc=summary['finished_utc'], binary_sha256=expected_binary,
-                          latency_seconds=summary['latency_seconds'], usage=summary['usage'],
+                          latency_seconds=summary['latency_seconds'], timing_source=timing_field,
+                          timing_samples=len(samples), usage=summary['usage'],
                           evidence=str(directory / 'summary.json'))
     comparisons = []
     for generated in generation['records']:

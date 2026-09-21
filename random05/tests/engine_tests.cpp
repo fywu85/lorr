@@ -871,6 +871,30 @@ void move_proposal_bias() {
     }
 }
 
+void rollout_elite_diversity() {
+    std::vector<Rollout> r(5);
+    for(int i=0;i<5;++i){r[i].score=10-i;r[i].offsets={float(i)};r[i].first.pending={0,1,2,3};}
+    r[1].first.pending={1,1,2,3};
+    r[2].first.pending={1,0,2,3};
+    r[3].first.pending={1,0,3,2};
+    r[4].score=100;r[4].fully_evaluated=false;
+    require(select_rollout_elites(r,5,0,3,false)==std::vector<int>({0,1,2}),
+            "default elite ordering changed or admitted an unfinished rollout");
+    require(select_rollout_elites(r,5,0,3,false,.5f)==std::vector<int>({0,2,3}),
+            "elite decision separation failed to preserve the incumbent and distinct alternatives");
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=4;cfg.persist_elites=4;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto ordinary=simulate(cfg,12);
+    for(int period:{0,2,8}) {
+        cfg.restart_period=period;cfg.elite_decision_distance=.1f;cfg.threads=1;
+        const auto altered=simulate(cfg,12,5,5,true);
+        require(altered!=ordinary,"restart/diversity fixture did not exercise changed proposals");
+        cfg.threads=3;
+        require(altered==simulate(cfg,12),"proposal diversity changed with worker scheduling");
+    }
+}
+
 void destination_demand_matching() {
     auto env=environment(1,5,2);env.curr_states[1].location=2;
     Task locked;locked.task_id=7;locked.locations={0,1};locked.idx_next_loc=1;locked.agent_assigned=0;
@@ -1048,6 +1072,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    rollout_elite_diversity();
     destination_demand_matching();
     guidance_reversal();
     window_configuration();
