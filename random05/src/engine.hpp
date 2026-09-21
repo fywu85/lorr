@@ -87,6 +87,7 @@ struct Config {
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2, destination_load=0;
     float initial_length_weight=-1, match_horizon_weight=0;
     int initial_length_steps=250, active_task_cap=0, active_cap_steps=0;
+    bool fast_admission=false;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     float flow_penalty=1.6, flow_output_penalty=-1, flow_normalize_ref=-1;
@@ -109,6 +110,8 @@ struct Config {
     std::string guidance="none", weights;
     static Config environment(const SharedEnvironment& env);
 };
+std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int rows,int columns,
+                                      int dummy_columns=0,bool fast_dummy_prefix=false);
 double weighted_static_future_score(const std::vector<double>& scores,double static_weight);
 std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power);
 std::vector<int> priority_order(const std::vector<float>& priorities,bool packed,bool radix=false);

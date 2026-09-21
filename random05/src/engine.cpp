@@ -212,6 +212,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
+    c.fast_admission=integer("R05_FAST_ADMISSION",0);
     if(c.active_task_cap<0 || c.active_cap_steps<0 || (c.active_task_cap>0 && !random_trick))
         throw std::invalid_argument("active task admission requires nonnegative settings and an explicit --trick RANDOM-01..05");
     c.destination_load=real("R05_DESTINATION_LOAD",0);
@@ -839,6 +840,52 @@ void Engine::initialize(SharedEnvironment* env) {
                  n,graph->cells,cfg.futures,cfg.depth,cfg.threads,cfg.guidance.c_str(),cfg.seed,
                  graph->distance.size()*sizeof(float)/1e6);
 }
+std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
+    int dummy_columns,bool fast_dummy_prefix) {
+    if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
+        throw std::invalid_argument("invalid rectangular matching problem");
+    std::vector<double> u(nr+1),v(nc+1);
+    std::vector<int> owner(nc+1),previous(nc+1);
+    int first_row=1;
+    if(fast_dummy_prefix && dummy_columns) {
+        const int real_columns=nc-dummy_columns;
+        const float idle_cost=matrix[real_columns];
+        // Preconditions make every dummy strictly cheaper than every real
+        // pair, with identical cost for every row and dummy column.
+        for(int row=0;row<nr;++row)for(int j=0;j<nc;++j)
+            if(j<real_columns ? !(matrix[size_t(row)*nc+j]>idle_cost) : matrix[size_t(row)*nc+j]!=idle_cost)
+                throw std::invalid_argument("dummy-prefix matching preconditions do not hold");
+        // The ordinary augmentations assign row k to dummy k for this prefix,
+        // with u[k]=idle_cost and all nonzero-column potentials unchanged.
+        // Equal-distance scans never replace that row's direct predecessor.
+        for(int row=1;row<=dummy_columns;++row) {
+            owner[real_columns+row]=row;u[row]=idle_cost;v[0]-=idle_cost;
+        }
+        first_row=dummy_columns+1;
+    }
+    for(int row=first_row;row<=nr;++row) {
+        owner[0]=row;int column=0;
+        std::vector<double> distance(nc+1,1e30);std::vector<bool> visited(nc+1,false);
+        do {
+            visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
+            for(int j=1;j<=nc;++j)if(!visited[j]) {
+                double reduced=matrix[size_t(active-1)*nc+j-1]-u[active]-v[j];
+                if(reduced<distance[j]){distance[j]=reduced;previous[j]=column;}
+                if(distance[j]<delta){delta=distance[j];next_column=j;}
+            }
+            for(int j=0;j<=nc;++j) {
+                if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
+                else distance[j]-=delta;
+            }
+            column=next_column;
+        } while(owner[column]);
+        do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
+    }
+    std::vector<int> assignment(nr,-1);
+    for(int j=1;j<=nc;++j)if(owner[j])assignment[owner[j]-1]=j-1;
+    return assignment;
+}
+
 void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     std::chrono::steady_clock::time_point match_start;
     if(cfg.profile)match_start=std::chrono::steady_clock::now();
@@ -952,28 +999,9 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
     };
     if(exact) {
-        const int nr=int(agents.size()),nc=columns;
-        std::vector<double> u(nr+1),v(nc+1);
-        std::vector<int> owner(nc+1),previous(nc+1);
-        for(int row=1;row<=nr;++row) {
-            owner[0]=row;int column=0;
-            std::vector<double> distance(nc+1,1e30);std::vector<bool> visited(nc+1,false);
-            do {
-                visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
-                for(int j=1;j<=nc;++j)if(!visited[j]) {
-                    double reduced=matrix[size_t(active-1)*nc+j-1]-u[active]-v[j];
-                    if(reduced<distance[j]){distance[j]=reduced;previous[j]=column;}
-                    if(distance[j]<delta){delta=distance[j];next_column=j;}
-                }
-                for(int j=0;j<=nc;++j) {
-                    if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
-                    else distance[j]-=delta;
-                }
-                column=next_column;
-            } while(owner[column]);
-            do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
-        }
-        for(int j=1;j<=int(tasks.size());++j)if(owner[j])schedule[agents[owner[j]-1]]=tasks[j-1];
+        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission);
+        for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
+            schedule[agents[row]]=tasks[selected[row]];
         report_match();return;
     }
     std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {

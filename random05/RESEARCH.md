@@ -1414,3 +1414,18 @@ Tests cover every packed mask/heading/count, exact dense trajectories, worker
 and checkpoint replay, biased-route fallback, and an explicit1MiB cache case
 where not all99 two-errand tables fit. Full-run comparisons remain required;
 this changes storage only and does not reduce declared search work.
+
+## Exact initialization of identical admission dummies
+
+`R05_FAST_ADMISSION=1` skips redundant initial Hungarian augmentations when
+all dummy columns have the same strictly cheaper cost. After the first d rows,
+the ordinary algorithm assigns row k to dummy k, sets each row potential to the
+dummy cost, and leaves other column potentials at zero. Initialize precisely
+that state and continue the remaining augmentations unchanged. Preconditions
+are checked against the complete matrix. Default0 keeps the legacy path.
+
+Thousands of tied, negative and fractional-cost rectangular fixtures compare
+exact assignments against ordinary Hungarian, including no/all dummy cases.
+Dense admission/checkpoint/worker tests compare whole trajectories. Full runtime
+controls must still pass before promotion. This skips redundant matching work;
+it does not return a partial assignment or change the fixed forecast count.

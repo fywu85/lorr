@@ -959,6 +959,34 @@ void compact_prepared_rankings() {
     }
 }
 
+void exact_dummy_prefix() {
+    std::mt19937 random(194837);
+    int comparisons=0;
+    for(int rows=1;rows<=12;++rows)for(int extra:{0,3})for(int dummies=0;dummies<=rows;++dummies) {
+        const int columns=rows+extra,real=columns-dummies;
+        for(int trial=0;trial<20;++trial) {
+            std::vector<float> matrix(size_t(rows)*columns);float minimum=0;
+            for(int row=0;row<rows;++row)for(int j=0;j<real;++j) {
+                // Ties, negative keep bonuses, and nonintegral costs all occur
+                // in real task matching. Compare exact assignments, not cost.
+                float value=int(random()%13)-6;
+                if(trial%2)value*=.37f;
+                matrix[size_t(row)*columns+j]=value;minimum=std::min(minimum,value);
+            }
+            for(int row=0;row<rows;++row)for(int j=real;j<columns;++j)
+                matrix[size_t(row)*columns+j]=minimum-1;
+            require(hungarian_assignment(matrix,rows,columns,dummies,false)==
+                    hungarian_assignment(matrix,rows,columns,dummies,true),
+                    "dummy-prefix shortcut changed an exact assignment");
+            ++comparisons;
+        }
+    }
+    std::vector<float> malformed{0,1,0,1};bool rejected=false;
+    try{hungarian_assignment(malformed,2,2,1,true);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"dummy prefix accepted a non-cheaper dummy column");
+    std::cout<<"exact dummy-prefix assignments="<<comparisons<<"\n";
+}
+
 void active_task_admission() {
     auto env=environment(3,3,4);env.curr_states[3].location=8;
     for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
@@ -989,6 +1017,8 @@ void active_task_admission() {
     cfg.scratch_reuse=true;cfg.cost_cache=true;cfg.candidate_cache=true;
     const auto signature=simulate(cfg,12,5,5,true);cfg.threads=3;
     require(signature==simulate(cfg,12),"task admission changed with worker scheduling");
+    cfg.fast_admission=true;
+    require(signature==simulate(cfg,12,5,5,true),"fast dummy prefix changed the admission trajectory");
     const char* old=std::getenv("R05_ACTIVE_TASK_CAP");const bool present=old;
     const std::string saved=old?old:"";setenv("R05_ACTIVE_TASK_CAP","1",1);
     SharedEnvironment gate;bool rejected=false;
@@ -1350,6 +1380,7 @@ int main() {
     rollout_elite_diversity();
     bounded_order_rankings();
     compact_prepared_rankings();
+    exact_dummy_prefix();
     active_task_admission();
     blocker_priority_mutations();
     physical_guidance_edges();
