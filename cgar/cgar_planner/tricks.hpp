@@ -26,12 +26,13 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; int game_active_limit = 0; bool game_tabu = false; bool horizon_manhattan = false; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; int game_active_limit = 0; bool game_tabu = false; bool horizon_manhattan = false; int lane_cost = 16; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
 inline Options options(const std::string& instance) {
     const char* lanes = std::getenv("CGAR_TRICK_LANES");
+    const char* lane_cost = std::getenv("CGAR_TRICK_LANE_COST");
     const char* short_tasks = std::getenv("CGAR_TRICK_SHORT_TASKS");
     const char* matching = std::getenv("CGAR_TRICK_UNOPENED_MATCH");
     const char* remaining_flow = std::getenv("CGAR_TRICK_REMAINING_FLOW");
@@ -51,7 +52,7 @@ inline Options options(const std::string& instance) {
     const char* game_active = std::getenv("CGAR_TRICK_GAME_ACTIVE_LIMIT");
     const char* game_tabu = std::getenv("CGAR_TRICK_GAME_TABU");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference || game_active || game_tabu || horizon_manhattan)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference || game_active || game_tabu || horizon_manhattan || lane_cost)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -62,6 +63,15 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    int opposing = 16;
+    if (lane_cost) {
+        const std::string value(lane_cost);
+        if (value != "4" && value != "8" && value != "12" && value != "16")
+            throw std::invalid_argument("lane cost must be 4, 8, 12 or 16");
+        if (!grid_instance(instance) || !boolean(lanes, true) || boolean(native_metric, false))
+            throw std::invalid_argument("lane cost requires explicit CITY/GAME adapted lanes");
+        opposing = std::stoi(value);
+    }
     int active_limit = 0;
     if ((game_active || game_tabu) && instance != "GAME")
         throw std::invalid_argument("GAME fleet selectors require --trick GAME");
@@ -79,8 +89,8 @@ inline Options options(const std::string& instance) {
     int reference_id = 0;
     if (reference) {
         const std::string value(reference);
-        if (value != "0" && value != "1" && value != "2")
-            throw std::invalid_argument("random reference must be 0(existing), 1(NMS arrows) or 2(KK forward)");
+        if (value != "0" && value != "1" && value != "2" && value != "3")
+            throw std::invalid_argument("random reference must be 0(existing), 1(NMS arrows), 2(KK forward) or 3(PILOT flow)");
         reference_id = value[0] - '0';
         if (!random_instance(instance) || (reference_id && (!boolean(lanes, true) || !boolean(native_metric, false))))
             throw std::invalid_argument("random reference requires a RANDOM CLI gate and active references require native static lanes");
@@ -154,7 +164,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id, active_limit, preserve_tabu, manhattan};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id, active_limit, preserve_tabu, manhattan, opposing};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:
@@ -173,8 +183,8 @@ struct FieldAsset {
 
 inline FieldAsset field_asset(const std::string& name, int reference = 0) {
     validate_name(name);
-    if (reference < 0 || reference > 2 || (reference && !random_instance(name)))
-        throw std::invalid_argument("reference field requires a RANDOM instance and provider0..2");
+    if (reference < 0 || reference > 3 || (reference && !random_instance(name)))
+        throw std::invalid_argument("reference field requires a RANDOM instance and provider0..3");
     if (random_instance(name)) {
         const uint8_t* costs = random_forward;
         const char* hash = random_native_nobands_field_sha256;
@@ -243,16 +253,19 @@ inline void validate_native_options(const std::string& name, bool bands, bool un
 }
 
 inline std::vector<uint8_t> forward_costs(const std::string& name, const std::vector<int>& map,
-                                          int rows, int cols) {
+                                          int rows, int cols, int opposing = 16) {
     validate_map(name, map, rows, cols);
     const auto asset = field_asset(name);
+    if ((opposing != 4 && opposing != 8 && opposing != 12 && opposing != 16) ||
+        (opposing != 16 && !grid_instance(name)))
+        throw std::invalid_argument("adapted lane price requires CITY/GAME and one of 4/8/12/16");
     if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane-mask metric");
     std::vector<uint8_t> result(map.size() * 4, 4);
     for (size_t cell = 0; cell < map.size(); ++cell) {
         const char ch = asset.masks[cell];
         if (ch == 'x') continue;
         const int mask = ch <= '9' ? ch - '0' : ch - 'a' + 10;
-        for (int d = 0; d < 4; ++d) if (mask & (1 << d)) result[cell * 4 + d] = 16;
+        for (int d = 0; d < 4; ++d) if (mask & (1 << d)) result[cell * 4 + d] = opposing;
     }
     return result;
 }
@@ -297,9 +310,14 @@ inline const char* native_field_hash(bool bands, const std::string& name = "WARE
     return bands ? asset.native_bands_sha256 : asset.native_nobands_sha256;
 }
 
-inline const char* lane_field_hash(const std::string& name) {
+inline const char* lane_field_hash(const std::string& name, int opposing = 16) {
     if (random_instance(name)) throw std::invalid_argument("RANDOM field has no legacy lane hash");
-    return field_asset(name).lane_sha256;
+    const auto asset = field_asset(name);
+    if (opposing == 16) return asset.lane_sha256;
+    if (!grid_instance(name) || (opposing != 4 && opposing != 8 && opposing != 12))
+        throw std::invalid_argument("adapted lane hash requires CITY/GAME and one of 4/8/12/16");
+    if (name == "GAME") return opposing == 4 ? game_lane4_field_sha256 : opposing == 8 ? game_lane8_field_sha256 : game_lane12_field_sha256;
+    return opposing == 4 ? city_lane4_field_sha256 : opposing == 8 ? city_lane8_field_sha256 : city_lane12_field_sha256;
 }
 inline const char* occupancy_hash(const std::string& name) { return field_asset(name).occupancy_sha256; }
 

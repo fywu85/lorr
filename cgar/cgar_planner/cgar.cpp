@@ -1167,14 +1167,14 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         if (static_trick_metric_) {
             auto field = native_trick_metric_ ?
                 tricks::native_forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.native_bands, trick_options.random_uniform, trick_options.random_reference) :
-                tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols);
+                tricks::forward_costs(env->trick_instance, env->map, env->rows, env->cols, trick_options.lane_cost);
             const uint64_t installed_fingerprint = native_trick_metric_ ? tricks::validate_native_field(field, trick_options.native_bands, env->trick_instance, trick_options.random_uniform, trick_options.random_reference) : 0;
             turn_oracle_.set_forward_costs(std::move(field));
             if (trick_options.remaining_flow && !turn_oracle_.weighted_forward())
                 throw std::logic_error("static remaining-flow score requires active weighted forward costs");
             if (native_trick_metric_ && tricks::random_instance(env->trick_instance)) {
                 std::printf("[CGAR_TRICK] instance=%s provider=%s normalization=20 turn=%d score=%s tie=raw field_sha256=%s installed_fnv1a64=%llu occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), trick_options.random_uniform ? "random-uniform-control" : trick_options.random_reference == 1 ? "nms-random-arrows" : trick_options.random_reference == 2 ? "kk-random-forward" : "random05-flow-integer",
+                    env->trick_instance.c_str(), trick_options.random_uniform ? "random-uniform-control" : trick_options.random_reference == 1 ? "nms-random-arrows" : trick_options.random_reference == 2 ? "kk-random-forward" : trick_options.random_reference == 3 ? "pilot-flow-integer" : "random05-flow-integer",
                     guidance_turn_cost_, (temporal_chain_mode_ & 1) ? "remaining_chain" : "pure_potential", tricks::native_field_hash(false, env->trick_instance, trick_options.random_uniform, trick_options.random_reference),
                     static_cast<unsigned long long>(installed_fingerprint), tricks::occupancy_hash(env->trick_instance));
             } else if (native_trick_metric_) {
@@ -1182,8 +1182,8 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
                     env->trick_instance.c_str(), trick_options.native_bands, guidance_turn_cost_, (temporal_chain_mode_ & 1) ? "remaining_chain" : "pure_potential", tricks::native_field_hash(trick_options.native_bands, env->trick_instance),
                     static_cast<unsigned long long>(installed_fingerprint), tricks::occupancy_hash(env->trick_instance));
             } else {
-                std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=16 turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
-                    env->trick_instance.c_str(), tricks::lane_field_hash(env->trick_instance), tricks::occupancy_hash(env->trick_instance));
+                std::printf("[CGAR_TRICK] instance=%s provider=nms-lane-directions forward_base=4 opposing=%d turn=4 field_sha256=%s occupancy_sha256=%s learned_publications=disabled\n",
+                    env->trick_instance.c_str(), trick_options.lane_cost, tricks::lane_field_hash(env->trick_instance, trick_options.lane_cost), tricks::occupancy_hash(env->trick_instance));
             }
         }
         if (!env->trick_instance.empty()) {
@@ -1195,7 +1195,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
                 env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_,
                 tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "",
                 temporal_rank_squared_ ? " rank_squared=1" : "",
-                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : "", fleet_components.c_str(), horizon_manhattan_ ? " horizon_manhattan=1" : "");
+                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : trick_options.random_reference == 3 ? " random_reference=3" : "", fleet_components.c_str(), horizon_manhattan_ ? " horizon_manhattan=1" : "");
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),

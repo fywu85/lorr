@@ -122,14 +122,20 @@ def main():
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
     component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED', 'CGAR_TRICK_GAME_TABU', 'CGAR_TRICK_HORIZON_MANHATTAN']
-    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment or 'CGAR_TRICK_GAME_ACTIVE_LIMIT' in environment
+    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment or 'CGAR_TRICK_GAME_ACTIVE_LIMIT' in environment or 'CGAR_TRICK_LANE_COST' in environment
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick <instance>')
     if any(environment.get(k, '0') not in ('0', '1') for k in component_keys):
         parser.error('CGAR_TRICK component settings must be 0 or 1')
     reference = environment.get('CGAR_TRICK_RANDOM_REFERENCE', '0')
-    if reference not in ('0','1','2'):
-        parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1 or 2')
+    if reference not in ('0','1','2','3'):
+        parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1, 2 or 3')
+    lane_cost = environment.get('CGAR_TRICK_LANE_COST', '16')
+    if lane_cost not in ('4','8','12','16'):
+        parser.error('CGAR_TRICK_LANE_COST must be 4, 8, 12 or 16')
+    if 'CGAR_TRICK_LANE_COST' in environment and (args.trick not in ('CITY-01','CITY-02','GAME') or
+            environment.get('CGAR_TRICK_LANES','1') != '1' or environment.get('CGAR_TRICK_NATIVE_METRIC','0') != '0'):
+        parser.error('lane cost requires explicit CITY/GAME adapted lanes')
     game_active = environment.get('CGAR_TRICK_GAME_ACTIVE_LIMIT', '0')
     if not re.fullmatch(r'[0-9]+', game_active) or int(game_active) > 6500:
         parser.error('CGAR_TRICK_GAME_ACTIVE_LIMIT must be in [0,6500]')
@@ -171,13 +177,15 @@ def main():
         if args.trick in ('CITY-01','CITY-02','GAME') and bands:
             parser.error('CITY/GAME native fields have no bands')
         asset_name = ('cgar/tricks/' + asset_prefix + '_native.hpp') if native or args.trick in ('SORTATION','CITY-01','CITY-02','GAME') else 'cgar/tricks/warehouse_lanes.hpp'
-        if random_field and reference != '0' and environment.get('CGAR_TRICK_RANDOM_UNIFORM','0') != '1':
+        if random_field and reference in ('1','2') and environment.get('CGAR_TRICK_RANDOM_UNIFORM','0') != '1':
             asset_name = 'cgar/tricks/random_reference.hpp'
             asset_prefix = 'random_nms' if reference == '1' else 'random_kk' + args.trick[-2:]
         asset = (ROOT / asset_name).read_bytes()
         if provenance is not None and provenance['sources'].get(asset_name) != hashlib.sha256(asset).hexdigest():
             parser.error('trick receipt asset does not match the frozen binary source manifest')
         declaration = (asset_prefix + '_native_' + ('bands' if bands else 'nobands') + '_field_sha256') if native else asset_prefix + '_field_sha256'
+        if not native and lane_cost != '16':
+            declaration = asset_prefix + '_lane' + lane_cost + '_field_sha256'
         if random_field and environment.get('CGAR_TRICK_RANDOM_UNIFORM', '0') == '1':
             declaration = 'random_uniform_field_sha256'
         match = re.search(declaration + r'\[\] = "([0-9a-f]{64})"', asset.decode())

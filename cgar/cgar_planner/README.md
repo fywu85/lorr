@@ -526,7 +526,9 @@ RANDOM-02's uniform stay1 is preserved as turn20; RANDOM-03/04 use a declared
 **forward-only adaptation** with uniform turn20, not KK's varying per-cell
 stay/turn costs. These require native metric and static lanes. Provider0 keeps
 the existing standalone-derived dense field; sparse instances require an
-explicit positive provider when lanes are enabled. No map-name autodispatch.
+explicit positive provider when lanes are enabled. Provider3 explicitly enables
+that same frozen PILOT-derived flow field at every RANDOM density, without
+refitting or changing its edge bytes. No map-name autodispatch.
 
 Reference providers default to turn20 and permit explicit native turn1..64;
 legacy providers retain their default1 and1..16 range. The normalization remains20,

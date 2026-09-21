@@ -8,6 +8,9 @@ inline constexpr char game_map_sha256[] = "ee4f1b89431452b6a07f7a56c6ca653edd7f9
 inline constexpr char game_occupancy_sha256[] = "9b631cfdb1b13cbd0e9da40538847aab7e7346035da1560331a43032ba86d7b2";
 inline constexpr char game_field_sha256[] = "8c4d511afc2cdcf4f069cb997d6c7f1ba5882c422a4f866e76470644dd31432c";
 inline constexpr char game_native_nobands_field_sha256[] = "f25e710f77f359ef7f1fe5cef09316782ea7da671346543cbb4c8b435b243dea";
+inline constexpr char game_lane4_field_sha256[] = "94a1669c5e5071ce52e00cb0561da661b58617c43c9b4edee7cb0aafeb483e77";
+inline constexpr char game_lane8_field_sha256[] = "6fa9d257ab94b22c4070de63ce28be7e85422ac84eda7e7eded0a8085b07b89c";
+inline constexpr char game_lane12_field_sha256[] = "38ae038fd57a0cf215acd33b26e64534ffd04df51afd4281692354392312d83d";
 inline constexpr uint64_t game_native_nobands_fnv1a64 = 2396239673730235117ULL;
 inline constexpr char game_masks[] =
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

@@ -57,6 +57,8 @@ def main():
   fnv=14695981039346656037
   for value in costs:fnv=((fnv^value)*1099511628211)&((1<<64)-1)
   hashes={name+'_map_sha256':sha(map_path),name+'_occupancy_sha256':digest(occupancy),name+'_field_sha256':digest(adapted),name+'_native_nobands_field_sha256':digest(costs)}
+  for opposing in [4,8,12]:
+   hashes[name+'_lane'+str(opposing)+'_field_sha256']=digest([opposing if x==16 else x for x in adapted])
   header=['#pragma once','#include <cstdint>','// Generated from unchanged archived NMS; explicit instance trick activation required.','// Generator: experiments/allmaps-20260920/city-game/generate.py.','namespace cgar { namespace tricks {','inline constexpr int '+name+'_rows = '+str(rows)+', '+name+'_cols = '+str(cols)+', '+name+'_free = '+str(occupancy.count(0))+';']
   header+=['inline constexpr char '+key+'[] = "'+value+'";' for key,value in hashes.items()]
   header+=['inline constexpr uint64_t '+name+'_native_nobands_fnv1a64 = '+str(fnv)+'ULL;','inline constexpr char '+name+'_masks[] =']

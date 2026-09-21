@@ -240,3 +240,19 @@ No actual CGAR protected action is changed. Future paths remain forecasts and ar
 revalidated at the next step; this is not a new liveness proof. Default0 keeps the
 original fully frozen tails. Regression exercises changed forecasts with unchanged
 first actions, pocket recovery, capacity mode and serial/parallel production.
+
+
+Optional field comparisons (all require the matching `--trick INSTANCE`):
+
+- `CGAR_TRICK_RANDOM_REFERENCE=3` selects the existing integer adaptation of
+  PILOT's flow field on any of RANDOM-01 through RANDOM-05. This is exactly the
+  field previously available as dense reference 0; no new field is fitted.
+  Explicit references default to turn price 20, overridable as before. Field
+  geometry and configuration selection are tricks; the CGAR planner is retained.
+- `CGAR_TRICK_LANE_COST=4|8|12|16` changes the opposing-edge price in the adapted
+  CITY-01, CITY-02 and GAME lane fields. Preferred edges and turns cost 4. The
+  default 16 preserves earlier behavior; 4 gives uniform forward costs. Native
+  metrics, lanes-off mode and other instances reject this selector. Each field
+  has a distinct recorded SHA-256. This does not change physical action duration.
+
+Neither option is a claimed improvement until its complete benchmarks pass.

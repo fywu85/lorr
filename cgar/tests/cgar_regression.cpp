@@ -3569,10 +3569,10 @@ void random_reference_trick_regression() {
   if(instance.second<=400)rejects([&]{native_forward_costs(instance.first,base.map,32,32,false);},"sparse reference used standalone field implicitly");
  }
  setenv("CGAR_TRICK_LANES","1",1);setenv("CGAR_TRICK_NATIVE_METRIC","1",1);setenv("CGAR_TRICK_REMAINING_FLOW","1",1);
- for(const char* value:{"","-1","3","01","true","1.0"}) {
+ for(const char* value:{"","-1","4","01","true","1.0"}) {
   setenv("CGAR_TRICK_RANDOM_REFERENCE",value,1);rejects([&]{options("RANDOM-02");},"malformed reference selector accepted");
  }
- for(const char* value:{"0","1","2"}) {
+ for(const char* value:{"0","1","2","3"}) {
   setenv("CGAR_TRICK_RANDOM_REFERENCE",value,1);rejects([&]{options("");},"reference accepted without CLI");
   for(const char* name:{"WAREHOUSE","SORTATION","CITY-01","CITY-02","GAME"})rejects([&]{options(name);},"reference accepted outside RANDOM");
  }
@@ -3591,11 +3591,16 @@ void random_reference_trick_regression() {
  setenv("CGAR_TRICK_RANK_SQUARED","1",1);rejects([&]{options("RANDOM-02");},"squared rank silently expanded to sparse RANDOM");unsetenv("CGAR_TRICK_RANK_SQUARED");
  Certificate cert;cert.rows=cert.cols=32;for(int wall:base.map)cert.free.push_back(!wall);cert.core=cert.free;cert.pocket.assign(1024,-1);
  long long compared=0;
- for(const auto& field:std::vector<std::pair<std::string,int>>{{"RANDOM-02",1},{"RANDOM-02",2},{"RANDOM-03",2},{"RANDOM-04",2}}) {
+ for(const auto& field:std::vector<std::pair<std::string,int>>{{"RANDOM-02",1},{"RANDOM-02",2},{"RANDOM-03",2},{"RANDOM-04",2},{"RANDOM-03",3}}) {
   auto weights=native_forward_costs(field.first,base.map,32,32,false,false,field.second);
   validate_native_field(weights,false,field.first,false,field.second);
   auto broken=weights;broken[free[0]*4]^=1;rejects([&]{validate_native_field(broken,false,field.first,false,field.second);},"corrupt reference accepted");
   if(field.second==1)for(const auto& instance:instances)require(weights==native_forward_costs(instance.first,base.map,32,32,false,false,1),"NMS arrow provider differs across fleets");
+  if(field.second==3)for(const auto& instance:instances) {
+   require(weights==native_forward_costs(instance.first,base.map,32,32,false,false,3),"PILOT flow provider differs across fleets");
+   require(weights==native_forward_costs("RANDOM-05",base.map,32,32,false,false,0),"PILOT reference changed the existing dense field");
+   require(std::string(native_field_hash(false,instance.first,false,3))==random_native_nobands_field_sha256,"PILOT field hash mismatch");
+  }
   const auto uniform=native_forward_costs(field.first,base.map,32,32,false,true,field.second);
   require(std::all_of(uniform.begin(),uniform.end(),[](int x){return x==20;}),"reference uniform control incorrect");validate_native_field(uniform,false,field.first,true,field.second);
   for(int goal:{free.front(),free[400],free.back()}) {
@@ -3618,7 +3623,7 @@ void random_reference_trick_regression() {
   {"CGAR_FLOW_STRENGTH","4"},{"CGAR_FLOW_COST_SCALE","20"},{"CGAR_PICKUP_FLOW","1"},{"CGAR_PICKUP_FULL_ROBOTS","1"},{"CGAR_TURN_COMPACT","1"},{"CGAR_TURN_TABLE_MB","16"}};
  for(auto setting:settings)setenv(setting.first,setting.second,1);
  int actions_checked=0;
- for(const auto& instance:instances)for(int reference:{1,2}) {
+ for(const auto& instance:instances)for(int reference:{1,2,3}) {
   if(reference==2&&(instance.second==100||instance.second==800))continue;
   setenv("CGAR_TRICK_RANDOM_REFERENCE",std::to_string(reference).c_str(),1);
   // Exercise the extended upper bound through real pickup and planning too.
@@ -3639,7 +3644,7 @@ void random_reference_trick_regression() {
  for(auto setting:settings)unsetenv(setting.first);
  for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_REMAINING_FLOW","CGAR_TRICK_RANDOM_REFERENCE","CGAR_TRICK_NATIVE_TURN_COST"})unsetenv(key);
  std::cout<<"RANDOM_REFERENCE_TRICK passed independent_oriented_states="<<compared<<" production_actions="<<actions_checked
-  <<" map_and_fleet_gates=1 distinct_providers=4 corrupt_and_malformed_rejected=1 native_pickup_and_plan=8 sparse_rank_rejected=1\n";
+  <<" map_and_fleet_gates=1 distinct_providers=5 corrupt_and_malformed_rejected=1 native_pickup_and_plan=13 pilot_matches_dense_field=1 sparse_rank_rejected=1\n";
 }
 
 void squared_rank_trick_regression() {
@@ -3721,7 +3726,7 @@ void city_game_trick_regression() {
  using namespace cgar::tricks;
  auto require=[](bool value,const char* message){if(!value)throw std::runtime_error(message);};
  auto rejects=[&](auto run,const char* message){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,message);};
- long long field_values=0,oriented_states=0,control_actions=0,native_actions=0;
+ long long field_values=0,oriented_states=0,control_actions=0,native_actions=0,contrast_actions=0,contrast_values=0;
  for(const std::string name:{"CITY-01","CITY-02","GAME"}) {
   const auto asset=field_asset(name);SharedEnvironment base;
   base.rows=asset.rows;base.cols=asset.cols;base.num_of_agents=name=="CITY-01"?1500:name=="CITY-02"?3000:6500;
@@ -3752,6 +3757,31 @@ void city_game_trick_regression() {
    require(native[4*cell+h]==(base.map[cell]?20:against?200:20),"CITY/GAME native parity formula mismatch");
    require(adapted[4*cell+h]==(base.map[cell]?4:against?16:4),"CITY/GAME adapted parity formula mismatch");++field_values;
   }
+  require(options(name).lane_cost==16,"default adapted lane price changed");
+  for(int price:{4,8,12,16}) {
+   setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
+   require(options(name).lane_cost==price,"explicit lane price lost");
+   rejects([&]{options("");},"lane price accepted without CLI");
+   rejects([&]{options("WAREHOUSE");},"CITY/GAME lane price escaped its instance gate");
+   rejects([&]{options("RANDOM-03");},"CITY/GAME lane price reached RANDOM");
+   setenv("CGAR_TRICK_LANES","0",1);rejects([&]{options(name);},"lane price accepted inactive lanes");unsetenv("CGAR_TRICK_LANES");
+   setenv("CGAR_TRICK_NATIVE_METRIC","1",1);rejects([&]{options(name);},"adapted price accepted native metric");unsetenv("CGAR_TRICK_NATIVE_METRIC");
+   const auto contrast=forward_costs(name,base.map,base.rows,base.cols,price);
+   require(std::string(lane_field_hash(name,price)).size()==64,"adapted contrast missing hash");
+   if(price==16)require(contrast==adapted&&std::string(lane_field_hash(name,price))==asset.lane_sha256,"explicit default changed field identity");
+   else require(std::string(lane_field_hash(name,price))!=asset.lane_sha256,"different contrast reused old hash");
+   for(int cell=0;cell<int(base.map.size());++cell)for(int h=0;h<4;++h) {
+    const int row=cell/base.cols,col=cell%base.cols;
+    const bool against=h==(row%2?0:2)||h==(col%2?1:3);
+    require(contrast[cell*4+h]==(base.map[cell]?4:against?price:4),"adapted contrast differs from independent parity formula");++contrast_values;
+   }
+  }
+  for(const char* value:{"","0","-1","6","20","08","8.0","true"}) {
+   setenv("CGAR_TRICK_LANE_COST",value,1);rejects([&]{options(name);},"invalid lane price accepted");
+  }
+  unsetenv("CGAR_TRICK_LANE_COST");
+  rejects([&]{forward_costs(name,base.map,base.rows,base.cols,6);},"undeclared field price accepted");
+  rejects([&]{lane_field_hash(name,6);},"undeclared field hash accepted");
   // One independent full oriented heap per distinct map. Disconnected free
   // components must remain unreachable in both implementations.
   if(name!="CITY-02"){
@@ -3808,10 +3838,26 @@ void city_game_trick_regression() {
    require(step(active,active.curr_states,actions).size()==size_t(base.num_of_agents)&&!planner.stats().flow_publications,"CITY/GAME native action invalid or field overwritten");native_actions+=actions.size();
    for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_NATIVE_METRIC","CGAR_TRICK_REMAINING_FLOW"})unsetenv(key);
   }
+  setenv("CGAR_FLOW_COST_SCALE","4",1);
+  std::vector<Action> explicit_default;
+  for(int price:{4,8,12,16}) {
+   setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
+   auto active=base;active.trick_instance=name;active.curr_timestep=10;Cgar planner;planner.initialize(&active,30000);
+   std::vector<int> schedule;planner.schedule(&active,30000,schedule);require(planner.stats().pickup_full_fields>0,"adapted price pickup inactive");install(active,schedule);
+   std::vector<Action> actions;planner.plan(&active,30000,actions);
+   require(step(active,active.curr_states,actions).size()==size_t(base.num_of_agents)&&!planner.stats().flow_publications,"adapted price invalid action or learned overwrite");contrast_actions+=actions.size();
+   if(price==16)explicit_default=actions;
+  }
+  unsetenv("CGAR_TRICK_LANE_COST");
+  {
+   auto active=base;active.trick_instance=name;active.curr_timestep=10;Cgar planner;planner.initialize(&active,30000);
+   std::vector<int> schedule;planner.schedule(&active,30000,schedule);install(active,schedule);
+   std::vector<Action> actions;planner.plan(&active,30000,actions);require(actions==explicit_default,"omitted lane price differs from explicit16");
+  }
   for(auto setting:settings)unsetenv(setting.first);
  }
  std::cout<<"CITY_GAME_TRICK passed independent_field_values="<<field_values<<" independent_oriented_states="<<oriented_states
-  <<" explicit_map_fleet_gate=3 generic_control_actions="<<control_actions<<" native_pickup_and_plan_actions="<<native_actions<<"\n";
+  <<" explicit_map_fleet_gate=3 generic_control_actions="<<control_actions<<" native_pickup_and_plan_actions="<<native_actions<<" contrast_values="<<contrast_values<<" contrast_actions="<<contrast_actions<<" default16_identity=1\n";
 }
 
 void random_trick_regression() {
