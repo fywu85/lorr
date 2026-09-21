@@ -320,6 +320,46 @@ void nonlinear_matching() {
     if(present)setenv("R05_MATCH_POWER",saved.c_str(),1);else unsetenv("R05_MATCH_POWER");
 }
 
+void retained_guidance_flips() {
+    auto e=environment(4,4,4);Config cfg;cfg.guidance="flow";cfg.flow_iterations=3;
+    cfg.flow_average=true;cfg.flow_normalize=true;cfg.flow_output_penalty=2.4;cfg.threads=1;
+    Graph unflipped(e,cfg);cfg.flow_flips=2;cfg.flow_flip_seed=7;Graph base(e,cfg);
+    cfg.flow_extra_flips=1;cfg.flow_extra_flip_seed=11;Graph extended(e,cfg),repeat(e,cfg);
+    require(extended.next==base.next && extended.weight==repeat.weight,
+            "independent field mutation changed topology or reproducibility");
+    int retained=0,additional=0;
+    for(int v=0;v<base.cells;++v)for(int d=0;d<4;++d) {
+        const int u=base.next[v][d];if(u<=v)continue;const int opposite=(d+2)%4;
+        if(base.weight[v][d]!=unflipped.weight[v][d]) {
+            ++retained;require(extended.weight[v][d]==base.weight[v][d] &&
+                extended.weight[u][opposite]==base.weight[u][opposite],"extra mutation undid a retained edge");
+        } else if(extended.weight[v][d]!=base.weight[v][d]) {
+            ++additional;require(extended.weight[v][d]==base.weight[u][opposite] &&
+                extended.weight[u][opposite]==base.weight[v][d],"extra mutation changed edge prices instead of swapping them");
+        }
+    }
+    require(retained==2 && additional==1,"field mutation lost its exact distinct-edge budget");
+    cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.cost_cache=true;
+    const auto serial=simulate(cfg,12,5,5,true);cfg.threads=2;
+    require(serial==simulate(cfg,12),"independent field mutations depend on workers");
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting guidance("R05_GUIDANCE","flow"),flips("R05_FLOW_FLIPS","1"),extra("R05_FLOW_EXTRA_FLIPS","1");
+    auto gate=environment(3,3,2);gate.trick_instance="RANDOM-03";
+    require(Config::environment(gate).flow_extra_flips==1,"extra field-flip budget was not parsed");
+    gate.trick_instance.clear();bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"extra field flips escaped the explicit trick flag");
+    gate.trick_instance="RANDOM-03";setenv("R05_FLOW_FLIPS","0",1);rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"extra field flips accepted a missing retained prefix");
+}
+
 void idle_pocket_eviction() {
     auto e=environment(3,4,1);e.map[3]=e.map[11]=1;
     e.curr_states[0].location=7;e.curr_states[0].orientation=0;
@@ -2073,6 +2113,7 @@ int main() {
     require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");
     require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");
     guidance_scale_reference();
+    retained_guidance_flips();
     idle_pocket_eviction();
     validation();
     scheduling();

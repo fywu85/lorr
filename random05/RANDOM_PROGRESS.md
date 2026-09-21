@@ -20,7 +20,7 @@ Large maps are outside active development.
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
-| RANDOM-02 | 200 | 600 | 1385 | 1408 | 1228 |
+| RANDOM-02 | 200 | 600 | 1390 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4175 | 3172 |
@@ -155,6 +155,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T15:23:22.109240+00:00 | RANDOM-05 | trick | 4175 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
 | 2026-09-21T15:54:03.792427+00:00 | RANDOM-02 | trick | 1408 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | 2026-09-21T16:00:46.717567+00:00 | RANDOM-02 | general | 1385 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random123-window-progress-split-full-v136/general-random-02-window-progress-early/summary.json) |
+| 2026-09-21T16:15:26.435917+00:00 | RANDOM-02 | general | 1390 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random02-window-progress-qualification-split-full-v136/general-random-02-record1385-seed4/summary.json) |
 
 
 ## September21: first development comparisons
@@ -806,3 +807,28 @@ Regression fixtures check a real matching decision change, protection of opened
 orders, unchanged single-pair idle thresholds in both matching backends, exact
 fast-dummy/worker/cache/checkpoint equivalence, and trick/range guards. Only after
 regression will powers0.5/1/2 run on all five selected archived profiles.
+
+Source138/8fe070ec passes40.74s regression (40.75s total), binarySHA
+0a6bfe88634888e1a2d5e1e89b718242c7bb28435aabf764ceb489c994d72be5.
+Fifteen frozen full cases compare matching powers1/0.5/2 on all five selected
+profiles729/1408/2602/2777/4175. Power1 controls must match the existing traces;
+other powers remain explicitly flagged assignment tricks. All other work/settings
+are fixed within each density, and all original attempts will be retained.
+
+R04search interaction audit is complete: K10240/12288 gives2751/2754; mutation
+0.05/0.15/0.2/0.3 gives2703/2690/2679/2634. More search does not improve2777.
+
+### Source139 hypothesis: retain selected guidance edges and vary another
+
+The earlier nested flip2–5 comparisons all include the same second edge. Their
+negative results do not distinguish an unhelpful second edge from all other
+possible additions. R05_FLOW_EXTRA_FLIPS/EXTRA_FLIP_SEED keeps the entire existing
+selected prefix and independently shuffles its unused suffix; the requested extra
+edges are distinct and cannot undo the retained ones. Default0 preserves the
+original layout exactly. The option requires flow guidance, a retained prefix and
+an explicit instance trick. Physical edges and their pairwise prices remain intact.
+
+Regression checks verify exact retained/extra edge counts, preservation of each
+selected edge and all edge prices, worker/checkpoint reproducibility and the trick
+gate. Following regression, R03/R04will test one additional edge with seeds0–3,
+plus controls, on their frozen2602/2777profiles. No held-out input participates.

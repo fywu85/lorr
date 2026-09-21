@@ -375,6 +375,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(const char* v=std::getenv("R05_GUIDANCE")) c.guidance=v;
     if(const char* v=std::getenv("R05_WEIGHTS")) c.weights=v;
     c.flow_flips=integer("R05_FLOW_FLIPS",0);c.flow_flip_seed=integer("R05_FLOW_FLIP_SEED",1);
+    c.flow_extra_flips=integer("R05_FLOW_EXTRA_FLIPS",0);
+    c.flow_extra_flip_seed=integer("R05_FLOW_EXTRA_FLIP_SEED",1);
+    if(c.flow_extra_flips<0 || (c.flow_extra_flips>0 && (!random_trick || c.flow_flips<=0 || c.guidance!="flow")))
+        throw std::invalid_argument("additional field flips require retained base flips, flow guidance and an explicit trick instance");
     c.flow_reverse=integer("R05_FLOW_REVERSE",0);
     if(c.flow_reverse && (!random_trick || c.guidance=="none"))
         throw std::invalid_argument("guidance reversal requires weighted guidance and an explicit trick instance");
@@ -692,7 +696,7 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             for(auto& w:weight)for(int d=0;d<4;++d)w[d]*=scale;
         }
     }
-    if(cfg.flow_flips) {
+    if(cfg.flow_flips || cfg.flow_extra_flips) {
         // Mutate the existing field without changing its cost scale or removing
         // physical edges. Equal-cost pairs have no direction to reverse.
         std::vector<std::pair<int,int>> edges;
@@ -700,9 +704,17 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
             int u=next[v][d];
             if(u>v && weight[v][d]!=weight[u][(d+2)%4])edges.emplace_back(v,d);
         }
-        if(cfg.flow_flips>int(edges.size()))throw std::invalid_argument("too many distinct guidance flips");
+        if(cfg.flow_flips<0 || cfg.flow_extra_flips<0 ||
+           cfg.flow_flips>int(edges.size()) || cfg.flow_extra_flips>int(edges.size())-cfg.flow_flips)
+            throw std::invalid_argument("too many distinct guidance flips");
         std::mt19937 random(cfg.flow_flip_seed);std::shuffle(edges.begin(),edges.end(),random);
-        for(int k=0;k<cfg.flow_flips;++k) {
+        if(cfg.flow_extra_flips) {
+            // Preserve every selected base edge, then sample only the unused
+            // suffix with an independent declared seed. No edge flips twice.
+            std::mt19937 additional(cfg.flow_extra_flip_seed);
+            std::shuffle(edges.begin()+cfg.flow_flips,edges.end(),additional);
+        }
+        for(int k=0;k<cfg.flow_flips+cfg.flow_extra_flips;++k) {
             auto [v,d]=edges[k];int u=next[v][d];
             std::swap(weight[v][d],weight[u][(d+2)%4]);
         }
