@@ -371,3 +371,23 @@ count how many regional candidates actually enter the pool. The default0 retains
 the original global-start pool. This addresses a candidate-quality hypothesis:
 unrepaired global roots may be too weak to compete with a heavily repaired root.
 It does not assume a measured throughput improvement or alter the CGAR protections.
+
+
+### Explicit RANDOM active-task admission cap
+
+`--trick RANDOM-01` through `RANDOM-05` may set
+`CGAR_TRICK_RANDOM_TASK_CAP` to a positive value no larger than the fleet. Default
+0 leaves admission unchanged. This bounds simultaneously assigned tasks, choosing
+new assignments through the existing scheduler. A completion releases a slot for
+another task. The receiving robot set is dynamic; goal-less robots remain movable
+by CGAR, including displacement to clear a primary's route. This does not park a
+new subset of robots or remove them from collision checking.
+
+Held and started tasks are preserved. An externally supplied initial assignment
+above the cap is allowed to finish, while new admissions wait for room. Existing
+oldest-admission rules operate within available slots. Fairness remains a
+secondary metric: the cap can increase task waiting and is explicitly a trick.
+No elapsed-time cutoff or partial search result is introduced. Diagnostics and an
+independent replay of actual assignment events verify the declared cap and that
+held tasks were not dropped. Full-fleet and explicit-zero cases preserve the
+uncapped assignment/action trajectory.

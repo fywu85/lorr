@@ -32,6 +32,38 @@ def fields(line):
     return dict(item.split('=', 1) for item in line.split()[1:])
 
 
+def audit_random_task_cap(actual, cap, samples):
+    """Replay assignment events, independently of solver admission counters."""
+    horizon=actual['makespan'];robots=len(actual['actualSchedule'])
+    changes=[[] for _ in range(horizon+1)]
+    for robot,line in enumerate(actual['actualSchedule']):
+        for entry in line.split(','):
+            if not entry:continue
+            tick,task=map(int,entry.split(':'));assert 1<=tick<=horizon
+            changes[tick].append((robot,task))
+    lengths={t[0]:len(t[2])//2 for t in actual['tasks']}
+    completed={task:tick for tick,robot,task,stop in actual['events'] if stop==lengths[task]}
+    current=[-1]*robots;seen=set();counts=[];peaks=[];admitted=[];idle=[];peak=idle_sum=0
+    for tick in range(1,horizon+1):
+        held={task for task in current if task>=0 and completed.get(task,horizon+1)>=tick}
+        for robot,task in changes[tick]:current[robot]=task
+        active=[task for task in current if task>=0];active_set=set(active)
+        assert len(active)==len(active_set) and held<=active_set, 'duplicate assignment or dropped held task'
+        assert len(active)<=cap, 'actual assignment count exceeds declared cap'
+        seen.update(active_set);peak=max(peak,len(active));idle_sum+=robots-len(active)
+        counts.append(len(active));peaks.append(peak);admitted.append(len(seen));idle.append(idle_sum)
+    for sample in samples:
+        tick=int(sample['t']);checks=int(sample['checks'])
+        assert int(sample['limit'])==cap and 0<=checks<=tick+1
+        assert int(sample['peak_active'])==peaks[tick]
+        assert int(sample['admitted'])==admitted[tick]
+        assert 0<=int(sample['idle_robot_steps'])<=robots*checks
+        if checks==tick+1:assert int(sample['idle_robot_steps'])==idle[tick]
+    return dict(steps=horizon,peak_active=max(counts),min_active=min(counts),mean_active=sum(counts)/horizon,
+                distinct_admitted_tasks=len(seen),idle_robot_steps=idle_sum,held_tasks_preserved=True,
+                assignment_timestamp='planner_tick_plus_one',initial_held_tasks=0)
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--raw', type=Path, required=True)
@@ -232,6 +264,18 @@ def main():
                     if int(case['environment'].get('CGAR_TRICK_HORIZON_MARGIN','0')):
                         margin_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon-margin] ')]
                         assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
+                task_cap=int(case['environment'].get('CGAR_TRICK_RANDOM_TASK_CAP','0'))
+                task_cap_config=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_RANDOM_TASK_CAP] ')]
+                task_cap_samples=[fields(l) for l in logs if l.startswith('[cgar-task-cap] ')]
+                if task_cap:
+                    assert name.startswith('RANDOM-') and 1<=task_cap<=row['robots']
+                    assert task_cap_config==[dict(limit=str(task_cap),selection='dynamic_new_only',held='protected',started='protected',idle_motion='cgar',no_task_drop='1',fairness='secondary',fixed_work='1')]
+                    assert [int(x['t']) for x in task_cap_samples]==list(range(0,row['steps'],200))
+                    for counter in ('checks','admitted','idle_robot_steps','peak_active'):
+                        counts=[int(x[counter]) for x in task_cap_samples];assert counts==sorted(counts)
+                    cap_audit=audit_random_task_cap(read(raw/label/(name+'.json')),task_cap,task_cap_samples)
+                    row['random_task_cap']=dict(configuration=task_cap_config[0],last_sample=task_cap_samples[-1],independent_audit=cap_audit)
+                else:assert not task_cap_config and not task_cap_samples
                 startup=int(case['environment'].get('CGAR_PICKUP_STARTUP','0'))
                 startup_config=[fields(l) for l in logs if l.startswith('[cgar-pickup-startup-config] ')]
                 startup_samples=[fields(l) for l in logs if l.startswith('[cgar-pickup-startup] ')]
@@ -255,7 +299,7 @@ def main():
                     initial_assigned=sum(any(int(v.split(':')[0])==1 and int(v.split(':')[1])>=0
                         for v in schedule.split(',') if v) for schedule in actual['actualSchedule'])
                     del actual
-                    assert int(x['robots'])==eligible_initial==initial_assigned
+                    assert int(x['robots'])==eligible_initial and initial_assigned==min(eligible_initial,task_cap or eligible_initial)
                     row['startup_initial_assignment_check']=dict(eligible=eligible_initial,assigned=initial_assigned,capacity_mode=bool(capacity),simulator_assignment_timestamp=1)
                     assert int(x['full_quota'])==int(case['environment'].get('CGAR_PICKUP_FULL_ROBOTS','0'))
                     assert int(x['node_limit'])==int(case['environment'].get('CGAR_PICKUP_FLOW_NODES','8192'))

@@ -271,6 +271,7 @@ struct Stats {
     long long chain_paid_cost = 0, chain_paid_seed_rotations = 0;
     long long scheduler_chain_calls = 0, scheduler_chain_tasks = 0, scheduler_chain_pairs = 0;
     long long scheduler_chain_covered = 0, scheduler_chain_fallback = 0, scheduler_chain_changed = 0;
+    long long task_cap_checks = 0, task_cap_admitted = 0, task_cap_idle_steps = 0, task_cap_peak_active = 0;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
@@ -629,6 +630,7 @@ private:
     bool hrrn_ = true;
     bool short_task_trick_ = false;
     int game_active_limit_ = 0;
+    int random_task_cap_ = 0;
     bool game_tabu_ = false, game_fleet_ready_ = false;
     GameFleetSelection game_fleet_selection_;
     int known_horizon_ = 0;

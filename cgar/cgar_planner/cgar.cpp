@@ -749,6 +749,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow)))
         throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
+    random_task_cap_ = trick_options.random_task_cap;
+    if (random_task_cap_ > n_)
+        throw std::invalid_argument("random task cap exceeds the declared fleet");
+    if (random_task_cap_)
+        std::printf("[CGAR_TRICK_RANDOM_TASK_CAP] limit=%d selection=dynamic_new_only held=protected started=protected idle_motion=cgar no_task_drop=1 fairness=secondary fixed_work=1\n", random_task_cap_);
     game_active_limit_ = trick_options.game_active_limit;
     game_tabu_ = trick_options.game_tabu;
     game_fleet_ready_ = false;
@@ -2226,6 +2231,10 @@ void Cgar::log_summary() {
             stats_.pickup_flow_searches, stats_.pickup_flow_pops, stats_.pickup_flow_states,
             stats_.pickup_flow_cells, stats_.pickup_flow_candidates, stats_.pickup_flow_limits,
             stats_.pickup_flow_cached_estimates, stats_.pickup_flow_approximate_estimates, stats_.pickup_flow_warmup_calls);
+    if (random_task_cap_)
+        std::printf("[cgar-task-cap] t=%d limit=%d checks=%lld admitted=%lld idle_robot_steps=%lld peak_active=%lld\n",
+            env_->curr_timestep, random_task_cap_, stats_.task_cap_checks, stats_.task_cap_admitted,
+            stats_.task_cap_idle_steps, stats_.task_cap_peak_active);
     if (scheduler_chain_potential_)
         std::printf("[cgar-scheduler-chain] t=%d calls=%lld tasks=%lld pairs=%lld covered=%lld fallback=%lld changed=%lld\n",
             env_->curr_timestep, stats_.scheduler_chain_calls, stats_.scheduler_chain_tasks, stats_.scheduler_chain_pairs,
@@ -3087,11 +3096,26 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     std::vector<int> robots;
     for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i] &&
         (!game_active_limit_ || !game_fleet_selection_.excluded[i])) robots.push_back(i);
-    if (robots.empty() || free_tasks_.empty()) {
+    const int held_count = random_task_cap_ ? std::count_if(proposed.begin(), proposed.end(), [](int task) { return task >= 0; }) : 0;
+    int admission_slots = random_task_cap_ ? std::max(0, random_task_cap_ - held_count) : n_;
+    auto has_admission_slot = [&] { return !random_task_cap_ || admission_slots > 0; };
+    auto check_task_cap = [&] {
+        if (!random_task_cap_) return;
+        const int active = std::count_if(proposed.begin(), proposed.end(), [](int task) { return task >= 0; });
+        // Already-held tasks survive even if an externally supplied initial
+        // assignment exceeds the cap. This policy only limits new admissions.
+        if (active < held_count || active > std::max(held_count, random_task_cap_))
+            throw std::logic_error("random task cap dropped a held task or exceeded available admission slots");
+        ++stats_.task_cap_checks; stats_.task_cap_admitted += active - held_count;
+        stats_.task_cap_idle_steps += n_ - active;
+        stats_.task_cap_peak_active = std::max<long long>(stats_.task_cap_peak_active, active);
+    };
+    if (robots.empty() || free_tasks_.empty() || !has_admission_slot()) {
         reassign_unopened(proposed);
         exchange_unopened_with_pool(proposed);
         match_unopened(proposed);
         record_horizon_proposal(proposed);
+        check_task_cap();
         check_deadline(deadline_, "empty_schedule"); return;
     }
     std::rotate(robots.begin(), robots.begin() + scheduler_cursor_ % robots.size(), robots.end());
@@ -3323,6 +3347,10 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
         return oldest < by_age.size() ? by_age[oldest] : -1;
     };
     auto assign = [&](const Pair& p) {
+        if (random_task_cap_) {
+            if (!admission_slots) throw std::logic_error("random task admission has no remaining slot");
+            --admission_slots;
+        }
         robot_used[p.robot] = 1;
         task_used[p.task] = 1;
         const int slot = available_position[p.task], last = available.back();
@@ -3377,7 +3405,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     auto fair_admission = [&]() {
         // Explicit competition-objective ablation: long unpicked tasks may wait
         // indefinitely. Started assignments and motion protection are unchanged.
-        if (short_task_trick_ || regular_admissions_ < n_) return;
+        if (!has_admission_slot() || short_task_trick_ || regular_admissions_ < n_) return;
         const int t = oldest_task();
         if (t < 0) return;
         Pair best{};
@@ -3552,16 +3580,20 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     }
     std::sort(pairs.begin(), pairs.end(), better);
     for (const Pair& p : pairs) {
+        if (!has_admission_slot()) break;
         if (robot_used[p.robot] || task_used[p.task]) continue;
         fair_admission();
+        if (!has_admission_slot()) break;
         if (robot_used[p.robot] || task_used[p.task]) continue;
         assign(p);
         if (!p.global) ++stats_.local_assignments;
         ++regular_admissions_;
     }
     for (int r : robots) {
+        if (!has_admission_slot()) break;
         if (robot_used[r]) continue;
         fair_admission();
+        if (!has_admission_slot()) break;
         if (robot_used[r]) continue;
         const int fallback = oldest_task();
         if (fallback < 0) break;
@@ -3604,6 +3636,7 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     match_unopened(proposed);
     if (fresh_pickup_audit_ && !full_pickup_slot.empty()) audit_fresh_pickup(proposed, full_pickup_slot);
     record_horizon_proposal(proposed);
+    check_task_cap();
     check_deadline(deadline_, "scheduling_complete");
 }
 

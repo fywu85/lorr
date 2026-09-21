@@ -26,7 +26,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; int game_active_limit = 0; bool game_tabu = false; bool horizon_manhattan = false; int lane_cost = 16; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; int game_active_limit = 0; bool game_tabu = false; bool horizon_manhattan = false; int lane_cost = 16; int random_task_cap = 0; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -34,6 +34,7 @@ inline Options options(const std::string& instance) {
     const char* lanes = std::getenv("CGAR_TRICK_LANES");
     const char* lane_cost = std::getenv("CGAR_TRICK_LANE_COST");
     const char* short_tasks = std::getenv("CGAR_TRICK_SHORT_TASKS");
+    const char* task_cap = std::getenv("CGAR_TRICK_RANDOM_TASK_CAP");
     const char* matching = std::getenv("CGAR_TRICK_UNOPENED_MATCH");
     const char* remaining_flow = std::getenv("CGAR_TRICK_REMAINING_FLOW");
     const char* native_metric = std::getenv("CGAR_TRICK_NATIVE_METRIC");
@@ -52,7 +53,7 @@ inline Options options(const std::string& instance) {
     const char* game_active = std::getenv("CGAR_TRICK_GAME_ACTIVE_LIMIT");
     const char* game_tabu = std::getenv("CGAR_TRICK_GAME_TABU");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference || game_active || game_tabu || horizon_manhattan || lane_cost)
+        if (lanes || short_tasks || task_cap || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference || game_active || game_tabu || horizon_manhattan || lane_cost)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -152,6 +153,16 @@ inline Options options(const std::string& instance) {
         if (!boolean(native_metric, false))
             throw std::invalid_argument("native prewarm selector requires a native metric");
     }
+    int random_task_cap = 0;
+    if (task_cap) {
+        if (!random_instance(instance) || !*task_cap)
+            throw std::invalid_argument("random task cap requires --trick RANDOM-01..05 and an integer in [0,800]");
+        for (const char* p = task_cap; *p; ++p) {
+            if (*p < '0' || *p > '9' || random_task_cap > (800 - (*p - '0')) / 10)
+                throw std::invalid_argument("random task cap must be an integer in [0,800]");
+            random_task_cap = random_task_cap * 10 + (*p - '0');
+        }
+    }
     const bool neutral = boolean(neutral_tail, false);
     if (neutral && !boolean(native_metric, false))
         throw std::invalid_argument("native neutral tail requires the native metric");
@@ -164,7 +175,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id, active_limit, preserve_tabu, manhattan, opposing};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id, active_limit, preserve_tabu, manhattan, opposing, random_task_cap};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:
