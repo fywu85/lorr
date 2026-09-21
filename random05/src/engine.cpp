@@ -155,11 +155,12 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_starts=integer("R05_WINDOW_STARTS",1);
     c.window_rounds=integer("R05_WINDOW_ROUNDS",1);
     c.window_reuse=integer("R05_WINDOW_REUSE",0);
+    c.window_fast_groups=integer("R05_WINDOW_FAST_GROUPS",0);
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_equal=integer("R05_WINDOW_EQUAL",0);
     if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
-       c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>8192 ||
+       c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>16384 ||
        c.window_neighborhood<1 || c.window_neighborhood>64 || c.window_expansions<1 || c.window_starts<1 || c.window_starts>1024 ||
        c.window_rounds<1 || c.window_rounds>32 || c.window_iterations%c.window_rounds ||
        c.window_first_iterations<0 || c.window_first_iterations>c.window_iterations || c.window_first_iterations%c.window_rounds ||

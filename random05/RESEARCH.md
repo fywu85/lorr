@@ -1292,3 +1292,20 @@ for timestep0, analogous to the reactive planner's existing FIRST_K. Zero
 and divide evenly across sharing rounds. All attempts still complete, and
 any later overrun still fails. Worker/checkpoint/dense-turnover tests exercise
 the smaller first budget without weakening timing or movement checks.
+
+## Skip unused spatial neighborhood ranking (source94 experiment)
+
+When recursive reservation blockers fill the whole LNS group, the previous
+implementation still generates400 distance keys and partially sorts them, then
+overwrites the entire selected prefix with blockers. Optional
+R05_WINDOW_FAST_GROUPS builds the blocker group first. If it fills, discard
+exactly the same N mt19937 draws and skip the unused distance/sort work; if not,
+run the original key generation, partial sort and fallback ordering unchanged.
+Reusable membership epochs avoid per-repair allocation on this path. A counter
+reports skipped sorts. Groups, subsequent draws, paths and work counts must
+match the old implementation. Default remains off. Dense worker/cost-cache/
+checkpoint regressions and full exact controls precede timing claims.
+
+Raise only the explicit WINDOW_ITERS ceiling8192->16384 for subsequent scaling
+if the optimization creates enough headroom. Default work is unchanged, every
+configured repair finishes, and the strict deadline still rejects overruns.

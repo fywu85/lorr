@@ -115,7 +115,7 @@ struct Search {
         return false;
     }
 };
-struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0; };
+struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0,skipped_sorts=0; };
 }
 
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
@@ -247,7 +247,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         }
     }
     std::vector<Island> islands(cfg.window_islands);
-    int best=0;uint64_t expanded=0;int accepted=0;
+    int best=0;uint64_t expanded=0;int accepted=0,skipped_sorts=0;
     // Optional fixed rounds share the best complete plan between islands.
     // Total repair attempts per island remain window_iterations, independent
     // of wall time and worker scheduling. One round is the original control.
@@ -256,7 +256,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int index=0;index<cfg.window_islands;++index) {
         try {
-            auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;
+            auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;island.skipped_sorts=0;
             Paths incumbent_paths;
             Cost current_cost=base_cost,incumbent_cost=base_cost;
             if(cfg.window_temperature>0)incumbent_paths=island.paths;
@@ -272,6 +272,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             std::vector<Cost> costs(n);
             for(int a=0;a<n;++a)costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
             std::vector<int> group(n);std::vector<float> keys(n);
+            const int count=std::min(cfg.window_neighborhood,n);
+            std::vector<int> linked;linked.reserve(count);
+            std::vector<uint32_t> marked(n,0);
             for(int iteration=0;iteration<iterations/cfg.window_rounds;++iteration) {
                 int pivot=int(random()%n),time=int(random()%(h+1));
                 // Half the neighborhoods emphasize delayed routes; the rest
@@ -282,16 +285,43 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         assigned_[b]->cost(g,initial.stage[b],initial.loc[b],initial.dir[b]):0);};
                     if(delay(a)>delay(pivot))pivot=a;
                 }
+                auto spatial_group=[&]() {
                 for(int a=0;a<n;++a) {
                     group[a]=a;
                     keys[a]=float(g.hop(island.paths[pivot][time]/4,island.paths[a][time]/4))+
                             float(random()%1024)/512;
                 }
                 keys[pivot]=-1;
-                const int count=std::min(cfg.window_neighborhood,n);
                 std::partial_sort(group.begin(),group.begin()+count,group.end(),[&](int a,int b){
                     return keys[a]!=keys[b]?keys[a]<keys[b]:a<b;
                 });
+                };
+                if(cfg.window_fast_groups && cfg.window_blockers) {
+                    linked.clear();linked.push_back(pivot);
+                    const uint32_t epoch=uint32_t(iteration)+1;marked[pivot]=epoch;
+                    auto add=[&](int a) {
+                        if(a>=0 && marked[a]!=epoch && int(linked.size())<count) {
+                            marked[a]=epoch;linked.push_back(a);
+                        }
+                    };
+                    for(size_t k=0;k<linked.size() && int(linked.size())<count;++k) {
+                        const auto& route=guides[linked[k]];
+                        for(int t=1;t<=h && int(linked.size())<count;++t) {
+                            add(reserve.owner(t,route[t]/4));
+                            const int crossing=reserve.owner(t-1,route[t]/4);
+                            if(crossing>=0 && reserve.owner(t,route[t-1]/4)==crossing)add(crossing);
+                        }
+                    }
+                    if(int(linked.size())<count) {
+                        spatial_group();for(int a:group)add(a);
+                    } else {
+                        // The original spatial ranking is overwritten entirely.
+                        // Consume exactly its draws so every later choice agrees.
+                        random.discard(n);++island.skipped_sorts;
+                    }
+                    std::copy(linked.begin(),linked.end(),group.begin());
+                } else {
+                    spatial_group();
                 if(cfg.window_blockers) {
                     std::vector<int> linked{pivot};std::vector<unsigned char> marked(n,0);marked[pivot]=1;
                     auto add=[&](int a) {
@@ -307,6 +337,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     }
                     for(int a:group)add(a);
                     std::copy(linked.begin(),linked.end(),group.begin());
+                }
                 }
                 std::shuffle(group.begin(),group.begin()+count,random);
                 std::vector<std::vector<int>> old(count),replacement(count);
@@ -366,7 +397,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     best=0;
     for(int k=0;k<cfg.window_islands;++k) {
         if(errors[k])std::rethrow_exception(errors[k]);
-        expanded+=islands[k].expansions;accepted+=islands[k].accepted;
+        expanded+=islands[k].expansions;accepted+=islands[k].accepted;skipped_sorts+=islands[k].skipped_sorts;
         if(better(islands[k].cost,islands[best].cost))best=k;
     }
     if(better(base_cost,islands[best].cost))throw std::runtime_error("window sharing round worsened its complete seed");
@@ -384,8 +415,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,accepted,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,accepted,skipped_sorts,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }

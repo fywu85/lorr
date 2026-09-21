@@ -915,6 +915,10 @@ void window_reproducibility() {
     const auto linked=simulate(cfg,8,5,5,true);
     cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");
     cfg.cost_cache=false;require(linked==simulate(cfg,8),"blocker guides depend on cost caching");
+    cfg.window_fast_groups=true;
+    require(linked==simulate(cfg,8,5,5,true),"skipping unused spatial sorts changed repairs or checkpoint replay");
+    cfg.threads=2;cfg.cost_cache=true;
+    require(linked==simulate(cfg,8),"fast blocker groups changed across workers or cost caching");
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
