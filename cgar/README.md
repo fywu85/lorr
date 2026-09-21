@@ -162,6 +162,19 @@ the full action/service product graph and checks serial/parallel production acti
 The option remains experimental pending full throughput comparisons.
 
 
+`CGAR_TEMPORAL_CHAIN_PAID_COST=1` changes score-only chain mode1 to price the five
+forecast actions plus the remaining chain. Default0 preserves the terminal-only
+score. Forward, turn and wait prices come from the same static oracle; only waits
+after the final revealed errand are free. CGAR priority order stays unchanged.
+With this option, an ordinary wait seed includes the rotation its executor would
+perform, so its forecast heading and paid first action agree with execution.
+Legacy temporal history and after-turn promises are incompatible. Diagnostics
+record the declared objective, accumulated paid choice costs and oriented seeds.
+This is an optional scoring experiment, not a new guarantee about congested
+travel time or a promise to execute all five forecast actions. All search work
+still completes before returning, and timeout remains failure.
+
+
 ### Experimental complete-chain assignment cost
 
 `CGAR_SCHEDULER_CHAIN_POTENTIAL=1` optionally reuses the complete static chain

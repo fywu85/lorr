@@ -987,6 +987,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     } else if (future_options_.horizon != 15 || future_options_.branches != 4 || future_options_.threads != 4 || future_options_.noise != 50 || future_options_.regional_roots)
         throw std::invalid_argument("common-future work overrides require enabled roots");
     temporal_chain_mode_ = priority_setting("CGAR_TEMPORAL_CHAIN_MODE", 0, 3);
+    temporal_chain_paid_ = priority_setting("CGAR_TEMPORAL_CHAIN_PAID_COST", 0, 1) != 0;
+    if (temporal_chain_paid_ && (temporal_chain_mode_ != 1 || temporal_warm_start_ || temporal_promise_after_turn_))
+        throw std::invalid_argument("paid chain forecasts require chain score mode1 with legacy history/promises disabled");
+    if (temporal_chain_paid_)
+        std::printf("[cgar-chain-paid-config] enabled=1 objective=paid_plus_remaining wait_seed=actual_first_action service=after_action post_completion_wait=free priority=unchanged fixed_work=1 timeout_is_failure=1\n");
     temporal_chain_mb_ = priority_setting("CGAR_TEMPORAL_CHAIN_MB", 512, 8192);
     temporal_chain_threads_ = priority_setting("CGAR_TEMPORAL_CHAIN_THREADS", 1, 32);
     chain_potential_ = ChainPotential();

@@ -102,7 +102,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         }
     }
     std::vector<std::array<long long, 5>> next_metrics(temporal_prepare_threads_, {0, 0, 0, 0, 0});
-    std::vector<std::array<long long, 6>> chain_metrics(temporal_chain_mode_ ? temporal_prepare_threads_ : 0, {0, 0, 0, 0, 0, 0});
+    std::vector<std::array<long long, 8>> chain_metrics(temporal_chain_mode_ ? temporal_prepare_threads_ : 0, std::array<long long, 8>{});
     std::vector<std::array<long long, 2>> native_service_metrics(native_neutral_tail_ ? temporal_prepare_threads_ : 0, {0, 0});
     std::vector<std::array<int, 2>> prepared_metrics(temporal_prepare_threads_, {0, 0});
     run_temporal_preparation(temporal_prepare_threads_, [&](int worker) {
@@ -114,6 +114,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             const int goal = agents_[i].goal; goals[i] = goal;
             const auto* spatial = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? oracle_.peek(goal) : prepared_spatial[i]);
             const auto* oriented = goal < 0 ? nullptr : (temporal_prepare_threads_ == 1 ? turn_oracle_.find(goal) : prepared_oriented[i]);
+            const auto* wait_orientation_table = oriented;
             if (oriented && turn_oracle_.value(*oriented, loc_[i], ori_[i]) >= kInf) oriented = nullptr;
             const bool guided = guide_enabled_ && guide_routes_.guided(i);
             const int robot_turn_cost = oriented && !guided ? guidance_turn_cost_ : flow_cost_scale_;
@@ -189,7 +190,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     chain_metrics[worker][3] += served > 0;
                     chain_metrics[worker][4] += served > 1;
                     chain_metrics[worker][5] += served == chain.goals.size();
-                    return remaining * temporal_distance_scale_ - int64_t(op) * (native_trick_metric_ ? 1 : flow_cost_scale_);
+                    const int64_t paid = temporal_chain_paid_ ? chain_potential_.paid_path(chain, path,
+                        TemporalGeometry::operations()[op], loc_[i], ori_[i],
+                        [&](int cell, int heading) { return turn_oracle_.forward_cost(cell, heading); }) : 0;
+                    chain_metrics[worker][6] += paid;
+                    return (remaining + paid) * temporal_distance_scale_ - int64_t(op) * (native_trick_metric_ ? 1 : flow_cost_scale_);
                 }
                 if (native_trick_metric_) {
                     if (native_neutral_tail_ && TemporalGeometry::first_goal_hit(path, goal) >= 0) {
@@ -233,7 +238,15 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             if ((temporal_chain_mode_ & 2) && chain_available)
                 priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, chain_initial));
             choices[i].reserve(pinned[i] ? 1 : 129);
-            seeds[i] = temporal_geometry_.seed(loc_[i], ori_[i], pinned[i] ? static_cast<int>(actions[i]) : 3);
+            int seed_first_action = pinned[i] ? static_cast<int>(actions[i]) : 3;
+            if (temporal_chain_paid_ && !pinned[i] && goal >= 0 && wait_orientation_table) {
+                seed_first_action = TemporalGeometry::wait_action(
+                    turn_oracle_.value(*wait_orientation_table, loc_[i], ori_[i]),
+                    turn_oracle_.value(*wait_orientation_table, loc_[i], (ori_[i] + 1) % 4),
+                    turn_oracle_.value(*wait_orientation_table, loc_[i], (ori_[i] + 3) % 4), temporal_strict_wait_turns_);
+                chain_metrics[worker][7] += seed_first_action != 3;
+            }
+            seeds[i] = temporal_geometry_.seed(loc_[i], ori_[i], seed_first_action);
             choices[i].push_back({&seeds[i], cost(seeds[i], 0), 0});
             if (pinned[i]) continue;
             const auto& paths = temporal_geometry_.paths(loc_[i], ori_[i]);
@@ -261,6 +274,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.chain_robot_steps += count[0]; stats_.chain_fallback_steps += count[1];
         stats_.chain_scored_choices += count[2]; stats_.chain_service_choices += count[3];
         stats_.chain_multi_service_choices += count[4]; stats_.chain_completed_choices += count[5];
+        stats_.chain_paid_cost += count[6]; stats_.chain_paid_seed_rotations += count[7];
     }
     for (const auto& count : next_metrics) {
         stats_.temporal_next_known += count[0]; stats_.temporal_next_eligible += count[1];
@@ -533,6 +547,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         if (search.selected(i) == 0 && agents_[i].goal >= 0) {
             auto orient_wait = [&](int wait, int right, int left) {
                 const int chosen = TemporalGeometry::wait_action(wait, right, left, temporal_strict_wait_turns_);
+                if (temporal_chain_paid_ && chosen != path.first_action)
+                    throw std::logic_error("paid chain wait seed changed its actual first action");
                 actions[i] = static_cast<Action>(chosen);
                 if (chosen != 3) {
                     ++stats_.temporal_seed_rotations;
@@ -729,6 +745,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
             std::printf("[cgar-chain] step=%d mode=%d robots=%lld fallback=%lld choices=%lld service=%lld multi_service=%lld completed=%lld\n",
                 env_->curr_timestep + 1, temporal_chain_mode_, stats_.chain_robot_steps, stats_.chain_fallback_steps,
                 stats_.chain_scored_choices, stats_.chain_service_choices, stats_.chain_multi_service_choices, stats_.chain_completed_choices);
+        if (temporal_chain_paid_)
+            std::printf("[cgar-chain-paid] step=%d paid_cost=%lld seed_rotations=%lld\n",
+                env_->curr_timestep + 1, stats_.chain_paid_cost, stats_.chain_paid_seed_rotations);
         if (temporal_next_errand_)
             std::printf("[cgar-temporal-next-errand] step=%d enabled=1 known=%lld eligible=%lld unavailable=%lld arriving_choices=%lld changed_choices=%lld\n",
                 env_->curr_timestep + 1, stats_.temporal_next_known, stats_.temporal_next_eligible,

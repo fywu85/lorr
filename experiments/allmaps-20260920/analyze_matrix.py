@@ -298,6 +298,21 @@ def main():
                     assert (int(chain_samples[-1]['choices'])>0)==bool(chain_mode&1)
                 else:
                     assert not chain_config and not chain_samples
+                chain_paid=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_PAID_COST','0'))
+                chain_paid_config=[fields(l) for l in logs if l.startswith('[cgar-chain-paid-config] ')]
+                chain_paid_samples=[fields(l) for l in logs if l.startswith('[cgar-chain-paid] ')]
+                if chain_paid:
+                    assert chain_paid==1 and chain_mode==1
+                    assert chain_paid_config==[dict(enabled='1',objective='paid_plus_remaining',wait_seed='actual_first_action',service='after_action',post_completion_wait='free',priority='unchanged',fixed_work='1',timeout_is_failure='1')]
+                    assert [int(x['step']) for x in chain_paid_samples]==list(range(200,row['steps']+1,200))
+                    for x,y in zip(chain_paid_samples,chain_samples):
+                        assert 0<=int(x['paid_cost'])<=int(y['choices'])*5*255
+                        assert 0<=int(x['seed_rotations'])<=row['robots']*int(x['step'])
+                    for counter in ('paid_cost','seed_rotations'):
+                        counts=[int(x[counter]) for x in chain_paid_samples];assert counts==sorted(counts)
+                    assert int(chain_paid_samples[-1]['paid_cost'])>0
+                    row['chain_paid_cost']=dict(configuration=chain_paid_config[0],last_sample=chain_paid_samples[-1])
+                else:assert not chain_paid_config and not chain_paid_samples
                 window_horizon=int(case['environment'].get('CGAR_WINDOW','0'))
                 window_config=[fields(l) for l in logs if l.startswith('[cgar-window-config] ')]
                 window_samples=[fields(l) for l in logs if l.startswith('[cgar-window] ')]

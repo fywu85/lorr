@@ -167,6 +167,29 @@ public:
         return best;
     }
 
+    // Price the actual forecast actions, including an oriented wait seed.
+    // Only waiting after the final revealed service is free, as in the window.
+    template<class Path, class Actions, class ForwardCost>
+    int64_t paid_path(const Chain& chain, const Path& path, const Actions& actions,
+                      int start, int heading, ForwardCost forward_cost) const {
+        if (!ready_ || start < 0 || start >= int(index_.size()) || index_[start] < 0 || heading < 0 || heading > 3)
+            throw std::logic_error("incomplete chain action pricing or invalid start");
+        size_t stage = 0; int cell = start; int64_t paid = 0;
+        for (size_t t = 0; t < path.cells.size(); ++t) {
+            const int action = t ? actions[t] : path.first_action;
+            if (action == 0) { paid += forward_cost(cell, heading); cell = neighbor(cell, heading); }
+            else if (action == 1 || action == 2) {
+                paid += turn_cost_; heading = (heading + (action == 1 ? 1 : 3)) % 4;
+            } else if (action == 3) paid += stage == chain.goals.size() ? 0 : wait_cost_;
+            else throw std::logic_error("invalid chain forecast action");
+            if (cell < 0 || cell >= int(index_.size()) || index_[cell] < 0 || cell != path.cells[t])
+                throw std::logic_error("chain action pricing changed forecast cells");
+            if (stage < chain.goals.size() && cell == chain.goals[stage]) ++stage;
+        }
+        if (heading != path.orientation) throw std::logic_error("chain action pricing changed forecast heading");
+        return paid;
+    }
+
     template<class Path>
     static size_t advance(const Chain& chain, const Path& path) {
         size_t stage = 0;

@@ -268,6 +268,7 @@ struct Stats {
     long long regional_peaks_restored = 0;
     long long chain_robot_steps = 0, chain_fallback_steps = 0, chain_scored_choices = 0;
     long long chain_service_choices = 0, chain_multi_service_choices = 0, chain_completed_choices = 0;
+    long long chain_paid_cost = 0, chain_paid_seed_rotations = 0;
     long long scheduler_chain_calls = 0, scheduler_chain_tasks = 0, scheduler_chain_pairs = 0;
     long long scheduler_chain_covered = 0, scheduler_chain_fallback = 0, scheduler_chain_changed = 0;
     MovementStats movement[3];  // idle, before pickup, after pickup
@@ -573,6 +574,7 @@ private:
     RollingWindow rolling_window_;
     std::mt19937_64 window_rng_{0}, window_history_rng_{0};
     int temporal_chain_mode_ = 0, temporal_chain_mb_ = 512, temporal_chain_threads_ = 1;
+    bool temporal_chain_paid_ = false;
     std::mt19937_64 temporal_rng_{0};
     TemporalPriorityPortfolio temporal_priority_portfolio_;
     int temporal_priority_noise_ = 0;

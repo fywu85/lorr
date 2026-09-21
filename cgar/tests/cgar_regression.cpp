@@ -5760,8 +5760,17 @@ void chain_potential_regression() {
     }
     // Advance post-action services independently along real temporal choices.
     int u=locations[sample%locations.size()],d=sample%4;
-    for(const auto& path:geometry.paths(u,d))if(path.valid){
-     size_t stage=0;for(int t=0;t<5;++t)if(stage<goals.size()&&path.cells[t]==goals[stage])++stage;
+    int operation=0;
+    for(const auto& path:geometry.paths(u,d)){
+     const auto& ops=TemporalGeometry::operations()[operation++];if(!path.valid)continue;
+     size_t stage=0;int heading=d,cell=u;int64_t expected_paid=0;
+     for(int t=0;t<5;++t){
+      if(ops[t]==0)expected_paid+=costs[cell][heading];
+      else if(ops[t]==1||ops[t]==2){expected_paid+=turn;heading=(heading+(ops[t]==1?1:3))%4;}
+      else if(stage<goals.size())expected_paid+=wait;
+      cell=path.cells[t];if(stage<goals.size()&&cell==goals[stage])++stage;
+     }
+     require(serial.paid_path(chain,path,ops,u,d,forward)==expected_paid,"paid forecast differs from explicit action walk");
      require(ChainPotential::advance(chain,path)==stage,"more than one service in a tick");
      require(serial.value(chain,stage,path.cells[4],path.orientation)==reference[stage*cells*4+path.cells[4]*4+path.orientation],"end heading or service cost");++paths_checked;
     }
@@ -5777,6 +5786,13 @@ void chain_potential_regression() {
    auto repeats=limited.make_chain(std::vector<int>(7,locations[0]),0,[]{});
    auto wait_path=geometry.seed(locations[0],0,3);
    require(ChainPotential::advance(repeats,wait_path)==5,"repeated co-located errands skipped");
+   for(int first:{1,2,3}){
+    const auto seed=geometry.seed(locations[0],0,first);const auto& ops=TemporalGeometry::operations()[0];
+    const int first_cost=first==3?wait:turn;
+    require(limited.paid_path(repeats,seed,ops,locations[0],0,forward)==first_cost+4*wait,"oriented seed action not priced");
+    const auto single=limited.make_chain({locations[0]},0,[]{});
+    require(limited.paid_path(single,seed,ops,locations[0],0,forward)==first_cost,"post-completion waits not free");
+   }
    timeout=false;try{limited.make_chain(std::vector<int>(100,locations[0]),0,[]{throw Timeout("chain_tail_fixture");});}catch(const Timeout&){timeout=true;}
    require(timeout,"chain DP ignored deadline");
    rejected=false;try{limited.make_chain({cells},0,[]{});}catch(const std::invalid_argument&){rejected=true;}
@@ -5784,7 +5800,7 @@ void chain_potential_regression() {
   }
  }
  require(checked>100000&&paths_checked>1000&&oriented_tails>0&&unreachable>0&&pocket_cases>0,"vacuous independent fixture");
- std::cout<<"CHAIN_POTENTIAL passed independent_product_graph_states="<<checked<<" temporal_paths="<<paths_checked<<" heading_coupled_tails="<<oriented_tails<<" unreachable="<<unreachable<<" service_after_action=1 serial_parallel=1 memory_cap=1 explicit_timeout=1\n";
+ std::cout<<"CHAIN_POTENTIAL passed independent_product_graph_states="<<checked<<" temporal_paths="<<paths_checked<<" paid_paths=1 oriented_wait_seed=1 completion_wait_free=1 heading_coupled_tails="<<oriented_tails<<" unreachable="<<unreachable<<" service_after_action=1 serial_parallel=1 memory_cap=1 explicit_timeout=1\n";
 }
 
 void temporal_chain_regression() {
@@ -5799,9 +5815,12 @@ void temporal_chain_regression() {
    Task t;t.task_id=r;t.agent_assigned=r;t.t_revealed=0;t.locations={r*3,r*3,(62-r*3)};
    e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
  for(auto setting:settings)setenv(setting.first,setting.second,1);
- int checked=0,served=0;std::vector<int> absent_trace,disabled_trace;
- for(int mode=-1;mode<=3;++mode){
-  if(mode<0)unsetenv("CGAR_TEMPORAL_CHAIN_MODE");else setenv("CGAR_TEMPORAL_CHAIN_MODE",std::to_string(mode).c_str(),1);
+ int checked=0,served=0;std::vector<int> absent_trace,disabled_trace,chain_trace,paid_disabled_trace;
+ for(int mode=-1;mode<=6;++mode){
+  const int chain_mode=mode>=4?1:mode;
+  if(mode<0)unsetenv("CGAR_TEMPORAL_CHAIN_MODE");else setenv("CGAR_TEMPORAL_CHAIN_MODE",std::to_string(chain_mode).c_str(),1);
+  if(mode>=4)setenv("CGAR_TEMPORAL_CHAIN_PAID_COST",mode>=5?"1":"0",1);
+  if(mode==6)setenv("CGAR_TEMPORAL_STRICT_WAIT_TURNS","1",1);
   auto e=fixture();
   setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);setenv("CGAR_TEMPORAL_THREADS","1",1);setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);
   if(mode>0)setenv("CGAR_TEMPORAL_CHAIN_THREADS","1",1);Cgar serial;serial.initialize(&e,2000);
@@ -5813,6 +5832,7 @@ void temporal_chain_regression() {
    auto next=step(e,e.curr_states,a);require(!next.empty(),"invalid motion");e.curr_states=next;checked+=a.size();
    for(int r=0;r<e.num_of_agents;++r){
     if(mode<0)absent_trace.push_back(int(a[r]));if(mode==0)disabled_trace.push_back(int(a[r]));
+    if(mode==1)chain_trace.push_back(int(a[r]));if(mode==4)paid_disabled_trace.push_back(int(a[r]));
     Task& task=e.task_pool.at(e.curr_task_schedule[r]);
     if(e.curr_states[r].location==task.locations[task.idx_next_loc]){
      ++task.idx_next_loc;++served;
@@ -5832,10 +5852,13 @@ void temporal_chain_regression() {
    x.chain_completed_choices==y.chain_completed_choices&&!x.chain_fallback_steps&&!y.chain_fallback_steps,"chain counters disagree");
   if(mode>0)require(x.chain_robot_steps>0,"enabled mode was unused");
   else require(!x.chain_robot_steps&&!x.chain_scored_choices,"disabled chain did work");
-  if(mode>0&&(mode&1))require(x.chain_scored_choices>0&&x.chain_multi_service_choices>0&&x.chain_completed_choices>0,"service scoring fixture was vacuous");
+  if(mode>0&&(chain_mode&1))require(x.chain_scored_choices>0&&x.chain_multi_service_choices>0&&x.chain_completed_choices>0,"service scoring fixture was vacuous");
   else require(!x.chain_scored_choices,"rank-only or disabled mode scored paths");
-  unsetenv("CGAR_TEMPORAL_CHAIN_THREADS");
+  if(mode>=5)require(x.chain_paid_cost>0&&x.chain_paid_cost==y.chain_paid_cost&&x.chain_paid_seed_rotations==y.chain_paid_seed_rotations,"paid forecast accounting unused or nondeterministic");
+  else require(!x.chain_paid_cost&&!x.chain_paid_seed_rotations,"disabled paid forecast did work");
+  unsetenv("CGAR_TEMPORAL_CHAIN_THREADS");unsetenv("CGAR_TEMPORAL_CHAIN_PAID_COST");unsetenv("CGAR_TEMPORAL_STRICT_WAIT_TURNS");
  }
+ require(chain_trace==paid_disabled_trace,"explicit paid-cost zero changed chain decisions or RNG");
  require(absent_trace==disabled_trace&&served>0,"disabled trajectory changed or no tasks serviced");
  // Parse errors must fail during initialization; no silent clamping/fallback.
  for(auto setting:std::vector<std::pair<const char*,const char*>>{
@@ -5853,9 +5876,23 @@ void temporal_chain_regression() {
  bool rejected=false;auto e=fixture();try{Cgar c;c.initialize(&e,2000);}catch(const std::invalid_argument&){rejected=true;}
  require(rejected,"disabled resource overrides accepted");unsetenv("CGAR_TEMPORAL_CHAIN_THREADS");
  setenv("CGAR_TEMPORAL_CHAIN_MODE","3",1);temporal_primary_regression();
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ setenv("CGAR_TEMPORAL_CHAIN_MODE","1",1);
+ for(const char* value:{"2","-1","1x",""}){
+  setenv("CGAR_TEMPORAL_CHAIN_PAID_COST",value,1);bool rejected=false;
+  try{auto e=fixture();Cgar c;c.initialize(&e,2000);}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,"invalid paid-cost selector accepted");
+ }
+ setenv("CGAR_TEMPORAL_CHAIN_PAID_COST","1",1);
+ for(const char* mode:{"0","2","3"}){
+  setenv("CGAR_TEMPORAL_CHAIN_MODE",mode,1);bool rejected=false;
+  try{auto e=fixture();Cgar c;c.initialize(&e,2000);}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,"paid cost accepted without score-only chain mode");
+ }
+ setenv("CGAR_TEMPORAL_CHAIN_MODE","1",1);temporal_primary_regression();unsetenv("CGAR_TEMPORAL_CHAIN_PAID_COST");
  for(auto setting:settings)unsetenv(setting.first);
  for(const char* key:{"CGAR_TEMPORAL_CHAIN_MODE","CGAR_TEMPORAL_CHAIN_THREADS","CGAR_TEMPORAL_CHAIN_MB","CGAR_TEMPORAL_PREP_THREADS","CGAR_TEMPORAL_THREADS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(key);
- std::cout<<"TEMPORAL_CHAIN passed serial_parallel_actions="<<checked<<" service_events="<<served<<" modes=0,1,2,3 disabled_trajectory_identity=1 repeated_and_replaced_tasks=1 protected_primary=1 strict_parser=1\n";
+ std::cout<<"TEMPORAL_CHAIN passed serial_parallel_actions="<<checked<<" service_events="<<served<<" modes=0,1,2,3 paid_cost=1 paid_default_identity=1 actual_wait_seed=1 disabled_trajectory_identity=1 repeated_and_replaced_tasks=1 protected_primary=1 strict_parser=1\n";
 }
 
 // Independent layered dynamic program on actual actions, task stages and fixed
