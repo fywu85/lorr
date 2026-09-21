@@ -171,6 +171,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_fast_groups=integer("R05_WINDOW_FAST_GROUPS",0);
     c.window_heap4=integer("R05_WINDOW_HEAP4",0);
     c.window_merge=integer("R05_WINDOW_MERGE",0);
+    c.window_repair_orders=integer("R05_WINDOW_REPAIR_ORDERS",1);
+    if(c.window_repair_orders<1 || c.window_repair_orders>2 || (c.window_repair_orders>1 && !c.window))
+        throw std::invalid_argument("window repairs require one or two complete priority orders and an enabled window");
     const int progress_tie=integer("R05_WINDOW_PROGRESS_TIE",0);
     if(progress_tie<0 || progress_tie>1 || (progress_tie && !c.window))
         throw std::invalid_argument("window progress tie-break requires an enabled window and a boolean value");

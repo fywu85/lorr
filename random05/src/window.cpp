@@ -407,14 +407,36 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     int a=group[k];old[k]=island.paths[a];reserve.set(a,old[k],false);
                     previous.total+=costs[a].total;previous.remaining+=costs[a].remaining;previous.integral+=costs[a].integral;
                 }
+                // A prioritized repair can strand a later member behind an
+                // earlier member's reservations. Optionally solve both the
+                // sampled order and its reverse against the identical outside
+                // reservations, then retain the better complete group. Every
+                // declared order is attempted; no wall-clock truncation occurs.
                 int planned=0;
-                for(;planned<count;++planned) {
-                    int a=group[planned];
-                    if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned]))break;
-                    reserve.set(a,replacement[planned],true);
-                    auto cost=agent_cost(a,replacement[planned]);
-                    proposed.total+=cost.total;proposed.remaining+=cost.remaining;proposed.integral+=cost.integral;
+                for(int order=0;order<cfg.window_repair_orders;++order) {
+                    std::vector<std::vector<int>> candidate(count);
+                    int built=0;
+                    for(;built<count;++built) {
+                        const int k=order?count-1-built:built,a=group[k];
+                        if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k]))break;
+                        reserve.set(a,candidate[k],true);
+                    }
+                    Cost candidate_cost;
+                    if(built==count)for(int k=0;k<count;++k) {
+                        const auto cost=agent_cost(group[k],candidate[k]);
+                        candidate_cost.total+=cost.total;candidate_cost.remaining+=cost.remaining;candidate_cost.integral+=cost.integral;
+                    }
+                    // Restore the exact outside-only reservation table before
+                    // the next order, including cleanup after a bounded failure.
+                    for(int done=0;done<built;++done) {
+                        const int k=order?count-1-done:done;
+                        reserve.set(group[k],candidate[k],false);
+                    }
+                    if(built==count && (planned!=count || better(candidate_cost,proposed))) {
+                        replacement=std::move(candidate);proposed=candidate_cost;planned=count;
+                    }
                 }
+                if(planned==count)for(int k=0;k<count;++k)reserve.set(group[k],replacement[k],true);
                 const bool equal=std::abs(proposed.total-previous.total)<=1e-8 &&
                                  std::abs(proposed.remaining-previous.remaining)<=1e-8 &&
                                  std::abs(proposed.integral-previous.integral)<=1e-8;
@@ -506,8 +528,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,accepted,skipped_sorts,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,accepted,skipped_sorts,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }

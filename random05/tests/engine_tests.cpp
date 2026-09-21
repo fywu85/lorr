@@ -1768,6 +1768,20 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"window progress ties accepted a non-boolean value");
     }
+    {
+        Setting orders("R05_WINDOW_REPAIR_ORDERS","2"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_repair_orders==2,"general two-order repair was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"two-order repair accepted a missing window");
+    }
+    for(const char* value:{"0","3"}) {
+        Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
+        auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"window repair accepted an unsupported order budget");
+    }
     auto env=environment(5,5,4);env.trick_instance="RANDOM-03";
     const auto cfg=Config::environment(env);
     require(cfg.window==8 && cfg.score_rank_power==.5 && cfg.score_rank_steps==20,
@@ -1962,6 +1976,17 @@ void window_reproducibility() {
     cfg.threads=1;cfg.cost_cache=true;
     require(local_guidance==simulate(cfg,8,5,5,true),"goal-local windows changed after checkpoint restoration");
     cfg.guidance="none";cfg.goal_local_radius=0;cfg.goal_local_mix=0;
+    cfg.window_repair_orders=2;cfg.window_progress_tie=true;
+    const auto both_orders=simulate(cfg,8,5,5,true);
+    cfg.threads=2;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+    require(both_orders==simulate(cfg,8),"two-order repairs depend on worker count, cache, heap or reused search storage");
+    cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+    require(both_orders==simulate(cfg,8,5,5,true),"two-order repairs changed after checkpoint restoration");
+    cfg.window_temperature=2;
+    const auto annealed_orders=simulate(cfg,8,5,5,true);
+    cfg.threads=2;
+    require(annealed_orders==simulate(cfg,8),"annealed two-order repairs depend on worker scheduling");
+    cfg.window_temperature=0;cfg.window_progress_tie=false;
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
