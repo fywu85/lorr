@@ -23,7 +23,7 @@ them a veto on a throughput improvement.
 | RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-04 |1249|Generic; full shared5s development, generic_chain_rank|
-| RANDOM-05 |No accepted CGAR transfer score yet|Separate CGAR baseline queued; standalone agent untouched|
+| RANDOM-05 |1847|Generic; full shared5s development, generic_chain_rank|
 
 The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
 Warehouse matching/trick work; it is a starting measurement, not each instance's
@@ -46,7 +46,14 @@ same bounded control, one seed. Direct-cost assignment with local matching gives
 
 The user requested a deeper read of the separate RANDOM-05 algorithm for transfer
 into CGAR on RANDOM-04/05. [Frozen source study and next experiments](experiments/allmaps-20260920/random-transfer/REVIEW.md).
-The first optional persistent-priority implementation is awaiting full build
-verification; no gain is claimed. It preserves CGAR's existing kernel and
+The first optional persistent-priority implementation passed the full regression
+suite; its dense-map matrix is running and no gain is claimed yet. It preserves CGAR's existing kernel and
 protections. SORTATION's explicit native field passed all regressions and its
 full three-way comparison is running; no new trick score yet.
+
+The first full CGAR RANDOM-05 comparison completed with1534(control) and
+1847(remaining-chain rank); mean123/124ms, maximum183/178ms,191MBRAM.
+These were enforced5sdevelopment runs, not strict1squalification.
+[Full evidence](experiments/allmaps-20260920/results/random05-baseline-full-v1/summary.md).
+Rows above use different exploratory configurations; they are not one universal
+preset or an automatic per-map dispatcher.

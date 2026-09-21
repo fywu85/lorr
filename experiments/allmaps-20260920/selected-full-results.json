@@ -1,6 +1,6 @@
 {
-  "updated_utc": "2026-09-21T00:03:59.564673+00:00",
-  "scope": "Selected maxima within the first two full generic cross-instance matrices; one planner seed, shared-host5s development, not competition-qualified or matched NMS comparisons.",
+  "updated_utc": "2026-09-21T00:13:15.381109+00:00",
+  "scope": "Selected maxima from the completed generic cross-instance and dense baseline matrices; one planner seed, shared-host5s development, not competition-qualified or matched NMS comparisons.",
   "rows": [
     {
       "case": "generic_regions_4m-s0-r0",
@@ -233,6 +233,35 @@
       "timestamp_kind": "result-file completion mtime UTC",
       "track": "GENERIC",
       "planner_seed": 0
+    },
+    {
+      "case": "generic_chain_rank-s0-r0",
+      "variant": "generic_chain_rank",
+      "instance": "RANDOM-05",
+      "seed": 0,
+      "steps": 2000,
+      "robots": 800,
+      "valid": true,
+      "outcome": "success",
+      "tasks": 1847,
+      "peak_rss_bytes": 190951424,
+      "wall_seconds": 250.255,
+      "mean_cpu_cores": 2.672039235831709,
+      "reserved_physical_cores": 4,
+      "raw_result": "/shared/share_mala/fw2449/lorr2024/runs/cgar-random05-baseline-full-v1-20260920/generic_chain_rank-s0-r0/RANDOM-05.json",
+      "mean_entry_ms": 124.10170628650029,
+      "max_entry_seconds": 0.177825175,
+      "trajectory_sha256": "9a763e9b0f0081dadf0343e5b45eb5ce6a92d577de3bae964a4a2568626f0405",
+      "outstanding_age_p90": 2000,
+      "competition_budget_confirmed": false,
+      "source_commit": "eb9938090d7cfb331fdc124ce19b475626356502",
+      "binary_sha256": "19155f20da9f518cfac5955c4bcc4a3af9926ff4828e552f3bd69026201b5c3f",
+      "verification": "experiments/allmaps-20260920/results/random05-baseline-full-v1/verification.json",
+      "verified_utc": "2026-09-21T00:07:09.329347+00:00",
+      "track": "GENERIC",
+      "planner_seed": 0,
+      "completed_utc": "2026-09-21T00:06:57.808224+00:00",
+      "timestamp_kind": "result-file completion mtime UTC"
     }
   ]
 }

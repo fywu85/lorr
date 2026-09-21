@@ -16,3 +16,12 @@ Throughput is primary. These full runs use shared EPYC9354hosts,4physical cores 
 CITY-01 reconfirms the previous7305score; the other rows improve or supply a complete result for the current campaign. The earlier uncapped RANDOM-04 profile scored997; the new selected1249uses different bounded work. Preserve those distinct configurations.
 
 [Machine-readable settings, latency, memory and trajectory fingerprints](selected-full-results.json).
+
+## First full CGAR RANDOM-05 results
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1534 | 2026-09-21T00:06:56.467303+00:00 | [eb99380](https://github.com/fywu85/lorr/commit/eb9938090d7cfb331fdc124ce19b475626356502) | generic_control | [verification](results/random05-baseline-full-v1/verification.json) |
+| 1847 | 2026-09-21T00:06:57.808224+00:00 | [eb99380](https://github.com/fywu85/lorr/commit/eb9938090d7cfb331fdc124ce19b475626356502) | generic_chain_rank | [verification](results/random05-baseline-full-v1/verification.json) |
+
+These are CGAR runs in separate directories. The independent RANDOM-05 solver and its records are untouched.
