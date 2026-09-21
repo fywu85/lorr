@@ -242,6 +242,10 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("guidance distance mixture must be in [0,1]");
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
     c.completion_bonus=real("R05_COMPLETE_BONUS",0);
+    c.progress_softcap=real("R05_PROGRESS_SOFTCAP",0);
+    if(!std::isfinite(c.progress_softcap) || c.progress_softcap<0 ||
+       (c.progress_softcap>0 && !random_trick))
+        throw std::invalid_argument("nonlinear short-task preference requires a nonnegative scale and explicit trick instance");
     c.score_rank_power=real("R05_SCORE_RANK_POWER",0);
     c.score_rank_steps=integer("R05_SCORE_RANK_STEPS",0);
     if(c.score_rank_steps<0 || (c.score_rank_steps>0 && c.score_rank_power<=0))
@@ -341,6 +345,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("optional immediate moves require the ordinary pipelined portfolio");
     if(c.component_trials && (c.early_fill || c.operation_depth))
         throw std::invalid_argument("motion-component search requires the ordinary fixed first-position pipeline");
+    if(c.progress_softcap>0 && (c.window || c.rollout_match || c.replan_roots ||
+       c.plain_score>0 || c.score_rank_power>0 || c.completion_bonus>0))
+        throw std::invalid_argument("nonlinear progress requires fixed-chain pipeline scoring without other task rewards");
     if(c.score_rank_power>0 && (c.rollout_match || c.replan_roots || c.completion_bonus>0))
         throw std::invalid_argument("rank-weighted scoring currently requires fixed-chain futures without reranking or completion bonus");
     if(c.replan_roots && (c.operation_depth || c.plain_score || c.reverse_penalty || c.progress_discount!=1))
@@ -1585,6 +1592,14 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     auto total_cost=[&](const Frame& f) {
         double guided=0,plain=0;
         const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
+        if(cfg.progress_softcap>0) {
+            const double scale=cfg.progress_softcap;
+            for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
+                const double remaining=assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
+                guided+=scale*remaining/(scale+remaining);
+            }
+            return guided*progress_normalization_;
+        }
         const auto& plain_assigned=cfg.rollout_match?f.plain_chains:score_assigned_;
         for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
             const double weight=score_weights_.empty()?1:score_weights_[i];
@@ -1918,7 +1933,19 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             }
         }
     }
-    score_weights_.clear();
+    score_weights_.clear();progress_normalization_=1;
+    if(cfg.progress_softcap>0) {
+        // Keep the mean initial marginal value equal to one. This preserves
+        // the local distance/dispersion scale while giving nearer completions
+        // smoothly increasing value along each simulated future.
+        double slopes=0;int active=0;
+        for(int a=0;a<n;++a)if(assigned_[a]) {
+            const double remaining=assigned_[a]->cost(g,frame.stage[a],frame.loc[a],frame.dir[a]);
+            const double ratio=cfg.progress_softcap/(cfg.progress_softcap+remaining);
+            slopes+=ratio*ratio;++active;
+        }
+        if(active)progress_normalization_=active/slopes;
+    }
     // A declared startup window returns to equal progress weights at its exact
     // boundary. Rebuild every step so previous weighted scores cannot leak.
     if(cfg.score_rank_power>0 && (!cfg.score_rank_steps || env->curr_timestep<cfg.score_rank_steps)) {

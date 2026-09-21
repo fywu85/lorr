@@ -1055,6 +1055,39 @@ void active_task_admission() {
     if(present)setenv("R05_ACTIVE_TASK_CAP",saved.c_str(),1);else unsetenv("R05_ACTIVE_TASK_CAP");
 }
 
+void nonlinear_progress_objective() {
+    // Equal movement competes for one cell; one chain finishes there and the
+    // other has more work. Smooth utility must prefer the nearer completion.
+    auto env=environment(1,3,2);env.curr_states[1].location=2;env.curr_states[1].orientation=2;
+    Task a;a.task_id=0;a.locations={1};env.task_pool[0]=a;
+    Task b;b.task_id=1;b.locations={1,0};env.task_pool[1]=b;env.curr_task_schedule={0,1};
+    Config cfg;cfg.futures=64;cfg.depth=2;cfg.matching=false;cfg.progress_softcap=4;
+    Engine engine(cfg);engine.initialize(&env);std::vector<Action> plan;std::vector<int> schedule;
+    engine.compute(&env,plan,schedule);
+    for(int i=0;i<2;++i) {
+        require(plan[i]!=FW,"nonlinear score moved before its promise");
+        if(plan[i]==CR)env.curr_states[i].orientation=(env.curr_states[i].orientation+1)%4;
+        if(plan[i]==CCR)env.curr_states[i].orientation=(env.curr_states[i].orientation+3)%4;
+    }
+    env.curr_timestep=1;engine.compute(&env,plan,schedule);
+    require(plan[0]==FW && plan[1]!=FW,"nonlinear progress failed to prefer completion");
+    cfg=Config{};cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.progress_softcap=10;cfg.cost_cache=true;cfg.hungarian_limit=1000;
+    cfg.active_task_cap=22;cfg.fast_admission=true;
+    const auto serial=simulate(cfg,12,5,5,true);
+    cfg.share_prefix=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    cfg.shared_rankings_mb=1;cfg.shared_orders=true;cfg.threads=3;
+    require(serial==simulate(cfg,12,5,5,true),"nonlinear utility changed with prefix/cache sharing or worker scheduling");
+    const char* old=std::getenv("R05_PROGRESS_SOFTCAP");const bool present=old;
+    const std::string saved=old?old:"";setenv("R05_PROGRESS_SOFTCAP","10",1);
+    SharedEnvironment gate;bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"nonlinear short-task utility escaped the explicit trick flag");
+    gate.trick_instance="RANDOM-04";require(Config::environment(gate).progress_softcap==10,"nonlinear utility parser changed its scale");
+    if(present)setenv("R05_PROGRESS_SOFTCAP",saved.c_str(),1);else unsetenv("R05_PROGRESS_SOFTCAP");
+}
+
 void priced_task_admission() {
     auto env=environment(3,3,4);env.curr_states[3].location=8;
     for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
@@ -1452,6 +1485,7 @@ int main() {
     exact_dummy_prefix();
     active_task_admission();
     priced_task_admission();
+    nonlinear_progress_objective();
     blocker_priority_mutations();
     physical_guidance_edges();
     mixed_guidance_potentials();

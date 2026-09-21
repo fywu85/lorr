@@ -26,7 +26,7 @@ void Engine::copy_replan_state(Engine& target,const Config& config) const {
     target.active_forward_=active_forward_;target.active_agent_steps_=active_agent_steps_;
     target.triaged_=triaged_;target.chains_=chains_;target.assigned_=assigned_;
     target.score_chains_.clear();target.score_assigned_.clear();
-    target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();target.score_weights_.clear();
+    target.future_tasks_.clear();target.future_plain_.clear();target.future_lengths_.clear();target.score_weights_.clear();target.progress_normalization_=1;
     target.age_=age_;target.previous_task_=previous_task_;target.previous_stage_=previous_stage_;
     target.pending_=pending_;target.best_offsets_=best_offsets_;target.past_offsets_=past_offsets_;
     target.last_actions_=last_actions_;target.predicted_loc_=predicted_loc_;target.predicted_dir_=predicted_dir_;

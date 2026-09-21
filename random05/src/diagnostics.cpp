@@ -77,6 +77,6 @@ void Engine::restore(const json& state,SharedEnvironment& env) {
     // Invalidate before clearing shared tasks, even when restore is repeated.
     ++ranking_epoch_;chains_.clear();score_chains_.clear();
     assigned_.clear();score_assigned_.clear();future_tasks_.clear();future_plain_.clear();
-    future_lengths_.clear();score_weights_.clear();triaged_=0;policy_profile_active_=false;
+    future_lengths_.clear();score_weights_.clear();progress_normalization_=1;triaged_=0;policy_profile_active_=false;
 }
 }
