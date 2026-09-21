@@ -34,6 +34,8 @@ def execute(out):
     assert len(cpus) == count and int(os.environ['NSLOTS']) >= count * spec.get('scheduler_slots_per_core', 1), resources
     assert resources['effective_cpu_quota'] is None or resources['effective_cpu_quota'] >= count, resources
     assert hashlib.sha256((out / 'lifelong').read_bytes()).hexdigest() == spec['build']['binary_sha256']
+    if spec.get('benchmark_runner_sha256'):
+        assert hashlib.sha256((ROOT / 'tools/benchmark_cgar.py').read_bytes()).hexdigest() == spec['benchmark_runner_sha256']
     write(out / 'allocation.json', {'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
           'resources': resources, 'selected_cpus': cpus, 'job_id': os.environ.get('JOB_ID'),
           'scheduler_slots': int(os.environ['NSLOTS']), 'scheduler_slots_per_core': spec.get('scheduler_slots_per_core', 1)})
@@ -56,6 +58,8 @@ def execute(out):
                        '--seed', str(case['seed']), '--plan-time-limit-ms', str(spec['time_limit_ms']),
                        '--log-detail-level', str(spec.get('log_detail_level', 1)),
                        '--instances'] + spec['instances']
+            if spec.get('local_log_spool'):
+                command += ['--local-log-spool']
             if spec.get('trick'):
                 command += ['--trick', spec['trick']]
             if spec['horizons']:
@@ -92,6 +96,7 @@ def main():
     parser.add_argument('--jobs-per-suite', type=int, default=5)
     parser.add_argument('--time-limit-ms', type=int, default=1000)
     parser.add_argument('--log-detail-level', type=int, choices=[1, 2, 3], default=1)
+    parser.add_argument('--local-log-spool', action='store_true', help='Spool solver logs on the allocated node and archive after exit')
     parser.add_argument('--cpus-per-instance', type=int, default=1, help='Reserved physical cores per process')
     parser.add_argument('--memory-gib-per-slot', type=int, default=8)
     parser.add_argument('--scheduler-slots-per-core', type=int, choices=[1, 2], default=1, help='Scheduler accounting only: use2 on hosts whose queue counts SMT threads; physical binding and per-process cores stay unchanged')
@@ -149,6 +154,7 @@ def main():
         write(out / 'horizons.json', horizons)
     spec = {'exclusive_host': not args.shared_host, 'benchmark_mode': 'relaxed_development' if args.shared_host or args.time_limit_ms != 1000 else 'competition_budget', 'trick': args.trick, 'experiment_track': 'TRICK' if args.trick else 'GENERIC', 'cases': cases, 'build': build, 'horizons': horizons, 'instances': instances,
             'parallel_suites': min(args.parallel_suites, len(cases)), 'jobs_per_suite': min(args.jobs_per_suite, len(instances)),
+            'local_log_spool': args.local_log_spool, 'benchmark_runner_sha256': hashlib.sha256((ROOT / 'tools/benchmark_cgar.py').read_bytes()).hexdigest(),
             'time_limit_ms': args.time_limit_ms, 'log_detail_level': args.log_detail_level, 'cpus_per_instance': args.cpus_per_instance, 'memory_gib_per_slot': args.memory_gib_per_slot, 'scheduler_slots_per_core': args.scheduler_slots_per_core, 'runtime': args.runtime,
             'hosts': args.hosts, 'expected_cpu_model': args.expected_cpu_model, 'hold_job': args.hold_job}
     write(out / 'spec.json', spec)

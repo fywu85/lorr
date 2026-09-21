@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 from cpu_resources import cpu_resources
@@ -58,6 +59,23 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
     return valid
 
 
+
+def run_logged(command, log_path, cwd, environment, local_spool=False):
+    """Preserve logs and exit status; optional node-local writes avoid NFS in timed entries."""
+    def run(path):
+        with path.open("w") as log:
+            return subprocess.run(command, cwd=cwd, env=environment, stdout=log, stderr=subprocess.STDOUT)
+    if not local_spool:
+        return run(log_path)
+    with tempfile.TemporaryDirectory(prefix="cgar-log-", dir="/tmp") as temporary:
+        local = Path(temporary) / log_path.name
+        try:
+            return run(local)
+        finally:
+            if local.exists():
+                shutil.copy2(local, log_path)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -71,6 +89,7 @@ def main():
     parser.add_argument("--trick", choices=["WAREHOUSE", "SORTATION", "CITY-01", "CITY-02", "GAME", "RANDOM-01", "RANDOM-02", "RANDOM-03", "RANDOM-04", "RANDOM-05"], help="Explicit map-specific policy; absent means generic")
     parser.add_argument("--seed", type=int, help="Set CGAR_SEED explicitly")
     parser.add_argument("--log-detail-level", type=int, choices=[1, 2, 3], default=1, help="Simulator verbosity; 2 retains warnings and failures")
+    parser.add_argument("--local-log-spool", action="store_true", help="Write solver stdout/stderr on the allocated node, then archive after exit")
     parser.add_argument("--cpu-list", help="Distinct allowed logical CPUs, grouped per concurrent run")
     parser.add_argument("--cpus-per-instance", type=int, default=1, help="Reserved CPUs in each process affinity mask")
     args = parser.parse_args()
@@ -199,6 +218,8 @@ def main():
                 "expected_trick_components": expected_components,
                 "jobs": args.jobs, "plan_time_limit_ms": args.plan_time_limit_ms, "preprocess_time_limit_ms": 30000,
                 "log_detail_level": args.log_detail_level,
+                "log_spool": "node_local_tmp" if args.local_log_spool else "archive",
+                "benchmark_runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 "max_process_memory_bytes": MAX_PROCESS_MEMORY_BYTES,
                 "binary_sha256": binary_hash,
                 "sources": provenance["sources"] if provenance else {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
@@ -243,9 +264,7 @@ def main():
                    "--output", str(usage_file), "--"] + command
         started = time.monotonic()
         try:
-            with (out / (name + ".log")).open("w") as log:
-                result = subprocess.run(command, cwd=str(ROOT / "cgar"), env=environment,
-                                        stdout=log, stderr=subprocess.STDOUT)
+            result = run_logged(command, out / (name + ".log"), str(ROOT / "cgar"), environment, args.local_log_spool)
         finally:
             if cpu is not None:
                 available_cpus.put(cpu)
