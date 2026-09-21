@@ -51,6 +51,21 @@ def main():
     if not re.fullmatch(r'[a-zA-Z0-9_-]+',a.analysis_tag):p.error('analysis tag must be a simple label')
     tag=a.analysis_tag;raw=a.raw.resolve();out=a.output.resolve();support=raw/(tag+'-support')
     if not a.execute:
+        # Reject declaration mistakes before creating an immutable attempt or
+        # reserving an analysis slot. Full artifact/hash checks still run on GRID.
+        declared=read(raw/'spec.json');profiles=read(a.variants);inputs=read(a.inputs)
+        if set(declared['instances'])!=set(inputs['instances']):
+            p.error('input manifest instances must exactly match the matrix instances')
+        if 'RANDOM-05' in declared['instances'] and not a.allow_random05:
+            p.error('CGAR RANDOM-05 analysis requires --allow-random05')
+        expected={(name,seed,0) for name in profiles for seed in a.seeds}
+        actual={(c['variant'],c['seed'],c['repeat']) for c in declared['cases']}
+        if len(set(a.seeds))!=len(a.seeds) or a.control not in profiles or actual!=expected or len(declared['cases'])!=len(expected):
+            p.error('variants, control and seeds must match the frozen matrix declaration')
+        if declared['trick']!=a.trick or declared['cpus_per_instance']!=a.cpus_per_instance:
+            p.error('trick and physical-core count must match the frozen matrix declaration')
+        if any(c['environment']!=profiles[c['variant']] for c in declared['cases']):
+            p.error('variant environments differ from the frozen matrix declaration')
         support.mkdir(exist_ok=False)
         copies={'analyze_matrix.py':Path(__file__), 'variants.json':a.variants.resolve(),
                 'inputs.json':a.inputs.resolve(), 'cpu_resources.py':ROOT/'tools/cpu_resources.py',

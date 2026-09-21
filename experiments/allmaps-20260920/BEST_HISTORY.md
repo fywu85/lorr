@@ -467,3 +467,77 @@ Exact eight-round control repeats2877. Six/ten/twelve rounds score2741/2861/2915
 | 635 | 2026-09-21T05:49:17.842678+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, no horizon, seed2 | [verification](results/random01-geometric-horizon-seeds-full-v1/verification.json) |
 
 The original profile scores621/635/631 on seeds0/2/4; the horizon mean-margin candidate scores626/633/633. The best selected run therefore has no known-horizon trick. Other existing field/scheduler tricks remain explicitly enabled. This is seed variation, not a new algorithmic gain.
+
+## GAME 24326 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 24326 | 2026-09-21T06:01:20.145817+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_fleet3250_pickup12, seed0 | [verification](results/game-fleet-dispatch-full-v1/verification.json) |
+
+Pickup weight12 improves23977 to24326 with the3250 active-fleet trick. Single seed; replication pending. Full horizon, four physical cores, strict1000ms; max827.91ms, RSS10.553GB. Published NMS is a historical target, not a matched run.
+
+## RANDOM-05 2956 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2956 | 2026-09-21T05:57:19.356336+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_workers32_equal, seed0 | [verification](results/random05-priority-diversity-full-v1/verification.json) |
+
+Thirty-two starts at125k candidate cap versus eight at500k: same4M nominal totalcap, but construction and completed-attempt overshoot differ. Regional rounds8 unchanged. One seed; no peak retention. Full horizon, four physical cores, strict1000ms; max766.89ms, RSS0.196GB. Published NMS is a historical target, not a matched run.
+
+## RANDOM-01 638 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 638 | 2026-09-21T05:54:19.412273+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK, trick_selected, seed8 | [verification](results/random01-seed-scan-full-v1/verification.json) |
+
+Best of16 declared planner seeds6,8,...,36 using the unchanged no-horizon profile. Seed selection, not a new algorithmic gain. Full horizon, four physical cores, strict1000ms; max201.53ms, RSS0.058GB. Published NMS is a historical target, not a matched run.
+
+## RANDOM-01 general chain guidance on the trick profile
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 644 | 2026-09-21T06:28:20.192302+00:00 | [7783736](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | TRICK, chain mode3/order2, seed8 | [verification](results/random01-chain-potential-full-v1/verification.json) |
+
+Original control638, score-only636, order2-only633, exact chain score+order644. Control reproduces the entire prior trajectory. The new mechanism is general and default-off; the selected field/scheduler remains an explicit trick. Above published NMS639 on this input/seed, not a matched competitor comparison. Max202.62ms, RSS0.102GB, strict1000ms, full600steps, four physical cores. Replication pending; the same mechanism lost on RANDOM02/03/04.
+
+## Follow-up ablations, 2026-09-21
+
+Known-horizon admission lost on GAME (23977control;23948bound,23867mean,23819p90)
+and CITY02 (16315control;16287bound,16241mean,16212p90). Both original control
+trajectories repeat exactly. Do not include these options in the selected profiles.
+
+RANDOM05 peak retention scores2898/2781/2827 versus2877/2865/2836 on seeds0/2/4:
+mean2835.33 versus2859.33 (-0.84%). The earlier single-seed gain does not support
+a default change. Eight-core partitioning: parts4/round12 control2915 repeats its
+original four-core trajectory; parts8/round12=2874, parts8/round16=2946, plus peak=2918.
+The wider partition reduces maximum step time and supports more rounds, but its
+best2946 remains below the separate2956four-core diversity record. Composition
+is a new declared experiment, not an assumed additive improvement.
+
+SORTATION reduced-work alternative150780 is114tasks below150894, with measured
+maximum900.70ms versus989.60ms in the matched matrix. Preserve both records; timing
+headroom in these runs is not a universal worst-case guarantee.
+
+## RANDOM-01 chain-guidance replication
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 647 | 2026-09-21T06:35:07.086945+00:00 | [7783736](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | TRICK, chain mode3/order2, seed2 | [verification](results/random01-chain-potential-seeds-full-v1/verification.json) |
+
+Controls621/635/631 versus candidates645/647/595 on seeds0/2/4: both means629. All control trajectories reproduce; all six full runs pass strict1000ms. Seed4 loses36, so no average-gain claim. Together with644seed8, three observed seeds exceed published639; these remain historical comparisons. The647record has max202.09ms and four physical cores.
+
+## GAME pickup-weight replication
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 24447 | 2026-09-21T06:41:11.628701+00:00 | [90df94f](https://github.com/fywu85/lorr/commit/90df94f0d1ca1e380acd1b4a9cf1a7cc851c4638) | TRICK,3250active/pickup12,seed4 | [verification](results/game-fleet-dispatch-seeds-full-v1/verification.json) |
+
+Candidates24326/24360/24447 versus controls23977/23917/23888 on seeds0/2/4. All positive; full5000steps, strict1000ms, four physical cores. Fleet-admission fairness tradeoff remains explicit.
+
+## RANDOM-05 full-chain scoring
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3027 | 2026-09-21T06:42:55.693457+00:00 | [7783736](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | TRICK, chain score only, seed0 | [verification](results/random05-chain-potential-full-v1/verification.json) |
+
+Control2956 repeats its full trajectory. Score-only3027 (+2.40%), exact-priority-only2850, both2958. Full2000steps, four physical cores, strict1000ms. Max744.30ms, RSS0.239GB. Retain the original priority order; this is a single seed pending replication.

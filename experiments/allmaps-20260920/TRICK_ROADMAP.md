@@ -1,53 +1,47 @@
 # General mechanisms and explicit instance tricks proceed together
 
-Updated 2026-09-21T05:43:46.143142+00:00. Throughput is primary; fairness is secondary. Every instance
-trick requires `--trick INSTANCE`, a labelled commit and declared settings. Individual
-seeds may set records. The independent RANDOM-05 solver/code/jobs/held-out streams
-remain outside this campaign's edit scope.
+Updated 2026-09-21T06:37:35.178872+00:00. The active targets are +10% over max(NMS,KK) on RANDOM cases and a stretch +5%
+on the other five. Throughput is primary and fairness secondary. Every instance trick
+requires `--trick INSTANCE` and labelled commits/logs. Individual seeds may set
+records; separate maxima from replicated average gains. The independent RANDOM-05
+code, builds, jobs and held-out streams remain outside this campaign's edit scope.
 
 | Instance | Selected full strict1s | Next comparison |
 |---|---:|---|
-| WAREHOUSE |155173|Preserve qualified eight-core profile. |
-| SORTATION |150894|Dispatch matching64 reaches150894. Test reduced global work and optional peak retention for timing margin. |
-| CITY-01 |8427|Four seeds near published8420; retain, no large-margin claim. |
-| CITY-02 |16315|Finite second reassignment improves all3seeds. Geometric horizon/margins running. |
-| GAME |23977|3250 active fleet exceeds published NMS on all3seeds. Horizon and dispatch matrices running. |
-| RANDOM-01 |635|Horizon gains small/mixed; best is no-horizon seed2. Declared16-seed scan running. |
-| RANDOM-02 |1197|Cadence1/budget4 improves all3seeds. Best1197seed4; test horizon/margins. |
-| RANDOM-03 |1902|Peak retention loses1902->1898. Preserve turn20 profile; exact oriented-chain potential is structural candidate. |
-| RANDOM-04 |1999|Best1999 with turn2/temp5000/retention, but hot no-retention has better3seedmean. Extra workers lost. |
-| RANDOM-05 |2915|Twelve rounds wins seed0. Eight-core regional partitions, diversity and retention replication running. |
+|WAREHOUSE|155173|Preserve the qualified eight-core profile.|
+|SORTATION|150894|Parallel starting plans for throughput plus timing margin.|
+|CITY-01|8427|Retain8427; extend general improvements only after controlled evidence.|
+|CITY-02|16315|Remaining-potential score and chain priority, separate factors. Horizon lost.|
+|GAME|24447|Pickup12 improves all three seeds; active fleet remains an explicit fairness tradeoff.|
+|RANDOM-01|647|Three of four observed seeds exceed639; new three-seed mean unchanged. Preserve selected maximum.|
+|RANDOM-02|1197|Retain1197; chain score/order lost on seed4.|
+|RANDOM-03|1902|Finite unopened-task rematching; investigate coherent multi-step motion after chain losses.|
+|RANDOM-04|1999|Preserve1999; coordinated motion remains structural candidate; chain cost alone lost.|
+|RANDOM-05|3027|Replicate chain score-only; original priority retained. Eight-core composition pending.|
 
-General regional peak retention is implemented default-off. Every regional batch
-finishes prescribed candidate/attempt work before restoring a strictly better
-visited complete plan. Timeout remains failure. Analytic peak, fixed-work, disabled
-RNG, strict-parser and serial/parallel reservation tests accompany full regression.
-Local score improvements must earn adoption through full throughput comparisons.
-The first retention matrix loses on RANDOM03. RANDOM04 retention yields the best
-individual hot run but lowers the three-seed mean versus hot no-retention. Keep
-it optional; no universal default promotion.
+General complete-chain guidance is implemented and tested (defaultoff). It retains
+all arrival headings, advances one service after each action, and exposes no
+partial preprocessing. Full regression and independent product-graph costs pass.
+It improves one selected RANDOM01seed but loses on RANDOM02/03/04. Exact static
+potential alone does not reproduce the reference's pipeline or depth8future search.
+The strongest RANDOM03 loss is associated with much more waiting, so the next
+structural experiment should isolate motion commitments rather than rename a
+larger construction portfolio as a faithful multi-step rollout.
 
-The dense reference's exact remaining-chain orientation DP and coherent multi-step
-motion pipeline remain structural candidates. The failed one-turn promise and
-partial next-errand scores are not equivalent to those algorithms. No independent
-RANDOM-05 production code is edited or built here.
+General regional peak retention also remains optional: full prescribed work
+completes before restoring the best complete plan; timeout always fails. It yields
+the best individual hot RANDOM04 run but reduces the three-seed mean; it loses
+the RANDOM05 mean and the RANDOM03 control. Preserve negative results.
 
-Instance tricks include NMS arrows and squared rank, KK forward guidance, imported
-standalone guidance, GAME fleet admission, and explicit known-horizon task admission.
-GAME's active-fleet choice deliberately withholds new tasks from some robots; all
-remain movable and held tasks are preserved. Uniform selection currently beats the
-KK exemption version. Fairness is reported separately; no starvation-free claim.
+Instance tricks include NMS arrows/priority weighting, KK forward guidance, the
+frozen standalone guidance field, GAME fleet admission and explicit known-horizon
+admission. Full horizons matter: early GAME prefixes reverse the sign of its fleet
+gain. Horizon admission loses on the latest GAME/CITY02 controls.
 
-The geometric horizon bound now supports certificate/pocket maps without bypassing
-restricted-core assumptions. It sums Manhattan travel plus per-errand service lower
-bounds, and is tested against independent action-state BFS. Small/mixed dense RANDOM
-gains do not justify enabling it by default. Preserve the failed control and its
-successful exact retry; the timeout cause remains unresolved.
+[Reference fingerprints](trick-review-source-hashes.json), [RANDOM transfer study](random-transfer/REVIEW.md),
+[chain factors](chain-potential/first-factor-results.json), [selected settings](selected-full-results.json),
+[history](BEST_HISTORY.md).
 
-More work is not automatically better: RANDOM-04 round8 loses to round4; RANDOM-05
-round8 improves all tested seeds. Higher annealing helps turn6 but not turn2. Greedy
-regional acceptance, certificate disabling and the narrow after-turn promise lost.
-Full horizons matter: the GAME fleet trick reverses the sign of its early prefix.
-
-[Reference facts and hashes](trick-review-source-hashes.json), [RANDOM transfer study](random-transfer/REVIEW.md),
-[full selected settings](selected-full-results.json), [history](BEST_HISTORY.md).
+The next substantial transfer is [a CGAR-seeded rolling-window repair layer](pilot-transfer/NEXT_TRANSFER.md),
+with explicit primary/recovery protection and fixed completed work. PILOT remains
+a read-only reference; its results are never counted as CGAR records.

@@ -1,0 +1,12 @@
+{
+  "corrected_utc": "2026-09-21T06:28:52.510879+00:00",
+  "reason": "Initial analyzer requests accidentally reused the RANDOM05 input attestation for other cases. Their instance-set guard rejected analysis before interpreting any raw result. Solver runs and actual inputs were correct and remain unchanged. Resubmit analysis with each original matching per-instance input manifest; preserve rejected requests/logs.",
+  "affected": [
+    "random03-chain-potential-full-v1",
+    "random04-chain-potential-full-v1",
+    "random01-chain-potential-full-v1",
+    "random02-chain-potential-full-v1",
+    "sortation-parallel-starts-full-v1",
+    "city02-objective-priority-full-v1"
+  ]
+}
