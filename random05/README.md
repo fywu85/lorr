@@ -169,3 +169,10 @@ cached move ranking during its first lookup, avoiding a second read pass over
 the sparse cache. It defaults off and changes no candidate score, priority,
 collision rule, or work budget. Full trajectory equivalence and runtime
 comparisons decide whether it is useful.
+
+`R05_WINDOW_REUSE=1` retains each worker's time-space A* storage between repairs
+and simulation steps. Epoch tags isolate searches; the option must preserve
+complete trajectories. `R05_WINDOW_ROUNDS=r` adds deterministic plan sharing:
+all islands start the next round from the best complete plan in the previous
+round. The fixed total iterations per island must be divisible by r (1–32).
+Defaults remain reuse off and one round; no wall-clock cutoff changes the work.

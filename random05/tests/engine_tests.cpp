@@ -879,6 +879,13 @@ void window_reproducibility() {
     const auto reference=simulate(cfg,8,5,5,true);
     cfg.threads=2;require(reference==simulate(cfg,8),"parallel window repairs changed the full trajectory");
     cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
+    cfg.cost_cache=true;cfg.window_reuse=true;
+    require(reference==simulate(cfg,8,5,5,true),"reused window search storage changed paths or checkpoint replay");
+    cfg.window_rounds=3;cfg.window_iterations=12;
+    const auto shared=simulate(cfg,8,5,5,true);
+    cfg.threads=1;require(shared==simulate(cfg,8),"window sharing rounds depend on worker scheduling");
+    cfg.window_reuse=false;require(shared==simulate(cfg,8),"window sharing depends on reused search storage");
+    cfg.window_rounds=1;cfg.window_iterations=3;cfg.threads=2;
     cfg.window_blockers=true;cfg.window_equal=true;cfg.window_starts=4;cfg.cost_cache=true;
     const auto linked=simulate(cfg,8,5,5,true);
     cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");

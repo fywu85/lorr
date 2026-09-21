@@ -243,19 +243,29 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         }
     }
     std::vector<Island> islands(cfg.window_islands);
+    int best=0;uint64_t expanded=0;int accepted=0;
+    // Optional fixed rounds share the best complete plan between islands.
+    // Total repair attempts per island remain window_iterations, independent
+    // of wall time and worker scheduling. One round is the original control.
+    for(int round=0;round<cfg.window_rounds;++round) {
     std::vector<std::exception_ptr> errors(cfg.window_islands);
     #pragma omp parallel for num_threads(cfg.threads) schedule(static)
     for(int index=0;index<cfg.window_islands;++index) {
         try {
-            auto& island=islands[index];island.paths=base;island.cost=base_cost;
-            std::seed_seq seeds{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(index),uint32_t(0x57494e44)};
+            auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;
+            std::seed_seq seeds{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(index),
+                               uint32_t(0x57494e44)+uint32_t(round)*uint32_t(0x9e3779b9)};
             std::mt19937 random(seeds);
-            Reservations reserve(g,h);Search search;
+            Reservations reserve(g,h);
+            Search fresh_search;
+            thread_local Search reused_search;
+            Search& search=cfg.window_reuse?reused_search:fresh_search;
+            search.expanded=0;
             for(int a=0;a<n;++a)reserve.set(a,island.paths[a],true);
             std::vector<Cost> costs(n);
             for(int a=0;a<n;++a)costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
             std::vector<int> group(n);std::vector<float> keys(n);
-            for(int iteration=0;iteration<cfg.window_iterations;++iteration) {
+            for(int iteration=0;iteration<cfg.window_iterations/cfg.window_rounds;++iteration) {
                 int pivot=int(random()%n),time=int(random()%(h+1));
                 // Half the neighborhoods emphasize delayed routes; the rest
                 // explore uniformly. Neighbors follow current planned positions.
@@ -324,11 +334,16 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             island.cost=total_cost(island.paths);island.expansions=search.expanded;
         } catch(...) {errors[index]=std::current_exception();}
     }
-    int best=0;uint64_t expanded=0;int accepted=0;
+    best=0;
     for(int k=0;k<cfg.window_islands;++k) {
         if(errors[k])std::rethrow_exception(errors[k]);
         expanded+=islands[k].expansions;accepted+=islands[k].accepted;
         if(better(islands[k].cost,islands[best].cost))best=k;
+    }
+    if(better(base_cost,islands[best].cost))throw std::runtime_error("window sharing round worsened its complete seed");
+    if(round+1<cfg.window_rounds) {
+        base=islands[best].paths;base_cost=islands[best].cost;
+    }
     }
     auto& chosen=islands[best].paths;validate(chosen);
     if(better(base_cost,islands[best].cost))throw std::runtime_error("window LNS worsened the complete seed plan");
@@ -340,8 +355,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,cfg.window_iterations,accepted,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,cfg.window_iterations,cfg.window_rounds,accepted,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }

@@ -1206,3 +1206,17 @@ rank order and kinematic mask exactly; dynamic push costs still bypass caching.
 The default is off. Dense task-turnover, cache-eviction, worker and checkpoint
 regressions compare it with the uncached policy, including the dynamic bypass.
 Full RANDOM-04 same-budget trajectories must match before any timing claim.
+
+## Cooperative window repairs and exact search-storage reuse (source88)
+
+The current32 LNS islands independently improve the same seed until the end of
+the step. Optional fixed sharing rounds let all workers refine the best complete
+plan after each round. This tests whether cooperative refinement beats independent
+diversity at the same declared total repair count. Each round is a deterministic
+barrier; its best plan cannot worsen the previous complete incumbent. Seeds use
+step/island/round, with round0 preserving the old seed stream. One round remains
+the default. Window-search storage reuse is a separate exact option, using the
+existing per-search epoch tags and private worker storage to avoid repeatedly
+allocating/clearing the state tables. Defaults preserve the old implementation.
+Dense turnover, worker count, cache choice, full checkpoint replay and mobility
+tests cover both. Neither feature is enabled based on map geometry.
