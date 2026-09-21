@@ -143,8 +143,18 @@ def main():
                 assert all(int(x['candidate_limit'])==cap for x in sampled)
                 assert all(0<=int(x['limited_batches'])<=8 for x in sampled)
                 assert all(not int(x['limited_batches']) or int(x['max_batch_candidates'])>=cap for x in sampled)
+                priority_noise=int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_NOISE','0'))
+                priority_samples=[fields(l) for l in logs if l.startswith('[cgar-priority-portfolio] ')]
+                if priority_noise:
+                    assert [int(x['step']) for x in priority_samples]==list(range(200,row['steps']+1,200))
+                    workers=int(case['environment']['CGAR_TEMPORAL_WORKERS'])
+                    assert all(int(x['workers'])==workers and int(x['noise'])==priority_noise for x in priority_samples)
+                    assert all(0<=int(x['selected_worker'])<workers and 0<=int(x['changed_orders'])<=workers for x in priority_samples)
+                    assert all(int(x['reused'])==int(case['environment'].get('CGAR_TEMPORAL_PRIORITY_PERSIST','0')) for x in priority_samples)
+                else:
+                    assert not priority_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
-                work[key]=dict(regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)
