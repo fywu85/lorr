@@ -1139,3 +1139,26 @@ Both are disabled by default. All full-plan reservation and collision checks,
 fixed work counts, and strict entry deadlines remain in force. Dense turnover,
 worker/cache equivalence and checkpoint restoration tests cover the new modes.
 No map-specific rule or future task is used.
+
+
+## Windowed initialization portfolio (source82, pending evaluation)
+
+The first windowed mode compared one deterministic pipeline rollout with a
+retained-prefix rollout. Add `R05_WINDOW_STARTS` (default1) to compare a fixed
+portfolio of complete pipeline starting plans before LNS. Extra starts use
+independent step/seed/index RNG streams and the existing `R05_NOISE` amplitude.
+The best complete plan seeds every LNS island; retain
+its priorities for the next step. All starts finish before optimization. This
+implements the colleague log's best-of-rollouts direction without using its
+unavailable code or tuned fields. The one-start default preserves the prior
+trajectory. New dense worker/cache/checkpoint tests exercise four starts with
+blocker groups and equal-cost exploration. Full controls precede promotion.
+
+
+The initial source82 proposal failed the existing dense-mobility floor with four
+starts plus blocker/equal repairs; do not benchmark or promote that build.
+Source83 revises initialization ranking to summed remaining task cost across the
+window. This tests whether progress-based ranking avoids preferring a stationary
+seed under cumulative travel-cost scoring. The LNS objective is unchanged, and
+the one-start control retains its original ranking. The same mobility regression
+and threshold remain in place; diagnostic output now identifies a failed setting.

@@ -111,6 +111,9 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_
             }
         }
     }
+    if(total_moved<=150)std::cerr<<"immobile: moves="<<total_moved<<" window="<<cfg.window
+        <<" starts="<<cfg.window_starts<<" iterations="<<cfg.window_iterations
+        <<" expansions="<<cfg.window_expansions<<"\n";
     require(total_moved>150,"dense rollout is immobile");
     std::cout<<"dense simulation moves="<<total_moved<<"\n";
     return signature;
@@ -872,7 +875,7 @@ void window_reproducibility() {
     const auto reference=simulate(cfg,8,5,5,true);
     cfg.threads=2;require(reference==simulate(cfg,8),"parallel window repairs changed the full trajectory");
     cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
-    cfg.window_blockers=true;cfg.window_equal=true;cfg.cost_cache=true;
+    cfg.window_blockers=true;cfg.window_equal=true;cfg.window_starts=4;cfg.cost_cache=true;
     const auto linked=simulate(cfg,8,5,5,true);
     cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");
     cfg.cost_cache=false;require(linked==simulate(cfg,8),"blocker guides depend on cost caching");

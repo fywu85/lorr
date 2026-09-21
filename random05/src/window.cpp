@@ -148,7 +148,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     // Shift a short prefix from the last plan and regenerate the tail with the
     // collision-free pipeline. Also compare a completely fresh pipeline seed.
     // Neither seed locks the prefix against LNS revisions.
-    auto seed=[&](bool retain) {
+    auto seed=[&](bool retain,const std::vector<float>& offsets) {
         Paths paths(n,std::vector<int>(h+1));Frame frame=initial;
         int keep=retain?std::min(cfg.window_keep,h-1):0;
         for(int a=0;a<n;++a) {
@@ -162,18 +162,60 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         frame.pending=frame.loc;
         std::vector<Action> actions;uint64_t expansions=0;
         for(int t=keep+1;t<=h;++t) {
-            advance(frame,best_offsets_,actions,expansions,true);
+            advance(frame,offsets,actions,expansions,true);
             for(int a=0;a<n;++a)paths[a][t]=frame.loc[a]*4+frame.dir[a];
         }
         validate(paths);return paths;
     };
-    Paths base=seed(false);Cost base_cost=total_cost(base);
+    auto seed_merit=[&](const Paths& paths) {
+        // Rank initialization by task progress throughout the window. Charging
+        // travelled distance here can favor stationary plans in crowded states;
+        // LNS still uses its ordinary complete-path objective after seeding.
+        double value=0;
+        for(int a=0;a<n;++a)if(assigned_[a]) {
+            int stage=initial.stage[a];
+            for(int t=1;t<=h;++t) {
+                stage=arrived(assigned_[a],stage,paths[a][t]);
+                value+=assigned_[a]->cost(g,stage,paths[a][t]/4,paths[a][t]%4);
+            }
+        }
+        return value;
+    };
+    Paths base=seed(false,best_offsets_);Cost base_cost=total_cost(base);
+    double base_merit=cfg.window_starts>1?seed_merit(base):0;
+    auto selected_offsets=best_offsets_;
+    if(cfg.window_starts>1) {
+        std::vector<Paths> starts(cfg.window_starts-1);
+        std::vector<Cost> costs(cfg.window_starts-1);
+        std::vector<double> merits(cfg.window_starts-1);
+        std::vector<std::vector<float>> offsets(cfg.window_starts-1);
+        std::vector<std::exception_ptr> failures(cfg.window_starts-1);
+        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+        for(int k=0;k<cfg.window_starts-1;++k) {
+            try {
+                std::seed_seq keys{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(k),uint32_t(0x53454544)};
+                std::mt19937 random(keys);std::uniform_real_distribution<float> noise(-cfg.noise,cfg.noise);
+                offsets[k].resize(n);for(float& value:offsets[k])value=noise(random);
+                starts[k]=seed(false,offsets[k]);costs[k]=total_cost(starts[k]);merits[k]=seed_merit(starts[k]);
+            } catch(...) {failures[k]=std::current_exception();}
+        }
+        for(int k=0;k<cfg.window_starts-1;++k) {
+            if(failures[k])std::rethrow_exception(failures[k]);
+            if(merits[k]<base_merit || (merits[k]==base_merit && better(costs[k],base_cost))) {
+                base=std::move(starts[k]);base_cost=costs[k];base_merit=merits[k];selected_offsets=std::move(offsets[k]);
+            }
+        }
+    }
     if(!window_paths_.empty()) {
         for(int a=0;a<n;++a)if(window_paths_[a].size()!=size_t(h+1) ||
               window_paths_[a][1]!=initial.loc[a]*4+initial.dir[a])
             throw std::runtime_error("persistent window disagrees with simulator");
-        Paths shifted=seed(true);Cost cost=total_cost(shifted);
-        if(better(cost,base_cost)){base=std::move(shifted);base_cost=cost;}
+        Paths shifted=seed(true,best_offsets_);Cost cost=total_cost(shifted);
+        const double merit=cfg.window_starts>1?seed_merit(shifted):0;
+        if((cfg.window_starts==1 && better(cost,base_cost)) ||
+           (cfg.window_starts>1 && (merit<base_merit || (merit==base_merit && better(cost,base_cost))))) {
+            base=std::move(shifted);base_cost=cost;selected_offsets=best_offsets_;
+        }
     }
     // Unconstrained task-chain routes identify actual reservation blockers.
     // They depend only on visible tasks, current states and the ordinary cost
@@ -296,7 +338,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         plan[a]=from/4!=to/4?FW:delta==1?CR:delta==3?CCR:W;
         predicted_loc_[a]=to/4;predicted_dir_[a]=to%4;
     }
-    pending_=predicted_loc_;window_paths_=std::move(chosen);
+    pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
         std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
             env.curr_timestep,h,cfg.window_islands,cfg.window_iterations,accepted,

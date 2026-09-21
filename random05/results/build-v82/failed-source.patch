@@ -1,0 +1,102 @@
+--- a/random05/src/engine.hpp
++++ b/random05/src/engine.hpp
+@@ -19,6 +19,7 @@
+     bool replan_policy=false;
+     int score_rank_steps=0;
+     int window=0, window_keep=6, window_islands=32, window_iterations=24, window_neighborhood=8, window_expansions=20000;
++    int window_starts=1;
+     bool window_blockers=false, window_equal=false;
+     int rescore_roots=0, rescore_branches=64;
+     float rescore_blend=0, rescore_static_weight=-1;
+--- a/random05/src/engine.cpp
++++ b/random05/src/engine.cpp
+@@ -147,11 +147,12 @@
+     c.window_iterations=integer("R05_WINDOW_ITERS",24);
+     c.window_neighborhood=integer("R05_WINDOW_NEIGHBORHOOD",8);
+     c.window_expansions=integer("R05_WINDOW_EXPANSIONS",20000);
++    c.window_starts=integer("R05_WINDOW_STARTS",1);
+     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
+     c.window_equal=integer("R05_WINDOW_EQUAL",0);
+     if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
+        c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>2048 ||
+-       c.window_neighborhood<1 || c.window_neighborhood>64 || c.window_expansions<1)
++       c.window_neighborhood<1 || c.window_neighborhood>64 || c.window_expansions<1 || c.window_starts<1 || c.window_starts>1024)
+         throw std::invalid_argument("invalid windowed search configuration");
+     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);
+     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
+--- a/random05/src/window.cpp
++++ b/random05/src/window.cpp
+@@ -148,7 +148,7 @@
+     // Shift a short prefix from the last plan and regenerate the tail with the
+     // collision-free pipeline. Also compare a completely fresh pipeline seed.
+     // Neither seed locks the prefix against LNS revisions.
+-    auto seed=[&](bool retain) {
++    auto seed=[&](bool retain,const std::vector<float>& offsets) {
+         Paths paths(n,std::vector<int>(h+1));Frame frame=initial;
+         int keep=retain?std::min(cfg.window_keep,h-1):0;
+         for(int a=0;a<n;++a) {
+@@ -162,18 +162,40 @@
+         frame.pending=frame.loc;
+         std::vector<Action> actions;uint64_t expansions=0;
+         for(int t=keep+1;t<=h;++t) {
+-            advance(frame,best_offsets_,actions,expansions,true);
++            advance(frame,offsets,actions,expansions,true);
+             for(int a=0;a<n;++a)paths[a][t]=frame.loc[a]*4+frame.dir[a];
+         }
+         validate(paths);return paths;
+     };
+-    Paths base=seed(false);Cost base_cost=total_cost(base);
++    Paths base=seed(false,best_offsets_);Cost base_cost=total_cost(base);
++    auto selected_offsets=best_offsets_;
++    if(cfg.window_starts>1) {
++        std::vector<Paths> starts(cfg.window_starts-1);
++        std::vector<Cost> costs(cfg.window_starts-1);
++        std::vector<std::vector<float>> offsets(cfg.window_starts-1);
++        std::vector<std::exception_ptr> failures(cfg.window_starts-1);
++        #pragma omp parallel for num_threads(cfg.threads) schedule(static)
++        for(int k=0;k<cfg.window_starts-1;++k) {
++            try {
++                std::seed_seq keys{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(k),uint32_t(0x53454544)};
++                std::mt19937 random(keys);std::uniform_real_distribution<float> noise(-cfg.noise,cfg.noise);
++                offsets[k].resize(n);for(float& value:offsets[k])value=noise(random);
++                starts[k]=seed(false,offsets[k]);costs[k]=total_cost(starts[k]);
++            } catch(...) {failures[k]=std::current_exception();}
++        }
++        for(int k=0;k<cfg.window_starts-1;++k) {
++            if(failures[k])std::rethrow_exception(failures[k]);
++            if(better(costs[k],base_cost)) {
++                base=std::move(starts[k]);base_cost=costs[k];selected_offsets=std::move(offsets[k]);
++            }
++        }
++    }
+     if(!window_paths_.empty()) {
+         for(int a=0;a<n;++a)if(window_paths_[a].size()!=size_t(h+1) ||
+               window_paths_[a][1]!=initial.loc[a]*4+initial.dir[a])
+             throw std::runtime_error("persistent window disagrees with simulator");
+-        Paths shifted=seed(true);Cost cost=total_cost(shifted);
+-        if(better(cost,base_cost)){base=std::move(shifted);base_cost=cost;}
++        Paths shifted=seed(true,best_offsets_);Cost cost=total_cost(shifted);
++        if(better(cost,base_cost)){base=std::move(shifted);base_cost=cost;selected_offsets=best_offsets_;}
+     }
+     // Unconstrained task-chain routes identify actual reservation blockers.
+     // They depend only on visible tasks, current states and the ordinary cost
+@@ -296,7 +318,7 @@
+         plan[a]=from/4!=to/4?FW:delta==1?CR:delta==3?CCR:W;
+         predicted_loc_[a]=to/4;predicted_dir_[a]=to%4;
+     }
+-    pending_=predicted_loc_;window_paths_=std::move(chosen);
++    pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
+     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
+         std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d accepted=%d expansions=%llu cost=%.3f base=%.3f\n",
+             env.curr_timestep,h,cfg.window_islands,cfg.window_iterations,accepted,
+--- a/random05/tests/engine_tests.cpp
++++ b/random05/tests/engine_tests.cpp
+@@ -872,7 +872,7 @@
+     const auto reference=simulate(cfg,8,5,5,true);
+     cfg.threads=2;require(reference==simulate(cfg,8),"parallel window repairs changed the full trajectory");
+     cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
+-    cfg.window_blockers=true;cfg.window_equal=true;cfg.cost_cache=true;
++    cfg.window_blockers=true;cfg.window_equal=true;cfg.window_starts=4;cfg.cost_cache=true;
+     const auto linked=simulate(cfg,8,5,5,true);
+     cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");
+     cfg.cost_cache=false;require(linked==simulate(cfg,8),"blocker guides depend on cost caching");

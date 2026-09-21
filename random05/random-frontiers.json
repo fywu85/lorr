@@ -408,10 +408,10 @@
       "finished_utc": "2026-09-21T01:26:22.425368+00:00"
     },
     "trick": {
-      "source_commit": "6b40cd5",
-      "evidence": "random05/results/generalization-random-frozen-trick-split-full-v78/pipeline-frozen-trick-random-03/summary.json",
+      "source_commit": "a2ff2b2",
+      "evidence": "random05/results/random-crowded-seeds-split-full-v80/trick-random-03-selected-seed6/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v78/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
         "cores": 16,
         "smt": 2,
@@ -419,7 +419,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-03",
-        "name": "pipeline-frozen-trick-random-03",
+        "name": "trick-random-03-selected-seed6",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -444,7 +444,7 @@
           "R05_SCHED_GUIDE": "1",
           "R05_FLOW_OUTPUT_PENALTY": "2.4",
           "R05_RANDOM_BY_STEP": "1",
-          "R05_SEED": "5",
+          "R05_SEED": "6",
           "R05_FLOW_FLIPS": "1",
           "R05_FLOW_FLIP_SEED": "5",
           "R05_CONTINUATIONS": "18",
@@ -476,8 +476,8 @@
           "R05_RESCORE_BRANCHES": "64",
           "R05_RESCORE_BLEND": "0"
         },
-        "binary_sha256": "83f08d663ef9363c8579c5d83035b50e0c2006d848e740c19b713c797ab42f6e",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v78/build/lifelong_random05",
+        "binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json": "6055eabe6eb02b1ebe0208482f523e658348a1f565765d002992fd5528c96499",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -486,8 +486,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 2171,
-      "finished_utc": "2026-09-21T01:32:52.388346+00:00"
+      "tasks": 2182,
+      "finished_utc": "2026-09-21T03:10:39.990229+00:00",
+      "audit": "random05/results/random-crowded-seeds-split-full-v80/audit.json"
     },
     "nms32_tasks": 2359
   },
@@ -568,10 +569,10 @@
       "finished_utc": "2026-09-21T01:30:14.383662+00:00"
     },
     "trick": {
-      "source_commit": "9e9dbfa",
-      "evidence": "random05/results/random-density-first-split-full-v79/trick-random-04-k24480/summary.json",
+      "source_commit": "a2ff2b2",
+      "evidence": "random05/results/random04-search-split-full-v80/trick-random-04-depth10/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v79/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
         "cores": 16,
         "smt": 2,
@@ -579,9 +580,9 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-04",
-        "name": "trick-random-04-k24480",
+        "name": "trick-random-04-depth10",
         "env": {
-          "R05_K": "24480",
+          "R05_K": "16320",
           "R05_THREADS": "32",
           "R05_GUIDANCE": "flow",
           "R05_DISPERSION": "0.8",
@@ -634,10 +635,11 @@
           "R05_SCORE_RANK_STEPS": "0",
           "R05_RESCORE_ROOTS": "0",
           "R05_RESCORE_BRANCHES": "64",
-          "R05_RESCORE_BLEND": "0"
+          "R05_RESCORE_BLEND": "0",
+          "R05_DEPTH": "10"
         },
-        "binary_sha256": "5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v79/build/lifelong_random05",
+        "binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json": "ef81d9db98eb3679e5c4a7fc424f2d0f726d2a1fdfb564a2333aa0eae89faf37",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -646,9 +648,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 2462,
-      "finished_utc": "2026-09-21T02:27:08.813026+00:00",
-      "audit": "random05/results/random-density-first-split-full-v79/audit.json"
+      "tasks": 2486,
+      "finished_utc": "2026-09-21T03:05:40.755316+00:00",
+      "audit": "random05/results/random04-search-split-full-v80/audit.json"
     },
     "nms32_tasks": 2580
   },
@@ -729,10 +731,10 @@
       "finished_utc": "2026-09-21T01:46:49.544530+00:00"
     },
     "trick": {
-      "source_commit": "acdbfd7",
-      "evidence": "random05/results/move-bias-refinement-split-full-v77/32-move-bias3-b18-seed0/summary.json",
+      "source_commit": "a2ff2b2",
+      "evidence": "random05/results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v77/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
         "cores": 16,
         "smt": 2,
@@ -740,9 +742,9 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": true,
-        "name": "32-move-bias3-b18-seed0",
+        "name": "32-move-bias3-seed0-k20160",
         "env": {
-          "R05_K": "16320",
+          "R05_K": "20160",
           "R05_THREADS": "32",
           "R05_GUIDANCE": "flow",
           "R05_DISPERSION": "0.8",
@@ -798,8 +800,8 @@
           "R05_RESCORE_BLEND": "0",
           "R05_MOVE_BIAS": "3"
         },
-        "binary_sha256": "ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v77/build/lifelong_random05",
+        "binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -808,8 +810,8 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 3978,
-      "finished_utc": "2026-09-21T02:16:03.845916+00:00"
+      "tasks": 3985,
+      "finished_utc": "2026-09-21T03:06:09.957953+00:00"
     },
     "nms32_tasks": 3172
   }

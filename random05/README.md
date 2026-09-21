@@ -157,3 +157,5 @@ by instance name must be exposed as a trick. Verify new batches with
 `tools/audit_random_cases.py`; promote audited RANDOM-01..04 improvements with
 `tools/promote_random_records.py`. RANDOM-05 also requires its main frontier
 and waiting-history audits.
+
+`R05_WINDOW_STARTS` (default1) adds a fixed portfolio of complete pipeline seeds before LNS. Extra starts use `R05_NOISE`; they are ranked by predicted remaining task cost across the window. The one-start default preserves the previous initializer. No wall-clock cutoff shortens this portfolio.

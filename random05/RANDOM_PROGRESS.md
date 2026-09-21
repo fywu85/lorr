@@ -19,9 +19,9 @@ RANDOM-05 still targets4,000. Large maps are outside active development.
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1370 | 1122 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2171 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2462 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 3978 | 3172 |
+| RANDOM-03 | 400 | 800 | 1582 | 2182 | 2359 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2486 | 2580 |
+| RANDOM-05 | 800 | 2000 | 2226 | 3985 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -78,6 +78,9 @@ has been added yet.
 | 2026-09-21T02:53:18.408890+00:00 | RANDOM-01 | general | 726 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-01-window-selected-seed4/summary.json) |
 | 2026-09-21T02:54:29.136533+00:00 | RANDOM-02 | general | 1351 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-h15-iters2048/summary.json) |
 | 2026-09-21T02:56:07.783992+00:00 | RANDOM-02 | general | 1370 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-followup-split-full-v80/general-random-02-window-h20-iters2048/summary.json) |
+| 2026-09-21T03:06:09.957953+00:00 | RANDOM-05 | trick | 3985 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json) |
+| 2026-09-21T03:05:40.755316+00:00 | RANDOM-04 | trick | 2486 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-search-split-full-v80/trick-random-04-depth10/summary.json) |
+| 2026-09-21T03:10:39.990229+00:00 | RANDOM-03 | trick | 2182 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-crowded-seeds-split-full-v80/trick-random-03-selected-seed6/summary.json) |
 
 
 ## September21: first development comparisons
@@ -184,3 +187,45 @@ and depths6/10 are now under full evaluation with the same frozen guidance.
 Source81 adds optional general blocker-based repair groups and equal-cost path
 exploration. Both default off; regression passed34.67s. Its full comparisons
 will include exact source80 controls before any performance promotion.
+
+
+### Blocker groups, equal-cost exploration, and crowded follow-ups
+
+All16 source81 ablations are strict/replayed; four controls exactly reproduce all
+six trajectory fields from source80. AtH20/512iterations, control/blockers/equal/
+both score718/723/718/718 on RANDOM-01,1314/1318/1331/1318 on RANDOM-02,
+1270/1090/1291/1105 on unguided RANDOM-03, and1839/1865/1886/1910 on guided
+RANDOM-03. There is no all-density gain: blockers hurt the unguided medium case.
+The best guided window remains below the2171 reactive record. Keep both flags
+optional. [Complete audit](results/random-window-blockers-split-full-v81/audit.json).
+
+Reactive RANDOM-03 guidance seeds0–5 score2039/2055/2035/2078/2040/2024;
+KK400 and NMS files both score2001 with different trajectories. The unchanged
+2171 control is exact in all six fields. None beats the existing profile.
+RANDOM-04 branch counts4/8/10/14 give2441/2384/2417/2426. Depth6 loses at2258;
+depth10 gives a new audited2486 record, still3.6% below matched NMS2580.
+[Reactive guidance audit](results/random03-reactive-guidance-split-full-v80/audit.json),
+[RANDOM-04 search audit](results/random04-search-split-full-v80/audit.json).
+
+A source82 initialization-portfolio prototype failed the dense-mobility regression
+before any benchmark. The failed source patch, log and build metadata are retained.
+Source83 tests progress-based initialization ranking against the same regression
+and unchanged one-start controls. It has not been promoted.
+
+
+### Additional crowded planner seeds
+
+The frozen RANDOM-03 reactive profile on planner seeds0/3/4/6 scores
+2182/2158/2157/2182, versus2171 onseed5. The earliest2182 is recorded; tied
+scores are not new frontiers. RANDOM-04's K24480/depth8 profile gives
+2439/2441/2431/2470 on those seeds, versus2462 onseed5. All eight full runs are
+strict successes with independent replay and order-latency audits. The newer
+2486 RANDOM-04 record instead usesK16320/depth10/seed5.
+[Seed audit](results/random-crowded-seeds-split-full-v80/audit.json).
+
+The revised source83 initialization portfolio passes the original dense-mobility
+threshold and worker/cache/checkpoint checks (22.76s); all35compiled/test inputs
+match its frozen build. Full experiments will include one-start controls. This
+passes regression, not a throughput claim. Two additional RANDOM-05 runs test
+the3985record's K20160 budget on planner seeds5/7; four earlier horizon variants
+still use the3978/K16320 recipe. No fresh50009+ input has been generated.

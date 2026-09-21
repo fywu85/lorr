@@ -138,3 +138,26 @@ staging onlythosepaths. Push:
 `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
 Hostlist32/33/35/36/37/39/40/41/45/46/47/48/49/50/51/52/54/55/56; avoid34/42/53/58.
 SGEbindingadvisory; actualguardsmandatory. Refusal/spike causes remain unproven.
+
+Source81commit`4b70a80` verified. Declared16casebatchrandom-window-blockers-full-v81: H20I512turn2wait2 on01–03 andR03flow2.4, eachcontrol/blockers/equal/both. Separate8casebatchrandom-crowded-seeds-full-v80 takesbesttrick03/04settingswithseeds0/3/4/6. R04usesK24480best2462; R03usesK16320best2171. Originalinputs,notfreshvalidation.
+
+## Updates after03:12UTC (override earlier active notes)
+
+R05NEW3,985 sourcea2ff2b2/build80/seed0/K20160/first7968/B18; allother3978settings.
+Finished03:06:09.957953UTC. Mean649.393/max693.366ms,RSS566944KiB,+25.6%vsNMS.
+Bestmanifests/mainlog/RESULTS/all5index updated; all83frontierrows audited;
+waitingmax1962,initialunfinished121/unopened87. K24480=3872, so notmonotonic.
+All7 source80seed0cases audited;3978control exact allsixfields.
+NewR04depth10record2486 audited/promoted (source80,K16320,seed5). R04seedbatch
+usesoldbestK24480/depth8; preserve that distinction. R03seed0/6=2182pendingaudit,
+seed3/4=2158/2157; allfourvalid. FourR04seedcasespendingatlastcollect.
+Source81blocker/equalall16valid/replayed; allfourcontrols exact. Outcomes inledger.
+GuidedR03both1910 vs1839control butbelowreactive2171. Noall-densitygain.
+Source82prototype FAILED densemobility regression. Archivedfailed-source.patch
+against4b70a80,regression.log andmetadata. No benchmark. Source83progress-ranking
+revision buildingjob8901420; sourcechangesUNCOMMITTED. Keep same regressionfloor.
+FourR05triagerefinements jobs8901393–96 ongoing around3978/K16320, NOT3985/K20160.
+
+Source83 progress-based initialization PASSES unchanged mobility/worker/cache/checkpoint regressions22.76s, finished03:20:18UTC. All35compiled/test inputs verified. SHA346e291a6ae48a94eca5f2753aeffa32c633d850e1aa29120595b60b46cff82e. Committhenrunexplicitstarts controls; source82remainsfailed. All8crowdedseedrunscomplete: R04seeds0/3/4/6=2439/2441/2431/2470(K24480depth8), below2486depth10record. R03new2182candidateawaitingaudit. R05fourtriagecasesstillrunning.
+
+Crowdedseedauditcomplete8/8. R03best2182promoted; R04current2486. NewR05record3985-seeds-split-full-v80 jobs8901421/22 (K20160seeds5/7). Source83readyforcommit,then16initializationportfolio cases with exactcontrols. All83progress/waitingauditscompleteandrendered.
