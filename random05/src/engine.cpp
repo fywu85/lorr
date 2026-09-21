@@ -181,6 +181,9 @@ Config Config::environment(const SharedEnvironment& env) {
        c.elite_decision_distance<0 || c.elite_decision_distance>1)
         throw std::invalid_argument("invalid restart period or elite decision distance");
     c.move_bias=real("R05_MOVE_BIAS",0);
+    c.move_bias_mode=integer("R05_MOVE_BIAS_MODE",0);
+    if(c.move_bias_mode<0 || c.move_bias_mode>2)
+        throw std::invalid_argument("move proposal mode must be compass, available edges, or edges and waiting");
     if(!std::isfinite(c.move_bias) || c.move_bias<0 || c.move_bias>4)
         throw std::invalid_argument("move proposal bias must be in [0,4]");
     c.move_bias_fraction=real("R05_MOVE_BIAS_FRACTION",0.25f);
@@ -1176,10 +1179,22 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         // The default quarter exactly preserves the old low-two-bits test.
         const uint32_t activation=((key&3u)<<30)|((key>>4)<<2);
         if(uint64_t(activation)>=bias_cutoff)continue;
-        const int preferred=int((key>>2)&3u);
+        int preferred=int((key>>2)&3u);
+        if(cfg.move_bias_mode) {
+            // Sample a real edge instead of wasting proposals on walls. Mode2
+            // also permits waiting; legality still comes from the joint PIBT
+            // and kinematic checks, and the rollout score remains unbiased.
+            std::array<int,5> directions{};int choices=0;
+            for(int d=0;d<4;++d)if(g.next[p[a]][d]>=0)directions[choices++]=d;
+            if(cfg.move_bias_mode==2)directions[choices++]=4;
+            if(!choices)continue;
+            uint32_t choice=key^0xa511e9b3u;choice^=choice>>16;choice*=0x7feb352du;choice^=choice>>15;
+            preferred=directions[size_t((uint64_t(choice)*choices)>>32)];
+        }
         auto& cand=candidates[a];const int count=candidate_count[a];
-        for(int k=0;k<count;++k)if(cand[k].v!=p[a] && cand[k].d==preferred)
-            cand[k].score-=cfg.move_bias;
+        for(int k=0;k<count;++k)
+            if(cand[k].v==p[a]?preferred==4:cand[k].d==preferred)
+                cand[k].score-=cfg.move_bias;
         for(int k=1;k<count;++k) {
             MoveCandidate value=cand[k];int j=k;
             while(j>0 && value.score<cand[j-1].score){cand[j]=cand[j-1];--j;}

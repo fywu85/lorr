@@ -871,6 +871,21 @@ void move_proposal_bias() {
     }
 }
 
+void feasible_move_proposals() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    cfg.move_bias=.75f;cfg.move_bias_fraction=.5f;
+    const auto compass=simulate(cfg,12);
+    for(int mode:{1,2}) {
+        cfg.move_bias_mode=mode;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        const auto signature=simulate(cfg,12,5,5,true);
+        require(signature!=compass,"available-edge proposal fixture did not change routing");
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(signature==simulate(cfg,12),"available-edge proposals changed with cache or workers");
+    }
+}
+
 void rollout_elite_diversity() {
     std::vector<Rollout> r(5);
     for(int i=0;i<5;++i){r[i].score=10-i;r[i].offsets={float(i)};r[i].first.pending={0,1,2,3};}
@@ -1072,6 +1087,7 @@ void window_reproducibility() {
 }
 
 int main() {
+    feasible_move_proposals();
     rollout_elite_diversity();
     destination_demand_matching();
     guidance_reversal();

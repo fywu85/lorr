@@ -50,6 +50,7 @@ struct Config {
     float elite_decision_distance=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
+    int move_bias_mode=0;
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2, destination_load=0;
     float initial_length_weight=-1;
     int initial_length_steps=250;
