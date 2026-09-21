@@ -266,7 +266,7 @@ def main():
                         assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
                 if name in ('CITY-01','CITY-02','GAME') and case['environment'].get('CGAR_TRICK_LANES','1')=='1' and case['environment'].get('CGAR_TRICK_NATIVE_METRIC','0')=='0':
                     lane_price=int(case['environment'].get('CGAR_TRICK_LANE_COST','16'))
-                    assert lane_price in (4,8,12,16,24,32,48,64)
+                    assert lane_price in (4,8,12,16,20,24,28,32,48,64)
                     receipts=[fields(l) for l in logs if l.startswith('[CGAR_TRICK] ')]
                     assert len(receipts)==1
                     lane=receipts[0]

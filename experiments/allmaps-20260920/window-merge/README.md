@@ -21,3 +21,17 @@ protected and first-cell constraints, complete donor counts, serial/parallel
 identity and late timeout with unpublished history. Start with selected RANDOM02
 and03 full strict1s controls versus merge, four physical cores each. No throughput
 gain is assumed. Map-specific fields retain their explicit --trick flags.
+
+Pre-submission work declaration 2026-09-21T13:50:42.079045+00:00: add a third arm with
+8 completed window workers, keeping per-worker attempts unchanged. RANDOM02
+retains4 physical cores and4 threads (2048 attempts/worker); RANDOM03 reserves8
+physical cores for all arms and uses8 threads only in its wider arm (4096
+attempts/worker). Controls retain4 worker threads, so extra reserved cores alone
+must not change their trajectories. Four-worker merge isolates the new operator;
+eight-worker merge tests additional independent work. No partial result after a
+deadline. These are full600/800step seed2 comparisons, with controls1215/1982.
+
+2026-09-21T13:59:13.435607+00:00: Current1215 versus merge1173 and8-worker merge1189; both lose. Preserve existing RANDOM02 profile. Controls reproduce entire selected trajectories.
+
+
+RANDOM03 full800step seed2 comparison also loses:1982control,1962merge,1859eight-worker merge. All three pass strict1s and32GB; unchanged control matches its earlier full trajectory. Keep merge0. More immediate window-cost improvement is not evidence of better long-run throughput. [RANDOM03 results](random03-results.json).

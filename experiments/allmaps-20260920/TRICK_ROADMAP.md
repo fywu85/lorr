@@ -1,6 +1,6 @@
 # CGAR next experiments across ten instances
 
-Updated 2026-09-21T13:24:01.461718+00:00
+Updated 2026-09-21T14:06:57.742781+00:00
 Targets: +10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on the other
 five. Throughput first, fairness secondary. These are historical targets rather
 than matched competitor runs. Every selected profile requires --trick INSTANCE.
@@ -8,14 +8,14 @@ than matched competitor runs. Every selected profile requires --trick INSTANCE.
 | Instance | Selected full strict1s | Next work |
 |---|---:|---|
 | WAREHOUSE | 155173 | Wider matching loses154829 versus155173; keep the qualified eight-core profile. +5% remains a stretch. |
-| SORTATION | 150894 | Wider matching loses150863 versus150894; keep current profile. Deadline headroom remains narrow. |
-| CITY-01 | 8440 | Wider matching, horizon selection, lower and higher lane prices all lose; keep price16. |
-| CITY-02 | 16839 | Price24 gains3.6849% across three seeds; selected16839seed4. Nearby price comparison remains a possible next step. |
+| SORTATION | 150894 | Known5000horizon with mean/p90 residual margins is running; wider matching lost. Deadline headroom remains narrow. |
+| CITY-01 | 8453 | Selected seed6 now8453, eight above published8445. Nearby price20 loses; continue route/dispatch improvements, do not claim a robust margin. |
+| CITY-02 | 16840 | Selected seed8 adds one task;157short of16997. Price24 replicates +3.6849%;20/28lose. Investigate dispatch/route interactions at the stronger field. |
 | GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
 | RANDOM-01 | 693 | Retained-tail refresh replicates; exact assignment and turn/wait price interactions lose. |
-| RANDOM-02 | 1215 | Guidance strengths25/50/75 versus100 are running on selectedseed2. Earlier window and scheduling changes lose. |
-| RANDOM-03 | 1982 | Delay3 gains3.29% across three seeds; guidance strengths25/50/75 versus100 now running on selectedseed2. |
-| RANDOM-04 | 2321 | Motion commitments replicate. Crowd16 adds0.76% aggregate with one losing seed; selected2321seed4. Guidance-strength comparison running. |
+| RANDOM-02 | 1215 | Guidance weakening and complete-worker merging lose. Study PILOT causal blocker neighborhoods for more useful bounded repairs. |
+| RANDOM-03 | 1982 | Delay3 replicates; guidance weakening and merging lose. Causal blocker selection is the next bounded source-transfer hypothesis. |
+| RANDOM-04 | 2398 | Seed4 now2398 using16workers/8rounds, +3.32%, max0.549s. Replicating both positive work arms on seeds0/2. |
 | RANDOM-05 | 3610 | Margin target met on seed10 with movement commitments and cap700; uncapped commitments gain16.56% over three seeds. Cap interaction gains39 on one seed. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),

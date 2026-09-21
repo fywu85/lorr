@@ -769,3 +769,35 @@ Previous selected maximum 2304. Full 1000 steps; 4 physical cores, strict 1,000 
 | 16839 | 2026-09-21T13:16:54.972282+00:00 | [59c73dc8](https://github.com/fywu85/lorr/commit/59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe) | trick_lane24, seed 4, `--trick CITY-02` | [verification](results/city02-stronger-lanes-replicate-full-v2/verification.json) |
 
 Previous selected maximum 16830. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 804.54 ms. Lane price24 improves all three tested seeds: 16830/16754/16839 versus 16315/16199/16117, +3.6849% aggregate. Controls reproduce earlier full trajectories exactly; selected maximum16839seed4.
+
+## RANDOM-04 2358 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2358 | 2026-09-21T13:56:54.000271+00:00 | [f22bc68b](https://github.com/fywu85/lorr/commit/f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9) | trick_rounds8, seed 4, `--trick RANDOM-04` | [verification](results/random04-committed-work-full-v1/verification.json) |
+
+Previous selected maximum 2321. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 543.68 ms. RANDOM04 sixteen global workers and eight regional rounds gives2398 versus2321control, +3.3175% on seed4 with max548.10ms on four physical cores. Replication on seeds0/2 is declared; no multi-seed claim yet. RANDOM02 window merge loses.
+
+## RANDOM-04 2398 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2398 | 2026-09-21T13:57:04.496650+00:00 | [f22bc68b](https://github.com/fywu85/lorr/commit/f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9) | trick_workers16_rounds8, seed 4, `--trick RANDOM-04` | [verification](results/random04-committed-work-full-v1/verification.json) |
+
+Previous selected maximum 2358. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 548.10 ms. RANDOM04 sixteen global workers and eight regional rounds gives2398 versus2321control, +3.3175% on seed4 with max548.10ms on four physical cores. Replication on seeds0/2 is declared; no multi-seed claim yet. RANDOM02 window merge loses.
+
+## CITY-01 8453 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 8453 | 2026-09-21T13:59:42.672590+00:00 | [f22bc68b](https://github.com/fywu85/lorr/commit/f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9) | trick_current_profile, seed 6, `--trick CITY-01` | [verification](results/city01-seed-frontier-full-v1/verification.json) |
+
+Previous selected maximum 8440. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 764.78 ms. Unchanged selected CITY profile on additional planner seeds. This is a selected-seed record, not an algorithm improvement or a claim of average outperformance; all other seed outcomes and nearby lane-price losses are retained.
+
+## CITY-02 16840 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 16840 | 2026-09-21T14:02:46.608996+00:00 | [f22bc68b](https://github.com/fywu85/lorr/commit/f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9) | trick_current_profile, seed 8, `--trick CITY-02` | [verification](results/city02-seed-frontier-full-v1/verification.json) |
+
+Previous selected maximum 16839. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 802.56 ms. Unchanged selected CITY profile on additional planner seeds. This is a selected-seed record, not an algorithm improvement or a claim of average outperformance; all other seed outcomes and nearby lane-price losses are retained.

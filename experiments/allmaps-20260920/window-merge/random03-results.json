@@ -1,0 +1,51 @@
+{
+  "checked_utc": "2026-09-21T14:06:03.271010+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-03",
+      "case": "trick_current_control-s2-r0",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 1982,
+      "max_entry_seconds": 0.75410717,
+      "peak_rss_bytes": 164642816,
+      "trajectory_sha256": "5bbd748e66c8e1b42318f72fed4017ce3550bfa58175262f06e9cf233918ccfc",
+      "evidence": "results/random03-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    },
+    {
+      "instance": "RANDOM-03",
+      "case": "trick_window_merge-s2-r0",
+      "variant": "trick_window_merge",
+      "seed": 2,
+      "tasks": 1962,
+      "max_entry_seconds": 0.831698984,
+      "peak_rss_bytes": 167251968,
+      "trajectory_sha256": "f477989037c9ea4ad2aab3a127c2bf712b36d4c491165694a62c5ee72975ba05",
+      "evidence": "results/random03-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    },
+    {
+      "instance": "RANDOM-03",
+      "case": "trick_window_merge_workers8-s2-r0",
+      "variant": "trick_window_merge_workers8",
+      "seed": 2,
+      "tasks": 1859,
+      "max_entry_seconds": 0.906488953,
+      "peak_rss_bytes": 205320192,
+      "trajectory_sha256": "430aa8a45b2513f12177b5373cf0d9b8a3dbaec9552655a4fadae70016c8c00a",
+      "evidence": "results/random03-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    }
+  ],
+  "decision": "RANDOM03 control1982, merge1962, eight-worker merge1859; all valid. Keep merge0 and four workers. All arms reserve8physical cores; wide arm uses8worker threads.",
+  "control_trajectory_exact": true,
+  "control_matches": [
+    {
+      "instance": "RANDOM-03",
+      "tasks": 1982,
+      "trajectory_sha256": "5bbd748e66c8e1b42318f72fed4017ce3550bfa58175262f06e9cf233918ccfc",
+      "previous_matching_evidence": "results/random03-matching-width-full-v1/verification.json"
+    }
+  ]
+}

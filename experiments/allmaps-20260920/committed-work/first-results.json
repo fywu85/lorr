@@ -1,0 +1,55 @@
+{
+  "checked_utc": "2026-09-21T13:59:13.435607+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "case": "trick_current_control-s4-r0",
+      "variant": "trick_current_control",
+      "seed": 4,
+      "tasks": 2321,
+      "max_entry_seconds": 0.307754811,
+      "peak_rss_bytes": 174350336,
+      "trajectory_sha256": "1f2823149d7cddd0a3c332de788f7db6c0bfba842f32714597a27e953def5398",
+      "evidence": "results/random04-committed-work-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "RANDOM-04",
+      "case": "trick_workers16-s4-r0",
+      "variant": "trick_workers16",
+      "seed": 4,
+      "tasks": 2278,
+      "max_entry_seconds": 0.322751953,
+      "peak_rss_bytes": 174743552,
+      "trajectory_sha256": "ec9b07587432c949199d1c90a6824f49a4e7d7c42436a660bdb2236e6fc9ee71",
+      "evidence": "results/random04-committed-work-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "RANDOM-04",
+      "case": "trick_rounds8-s4-r0",
+      "variant": "trick_rounds8",
+      "seed": 4,
+      "tasks": 2358,
+      "max_entry_seconds": 0.543676034,
+      "peak_rss_bytes": 174198784,
+      "trajectory_sha256": "d3cad8a0d912778483274e71ff2508f8f649f8b61ce203fe396b01894cf46197",
+      "evidence": "results/random04-committed-work-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "RANDOM-04",
+      "case": "trick_workers16_rounds8-s4-r0",
+      "variant": "trick_workers16_rounds8",
+      "seed": 4,
+      "tasks": 2398,
+      "max_entry_seconds": 0.548104763,
+      "peak_rss_bytes": 174469120,
+      "trajectory_sha256": "3d894560eb3a100abd6973e4961a5b634a412d95217b4d8cb05cbedde3d8af9a",
+      "evidence": "results/random04-committed-work-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    }
+  ],
+  "control_trajectory_exact": true,
+  "decision": "Current2321 versus workers16=2278,rounds8=2358,both2398. Select2398seed4 (+3.3175%) under0.549s; replicate both positive work treatments on seeds0/2 before a robustness claim."
+}

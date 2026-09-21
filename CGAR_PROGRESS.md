@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T13:21:45.448729+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T14:04:45.147566+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -12,13 +12,13 @@ use eight physical cores; the other selected rows use four.
 |---|---:|---:|---:|---:|---:|---:|
 | WAREHOUSE | 155,173 | 154,795 | 162,535 | 7,362 | 0 | 944.77 |
 | SORTATION | 150,894 | 152,714 | 160,350 | 9,456 | 0 | 993.90 |
-| CITY-01 | 8,440 | 8,445 | 8,868 | 428 | 2 | 752.71 |
-| CITY-02 | 16,839 | 16,997 | 17,847 | 1,008 | 4 | 804.54 |
+| CITY-01 | 8,453 | 8,445 | 8,868 | 415 | 6 | 764.78 |
+| CITY-02 | 16,840 | 16,997 | 17,847 | 1,007 | 8 | 802.56 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
 | RANDOM-01 | 693 | 688 | 757 | 64 | 4 | 488.91 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
-| RANDOM-04 | 2,321 | 2,547 | 2,802 | 481 | 4 | 302.95 |
+| RANDOM-04 | 2,398 | 2,547 | 2,802 | 404 | 4 | 548.10 |
 | RANDOM-05 | 3,610 | 3,050 | 3,355 | 0 | 10 | 729.83 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-132145.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-140445.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority

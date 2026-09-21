@@ -1,0 +1,81 @@
+{
+  "checked_utc": "2026-09-21T14:06:03.271010+00:00",
+  "rows": [
+    {
+      "instance": "CITY-01",
+      "case": "trick_current_control-s2-r0",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 8440,
+      "max_entry_seconds": 0.754414873,
+      "peak_rss_bytes": 8094126080,
+      "trajectory_sha256": "705fb54e196dc9fd8e1c9706e77351d5182f1e087816865e3a0589c755defa2a",
+      "evidence": "results/city01-lane-neighbors-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "CITY-01",
+      "case": "trick_lane20-s2-r0",
+      "variant": "trick_lane20",
+      "seed": 2,
+      "tasks": 8434,
+      "max_entry_seconds": 0.766928349,
+      "peak_rss_bytes": 8102862848,
+      "trajectory_sha256": "780db0b62fa7b1a506258b27294ad28d6c0def3988d9084421a8365432c11a1f",
+      "evidence": "results/city01-lane-neighbors-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "CITY-02",
+      "case": "trick_current_control-s4-r0",
+      "variant": "trick_current_control",
+      "seed": 4,
+      "tasks": 16839,
+      "max_entry_seconds": 0.819130178,
+      "peak_rss_bytes": 8501485568,
+      "trajectory_sha256": "428f947d7d182e5a1b47fddcf5a666750c346a8496a706493bbc007cabf168c0",
+      "evidence": "results/city02-lane-neighbors-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "CITY-02",
+      "case": "trick_lane20-s4-r0",
+      "variant": "trick_lane20",
+      "seed": 4,
+      "tasks": 16254,
+      "max_entry_seconds": 0.808338488,
+      "peak_rss_bytes": 8491712512,
+      "trajectory_sha256": "fb07d99f7f26c9f16c8ad3fa56c3125bb9e74c1e8786ba0ff5c5fe0165575611",
+      "evidence": "results/city02-lane-neighbors-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    },
+    {
+      "instance": "CITY-02",
+      "case": "trick_lane28-s4-r0",
+      "variant": "trick_lane28",
+      "seed": 4,
+      "tasks": 16611,
+      "max_entry_seconds": 0.806073697,
+      "peak_rss_bytes": 8503164928,
+      "trajectory_sha256": "2fbc5154977bb75321ca76a8e44e724ed899c75f9b2c60643cef0f5334acd032",
+      "evidence": "results/city02-lane-neighbors-full-v1/verification.json",
+      "source_commit": "f22bc68bb6ea5c3ecc6234fe23838a5ca10ac5e9"
+    }
+  ],
+  "decision": "CITY01 price16/20 gives8440/8434. CITY02 price24/20/28 gives16839/16254/16611. Every new price loses. Keep16 and24. Initial verifier omitted legal20/28; declared whitelist corrected with failures retained, unchanged simulations reanalysed.",
+  "control_trajectory_exact": true,
+  "control_matches": [
+    {
+      "instance": "CITY-01",
+      "tasks": 8440,
+      "trajectory_sha256": "705fb54e196dc9fd8e1c9706e77351d5182f1e087816865e3a0589c755defa2a",
+      "previous_matching_evidence": "results/city01-matching-width-full-v1/verification.json"
+    },
+    {
+      "instance": "CITY-02",
+      "tasks": 16839,
+      "trajectory_sha256": "428f947d7d182e5a1b47fddcf5a666750c346a8496a706493bbc007cabf168c0",
+      "previous_matching_evidence": "results/city02-stronger-lanes-replicate-full-v2/verification.json"
+    }
+  ]
+}

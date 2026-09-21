@@ -13,3 +13,6 @@ native and other map profiles remain unchanged. All old field hashes and masks
 are checked before adding two identities. Existing independent coordinate-field
 and real pickup/planning regressions cover the two new values; default16 identity
 and the independent high-cost heap check remain required.
+
+
+Verified results: CITY01 price16/20 =8440/8434; CITY02 price24/20/28 =16839/16254/16611. Keep CITY01price16 and CITY02price24. Controls match prior complete trajectories. The initial verifier omitted legal20/28 from its declaration whitelist; its failures are retained and the same solver outputs passed after that parser-only correction. [Results](first-results.json), [retry provenance](verification-retry.json).

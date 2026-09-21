@@ -1,0 +1,43 @@
+{
+  "checked_utc": "2026-09-21T13:59:13.435607+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-02",
+      "case": "trick_current_control-s2-r0",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 1215,
+      "max_entry_seconds": 0.479155389,
+      "peak_rss_bytes": 140840960,
+      "trajectory_sha256": "a7ee5a2f0e741ac129c1898e49ba0862924fa38af13458d1ce56ce032455132e",
+      "evidence": "results/random02-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    },
+    {
+      "instance": "RANDOM-02",
+      "case": "trick_window_merge-s2-r0",
+      "variant": "trick_window_merge",
+      "seed": 2,
+      "tasks": 1173,
+      "max_entry_seconds": 0.560934377,
+      "peak_rss_bytes": 142491648,
+      "trajectory_sha256": "41993743d59a69f073378dabcb5c9bc56f0dec1d9481ba4b027069fe99fbf4f4",
+      "evidence": "results/random02-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    },
+    {
+      "instance": "RANDOM-02",
+      "case": "trick_window_merge_workers8-s2-r0",
+      "variant": "trick_window_merge_workers8",
+      "seed": 2,
+      "tasks": 1189,
+      "max_entry_seconds": 0.507294664,
+      "peak_rss_bytes": 173330432,
+      "trajectory_sha256": "0f676d6a3a0251d2c73732eb6a266e1f6d3bf4e193eefbf882eab87e92372214",
+      "evidence": "results/random02-window-merge-full-v1/verification.json",
+      "source_commit": "766e2508919fdec01bb4aaefce15825deedde04a"
+    }
+  ],
+  "control_trajectory_exact": true,
+  "decision": "Current1215 versus merge1173 and8-worker merge1189; both lose. Preserve existing RANDOM02 profile."
+}
