@@ -920,6 +920,44 @@ void rollout_elite_diversity() {
     }
 }
 
+void mixed_guidance_potentials() {
+    auto env=environment(5,5,4);env.map[12]=1;
+    Config cfg;cfg.guidance="lanes";cfg.turn_cost=.6f;cfg.goal_cache=true;
+    Graph original(env,cfg),mixed(env,cfg);auto physical_cfg=cfg;physical_cfg.guidance="none";physical_cfg.turn_cost=2;
+    Graph physical(env,physical_cfg);mixed.blend_distances(physical,.25f,2);
+    require(mixed.weight==original.weight,"mixing potentials changed lane edge prices");
+    for(int target=0;target<mixed.cells;++target)for(int source=0;source<mixed.states;++source) {
+        float best=1e30f;
+        for(int d=0;d<4;++d) {
+            const float expected=.75f*original.dist(target*4+d,source)+.25f*physical.dist(target*4+d,source);
+            require(mixed.dist(target*4+d,source)==expected,"oriented potential mixture is incorrect");
+            best=std::min(best,expected);
+        }
+        require(mixed.approach(target,source)==best,"goal cache retained the old potential or blended incompatible arrival headings");
+    }
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;cfg.random_by_step=true;
+    cfg.guidance_distance_mix=.25f;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    cfg.guided_matching=true;const auto uncached=simulate(cfg,12,5,5,true);
+    cfg.cost_cache=true;cfg.candidate_cache=true;cfg.shared_rankings_mb=4;cfg.threads=3;
+    require(uncached==simulate(cfg,12),"mixed potentials changed with caches or workers");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);require(setenv(k,v,1)==0,"cannot configure mixed potential fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting mixture("R05_GUIDANCE_DISTANCE_MIX","0.25"),guidance("R05_GUIDANCE","lanes");
+    env.trick_instance="RANDOM-04";
+    require(Config::environment(env).guidance_distance_mix==.25f,"mixed potential parser lost the fraction");
+    env.trick_instance.clear();bool rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"mixed weighted guidance escaped the trick gate");
+    env.trick_instance="RANDOM-04";Setting window("R05_WINDOW","8");rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"mixed potentials escaped the windowed-search guard");
+}
+
 void optional_immediate_moves() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -1180,6 +1218,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    mixed_guidance_potentials();
     optional_immediate_moves();
     remaining_work_priorities();
     horizon_aware_matching();

@@ -215,6 +215,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
     c.plain_score=real("R05_PLAIN_SCORE",0);
+    c.guidance_distance_mix=real("R05_GUIDANCE_DISTANCE_MIX",0);
+    if(!std::isfinite(c.guidance_distance_mix) || c.guidance_distance_mix<0 || c.guidance_distance_mix>1)
+        throw std::invalid_argument("guidance distance mixture must be in [0,1]");
     c.reverse_penalty=real("R05_REVERSE_PENALTY",0);
     c.completion_bonus=real("R05_COMPLETE_BONUS",0);
     c.score_rank_power=real("R05_SCORE_RANK_POWER",0);
@@ -299,6 +302,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("guidance reversal requires weighted guidance and an explicit trick instance");
     if(c.flow_flips<0 || (c.flow_flips && c.guidance!="flow"))
         throw std::invalid_argument("field flips require flow guidance and a nonnegative count");
+    if(c.guidance_distance_mix>0 && (c.guidance=="none" || c.window))
+        throw std::invalid_argument("mixed guidance potentials require weighted guidance and a non-windowed policy");
     if(c.guidance!="none" && !random_trick)
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
     if(c.early_root_period && (c.early_fill || c.operation_depth || c.window || c.component_trials || c.replan_roots))
@@ -699,6 +704,26 @@ Graph::Graph(const SharedEnvironment& env,const Config& cfg) {
         }
     }
 }
+void Graph::blend_distances(const Graph& other,float fraction,int threads) {
+    if(!std::isfinite(fraction) || fraction<0 || fraction>1 || threads<1 ||
+       states!=other.states || to_grid!=other.to_grid || distance.size()!=other.distance.size())
+        throw std::invalid_argument("incompatible guidance potential mixture");
+    if(fraction==0)return;
+    // Mix oriented cost-to-go potentials while retaining the original lane
+    // prices for move ranking. These are not exact distances under those edge
+    // prices; the environment guard excludes windowed A* for this experiment.
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for(size_t i=0;i<distance.size();++i)
+        distance[i]=fraction==1?other.distance[i]:(1-fraction)*distance[i]+fraction*other.distance[i];
+    if(!any_heading_distance.empty()) {
+        #pragma omp parallel for num_threads(threads) schedule(static)
+        for(int target=0;target<cells;++target)for(int source=0;source<states;++source) {
+            float best=INF;
+            for(int d=0;d<4;++d)best=std::min(best,dist(target*4+d,source));
+            any_heading_distance[size_t(target)*states+source]=best;
+        }
+    }
+}
 float Graph::approach(int target,int source) const {
     if(!any_heading_distance.empty())return any_heading_distance[size_t(target)*states+source];
     float best=INF;
@@ -754,11 +779,14 @@ void Engine::initialize(SharedEnvironment* env) {
     // They permit a few more faithful forecasts to use the existing allocation.
     if(cfg.replan_roots && cfg.replan_threads>1)omp_set_max_active_levels(2);
     rng_.seed(cfg.seed);graph=std::make_shared<Graph>(*env,cfg);
-    if(cfg.plain_score>0) {
-        // The policy can prefer traffic lanes while evaluation measures actual
-        // unit-cost forward/turn actions, including every remaining task stop.
-        Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;metric.flow_flips=0;
-        score_graph_=std::make_unique<Graph>(*env,metric);
+    if(cfg.plain_score>0 || cfg.guidance_distance_mix>0) {
+        // Physical action costs may inform only evaluation, or optionally the
+        // policy's distance potential. Both are built before any tasks appear.
+        Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
+        metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;
+        auto physical=std::make_unique<Graph>(*env,metric);
+        if(cfg.guidance_distance_mix>0)graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
+        if(cfg.plain_score>0)score_graph_=std::move(physical);
     }
     const int n=env->num_of_agents;
     if(cfg.candidate_cache && cfg.push_price==0) {
@@ -2097,8 +2125,8 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                          env->curr_timestep,roots,roots/cfg.screen_keep,evaluated,cfg.screen_branches,cfg.continuations);
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;
-        std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d\n",
-                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,futures,triaged_);
+        std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d early_root=%d\n",
+                     env->curr_timestep,moves,selected.score,(unsigned long long)expanded,futures,triaged_,int(selected.early_moves));
     }
 }
 }
