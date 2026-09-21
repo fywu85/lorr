@@ -14,12 +14,13 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,872 | 3,172 | +22.1% | 500 / 535ms | 579MB |
+| 16 physical cores / 32 workers | 3,877 | 3,172 | +22.2% | 484 / 526ms | 559MB |
 
-The current goal is4,000 tasks. The latest32-worker record improves3,857 by
-15tasks using a0.5 normalized directional-cost blend in the horizon cutoff,
-at scale1.25. Across planner seeds0/3/4, the change yields-2/+60/+15tasks (+0.64% aggregate).
-This small development sample is not independent-input validation.
+The current goal is4,000 tasks. The latest32-worker record adds five tasks over
+3,872 by averaging18 futures per finalist instead of14, with the same steady-state
+K16,320 and slightly different startup work (7,968). Other settings stay fixed,
+including the directional horizon cutoff. This small selected-seed gain needs
+replication. Independent replay verified the complete run.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and

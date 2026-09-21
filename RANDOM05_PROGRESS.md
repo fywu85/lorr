@@ -30,17 +30,19 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 22:49 UTC.
+Updated: 2026-09-20 23:58 UTC.
 
-**Best single run on the archived input: 3,872 tasks on32 workers /16 physical cores**,
-or **+22.1% versus matched NMS32=3,172**. Source
+**Best single run on the archived input: 3,877 tasks on 32 workers / 16 physical cores**,
+or **+22.2% versus matched NMS32=3,172**. Source
 [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf), planner seed4,
-firstK8000 thenK16320/B14/s2/q4/G4/E8/P8. The declared horizon trick uses
+firstK7968 thenK16320/B18/s2/q4/G4/E8/P8. The declared horizon trick uses
 scale1.25 and a0.5 blend of normalized directional remaining cost.
-Mean500ms, maximum535ms, RSS579MB; all2,000steps valid and independently replayed.
-This is15tasks above3,857 on one selected seed; replication is pending.
-The4,000 target remains128tasks away.
-[Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json).
+Mean484ms, maximum526ms, RSS559MB; all2,000steps valid and independently replayed.
+This selected run is five tasks above3,872. It reallocates the same steady-state
+work to18 futures per finalist and fewer initial candidates; startup work changes
+slightly to fit whole groups. No replicated gain is established.
+The4,000 target remains123tasks away.
+[Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json).
 
 The previous3,852 record used scale1.5. A new diagnostic build reproduces its
 entire trajectory while recording exact pre-decision snapshots. Four of that
@@ -293,6 +295,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T20:47:29.818820+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | Without horizon cutoff: firstK4608 thenK5760/B12, screen2/keep4, generations4/E8/P8, seed3; **trick** guidance only | 3503 | 4 / 4 / EPYC 9354 | 2914 NMS4 | +20.2% | [full run](random05/results/staged-no-horizon-split-full-v65/four-k5760-b12-first4608-seed3-no-horizon/summary.json) |
 | 2026-09-20T22:04:50.502045+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25; `--trick RANDOM-05` | 3857 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +21.6% | [Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json) |
 | 2026-09-20T22:49:18.963497+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3872 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.1% | [Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json) |
+| 2026-09-20T23:58:38.632599+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3877 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.2% | [Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1578,3 +1581,19 @@ input/binary hashes and allocation are linked in the audits.
   work accounting, worker determinism and replay regressions pass20.30s.
   Seven full strict cases compare off/one-root controls and4/16/32finalists
   with32/64/128branches, including a half-original-score blend. No gain yet.
+
+- New selected strict record: **3,877**, source233f5bf/build-v69, B18 atK16320
+  andfirst7968, seed4. Mean484.147ms/max526.147ms/RSS545736KiB. Independent
+  action/task replay passed. This is only+5 versus3,872; no mean gain is claimed.
+  Max completed-order latency1966steps;131initial orders unfinished,94unopened.
+  B22/B26 at similar fixed work lose (3,732/3,705); fixed-root counterparts
+  still run. [Replay](random05/results/branch-allocation-split-full-v69/replay-3877.json).
+
+- The nested-worker legacy-forecast control exactly reproduces3,752 in all
+  six trajectory fields. The more faithful strict K64/depth8 forecast completes
+ 3,785, below3,872; K96/depth6 fails the deadline. The two heavier5s diagnostic
+  cases are still running. Optional forecast reranking remains disabled.
+- Ten predeclared source69 runs compare B14/B18 on planner seeds5–8, plus B18
+  on previously measured seeds0/3. These are RNG-seed comparisons on the same
+  archived development input; no new task/start inputs or held-out data are used.
+  All77frontier rows and updated waiting metrics passed the source/full-run audit.

@@ -924,3 +924,15 @@ One finalist, or blend1, must preserve the original trajectory and all persisten
 state. Parent history keeps its original ordering with the chosen root first.
 Concurrent component/closed-loop reranking is rejected to keep the comparison
 interpretable. No change to default behavior or deadline handling is intended.
+
+
+## Replicate the18-future record and sample additional planner seeds
+
+The first fixed-work B18 run completes3,877, five above B14's3,872 on seed4,
+with independent replay and strict timing. B22/B26 at fixed work lose. This
+small selected gain is not a demonstrated mean improvement. Predeclare paired
+B14/B18 runs on additional planner RNG seeds5/6/7/8, plus B18 on previously
+measured seeds0/3. Inputs, horizon and all other settings stay frozen; these
+are planner randomness comparisons, not new or held-out task/start inputs.
+Retain all outcomes, update the selected best if justified, and report paired
+means separately. The user's success criterion allows a selected planner seed.

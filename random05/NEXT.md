@@ -2,7 +2,7 @@
 
 Updated2026-09-20 23:57UTC. Goal ACTIVE: at least4,000 full2,000-step combined
 completions, then independent fresh-input validation of the selected improvement.
-Current best3,872; goal not achieved. Continue rather than stopping at a plan.
+Current best3,877; goal not achieved. Continue rather than stopping at a plan.
 
 ## Scope and rules
 
@@ -115,3 +115,18 @@ Push works per-command (stale VSCode helper):
 env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper=
 -c 'credential.helper=!gh auth git-credential' push origin main
 Only commit our paths with git commit --only ... -- random05 RANDOM05_PROGRESS.md.
+
+
+## 00:04UTC update (2026-09-21)
+
+Source75 commite84533a pushed. Newverified record3877: source233f5bf/build-v69,
+branch-allocation-split-full-v69/B18fixedwork, first7968/K16320, seed4.
+Finished2026-09-20T23:58:38.632599+00:00, mean484.147/max526.147ms,
+RSS545736KiB. Full replay passed; bestmanifests/RESULTS/progress/waiting updated.
+77frontier rows verified. Maxcompletedwait1966;initial unfinished131/unopened94.
+B18fixedroots=3837; B22/B26fixedwork=3732/3705. Largerfixedroots stillpending.
+Tennewpairedplannerseedjobs8900925..34 in branch-seeds-split-full-v69:
+B18seeds0/3 and B14/B18eachseeds5/6/7/8. Strictfull. Notfreshinputvalidation.
+Faithful legacy3752control exactsixfields; smallerK64=3785,K96failedstrict.
+Twoheavierforecast5sdiagnosticsstillrunning. Newrecord archivepartialbatchclearly
+marked incomplete while remainingcases finish. Startup/rescorebothpending.
