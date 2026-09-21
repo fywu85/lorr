@@ -81,6 +81,17 @@ struct Greater {
         return a.id>b.id;
     }
 };
+// One agent's search inputs (start, chain, graph and configuration) stay fixed
+// within an island round. Reservations are the only changing input. Replaying
+// every queried Boolean constraint certifies the same complete A* execution,
+// including its tie choices and bounded failures; a legal path alone would not.
+struct SearchMemo {
+    struct Query {int time,from,to;bool allowed;};
+    std::vector<Query> queries;
+    std::vector<int> path;
+    uint64_t expanded=0;
+    bool valid=false,success=false;
+};
 struct Search {
     std::vector<float> costs;
     std::vector<int> parent;
@@ -89,7 +100,7 @@ struct Search {
     std::vector<const float*> heuristic_rows;
     std::vector<int> completion_hops;
     uint32_t epoch=0;
-    uint64_t expanded=0;
+    uint64_t expanded=0,saved=0,memo_hits=0,query_tests=0;
     // A four-way heap uses the same complete ordering as the binary reference.
     // Fewer levels trade a short contiguous sibling scan for dependent loads.
     void insert(Node node,bool four_way) {
@@ -125,7 +136,42 @@ struct Search {
         return node;
     }
     bool solve(const Graph& g,const Config& cfg,const Reservations& reserve,
-               const Chain* chain,int stage,int state,std::vector<int>& path) {
+               const Chain* chain,int stage,int state,std::vector<int>& path,SearchMemo* memo=nullptr) {
+        if(memo && memo->valid) {
+            bool identical=true;
+            for(const auto& query:memo->queries) {
+                ++query_tests;
+                if(reserve.allowed(query.time,query.from,query.to)!=query.allowed){identical=false;break;}
+            }
+            if(identical) {
+                ++memo_hits;saved+=memo->expanded;expanded+=memo->expanded;
+                if(memo->success)path=memo->path;
+                return memo->success;
+            }
+        }
+        const uint64_t before=expanded;
+        if(memo){memo->valid=true;memo->queries.clear();memo->path.clear();}
+        auto finish=[&](bool success) {
+            if(memo) {
+                memo->success=success;memo->expanded=expanded-before;
+                if(success && memo->valid)memo->path=path;
+            }
+            return success;
+        };
+        auto allowed=[&](int time,int from,int to) {
+            const bool answer=reserve.allowed(time,from,to);
+            if(memo && memo->valid) {
+                // Turning either way and waiting issue the same consecutive
+                // occupancy query; record it only once, without hashing.
+                const auto* last=memo->queries.empty()?nullptr:&memo->queries.back();
+                if(!last || last->time!=time || last->from!=from || last->to!=to) {
+                    if(memo->queries.size()>=size_t(cfg.window_query_cache)) {
+                        memo->valid=false;memo->queries.clear();
+                    } else memo->queries.push_back({time,from,to,answer});
+                }
+            }
+            return answer;
+        };
         const int stages=chain?int(chain->goals.size())+1:1,horizon=reserve.horizon;
         const size_t size=size_t(horizon+1)*stages*g.states;
         if(size>size_t(std::numeric_limits<int>::max()))throw std::runtime_error("window state index overflow");
@@ -166,20 +212,20 @@ struct Search {
             if(t==horizon) {
                 path.resize(horizon+1);int id=node.id;
                 for(int j=horizon;j>=0;--j){path[j]=id%g.states;id=parent[id];}
-                return true;
+                return finish(true);
             }
             const int cell=s/4,dir=s%4,forward=g.next[cell][dir];
             const std::array<int,4> options={forward<0?-1:forward*4+dir,cell*4+(dir+1)%4,cell*4+(dir+3)%4,s};
-            for(int next:options)if(next>=0 && reserve.allowed(t,cell,next/4)) {
+            for(int next:options)if(next>=0 && allowed(t,cell,next/4)) {
                 float cost=action_cost(g,cfg,s,next,chain && k<int(chain->goals.size())?chain->goals[k]:-1);
                 push(t+1,arrived(chain,k,next),next,node.g+cost,node.id);
             }
         }
         // A failed bounded repair preserves the entire previously legal plan.
-        return false;
+        return finish(false);
     }
 };
-struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0,skipped_sorts=0,cost_hits=0; };
+struct Island { Paths paths;Cost cost;uint64_t expansions=0,saved=0,memo_hits=0,query_tests=0;int accepted=0,skipped_sorts=0,cost_hits=0; };
 }
 
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
@@ -339,7 +385,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         }
     }
     std::vector<Island> islands(cfg.window_islands);
-    int best=0;uint64_t expanded=0;int accepted=0,skipped_sorts=0,cost_hits=0;
+    int best=0;uint64_t expanded=0,saved=0,memo_hits=0,query_tests=0;int accepted=0,skipped_sorts=0,cost_hits=0;
     // Optional fixed rounds share the best complete plan between islands.
     // Total repair attempts per island remain window_iterations, independent
     // of wall time and worker scheduling. One round is the original control.
@@ -359,7 +405,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             Search fresh_search;
             thread_local Search reused_search;
             Search& search=cfg.window_reuse?reused_search:fresh_search;
-            search.expanded=0;
+            search.expanded=search.saved=search.memo_hits=search.query_tests=0;
+            std::vector<SearchMemo> memo(cfg.window_query_cache?n:0);
             for(int a=0;a<n;++a)reserve.set(a,island.paths[a],true);
             std::vector<Cost> costs(n);
             for(int a=0;a<n;++a)costs[a]=agent_cost(a,island.paths[a]);
@@ -465,7 +512,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 if(cfg.window_repair_orders==1) {
                     for(;planned<count;++planned) {
                         int a=group[planned];
-                        if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned]))break;
+                        if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned],cfg.window_query_cache?&memo[a]:nullptr))break;
                         reserve.set(a,replacement[planned],true);
                         const bool unchanged=cfg.window_cost_reuse && replacement[planned]==old[planned];
                         // Assignment, start stage and scoring weights are fixed
@@ -486,7 +533,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         int built=0;
                         for(;built<count;++built) {
                             const int k=order?count-1-built:built,a=group[k];
-                            if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k]))break;
+                            if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr))break;
                             reserve.set(a,candidate[k],true);
                         }
                         Cost candidate_cost;
@@ -550,11 +597,13 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             }
             if(cfg.window_temperature>0)island.paths=std::move(incumbent_paths);
             island.cost=total_cost(island.paths);island.expansions=search.expanded;
+            island.saved=search.saved;island.memo_hits=search.memo_hits;island.query_tests=search.query_tests;
         } catch(...) {errors[index]=std::current_exception();}
     }
     best=0;
     for(int k=0;k<cfg.window_islands;++k) {
         if(errors[k])std::rethrow_exception(errors[k]);
+        saved+=islands[k].saved;memo_hits+=islands[k].memo_hits;query_tests+=islands[k].query_tests;
         expanded+=islands[k].expansions;accepted+=islands[k].accepted;skipped_sorts+=islands[k].skipped_sorts;cost_hits+=islands[k].cost_hits;
         if(better(islands[k].cost,islands[best].cost))best=k;
     }
@@ -601,8 +650,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d cost_reused=%d expansions=%llu cost=%.3f base=%.3f\n",
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d cost_reused=%d expansions=%llu search_reused=%llu expansions_saved=%llu query_tests=%llu cost=%.3f base=%.3f\n",
             env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),accepted,skipped_sorts,cost_hits,
-            (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
+            (unsigned long long)expanded,(unsigned long long)memo_hits,(unsigned long long)saved,
+            (unsigned long long)query_tests,islands[best].cost.total,base_cost.total);
 }
 }

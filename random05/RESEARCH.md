@@ -1445,3 +1445,24 @@ horizon triage and optional matching-horizon costs. Counters are carried through
 checkpoints and shadow forecasts; no future tasks or elapsed compute time enter
 them. Default0 preserves the previous estimator. This remains an explicit
 known-horizon trick, and full comparisons must determine whether it helps.
+
+
+## Exact repeated path searches (source152 experiment)
+
+RANDOM-03 profiles show about100million A* expansions per step, while unchanged
+path-cost reuse saves little runtime. `R05_WINDOW_QUERY_CACHE=N` (default0,
+capacity1..4096) retains one bounded search per agent and island round. Each
+entry records every distinct consecutive reservation query and its Boolean
+answer, along with the full resulting path or bounded failure. Before reuse,
+every answer is checked against current reservations. Starts, task chains,
+configuration and graph are fixed within the round, so identical query answers
+imply identical deterministic A* execution, including its tie choices. The cache
+is discarded on capacity overflow and at every sharing round and timestep.
+Merely finding the old path legal would not justify this exact substitution.
+
+This is a general implementation optimization. Declared repair attempts and
+logical expansions stay unchanged; profiling separates saved physical expansions
+and query checks. Regression covers exhaustive single-agent finite-horizon
+optima, repeated waypoints, changed reservations, cache overflow, bounded failure,
+multiple repair orders, parallel execution and checkpoint replay. Complete-run
+trajectory identity and runtime measurements are required before enabling it.

@@ -195,6 +195,9 @@ Config Config::environment(const SharedEnvironment& env) {
     if(cost_reuse<0 || cost_reuse>1 || (cost_reuse && !c.window))
         throw std::invalid_argument("window cost reuse needs an enabled window and a boolean value");
     c.window_cost_reuse=cost_reuse;
+    c.window_query_cache=integer("R05_WINDOW_QUERY_CACHE",0);
+    if(c.window_query_cache<0 || c.window_query_cache>4096 || (c.window_query_cache && !c.window))
+        throw std::invalid_argument("window query cache needs an enabled window and capacity0..4096");
     c.window_completion_price=real("R05_WINDOW_COMPLETION_PRICE",0);
     if(!std::isfinite(c.window_completion_price) || c.window_completion_price<0 || c.window_completion_price>8 ||
        (c.window_completion_price>0 && (!c.window || !random_trick)))

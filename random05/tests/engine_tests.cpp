@@ -2097,6 +2097,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"unchanged-path cost reuse accepted a non-boolean value");
     }
+    {
+        Setting cache("R05_WINDOW_QUERY_CACHE","256"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_query_cache==256,"general query cache was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"query cache accepted a missing window");
+    }
+    for(const char* value:{"-1","4097"}) {
+        Setting cache("R05_WINDOW_QUERY_CACHE",value);auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"query cache accepted an invalid capacity");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2176,12 +2189,12 @@ void window_local_goal_optimum() {
     // Exhaustive finite-horizon dynamic programming independently checks the
     // bounded A* repair and complete-plan evaluator on a changing goal chain.
     // Both repeated goals and direction-dependent local prices are exercised.
-    for(float completion_price:{0.f,.125f,.5f,2.f})for(bool nearby:{false,true}) {
+    for(int memo_capacity:{0,512})for(float completion_price:{0.f,.125f,.5f,2.f})for(bool nearby:{false,true}) {
     auto e=environment(5,5,1);e.trick_instance="RANDOM-03";
     e.curr_states[0].orientation=0;
     Task task;task.task_id=1;task.locations=nearby?std::vector<int>{4,4,2}:std::vector<int>{24,24,2};e.task_pool[1]=task;
     Config cfg;cfg.guidance="lanes";cfg.goal_local_radius=3;cfg.goal_local_mix=.75;
-    cfg.window=12;cfg.window_keep=3;cfg.window_islands=1;cfg.window_iterations=1;
+    cfg.window=12;cfg.window_keep=3;cfg.window_islands=1;cfg.window_iterations=4;cfg.window_query_cache=memo_capacity;
     cfg.window_neighborhood=1;cfg.window_expansions=50000;cfg.threads=1;
     cfg.wait_cost=2;cfg.turn_cost=2;cfg.cost_cache=true;cfg.window_completion_price=completion_price;
     Engine engine(cfg);engine.initialize(&e);std::vector<Action> actions;std::vector<int> schedule;
@@ -2346,6 +2359,18 @@ void window_reproducibility() {
         require(original_buffers==simulate(cfg,8,5,5,true),"unchanged-path cost reuse changed groups/orders/workers/checkpoints");
         cfg.window_cost_reuse=false;
     }
+    // Capacity1 forces overflow on almost every nontrivial search. Larger
+    // capacities retain both successful paths and bounded failures. Compare
+    // whole trajectories as surrounding reservations and task chains change.
+    for(int orders:{1,2})for(int capacity:{1,256,4096}) {
+        cfg.window_repair_orders=orders;cfg.window_group_mix=orders==2;
+        cfg.window_query_cache=0;cfg.threads=1;
+        const auto without_memo=simulate(cfg,8,5,5,true);
+        cfg.window_query_cache=capacity;cfg.threads=3;
+        require(without_memo==simulate(cfg,8),"query replay changed repairs across capacities, orders or workers");
+        require(without_memo==simulate(cfg,8,5,5,true),"query replay changed checkpoint restoration");
+    }
+    cfg.window_query_cache=0;
     cfg.window_completion_price=.5;cfg.window_neighborhood=5;
     cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
     const auto completion_weighted=simulate(cfg,8,5,5,true);
@@ -2354,8 +2379,12 @@ void window_reproducibility() {
     require(completion_weighted==simulate(cfg,8,5,5,true),"completion weighting changed after checkpoint restoration");
     cfg.window_cost_reuse=true;
     require(completion_weighted==simulate(cfg,8,5,5,true),"unchanged-path cost reuse changed completion weighting");
-    cfg.window_expansions=1;cfg.window_iterations=12;
+    cfg.window_query_cache=512;
+    require(completion_weighted==simulate(cfg,8,5,5,true),"query replay changed completion-weighted repairs");
+    cfg.window_query_cache=0;cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
+    cfg.window_query_cache=512;
+    require(failed_repairs==simulate(cfg,8,5,5,true),"cached bounded failures changed fallback paths");
     cfg.window_iterations=0;
     require(failed_repairs==simulate(cfg,8),"failed window repairs damaged the complete fallback plan");
 }
