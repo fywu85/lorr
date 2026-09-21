@@ -81,6 +81,24 @@ void local_goal_guidance() {
 
 }
 
+void idle_displacement_price() {
+    // An opened order needs to pass an idle robot. Charging that idle robot's
+    // nonexistent goal loss makes the parent wait; the free-idle variant yields.
+    for(bool free_idle:{false,true}) {
+        auto env=environment(3,3,2);env.curr_states[0].location=3;env.curr_states[1].location=4;
+        env.curr_states[0].orientation=env.curr_states[1].orientation=0;
+        Task task;task.task_id=1;task.locations={5,5};task.idx_next_loc=1;task.agent_assigned=0;
+        env.task_pool[1]=task;env.curr_task_schedule={1,-1};
+        Config cfg;cfg.futures=1;cfg.depth=1;cfg.loops=false;cfg.wait_cost=.5;
+        cfg.push_price=2;cfg.fast_push=true;cfg.push_idle_free=free_idle;
+        Engine engine(cfg);engine.initialize(&env);std::vector<Action> actions;std::vector<int> schedule;
+        engine.compute(&env,actions,schedule);
+        const auto pending=engine.checkpoint(env).at("pending").get<std::vector<int>>();
+        require(schedule[0]==1,"displacement policy reassigned an opened order");
+        require(pending[0]==(free_idle?4:3),"idle displacement pricing ignored the declared goal loss");
+    }
+}
+
 void scheduling() {
     auto e=environment(3,3,2);Config cfg;Engine engine(cfg);engine.initialize(&e);
     Task t;t.task_id=7;t.locations={8,0};t.idx_next_loc=1;t.agent_assigned=0;e.task_pool[7]=t;
@@ -1600,6 +1618,27 @@ void window_reproducibility() {
 }
 
 int main() {
+    idle_displacement_price();
+    for(float price:{.25f,1.f,2.f}) {
+        Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
+        cfg.push_price=price;cfg.threads=1;cfg.scratch_reuse=true;cfg.kinematic_mask=true;
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.fast_push=true;
+        require(reference==simulate(cfg,12),"cached displacement costs changed legacy decisions");
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;
+        cfg.shared_rankings_mb=16;cfg.shared_orders=true;cfg.threads=2;
+        require(reference==simulate(cfg,12),"shared cached displacement costs or workers changed legacy decisions");
+    }
+    for(int flags=1;flags<=3;++flags) {
+        Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
+        cfg.push_price=.5;cfg.fast_push=true;cfg.push_idle_free=flags&1;cfg.push_exclude_swap=flags&2;
+        cfg.active_task_cap=18;cfg.threads=1;
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+        cfg.shared_rankings_mb=16;cfg.shared_orders=true;cfg.threads=2;
+        require(reference==simulate(cfg,12),"corrected displacement costs changed with caches or workers");
+    }
+
     local_goal_guidance();
     {
         Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";

@@ -57,11 +57,11 @@ void Engine::prepare_shared_rankings(int timestep) {
     // Shadow planners share Chain objects. Keep this prototype off in nested
     // forecasts and virtual matching, where independently built tables would
     // otherwise need a different ownership protocol. Dynamic push costs bypass.
-    if(!cfg.shared_rankings_mb || cfg.push_price>0 || cfg.rollout_match || cfg.replan_roots || cfg.operation_depth)return;
+    if(!cfg.shared_rankings_mb || (cfg.push_price>0 && !cfg.fast_push) || cfg.rollout_match || cfg.replan_roots || cfg.operation_depth)return;
     const auto& g=*graph;
     // Biased routing needs actual scores. Keep its full exact entries even if
     // the order-only optimization is requested for a shared preset.
-    const bool orders_only=cfg.shared_orders && cfg.move_bias==0;
+    const bool orders_only=cfg.shared_orders && cfg.move_bias==0 && cfg.push_price==0;
     const bool changed=cfg.wait_cost!=shared_wait_cost_ || cfg.intent_rotation!=shared_intent_rotation_ ||
                        cfg.prospective_wait!=shared_prospective_wait_ || orders_only!=shared_orders_only_;
     auto clear_tables=[&]() {

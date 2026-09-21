@@ -43,7 +43,8 @@ int search_roots(const Config& cfg,int futures) {
 }
 struct PolicyScratch {
     std::vector<int> p,moving,owner,chosen,reserve,idle_heading,forced_heading,candidate_count,order,prepared,intent;
-    std::vector<float> base_cost,priorities;
+    std::vector<float> base_cost,priorities,push_best,push_second;
+    std::vector<int> push_destination;
     std::vector<const Chain*> active_chain;
     std::vector<const float*> cost_table;
     std::vector<std::array<MoveCandidate,5>> candidates;
@@ -208,6 +209,11 @@ Config Config::environment(const SharedEnvironment& env) {
     c.mutation_radius=integer("R05_MUTATION_RADIUS",0);
     if(c.mutation_radius<0)throw std::invalid_argument("mutation radius must be nonnegative");
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
+    c.fast_push=integer("R05_FAST_PUSH",0);
+    c.push_idle_free=integer("R05_PUSH_IDLE_FREE",0);
+    c.push_exclude_swap=integer("R05_PUSH_EXCLUDE_SWAP",0);
+    if((c.push_idle_free || c.push_exclude_swap) && (!c.fast_push || c.push_price<=0))
+        throw std::invalid_argument("corrected displacement prices require positive push cost and its cached policy");
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
@@ -854,7 +860,7 @@ void Engine::initialize(SharedEnvironment* env) {
     // Publish immutable shared graph storage only after preprocessing is done.
     graph=std::move(prepared_graph);
     const int n=env->num_of_agents;
-    if(cfg.candidate_cache && cfg.push_price==0) {
+    if(cfg.candidate_cache && (cfg.push_price==0 || cfg.fast_push)) {
         // Bounded per-worker storage is independent of map area/task history.
         // Allocation uses no task/start information and belongs to preprocessing.
         candidate_rankings_.resize(cfg.threads);
@@ -1230,13 +1236,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     // Push loss depends on another robot's state, so that optional policy uses
     // the original path. All other ranking inputs are captured below; priorities
     // and collision resolution are always recomputed for the current future.
-    CachedRanking* cache=cfg.candidate_cache && cfg.push_price==0 && !candidate_rankings_.empty()
+    CachedRanking* cache=cfg.candidate_cache && (cfg.push_price==0 || cfg.fast_push) && !candidate_rankings_.empty()
         && ranking_epoch_<=std::numeric_limits<uint32_t>::max()
         ?candidate_rankings_[omp_get_thread_num()].data():nullptr;
     const int cache_shift=64-__builtin_ctz(unsigned(cfg.cache_slots));
-    const bool shared=cfg.shared_rankings_mb>0 && cfg.push_price==0 && !cfg.rollout_match && !cfg.replan_roots;
+    const bool shared=cfg.shared_rankings_mb>0 && (cfg.push_price==0 || cfg.fast_push) && !cfg.rollout_match && !cfg.replan_roots;
     for(int i=0;i<n;++i) {
-        if(shared && cfg.shared_orders && cfg.move_bias==0 && active_chain[i] && !active_chain[i]->order_rankings.empty()) {
+        if(shared && cfg.shared_orders && cfg.move_bias==0 && cfg.push_price==0 && active_chain[i] && !active_chain[i]->order_rankings.empty()) {
             const auto& entry=active_chain[i]->order_rankings[(size_t(f.stage[i])*g.cells+p[i])*8+f.dir[i]*2+moving[i]];
             ranking_hits[i]=2;idle_heading[i]=entry.idle_heading();base_cost[i]=entry.base_cost;
             candidate_count[i]=entry.count();
@@ -1343,7 +1349,7 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             int v=g.next[p[i]][d];if(v<0 || (!cfg.intent_rotation && !allowed(i,d)))continue;
             float score=cost(i,v,d)+forward_weight(i,p[i],d);
             int b=owner[v];
-            if(cfg.push_price>0 && b>=0 && b!=i) {
+            if(cfg.push_price>0 && !cfg.fast_push && b>=0 && b!=i) {
                 float loss=INF;
                 for(int q=0;q<4;++q)if(g.next[v][q]>=0 && allowed(b,q))
                     loss=std::min(loss,cost(b,g.next[v][q],q)+forward_weight(b,v,q)-base_cost[b]);
@@ -1380,6 +1386,45 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             auto& entry=*ranking_slots[i];entry.count=count;
             if(cfg.kinematic_mask)entry.kinematic_mask=kinematic_masks[i];
             entry.save(cand);
+        }
+    }
+    if(cfg.push_price>0 && cfg.fast_push) {
+        // Cache only static candidate scores. Compute each occupant's cheapest
+        // forced exit once, before adding any interaction-dependent prices.
+        // Two exits suffice when the requesting parent's cell is forbidden.
+        auto& first=scratch.push_best;first.assign(n,INF);
+        auto& second=scratch.push_second;second.assign(n,INF);
+        auto& destination=scratch.push_destination;destination.assign(n,-1);
+        for(int b=0;b<n;++b)for(int k=0;k<candidate_count[b];++k) {
+            const auto& move=candidates[b][k];
+            if(move.v==p[b] || !allowed(b,move.d))continue;
+            const float loss=move.score-base_cost[b];
+            if(loss<first[b]) {second[b]=first[b];first[b]=loss;destination[b]=move.v;}
+            else if(loss<second[b])second[b]=loss;
+        }
+        for(int a=0;a<n;++a) {
+            auto& moves=candidates[a];const int count=candidate_count[a];
+            for(int k=0;k<count;++k)if(moves[k].v!=p[a]) {
+                const int b=owner[moves[k].v];
+                if(b<0 || b==a || (cfg.push_idle_free && !active_chain[b]))continue;
+                const float loss=cfg.push_exclude_swap && destination[b]==p[a]?second[b]:first[b];
+                moves[k].score+=cfg.push_price*std::max(0.f,std::min(100.f,loss));
+            }
+            // Start with the same directional order as the uncached policy,
+            // so newly equal priced scores retain its original tie-breaking.
+            std::sort(moves.begin(),moves.begin()+count,[&](const auto& x,const auto& y) {
+                const int dx=x.v==p[a]?4:x.d,dy=y.v==p[a]?4:y.d;return dx<dy;
+            });
+            for(int k=1;k<count;++k) {
+                const auto move=moves[k];int j=k;
+                while(j>0 && move.score<moves[j-1].score){moves[j]=moves[j-1];--j;}
+                moves[j]=move;
+            }
+            if(cfg.kinematic_mask) {
+                unsigned int mask=0;
+                for(int k=0;k<count;++k)if(moves[k].v==p[a] || allowed(a,moves[k].d))mask|=1u<<k;
+                kinematic_masks[a]=mask;
+            }
         }
     }
     // Explore nearby routing alternatives as well as priority orders. The

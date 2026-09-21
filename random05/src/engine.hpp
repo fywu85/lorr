@@ -81,6 +81,7 @@ struct Config {
     int blocker_mutation_size=0, blocker_mutation_period=2, blocker_mutation_edges=1;
     float elite_decision_distance=0, priority_remaining_weight=0;
     int priority_remaining_steps=0, early_root_period=0;
+    bool fast_push=false, push_idle_free=false, push_exclude_swap=false;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
     int move_bias_mode=0;
