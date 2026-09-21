@@ -1,6 +1,6 @@
 # PILOT: independent combined planner and scheduler
 
-[Competition dashboard](../PILOT_PROGRESS.md),
+[Active five-instance goal](ACTIVE_GOAL.md), [competition dashboard](../PILOT_PROGRESS.md),
 [RANDOM-05 results](RESULTS.md), [all five RANDOM cases](RANDOM_PROGRESS.md),
 and the [completed 4,000-task audit](results/completion-audit-4000/audit.json).
 
@@ -12,7 +12,7 @@ outside the current development scope.
 
 [Throughput history](../RANDOM05_PROGRESS.md) records each verified best with a
 UTC timestamp, source commit, settings, and linked benchmark evidence. Published
-scores, local NMS references, single-seed bests, and replicated results are
+scores, matched local max(NMS, Kitty Knight), single-seed bests, and replicated results are
 identified separately. Exact frontier cases are saved in `best.json`,
 `best-four-cores.json`, and `best-32-workers.json`. The history audit is run with
 `python3 random05/tools/audit_progress.py`; it requires the frozen local builds

@@ -1,7 +1,8 @@
 # RANDOM campaign continuation
 
 Updated 2026-09-21 21:02 UTC. The user resumed full-speed optimization across all five
-RANDOM instances. The active reporting rule is **always max(NMS, Kitty Knight)**
+RANDOM instances. [ACTIVE_GOAL.md](ACTIVE_GOAL.md) is the current full objective;
+RANDOM-03/04 are retained milestones, not the entire scope. The active reporting rule is **always max(NMS, Kitty Knight)**
 per instance. Keep matched local and published comparisons separate.
 RANDOM-05 4,000 is independently achieved; further optimization remains active.
 Non-random maps are deferred. The family name is PILOT.
@@ -102,8 +103,8 @@ proposing them again. Current record improvements are small; do not claim a
 breakthrough from selected-seed changes.
 
 All prior audit sessions are drained except any newly launched tool calls.
-Latest successful push before this checkpoint wasbe489655; update from git
-once this reporting/evidence commit is pushed. Continue authorized work.
+Latest successful push is2fea39064c7433bf56e7fb1a9e396c3e1d7ab40c. The user
+reconfirmed all-five optimization and updating the working goal after that push. Continue authorized work.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
