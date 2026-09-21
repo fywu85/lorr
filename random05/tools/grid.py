@@ -14,7 +14,7 @@ def write(p,x):
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
 def validate_r05_case(case):
-    if case.get('team') == 'nms':
+    if case.get('team') in ('nms','kk'):
         return
     requested = {key for key in case.get('env', {}) if key.startswith('R05_')}
     if not requested:
@@ -62,12 +62,17 @@ def submit(a):
     spec={'kind':a.kind,'created_utc':now(),'repo':str(ROOT),
           'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
           'hosts':a.hosts,'required_cpu_model':a.cpu_model,'interprocedural_optimization':a.ipo}
-    if a.kind=='nms4-build':
-        shutil.copytree(ROOT/'nms',out/'source',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
-        p=out/'source/Solution/settings.hpp';body=p.read_text();assert body.count('THREADS = 32;')==1
-        p.write_text(body.replace('THREADS = 32;','THREADS = 4;'))
-        spec['change']='Only Solution/settings.hpp THREADS=32 changed to THREADS=4'
-        cache=(ROOT/'nms/build/CMakeCache.txt').read_text().splitlines()
+    if a.kind in ('nms4-build','kk-build'):
+        reference_team='nms' if a.kind=='nms4-build' else 'kk'
+        shutil.copytree(ROOT/reference_team,out/'source',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
+        if a.kind=='nms4-build':
+            p=out/'source/Solution/settings.hpp';body=p.read_text();assert body.count('THREADS = 32;')==1
+            p.write_text(body.replace('THREADS = 32;','THREADS = 4;'))
+            spec['change']='Only Solution/settings.hpp THREADS=32 changed to THREADS=4'
+        else:
+            spec['change']='Unmodified selected Kitty Knight combined submission; preserve original source and build flags'
+            spec['reference_source']=str((ROOT/reference_team).resolve().relative_to(ROOT))
+        cache=(ROOT/reference_team/'build/CMakeCache.txt').read_text().splitlines()
         spec['reference_flags']={k:next(l.split('=',1)[1] for l in cache if l.startswith(k+':STRING=')) for k in ['CMAKE_CXX_FLAGS','CMAKE_EXE_LINKER_FLAGS']}
         spec['source_hashes']={str(p.relative_to(out/'source')):sha(p) for p in (out/'source').rglob('*') if p.is_file()}
         physical=4;slots=8
@@ -99,10 +104,16 @@ def submit(a):
             data=json.loads(Path(c['input']).read_text())
             for key in ['mapFile','agentFile','taskFile']:
                 p=Path(c['input']).parent/data[key];c['input_hashes'][str(p.resolve())]=sha(p)
-            if c.get('team')=='nms':
-                shutil.copytree(ROOT/'nms',work/'cwd',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
+            if c.get('team') in ('nms','kk'):
+                runtime_source=ROOT/'nms' if c['team']=='nms' else binary.parent.parent/'source'
+                if c['team']=='kk':
+                    frozen=json.loads((binary.parent.parent/'spec.json').read_text())
+                    assert frozen['kind']=='kk-build' and frozen['change'].startswith('Unmodified'), 'KK needs its frozen original build'
+                    c['runtime_source']=str(runtime_source)
+                    c['runtime_hashes']=frozen['source_hashes']
+                shutil.copytree(runtime_source,work/'cwd',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
             else:(work/'cwd').mkdir()
-    memory_per_slot=2 if a.kind in ('build','nms4-build') else max(1,(max(32,sum(c.get('memory_gib',4 if c.get('team')=='nms' else 2) for c in spec['cases']))+slots-1)//slots)
+    memory_per_slot=2 if a.kind in ('build','nms4-build','kk-build') else max(1,(max(32,sum(c.get('memory_gib',4 if c.get('team') in ('nms','kk') else 2) for c in spec['cases']))+slots-1)//slots)
     spec.update(physical=physical,slots=slots,exclusive=False,memory_per_slot_gib=memory_per_slot)
     helper=Path(__file__).with_name('result_horizon.py')
     shutil.copy2(helper,out/'result_horizon.py')
@@ -147,7 +158,7 @@ def execute(a):
             write(out/'summary.json',rows)
         print('R05_RESOURCE_REJECTED '+json.dumps(problem),file=sys.stderr)
         return 1
-    if spec['kind'] in ('build','nms4-build'):
+    if spec['kind'] in ('build','nms4-build','kk-build'):
         for rel,digest in spec['source_hashes'].items():assert sha(out/'source'/rel)==digest,rel
         env=dict(os.environ);env['PATH']=str(ROOT/'env/bin')+':'+env['PATH']
         commands=[[str(ROOT/'env/bin/cmake'),'-S',str(out/'source'),'-B',str(out/'build'),
@@ -156,7 +167,7 @@ def execute(a):
                   [str(ROOT/'env/bin/ctest'),'--test-dir',str(out/'build'),'--output-on-failure']]
         if spec['kind']=='build' and spec.get('interprocedural_optimization'):
             commands[0]+=['-DPILOT_IPO=ON']
-        if spec['kind']=='nms4-build':
+        if spec['kind'] in ('nms4-build','kk-build'):
             commands[0]+=['-D'+k+'='+v for k,v in spec['reference_flags'].items()]
             commands[1]+=['--target','lifelong'];commands=commands[:2]
         result=0
@@ -165,7 +176,7 @@ def execute(a):
                 result=subprocess.run(cmd,env=env,stdout=f,stderr=subprocess.STDOUT).returncode
                 if result:break
         record={'exit':result,'finished_utc':now()}
-        binary=out/('build/lifelong' if spec['kind']=='nms4-build' else 'build/lifelong_random05')
+        binary=out/('build/lifelong' if spec['kind'] in ('nms4-build','kk-build') else 'build/lifelong_random05')
         if binary.exists():record['binary_sha256']=sha(binary)
         write(out/'completion.json',record);return result
     groups=resources['logical_cpus_by_physical_core'];start=0;cases=[]
@@ -175,6 +186,7 @@ def execute(a):
     def run(item):
         c,cpus=item;work=out/c['name'];assert sha(work/'lifelong')==c['binary_sha256']
         for p,digest in c['input_hashes'].items():assert sha(Path(p))==digest,p
+        for p,digest in c.get('runtime_hashes',{}).items():assert sha(work/'cwd'/p)==digest,p
         env={k:v for k,v in os.environ.items() if not k.startswith(('R05_','CGAR_','WPPL_'))}
         env.update({k:str(v) for k,v in c.get('env',{}).items()})
         env['OMP_NUM_THREADS']=str(len(cpus));env['OMP_DYNAMIC']='FALSE'
@@ -215,7 +227,7 @@ def execute(a):
     return 0 if all(r['valid'] for r in results) else 1
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['submit','execute'])
-    p.add_argument('--kind',choices=['build','nms4-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
+    p.add_argument('--kind',choices=['build','nms4-build','kk-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
     p.add_argument('--hosts',help='GRID host patterns separated by | for matched-hardware validation')
     p.add_argument('--cpu-model',help='Exact CPU model required at job startup')
     p.add_argument('--ipo',action='store_true',help='Enable portable whole-program optimization for a PILOT build')
