@@ -778,16 +778,18 @@ void Engine::initialize(SharedEnvironment* env) {
     // Nested teams are bounded below by outer_workers*inner_workers<=threads.
     // They permit a few more faithful forecasts to use the existing allocation.
     if(cfg.replan_roots && cfg.replan_threads>1)omp_set_max_active_levels(2);
-    rng_.seed(cfg.seed);graph=std::make_shared<Graph>(*env,cfg);
+    rng_.seed(cfg.seed);auto prepared_graph=std::make_shared<Graph>(*env,cfg);
     if(cfg.plain_score>0 || cfg.guidance_distance_mix>0) {
         // Physical action costs may inform only evaluation, or optionally the
         // policy's distance potential. Both are built before any tasks appear.
         Config metric=cfg;metric.guidance="none";metric.turn_cost=2;metric.loops=false;
         metric.flow_flips=0;metric.flow_reverse=false;metric.guidance_distance_mix=0;
         auto physical=std::make_unique<Graph>(*env,metric);
-        if(cfg.guidance_distance_mix>0)graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
+        if(cfg.guidance_distance_mix>0)prepared_graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
         if(cfg.plain_score>0)score_graph_=std::move(physical);
     }
+    // Publish immutable shared graph storage only after preprocessing is done.
+    graph=std::move(prepared_graph);
     const int n=env->num_of_agents;
     if(cfg.candidate_cache && cfg.push_price==0) {
         // Bounded per-worker storage is independent of map area/task history.

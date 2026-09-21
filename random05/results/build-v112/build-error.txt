@@ -1,0 +1,9 @@
+      |     ^~~~
+/shared/share_mala/fw2449/lorr2024/runs/random05/build-v112/source/src/engine.cpp: In member function 'void r05::Engine::initialize(SharedEnvironment*)':
+/shared/share_mala/fw2449/lorr2024/runs/random05/build-v112/source/src/engine.cpp:788:62: error: passing 'std::__shared_ptr_access<const r05::Graph, __gnu_cxx::_S_atomic, false, false>::element_type' {aka 'const r05::Graph'} as 'this' argument discards qualifiers [-fpermissive]
+  788 |         if(cfg.guidance_distance_mix>0)graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/shared/share_mala/fw2449/lorr2024/runs/random05/build-v112/source/src/engine.cpp:707:6: note:   in call to 'void r05::Graph::blend_distances(const r05::Graph&, float, int)'
+  707 | void Graph::blend_distances(const Graph& other,float fraction,int threads) {
+      |      ^~~~~
+[ 19%] Building CXX object CMakeFiles/random05_engine.dir/src/replan.cpp.o
