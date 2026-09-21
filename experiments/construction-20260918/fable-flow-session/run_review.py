@@ -31,6 +31,7 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--prompt", type=Path, default=HERE / "prompt.md")
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--source-spec", type=Path, default=HERE / "source-spec.json", help="Explicit source context list for this consultation")
     p.add_argument("--max-budget-usd", type=float, default=12.0, help="Per-turn CLI spending cap, fixed when preparing the payload")
     args = p.parse_args()
     if not 0 < args.max_budget_usd < float("inf"):
@@ -49,7 +50,7 @@ def main():
         if not args.execute:
             out.mkdir(parents=True, exist_ok=False)
             records, snapshots = [], {}
-            for spec in json.loads((HERE / "source-spec.json").read_text()):
+            for spec in json.loads(args.source_spec.read_text()):
                 path = spec["path"]
                 data = (ROOT / path).read_text()
                 if "ranges" in spec:
@@ -130,7 +131,7 @@ def main():
         write(out / "status.json", {"state":"complete" if success else "failed", "completed_utc":meta["completed_utc"], "session_id":session["session_id"]})
         # Preserve only visible findings here. Raw session/protocol data remains in ignored runs/.
         (out / "emitted-findings.md").write_text("\n\n".join(visible).rstrip() + "\n")
-        if session["initialized"]:
+        if success:
             for path, data in json.loads((out / "snapshots.json").read_text()).items():
                 target = SESSION / "source-cache" / path
                 target.parent.mkdir(parents=True, exist_ok=True)

@@ -1,39 +1,38 @@
 # CGAR next experiments across ten instances
 
-Updated 2026-09-21T09:08:18.069431+00:00. Targets remain +10% over max(published NMS,KK)
-on RANDOM01-05 and a stretch +5% elsewhere. Throughput primary, fairness secondary.
-Selected-seed maxima qualify. Preserve general mechanisms and explicit instance
-tricks separately; all selected profiles currently require `--trick INSTANCE`.
-Historical published targets are not matched local competitor runs.
+Updated 2026-09-21T10:14:13.450223+00:00
+Targets: +10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on the other
+five. Throughput first, fairness secondary. These are historical targets rather
+than matched competitor runs. Every selected profile requires --trick INSTANCE.
 
 | Instance | Selected full strict1s | Next work |
 |---|---:|---|
-|WAREHOUSE|155173|Preserve qualified eight-core profile; new5%target is a stretch.|
-|SORTATION|150894|Retain150894; runtime alternative150865has895ms max.|
-|CITY-01|8427|Transfer CITY02 pickup grouping and two allowed rematches in a2x2factor.|
-|CITY-02|16315|Lower lane penalties all lost; investigate assignment or route quality.|
-|GAME|24447|New margin goal met; lower lane penalties lose sharply.|
-|RANDOM-01|668|Replicate uniform-window668; explore forecast initialization.|
-|RANDOM-02|1215|Keep1215; turn40/wait20lose.|
-|RANDOM-03|1939|Keep1939history-off; horizon10/15/25factors pending.|
-|RANDOM-04|2023|Replicate2023common-future gain; longer/extra branches and chain composition.|
-|RANDOM-05|3065|Keep3065selected seed10; common-future factors pending.|
+| WAREHOUSE | 155173 | Preserve qualified eight-core profile; +5% remains a stretch. |
+| SORTATION | 150894 | Runtime alternative 150865 has more measured deadline headroom. |
+| CITY-01 | 8440 | Pickup grouping gain replicates; examine finite assignment restrictions. |
+| CITY-02 | 16315 | Budget2 gain replicates; lane penalty reductions lose. |
+| GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
+| RANDOM-01 | 693 | Retained-tail refresh replicates; annealed repair factors running. |
+| RANDOM-02 | 1215 | Delay bias and tail refresh lose; annealed repair factors running. |
+| RANDOM-03 | 1967 | Replicate delay3 improvement; annealing is tested separately. |
+| RANDOM-04 | 2059 | Global future H20 is best selected seed, H15 has better three-seed mean; crowded-window check running. |
+| RANDOM-05 | 3065 | Regional futures and startup lose; crowded-window check running. |
 
-The window layer is seeded by a valid CGAR plan and preserves real primary and
-support actions. Atomic group repairs, exact task-stage costs, independent random
-streams, serial/parallel identity and timeout failure are regression-tested.
-R01/R02/R03 now benefit on selected seeds; R01/R03 improve all three matched seeds.
-History-off helps R03. A remaining hypothesis is that truncating a retained prefix
-into waits makes it incomparable with a fully projected fresh seed. A separate
-optional tail refresh can test that; do not silently alter current frontiers.
+RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
+then a refreshed retained tail (+1.88%, all three positive). More attempts and
+larger groups lost; extreme work failed its deadline. RANDOM-03 delay selection
+adds 28 tasks at seed0; replication is pending. Annealed repair retains the best
+complete plan only after all declared attempts finish, with deadline exceptions.
 
-The common-future selector is general and defaultoff. It compares completed CGAR
-proposals under common future orders, keeps all protected paths, and finishes
-all declared evaluations. It does not reproduce PILOT's two-phase motion pipeline.
-R04's15action arm improves seed0while10action arms lose; replication is necessary.
-The independent PILOT tree, jobs, builds and held-out streams remain untouched.
+All regional-future arms lose on RANDOM04/05; keep them off. The global future
+selector changes no actions on RANDOM05. A true two-phase movement pipeline has
+not been transferred. Current window/future layers retain CGAR primary/recovery
+and protected actions; they are not renamed PILOT or NMS solvers.
 
-[Exact selected settings](selected-full-results.json), [history](BEST_HISTORY.md),
-[current jobs](ACTIVE_JOBS.json), [field negatives](field-options/first-results.json),
-[window replication](rolling-window/random03-three-seed-summary.json),
-[common-future design](common-futures/README.md).
+New matrix runs may explicitly spool logs under node-local /tmp and archive them
+after process exit, including failures. The frozen runner hash and sink mode are
+verified. This reduces exposure to shared-filesystem stalls while keeping strict
+entry deadlines and complete diagnostics; it does not erase earlier timeouts.
+
+[Frontier](selected-full-results.json), [history](BEST_HISTORY.md),
+[jobs](ACTIVE_JOBS.json), [PILOT transfers](pilot-transfer/NEXT_TRANSFER.md).

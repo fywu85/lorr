@@ -1,0 +1,139 @@
+{
+  "CGAR_TEMPORAL_CHAIN_THREADS": {
+    "chain_config": [],
+    "chain_samples": [],
+    "regional_peak_retention": [],
+    "regional_peaks": [],
+    "retarget_budget": 4,
+    "retarget_samples": [
+      {
+        "t": "0",
+        "task_budget": "4",
+        "repeated_moves": "0",
+        "max_task_moves": "0",
+        "tracked": "0"
+      },
+      {
+        "t": "200",
+        "task_budget": "4",
+        "repeated_moves": "1",
+        "max_task_moves": "2",
+        "tracked": "10"
+      },
+      {
+        "t": "400",
+        "task_budget": "4",
+        "repeated_moves": "3",
+        "max_task_moves": "2",
+        "tracked": "5"
+      }
+    ],
+    "game_fleet": [],
+    "game_fleet_audit": null,
+    "rank_squared": [],
+    "after_turn_promises": [],
+    "priority_portfolio": [],
+    "regional_budget": [
+      {
+        "step": "200",
+        "candidate_limit": "4000000",
+        "limited_batches": "0",
+        "max_batch_candidates": "410630"
+      },
+      {
+        "step": "400",
+        "candidate_limit": "4000000",
+        "limited_batches": "0",
+        "max_batch_candidates": "227637"
+      },
+      {
+        "step": "600",
+        "candidate_limit": "4000000",
+        "limited_batches": "0",
+        "max_batch_candidates": "959629"
+      }
+    ],
+    "regional": [
+      {
+        "step": "200",
+        "regions": "4",
+        "rounds": "2",
+        "threads": "4",
+        "temperature_ppm": "1000",
+        "active": "318",
+        "candidates": "1970000",
+        "repairs": "200000",
+        "attempts_accepted": "85964",
+        "kept": "2",
+        "reverted": "6",
+        "frozen_crossers": "78",
+        "score_before": "897628.000",
+        "score_after": "898411.000"
+      },
+      {
+        "step": "400",
+        "regions": "4",
+        "rounds": "2",
+        "threads": "4",
+        "temperature_ppm": "1000",
+        "active": "293",
+        "candidates": "1122907",
+        "repairs": "200000",
+        "attempts_accepted": "89386",
+        "kept": "0",
+        "reverted": "8",
+        "frozen_crossers": "79",
+        "score_before": "815155.000",
+        "score_after": "815155.000"
+      },
+      {
+        "step": "600",
+        "regions": "4",
+        "rounds": "2",
+        "threads": "4",
+        "temperature_ppm": "1000",
+        "active": "315",
+        "candidates": "2409537",
+        "repairs": "200000",
+        "attempts_accepted": "87754",
+        "kept": "1",
+        "reverted": "7",
+        "frozen_crossers": "58",
+        "score_before": "798639.000",
+        "score_after": "798667.000"
+      }
+    ],
+    "timing": [
+      {
+        "step": "200",
+        "candidates": "0.000733",
+        "global": "0.135122",
+        "regions": "0.025624",
+        "validation": "0.112957",
+        "exact_metric": "199",
+        "fallback_metric": "1",
+        "distance_scale": "50"
+      },
+      {
+        "step": "400",
+        "candidates": "0.000616",
+        "global": "0.156067",
+        "regions": "0.018056",
+        "validation": "0.129297",
+        "exact_metric": "199",
+        "fallback_metric": "1",
+        "distance_scale": "50"
+      },
+      {
+        "step": "600",
+        "candidates": "0.000317",
+        "global": "0.114269",
+        "regions": "0.028679",
+        "validation": "0.133079",
+        "exact_metric": "199",
+        "fallback_metric": "1",
+        "distance_scale": "50"
+      }
+    ]
+  }
+}

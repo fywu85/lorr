@@ -1,0 +1,6 @@
+{
+  "checked_utc": "2026-09-21T09:58:57.396464+00:00",
+  "kind": "analysis assertion, both solver runs completed",
+  "reason": "First dispatch is planner tick0 but simulator actualSchedule stamps it1, after its first action. Confirmed CompetitionSystem.cpp run loop update_tasks receives simulator.get_curr_timestep(). Correct independent assignment audit from stamp0to1; no solver rerun.",
+  "original_job": 8902530
+}

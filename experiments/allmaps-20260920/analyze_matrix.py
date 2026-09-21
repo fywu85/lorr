@@ -125,6 +125,8 @@ def main():
         assert meta['environment']==dict(case['environment'],CGAR_SEED=str(case['seed'])) and meta['build_provenance']==build
         assert meta['binary_sha256']==build['binary_sha256'] and meta['max_process_memory_bytes']==32000000000
         assert meta['plan_time_limit_ms']==spec['time_limit_ms'] and meta['preprocess_time_limit_ms']==30000
+        assert meta.get('log_spool','archive')==('node_local_tmp' if spec.get('local_log_spool',False) else 'archive')
+        if spec.get('benchmark_runner_sha256'):assert meta['benchmark_runner_sha256']==spec['benchmark_runner_sha256']
         assert meta['trick']==a.trick and meta['trick_argv']==(['--trick',a.trick] if a.trick else []) and meta['experiment_track']==track
         cpu=meta['cpu_resources'];assert cpu['effective_cpu_quota'] is None
         assert cpu['cpu_model']=='AMD EPYC 9354 32-Core Processor'
@@ -201,6 +203,24 @@ def main():
                     counts=[int(s['repeated_moves']) for s in retarget_samples];assert counts==sorted(counts)
                 else:
                     assert not retarget_config and not retarget_samples
+                matching=int(case['environment'].get('CGAR_TRICK_UNOPENED_MATCH','0')) or int(case['environment'].get('CGAR_REASSIGN_MATCH','0'))
+                match_config=[fields(l) for l in logs if l.startswith('[cgar-unopened-match] enabled=')]
+                if matching:
+                    assert len(match_config)==1
+                    cfg=match_config[0];width=int(case['environment'].get('CGAR_REASSIGN_MATCH_GROUP_SIZE','32'));groups=int(case['environment'].get('CGAR_REASSIGN_MATCH_GROUPS','4'))
+                    assert 2<=width<=256 and int(cfg['group_size'])==width and int(cfg['groups'])==groups
+                    assert cfg['enabled']=='1' and cfg['resident_only']=='1' and cfg['extra_tables']=='0'
+                    assert int(cfg['node_limit'])==2048 and int(cfg['task_budget'])==retarget_budget and int(cfg['cooldown'])==20
+                    match_samples=[fields(l) for l in logs if l.startswith('[cgar-unopened-match] t=')]
+                    assert match_samples
+                    for x in match_samples:
+                        passes=int(x['passes']);formed=int(x['groups']);selected=int(x['selected'])
+                        assert x['enabled']=='1' and 0<=formed<=passes*groups
+                        assert 0<=selected<=formed*width and 0<=int(x['nodes'])<=passes*groups*2048
+                        assert 0<=int(x['matrix_entries'])<=selected*width and 0<=int(x['moved'])<=selected
+                        assert 0<=int(x['accepted_cycles'])<=int(x['cycles']) and 0<=int(x['full_groups'])<=formed
+                    row['unopened_matching']=dict(configuration=cfg,last_sample=match_samples[-1])
+                else:assert not match_config
                 if int(case['environment'].get('CGAR_TRICK_HORIZON_MANHATTAN','0')):
                     known=int(case['environment']['CGAR_TRICK_KNOWN_HORIZON'])
                     assert known==row['steps'], 'known horizon must be the predeclared full run length'
@@ -218,7 +238,25 @@ def main():
                 if startup:
                     assert startup_config==[dict(enabled='1',initial_metric='oriented_current',quotas='unchanged',fixed_work='1',timeout_is_failure='1')]
                     assert len(startup_samples)==1
-                    x=startup_samples[0];assert int(x['step'])==0 and int(x['robots'])==row['robots']
+                    x=startup_samples[0];assert int(x['step'])==0 and 0<int(x['robots'])<=row['robots']
+                    capacity=[dict(item.split('=',1) for item in l.split()[2:]) for l in logs if l.startswith('[cgar] capacity_mode ')]
+                    eligible_initial=row['robots']
+                    if capacity:
+                        assert len(capacity)==1
+                        c=capacity[0];assert int(c['active'])+int(c['parked'])==row['robots']
+                        assert int(c['active'])<=int(c['capacity']) and c['core_tasks_only']=='1'
+                        eligible_initial=int(c['active'])
+                    # These archived runs start with no held tasks and enough
+                    # eligible work. Cross-check candidate count against actual
+                    # initial positive assignments, including parked exclusions.
+                    # Simulator commits that first dispatch at timestamp1 after
+                    # executing the action proposed at planner tick0.
+                    actual=read(raw/label/(name+'.json'))
+                    initial_assigned=sum(any(int(v.split(':')[0])==1 and int(v.split(':')[1])>=0
+                        for v in schedule.split(',') if v) for schedule in actual['actualSchedule'])
+                    del actual
+                    assert int(x['robots'])==eligible_initial==initial_assigned
+                    row['startup_initial_assignment_check']=dict(eligible=eligible_initial,assigned=initial_assigned,capacity_mode=bool(capacity),simulator_assignment_timestamp=1)
                     assert int(x['full_quota'])==int(case['environment'].get('CGAR_PICKUP_FULL_ROBOTS','0'))
                     assert int(x['node_limit'])==int(case['environment'].get('CGAR_PICKUP_FLOW_NODES','8192'))
                     assert int(x['forward_base'])>=1 and int(x['turn'])>=1
@@ -260,6 +298,8 @@ def main():
                     progress_ties=int(case['environment'].get('CGAR_WINDOW_PROGRESS_TIES','0'));assert int(cfg.get('progress_ties','0'))==progress_ties
                     assert int(cfg.get('protected_prefix','0'))==int(case['environment'].get('CGAR_WINDOW_PROTECTED_PREFIX','0'))
                     history_rollout=int(case['environment'].get('CGAR_WINDOW_HISTORY_ROLLOUT','0'));assert int(cfg.get('history_rollout','0'))==history_rollout
+                    delay_samples=int(case['environment'].get('CGAR_WINDOW_DELAY_SAMPLES','0'));assert int(cfg.get('delay_samples','0'))==delay_samples and 0<=delay_samples<=16
+                    temperature=int(case['environment'].get('CGAR_WINDOW_TEMPERATURE','0'));assert int(cfg.get('temperature','0'))==temperature and 0<=temperature<=65536
                     assert cfg['seed']=='cgar' and cfg['protected'] in ('immutable','immutable_first_action') and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -276,6 +316,16 @@ def main():
                         if history_rollout:assert 0<=int(x.get('total_history_batches','0'))<=expected_history*int(x['step'])
                         else:assert int(x.get('total_history_batches','0'))==0
                         assert int(x['calls'])==int(x['step']) and int(x['total_attempts'])==attempts*int(x['step'])
+                        draws=int(x.get('delay_draws','0'));replacements=int(x.get('delay_replacements','0'))
+                        total_draws=int(x.get('total_delay_draws','0'));total_replacements=int(x.get('total_delay_replacements','0'))
+                        max_draws=(int(cfg['iterations'])//2)*int(cfg['workers'])*delay_samples
+                        assert 0<=replacements<=draws<=max_draws
+                        assert 0<=total_replacements<=total_draws<=max_draws*int(x['step'])
+                        uphill=int(x.get('uphill_accepted','0'));updates=int(x.get('incumbent_updates','0'));restores=int(x.get('incumbent_restores','0'))
+                        assert 0<=uphill<=int(x['accepted']) and 0<=updates<=int(x['improved']) and 0<=restores<=int(cfg['workers'])
+                        assert 0<=int(x.get('total_uphill_accepted','0'))<=int(x['total_attempts'])
+                        assert 0<=int(x.get('total_incumbent_updates','0'))<=int(x['total_attempts'])
+                        if not temperature:assert uphill==updates==restores==int(x.get('total_uphill_accepted','0'))==int(x.get('total_incumbent_updates','0'))==0
                         assert 0<=int(x['improved'])<=int(x['accepted'])<=attempts
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
                         assert int(x['capped'])+int(x['failed'])<=int(x['searches'])
@@ -287,8 +337,8 @@ def main():
                         assert 0<=int(x['selected_worker'])<int(cfg['workers'])
                         assert 0<=int(x['changed_first'])<=row['robots']-int(x['protected'])
                         assert 0<=int(x['retained'])<=row['robots'] and 0<=int(x['history_resets'])<=row['robots']
-                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets'):
-                        counts=[int(x[counter]) for x in window_samples];assert counts==sorted(counts)
+                    for counter in ('total_attempts','total_changed_first','total_retained','total_history_resets','total_delay_draws','total_delay_replacements','total_uphill_accepted','total_incumbent_updates'):
+                        counts=[int(x.get(counter,'0')) for x in window_samples];assert counts==sorted(counts)
                     row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
                 else:
                     assert not window_config and not window_samples
@@ -430,7 +480,7 @@ def main():
                 source_and_test_files=len(source),binary_sha256=build['binary_sha256'],rows=rows,
                 valid_runs=sum(r['valid'] for r in rows),failed_runs=sum(not r['valid'] for r in rows),
                 disjoint_physical_core_groups=True,no_cpu_quota=True,decision_limit_ms=spec['time_limit_ms'],strict_one_second_limit=spec['time_limit_ms']==1000,
-                competition_budget_confirmed=False,random05_excluded='RANDOM-05' not in spec['instances'],independent_random05_solver_untouched=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,
+                competition_budget_confirmed=False,random05_excluded='RANDOM-05' not in spec['instances'],independent_random05_solver_untouched=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,local_log_spool=spec.get('local_log_spool',False),benchmark_runner_sha256=spec.get('benchmark_runner_sha256'),
                 scope='Archived inputs and declared planner seeds, frozen factor profiles. Throughput comparisons require full horizons. Shared hosts and32decimalGB; exact enforced entry limit is recorded above. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim.')
     write(out/'verification.json',report);write(out/'fairness.json',fairness);write(out/'regional-work.json',work)
     for name in ['completion.json','submission.json',tag+'-request.json',tag+'-submission.json']:

@@ -1,0 +1,9 @@
+trick_current_control-s10-r0 RANDOM-05 3065
+trick_oriented_startup-s10-r0 RANDOM-05 2901
+ANALYSIS_COMPLETE 2 valid cases; failures 0
+Traceback (most recent call last):
+  File "/shared/share_mala/fw2449/lorr2024/runs/cgar-random05-pickup-startup-full-v1-20260921/factor-analysis-support/analyze_matrix.py", line 445, in <module>
+    if __name__=='__main__':main()
+  File "/shared/share_mala/fw2449/lorr2024/runs/cgar-random05-pickup-startup-full-v1-20260921/factor-analysis-support/analyze_matrix.py", line 221, in main
+    x=startup_samples[0];assert int(x['step'])==0 and int(x['robots'])==row['robots']
+AssertionError

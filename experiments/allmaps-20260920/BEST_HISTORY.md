@@ -657,3 +657,19 @@ Previous selected maximum 8427. Full 3000 steps; 4 physical cores, strict 1,000 
 | 693 | 2026-09-21T09:21:08.553734+00:00 | [4154b482](https://github.com/fywu85/lorr/commit/4154b48222ab272f5209b4fa8160cf80182fe612) | trick_refresh_keep10, seed 4, `--trick RANDOM-01` | [verification](results/random01-history-rollout-full-v1/verification.json) |
 
 Previous selected maximum 682. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 488.91 ms. Complete strict1s selected-seed improvement. CITY01pickup groups and RANDOM01refreshed keep10 are experimental compositions; replication pending. Deeper common futures lose on RANDOM04 and change no actions on RANDOM05.
+
+## RANDOM-03 1967 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1967 | 2026-09-21T10:06:08.090418+00:00 | [c302547d](https://github.com/fywu85/lorr/commit/c302547df0651a2d662b269aa6d9a668addc14f2) | trick_delay3, seed 0, `--trick RANDOM-03` | [verification](results/random03-window-delay-full-v1/verification.json) |
+
+Previous selected maximum 1939. Full 800 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 611.68 ms. Delay-directed repair reaches1967onRANDOM03seed0, strict1s4cores. Replication pending; off by default. AllR01completearms and R02delay1/7 lose; R02delay3timeoutexcluded.
+
+## RANDOM-03 1982 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1982 | 2026-09-21T10:15:32.778021+00:00 | [c302547d](https://github.com/fywu85/lorr/commit/c302547df0651a2d662b269aa6d9a668addc14f2) | trick_delay3, seed 2, `--trick RANDOM-03` | [verification](results/random03-window-delay-seeds-full-v1/verification.json) |
+
+Previous selected maximum 1967. Full 800 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 662.92 ms. Delay3windowrepair replicates on seeds0/2/4:1967/1982/1948vs1939/1900/1870,+3.293%aggregate,allpositive. Newselectedmaximum1982seed2. Local-log-spool controls repeat full earlier trajectories.

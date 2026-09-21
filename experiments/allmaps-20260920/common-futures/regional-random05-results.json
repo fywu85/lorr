@@ -1,0 +1,37 @@
+{
+  "checked_utc": "2026-09-21T10:14:13.450223+00:00",
+  "source_commit": "697f423ec030e384860224998b2c7261adeb8b7a",
+  "report": "experiments/allmaps-20260920/results/random05-regional-futures-full-v1/verification.json",
+  "rows": [
+    {
+      "variant": "trick_current_control",
+      "seed": 10,
+      "tasks": 3065,
+      "max_entry_seconds": 0.691143785,
+      "changed_first": null
+    },
+    {
+      "variant": "trick_regional_h10",
+      "seed": 10,
+      "tasks": 2937,
+      "max_entry_seconds": 0.771874065,
+      "changed_first": "22233"
+    },
+    {
+      "variant": "trick_regional_h15",
+      "seed": 10,
+      "tasks": 2978,
+      "max_entry_seconds": 0.765161359,
+      "changed_first": "26486"
+    },
+    {
+      "variant": "trick_regional_h20",
+      "seed": 10,
+      "tasks": 2971,
+      "max_entry_seconds": 0.777301967,
+      "changed_first": "28667"
+    }
+  ],
+  "decision": "Regional roots now change actions, but all H10/15/20arms lose2937/2978/2971vs3065. KeepcommonfuturesOFFonRANDOM05. Control completes below692ms and repeatscanonicalwholetrajectory.",
+  "control_trajectory_identical": true
+}

@@ -1,0 +1,122 @@
+{
+  "checked_utc": "2026-09-21T10:08:13.699998+00:00",
+  "comparisons": {
+    "RANDOM-01": {
+      "report": "results/random01-window-delay-full-v1/verification.json",
+      "source_commit": "c302547df0651a2d662b269aa6d9a668addc14f2",
+      "rows": [
+        {
+          "variant": "trick_current_control",
+          "seed": 4,
+          "tasks": 693,
+          "valid": true,
+          "max_entry_seconds": 0.480613051,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay1",
+          "seed": 4,
+          "tasks": 688,
+          "valid": true,
+          "max_entry_seconds": 0.440101185,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay3",
+          "seed": 4,
+          "tasks": 679,
+          "valid": true,
+          "max_entry_seconds": 0.57618551,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay7",
+          "seed": 4,
+          "tasks": 673,
+          "valid": true,
+          "max_entry_seconds": 0.727072126,
+          "failure_lines": null
+        }
+      ]
+    },
+    "RANDOM-02": {
+      "report": "results/random02-window-delay-full-v1/verification.json",
+      "source_commit": "c302547df0651a2d662b269aa6d9a668addc14f2",
+      "rows": [
+        {
+          "variant": "trick_current_control",
+          "seed": 2,
+          "tasks": 1215,
+          "valid": true,
+          "max_entry_seconds": 0.344662933,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay1",
+          "seed": 2,
+          "tasks": 1182,
+          "valid": true,
+          "max_entry_seconds": 0.361510138,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay3",
+          "seed": 2,
+          "tasks": null,
+          "valid": false,
+          "max_entry_seconds": null,
+          "failure_lines": [
+            "CGAR_TIMEOUT timestep=199 elapsed_ms=2632.087 stage=planning_complete"
+          ]
+        },
+        {
+          "variant": "trick_delay7",
+          "seed": 2,
+          "tasks": 1187,
+          "valid": true,
+          "max_entry_seconds": 0.394094177,
+          "failure_lines": null
+        }
+      ]
+    },
+    "RANDOM-03": {
+      "report": "results/random03-window-delay-full-v1/verification.json",
+      "source_commit": "c302547df0651a2d662b269aa6d9a668addc14f2",
+      "rows": [
+        {
+          "variant": "trick_current_control",
+          "seed": 0,
+          "tasks": 1939,
+          "valid": true,
+          "max_entry_seconds": 0.582276696,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay1",
+          "seed": 0,
+          "tasks": 1864,
+          "valid": true,
+          "max_entry_seconds": 0.62438017,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay3",
+          "seed": 0,
+          "tasks": 1967,
+          "valid": true,
+          "max_entry_seconds": 0.611675768,
+          "failure_lines": null
+        },
+        {
+          "variant": "trick_delay7",
+          "seed": 0,
+          "tasks": 1644,
+          "valid": true,
+          "max_entry_seconds": 0.633293996,
+          "failure_lines": null
+        }
+      ]
+    }
+  },
+  "decision": "Delay3improves RANDOM03seed0to1967(+1.44%); replicate seeds2/4. AllcompleteR01/R02arms lose. R02delay3timeoutstep199is excluded and gets a local-log-spool rerun with matchedcontrol."
+}

@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T09:26:25.686106+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T10:20:23.337736+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -17,7 +17,7 @@ use eight physical cores; the other selected rows use four.
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
 | RANDOM-01 | 693 | 688 | 757 | 64 | 4 | 488.91 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
-| RANDOM-03 | 1,939 | 2,334 | 2,568 | 629 | 0 | 586.09 |
+| RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
 | RANDOM-04 | 2,059 | 2,547 | 2,802 | 743 | 0 | 283.86 |
 | RANDOM-05 | 3,065 | 3,050 | 3,355 | 290 | 10 | 709.47 |
 
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-092625.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-102023.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -171,3 +171,53 @@ failed first build is preserved and was never benchmarked. Full RANDOM04/05
 matrices now compare complete regional checkpoints, because the original global
 roots never displaced RANDOM05's stronger regional incumbent.
 [Qualification](experiments/allmaps-20260920/common-futures/regional-build-v2/verification.json).
+
+Delay-directed window repair raises RANDOM-03 to **1,967**, compared with an
+identical 1,939 control trajectory. The selected run peaks at 611.68 ms on four
+physical cores; replication on seeds 2/4 is running. The same option loses on
+RANDOM-01 and RANDOM-02. [Declared comparisons](experiments/allmaps-20260920/window-delay/first-results.json).
+
+The RANDOM-02 delay3 run first failed its deadline after the diagnostic sample at
+step 199. Node-local log spooling then reproduced its 1,215 control and completed
+the candidate at 1,164. The candidate is rejected; the earlier failure is retained.
+Shared-filesystem logging is a plausible source of that timing spike, not proven.
+[Full rerun and log preservation](experiments/allmaps-20260920/local-log-spool/full-run-results.json).
+
+Regional-checkpoint future selection changes actions on RANDOM-05, but all three
+horizons lose: 2,937 / 2,978 / 2,971 versus the reproduced 3,065 control. RANDOM-04
+regional roots also lose to its 2,059 global-root selection. Keep these extensions
+off in both selected profiles. The oriented-startup factor loses on all five
+RANDOM cases. Two startup verifier errors were fixed and preserved; the final
+audit reconciles 769 initial assignments, excluding 31 parked robots.
+[Regional RANDOM-05 results](experiments/allmaps-20260920/common-futures/regional-random05-results.json).
+
+A separate default-off annealed window now passes the full regression suite,
+including 12,000 serial/parallel actions, complete rollback, best-plan restoration
+and explicit failure after a deadline despite finding a useful plan. It completes
+all declared work before returning. Full sparse-map factors are running, plus a
+bounded check of the existing window on crowded maps.
+[Annealed design and qualification](experiments/allmaps-20260920/window-anneal/README.md).
+
+The RANDOM-03 delay3 gain now replicates on all three seeds: **1,967 / 1,982 /
+1,948 versus 1,939 / 1,900 / 1,870**, a **3.29%** aggregate gain. Both new controls
+repeat their earlier complete trajectories. The selected best becomes **1,982**,
+seed 2, with a maximum 662.92 ms. [Replication](experiments/allmaps-20260920/window-delay/random03-three-seed-summary.json).
+
+All first annealing factors lose on RANDOM01/02/03. One follow-up checks its
+interaction with long retained/refreshed history on RANDOM-03, as used by the
+PILOT reference. The crowded window variants lose on RANDOM-04 (1,913 / 1,734 /
+1,944 versus 1,999 without futures); RANDOM-05 is still pending. Wider complete
+assignment groups are the next general scheduling experiment, with unchanged
+primary/started-task protections and total participant quota.
+[Assignment experiment](experiments/allmaps-20260920/matching-width/README.md).
+
+The long-history/annealing interaction also loses on RANDOM-03. Wider matching
+leaves the complete RANDOM-01 trajectory unchanged and loses on RANDOM-02/03;
+CITY comparisons are pending. RANDOM-05's refreshed window reaches 2,921 from
+its 2,844 chain-score-off control, still below the selected chain-scored 3,065.
+This motivates testing whether the window can improve the stronger chain-scored
+seed with consistent oracle units. No composition has yet been implemented.
+
+Fable was retried in the same authorized Claude Code session after 16 hours, but
+still reports exhausted usage credits. No review findings were produced.
+[Consultation receipt](experiments/allmaps-20260920/fable-followup/turn47/metadata.json).
