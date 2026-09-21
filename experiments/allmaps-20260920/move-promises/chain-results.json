@@ -1,0 +1,43 @@
+{
+  "checked_utc": "2026-09-21T12:21:40.759210+00:00",
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_control",
+      "seed": 0,
+      "tasks": 2239,
+      "valid": true,
+      "max_entry_seconds": 0.265975883,
+      "peak_rss_bytes": 117399552,
+      "trajectory_sha256": "8532660aa886cb6846465e6abe47f39308c4690a7ac990769d5f4b7342d9ebe0",
+      "evidence": "results/random04-move-chain-full-v5/verification.json",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_chain_terminal",
+      "seed": 0,
+      "tasks": 2231,
+      "valid": true,
+      "max_entry_seconds": 0.267638917,
+      "peak_rss_bytes": 160620544,
+      "trajectory_sha256": "c4122f60351b2dbd90cff51b0c0f44faaf36700eb0cb0cdd1f361255f1e2adb0",
+      "evidence": "results/random04-move-chain-full-v5/verification.json",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_chain_paid",
+      "seed": 0,
+      "tasks": 2044,
+      "valid": true,
+      "max_entry_seconds": 0.255208841,
+      "peak_rss_bytes": 159858688,
+      "trajectory_sha256": "b9d5aa105a9e024b8973af1713c8be1c4d3dcc3cccf9509ad174c8e7a6822ebe",
+      "evidence": "results/random04-move-chain-full-v5/verification.json",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d"
+    }
+  ],
+  "control_trajectory_exact": true,
+  "decision": "Terminal and paid chain objectives still lose when composed with mode2 motion commitments on RANDOM04:2239control,2231terminal,2044paid. No promotion."
+}

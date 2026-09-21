@@ -1,6 +1,6 @@
 # CGAR next experiments across ten instances
 
-Updated 2026-09-21T11:33 UTC
+Updated 2026-09-21T12:21:40.759210+00:00
 Targets: +10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on the other
 five. Throughput first, fairness secondary. These are historical targets rather
 than matched competitor runs. Every selected profile requires --trick INSTANCE.
@@ -15,8 +15,8 @@ than matched competitor runs. Every selected profile requires --trick INSTANCE.
 | RANDOM-01 | 693 | Retained-tail refresh replicates; exact assignment and turn/wait price interactions lose. |
 | RANDOM-02 | 1215 | Delay, tail refresh, annealing, wider matching and exact chain assignment lose. |
 | RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment and turn/wait price interactions lose. |
-| RANDOM-04 | 2059 | H20 is best selected seed, H15 has better mean; task caps lose. One-action motion commitments running. |
-| RANDOM-05 | 3130 | Task cap700 gains65 on seed10; seeds0/2 replication and nearby caps queued. One-action motion commitments running on prior uncapped control. |
+| RANDOM-04 | 2298 | Forward/wait commitments improve all three seeds (+16.32% aggregate); H20 retained. Test a bounded congestion objective next. |
+| RANDOM-05 | 3571 | Margin target met on seed10 with forward/wait commitments and no new task cap; seeds0/2 replication and cap composition running. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
 then a refreshed retained tail (+1.88%, all three positive). More attempts and
@@ -24,9 +24,9 @@ larger groups lost; extreme work failed its deadline. RANDOM-03 delay selection
 gains28/82/78 tasks on seeds0/2/4 (+3.29%aggregate). Annealed repair retains the best
 complete plan only after all declared attempts finish, with deadline exceptions.
 
-All regional-future arms lose on RANDOM04/05; keep them off. The global future
-selector changes no actions on RANDOM05. A true two-phase movement pipeline has
-not been transferred. Current window/future layers retain CGAR primary/recovery
+All regional-future arms lose on RANDOM04/05; keep them off. The earlier global future
+selector changed no actions on RANDOM05 before movement commitments. One-action motion commitments now transfer the next occupied cell; a full two-phase
+pipeline has not been substituted for CGAR. Current window/future layers retain CGAR primary/recovery
 and protected actions; they are not renamed PILOT or NMS solvers.
 
 New matrix runs may explicitly spool logs under node-local /tmp and archive them

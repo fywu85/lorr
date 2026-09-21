@@ -1,0 +1,123 @@
+{
+  "checked_utc": "2026-09-21T12:21:40.759210+00:00",
+  "rows": [
+    {
+      "variant": "trick_current_control",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 3065,
+      "valid": true,
+      "max_entry_seconds": 0.694834118,
+      "peak_rss_bytes": 240545792,
+      "trajectory_sha256": "30882b2d79ace1475b6a292f3c90799cf13113fb9b7cf8b51b64cd0b3d8cbdb9",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "selected_control_trajectory_exact": true,
+      "movement_percent": {
+        "fw": 28.8198125,
+        "cr": 19.8851875,
+        "ccr": 13.144125,
+        "wait": 38.150875
+      }
+    },
+    {
+      "variant": "trick_task_cap700",
+      "instance": "RANDOM-05",
+      "seed": 10,
+      "tasks": 3130,
+      "valid": true,
+      "max_entry_seconds": 0.695175945,
+      "peak_rss_bytes": 239919104,
+      "trajectory_sha256": "5f5019fad736c211168d7d4ed28a089cd8164344bc0f98a761d745d91d2b809e",
+      "evidence": "results/random05-task-cap-full-v1/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "random_task_cap": {
+        "configuration": {
+          "limit": "700",
+          "selection": "dynamic_new_only",
+          "held": "protected",
+          "started": "protected",
+          "idle_motion": "cgar",
+          "no_task_drop": "1",
+          "fairness": "secondary",
+          "fixed_work": "1"
+        },
+        "last_sample": {
+          "t": "1800",
+          "limit": "700",
+          "checks": "1801",
+          "admitted": "3509",
+          "idle_robot_steps": "180567",
+          "peak_active": "700"
+        },
+        "independent_audit": {
+          "steps": 2000,
+          "peak_active": 700,
+          "min_active": 647,
+          "mean_active": 696.5335,
+          "distinct_admitted_tasks": 3776,
+          "idle_robot_steps": 206933,
+          "held_tasks_preserved": true,
+          "assignment_timestamp": "planner_tick_plus_one",
+          "initial_held_tasks": 0
+        }
+      },
+      "movement_percent": {
+        "fw": 27.9011875,
+        "cr": 20.2320625,
+        "ccr": 13.1899375,
+        "wait": 38.6768125
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 3043,
+      "valid": true,
+      "max_entry_seconds": 0.720118655,
+      "peak_rss_bytes": 239849472,
+      "trajectory_sha256": "7393751e8e4028d6aa3df694f81c1709dcd8d4916bcd7471389324500af0a554",
+      "evidence": "results/random05-task-cap-replicate-full-v2/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_task_cap700",
+      "seed": 0,
+      "tasks": 3033,
+      "valid": true,
+      "max_entry_seconds": 0.704837936,
+      "peak_rss_bytes": 239517696,
+      "trajectory_sha256": "bde87a5c83e25c72bf3163722ed4d6bbcf33f6410117c83e678d8d6435f6c80f",
+      "evidence": "results/random05-task-cap-replicate-full-v2/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 3015,
+      "valid": true,
+      "max_entry_seconds": 0.692038041,
+      "peak_rss_bytes": 239665152,
+      "trajectory_sha256": "dc2d637f011de56e3576b8be1135e02e095c44b24b0dd5a03435307619323b7c",
+      "evidence": "results/random05-task-cap-replicate-full-v2/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7"
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "trick_task_cap700",
+      "seed": 2,
+      "tasks": 3063,
+      "valid": true,
+      "max_entry_seconds": 0.724129679,
+      "peak_rss_bytes": 239263744,
+      "trajectory_sha256": "ba423f88bc10eedc4b7fd9f6bdcf18d8dea2f8999d3c83f4dd0015ccd86f02b4",
+      "evidence": "results/random05-task-cap-replicate-full-v2/verification.json",
+      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7"
+    }
+  ],
+  "aggregate_gain_percent": 1.129014578537757,
+  "decision": "Cap700: seed0 3043->3033; seed2 3015->3063; seed10 3065->3130. Small aggregate gain, one loss. Superseded by movement commitments; no broad consistent-gain claim."
+}

@@ -1,27 +1,7 @@
 {
-  "updated_utc": "2026-09-21T11:54:26.754951+00:00",
+  "updated_utc": "2026-09-21T12:21:52.879061+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
-    {
-      "suffix": "random04-move-promises-full-v1",
-      "matrix_job": 8902767,
-      "verifier_job": 8902768,
-      "physical_cores_per_case": 4,
-      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random04-move-promises-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random04-move-promises-full-v1"
-    },
-    {
-      "suffix": "random05-move-promises-full-v1",
-      "matrix_job": 8902769,
-      "verifier_job": 8902770,
-      "physical_cores_per_case": 4,
-      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-move-promises-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-move-promises-full-v1"
-    },
     {
       "suffix": "warehouse-matching-width-full-v1",
       "matrix_job": 8902771,
@@ -43,24 +23,24 @@
       "report": "experiments/allmaps-20260920/results/sortation-matching-width-full-v1"
     },
     {
-      "suffix": "random05-task-cap-replicate-full-v2",
-      "matrix_job": 8902775,
-      "verifier_job": 8902776,
+      "suffix": "random05-move-promises-replicate-full-v2",
+      "matrix_job": 8902815,
+      "verifier_job": 8902816,
       "physical_cores_per_case": 4,
-      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-task-cap-replicate-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-task-cap-replicate-full-v2"
+      "raw": "runs/cgar-random05-move-promises-replicate-full-v2-20260921",
+      "report": "experiments/allmaps-20260920/results/random05-move-promises-replicate-full-v2"
     },
     {
-      "suffix": "random05-task-cap-neighbors-full-v3",
-      "matrix_job": 8902777,
-      "verifier_job": 8902778,
+      "suffix": "random05-move-cap-composition-full-v3",
+      "matrix_job": 8902817,
+      "verifier_job": 8902818,
       "physical_cores_per_case": 4,
-      "source_commit": "0962671fee93801d104a0f35d723274ecc9994c7",
+      "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-task-cap-neighbors-full-v3-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-task-cap-neighbors-full-v3"
+      "raw": "runs/cgar-random05-move-cap-composition-full-v3-20260921",
+      "report": "experiments/allmaps-20260920/results/random05-move-cap-composition-full-v3"
     }
   ],
   "builds": [
@@ -170,6 +150,12 @@
       "job": 8902755,
       "raw": "runs/cgar-move-promises-build-v1-20260921",
       "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902789,
+      "raw": "runs/cgar-window-move-promises-build-v1-20260921",
+      "source_commit": "44986ddf54fc381f478ba5116b9660389c3fb693",
       "status": "complete; all40source/test hashes, binary and full regression verified"
     }
   ]

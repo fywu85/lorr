@@ -60,3 +60,8 @@ the development seed, not a held-out generalization claim. In the first matrix,
 cap700 reduces observed pickup delay71.85->42.23steps and pre-pickup forward
 work89,352->48,831 actions, but total forward share also falls28.82%->27.90%.
 That does not establish that the throughput gain comes from less congestion.
+
+Cap700 replication: seeds0/2/10 control3043/3015/3065 versus3033/3063/3130;
+aggregate+1.129%, one loss. Nearby625/650/675 caps yield3042/3084/3106 versus
+3130control on seed10. All valid. This cap-only frontier is superseded by3571
+with motion commitments and no new task cap; its composition test is pending.

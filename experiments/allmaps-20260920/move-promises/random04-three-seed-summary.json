@@ -1,0 +1,158 @@
+{
+  "checked_utc": "2026-09-21T12:11:11.957031+00:00",
+  "source_commit": "e66daa2f065e2b9589f1e2c972c3437f2e636f2d",
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 2059,
+      "valid": true,
+      "max_entry_seconds": 0.286355624,
+      "peak_rss_bytes": 174395392,
+      "trajectory_sha256": "ad244aee69dd6a19659d22344e66c47836ab00ae639c588ad13dd81be084d206",
+      "evidence": "results/random04-move-promises-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise1",
+      "seed": 0,
+      "tasks": 2190,
+      "valid": true,
+      "max_entry_seconds": 0.302200935,
+      "peak_rss_bytes": 174067712,
+      "trajectory_sha256": "7c1ced040dbfd3c4affd013dd20485c29d9a85d88575014c8f0edc6be0b52009",
+      "evidence": "results/random04-move-promises-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise2",
+      "seed": 0,
+      "tasks": 2237,
+      "valid": true,
+      "max_entry_seconds": 0.302544099,
+      "peak_rss_bytes": 173842432,
+      "trajectory_sha256": "a529669db8370bb01fd2d2683fbfd24c17e714c7882715f886d8b4fd7371d01d",
+      "evidence": "results/random04-move-promises-full-v1/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 2,
+      "tasks": 1901,
+      "valid": true,
+      "max_entry_seconds": 0.276867263,
+      "peak_rss_bytes": 173539328,
+      "trajectory_sha256": "d26ffe5fc266b951a9cb5f42565a3f1ea3409f996f4985ecb9e79fe9fbc285ec",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise1",
+      "seed": 2,
+      "tasks": 2172,
+      "valid": true,
+      "max_entry_seconds": 0.306949832,
+      "peak_rss_bytes": 173678592,
+      "trajectory_sha256": "afbfa7ff88bd936264a789195113a1e9fd442714cbe652d35dbbd8a37fe0a8de",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise2",
+      "seed": 2,
+      "tasks": 2298,
+      "valid": true,
+      "max_entry_seconds": 0.306425563,
+      "peak_rss_bytes": 173654016,
+      "trajectory_sha256": "0d41f08fab4641d1c8fd2c9f6f82768a0528a3e05528042965302419eff5fb92",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_current_control",
+      "seed": 4,
+      "tasks": 1843,
+      "valid": true,
+      "max_entry_seconds": 0.281743935,
+      "peak_rss_bytes": 173858816,
+      "trajectory_sha256": "ba68ffd98d58f07283fd5c778e6cadc229cbc6d98b7e7e6b952391661c18279f",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise1",
+      "seed": 4,
+      "tasks": 2110,
+      "valid": true,
+      "max_entry_seconds": 0.320404509,
+      "peak_rss_bytes": 173907968,
+      "trajectory_sha256": "92679b7e9c3f8f19bf5608f54de47653e0ebd0b6ec3fe6b111d2780307a8ea44",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "trick_move_promise2",
+      "seed": 4,
+      "tasks": 2215,
+      "valid": true,
+      "max_entry_seconds": 0.303736124,
+      "peak_rss_bytes": 173850624,
+      "trajectory_sha256": "0838aa93081f07387efcd2cc786ef27a8a7d6f88565049f0cd1bc2c5eacff3d6",
+      "evidence": "results/random04-move-promises-replicate-full-v2/verification.json"
+    }
+  ],
+  "comparisons": [
+    {
+      "variant": "trick_move_promise1",
+      "seeds": [
+        0,
+        2,
+        4
+      ],
+      "control_tasks": [
+        2059,
+        1901,
+        1843
+      ],
+      "candidate_tasks": [
+        2190,
+        2172,
+        2110
+      ],
+      "deltas": [
+        131,
+        271,
+        267
+      ],
+      "aggregate_gain_percent": 11.528519731173525,
+      "all_positive": true
+    },
+    {
+      "variant": "trick_move_promise2",
+      "seeds": [
+        0,
+        2,
+        4
+      ],
+      "control_tasks": [
+        2059,
+        1901,
+        1843
+      ],
+      "candidate_tasks": [
+        2237,
+        2298,
+        2215
+      ],
+      "deltas": [
+        178,
+        397,
+        372
+      ],
+      "aggregate_gain_percent": 16.319145269688097,
+      "all_positive": true
+    }
+  ],
+  "scope": "Full archived input, matched planner seeds0/2/4, strict1s and32decimalGB; old H20 profile control. All variants complete declared work. Published competitor numbers are historical targets, not matched competitor results."
+}

@@ -1,151 +1,136 @@
 # Continue CGAR across ten instances
 
-Updated 2026-09-21T11:33 UTC. User asleep and explicitly requests continuous
-iteration. Targets: +10% over max(published NMS,KK) RANDOM01–05; +5% stretch on
-other five. Throughput primary, fairness secondary. Selected seed maxima count;
-distinguish them from replicated improvements. Active formal Warehouse160k goal
-is obsolete; do not stop while current scope remains. No internal subagents.
+Updated 2026-09-21T12:23:19.646725+00:00. User asleep and explicitly requests continued iteration. Targets:
++10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on other five.
+Throughput primary, fairness secondary. Selected-seed maxima count; distinguish
+replicated improvements. The active formal Warehouse160k goal text is obsolete;
+do not stop while the current all-map scope remains. No internal subagents.
 
-Ownership: NEVER edit/stage/build/collect/interrupt random05/, RANDOM05_PROGRESS.md,
-PILOT_PROGRESS.md or their jobs/builds/held-out streams. Read-only immutable git
+## Ownership and authorization
+
+NEVER edit/stage/build/collect/interrupt random05/, RANDOM05_PROGRESS.md,
+PILOT_PROGRESS.md or independent jobs/builds/held-out streams. Immutable git
 source references and algorithmic transfers into CGAR are authorized. Fable CLI
-persistent session1ebb1075-3538-49d1-93d1-a00c94fa256a authorized, Fable5.1max.
-Turn47 failed credits at2026-09-21T10:31:58Z; no findings. Do not retry without
-availability change. Compact receipt allmaps/fable-followup/turn47.
+persistent session1ebb1075-3538-49d1-93d1-a00c94fa256a, Fable5.1max, authorized.
+Turn47 failed credits at2026-09-21T10:31:58Z; no findings. Do not retry absent an
+availability change. Receipt allmaps/fable-followup/turn47. Public repo deliberate;
+owned commits and normal push authorized. Shared main/index, explicit paths and
+commit --only; no amend, force, lock deletion or staging another agent's changes.
 
-## Execution and ownership
+## Execution
 
 All shell calls require_escalated (default bwrap fails), Python3.7. Heavy builds,
-regressions and raw analyses run on GRID. Shared main/index: explicit owned paths,
-git commit --only; no amend/force/lock deletion. Public repo deliberate, push authorized.
-GRID research44/57: scheduler-slots-per-core2;4physical=8slotsx4GiB;
-8physical=16slotsx2GiB. Disjoint physical binding/no quota;32decimalGB process cap;
-strict1000ms whole entry. Shared hosts authorized, do not claim exclusive.
-Timeout is failure, never partial best. No production/test edits during live builds.
+regressions and raw analysis on GRID. research44/57 use slots-per-core2:
+4physical=8slotsx4GiB;8physical=16slotsx2GiB. Disjoint physical binding/no quota,
+32decimalGB process cap, strict1000ms complete entry. Shared hosts authorized;
+do not claim exclusivity. Timeout is failure, never partial best. No source/test
+edits during a live build; frozen binaries permit later independent edits.
 
-## Frontier
+## Current frontier and evidence
 
-WAREHOUSE155173; SORTATION150894; CITY01 8440; CITY02 16315; GAME24447;
-R01 693; R02 1215; R03 1982; R04 2059; R05 3065. All full-horizon TRICK, strict1s,
-32GB. WH/Sortation8physical; others4. Only GAME meets the new margin target.
-Canonical selected-full-results.json; latest all10 proof112321; BEST_HISTORY,
-CGAR_PROGRESS and TARGETS. No starvation-free claim. R05 parks31capacityrobots,
-GAME fleet limits. WH exclusive qualified +100Mactionreplay; others simulator and
-complete action/wait accounting. Historical competitor targets, not matched reruns.
+WAREHOUSE 155173 (seed0); SORTATION 150894 (seed0); CITY-01 8440 (seed2); CITY-02 16315 (seed0); GAME 24447 (seed4); RANDOM-01 693 (seed4); RANDOM-02 1215 (seed2); RANDOM-03 1982 (seed2); RANDOM-04 2298 (seed2); RANDOM-05 3571 (seed10)
 
-Replicated gains: R01 uniform field+2.69%/three seeds, then refreshedkeep10+1.88%
-allthreepositive; R03 delay3 +3.293% allthreepositive1967/1982/1948 vs1939/1900/1870.
-R04 H20 seed0 best2059 but H15 better mean. R05 chainmode1 +3.59%three-seedmean,
-32starts helps, horizonmean modest; selectedseed10=3065. Exactbest profiles under
-history-rollout/best-random01, rolling-window/best-random02,
-window-delay/best-random03, common-futures/best-random04,
-chain-potential/best-random05-horizon (all JSON trick_selected envs).
+All are full horizon TRICK profiles, strict1s/32decimalGB; WH/Sortation8physical,
+others4. GAME and RANDOM05 meet selected-seed margin targets. Competitor scores
+are historical published targets, not matched reruns. No starvation-free claim.
+R05 parks31capacityrobots; GAME uses fleet/rank restrictions. WH has exclusive
+qualification and100Mactionreplay; other runs simulator and full movement audits.
+Canonical selected-full-results.json, BEST_HISTORY.md, active-targets.json,
+CGAR_PROGRESS.md. Latest all10 proof selected-results-checks-20260921-122152.json.
+Exact profiles: history-rollout/best-random01.json, rolling-window/best-random02,
+window-delay/best-random03, move-promises/best-random04 and best-random05.
 
-## Recent rejected directions
+Movement commitments: R04 controls2059/1901/1843, mode2 2237/2298/2215 on seeds0/2/4,
++16.319%aggregate, all positive; forward-only+11.529%. Selected2298seed2. R05seed10
+3065control→3391mode1→3571mode2, max712.321ms; 17.082%above published3050. No new
+cap in this best; old guidance/horizon/parking tricks remain. R05replication pending.
+General option CGAR_TEMPORAL_MOVE_PROMISES0/1/2 carries only next occupied cell,
+exact pose/task/goal guarded. Protected CGAR actions override; collision closure
+resets dependent components; replans tail; stationary promise leaves heading free.
+This remains CGAR temporal construction/repair, not a replacement PILOT pipeline.
 
-Wider matching: R01 all693 wholetraceidentity; R02 1194/1154/1154 vs1215;
-R03 all1938 vs1982. CITY01 8440/8440/8435/8434 and CITY02
-16315/16315/16260/16203 atwidth32/64/128/256. CITY01 horizon
-bound8410/mean8427/p908357 vs8440. Allvalid, no promotion.
-Exact whole-chain assignment: R01 693->677; R02 1215->1200; R03 1982->1779;
-R04 2059->1814; R05 3065->3055. All10valid, controls repeat full trajectories.
-R05 chain-seed+window: control3065; H10keep0=3008; H20keep0=2896;
-H20keep10refresh=2985. Lower wait mostly became more turns, no promotion.
-R04 terminal chain1908; paidchain1714; paid+strict1683 vs2059. Allvalid.
-Prior delayR02, annealing, history/annealR03, startupassignment, regionalroots,
-R05 crowdedwindow alllose. Do not repeat unchanged arms.
+## Finished follow-ups
 
-Movement audit all10 at bottlenecks/README: R01/2/3 turn24.23/30.08/40.65%;
-R04/5 wait25.14/38.15%; CITY forward94.07/92.32%. Descriptive, not causal ceilings.
+R04H20/no-futures seeds0/2/4:2237/2298/2215 vs2239/2219/2270. No-futures loses22
+aggregate tasks; selected H20 stays. With mode2/no-futures, terminal chain2231 and
+paidchain2044 lose to2239control. Sparse window composition all loses:
+R01 693/687/688;R02 1215/1197/1172;R03 1982/1848/1942 (control/mode1/mode2).
+All full runs valid and available control trajectories match exactly.
+Cap700 alone replicates+1.129%aggregate on seeds0/2/10 (3033/3063/3130 versus
+3043/3015/3065), one loss. Nearby625/650/675 yield3042/3084/3106 below3130control.
+Cap-only results superseded by3571; cap+mode2 composition remains pending.
+Earlier exact chain assignment, paidchain, sparse action-price changes, wider
+matching on RANDOM/CITY, CITY horizon, regional futures all lost; don't repeat
+unchanged arms. Detailed negative logs in feature subdirectories.
+Earlier replicated sparse gains: R01uniform+2.69%, refreshedkeep10+1.88%, each3seeds;
+R03delay3+3.293%allthree. Sparse current turnshare24–41%; CITY FW92–94%. Movement
+bottlenecks/README is PRE-newR04/05 commitments; no causal ceiling claim.
 
-## Current builds and jobs
+## Builds
 
-No active builds, no source edits pending. All four new builds below FULL40source/
-test hashes + binary + whole regression qualified. Proof in respective build-v1.
-- chain-window source d28d451ac96dd654413a714ffa809f8bdf20983c,
-  binary46d5130133429a474dfe2537a1fe9d075dc5ae27d121ee4add5dc1d86d97dc92.
-- scheduler-chain source e4cfcc4dace2f92139c8496dc8c21a708bc2ab12,
-  binaryb0d408f171f94b1cc9990350d18bed7994d3611bdfd57bba4bc9d8b614d3a441.
-- chain-paid source311d04800c369f227407b63641c1c4f0a7102186,
-  binary8af0745f67e572fcbb29dc6d3797583f3a69b654425bbf4f3f88a04e36cf9b17.
-- task-cap source0962671fee93801d104a0f35d723274ecc9994c7,
-  binary78026b67d063a7b13e7379df0125dac8e08292627801a9078bc1ae957aed2e25.
-Raw: runs/cgar-NAME-build-v1-20260921. Full source commits in build manifest.
+No active build; no source edits pending. Latest qualified44986ddf54fc381f478ba5116b9660389c3fb693
+(window-move-promises), rawruns/cgar-window-move-promises-build-v1-20260921,
+binary7b37798ab513ec9cfbb66ad1f312854174f705d4facc0cfa98bc5efa03a0c1cf.
+Complete40source/testhash+binary/fullregression qualification inwindow-move-promises/build-v1.
+26400productionactions,3307services,8554retainedFW,4743wait,550collisionresets.
+Window first_cells constrain boundedA*/validation/retainedhistory, first heading
+remains free for stationary cell. Actual selectedwindow t2 supplies next promise.
+Explicit CGAR_WINDOW_MOVE_PROMISES1 required. Default window/commitment combination
+still rejected. Commonfutures/window mutuallyexclusive. Source guard TODO: include
+new first_cells in common_futures.hpp root-problem equality (production always empty).
 
-Pending (verify ACTIVE_JOBS):
-- R05 paidchain four arms 8902716/verifier8902717: control3065/paid/strict/paid+strict.
-- R04 task-cap 8902736/37: control2059/cap600/650/675, seed0.
-- R05 task-cap 8902738/39: control3065/cap600/700/750, seed10.
-- R01 action-prices 8902740/41: seed4 2x2turn20/40 wait40/20, current693.
-- R03 action-prices 8902742/43: seed2 same2x2, current1982.
-Cap uses qualified096; action-prices qualified311. Fullhorizons,4physical/case,
-strict1s32GB, node-local log spool. Source free for next independent change.
+Prior move-promises e66daa2f065e2b9589f1e2c972c3437f2e636f2d,
+rawruns/cgar-move-promises-build-v1-20260921,
+binarya7c3a6d7b8419cd833ef75347d608803d055737b6a83beda26884ee014410fd4,
+19200serial/parallelactions and complete safety/identity/regression qualification.
+Older qualified source311d04800c369f227407b63641c1c4f0a7102186 chain-paid build is
+used by pending WH/Sortation. All build identities inACTIVE_- warehouse-matching-width-full-v1: 8902771/8902772, 8physical/case, 311d0480
+- sortation-matching-width-full-v1: 8902773/8902774, 8physical/case, 311d0480
+- random05-move-promises-replicate-full-v2: 8902815/8902816, 4physical/case, e66daa2f
+- random05-move-cap-composition-full-v3: 8902817/8902818, 4physical/case, e66daa2f and featureproofs.
 
-Taskcap CGAR_TRICK_RANDOM_TASK_CAP is explicit RANDOM01–05only, default0 unchanged.
-Caps new admissions only, preserves held/started including external over-cap
-assignments, goal-less robots remain movable; existing R05 parking separate.
-30000productionactions/464completions regression, off/zero/fullfleet identity,
-idle blocker displaced, held/started protected. Analyzer reconstructs every active
-assignment and completion, checks cap/no dropped held tasks, peak/admitted counters.
+## Pending matrices
 
-PILOT immutable source review copied d51bdbf2c4e6830f8cabacb52ac9cfa8234aa663
-engine.cpp/hpp to /tmp/cgar-pilot-readonly-d51; provenance
-pilot-transfer/source-review-20260921-1112.json. No independent run data touched.
-True two-phase pipeline remains NOT transferred: promises movement one action
-ahead, idle robots pre-rotate while future move is chosen, next-frame starts from
-exact predicted occupancy. Current CGAR windows/common futures are forecasts.
+- warehouse-matching-width-full-v1: 8902771/8902772, 8physical/case, 311d0480
+- sortation-matching-width-full-v1: 8902773/8902774, 8physical/case, 311d0480
+- random05-move-promises-replicate-full-v2: 8902815/8902816, 4physical/case, e66daa2f
+- random05-move-cap-composition-full-v3: 8902817/8902818, 4physical/case, e66daa2f
+
+## Next bounded work candidates
+
+1. Stronger adapted CITY lane opposing prices24/32/48 (currentlyonly4/8/12/16;
+all lowerprices lost). Requires strict explicittrick gate, new immutablefieldhashes,
+cgar.cpp guidance_cost_limit_ increase onlyforchosenprice, tests/analyzer identity.
+Defaultunchanged; full CITY01seed2/CITY02seed0 matched arms after qualification.
+2. PILOT-style terminal5x5neighbor-pair penalty in completecommonfutureobjective,
+generaldefault0, O(cells+12n)counter, nottimedpartialsearch. Nativeforward20:
+trialweights8/16/32 on R04currentmode2H20. Needs independentpair/selector tests,
+strictconfig/audit and defaultidentity. Neither candidate implemented yet.
+PILOT immutable engine.cpp/hpp copies /tmp/cgar-pilot-readonly-d51, source
+ d51bdbf2c4e6830f8cabacb52ac9cfa8234aa663; provenancepilot-transfer/source-review-20260921-1112.json.
+Never inspect independent current run output.
 
 ## Helpers and checkpointing
 
-/tmp/cgar_qualify_build.py --raw runs/... --proof experiments/allmaps-20260920/.../build-v1
-verifies40source/test hashes against manifestcommit, binary, full regressions,4cores/noquota.
+/tmp/cgar_qualify_build.py --raw runs/... --proof experiments/allmaps-20260920/FEATURE/build-v1
+verifies40hashes,commit,binary,fullregression,physicalbinding/noquota.
 /tmp/cgar_submit_profile.py --instance INSTANCE --seeds ... --profile JSON --suffix SUFFIX
---build runs/... --source FULLHASH --local-log-spool [--inputs MANIFEST] [--cores8].
-Alwaysoverride old defaultbuild339718b3. CITY manifests city-game/inputs-CITY-01.json,etc.
-Sequential ACTIVE_JOBS writers. /tmp/cgar_refresh_frontier.py --report SUFFIX repeatable
---note ... updates canonical/target/history/proofs and removes completed jobs; inspect
-all completed jobs first. Does NOT update exact best profiles or narrative.
-/tmp/cgar_commit_checkpoint.py ownsCGAR_PROGRESS,NEXT,Fablehelper,allmaps/** only;
-resultdirs requireverification, gitignoredrawlogs excluded. Explicitadd+commit--only.
-NFSnegativecache: listparent/retry; no solverrerun forvisibility. Last push04b28c82;
-source311/096 and subsequent reports still require checkpoint+push.
-Authorized push: GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 git -c
+--build runs/... --source FULLHASH --local-log-spool [--inputs MANIFEST] [--cores 8]
+Always override old default339718b3 build/source. CITY manifests city-game/inputs-CITY-01.json,etc.
+WH manifestwarehouse-sortation-matching/inputs-WAREHOUSE.json. SequentialACTIVE_- warehouse-matching-width-full-v1: 8902771/8902772, 8physical/case, 311d0480
+- sortation-matching-width-full-v1: 8902773/8902774, 8physical/case, 311d0480
+- random05-move-promises-replicate-full-v2: 8902815/8902816, 4physical/case, e66daa2f
+- random05-move-cap-composition-full-v3: 8902817/8902818, 4physical/case, e66daa2fwriters.
+/tmp/cgar_refresh_frontier.py --report SUFFIX repeatable --note ... updatesfrontier/proof;
+clears ONLY requested completedreports (fixed this continuation). Does NOT update
+bestprofilefiles/narrative. Inspect allresults beforecalling.
+/tmp/cgar_commit_checkpoint.py ownsCGAR_PROGRESS,NEXT,Fablehelper,allmaps/**only;
+resultdirs requireverification; ignoredrawlogs excluded. Updatecommitmessagewhenneeded.
+Poll exec_command's sessionID untilcommitcomplete BEFORE dependentpush/build.
+Push: GIT_ASKPASS=/bin/false GIT_TERMINAL_PROMPT=0 git -c
 'credential.helper=!/user/fw2449/.local/bin/gh auth git-credential' push origin main
-
-tools/benchmark_cgar.py is frozen runnerhash
-f5049ddd0f2ac55f01f2493076f9538bca1acaa817beda5aff8a6a0c890234bc.
-Do not edit while queued matrices await dispatch. --local-log-spool archives full
-logs after exit including failures; strict time limits include actual logging.
-EarlierR02timeout2632ms retained; cause not proven, localspoolrepeatvalid1164 loses.
-
-## Update 2026-09-21T11:54:19.212956+00:00
-
-New selected RANDOM05=3130seed10, explicit taskcap700, source0962671f. Full2000,
-mean585.66ms,max695.18ms,RSS239919104bytes; held-task audit passed, agep90still2000.
-Control3065 exactwholetrace. Cap6003032,cap7502985. R04allcapslose1941/1758/1911
-vs2059. Canonicalprofile task-cap/best-random05.json. Proof115222, BEST_HISTORYupdated.
-Cap700replicationseeds0/2jobs8902775/76 usesoldqualified096. Nearbycaps625/650/675
-versus700seed10declaredtask-cap/random-05-neighbors-v3.json; submissionnext.
-PaidR05comparisonalllose2544/3018/2553vs3065, allvalid. ActionpriceR01
-turn40/wait20/both647/690/677vs693; R03 1799/1806/1575vs1982. Allvalid, no promotion.
-
-General next-movement commitments sourcee66daa2f065e2b9589f1e2c972c3437f2e636f2d
-FULL40hash/regressionqualified11:48:25UTC. Binarya7c3a6d7b8419cd833ef75347d608803d055737b6a83beda26884ee014410fd4.
-CGAR_TEMPORAL_MOVE_PROMISES0off,1nextFWonly,2nextFW/waitoccupancy. Replanssuffix,
-exactpose+taskgoalguard, priorityforcurrentCGARprotection+monotonecollisionreset.
-Seedsindex0aswellasalternativesretainpromise. Idlewaitmayrotate. Legacyhistory/
-windowincompatible; commonfutures/regional/branch/paidchaincompositions tested.
-19200serial/parallelactions,2412services,5645retainedFW,2853wait,357resets,
-occupiedcycle/changedtaskgoal/protectedreset/deadline/defaultidentitytested.
-No newfullpipelineclaim; itisCGAR'stemporalplanwithone-actionmotioncommitments.
-Rawruns/cgar-move-promises-build-v1-20260921, proofmove-promises/build-v1.
-R04seed0three-armjobs8902767/68 andR05seed10jobs8902769/70: uncappedcontrol,
-mode1,mode2. Declaredbeforecap700win, keeporiginalcontrols2059/3065.
-
-Warehouse+Sortation newwidergroupfullmatrices each2arms: currentwidth32groups64
-versuswidth64groups32 (2048participantceiling). Allotherselectedoptionsfixed.
-Oldqualified311d0480build. WH8cores5000steps jobs8902771/72; Sortation8cores5000
-steps8902773/74. Originalcontrols155173/150894; localspool. NewlyhashedWarehouse
-manifestwarehouse-sortation-matching/inputs-WAREHOUSE.json. Controltimeoutsfail.
-Noactivebuild, no sourceedits pending. Sourcee66andlatestdocsawaitcheckpoint/push;
-last ownpush602d6289. SeeACTIVE_JOBS for livework. Never touch otheragent files/jobs.
+NFSnegativecache:listparent/retry, don'trerun solver merelyforvisibility.
+Frozen tools/benchmark_cgar.py SHA
+f5049ddd0f2ac55f01f2493076f9538bca1acaa817beda5aff8a6a0c890234bc;
+DO NOT edit while queued matrices awaitdispatch. Localspool archives fullfailedlogs,
+strictentry stillincludeslogging. Earlier2632ms timeoutretained,causeunproven.

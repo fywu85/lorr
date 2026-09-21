@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T11:52:22.749757+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T12:21:52.879061+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -18,8 +18,8 @@ use eight physical cores; the other selected rows use four.
 | RANDOM-01 | 693 | 688 | 757 | 64 | 4 | 488.91 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
-| RANDOM-04 | 2,059 | 2,547 | 2,802 | 743 | 0 | 283.86 |
-| RANDOM-05 | 3,130 | 3,050 | 3,355 | 225 | 10 | 695.18 |
+| RANDOM-04 | 2,298 | 2,547 | 2,802 | 504 | 2 | 306.43 |
+| RANDOM-05 | 3,571 | 3,050 | 3,355 | 0 | 10 | 712.32 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
 are selected seed maxima, not averages of one universal configuration. The new
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-115222.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-122152.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -233,3 +233,32 @@ The full2000-step run has585.66ms mean,695.18ms maximum entry time and240MB peak
 The assignment audit preserves all held tasks; agep90 remains2000, so this is no
 starvation-free claim. Caps600/750 and all RANDOM04 caps lose. Seeds0/2 replication
 is declared. [Evidence](experiments/allmaps-20260920/task-cap/first-results.json).
+
+2026-09-21 — One-action movement commitments raise RANDOM-04 to **2,237** from
+an identical **2,059** control (+8.65%, seed0). Forward-only commitments score
+2,190; carrying forward/wait occupied cells scores2,237. All three complete the
+full1000 steps under1s; the selected run peaks at302.54ms. The mechanism remains
+CGAR with current primary/recovery protections and a replanned temporal tail.
+Both modes are being checked on seeds2/4. [Evidence](experiments/allmaps-20260920/move-promises/first-results.json).
+
+The movement-commitment gain replicates on RANDOM-04 seeds0/2/4: **2,237 / 2,298 /
+2,215** versus **2,059 / 1,901 / 1,843**, a **16.32% aggregate improvement**.
+Forward-only promises also improve all three (+11.53%). The selected best is now
+**2,298**, seed2, with306.43ms maximum entry time. This measures improvement over
+our previous solver, not over NMS. [Matched replication](experiments/allmaps-20260920/move-promises/random04-three-seed-summary.json).
+
+2026-09-21 — RANDOM-05 reaches **3,571** on seed10 with forward/wait movement
+commitments, against an identical **3,065** uncapped control (+16.51%). Forward-only
+commitments score3,391. All three full2000-step runs pass strict1s; the selected
+run peaks at712.32ms. This clears our3,355target and is17.08%above historical
+max(NMS,KK)=3,050, not a matched competitor result. No new task cap is used.
+Seeds0/2 replication and a separate cap700 composition are declared.
+[Evidence](experiments/allmaps-20260920/move-promises/first-results.json).
+
+2026-09-21T12:21:40.759210+00:00 — Full window/commitment composition loses on all three sparse
+selected seeds: RANDOM01 693→687/688, RANDOM02 1215→1197/1172, RANDOM03
+1982→1848/1942 (forward-only/forward-and-wait). All controls repeat exact
+trajectories and all runs pass strict1s. Keep the sparse profiles unchanged.
+The new movement commitment remains useful on the crowded cases. Removing
+RANDOM04 futures loses22 tasks in aggregate across three seeds; retain H20.
+[Window results](experiments/allmaps-20260920/window-move-promises/first-results.json).

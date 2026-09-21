@@ -681,3 +681,51 @@ Previous selected maximum 1967. Full 800 steps; 4 physical cores, strict 1,000 m
 | 3130 | 2026-09-21T11:49:47.972951+00:00 | [0962671f](https://github.com/fywu85/lorr/commit/0962671fee93801d104a0f35d723274ecc9994c7) | trick_task_cap700, seed 10, `--trick RANDOM-05` | [verification](results/random05-task-cap-full-v1/verification.json) |
 
 Previous selected maximum 3065. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 695.18 ms. RANDOM-05 seed10 cap700 reaches3130 vs exact3065 control; explicit trick with held tasks preserved, full strict1s max695.18ms. Selected-seed gain; seeds0/2 replication declared.
+
+## RANDOM-04 2190 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2190 | 2026-09-21T11:53:08.996008+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise1, seed 0, `--trick RANDOM-04` | [verification](results/random04-move-promises-full-v1/verification.json) |
+
+Previous selected maximum 2059. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 302.20 ms. RANDOM-04 next-movement commitments reach2237 vs exact2059 control (+8.65%) on seed0, full1000 strict1s max302.54ms; modes1/2 replication on seeds2/4 declared.
+
+## RANDOM-04 2237 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2237 | 2026-09-21T11:53:12.988386+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise2, seed 0, `--trick RANDOM-04` | [verification](results/random04-move-promises-full-v1/verification.json) |
+
+Previous selected maximum 2190. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 302.54 ms. RANDOM-04 next-movement commitments reach2237 vs exact2059 control (+8.65%) on seed0, full1000 strict1s max302.54ms; modes1/2 replication on seeds2/4 declared.
+
+## RANDOM-04 2239 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2239 | 2026-09-21T12:03:23.514315+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_promise2_without_futures, seed 0, `--trick RANDOM-04` | [verification](results/random04-move-promise-horizons-full-v3/verification.json) |
+
+Previous selected maximum 2237. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 278.68 ms. RANDOM-04 mode2 without common futures scores2239 vs2237 exactcontrol. Two-task selected-seed gain only; max278.68ms and replication on seeds2/4 declared.
+
+## RANDOM-04 2298 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2298 | 2026-09-21T12:02:19.208154+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise2, seed 2, `--trick RANDOM-04` | [verification](results/random04-move-promises-replicate-full-v2/verification.json) |
+
+Previous selected maximum 2239. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 306.43 ms. Motion commitments replicate on RANDOM-04 seeds0/2/4: mode2 2237/2298/2215 vs2059/1901/1843, +16.32% aggregate allpositive; mode1 +11.53% allpositive. Selected2298seed2 max306.43ms.
+
+## RANDOM-05 3391 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3391 | 2026-09-21T12:09:32.684352+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise1, seed 10, `--trick RANDOM-05` | [verification](results/random05-move-promises-full-v1/verification.json) |
+
+Previous selected maximum 3130. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 779.85 ms. RANDOM-05 mode2 motion commitments reach3571 vs exact3065 uncapped control (+16.51%), max712.32ms. Published3355margin target cleared at selectedseed10 (+17.08% over3050). Seeds0/2 replication pending; no newtaskcap.
+
+## RANDOM-05 3571 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3571 | 2026-09-21T12:09:07.898748+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move_promise2, seed 10, `--trick RANDOM-05` | [verification](results/random05-move-promises-full-v1/verification.json) |
+
+Previous selected maximum 3391. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 712.32 ms. RANDOM-05 mode2 motion commitments reach3571 vs exact3065 uncapped control (+16.51%), max712.32ms. Published3355margin target cleared at selectedseed10 (+17.08% over3050). Seeds0/2 replication pending; no newtaskcap.
