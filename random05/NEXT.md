@@ -24,9 +24,9 @@ before generating any new fresh inputs. Tricks require --trick RANDOM-0N.
 
 ## Current verified frontiers
 
-Selected729/1408/2620/2782/4242. General727/1397/1634/1616/2226.
+Selected732/1408/2620/2782/4242. General727/1397/1634/1616/2226.
 Matched max692/1256/2359/2649/3172; selected leads
-+5.35%/+12.10%/+11.06%/+5.02%/+33.73%. Published values are separate.
++5.78%/+12.10%/+11.06%/+5.02%/+33.73%. Published values are separate.
 R03target2595;R04target2914 (132short). Fresh selected01/02gains4.37%/10.17%;
 fresh03V2only8.852% versus matchedmax. Current full qualification is unmet.
 
@@ -65,16 +65,28 @@ Face cycles raisegeneral04to1616 (seed1); qualification is still running.
  off1595 fromsource158. Extra face8+revisits2seed1 is exploratory, not a pair.
  Audit/exactproof before promoting; general paired gain is not yet established.
 3. Physical deadline matching: production source161=7a9b9b8dad26193d6f21c35ab57816e91340e7a7.
- Newregression fixture declaredhorizon18 in150stephelper; failed106move mobility
- floor. Build161failurearchived; no benchmarks submitted with it. No thresholds
- or assertions changed. Source162=4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad fixes
- only fixturehorizon150; build162 job8912100 running at23:27UTC.
- Check completion/regression. Independently compare all compiled/test sources
- tosource162, verify production code identical tosource161, archive buildproof.
- Only on pass, submit10frozen all-five cases in
- experiments/random12345-physical-deadline-full-v162.json, withoffreferences in
- random12345-physical-deadline-v162-references.json. Keepfailed161manifestfrozen.
- Do not submit failedbuild161 or weaken existingmobilitychecks.
+ Newregression fixturehorizon18 in150stephelper failed106move mobility floor.
+ Failure/build161preserved; no benchmarks submitted with it. Source162=
+ 4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad corrects only fixturehorizon150.
+ Build162fullregression passes54.99s, production binary is identical to161:
+ SHA fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556.
+ Fullsource/test audit is results/build-v162/source-audit.json.
+ random12345-physical-deadline-split-full-v162:10full cases; jobs8913047/49/51/
+ 53/55/57/59/61/63/65. At23:34UTC six complete. RANDOM01off/on729/732,
+ RANDOM02off/on1408/1403;03offand05offallocation refused onresearch49
+ (16requested versus64physical exposed), preserved withsolver_startedfalse.
+ RANDOM01is independently audited/promoted:732,finished23:30:21.892751UTC,
+ mean69.316/max115.317ms,peak379453440bytes. Offcontrol729matchesall6fields.
+ Other completed cases need the final audit; no score from a failed run.
+4. random35-physical-deadline-binding-repeat-split-full-v162:2unchanged controls
+ replacing those refusals, jobs8913906/8913908, exclude49and54. Originalrefusals
+ remain. Frozenmanifestcommit5b503b2f. Audit both and include them explicitly
+ in the all-five comparison/exact-control proof; do not silently replace errors.
+5. random01-record732-split-full-v162:9full cases, jobs8913910/12/14/16/18/20/
+ 22/24/26. Exactseed4gate-on repeat plusseed0/1/2/3pairedgateoff/on. Frozenin
+ 5b503b2f. Audit/source4fb9498e; exactcontrol againstoriginal732, fivepairedseeds
+ including selectingseed4(originaloff729). Retain all outcomes; fresh01V1
+ still qualifies729only. New732is5.78% overmatchedmax692, no seedmeanclaimyet.
 
 Physical gate R05_MATCH_FEASIBLE=1 is a known-horizon TRICK, defaultoff, independent
 unit-action physical metric. Masks only impossible unopened pairs, preserves
@@ -98,10 +110,10 @@ and many admission/annealing options already exist; inspect RESEARCH/manifests
 before proposing duplicates. Sparse01/02annealing is not yet in archived manifests,
 but no hypothesis/benchmark for it is frozen. Physical deadline test is next.
 
-Currenthosts35/36/37/39/46/47/48/49/50/51/52/55/56; exclude54(bindingfailure).
-Latest successfulpush2fea39064c7433bf56e7fb1a9e396c3e1d7ab40c; numerous later
-scopedcommits are local. Push verified report/source/manifest commits after this
-checkpoint; use existing ghcredential helper and no force. Campaign remainsactive.
+Currenthosts35/36/37/39/46/47/48/50/51/52/55/56; exclude49and54(bindingfailures).
+Latest push before this checkpoint was2fea39064c7433bf56e7fb1a9e396c3e1d7ab40c.
+This checkpoint includes scoped source/report/manifest commits through5b503b2f;
+push it with existing ghcredential helper and no force. Campaign remainsactive.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 

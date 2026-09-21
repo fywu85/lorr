@@ -1,6 +1,6 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-21 23:28 UTC following the user's explicit scope and baseline corrections.
+Updated 2026-09-21 23:35 UTC following the user's explicit scope and baseline corrections.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04 and RANDOM-05. Make a substantial, evidence-driven effort on every instance, developing general improvements and separately labelled instance tricks. Always compare each instance with max(NMS, Kitty Knight).**
 
@@ -8,7 +8,7 @@ The RANDOM-03/04 ten-percent qualification is a milestone inside this broader ca
 
 | Instance | Current selected best | Matched max(NMS, KK) | Lead | 10% reference milestone |
 |---|---:|---:|---:|---:|
-| RANDOM-01 | 729 | 692 | +5.35% | 762 |
+| RANDOM-01 | 732 | 692 | +5.78% | 762 |
 | RANDOM-02 | 1,408 | 1,256 | +12.10% | 1,382 |
 | RANDOM-03 | 2,620 | 2,359 | +11.06% | 2,595 |
 | RANDOM-04 | 2,782 | 2,649 | +5.02% | 2,914 |
@@ -28,8 +28,8 @@ The table's10% values are useful yardsticks for all instances. Only RANDOM-03/04
 
 ## Current next work
 
-The general auction gain has five paired planner seeds (+1.85% on RANDOM-03 and +4.31% on RANDOM-04). General RANDOM-04 reaches1,616 with added face cycles, with paired-seed qualification pending. The32-case all-five face-cycle batch,30-case all-five PIBT retry batch,14 sparse/medium prefix-search cases and8 sparse completion-priority cases are fully audited. None raises the selected729/1408/2620/2782/4242 records. All disabled controls reproduce complete traces.
+The physical deadline gate has produced an independently replayed RANDOM-01 record of732 (+5.78% versus matchedmax692), maximum entry115.317ms and peakRSS379.453MB. Exact repetition and paired planner seeds are queued; no fresh qualification is claimed. Other selected records remain1408/2620/2782/4242. The same gate's RANDOM-02 result1403 trails1408; other full cases are still pending. Two disabled controls were refused before solver launch on research49 because binding exposed64physical cores instead of16; their original refusals are retained and unchanged replacements are queued on other hosts.
 
-Higher startup-admission presets on RANDOM-04/05 and general RANDOM-04 face-cycle qualification remain in GRID. A newly diagnosed physical deadline gate for unopened matching has frozen full-run comparisons on all five. Its initial regression fixture used the wrong run length; that failure remains archived, and a corrected build must pass before benchmarks. Keep substantive work across all five densities, pursue measured bottlenecks, and retain negative results rather than promoting attractive mechanisms without throughput evidence.
+The general auction gain has five paired planner seeds (+1.85% on03 and +4.31% on04). General04 reaches1616 with face cycles, but its completed raw seed pairs indicate a slightly lower aggregate; the full qualification audit is still pending. The32-case all-five face-cycle batch,30-case all-five PIBT retry batch,14 sparse/medium prefix-search cases and8 sparse completion-priority cases are fully audited. None of those mechanisms raised a selected record. Higher startup-admission presets on04/05 are still finishing. Keep substantive work across all five, pursue measured bottlenecks, and preserve negative results.
 
 The campaign remains active. Further increases in selected maxima are useful evidence; they do not alone establish a repeatable gain, fresh-input transfer or that performance cannot be improved.
