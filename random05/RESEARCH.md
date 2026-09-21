@@ -1353,3 +1353,20 @@ are grouped by possible route interference rather than their coordinates alone.
 Only priorities change; each whole forecast is recomputed and certified normally,
 with exactly the same declared number of branch evaluations. No throughput gain
 is assumed. The general mechanism has no map name, task ID or horizon rule.
+
+## Explicit task-admission experiment
+
+`R05_ACTIVE_TASK_CAP` (default0) is a fairness tradeoff under the corresponding
+`--trick RANDOM-0N`: preserve every opened task and admit only enough unopened
+tasks to fill the cap. Hungarian matching uses dummy columns to choose the
+minimum-cost real pairs at the specified cardinality; greedy matching stops at
+the same cap. Goal-less robots remain movable and participate in every collision
+check and push chain. This does not remove robots or turn their cells into walls.
+`R05_ACTIVE_CAP_STEPS` (default0, all run) optionally ends the cap at a declared
+startup boundary. Unopened work may wait longer; record censored waits normally.
+
+The colleague reported that parking robots hurt crowded throughput. This is a
+related negative precedent, so the admission test is bounded and default-off.
+It tests whether modestly reducing competing task goals helps RANDOM-04, with
+opened orders protected and full admission restored in the startup variants.
+No gain is claimed before full strict runs.

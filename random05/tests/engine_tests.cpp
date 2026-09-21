@@ -920,6 +920,45 @@ void rollout_elite_diversity() {
     }
 }
 
+void active_task_admission() {
+    auto env=environment(3,3,4);env.curr_states[3].location=8;
+    for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
+    Config cfg;cfg.active_task_cap=1;cfg.hungarian_limit=1000;cfg.keep_bonus=0;
+    Engine engine(cfg);engine.initialize(&env);std::vector<int> schedule;
+    engine.match(&env,schedule);
+    require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1 && schedule[3]>=0,
+            "cardinality-constrained matching did not choose the closest robot");
+    env.curr_task_schedule=schedule;env.task_pool.at(schedule[3]).idx_next_loc=1;
+    engine.match(&env,schedule);
+    require(schedule==env.curr_task_schedule,"admission cap changed an opened task or admitted an extra task");
+    env.curr_task_schedule[0]=0;env.task_pool[0].idx_next_loc=1;
+    if(env.curr_task_schedule[3]==0){env.curr_task_schedule[0]=1;env.task_pool[1].idx_next_loc=1;}
+    engine.match(&env,schedule);
+    require(schedule==env.curr_task_schedule,"admission cap dropped an opened task above the cap");
+    env.curr_task_schedule.assign(4,-1);for(auto& kv:env.task_pool)kv.second.idx_next_loc=0;
+    for(int limit:{0,1000}) {
+        cfg.hungarian_limit=limit;cfg.active_cap_steps=10;
+        Engine boundary(cfg);boundary.initialize(&env);env.curr_timestep=9;boundary.match(&env,schedule);
+        require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==1,
+                "greedy/exact admission did not enforce its active cap");
+        env.curr_timestep=10;boundary.match(&env,schedule);
+        require(std::count_if(schedule.begin(),schedule.end(),[](int t){return t>=0;})==4,
+                "startup admission cap failed to expire");
+    }
+    cfg.active_task_cap=22;cfg.active_cap_steps=0;cfg.futures=32;cfg.continuations=4;
+    cfg.continuation_start=2;cfg.depth=6;cfg.random_by_step=true;cfg.share_prefix=true;
+    cfg.scratch_reuse=true;cfg.cost_cache=true;cfg.candidate_cache=true;
+    const auto signature=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(signature==simulate(cfg,12),"task admission changed with worker scheduling");
+    const char* old=std::getenv("R05_ACTIVE_TASK_CAP");const bool present=old;
+    const std::string saved=old?old:"";setenv("R05_ACTIVE_TASK_CAP","1",1);
+    SharedEnvironment gate;bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"active admission did not require the trick flag");
+    gate.trick_instance="RANDOM-04";require(Config::environment(gate).active_task_cap==1,"explicit admission trick was rejected");
+    if(present)setenv("R05_ACTIVE_TASK_CAP",saved.c_str(),1);else unsetenv("R05_ACTIVE_TASK_CAP");
+}
+
 void blocker_priority_mutations() {
     auto env=environment(5,5,4);Config cfg;Graph graph(env,cfg);
     Task task;task.locations={4};Chain chain(graph,task,true);
@@ -1270,6 +1309,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    active_task_admission();
     blocker_priority_mutations();
     physical_guidance_edges();
     mixed_guidance_potentials();

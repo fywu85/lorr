@@ -209,6 +209,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.dispersion=real("R05_DISPERSION",c.dispersion);c.push_price=real("R05_PUSH",c.push_price);
     c.loop_threshold=real("R05_LOOP_THRESHOLD",c.loop_threshold);
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
+    c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
+    c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
+    if(c.active_task_cap<0 || c.active_cap_steps<0 || (c.active_task_cap>0 && !random_trick))
+        throw std::invalid_argument("active task admission requires nonnegative settings and an explicit --trick RANDOM-01..05");
     c.destination_load=real("R05_DESTINATION_LOAD",0);
     if(!std::isfinite(c.destination_load) || c.destination_load<0)
         throw std::invalid_argument("destination load coefficient must be finite and nonnegative");
@@ -319,6 +323,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("mixed guidance potentials require weighted guidance and a non-windowed policy");
     if(c.guidance!="none" && !random_trick)
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
+    if(c.active_task_cap && c.rollout_match)
+        throw std::invalid_argument("active task admission does not support virtual task replacement forecasts");
     if(c.blocker_mutation_size && (c.window || c.operation_depth || c.mutation_radius))
         throw std::invalid_argument("blocker-directed mutations require the ordinary pipeline without spatial mutation");
     if(c.early_root_period && (c.early_fill || c.operation_depth || c.window || c.component_trials || c.replan_roots))
@@ -846,6 +852,11 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         if(started || (!cfg.matching && id>=0)) { locked.insert(id);continue; }
         agents.push_back(i);schedule[i]=-1;
     }
+    const bool capped=cfg.active_task_cap>0 &&
+        (!cfg.active_cap_steps || env->curr_timestep<cfg.active_cap_steps);
+    // Opened tasks remain protected even if they temporarily exceed the cap.
+    // All robots remain in the collision planner and may yield or be pushed.
+    const int capacity=capped?std::min(int(agents.size()),std::max(0,cfg.active_task_cap-int(locked.size()))):int(agents.size());
     for(const auto& kv:env->task_pool)if(!locked.count(kv.first))tasks.push_back(kv.first);
     std::sort(tasks.begin(),tasks.end());
     std::vector<float> length(tasks.size(),0);
@@ -879,8 +890,10 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     const double match_steps_per_cell=total_forward_?double(total_agent_steps_)/total_forward_:2;
     const double remaining_steps=cfg.horizon-env->curr_timestep;
     struct Pair { float cost;int agent,task; };
-    const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && tasks.size()>=agents.size();
-    std::vector<float> matrix(exact?agents.size()*tasks.size():0);
+    const int dummy_columns=capped?int(agents.size())-std::min(capacity,int(tasks.size())):0;
+    const int columns=int(tasks.size())+dummy_columns;
+    const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && columns>=int(agents.size());
+    std::vector<float> matrix(exact?agents.size()*columns:0);
     std::vector<Pair> pairs;if(!exact)pairs.reserve(agents.size()*tasks.size());
     for(int row=0;row<int(agents.size());++row) {
         int a=agents[row];
@@ -911,9 +924,20 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 cost+=cfg.match_horizon_weight*float(std::max(0.0,estimate-remaining_steps));
             }
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
-            if(exact)matrix[size_t(row)*tasks.size()+j]=cost;
+            if(exact)matrix[size_t(row)*columns+j]=cost;
             else pairs.push_back({cost,a,j});
         }
+    }
+    if(exact && dummy_columns) {
+        float minimum=0;
+        for(size_t row=0;row<agents.size();++row)for(size_t j=0;j<tasks.size();++j)
+            minimum=std::min(minimum,matrix[row*columns+j]);
+        // Every dummy is cheaper than every real pair, so an optimum fills all
+        // dummies and admits exactly capacity real pairs (when available).
+        // Their equal costs leave the chosen real matching minimum-cost.
+        const float idle_cost=minimum-std::max(1.f,std::abs(minimum)*1e-6f);
+        for(size_t row=0;row<agents.size();++row)
+            std::fill(matrix.begin()+row*columns+tasks.size(),matrix.begin()+(row+1)*columns,idle_cost);
     }
     std::chrono::steady_clock::time_point matrix_done;
     if(cfg.profile)matrix_done=std::chrono::steady_clock::now();
@@ -927,7 +951,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
     };
     if(exact) {
-        const int nr=int(agents.size()),nc=int(tasks.size());
+        const int nr=int(agents.size()),nc=columns;
         std::vector<double> u(nr+1),v(nc+1);
         std::vector<int> owner(nc+1),previous(nc+1);
         for(int row=1;row<=nr;++row) {
@@ -948,16 +972,19 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             } while(owner[column]);
             do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
         }
-        for(int j=1;j<=nc;++j)if(owner[j])schedule[agents[owner[j]-1]]=tasks[j-1];
+        for(int j=1;j<=int(tasks.size());++j)if(owner[j])schedule[agents[owner[j]-1]]=tasks[j-1];
         report_match();return;
     }
     std::sort(pairs.begin(),pairs.end(),[](const Pair& a,const Pair& b) {
         if(a.cost!=b.cost)return a.cost<b.cost;
         return std::tie(a.agent,a.task)<std::tie(b.agent,b.task);
     });
-    std::vector<bool> used(tasks.size(),false);
-    for(const auto& p:pairs)if(schedule[p.agent]<0 && !used[p.task]) {
-        schedule[p.agent]=tasks[p.task];used[p.task]=true;
+    std::vector<bool> used(tasks.size(),false);int admitted=0;
+    for(const auto& p:pairs) {
+        if(admitted>=capacity)break;
+        if(schedule[p.agent]<0 && !used[p.task]) {
+            schedule[p.agent]=tasks[p.task];used[p.task]=true;++admitted;
+        }
     }
     report_match();
 }
