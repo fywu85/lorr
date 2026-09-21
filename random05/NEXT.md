@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 06:13 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 06:55 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2551 / 2565 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2552 / 2634 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +8.1% / -0.6% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +8.2% / +2.1% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -79,60 +79,68 @@ campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Active RANDOM-03/04 ten-percent work
 
-The goal remains ACTIVE. Targets2595/2838 plus robust subsecond qualification.
-R03 now2551 (8.14% overmatchedNMS2359), source dabfcc7/build89, case
-trick-random-03-cooperative-triage-triage100 in
-random03-cooperative-triage-split-full-v89. Full800steps,mean520/max698ms.
-Samecooperative2514profile + horizon800/scale1/hop-only estimate. This known
-horizon is an explicit trick. All6triage cases full/audited; scales0.45/0.75/1.25
-=2529/2538/2514,scale1/mix1=2545. Newrecord independently replayed/promoted.
-No freshR03/04 input generated yet; keep50001–10 untouched.
+Goal ACTIVE: archived targets2595/2838 plus strict subsecond qualification,
+selected exact repeat, three planner seeds and subsequently frozen fresh inputs.
+No fresh R03/04 input generated; preserve50001-10 and freeze before50011+.
+R03 best2552 source de0b763/build91, anneal temperature4, H20/keep14/I8192,
+group4/32islands/2sharingrounds, horizon800/triage1/hop-only, seed5.
+Batch random03-anneal-split-full-v91, case trick-random-03-anneal-temperature4.
+Mean523/max761ms. Only+1 over nonannealed2551: no broad gain established.
+2551 profile seeds0/3 give2522/2516, all strict. See results/random34-runtime.
+R04 best2634 source ac5cbc9/build90, rootmutation0.1, B10/K8064/first4032,
+depth16/G4/E8/P8/screen2/keep4/noise200/seed4; field15flip5contrast2.4,
+turn0.6/wait0.5/dispersion0.8/horizon1000/triage1.25/mix0.5.
+Batch random04-forecast-split-full-v90, case trick-random-04-forecast-mutation01.
+Mean495/max532ms. Same config seeds0/3=2584/2530; throughput spread real.
 
-R04 record2565 still sourcea2ff2b2/build80 depth16/K14400/B18/seed4,
-mean832/max949ms. Oldseeds0/3 andsource87control/fused have realtimeouts, so
-this profile is NOT robustly qualified. No claim that hostcontention caused them.
-B10/K8064 cheaperprofile=2501,mean498/max546ms in source89exactcontrol.
-Increasing B10 toK11520 gives2484;dispersion0.4=2507; othertriage/mix/turn
-variants2461–2496. Routing changes (weaker/strongercontrast,plain-scoremix,
-turn-awarefield,betweenness) alllose2241–2483. Startupscorepower0.5/1/2 at
-200steps gives2513/2509/2431;power1for400steps2479. No new R04frontier.
+Exact shared immutable rankings source b4b4abe/build92 preserve all six fields
+and2634 tasks. Four full controls audited in random04-shared-rankings-split-full-v92.
+Private control mean489/max540ms; shared2048MiB mean447/max485ms/RSS1558MB.
+1024MiB449/480;2048/no-private441/593. Runtime evidence is a measured comparison,
+not a worst-case guarantee. Default remains off. No new throughput record.
 
-Closed/audited batches before05:56UTC: first12mixed,windowbudgetv86(5),
-fusionv87(3,2timeouts),cooperativev88(6),cheaperR04v80(8).
-Currentclosed: R03triagev89(6,audited),R04compactv89(9,audited),
-R04routingv89(8,audited),R04startupv89(4,auditexec73508 aftersubmissions).
-Fullsix-field exactproofs: old2439 source86; old2479 source88control/reuse;
-old2565 cache128/512/cyclemask; old2500 source87fusedK11520.
-Source89controls (2514,2501,2500) need finalsix-fieldcomparisonproof written.
+All closed batches through searchshapev92 and fastgroupsv94 audited.
+R04 rootmutation.02/.05/.15/.2=2448/2535/2529/2482;G8/G16=2622/2632.
+K11520 B10 timed out;B18=2603. Searchshape E1/4/16=2474/2547/2556;
+noise100/400=2564/2593;discount.95/.98=2534/2582;depth12/20=2599/2545;
+rank1/2=2487/2416. None surpass2634. Fine guidance and scheduling/cost changes
+mostly lost. See individual results/*/audit.json; preserve all timeout attempts.
+R03 longer windows initially fail strict1s; smaller initial fixed work alone
+moves failure to step1 or150. Fast blocker groups skip84-87% unused spatial
+sorts; full control and fast both2551, means505/475ms but max719/918, so no
+proven maximum-latency gain. Six-field equivalence proof still to write.
 
-Sources:
-- dabfcc7/build89, regression23.04s, CachedRanking104->96bytes.
-- ac5cbc9/build90, regression23.26s, compact candidates and24-byteheader fit
-  one64-bytecacheline. Hash/score/order preserved; oversizedstage/epoch bypass.
-  binarySHA f288fa5449b5cf474672e5cb97f6470f628bb552fd1b32c5d4561459f3e8830c.
-- de0b763/build91, regression24.46s, optional fixed-work annealed windowrepairs,
-  preservebestcompleteincumbent; temperature0defaultexactcontrol.
-  binarySHA90e318c2e3c951f9945a6472e21cc8cd964c3ef8d1681d83ef6f637a9111840b.
+Current source fa98fd1d/build96, regression25.06s, SHA
+ ae3feb041eb03db6e7a0bb059741cbd09374d9691cf98f3969bc2261fcf5aa1f.
+Changes since91:92 shared immutable rankings bounded by RAM;93 fixed FIRST_ITERS;
+94 fast groups and explicit max16384;95 disable cache building in parallel
+forecast shadows;96 carry A-star state/stage and cached rows, declare fixed
+WINDOW_INITIAL_STEPS schedule. All regression suites passed unchanged.
+Nested forecast fix95 does not affect92 full cache records (replan off).
 
-ACTIVE fullbatches:
-- random04-cacheline-runtime-split-full-v90, jobs8901762–67: exactB10K8064/11520,
-  B18K11520fusedoff/on, B10K11520OpenMPbinding andpassivewaiting.
-- random03-anneal-split-full-v91, jobs8901768–75: exact2551control,temperature
-  0.25/1/4,group3,group6/I6144,plannerseeds0/3.
-- random04-forecast-split-full-v90, jobs8901777–84: futuremutation0.1/0.5,
-  risk-1/+0.5,elitefutureblend0.5,radius3,rootmutation0.1,dispersion0.
-- random04-localfield-split-full-v90, jobs8901785–92: removeoldflip,1flip
-  seeds0/1/2/3/4/6,4flipsseed5. Explicitguidancetricks.
-- random03-cost-split-full-v90, jobs8901794–1800: contrast2/2.2/2.6,
-  turn1.5/2.5,wait1.5/3,otherwise2551profile.
-Audit source90withac5cbc9; source91withde0b763.
+ACTIVE:
+- random03-astar-warmup-split-full-v96, jobs8901937–45: exact2551/2552 controls,
+  first8steps4096 then8192/12288/16384, H24/H28/H32 variants. As of06:54,
+  warmup8=2502;16384/H24keep16/H24keep18/H28 already failed strict deadlines.
+  Await remaining controls/12288/H32; audit with fa98fd1d.
+JUST CLOSED (need audit):
+- random03-layout-screen-split-full-v94, source0ca9413c,9full800-step runs.
+  I4096 control2483;field4/7/11/19/23/29/37/43 =
+  2405/2445/2445/2318/2517/2359/2416/2481. Field23 merits higher-work followup.
+- random04-layout-screen-split-full-v92, sourceb4b4abe,9full1000-step runs.
+  K4096 control2492;fields4/7/11/19/23/29/37/43 =
+  2369/2370/2375/2114/2398/2225/2313/2439. No win in this screen.
+These are explicit trick field searches, archived tuning only.
+
+Pending: audit closed fields; six-field94/96 controls; commit scoped changes
+and push (last verified remote8714169; later commits not pushed).
 
 R04 motion diagnostic: completed loaded forwards/lowerbound=2.05for2565
-versus1.67inNMS2580. First200steps=428vs638completions, althoughinitial
-assignments have271two-stoptasksboth andsimilarhopwork. Differentselected
-tasksets/trajectories make this observational. Most routingsoftening testslose,
-so lowerdetours alone do not predict higher throughput. Evidence in
-results/random34-motion-diagnosis.
+versus1.67inNMS2580. First200steps=428vs638completions, initial assignments
+have271two-stop tasks each and similar hopwork. Different selected task sets
+make this observational; most routing softening tests lost. Evidence in
+results/random34-motion-diagnosis. Further progress needs better collective
+routes/search, not merely a shorter-distance proxy.
 
 ## Rejected source experiments / tool notes
 

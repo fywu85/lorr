@@ -482,3 +482,21 @@ manifest, so a new horizon-enabled record cannot inherit stale horizon-off prose
 R04 routing/cost changes remain below2565. Compact-cache and thread-binding
 controls, fixed-work annealed R03repair, and targeted R04forecast/layout checks
 are running. No new robust-timing or ten-percent qualification is claimed.
+
+### 2026-09-21 06:49 UTC: RANDOM-04 2,634 and exact runtime improvement
+
+Rootmutation0.1 reaches2634 onR04 (+2.09% vsNMS2580), source[ac5cbc9](https://github.com/fywu85/lorr/commit/ac5cbc9).
+Mean495/max532ms. Same configuration on plannerseeds0/3 gives2584/2530;
+these qualify its archived timing across three seeds, not a10%throughput claim.
+The source[b4b4abe](https://github.com/fywu85/lorr/commit/b4b4abe) shared immutable
+cache preserves the entire2634trajectory atmean447/max485ms with1.56GB RSS
+(2048MiB cache cap), versus489/540ms for its exact source92control.
+[Full equivalence](results/random04-shared-rankings-split-full-v92/control-equivalence.json),
+[replay audit](results/random04-shared-rankings-split-full-v92/audit.json).
+
+R03's selected maximum is2552 atannealingtemperature4, onlyone task above2551;
+no substantial annealing gain is established. The2551configuration repeats
+exactly across source revisions and remains below1s on plannerseeds0/3/5.
+Larger budgets/windows still have preserved timeout attempts; startup work
+schedules and exact A* optimizations are being evaluated.
+[Runtime quantiles and qualification limits](results/random34-runtime/REPORT.md).

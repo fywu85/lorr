@@ -77,6 +77,40 @@ struct Search {
     std::vector<const float*> heuristic_rows;
     uint32_t epoch=0;
     uint64_t expanded=0;
+    // A four-way heap uses the same complete ordering as the binary reference.
+    // Fewer levels trade a short contiguous sibling scan for dependent loads.
+    void insert(Node node,bool four_way) {
+        if(!four_way) {
+            heap.push_back(node);std::push_heap(heap.begin(),heap.end(),Greater{});return;
+        }
+        size_t hole=heap.size();heap.push_back(node);
+        while(hole>0) {
+            const size_t parent=(hole-1)/4;
+            if(!Greater{}(heap[parent],node))break;
+            heap[hole]=heap[parent];hole=parent;
+        }
+        heap[hole]=node;
+    }
+    Node remove(bool four_way) {
+        if(!four_way) {
+            std::pop_heap(heap.begin(),heap.end(),Greater{});
+            Node node=heap.back();heap.pop_back();return node;
+        }
+        const Node node=heap.front(),tail=heap.back();heap.pop_back();
+        if(!heap.empty()) {
+            size_t hole=0;
+            while(hole*4+1<heap.size()) {
+                const size_t first=hole*4+1,end=std::min(first+4,heap.size());
+                size_t best=first;
+                for(size_t child=first+1;child<end;++child)
+                    if(Greater{}(heap[best],heap[child]))best=child;
+                if(!Greater{}(tail,heap[best]))break;
+                heap[hole]=heap[best];hole=best;
+            }
+            heap[hole]=tail;
+        }
+        return node;
+    }
     bool solve(const Graph& g,const Config& cfg,const Reservations& reserve,
                const Chain* chain,int stage,int state,std::vector<int>& path) {
         const int stages=chain?int(chain->goals.size())+1:1,horizon=reserve.horizon;
@@ -96,12 +130,11 @@ struct Search {
             int id=(time*stages+k)*g.states+s;
             if(seen[id]==epoch && costs[id]<=cost)return;
             seen[id]=epoch;costs[id]=cost;parent[id]=previous;
-            float h=estimate(k,s);heap.push_back({cost+h,h,cost,id,time,s,k});
-            std::push_heap(heap.begin(),heap.end(),Greater{});
+            float h=estimate(k,s);insert({cost+h,h,cost,id,time,s,k},cfg.window_heap4);
         };
         push(0,stage,state,0,-1);int count=0;
         while(!heap.empty() && count<cfg.window_expansions) {
-            std::pop_heap(heap.begin(),heap.end(),Greater{});const Node node=heap.back();heap.pop_back();
+            const Node node=remove(cfg.window_heap4);
             if(costs[node.id]!=node.g)continue;
             ++count;++expanded;
             const int s=node.state,k=node.stage,t=node.time;

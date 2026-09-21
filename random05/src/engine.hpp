@@ -35,7 +35,7 @@ struct Config {
     int score_rank_steps=0;
     int window=0, window_keep=6, window_islands=32, window_iterations=24, window_neighborhood=8, window_expansions=20000;
     int window_starts=1, window_rounds=1, window_first_iterations=0, window_initial_steps=1;
-    bool window_reuse=false, window_fast_groups=false;
+    bool window_reuse=false, window_fast_groups=false, window_heap4=false;
     float window_temperature=0;
     bool window_blockers=false, window_equal=false;
     int rescore_roots=0, rescore_branches=64;

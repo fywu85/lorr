@@ -7,8 +7,8 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,551 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,565 | 2,580 | 2,838 | 1,000 |
+| RANDOM-03 | 2,552 | 2,359 | 2,595 | 800 |
+| RANDOM-04 | 2,634 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -222,3 +222,40 @@ tricks and may increase waiting for long tasks. NMS's local source squares
 remaining-task rank on both RANDOM04/05, but its different search means this
 is only a hypothesis, not an expected transferable gain. All other controls
 are general mechanisms evaluated in the flagged R04profile.
+
+## Broader explicit guidance screen at bounded work
+
+The inherited field15 was selected on RANDOM-05. Small flips and broad cost
+softening have not closed R03/04 gaps. Declare nine full-horizon cases per
+density: the inherited control, plus fieldseeds4/7/11/19/23/29/37/43 with no
+inherited flip. R03 uses source94, I4096/two rounds/fastgroups/horizon800; R04
+uses source92, B10/K4096/first2048/mutation0.1/sharedcache2048MiB. Lower work
+keeps the layout screen inexpensive; every score still covers the full800 or
+1000 steps. Validate promising fields at the larger selected work budget before
+claiming an improvement over that recipe. All are explicit --trick instances;
+held-out task/start inputs remain unused.
+
+Source96/fa98fd1d passes regression25.06s. Nine full R03 cases test exact
+2551/2552 controls after A* state/row reuse, then an8-call startup work schedule
+andlarger windows/work. H20uses8192/12288/16384regular with4096startup; H24
+keep16/18 uses8192/4096; H28keep20uses6144/2048. H32keep22 uses4096/1024
+and16startupcalls. Everydeclared count completes; all original source94
+timeouts stay retained. This does not treat a rejected partial run as a score.
+
+## September 21, 07:01 UTC: layout screen and next full comparisons
+
+At I4096, RANDOM-03 field23 scores2517 against2483 for the inherited field.
+The other seven new layouts score2318–2481. Next six full source96 cases test
+field23 at I8192, temperature4, triage0.75, two single-edge flips, and H22/I6144.
+These remain explicit guidance tricks selected only on the archived input.
+
+All eight new RANDOM-04 fields lose at K4096:2114–2439 versus2492. The next
+nine full source96 cases retain the best2634 recipe and the exact2048MiB cache.
+They test a control, movement-proposal biases1/3, bias3 on half of candidates,
+prospective waits, intent mode1, half waypoint-age retention, zero loop
+threshold and larger loops. These are bounded transfers from earlier R05
+mechanisms, not assumed improvements. Every case uses the full1000steps,
+fixed work, verified allocation and strict1s. No held-out input is generated.
+
+Source94 control and fast groups reproduce all six fields of2551 exactly.
+Runtime observations are consolidated in [the timing report](results/random34-runtime/REPORT.md).

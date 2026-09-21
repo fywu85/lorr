@@ -157,6 +157,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_rounds=integer("R05_WINDOW_ROUNDS",1);
     c.window_reuse=integer("R05_WINDOW_REUSE",0);
     c.window_fast_groups=integer("R05_WINDOW_FAST_GROUPS",0);
+    c.window_heap4=integer("R05_WINDOW_HEAP4",0);
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_equal=integer("R05_WINDOW_EQUAL",0);

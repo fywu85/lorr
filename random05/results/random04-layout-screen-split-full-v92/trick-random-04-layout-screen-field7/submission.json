@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "n",
+    "-cwd",
+    "-q",
+    "debian.q@research32,debian.q@research33,debian.q@research35,debian.q@research36,debian.q@research37,debian.q@research39,debian.q@research41,debian.q@research45,debian.q@research46,debian.q@research47,debian.q@research48,debian.q@research49,debian.q@research50,debian.q@research51,debian.q@research52,debian.q@research54,debian.q@research55,debian.q@research56",
+    "-pe",
+    "threaded",
+    "32",
+    "-binding",
+    "linear:16",
+    "-l",
+    "h_rt=03:00:00,h_vmem=1G,m_topology_inuse=*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*CTT*",
+    "-m",
+    "n",
+    "-N",
+    "r05_benchmark",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-layout-screen-split-full-v92/trick-random-04-layout-screen-field7/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-layout-screen-split-full-v92/trick-random-04-layout-screen-field7/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8901928\n"
+}

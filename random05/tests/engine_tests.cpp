@@ -900,6 +900,9 @@ void window_reproducibility() {
     cfg.cost_cache=false;require(reference==simulate(cfg,8),"window search depends on cost caching");
     cfg.cost_cache=true;cfg.window_reuse=true;
     require(reference==simulate(cfg,8,5,5,true),"reused window search storage changed paths or checkpoint replay");
+    cfg.window_heap4=true;
+    require(reference==simulate(cfg,8,5,5,true),"four-way search heap changed complete paths or checkpoint replay");
+    cfg.window_heap4=false;
     cfg.window_rounds=3;cfg.window_iterations=12;
     const auto shared=simulate(cfg,8,5,5,true);
     cfg.threads=1;require(shared==simulate(cfg,8),"window sharing rounds depend on worker scheduling");
@@ -908,6 +911,9 @@ void window_reproducibility() {
     const auto annealed=simulate(cfg,8,5,5,true);
     cfg.threads=2;require(annealed==simulate(cfg,8),"annealed window repairs depend on worker scheduling");
     cfg.cost_cache=false;require(annealed==simulate(cfg,8),"annealed window repairs depend on cost caching");
+    cfg.window_heap4=true;
+    require(annealed==simulate(cfg,8,5,5,true),"four-way heap changed annealed repairs or checkpoint replay");
+    cfg.window_heap4=false;
     cfg.window_temperature=0;cfg.window_first_iterations=3;cfg.window_initial_steps=4;
     const auto first_budget=simulate(cfg,8,5,5,true);
     cfg.threads=1;require(first_budget==simulate(cfg,8),"fixed startup repair budget depends on worker count");
@@ -921,6 +927,8 @@ void window_reproducibility() {
     require(linked==simulate(cfg,8,5,5,true),"skipping unused spatial sorts changed repairs or checkpoint replay");
     cfg.threads=2;cfg.cost_cache=true;
     require(linked==simulate(cfg,8),"fast blocker groups changed across workers or cost caching");
+    cfg.window_heap4=true;
+    require(linked==simulate(cfg,8,5,5,true),"four-way heap changed blocker repairs or checkpoint replay");
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
