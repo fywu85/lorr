@@ -545,3 +545,14 @@ owners always remain eligible, even if that exceeds the nominal fleet size.
 All robots remain movable by CGAR, and the motion/primary/recovery code is
 unchanged. This is a separate throughput experiment, not a liveness guarantee.
 [Design, attribution, and planned ablation](../../experiments/allmaps-20260920/game-fleet/README.md).
+
+## General finite matching budget experiment
+
+`CGAR_REASSIGN_MATCH_TASK_BUDGET=2` permits at most two unopened-task
+reassignments instead of the default one. Accepted values are1..8 and require
+existing matching; the matching-horizon guard is currently incompatible.
+The20-step robot cooldown, started tasks, primary/recovery protections and all
+fixed group/work limits remain. Each task in an accepted cycle consumes one
+unit. This general option has no map lookup. Diagnostics report repeat moves
+and the largest actual task count. Default1 preserves existing behavior.
+[Design and declared comparison](../../experiments/allmaps-20260920/rematch-budget/README.md).

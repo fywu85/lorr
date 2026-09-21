@@ -174,6 +174,16 @@ def main():
                     assert all(int(x['squared'])==1 and 0<=int(x['changed_total'])<=row['robots']*int(x['step']) for x in rank_samples)
                 else:
                     assert not rank_samples and not rank_config
+                retarget_budget=int(case['environment'].get('CGAR_REASSIGN_MATCH_TASK_BUDGET','1'))
+                retarget_config=[fields(l) for l in logs if l.startswith('[cgar-match-retarget-config] ')]
+                retarget_samples=[fields(l) for l in logs if l.startswith('[cgar-match-retarget] ')]
+                if retarget_budget!=1:
+                    assert retarget_config==[dict(task_budget=str(retarget_budget),finite='1',cooldown='20',started='protected',primary='protected',recovery='protected',fair='protected',fixed_work='1')]
+                    assert retarget_samples and all(int(s['task_budget'])==retarget_budget and 0<=int(s['max_task_moves'])<=retarget_budget for s in retarget_samples)
+                    counts=[int(s['repeated_moves']) for s in retarget_samples];assert counts==sorted(counts)
+                else:
+                    assert not retarget_config and not retarget_samples
+                fleet_audit=None
                 fleet_limit=int(case['environment'].get('CGAR_TRICK_GAME_ACTIVE_LIMIT','0'))
                 fleet=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_GAME_FLEET] ')]
                 if fleet_limit:
@@ -186,6 +196,46 @@ def main():
                     assert f['asset_sha256']==('15e86aa9a3f5d45a822bd699db8a7adc2a34ca76e1bcca7e8e18640d28103681' if tabu else 'none')
                     assert 0<=int(f['tabu_kept'])<=int(f['active']) and 0<=int(f['held_kept'])<=int(f['active'])
                     assert int(f['mask_fnv1a64'])>0
+                    # Reconstruct the mask independently from the archived starts
+                    # and committed asset, then audit every actual assignment.
+                    inp=Path(inputs['instances']['GAME']['input']);inp_data=read(inp)
+                    agent_path=inp.parent/inp_data['agentFile']
+                    numbers=[int(l) for l in agent_path.read_text().splitlines() if l.strip() and not l.lstrip().startswith('#')]
+                    assert numbers[0]==row['robots'] and len(numbers)==row['robots']+1
+                    starts=numbers[1:];exempt=set()
+                    if tabu:
+                        asset=subprocess.check_output(['git','show',a.commit+':cgar/tricks/game_fleet_tabu.hpp'],cwd=ROOT,text=True)
+                        body=asset.split('game_tabu_cells[] = {',1)[1].split('};',1)[0]
+                        exempt=set(map(int,re.findall(r'\d+',body)));assert len(exempt)==10882
+                    mask64=(1<<64)-1
+                    def priority(robot):
+                        x=(int(case['seed'])&mask64)^((robot+0x9e3779b97f4a7c15)&mask64)
+                        x=((x^(x>>30))*0xbf58476d1ce4e5b9)&mask64
+                        x=((x^(x>>27))*0x94d049bb133111eb)&mask64
+                        return x^(x>>31)
+                    pool=[r for r,c in enumerate(starts) if c not in exempt]
+                    pool.sort(key=lambda r:(priority(r),r))
+                    excluded=set(pool[:min(row['robots']-fleet_limit,len(pool))])
+                    fingerprint=14695981039346656037
+                    for robot in range(row['robots']):
+                        fingerprint=((fingerprint^int(robot in excluded))*1099511628211)&mask64
+                    assert int(f['held_kept'])==0 and int(f['eligible_pool'])==len(pool)
+                    assert int(f['tabu_kept'])==row['robots']-len(pool)
+                    assert int(f['mask_fnv1a64'])==fingerprint and int(f['disabled'])==len(excluded)
+                    actual=read(raw/label/(name+'.json'))
+                    assert [p[0]*530+p[1] for p in actual['start']]==starts
+                    assert len(actual['actualSchedule'])==row['robots']
+                    checked=0
+                    for robot in excluded:
+                        for item in actual['actualSchedule'][robot].split(','):
+                            if item:
+                                assert int(item.split(':')[1])<0,(robot,item)
+                                checked+=1
+                    del actual
+                    fleet_audit=dict(start_file=str(agent_path),mask_independently_reconstructed=True,
+                        mask_fnv1a64=fingerprint,excluded_robots=len(excluded),
+                        excluded_schedule_entries_checked=checked,excluded_positive_assignments=0)
+
                 else:
                     assert not fleet
                 after_turn=int(case['environment'].get('CGAR_TEMPORAL_PROMISE_AFTER_TURN','0'))
@@ -203,7 +253,7 @@ def main():
                 else:
                     assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
-                work[key]=dict(game_fleet=fleet,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)

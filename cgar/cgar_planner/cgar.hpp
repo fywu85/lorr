@@ -256,6 +256,7 @@ struct MovementStats {
 };
 
 struct Stats {
+    long long match_repeat_moves = 0, match_max_task_moves = 0;
     TemporalRegionPeaks regional_peaks;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
@@ -522,6 +523,7 @@ private:
         long long primary = 0, recovery = 0, fair = 0, budget = 0;
     };
     void prune_reassignment_records();
+    bool reassignment_budget_exhausted(int task) const;
     UnopenedCandidates unopened_candidates(const std::vector<int>& proposed, bool existing_only, bool include_budget = false) const;
     void audit_fresh_pickup(const std::vector<int>& proposed, const std::vector<int>& full_slots);
     void reassign_unopened(std::vector<int>& proposed);
@@ -632,6 +634,8 @@ private:
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
     int match_group_limit_ = 4;
+    int match_task_budget_ = 1;
+    std::unordered_map<int, int> match_task_moves_;
     int match_interval_ = 10;
     bool match_pickup_groups_ = false;
     int match_budget_audit_stride_ = 0;

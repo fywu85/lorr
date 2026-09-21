@@ -1009,11 +1009,29 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
           (temporal_remaining_flow_ && !trick_options.remaining_flow))))
         throw std::invalid_argument("unopened pickup matching requires temporal/oriented pickup flow, a boolean selector and no other rematching, chain pricing, generic remaining-flow score or guides; under --trick use CGAR_TRICK_UNOPENED_MATCH");
     reassign_match_ = reassign_match != 0 || trick_options.matching;
+    match_task_budget_ = 1;
+    if (const char* budget = std::getenv("CGAR_REASSIGN_MATCH_TASK_BUDGET")) {
+        if (!*budget) throw std::invalid_argument("matching task budget must be an integer in [1,8]");
+        match_task_budget_ = 0;
+        for (const char* p = budget; *p; ++p) {
+            if (*p < '0' || *p > '9' || match_task_budget_ > (8 - (*p - '0')) / 10)
+                throw std::invalid_argument("matching task budget must be an integer in [1,8]");
+            match_task_budget_ = match_task_budget_ * 10 + (*p - '0');
+        }
+        if (match_task_budget_ < 1 || match_task_budget_ > 8)
+            throw std::invalid_argument("matching task budget must be an integer in [1,8]");
+    }
+    if (match_task_budget_ != 1 && (!reassign_match_ || match_horizon_))
+        throw std::invalid_argument("nondefault task budget requires unopened matching without the horizon guard");
+    match_task_moves_.clear();
+    if (match_task_budget_ != 1)
+        std::printf("[cgar-match-retarget-config] task_budget=%d finite=1 cooldown=20 started=protected primary=protected recovery=protected fair=protected fixed_work=1\n", match_task_budget_);
+
     match_interval_ = env_int("CGAR_REASSIGN_MATCH_INTERVAL", 10);
     if (match_interval_ < 1 || match_interval_ > 100 || (!reassign_match_ && match_interval_ != 10))
         throw std::invalid_argument("matching interval requires enabled matching and 1-100 steps (disabled default10)");
     if (match_interval_ != 10)
-        std::printf("[cgar-match-cadence] interval=%d default_interval=10 cooldown=20 task_budget=1 same_group_quota=1 fixed_work=1\n", match_interval_);
+        std::printf("[cgar-match-cadence] interval=%d default_interval=10 cooldown=20 task_budget=%d same_group_quota=1 fixed_work=1\n", match_interval_, match_task_budget_);
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
         throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
@@ -1028,7 +1046,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (match_budget_audit_stride_)
         std::printf("[cgar-match-budget-shadow-config] stride=%d read_only=1 after_real_match=1 resident_only=1 include_budget=1 cooldown=20 task_disjoint_witnesses=1\n", match_budget_audit_stride_);
     if (reassign_match_)
-        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=1 cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_pickup_groups_);
+        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=%d cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_task_budget_, match_pickup_groups_);
     const int fresh_audit = env_int("CGAR_FRESH_PICKUP_AUDIT", 0);
     if (fresh_audit < 0 || fresh_audit > 1 || (fresh_audit &&
         (!diagnostics_ || !reassign_match_ || !hrrn_ || pickup_full_robots_ < 1 || pickup_full_robots_ > 64 || short_task_trick_)))
@@ -2122,6 +2140,9 @@ void Cgar::log_summary() {
         stats_.match_anchors, stats_.match_full_groups, stats_.match_nodes, stats_.match_matrix_entries, stats_.match_cycles, stats_.match_accepted_cycles,
         stats_.match_moved, stats_.match_saving, stats_.match_primary_protected,
         stats_.match_recovery_protected, stats_.match_fair_protected, stats_.match_budget_protected, stats_.match_pickup_selected);
+    if (match_task_budget_ != 1)
+        std::printf("[cgar-match-retarget] t=%d task_budget=%d repeated_moves=%lld max_task_moves=%lld tracked=%zu\n",
+            env_->curr_timestep, match_task_budget_, stats_.match_repeat_moves, stats_.match_max_task_moves, match_task_moves_.size());
     if (known_horizon_)
         std::printf("[cgar-horizon] t=%d known_horizon=%d pairs=%lld impossible_pairs=%lld rank_changes=%lld first_rank_change=%lld assignments=%lld impossible_assignments=%lld assumption=configured\n",
             env_->curr_timestep, known_horizon_, stats_.horizon_pairs, stats_.horizon_impossible_pairs,
@@ -2184,6 +2205,16 @@ void Cgar::prune_reassignment_records() {
     };
     prune(reassigned_tasks_);
     prune(fair_tasks_);
+    if (match_task_budget_ != 1) for (auto it = match_task_moves_.begin(); it != match_task_moves_.end();)
+        it = reassigned_tasks_.count(it->first) ? std::next(it) : match_task_moves_.erase(it);
+
+}
+
+bool Cgar::reassignment_budget_exhausted(int task) const {
+    if (!reassigned_tasks_.count(task)) return false;
+    if (match_task_budget_ == 1) return true;
+    const auto it = match_task_moves_.find(task);
+    return it == match_task_moves_.end() || it->second >= match_task_budget_;
 }
 
 Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& proposed, bool existing_only, bool include_budget) const {
@@ -2219,7 +2250,7 @@ Cgar::UnopenedCandidates Cgar::unopened_candidates(const std::vector<int>& propo
         if (task.idx_next_loc != 0 || task.locations.empty() || !cert_.core[task.locations.front()] ||
             cell == task.locations.front() || !eligible_task(task)) continue;
         if (fair_tasks_.count(proposed[i])) { ++result.fair; continue; }
-        if (reassigned_tasks_.count(proposed[i])) { ++result.budget; if (!include_budget) continue; }
+        if (reassignment_budget_exhausted(proposed[i])) { ++result.budget; if (!include_budget) continue; }
         if (existing_only && (agent.task != proposed[i] || agent.stop != 0 || agent.ticket == kIdleTicket)) continue;
         result.robots.push_back(i);
     }
@@ -2708,7 +2739,7 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
             int budget_rows = 0; bool repeated = false;
             for (int row : cycle.rows) {
                 const int task = proposed[item.robots[row]];
-                budget_rows += reassigned_tasks_.count(task) != 0;
+                budget_rows += reassignment_budget_exhausted(task);
                 repeated |= match_budget_audit_seen_tasks_.count(task) != 0;
             }
             if (!budget_rows) { ++match_budget_shadow_.unprotected_cycles; continue; }
@@ -2746,6 +2777,14 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
             for (int row : cycle.rows) {
                 const int robot = item.robots[row];
                 reassigned_tasks_.insert(proposed[robot]);
+                int moves = 1;
+                if (match_task_budget_ != 1) {
+                    moves = ++match_task_moves_[proposed[robot]];
+                    if (moves > match_task_budget_) throw std::logic_error("matching exceeded finite task retarget budget");
+                    stats_.match_repeat_moves += moves > 1;
+                }
+                stats_.match_max_task_moves = std::max(stats_.match_max_task_moves, static_cast<long long>(moves));
+
                 replacement[row] = proposed[item.robots[item.permutation.column[row]]];
                 last_reassignment_[robot] = now;
                 agents_[robot].committed = -1;
