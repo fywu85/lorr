@@ -121,6 +121,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.policy_profile=integer("R05_POLICY_PROFILE",0);
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
+    c.fuse_cache_hits=integer("R05_FUSE_CACHE_HITS",0);
     c.kinematic_mask=integer("R05_KINEMATIC_MASK",0);
     c.cycle_mask=integer("R05_CYCLE_MASK",0);
     c.cache_slots=integer("R05_CACHE_SLOTS",64);
@@ -970,6 +971,13 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
             auto* entry=&cache[size_t(i)*cfg.cache_slots+slot];ranking_slots[i]=entry;
             if(entry->epoch==ranking_epoch_ && entry->key==key && entry->chain==active_chain[i]) {
                 ranking_hits[i]=1;idle_heading[i]=entry->idle_heading;base_cost[i]=entry->base_cost;
+                if(cfg.fuse_cache_hits) {
+                    // Copy while this sparse cache entry is already being read.
+                    // Later collision/priority resolution still runs unchanged.
+                    candidate_count[i]=entry->count;
+                    if(cfg.kinematic_mask)kinematic_masks[i]=entry->kinematic_mask;
+                    std::copy_n(entry->candidates.begin(),entry->count,candidates[i].begin());
+                }
             } else {
                 entry->epoch=ranking_epoch_;entry->key=key;entry->chain=active_chain[i];
             }
@@ -1036,9 +1044,12 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
     for(int i=0;i<n;++i) {
         auto& cand=candidates[i];int count=0;
         if(ranking_hits[i]) {
-            const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
-            if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
-            std::copy_n(entry.candidates.begin(),entry.count,cand.begin());continue;
+            if(!cfg.fuse_cache_hits) {
+                const auto& entry=*ranking_slots[i];candidate_count[i]=entry.count;
+                if(cfg.kinematic_mask)kinematic_masks[i]=entry.kinematic_mask;
+                std::copy_n(entry.candidates.begin(),entry.count,cand.begin());
+            }
+            continue;
         }
         for(int d=0;d<4;++d) {
             int v=g.next[p[i]][d];if(v<0 || (!cfg.intent_rotation && !allowed(i,d)))continue;

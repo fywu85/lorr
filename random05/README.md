@@ -163,3 +163,9 @@ by instance name must be exposed as a trick. Verify new batches with
 and waiting-history audits.
 
 `R05_WINDOW_STARTS` (default1) adds a fixed portfolio of complete pipeline seeds before LNS. Extra starts use `R05_NOISE`; they are ranked by predicted remaining task cost across the window. The one-start default preserves the previous initializer. No wall-clock cutoff shortens this portfolio.
+
+`R05_FUSE_CACHE_HITS=1` is an experimental exact optimization: it copies a
+cached move ranking during its first lookup, avoiding a second read pass over
+the sparse cache. It defaults off and changes no candidate score, priority,
+collision rule, or work budget. Full trajectory equivalence and runtime
+comparisons decide whether it is useful.

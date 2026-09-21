@@ -538,6 +538,8 @@ void cached_kinematic_masks() {
         require(original==simulate(cfg,12),"kinematic mask changed candidate order or collision resolution");
         cfg.threads=2;
         require(original==simulate(cfg,12),"kinematic mask changed across workers or task turnover");
+        cfg.fuse_cache_hits=true;
+        require(original==simulate(cfg,12,5,5,true),"fused ranking hits changed turnover, workers or checkpoint replay");
     }
 }
 
@@ -554,6 +556,8 @@ void cached_candidate_rankings() {
         require(reference==simulate(cfg,12),"ranking cache changed dense task turnover/policy choices");
         cfg.threads=2;
         require(reference==simulate(cfg,12),"ranking cache changed with worker count");
+        cfg.fuse_cache_hits=true;
+        require(reference==simulate(cfg,12),"fused ranking lookup changed the uncached policy");
         if(variant==0)for(int slots:{8,128,256}) {
             // A tiny direct-mapped cache forces eviction; larger tables must
             // retain exactly the same rankings through chained task turnover.

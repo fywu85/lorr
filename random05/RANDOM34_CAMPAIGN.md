@@ -56,3 +56,18 @@ without consuming the one-second margin, and profile the crowded policy before
 changing its inner loop. The current implementation caps window iterations at
 2,048 even though the selected RANDOM-03 run averages275 ms; that cap can be
 raised explicitly, while default behavior and fixed-work semantics stay intact.
+
+## Source86 work-budget trials
+
+Sourcef60f254/build86 passes the full regression suite in22.59 seconds. The
+next five full RANDOM-03 cases keep the selected field/scheduler unchanged and
+test I2048 as an exact control, I3072, I4096, plus repair-group4 at I4096/I8192.
+The preliminary group4/I2048 result is2427 (versus2439), but mean155/max231ms
+versus275/372ms: a substantial speed/quality tradeoff to measure at larger work.
+These are explicitly budgeted iterations, not a deadline-based search.
+
+The first batch's group16 exceeds1s atstep111 and remains invalid. The unguided
+matching trial was refused before solver launch on research40 (64 physical
+cores visible where16 were requested), so it has no algorithmic result. That
+original refusal is preserved; exclude research40 from subsequent submissions
+until its binding is understood. No cause is inferred from the resource record.

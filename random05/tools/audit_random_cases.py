@@ -62,6 +62,21 @@ def main():
         assert case['cores'] == 16 and case['smt'] == 2 and int(case['env']['R05_THREADS']) == 32
         assert case['steps'] == reference['steps']
         assert case['limit_ms'] == 1000 and case['preprocess_ms'] == 30000
+        if summary.get('failure_kind') == 'resource_preflight':
+            # Allocation refusal happens before case.json/usage/result exist.
+            # Preserve it as an invalid attempt, never as a performance result.
+            assert not summary['valid'] and summary['exit'] != 0 and summary['solver_started'] is False
+            assert sha(work / 'lifelong') == case['binary_sha256'] == summary['binary_sha256'] == source['binary_sha256']
+            for filename, digest in case['input_hashes'].items():
+                assert sha(Path(filename)) == digest, filename
+            rows.append(dict(instance=instance, profile='trick' if case.get('trick') else 'general',
+                name=case['name'], valid=False, source_commit=source['commit'],
+                finished_utc=summary['finished_utc'], exit=summary['exit'],
+                evidence=str((archived / case['name'] / 'summary.json').relative_to(ROOT)),
+                failure_kind=summary['failure_kind'], failure=summary['failure'],
+                solver_started=False, note='Allocation rejected before solver launch; original attempt retained.'))
+            print(instance, case['name'], 'allocation refused; preserved', flush=True)
+            continue
         allocation = read(case_dir / 'allocation.json')['resources']
         assert allocation['cpu_model'] == 'AMD EPYC 9354 32-Core Processor'
         assert allocation['physical_cores_visible'] == 16 and len(allocation['logical_cpu_affinity']) == 32

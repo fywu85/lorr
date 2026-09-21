@@ -1194,3 +1194,15 @@ no search-policy change. Test the full regression suite and unchanged2048
 control alongside4096, with qualification across seeds before promotion.
 The first mixed-source batch separately tests eight routing/scheduling changes
 and four RANDOM-04 runtime controls. See RANDOM34_CAMPAIGN.md for criteria.
+
+## Exact ranking-cache read fusion (source87)
+
+RANDOM-04's sampled policy time at depth16/K11520 is about29% setup,19%
+candidate ranking,7% ordering,28% spatial/kinematic PIBT,7% cycles and9% actions.
+These are sampled worker elapsed times, not a causal speedup prediction.
+Optional R05_FUSE_CACHE_HITS copies cached candidates in the first lookup pass
+instead of reopening the entry in the later candidate pass. This preserves the
+rank order and kinematic mask exactly; dynamic push costs still bypass caching.
+The default is off. Dense task-turnover, cache-eviction, worker and checkpoint
+regressions compare it with the uncached policy, including the dynamic bypass.
+Full RANDOM-04 same-budget trajectories must match before any timing claim.
