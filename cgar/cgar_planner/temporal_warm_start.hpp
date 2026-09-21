@@ -110,10 +110,11 @@ public:
     }
 
     // Keep the ordinary seed at index zero as the unchanged score baseline.
-    // Promised robots start at a nonzero compatible suffix. Every searchable
-    // alternative (indices >= 1) has the same first action; successful searches
+    // Promised robots start at a nonzero compatible suffix. Every TemporalPibt
+    // searchable alternative (indices >= 1) has the same first action; successful searches
     // and their rollbacks therefore preserve it. Filtering preserves cost order
     // and operation IDs. The adapter also checks the final emitted action.
+    // Branch transactions can search index zero and must remain disabled.
     template<class Deadline>
     static std::vector<int> constrain_first_actions(std::vector<std::vector<TemporalChoice>>& choices,
             std::vector<int>& selected, const std::vector<char>& fixed, Deadline check) {

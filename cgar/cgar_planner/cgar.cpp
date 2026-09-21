@@ -844,6 +844,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     guide_options_.reconnect_steps = env_int("CGAR_GUIDE_RECONNECT_STEPS", 0);
     guide_options_.refine_batch = env_int("CGAR_GUIDE_REFINE_BATCH", 0);
     temporal_transaction_options_.work = env_int("CGAR_TEMPORAL_BRANCH_WORK", 0);
+    // Branch repair can select ordinary choice zero when resolving displaced
+    // owners. The first-action promise prototype excludes that fallback.
+    if (temporal_promise_after_turn_ && temporal_transaction_options_.work)
+        throw std::invalid_argument("after-turn promises require branch transactions disabled");
     temporal_transaction_options_.max_owners = env_int("CGAR_TEMPORAL_BRANCH_OWNERS", 2);
     if (temporal_transaction_options_.work < 0 || temporal_transaction_options_.work > 2000000 ||
         temporal_transaction_options_.max_owners < 1 || temporal_transaction_options_.max_owners > 2 ||

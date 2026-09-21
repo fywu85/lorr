@@ -2678,19 +2678,20 @@ void temporal_after_turn_promise_regression() {
   require(rejected,"invalid promise boolean accepted");
  }
  setenv("CGAR_TEMPORAL_PROMISE_AFTER_TURN","1",1);
- for(int mode=0;mode<3;++mode){
+ for(int mode=0;mode<4;++mode){
   setenv("CGAR_TEMPORAL",mode?"1":"0",1);
   if(mode==1)setenv("CGAR_TEMPORAL_WARM_START","1",1);
   if(mode==2)setenv("CGAR_TEMPORAL_MIXED_START","1",1);
+  if(mode==3)setenv("CGAR_TEMPORAL_BRANCH_WORK","32",1);
   bool rejected=false;try{Cgar planner;planner.initialize(&config,1000);}catch(const std::invalid_argument&){rejected=true;}
-  require(rejected,"promise accepted missing temporal mode or an incompatible warm/mixed start");
-  unsetenv("CGAR_TEMPORAL_WARM_START");unsetenv("CGAR_TEMPORAL_MIXED_START");
+  require(rejected,"promise accepted missing temporal mode or an incompatible warm/mixed/branch option");
+  unsetenv("CGAR_TEMPORAL_WARM_START");unsetenv("CGAR_TEMPORAL_MIXED_START");unsetenv("CGAR_TEMPORAL_BRANCH_WORK");
  }
  temporal_parallel_regression();temporal_region_adapter_regression();temporal_primary_regression();
  setenv("CGAR_FLOW_STRENGTH","1",1);setenv("CGAR_FLOW_WARMUP","4",1);setenv("CGAR_FLOW_MIN_SAMPLES","1",1);
  temporal_region_adapter_regression();
  for(const char* name:{"CGAR_TEMPORAL_PROMISE_AFTER_TURN","CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES"})unsetenv(name);
- std::cout<<"TEMPORAL_AFTER_TURN_PROMISE passed occupied_cycle=4 promised_wait=4 unchanged_score_reference=1 protected_cascade=3 changed_goal=1 stale_history=1 explicit_timeout=1 invalid_configuration=9 disabled_equivalence_actions=720 protected_threaded_episodes=1\n";
+ std::cout<<"TEMPORAL_AFTER_TURN_PROMISE passed occupied_cycle=4 promised_wait=4 unchanged_score_reference=1 protected_cascade=3 changed_goal=1 stale_history=1 explicit_timeout=1 invalid_configuration=10 disabled_equivalence_actions=720 protected_threaded_episodes=1\n";
 }
 
 void guide_routes_regression() {

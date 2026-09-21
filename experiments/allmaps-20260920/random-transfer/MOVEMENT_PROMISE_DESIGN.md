@@ -114,3 +114,14 @@ transitions increase slightly. Throughput still falls. Therefore reducing this
 local symptom alone is not a successful throughput objective. Exact eligible
 promise retention/reset totals are retained in the paired summary; compatibility
 with the reset ordinary fleet cancels most proposed suffixes.
+
+## Configuration compatibility review
+
+The optional branch transaction resolver searches ordinary choice0 as a last
+fallback, unlike TemporalPibt construction/repair. Because the promise constraint
+retains that seed only as a score reference, this prototype now explicitly
+rejects positive `CGAR_TEMPORAL_BRANCH_WORK` together with promises. The final
+promise assertion already prevented silently emitting a changed action; the new
+initialization guard rejects the unsupported combination before planning.
+All measured promise profiles have branch work0. Warm/mixed/branch combinations
+are covered by strict invalid-configuration tests; ordinary branch tests remain.
