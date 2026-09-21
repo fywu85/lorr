@@ -275,6 +275,33 @@ def main():
                     row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
                 else:
                     assert not window_config and not window_samples
+                future_roots=int(case['environment'].get('CGAR_FUTURE_ROOTS','0'))
+                future_config=[fields(l) for l in logs if l.startswith('[cgar-future-config] ')]
+                future_samples=[fields(l) for l in logs if l.startswith('[cgar-future] ')]
+                if future_roots:
+                    assert not window_horizon and len(future_config)==1
+                    cfg=future_config[0];cells=int(cfg['cells'])
+                    for field,key,default in [('roots','CGAR_FUTURE_ROOTS',0),('horizon','CGAR_FUTURE_HORIZON',15),
+                            ('branches','CGAR_FUTURE_BRANCHES',4),('threads','CGAR_FUTURE_THREADS',4),
+                            ('noise','CGAR_FUTURE_NOISE',50),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
+                        assert int(cfg[field])==int(case['environment'].get(key,str(default)))
+                    assert cfg['seed']=='cgar' and cfg['protected']=='full_root_path' and cfg['objective']=='paid_plus_chain'
+                    assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
+                    assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
+                    assert 1<=int(cfg['turn_cost'])<=255 and 1<=int(cfg['wait_cost'])<=255
+                    assert [int(x['step']) for x in future_samples]==list(range(200,row['steps']+1,200))
+                    evaluations=future_roots*int(cfg['branches']);batches=evaluations*(int(cfg['horizon'])//5-1)
+                    for x in future_samples:
+                        assert x['complete']=='1' and int(x['evaluations'])==evaluations and int(x['batches'])==batches
+                        assert int(x['calls'])==int(x['step']) and int(x['total_evaluations'])==evaluations*int(x['step'])
+                        assert int(x['total_batches'])==batches*int(x['step']) and 0<=int(x['selected_root'])<future_roots
+                        assert 0<=int(x['selected_cost'])<=int(x['incumbent_cost'])
+                        assert 0<=int(x['changed_first'])<=row['robots']
+                        if future_roots==1:assert int(x['changed_first'])==0
+                    counts=[int(x['total_changed_first']) for x in future_samples];assert counts==sorted(counts)
+                    row['common_futures']=dict(configuration=cfg,last_sample=future_samples[-1])
+                else:
+                    assert not future_config and not future_samples
                 peak_samples=[fields(l) for l in logs if l.startswith('[cgar-regional-peaks] ')]
                 if int(case['environment'].get('CGAR_TEMPORAL_REGION_PEAK_AUDIT','0')):
                     assert [int(x['step']) for x in peak_samples]==list(range(200,row['steps']+1,200))

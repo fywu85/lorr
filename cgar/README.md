@@ -256,3 +256,33 @@ Optional field comparisons (all require the matching `--trick INSTANCE`):
   has a distinct recorded SHA-256. This does not change physical action duration.
 
 Neither option is a claimed improvement until its complete benchmarks pass.
+
+
+## Optional common-continuation selection
+
+`CGAR_FUTURE_ROOTS=4` compares the current complete repaired CGAR proposal with
+other completed global starts. Defaults are horizon15, branches4, threads4 and
+priority noise50 (`CGAR_FUTURE_HORIZON/BRANCHES/THREADS/NOISE`). Each root gets the
+same declared continuation orders and random seeds. Complete joint temporal-PIBT
+chunks project only already revealed task errands; no future assignments are
+invented. The aggregate objective is paid action cost plus exact remaining chain
+cost. Only the first action of a validated original CGAR proposal is executed.
+The incumbent is always included and wins exact ties. Protected primary, recovery
+and support paths stay fixed. This is a general, map-independent mechanism; any
+selected guidance field or instance profile still requires `--trick INSTANCE`.
+
+Roots must not exceed `CGAR_TEMPORAL_WORKERS` (maximum32); horizon must be
+10/15/20/25/30, branches1..16, threads1..32 and noise0..1000000. Complete chain
+resources use `CGAR_TEMPORAL_CHAIN_MB/THREADS`. Static temporal orientation
+guidance is required; rolling-window repair, learned changing fields, guide
+routes, next-errand scoring, neutral tails and legacy temporal history/promises
+are incompatible. Chain scoring and persistent priority portfolios are allowed.
+The selected root's originating priority vector is remembered.
+
+All declared root/branch pairs finish before selection, including with one root.
+Any error or deadline aborts the whole step; there is no partial-result success.
+An independent RNG and non-mutating distance-table peeks preserve the old complete
+trajectory when disabled or configured with one root. The forecast is a heuristic:
+it holds current protected paths stationary after their five-action prefix and
+does not predict future CGAR primary/recovery decisions. A lower forecast cost is
+not itself evidence of greater competition throughput. Full benchmarks decide.

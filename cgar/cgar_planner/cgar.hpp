@@ -38,6 +38,7 @@
 #include "horizon_bound.hpp"
 #include "chain_potential.hpp"
 #include "rolling_window.hpp"
+#include "common_futures.hpp"
 #include "guide_routes.hpp"
 
 #include <array>
@@ -260,6 +261,7 @@ struct MovementStats {
 
 struct Stats {
     WindowStats window;
+    long long future_calls = 0, future_evaluations = 0, future_batches = 0, future_changed_first = 0;
     long long window_calls = 0, window_changed_first = 0, window_retained = 0, window_history_resets = 0;
     long long match_repeat_moves = 0, match_max_task_moves = 0;
     TemporalRegionPeaks regional_peaks;
@@ -563,6 +565,8 @@ private:
     bool temporal_remaining_flow_ = false;
     ChainPotential chain_potential_;
     WindowOptions window_options_;
+    FutureOptions future_options_;
+    std::mt19937_64 future_rng_{0};
     RollingWindow rolling_window_;
     std::mt19937_64 window_rng_{0};
     int temporal_chain_mode_ = 0, temporal_chain_mb_ = 512, temporal_chain_threads_ = 1;

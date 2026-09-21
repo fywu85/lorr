@@ -397,7 +397,90 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 transaction_stats.max_agents, transaction_stats.score_before, transaction_stats.score_after,
                 std::chrono::duration<double>(Clock::now() - regions_finished).count());
     }
-    auto& search = transaction ? *transaction : (regional ? *regional : *results[best]);
+    auto* selected_search = transaction ? transaction.get() : (regional ? regional.get() : results[best].get());
+    int priority_selected_worker = best;
+    if (future_options_.roots) {
+        const auto started = Clock::now();
+        auto check = [&] { check_deadline(deadline_, "common_futures"); };
+        // The current repaired result is always root zero. Remaining roots are
+        // complete global proposals ranked by their original five-step score.
+        std::vector<TemporalPibt*> proposals{selected_search};
+        std::vector<int> origins{best}, ranked(temporal_workers_);
+        std::iota(ranked.begin(), ranked.end(), 0);
+        std::stable_sort(ranked.begin(), ranked.end(), [&](int a, int b) { return results[a]->score() > results[b]->score(); });
+        for (int worker : ranked) {
+            if (proposals.size() == size_t(future_options_.roots)) break;
+            if (results[worker].get() == selected_search) continue;
+            proposals.push_back(results[worker].get()); origins.push_back(worker);
+        }
+        WindowProblem problem;
+        problem.rows = cert_.rows; problem.cols = cert_.cols; problem.horizon = future_options_.horizon;
+        problem.turn_cost = guidance_turn_cost_; problem.wait_cost = flow_cost_scale_;
+        problem.oracle = &chain_potential_; problem.free = cert_.free; problem.fixed = pinned;
+        problem.forward.resize(cells);
+        for (int u = 0; u < cells; ++u) for (int d = 0; d < 4; ++d)
+            problem.forward[u][d] = turn_oracle_.forward_cost(u, d);
+        problem.allowed.resize(n_); problem.entry_allowed.resize(n_); problem.chains.resize(n_);
+        problem.tasks.resize(n_); problem.seed.resize(n_);
+        std::vector<int> waiting_action(n_, 3);
+        for (int r = 0; r < n_; ++r) {
+            check(); problem.tasks[r] = agents_[r].task;
+            std::vector<int> stops;
+            const auto found = env_->task_pool.find(agents_[r].task);
+            if (agents_[r].goal >= 0) {
+                if (found != env_->task_pool.end() && found->second.idx_next_loc >= 0 &&
+                    found->second.idx_next_loc < int(found->second.locations.size()) &&
+                    found->second.locations[found->second.idx_next_loc] == agents_[r].goal)
+                    stops.assign(found->second.locations.begin() + found->second.idx_next_loc, found->second.locations.end());
+                else stops.push_back(agents_[r].goal);
+                // Forecast the ordinary wait-seed rotation without changing LRU
+                // recency. The selected root still goes through normal emission.
+                if (const auto* table = turn_oracle_.peek(agents_[r].goal))
+                    waiting_action[r] = TemporalGeometry::wait_action(
+                        turn_oracle_.value(*table, loc_[r], ori_[r]),
+                        turn_oracle_.value(*table, loc_[r], (ori_[r] + 1) % 4),
+                        turn_oracle_.value(*table, loc_[r], (ori_[r] + 3) % 4), temporal_strict_wait_turns_);
+            }
+            problem.chains[r] = chain_potential_.make_chain(stops, 0, check);
+            if (chain_potential_.value(problem.chains[r], 0, loc_[r], ori_[r]) >= ChainPotential::infinity)
+                problem.fixed[r] = true;
+            problem.allowed[r].assign(cells, false); problem.entry_allowed[r].assign(cells, false);
+            for (int u = 0; u < cells; ++u) {
+                problem.allowed[r][u] = cert_.core[u] && allowed(r, u) && !witness[u];
+                problem.entry_allowed[r][u] = problem.allowed[r][u] && (intent_owner[u] < 0 || intent_owner[u] == r);
+            }
+        }
+        std::vector<WindowProblem> roots;
+        for (const auto* proposal : proposals) {
+            auto root = problem;
+            for (int r = 0; r < n_; ++r) {
+                check(); const auto& choice = proposal->choice(r);
+                const int first = pinned[r] ? int(actions[r]) : proposal->selected(r) ? choice.path->first_action : waiting_action[r];
+                auto& path = root.seed[r]; path.reserve(root.horizon + 1); path.push_back(loc_[r] * 4 + ori_[r]);
+                for (int t = 0; t < root.horizon; ++t) {
+                    const int action = t == 0 ? first : t < 5 ? TemporalGeometry::operations()[choice.operation][t] : 3;
+                    const int state = root.next(path.back(), action);
+                    if (state < 0 || (t < 5 && state / 4 != choice.path->cells[t]))
+                        throw std::logic_error("CGAR common-future root changed occupied cells");
+                    path.push_back(state);
+                }
+            }
+            roots.push_back(std::move(root));
+        }
+        const auto future = select_common_futures(roots, temporal_geometry_, order, temporal_budget_, future_options_, flow_cost_scale_, future_rng_(), check);
+        if (!future.completed) throw std::logic_error("CGAR exposed incomplete common futures");
+        selected_search = proposals[future.selected];
+        priority_selected_worker = origins[future.selected];
+        ++stats_.future_calls; stats_.future_evaluations += future.evaluations;
+        stats_.future_batches += future.batches; stats_.future_changed_first += future.changed_first;
+        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+            std::printf("[cgar-future] step=%d complete=1 selected_root=%d evaluations=%d batches=%d incumbent_cost=%lld selected_cost=%lld changed_first=%d orders_fnv1a64=%llu calls=%lld total_evaluations=%lld total_batches=%lld total_changed_first=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, future.selected, future.evaluations, future.batches,
+                static_cast<long long>(future.incumbent_cost), static_cast<long long>(future.selected_cost), future.changed_first,
+                static_cast<unsigned long long>(future.orders_fingerprint), stats_.future_calls, stats_.future_evaluations,
+                stats_.future_batches, stats_.future_changed_first, std::chrono::duration<double>(Clock::now() - started).count());
+    }
+    auto& search = *selected_search;
     // A promise constrains only an ordinary first action. Search and regional
     // repair may change its tail but must never return to the unconstrained seed.
     for (size_t i = 0; i < promised_first.size(); ++i) if (promised_first[i] >= 0 &&
@@ -531,11 +614,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 std::chrono::duration<double>(Clock::now() - started).count());
     }
     if (temporal_priority_noise_) {
-        temporal_priority_portfolio_.remember(priority_batch, best, env_->curr_timestep);
+        temporal_priority_portfolio_.remember(priority_batch, priority_selected_worker, env_->curr_timestep);
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
             std::printf("[cgar-priority-portfolio] step=%d workers=%d noise=%d changed_orders=%d reused=%d selected_worker=%d offsets_fnv1a64=%llu\n",
                 env_->curr_timestep + 1, temporal_workers_, temporal_priority_noise_, priority_batch.changed_orders,
-                priority_batch.reused, best, static_cast<unsigned long long>(TemporalPriorityPortfolio::fingerprint(priority_batch.offsets[best])));
+                priority_batch.reused, priority_selected_worker, static_cast<unsigned long long>(TemporalPriorityPortfolio::fingerprint(priority_batch.offsets[priority_selected_worker])));
     }
     if (temporal_warm_start_ || temporal_promise_after_turn_) {
         std::vector<int> expected_orientation = ori_;
