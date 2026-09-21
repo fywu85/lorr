@@ -1806,6 +1806,20 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"two-order repair accepted a missing window");
     }
+    {
+        Setting merge("R05_WINDOW_SEED_MERGE","1"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_seed_merge,"general seed merging was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"seed merging accepted a missing window");
+    }
+    {
+        Setting merge("R05_WINDOW_SEED_MERGE","2");
+        auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"seed merging accepted a non-boolean value");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2017,6 +2031,20 @@ void window_reproducibility() {
     cfg.threads=2;
     require(annealed_orders==simulate(cfg,8),"annealed two-order repairs depend on worker scheduling");
     cfg.window_temperature=0;cfg.window_progress_tie=false;
+    cfg.window_seed_merge=true;
+    for(int starts:{1,4}) {
+        cfg.window_starts=starts;cfg.threads=1;cfg.window_repair_orders=1;
+        cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+        const auto combined_seed=simulate(cfg,8,5,5,true);
+        cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+        require(combined_seed==simulate(cfg,8),"seed merging depends on workers, caches, heap or search storage");
+        require(combined_seed==simulate(cfg,8,5,5,true),"seed merging changed after checkpoint restoration");
+    }
+    cfg.window_repair_orders=2;cfg.window_iterations=0;
+    const auto seed_only=simulate(cfg,8,5,5,true);
+    cfg.threads=1;
+    require(seed_only==simulate(cfg,8),"unoptimized legal seed merging depends on workers");
+    cfg.window_seed_merge=false;
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

@@ -178,6 +178,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(progress_tie<0 || progress_tie>1 || (progress_tie && !c.window))
         throw std::invalid_argument("window progress tie-break requires an enabled window and a boolean value");
     c.window_progress_tie=progress_tie;
+    const int seed_merge=integer("R05_WINDOW_SEED_MERGE",0);
+    if(seed_merge<0 || seed_merge>1 || (seed_merge && !c.window))
+        throw std::invalid_argument("window seed merging requires an enabled window and a boolean value");
+    c.window_seed_merge=seed_merge;
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);

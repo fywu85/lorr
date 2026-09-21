@@ -272,7 +272,29 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
         const double merit=cfg.window_starts>1?seed_merit(shifted):0;
         if((cfg.window_starts==1 && better(cost,base_cost)) ||
            (cfg.window_starts>1 && (merit<base_merit || (merit==base_merit && better(cost,base_cost))))) {
-            base=std::move(shifted);base_cost=cost;selected_offsets=best_offsets_;
+            if(cfg.window_seed_merge)base.swap(shifted);
+            else base=std::move(shifted);
+            base_cost=cost;selected_offsets=best_offsets_;
+        }
+        if(cfg.window_seed_merge) {
+            // Both complete seeds are legal. Their conflict components collect
+            // every agent whose choices must agree to prevent vertex or edge
+            // conflicts. Independent components can therefore retain useful
+            // old commitments and switch other agents to fresh routes together.
+            const Cost before=base_cost;
+            const auto groups=window_conflict_components(g,base,shifted);
+            for(const auto& group:groups) {
+                Cost old_cost,new_cost;
+                for(int a:group) {
+                    const auto old=agent_cost(a,base[a]),fresh=agent_cost(a,shifted[a]);
+                    old_cost.total+=old.total;old_cost.remaining+=old.remaining;old_cost.integral+=old.integral;
+                    new_cost.total+=fresh.total;new_cost.remaining+=fresh.remaining;new_cost.integral+=fresh.integral;
+                }
+                if(new_cost.total<=old_cost.total && better(new_cost,old_cost))
+                    for(int a:group)base[a]=shifted[a];
+            }
+            validate(base);base_cost=total_cost(base);
+            if(better(before,base_cost))throw std::runtime_error("window seed mixing worsened its complete incumbent");
         }
     }
     // Unconstrained task-chain routes identify actual reservation blockers.

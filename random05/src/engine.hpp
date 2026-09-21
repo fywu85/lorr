@@ -69,7 +69,7 @@ struct Config {
     int window_starts=1, window_rounds=1, window_first_iterations=0, window_initial_steps=1, window_blocker_rotation=0;
     int window_repair_orders=1;
     bool window_reuse=false, window_fast_groups=false, window_heap4=false, window_merge=false;
-    bool window_progress_tie=false;
+    bool window_progress_tie=false, window_seed_merge=false;
     float window_temperature=0;
     bool window_blockers=false, window_equal=false;
     int rescore_roots=0, rescore_branches=64;
