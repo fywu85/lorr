@@ -1661,6 +1661,20 @@ void window_configuration() {
         ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
     };
     Setting window("R05_WINDOW","8"),rank("R05_SCORE_RANK_POWER","0.5"),startup("R05_SCORE_RANK_STEPS","20");
+    {
+        Setting progress("R05_WINDOW_PROGRESS_TIE","1");
+        auto general=environment(5,5,4);general.trick_instance="RANDOM-03";
+        require(Config::environment(general).window_progress_tie,"window progress tie option was not accepted");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"window progress ties accepted a missing window");
+    }
+    {
+        Setting invalid("R05_WINDOW_PROGRESS_TIE","2");
+        auto general=environment(5,5,4);general.trick_instance="RANDOM-03";bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"window progress ties accepted a non-boolean value");
+    }
     auto env=environment(5,5,4);env.trick_instance="RANDOM-03";
     const auto cfg=Config::environment(env);
     require(cfg.window==8 && cfg.score_rank_power==.5 && cfg.score_rank_steps==20,
@@ -1785,6 +1799,17 @@ void window_reproducibility() {
     cfg.threads=2;cfg.cost_cache=false;
     require(weighted==simulate(cfg,8),"weighted window scoring changed with workers or cost caching");
     cfg.score_rank_power=0;cfg.score_rank_steps=0;
+    cfg.window_progress_tie=true;cfg.cost_cache=true;cfg.window_heap4=true;
+    const auto early_progress=simulate(cfg,8,5,5,true);
+    cfg.threads=1;cfg.cost_cache=false;cfg.window_heap4=false;
+    require(early_progress==simulate(cfg,8),"window progress ties depend on workers, cost caching or heap layout");
+    cfg.threads=2;cfg.cost_cache=true;
+    require(early_progress==simulate(cfg,8,5,5,true),"window progress ties changed after checkpoint restoration");
+    cfg.window_temperature=2;
+    const auto annealed_progress=simulate(cfg,8,5,5,true);
+    cfg.threads=1;
+    require(annealed_progress==simulate(cfg,8),"annealed progress ties depend on worker scheduling");
+    cfg.window_progress_tie=false;cfg.window_temperature=0;
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

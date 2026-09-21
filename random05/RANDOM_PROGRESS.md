@@ -680,3 +680,34 @@ now obtains executed steps from the original full trace when an early summary
 lacks actual_path_steps; it never substitutes makespan. Original summaries remain
 unchanged. All six existing horizon tests pass, and the root PILOT dashboard and
 waiting report are regenerated from audited evidence.
+
+### Exact shared-cache transfer and sparse cutoff refinement, declared 15:51 UTC
+
+Four full RANDOM-05 cases test the existing immutable shared task/pose ranking
+cache on the selected4175profile. The2048MiB exact-cache control retains
+FIRST_K7968/K16320; a separately declared FIRST_K6144 case reserves startup
+headroom. Two more cases retain that startup work and increase later fixed work
+toK19584/K23040. Shared order-only storage automatically uses full score entries
+when movement bias needs them; no approximation or elapsed-time exit is introduced.
+Only full six-field equality can qualify the cache as an exact optimization.
+
+Six full RANDOM-01/02 cases refine cutoff0.5/0.625/0.875 around the selected0.75.
+All other current729/1401 settings and seeds stay fixed. The only changed choice
+is explicitly gated by --trick RANDOM-01/02. These are development selections,
+not fresh-input claims. Published records and every original failure are retained.
+
+### Source136 hypothesis: prefer earlier progress among equal window plans
+
+The window solver currently compares total action-plus-terminal cost, then
+terminal remaining work. Complete plans with equal values can still delay progress
+until late in the window, and equal-cost repair acceptance can move between them.
+The new optional R05_WINDOW_PROGRESS_TIE=1 adds accumulated remaining-chain cost
+as a tertiary comparison. It never knowingly trades worse primary or terminal
+cost for this preference. A* work, collision reservations, task assignments and
+hard deadlines are unchanged. Default0 preserves the old comparator exactly.
+
+This is a general mechanism with no map name, horizon knowledge or selected edge
+embedded. Full paired controls on the three windowed densities will decide whether
+it helps. Regression checks cover worker counts, caches, heap layouts, checkpoint
+restoration, simulated annealing and invalid configuration combinations. No gain
+is claimed before compilation, regression and full-run audits.

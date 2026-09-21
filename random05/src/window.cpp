@@ -13,9 +13,11 @@
 namespace r05 {
 namespace {
 using Paths=std::vector<std::vector<int>>;
-struct Cost { double total=0, remaining=0; };
+struct Cost { double total=0, remaining=0, integral=0; };
 bool better(const Cost& a,const Cost& b) {
-    return a.total<b.total-1e-5 || (std::abs(a.total-b.total)<=1e-5 && a.remaining<b.remaining-1e-5);
+    return a.total<b.total-1e-5 || (std::abs(a.total-b.total)<=1e-5 &&
+        (a.remaining<b.remaining-1e-5 || (std::abs(a.remaining-b.remaining)<=1e-5 &&
+         a.integral<b.integral-1e-5)));
 }
 float action_cost(const Graph& g,const Config& cfg,int from,int to,bool active) {
     if(!active && from==to)return 0;
@@ -32,6 +34,11 @@ Cost path_cost(const Graph& g,const Config& cfg,const Chain* chain,int stage,con
     for(size_t t=1;t<path.size();++t) {
         value.total+=action_cost(g,cfg,path[t-1],path[t],chain && stage<int(chain->goals.size()));
         stage=arrived(chain,stage,path[t]);
+        // A tertiary preference for progress earlier in the complete window.
+        // It never trades a worse primary path cost or terminal potential for
+        // apparent early progress, and does not alter the bounded A* search.
+        if(cfg.window_progress_tie && chain)
+            value.integral+=chain->cost(g,stage,path[t]/4,path[t]%4);
     }
     if(chain)value.remaining=chain->cost(g,stage,path.back()/4,path.back()%4);
     value.total+=value.remaining;return value;
@@ -166,14 +173,14 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     auto agent_weight=[&](int a) {return score_weights_.empty()?1.0:score_weights_[a];};
     auto agent_cost=[&](int a,const std::vector<int>& path) {
         auto cost=path_cost(g,cfg,assigned_[a],initial.stage[a],path);
-        const double weight=agent_weight(a);cost.total*=weight;cost.remaining*=weight;
+        const double weight=agent_weight(a);cost.total*=weight;cost.remaining*=weight;cost.integral*=weight;
         return cost;
     };
     auto total_cost=[&](const Paths& paths) {
         Cost out;
         for(int a=0;a<n;++a) {
             auto c=agent_cost(a,paths[a]);
-            out.total+=c.total;out.remaining+=c.remaining;
+            out.total+=c.total;out.remaining+=c.remaining;out.integral+=c.integral;
         }
         return out;
     };
@@ -396,7 +403,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 Cost previous,proposed;
                 for(int k=0;k<count;++k) {
                     int a=group[k];old[k]=island.paths[a];reserve.set(a,old[k],false);
-                    previous.total+=costs[a].total;previous.remaining+=costs[a].remaining;
+                    previous.total+=costs[a].total;previous.remaining+=costs[a].remaining;previous.integral+=costs[a].integral;
                 }
                 int planned=0;
                 for(;planned<count;++planned) {
@@ -404,10 +411,11 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     if(!search.solve(g,cfg,reserve,assigned_[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],replacement[planned]))break;
                     reserve.set(a,replacement[planned],true);
                     auto cost=agent_cost(a,replacement[planned]);
-                    proposed.total+=cost.total;proposed.remaining+=cost.remaining;
+                    proposed.total+=cost.total;proposed.remaining+=cost.remaining;proposed.integral+=cost.integral;
                 }
                 const bool equal=std::abs(proposed.total-previous.total)<=1e-8 &&
-                                 std::abs(proposed.remaining-previous.remaining)<=1e-8;
+                                 std::abs(proposed.remaining-previous.remaining)<=1e-8 &&
+                                 std::abs(proposed.integral-previous.integral)<=1e-8;
                 bool accept=planned==count && (better(proposed,previous) ||
                     (cfg.window_equal && equal && replacement!=old));
                 if(!accept && planned==count && cfg.window_temperature>0 && replacement!=old) {
@@ -428,6 +436,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     if(cfg.window_temperature>0) {
                         current_cost.total+=proposed.total-previous.total;
                         current_cost.remaining+=proposed.remaining-previous.remaining;
+                        current_cost.integral+=proposed.integral-previous.integral;
                         if(better(current_cost,incumbent_cost)) {
                             // Recompute before retaining a new best so any
                             // accumulated delta rounding cannot win selection.
@@ -463,9 +472,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             for(const auto& group:groups) {
                 Cost old_cost,new_cost;std::vector<Cost> replacement;replacement.reserve(group.size());
                 for(int a:group) {
-                    old_cost.total+=current[a].total;old_cost.remaining+=current[a].remaining;
+                    old_cost.total+=current[a].total;old_cost.remaining+=current[a].remaining;old_cost.integral+=current[a].integral;
                     replacement.push_back(agent_cost(a,alternative[a]));
-                    new_cost.total+=replacement.back().total;new_cost.remaining+=replacement.back().remaining;
+                    new_cost.total+=replacement.back().total;new_cost.remaining+=replacement.back().remaining;new_cost.integral+=replacement.back().integral;
                 }
                 // Never trade increased path cost for a secondary improvement:
                 // tiny accepted increases could otherwise accumulate by group.
