@@ -3408,7 +3408,13 @@ void random_trick_regression() {
   auto e=base;e.num_of_agents=name=="RANDOM-04"?700:800;
   e.curr_task_schedule.assign(e.num_of_agents,-1);e.goal_locations.resize(e.num_of_agents);
   for(int r=0;r<e.num_of_agents;++r)e.curr_states.push_back(State(free[r],0,r%4));
-  for(int t=0;t<4;++t){Task task;task.task_id=t;task.t_revealed=0;task.locations={free[818-t],free[t]};e.task_pool.emplace(t,task);}
+  // Capacity mode intentionally accepts only chains entirely in the certified
+  // core. Use eligible tasks so both 700- and 800-robot fixtures exercise the
+  // actual pickup metric rather than the empty-task admission path.
+  const auto fixture_cert=build_certificate_feasible(e.map,e.rows,e.cols,e.num_of_agents);
+  std::vector<int> core;for(int cell:free)if(fixture_cert.core[cell])core.push_back(cell);
+  require(core.size()>8,"RANDOM fixture core too small");
+  for(int t=0;t<4;++t){Task task;task.task_id=t;task.t_revealed=0;task.locations={core[core.size()-1-t],core[t]};e.task_pool.emplace(t,task);}
   auto plain=e,control=e;control.trick_instance=name;
   Cgar generic;generic.initialize(&plain,30000);
   setenv("CGAR_TRICK_LANES","0",1);Cgar ablation;ablation.initialize(&control,30000);unsetenv("CGAR_TRICK_LANES");
