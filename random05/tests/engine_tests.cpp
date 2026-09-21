@@ -118,6 +118,15 @@ void arrival_priority_semantics() {
     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
     require(rejected,"arrival priority escaped its explicit trick gate");
     env.trick_instance="RANDOM-04";require(Config::environment(env).arrival_priority==50,"valid arrival priority rejected");
+    Setting period("R05_ARRIVAL_ROOT_PERIOD","2");
+    require(Config::environment(env).arrival_root_period==2,"arrival portfolio period lost");
+    {Setting bonus("R05_ARRIVAL_PRIORITY","0");rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"arrival portfolio accepted a missing bonus");}
+    {Setting components("R05_COMPONENT_TRIALS","4");rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"arrival portfolio accepted unsupported component search");}
+
 }
 
 void scheduling() {
@@ -1404,6 +1413,30 @@ void optional_immediate_moves() {
     require(rescored==simulate(cfg,12),"rescoring substituted an optional immediate-move decision");
 }
 
+void optional_arrival_proposals() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto ordinary=simulate(cfg,12);bool changed=false;
+    cfg.arrival_priority=200;
+    for(int period:{1,2,4}) {
+        cfg.arrival_root_period=period;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        const auto selected=simulate(cfg,12,5,5,true);changed|=selected!=ordinary;
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(selected==simulate(cfg,12),"arrival proposal changed with cache or workers");
+        cfg.share_prefix=false;
+        require(selected==simulate(cfg,12),"shared prefix changed arrival proposal decisions");
+        cfg.share_prefix=true;
+    }
+    require(changed,"arrival portfolio did not affect the dense fixture");
+    cfg.futures=192;cfg.screen_branches=2;cfg.screen_keep=2;cfg.threads=1;
+    const auto screened=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(screened==simulate(cfg,12),"screened arrival proposals changed with workers");
+    cfg.rescore_roots=2;cfg.rescore_branches=4;cfg.threads=1;
+    const auto rescored=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(rescored==simulate(cfg,12),"rescoring changed an arrival proposal decision");
+}
+
 void remaining_work_priorities() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -1640,6 +1673,7 @@ void window_reproducibility() {
 
 int main() {
     arrival_priority_semantics();
+    optional_arrival_proposals();
     for(float bonus:{50.f,200.f}) {
         Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
         cfg.arrival_priority=bonus;cfg.threads=1;cfg.active_task_cap=18;

@@ -180,6 +180,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.priority_remaining_weight=real("R05_PRIORITY_REMAINING",0);
     c.priority_remaining_steps=integer("R05_PRIORITY_REMAINING_STEPS",0);
     c.arrival_priority=real("R05_ARRIVAL_PRIORITY",0);
+    c.arrival_root_period=integer("R05_ARRIVAL_ROOT_PERIOD",0);
+    if(c.arrival_root_period<0 || (c.arrival_root_period>0 && c.arrival_priority<=0))
+        throw std::invalid_argument("arrival root portfolio needs a positive bonus and nonnegative period");
     if(!std::isfinite(c.arrival_priority) || c.arrival_priority<0 || (c.arrival_priority>0 && !random_trick))
         throw std::invalid_argument("arrival priority needs a nonnegative bonus and explicit trick instance");
     if(!std::isfinite(c.priority_remaining_weight) || c.priority_remaining_weight<0 ||
@@ -379,6 +382,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.arrival_root_period>0 && (c.component_trials || c.replan_roots))
+        throw std::invalid_argument("arrival root portfolio does not support component or replanning search");
     if(c.arrival_priority>0 && (c.operation_depth || c.window))
         throw std::invalid_argument("arrival priority is implemented for the pipelined policy only");
     if(c.priority_remaining_weight>0 && (c.operation_depth || c.window))
@@ -1178,7 +1183,8 @@ void Engine::fill_ready_moves(const Frame& f,const std::vector<float>& offsets,s
 }
 
 void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Action>& actions,
-                     uint64_t& expansion_count,bool cycle_moves,bool early_moves) const {
+                     uint64_t& expansion_count,bool cycle_moves,bool early_moves,float arrival_priority) const {
+    if(arrival_priority<0)arrival_priority=cfg.arrival_priority;
     PolicyTiming* timing=policy_profile_active_?&policy_timings_[omp_get_thread_num()]:nullptr;
     const bool sampled=timing && ++timing->calls%64==0;
     std::chrono::steady_clock::time_point measured;
@@ -1306,8 +1312,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         const bool active=assigned[i] && f.stage[i]<int(assigned[i]->goals.size());
         if(!active)priority-=100000;
         else if(priority_remaining_scale_>0)priority-=priority_remaining_scale_*base_cost[i];
-        if(active && cfg.arrival_priority>0)
-            priority+=arrival_priority_bonus(g,p[i],f.dir[i],moving[i],assigned[i]->goals[f.stage[i]],cfg.arrival_priority);
+        if(active && arrival_priority>0)
+            priority+=arrival_priority_bonus(g,p[i],f.dir[i],moving[i],assigned[i]->goals[f.stage[i]],arrival_priority);
         if(cfg.deadends && g.pocket[p[i]] &&
            (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
@@ -1693,8 +1699,8 @@ void Engine::match_future(Frame& frame) const {
 
 Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves,
                         const Continuation* continuation,RolloutPrefix* save,
-                        const RolloutPrefix* resume,const Rollout* forced_first,bool early_moves) const {
-    const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;r.early_moves=early_moves;
+                        const RolloutPrefix* resume,const Rollout* forced_first,bool early_moves,bool arrival_moves) const {
+    const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;r.early_moves=early_moves;r.arrival_moves=arrival_moves;
     auto total_cost=[&](const Frame& f) {
         double guided=0,plain=0;
         const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
@@ -1738,7 +1744,8 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
         if(t==0 && forced_first) {
             frame=forced_first->first;actions=forced_first->actions;
         } else if(cfg.operation_depth)advance_operations(frame,priorities,actions,r.expansions);
-        else advance(frame,priorities,actions,r.expansions,cycle_moves,early_moves && t==0);
+        else advance(frame,priorities,actions,r.expansions,cycle_moves,early_moves && t==0,
+                     cfg.arrival_root_period?(arrival_moves && t==0?cfg.arrival_priority:0):cfg.arrival_priority);
         if(t==0){r.first=frame;r.actions=actions;}
         if(cfg.completion_bonus>0)completions+=completed(frame)-before_completed;
         if(cfg.progress_discount<1 || cfg.rollout_match) {
@@ -1786,10 +1793,10 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
 }
 Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
                          const std::vector<Continuation>& continuations,bool cycle_moves,
-                         std::vector<double>* branch_scores,const Rollout* forced_first,bool early_moves) const {
+                         std::vector<double>* branch_scores,const Rollout* forced_first,bool early_moves,bool arrival_moves) const {
     RolloutPrefix prefix;
     const bool shared=cfg.share_prefix && !continuations.empty();
-    Rollout result=rollout(frame,offsets,cycle_moves,nullptr,shared?&prefix:nullptr,nullptr,forced_first,early_moves);
+    Rollout result=rollout(frame,offsets,cycle_moves,nullptr,shared?&prefix:nullptr,nullptr,forced_first,early_moves,arrival_moves);
     if(branch_scores){branch_scores->clear();branch_scores->reserve(continuations.size()+1);branch_scores->push_back(result.score);}
     if(continuations.empty())return result;
     if(shared && prefix.time!=cfg.continuation_start)
@@ -1797,8 +1804,8 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
     double score=result.score,mean=result.score,variance_sum=0;int count=1;
     for(const auto& continuation:continuations) {
         Rollout branch=shared
-            ?rollout(prefix.frame,offsets,cycle_moves,&continuation,nullptr,&prefix,nullptr,early_moves)
-            :rollout(frame,offsets,cycle_moves,&continuation,nullptr,nullptr,forced_first,early_moves);
+            ?rollout(prefix.frame,offsets,cycle_moves,&continuation,nullptr,&prefix,nullptr,early_moves,arrival_moves)
+            :rollout(frame,offsets,cycle_moves,&continuation,nullptr,nullptr,forced_first,early_moves,arrival_moves);
         // A branch evaluates the root's decision; it cannot silently substitute
         // a different first action or promise while contributing to its score.
         if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||
@@ -1827,10 +1834,10 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
 // sums preserve branch order; partial means never compete with full means.
 void Engine::evaluate_until(const Frame& frame,const std::vector<float>& offsets,
                             const std::vector<Continuation>& continuations,bool cycle_moves,
-                            int branches,ScreenedRollout& state,bool early_moves) const {
+                            int branches,ScreenedRollout& state,bool early_moves,bool arrival_moves) const {
     const bool shared=cfg.share_prefix && !continuations.empty();
     if(!state.count) {
-        state.result=rollout(frame,offsets,cycle_moves,nullptr,shared?&state.prefix:nullptr,nullptr,nullptr,early_moves);
+        state.result=rollout(frame,offsets,cycle_moves,nullptr,shared?&state.prefix:nullptr,nullptr,nullptr,early_moves,arrival_moves);
         state.sum=state.mean=state.result.score;state.count=1;
         if(shared && state.prefix.time!=cfg.continuation_start)
             throw std::runtime_error("missing screened rollout prefix");
@@ -1838,8 +1845,8 @@ void Engine::evaluate_until(const Frame& frame,const std::vector<float>& offsets
     while(state.count<branches) {
         const auto& continuation=continuations.at(state.count-1);
         Rollout branch=shared
-            ?rollout(state.prefix.frame,offsets,cycle_moves,&continuation,nullptr,&state.prefix,nullptr,early_moves)
-            :rollout(frame,offsets,cycle_moves,&continuation,nullptr,nullptr,nullptr,early_moves);
+            ?rollout(state.prefix.frame,offsets,cycle_moves,&continuation,nullptr,&state.prefix,nullptr,early_moves,arrival_moves)
+            :rollout(frame,offsets,cycle_moves,&continuation,nullptr,nullptr,nullptr,early_moves,arrival_moves);
         auto& result=state.result;
         if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||
            branch.first.dir!=result.first.dir || branch.first.pending!=result.first.pending ||
@@ -2109,7 +2116,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
     const int futures=env->curr_timestep==0 && cfg.first_futures>0?cfg.first_futures:cfg.futures;
     const int roots=search_roots(cfg,futures);
     std::vector<std::vector<float>> offsets(roots);
-    std::vector<unsigned char> root_early(roots,0);
+    std::vector<unsigned char> root_early(roots,0),root_arrival(roots,0);
     // Independent per-step streams preserve candidate prefixes across K and
     // keep local-refinement draws independent of the number of global futures.
     auto mix=[](uint64_t x) {
@@ -2183,6 +2190,12 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             root_early[k]=cfg.early_root_period>0 &&
                 (cfg.early_root_period==1 || k%cfg.early_root_period==1);
             if(generation && k==begin)root_early[k]=results[best].early_moves;
+            // Arrival protection is an optional first-decision proposal only.
+            // Score its continuation under the ordinary policy and preserve a
+            // later generation's incumbent proposal with its unchanged anchor.
+            root_arrival[k]=cfg.arrival_root_period>0 &&
+                (cfg.arrival_root_period==1 || k%cfg.arrival_root_period==1);
+            if(generation && k==begin)root_arrival[k]=results[best].arrival_moves;
             offsets[k]=generation?results[parent].offsets:best_offsets_;
             bool history_anchor=false;
             if(!generation && cfg.persist_elites>1 && !past_offsets_.empty() &&
@@ -2221,7 +2234,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             #pragma omp parallel for num_threads(cfg.threads) schedule(static)
             for(int k=begin;k<end;++k) {
                 try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
-                                         diagnose_branches?&branch_scores[k]:nullptr,nullptr,root_early[k]); }
+                                         diagnose_branches?&branch_scores[k]:nullptr,nullptr,root_early[k],root_arrival[k]); }
                 catch(...) { errors[k]=std::current_exception(); }
             }
         } else {
@@ -2229,7 +2242,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             #pragma omp parallel for num_threads(cfg.threads) schedule(static)
             for(int k=begin;k<end;++k) {
                 try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
-                                     cfg.screen_branches,screened[k-begin],root_early[k]); }
+                                     cfg.screen_branches,screened[k-begin],root_early[k],root_arrival[k]); }
                 catch(...) { errors[k]=std::current_exception(); }
             }
             for(int k=begin;k<end;++k)if(errors[k])std::rethrow_exception(errors[k]);
@@ -2247,7 +2260,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             for(size_t j=0;j<survivors.size();++j) {
                 int k=survivors[j];
                 try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
-                                     cfg.continuations,screened[k-begin],root_early[k]); }
+                                     cfg.continuations,screened[k-begin],root_early[k],root_arrival[k]); }
                 catch(...) { errors[k]=std::current_exception(); }
             }
             for(int k=begin;k<end;++k)results[k]=std::move(screened[k-begin].result);
@@ -2291,7 +2304,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             int q=g.to_grid[frame.loc[a]];
             if(std::abs(p/g.cols-q/g.cols)<=2 && std::abs(p%g.cols-q%g.cols)<=2)local[a]=noise(local_rng);
         }
-        Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves,nullptr,nullptr,results[best].early_moves);
+        Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves,nullptr,nullptr,results[best].early_moves,results[best].arrival_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
@@ -2452,6 +2465,9 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         if(cfg.screen_branches)
             std::fprintf(stderr,"R05_SCREEN t=%d roots=%d finalists=%d branch_evaluations=%d screen_branches=%d full_branches=%d\n",
                          env->curr_timestep,roots,roots/cfg.screen_keep,evaluated,cfg.screen_branches,cfg.continuations);
+        if(cfg.arrival_root_period)
+            std::fprintf(stderr,"R05_ARRIVAL_ROOT t=%d selected=%d period=%d bonus=%.3f\n",
+                         env->curr_timestep,int(selected.arrival_moves),cfg.arrival_root_period,cfg.arrival_priority);
         int moves=std::count(plan.begin(),plan.end(),FW);uint64_t expanded=0;
         for(const auto& r:results)expanded+=r.expansions;
         std::fprintf(stderr,"R05_STEP t=%d moves=%d score=%.3f expansions=%llu K=%d triaged=%d early_root=%d\n",

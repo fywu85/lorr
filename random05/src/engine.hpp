@@ -80,7 +80,7 @@ struct Config {
     int restart_period=4;
     int blocker_mutation_size=0, blocker_mutation_period=2, blocker_mutation_edges=1;
     float elite_decision_distance=0, priority_remaining_weight=0, arrival_priority=0;
-    int priority_remaining_steps=0, early_root_period=0;
+    int priority_remaining_steps=0, early_root_period=0, arrival_root_period=0;
     bool fast_push=false, push_idle_free=false, push_exclude_swap=false;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
@@ -181,7 +181,7 @@ struct Rollout {
     std::vector<Action> actions;
     std::vector<float> offsets;
     int moves=0;
-    bool cycle_moves=true, early_moves=false, fully_evaluated=true;
+    bool cycle_moves=true, early_moves=false, arrival_moves=false, fully_evaluated=true;
     int evaluated_branches=1;
     uint64_t expansions=0;
 };
@@ -299,18 +299,18 @@ private:
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true,
                     const Continuation* continuation=nullptr,RolloutPrefix* save=nullptr,
                     const RolloutPrefix* resume=nullptr,const Rollout* forced_first=nullptr,
-                    bool early_moves=false) const;
+                    bool early_moves=false,bool arrival_moves=false) const;
     Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
                      const std::vector<Continuation>& continuations,bool cycle_moves,
                      std::vector<double>* branch_scores=nullptr,const Rollout* forced_first=nullptr,
-                     bool early_moves=false) const;
+                     bool early_moves=false,bool arrival_moves=false) const;
     void evaluate_until(const Frame& frame,const std::vector<float>& offsets,
                         const std::vector<Continuation>& continuations,bool cycle_moves,
-                        int branches,ScreenedRollout& state,bool early_moves=false) const;
+                        int branches,ScreenedRollout& state,bool early_moves=false,bool arrival_moves=false) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;
     void fill_ready_moves(const Frame& frame, const std::vector<float>& offsets, std::vector<int>& to) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
-                 uint64_t& expansions,bool cycle_moves,bool early_moves=false) const;
+                 uint64_t& expansions,bool cycle_moves,bool early_moves=false,float arrival_priority=-1) const;
 };
 }
