@@ -34,6 +34,16 @@ unfinished run has no accepted throughput. Source/test and actual binary hashes
 must match. Compare lanes-off trajectories to the archived selected generic
 controls before crediting a field result. Report waiting tails separately.
 
-Status: fields generated and independently verified; CGAR integration and new
-regression fixtures prepared. Build, complete tests and full benchmark results
-are pending. No CITY/GAME throughput gain is claimed yet.
+Status: CGAR integration and the full regression suite passed. Source
+596b609351f4653dcb404e264edb4f20de98d7eb, binary
+41aea6783c66413dfc9df6970f18bae29c7ac431b592b1a8310b986a929ff758.
+New checks independently verify1544008 field values,361564 oriented distances,
+22000 generic/control actions and11000 native planning actions, plus explicit
+map/fleet and selector gates. [Build checks](build-v2/checks.json).
+The first build failed a new fixture assertion because timestep0 deliberately
+uses spatial mass dispatch; the native pickup fixture now uses timestep10.
+Production code did not change for that test correction. [Failure record](build-v1-failed/failure.json).
+
+Full matrices are submitted: CITY-01 job8901193 / verifier8901194,
+CITY-02 job8901195 / verifier8901196, GAME job8901197 / verifier8901198.
+No CITY/GAME throughput gain is claimed until complete results are verified.

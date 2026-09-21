@@ -56,7 +56,7 @@ primary paths and guidance updates. All fixtures and the complete existing suite
 
 ## Predeclared full-horizon comparison
 
-Source aa63d48; build/test pending. Four physical cores per case, exact archived
+Source aa63d48; build and complete tests passed. Four physical cores per case, exact archived
 MR24 inputs, planner seed0, complete1000/2000 steps, enforced1000ms decisions,
 32decimalGB, shared EPYC9354 hosts. Variant settings are frozen in the adjacent
 `promise-*-variants.json` files before runs begin.

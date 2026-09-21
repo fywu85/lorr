@@ -87,3 +87,18 @@ The new scheduling profiles are still seed0 results. RANDOM-04 selects **generic
 | RANDOM-05 | 2608 | 2 | 2026-09-21T01:14:54.037778+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_match64_direct_pickup4, --trick RANDOM-05 |
 
 RANDOM-04 generic selected profile scores1503/1480/1494, mean1492.33 versus1301.33 control (+14.68%). RANDOM-05 selected trick scores2574/2608/2528, mean2570 versus2478.33 field control (+3.70%); matching-only scores2544/2475/2532, mean2517. Overall selected R05 mean is26.43% above the earlier generic mean2032.67. Every selected-profile pair improves its control, but matching-only is mixed. The new2608 best is14.49% below historical NMS3050. [Full three-seed summary](random-transfer/scheduling-three-seed-summary.json).
+
+## 2026-09-21 dense follow-ups: bests unchanged
+
+Source [aa63d48](https://github.com/fywu85/lorr/commit/aa63d48cdb75f61774474faad025f049cc631f76),
+all14 added full seed0 cases valid under1s. The after-turn promise, explicit
+short-task preference, their combination, and neutral service-tail scoring all
+lost their respective paired controls. None updates the best table: RANDOM-04
+remains generic1503, RANDOM-05 remains TRICK2608 on seed2. Complete disabled
+control trajectories matched their earlier source exactly. [Promise/admission
+results](random-transfer/promise-summary.json), [service-tail check](random-transfer/neutral-service-summary.json).
+
+CITY-01/02 and GAME now have explicit NMS guidance providers with full regression
+proof; their full1s throughput comparisons are running. No pending result is
+entered as a new best. [Declared comparisons](city-game/README.md),
+[parallel general/trick roadmap](TRICK_ROADMAP.md).

@@ -71,7 +71,12 @@ Selected bests are unchanged. [Complete negative result](experiments/allmaps-202
 
 The parallel trick track now includes explicit NMS CITY/GAME guidance providers,
 verified against the unchanged archived constructor and independent formulas.
-Their full CGAR tests/build and strict1s field/admission comparisons are underway.
+Their full CGAR tests/build passed; strict1s field/admission comparisons are running.
 They require `--trick CITY-01`, `--trick CITY-02` or `--trick GAME`; no throughput
 gain is claimed before the complete measurements.
 [Declared CITY/GAME comparison](experiments/allmaps-20260920/city-game/README.md).
+
+The follow-up native service-tail scoring check also lost: RANDOM-04 1481->1398,
+RANDOM-05 2574->2542, both full seed0 pairs valid under1s. Best profiles remain
+unchanged. [Ablation](experiments/allmaps-20260920/random-transfer/NEUTRAL_SERVICE_CHECK.md).
+[Per-instance trick roadmap and NMS/KK source findings](experiments/allmaps-20260920/TRICK_ROADMAP.md).
