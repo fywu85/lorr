@@ -302,6 +302,7 @@ def main():
                             ('branches','CGAR_FUTURE_BRANCHES',4),('threads','CGAR_FUTURE_THREADS',4),
                             ('noise','CGAR_FUTURE_NOISE',50),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
                         assert int(cfg[field])==int(case['environment'].get(key,str(default)))
+                    regional_roots=int(case['environment'].get('CGAR_FUTURE_REGIONAL_ROOTS','0'));assert int(cfg.get('regional_roots','0'))==regional_roots
                     assert cfg['seed']=='cgar' and cfg['protected']=='full_root_path' and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -314,6 +315,9 @@ def main():
                         assert int(x['total_batches'])==batches*int(x['step']) and 0<=int(x['selected_root'])<future_roots
                         assert 0<=int(x['selected_cost'])<=int(x['incumbent_cost'])
                         assert 0<=int(x['changed_first'])<=row['robots']
+                        assert 0<=int(x.get('regional_candidates','0'))<=future_roots-1
+                        assert 0<=int(x.get('total_regional_candidates','0'))<=(future_roots-1)*int(x['step'])
+                        if not regional_roots:assert int(x.get('regional_candidates','0'))==int(x.get('total_regional_candidates','0'))==0
                         if future_roots==1:assert int(x['changed_first'])==0
                     counts=[int(x['total_changed_first']) for x in future_samples];assert counts==sorted(counts)
                     row['common_futures']=dict(configuration=cfg,last_sample=future_samples[-1])

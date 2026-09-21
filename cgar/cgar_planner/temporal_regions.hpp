@@ -55,11 +55,12 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         const std::vector<char>& protected_robots, const std::vector<double>& power,
         int displacement_limit, const TemporalPibt& initial,
         const TemporalRegionOptions& options, std::mt19937_64& rng,
-        TemporalRegionStats& stats, Deadline check) {
+        TemporalRegionStats& stats, Deadline check, std::vector<std::vector<int>>* checkpoints = nullptr) {
     if (options.parts < 1 || options.parts > 32 || options.rounds < 1 ||
         options.steps < 0 || options.candidate_limit < 0 || options.threads < 1 || options.threads > options.parts ||
         options.temperature_ppm < 0 || options.temperature_ppm > 10000)
         throw std::invalid_argument("invalid temporal region work limits");
+    if (checkpoints) checkpoints->clear();
     const int count = static_cast<int>(choices.size()), cells = rows * cols;
     int row_parts = 1, col_parts = options.parts;
     double aspect = 1e100;
@@ -162,6 +163,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
         if (merged->score() + 1e-6 < before)
             throw std::logic_error("regional repair reduced the complete-plan score");
         check();
+        if (checkpoints) checkpoints->push_back(selected);
     }
     return merged;
 }

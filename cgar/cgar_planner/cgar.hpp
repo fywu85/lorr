@@ -261,7 +261,7 @@ struct MovementStats {
 
 struct Stats {
     WindowStats window;
-    long long future_calls = 0, future_evaluations = 0, future_batches = 0, future_changed_first = 0;
+    long long future_calls = 0, future_evaluations = 0, future_batches = 0, future_changed_first = 0, future_regional_candidates = 0;
     long long window_calls = 0, window_changed_first = 0, window_retained = 0, window_history_resets = 0;
     long long match_repeat_moves = 0, match_max_task_moves = 0;
     TemporalRegionPeaks regional_peaks;

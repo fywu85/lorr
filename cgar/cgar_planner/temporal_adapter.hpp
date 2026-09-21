@@ -371,10 +371,12 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     stats_.temporal_selected_warm_runs += warm_started[best];
     const auto global_finished = Clock::now();
     TemporalRegionStats region_stats;
+    std::vector<std::vector<int>> region_checkpoints;
     std::unique_ptr<TemporalPibt> regional;
     if (temporal_regions_) regional = repair_temporal_regions(cert_.rows, cert_.cols, loc_, choices, pinned, power,
         temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
-        [&] { check_deadline(deadline_, "temporal_region_repair"); });
+        [&] { check_deadline(deadline_, "temporal_region_repair"); },
+        future_options_.regional_roots ? &region_checkpoints : nullptr);
     if (temporal_region_options_.audit_peaks) stats_.regional_peaks.merge(region_stats.peaks);
     stats_.regional_peaks_restored += region_stats.peaks_restored;
     const auto regions_finished = Clock::now();
@@ -406,6 +408,19 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         // complete global proposals ranked by their original five-step score.
         std::vector<TemporalPibt*> proposals{selected_search};
         std::vector<int> origins{best}, ranked(temporal_workers_);
+        std::vector<std::unique_ptr<TemporalPibt>> replayed_regions;
+        int regional_candidates = 0;
+        if (future_options_.regional_roots) {
+            // Every snapshot comes from a completed, jointly validated merge.
+            // Prefer distinct latest rounds; the final incumbent stays root0.
+            std::vector<std::vector<int>> seen{selected_search->selections()};
+            for (auto at = region_checkpoints.rbegin(); at != region_checkpoints.rend() && proposals.size() < size_t(future_options_.roots); ++at) {
+                check(); if (std::find(seen.begin(), seen.end(), *at) != seen.end()) continue;
+                replayed_regions.push_back(std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, 0, &*at));
+                proposals.push_back(replayed_regions.back().get()); origins.push_back(best);
+                seen.push_back(*at); ++regional_candidates;
+            }
+        }
         std::iota(ranked.begin(), ranked.end(), 0);
         std::stable_sort(ranked.begin(), ranked.end(), [&](int a, int b) { return results[a]->score() > results[b]->score(); });
         for (int worker : ranked) {
@@ -473,12 +488,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         priority_selected_worker = origins[future.selected];
         ++stats_.future_calls; stats_.future_evaluations += future.evaluations;
         stats_.future_batches += future.batches; stats_.future_changed_first += future.changed_first;
+        stats_.future_regional_candidates += regional_candidates;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-future] step=%d complete=1 selected_root=%d evaluations=%d batches=%d incumbent_cost=%lld selected_cost=%lld changed_first=%d orders_fnv1a64=%llu calls=%lld total_evaluations=%lld total_batches=%lld total_changed_first=%lld seconds=%.6f\n",
-                env_->curr_timestep + 1, future.selected, future.evaluations, future.batches,
+            std::printf("[cgar-future] step=%d complete=1 selected_root=%d regional_candidates=%d evaluations=%d batches=%d incumbent_cost=%lld selected_cost=%lld changed_first=%d orders_fnv1a64=%llu calls=%lld total_evaluations=%lld total_batches=%lld total_changed_first=%lld total_regional_candidates=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, future.selected, regional_candidates, future.evaluations, future.batches,
                 static_cast<long long>(future.incumbent_cost), static_cast<long long>(future.selected_cost), future.changed_first,
                 static_cast<unsigned long long>(future.orders_fingerprint), stats_.future_calls, stats_.future_evaluations,
-                stats_.future_batches, stats_.future_changed_first, std::chrono::duration<double>(Clock::now() - started).count());
+                stats_.future_batches, stats_.future_changed_first, stats_.future_regional_candidates, std::chrono::duration<double>(Clock::now() - started).count());
     }
     auto& search = *selected_search;
     // A promise constrains only an ordinary first action. Search and regional

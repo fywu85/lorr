@@ -1474,7 +1474,20 @@ void temporal_regions_regression(long long candidate_limit = 0, bool keep_peak =
      a_stats.peaks_restored!=b_stats.peaks_restored||(!keep_peak&&a_stats.peaks_restored)||serial_rng!=parallel_rng)
    throw std::runtime_error("regional parallel scheduling changed the complete result");
   TemporalRegionStats audit_stats;std::mt19937_64 audit_rng(trial+100);options.audit_peaks=true;
-  auto audited=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,audit_rng,audit_stats,[]{});
+  std::vector<std::vector<int>> checkpoints;
+  auto audited=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,audit_rng,audit_stats,[]{},&checkpoints);
+  if(checkpoints.size()!=size_t(options.rounds)||checkpoints.back()!=audited->selections())throw std::runtime_error("regional checkpoints incomplete");
+  for(int k=0;k<options.rounds;++k){
+   TemporalPibt replay(cells,choices,fixed,power,8192,0,&checkpoints[k]);
+   if(replay.score()!=audit_stats.round_scores[k])throw std::runtime_error("regional checkpoint changed complete score");
+   for(int r=0;r<count;++r)if(fixed[r]&&replay.selected(r)!=initial.selected(r))throw std::runtime_error("regional checkpoint changed protection");
+  }
+  if(trial==1&&temperature==1000){
+   std::vector<std::vector<int>> partial;TemporalRegionStats ignored;std::mt19937_64 failure_rng(trial+100);bool failed=false;
+   try{repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,failure_rng,ignored,[&]{if(!partial.empty())throw Timeout("after_complete_region_round");},&partial);}
+   catch(const Timeout&){failed=true;}
+   if(!failed||partial.size()!=1)throw std::runtime_error("regional checkpoint became partial success after a deadline");
+  }
   if(audited->selections()!=serial->selections()||audited->score()!=serial->score()||audit_rng!=serial_rng||
      audit_stats.candidates!=a_stats.candidates||audit_stats.repairs!=a_stats.repairs||audit_stats.accepted!=a_stats.accepted||
      audit_stats.kept_regions!=a_stats.kept_regions||audit_stats.reverted_regions!=a_stats.reverted_regions||
@@ -1542,7 +1555,7 @@ void temporal_regions_regression(long long candidate_limit = 0, bool keep_peak =
  }
  if(!boundary_cases||!improved_cases||!searched_candidates||!temperature_changes)throw std::runtime_error("regional fixture was vacuous");
  if(candidate_limit&&(!limited_batches||!work_reduced))throw std::runtime_error("regional work limit did not reduce observed candidate work and attempts");
- std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" improved_cases="<<improved_cases<<" searched_candidates="<<searched_candidates<<" temperature_changes="<<temperature_changes<<" candidate_limit="<<candidate_limit<<" limited_batches="<<limited_batches<<" temperatures=1000,100,0 complete_merge_valid=1 protected_paths=1 explicit_timeout=1\n";
+ std::cout<<"TEMPORAL_REGIONS passed serial_vs_parallel_robots="<<checked<<" boundary_cases="<<boundary_cases<<" improved_cases="<<improved_cases<<" searched_candidates="<<searched_candidates<<" temperature_changes="<<temperature_changes<<" candidate_limit="<<candidate_limit<<" limited_batches="<<limited_batches<<" temperatures=1000,100,0 complete_merge_valid=1 protected_paths=1 checkpoint_capture_identity=1 complete_checkpoint_validation=1 explicit_timeout=1\n";
  // Exercise the production adapter, including primary/pocket/capacity protection.
  setenv("CGAR_TEMPORAL_REGIONS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
  setenv("CGAR_TEMPORAL_REGION_STEPS","128",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","2",1);
@@ -5996,24 +6009,27 @@ void common_futures_production_regression() {
  const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_ORIENTATION_GUIDANCE","1"},
   {"CGAR_TEMPORAL_STEPS","64"},{"CGAR_TEMPORAL_WORKERS","4"},{"CGAR_TEMPORAL_THREADS","1"},{"CGAR_TEMPORAL_ORDER","2"},{"CGAR_TURN_COST","2"}};
  const std::vector<std::pair<const char*,const char*>> active={{"CGAR_FUTURE_ROOTS","4"},{"CGAR_FUTURE_HORIZON","10"},
-  {"CGAR_FUTURE_BRANCHES","2"},{"CGAR_FUTURE_THREADS","1"},{"CGAR_FUTURE_NOISE","50"},{"CGAR_TEMPORAL_CHAIN_MB","8"}};
+  {"CGAR_FUTURE_BRANCHES","2"},{"CGAR_FUTURE_THREADS","1"},{"CGAR_FUTURE_NOISE","50"},{"CGAR_FUTURE_REGIONAL_ROOTS","0"},{"CGAR_TEMPORAL_CHAIN_MB","8"}};
  auto fixture=[](){SharedEnvironment e;e.rows=7;e.cols=9;e.num_of_agents=20;e.map.assign(63,0);
   e.curr_task_schedule.resize(20);e.goal_locations.resize(20);
   for(int r=0;r<20;++r){e.curr_states.emplace_back(r*3,0,r%4);e.curr_task_schedule[r]=r;
    Task t;t.task_id=r;t.agent_assigned=r;t.locations={r*3,r*3,62-r*3};e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
  for(auto s:settings)setenv(s.first,s.second,1);
- std::vector<int> absent,disabled,single;int checked=0,services=0;long long changed=0;
- for(int mode=-1;mode<5;++mode){
+ std::vector<int> absent,disabled,single,regional_plain,regional_capture;int checked=0,services=0;long long changed=0;
+ for(int mode=-1;mode<8;++mode){
   if(mode==0)setenv("CGAR_FUTURE_ROOTS","0",1);if(mode>0)for(auto s:active)setenv(s.first,s.second,1);
   if(mode==1)setenv("CGAR_FUTURE_ROOTS","1",1);
   if(mode==3)setenv("CGAR_TEMPORAL_CHAIN_MODE","1",1);
   if(mode==4){setenv("CGAR_TEMPORAL_PRIORITY_NOISE","50",1);setenv("CGAR_TEMPORAL_PRIORITY_PERSIST","1",1);}
+  if(mode>=5){setenv("CGAR_TEMPORAL_REGIONS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);setenv("CGAR_TEMPORAL_REGION_ROUNDS","4",1);setenv("CGAR_TEMPORAL_REGION_STEPS","64",1);}
+  if(mode==5||mode==6)setenv("CGAR_FUTURE_ROOTS","1",1);
+  if(mode>=6)setenv("CGAR_FUTURE_REGIONAL_ROOTS","1",1);
   auto e=fixture();Cgar serial;serial.initialize(&e,5000);
-  if(mode>0)setenv("CGAR_FUTURE_THREADS","4",1);Cgar parallel;parallel.initialize(&e,5000);
+  if(mode>0)setenv("CGAR_FUTURE_THREADS","4",1);if(mode>=5)setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);Cgar parallel;parallel.initialize(&e,5000);
   for(int tick=0;tick<60;++tick){e.curr_timestep=tick;std::vector<Action>a,b;
    serial.plan(&e,2000,a);parallel.plan(&e,2000,b);require(a==b,"thread count changed production action");
    auto next=step(e,e.curr_states,a);require(!next.empty(),"production collision");e.curr_states=next;checked+=a.size();
-   for(int r=0;r<20;++r){if(mode<0)absent.push_back(int(a[r]));if(mode==0)disabled.push_back(int(a[r]));if(mode==1)single.push_back(int(a[r]));
+   for(int r=0;r<20;++r){if(mode<0)absent.push_back(int(a[r]));if(mode==0)disabled.push_back(int(a[r]));if(mode==1)single.push_back(int(a[r]));if(mode==5)regional_plain.push_back(int(a[r]));if(mode==6)regional_capture.push_back(int(a[r]));
     auto& old=e.task_pool.at(e.curr_task_schedule[r]);
     if(e.curr_states[r].location==old.locations[old.idx_next_loc]){
      ++old.idx_next_loc;++services;
@@ -6023,18 +6039,20 @@ void common_futures_production_regression() {
     const auto& task=e.task_pool.at(e.curr_task_schedule[r]);e.goal_locations[r]={{task.locations[task.idx_next_loc],tick}};
    }
   }
-  if(mode>0){const int expected=60*(mode==1?1:4)*2;
+  if(mode>0){const int expected=60*((mode==1||mode==5||mode==6)?1:4)*2;
    require(serial.stats().future_calls==60&&serial.stats().future_evaluations==expected&&serial.stats().future_batches==expected,"declared fixed work incomplete");
    require(serial.stats().future_changed_first==parallel.stats().future_changed_first,"parallel selected-root accounting differs");
+   if(mode==7)require(serial.stats().future_regional_candidates>0&&serial.stats().future_regional_candidates==parallel.stats().future_regional_candidates,"regional future pool was unused or nondeterministic");
    changed+=serial.stats().future_changed_first;
   }else require(!serial.stats().future_calls,"disabled futures did work");
   for(auto s:active)unsetenv(s.first);
-  for(const char* k:{"CGAR_TEMPORAL_CHAIN_MODE","CGAR_TEMPORAL_PRIORITY_NOISE","CGAR_TEMPORAL_PRIORITY_PERSIST"})unsetenv(k);
+  for(const char* k:{"CGAR_TEMPORAL_CHAIN_MODE","CGAR_TEMPORAL_PRIORITY_NOISE","CGAR_TEMPORAL_PRIORITY_PERSIST","CGAR_TEMPORAL_REGIONS","CGAR_TEMPORAL_REGION_THREADS","CGAR_TEMPORAL_REGION_ROUNDS","CGAR_TEMPORAL_REGION_STEPS"})unsetenv(k);
  }
+ require(regional_plain==regional_capture,"single-root checkpoint capture changed full trajectory or RNG");
  require(absent==disabled&&absent==single,"disabled or one-root layer changed full trajectory or RNG");
  require(changed>0&&services>0,"future fixture never changed a decision or served tasks");
  for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_FUTURE_ROOTS","5"},{"CGAR_FUTURE_ROOTS","-1"},{"CGAR_FUTURE_ROOTS","33"},
-  {"CGAR_FUTURE_HORIZON","9"},{"CGAR_FUTURE_HORIZON","12"},{"CGAR_FUTURE_HORIZON","31"},{"CGAR_FUTURE_BRANCHES","0"},
+  {"CGAR_FUTURE_REGIONAL_ROOTS","1"},{"CGAR_FUTURE_REGIONAL_ROOTS","2"},{"CGAR_FUTURE_HORIZON","9"},{"CGAR_FUTURE_HORIZON","12"},{"CGAR_FUTURE_HORIZON","31"},{"CGAR_FUTURE_BRANCHES","0"},
   {"CGAR_FUTURE_BRANCHES","17"},{"CGAR_FUTURE_THREADS","0"},{"CGAR_FUTURE_THREADS","33"},{"CGAR_FUTURE_NOISE","-1"},{"CGAR_FUTURE_NOISE","x"},
   {"CGAR_WINDOW","12"},{"CGAR_TEMPORAL_WARM_START","1"},{"CGAR_TEMPORAL_PROMISE_AFTER_TURN","1"},{"CGAR_TEMPORAL_CHAIN_MB","0"},{"CGAR_FLOW_STRENGTH","4"}}){
   for(auto s:active)setenv(s.first,s.second,1);setenv(bad.first,bad.second,1);bool rejected=false;
@@ -6047,7 +6065,7 @@ void common_futures_production_regression() {
  require(rejected,"disabled work override accepted");unsetenv("CGAR_FUTURE_BRANCHES");
  for(auto s:active)setenv(s.first,s.second,1);temporal_primary_regression();
  for(auto s:active)unsetenv(s.first);for(auto s:settings)unsetenv(s.first);
- std::cout<<"COMMON_FUTURES_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" disabled_identity=1 single_root_rng_identity=1 chain_score=1 priority_persistence=1 primary_recovery_pocket_capacity=1 strict_parser=1\n";
+ std::cout<<"COMMON_FUTURES_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" disabled_identity=1 single_root_rng_identity=1 regional_capture_single_identity=1 regional_roots=1 chain_score=1 priority_persistence=1 primary_recovery_pocket_capacity=1 strict_parser=1\n";
 }
 
 int main(){try{pickup_startup_regression();common_futures_search_regression();common_futures_production_regression();rolling_window_search_regression();rolling_window_production_regression();chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

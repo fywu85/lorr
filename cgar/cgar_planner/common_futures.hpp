@@ -7,7 +7,7 @@
 
 namespace cgar {
 struct FutureOptions {
-    int roots = 0, horizon = 15, branches = 4, threads = 4, noise = 50;
+    int roots = 0, horizon = 15, branches = 4, threads = 4, noise = 50, regional_roots = 0;
 };
 struct FutureStats {
     bool completed = false;
@@ -26,7 +26,7 @@ FutureStats select_common_futures(const std::vector<WindowProblem>& roots,
     if (roots.empty() || roots.size() != size_t(options.roots) || options.roots > 32 ||
         options.horizon < 10 || options.horizon > 30 || options.horizon % 5 ||
         options.branches < 1 || options.branches > 16 || options.threads < 1 ||
-        options.threads > 32 || options.noise < 0 || options.noise > 1000000 || unit_cost < 1)
+        options.threads > 32 || options.regional_roots < 0 || options.regional_roots > 1 || options.noise < 0 || options.noise > 1000000 || unit_cost < 1)
         throw std::invalid_argument("invalid common-future work declaration");
     const int robots = roots[0].seed.size();
     if (order.size() != size_t(robots)) throw std::invalid_argument("common-future order size mismatch");

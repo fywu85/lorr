@@ -615,3 +615,16 @@ policy is unchanged. Static instance fields still require their explicit trick
 gate. This can be expensive for large initial fleets and is never auto-enabled
 based on elapsed time. Full benchmarks determine whether better initial pairings
 repay the extra work; no throughput gain is assumed.
+
+
+`CGAR_FUTURE_REGIONAL_ROOTS=1` fills the common-future pool with distinct completed
+regional-round plans, newest first, before falling back to global starts. It
+requires enabled futures and regions. Root zero remains the final repaired
+incumbent. Capturing a round copies its validated selection vector without
+additional search or RNG draws; reconstruction validates all joint reservations.
+Every prescribed regional round and future branch still completes before action
+selection. A deadline after a captured round remains a failed step. Diagnostics
+count how many regional candidates actually enter the pool. The default0 retains
+the original global-start pool. This addresses a candidate-quality hypothesis:
+unrepaired global roots may be too weak to compete with a heavily repaired root.
+It does not assume a measured throughput improvement or alter the CGAR protections.
