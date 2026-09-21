@@ -399,6 +399,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 transaction_stats.max_agents, transaction_stats.score_before, transaction_stats.score_after,
                 std::chrono::duration<double>(Clock::now() - regions_finished).count());
     }
+    // A selected checkpoint must outlive forecast scoring and action emission.
+    std::vector<std::unique_ptr<TemporalPibt>> replayed_regions;
     auto* selected_search = transaction ? transaction.get() : (regional ? regional.get() : results[best].get());
     int priority_selected_worker = best;
     if (future_options_.roots) {
@@ -408,7 +410,6 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         // complete global proposals ranked by their original five-step score.
         std::vector<TemporalPibt*> proposals{selected_search};
         std::vector<int> origins{best}, ranked(temporal_workers_);
-        std::vector<std::unique_ptr<TemporalPibt>> replayed_regions;
         int regional_candidates = 0;
         if (future_options_.regional_roots) {
             // Every snapshot comes from a completed, jointly validated merge.
