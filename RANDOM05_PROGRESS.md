@@ -7,7 +7,7 @@ RANDOM-05 combined benchmark, then independently validate the selected improveme
 Keep separate four-core and 32-worker records under the existing comparison rules.
 The previous target of approaching the colleague's 27–28% matched NMS gain was
 met at +25.42% on fresh inputs. Their private absolute counts are not matched
-baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
+baselines. All prior fresh inputs 50001–50010 remain excluded from tuning.
 
 ## Comparison rules
 
@@ -30,23 +30,24 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 03:26 UTC.
+Updated: 2026-09-21 03:50 UTC.
 
-**Best single run on the archived input: 3,990 tasks on 32 workers / 16 physical cores**,
-or **+25.8% versus matched NMS32=3,172**. Source
+**Best single run on the archived input: 4,011 tasks on 32 workers / 16 physical cores**,
+or **+26.5% versus matched NMS32=3,172**. Source
 [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2), planner seed0,
 firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias3,
-triage scale1.25 with directional mix0.75.
-This run uses the reactive planner; the new windowed mode is off.
-Guidance and the known-horizon cutoff remain explicit tricks;
-startup weighting and finalist rescoring are off.
-Mean513ms, maximum565ms, RSS559MB; all2,000steps valid and independently replayed.
-It is12tasks above its K16320/mix0.5 parent3,978 and5 above the previous selected
-record3,985 (K20160/mix0.5). These are selected maxima; the new mix has not been
-replicated across planner seeds or fresh task/start inputs. The4,000 target
-remains10tasks away.
-[Full evidence](random05/results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json),
-[independent replay](random05/results/record3978-triage-split-full-v80/action_audit-3990.json).
+triage scale1.25 with directional mix1. The reactive planner is used;
+windowed search, startup weighting and finalist rescoring are off.
+Guidance and the known-horizon cutoff require `--trick RANDOM-05`.
+Mean534ms, maximum622ms, RSS559MB; all2,000steps independently replayed,
+with zero planner/scheduler errors or entry timeouts.
+This is21tasks above the previous3,990 record and crosses the archived4,000
+threshold. **The goal remains active:** the exact archived repeat passed; full frozen
+fresh-input validation is still pending. V5 compares this fixed configuration with
+its immediately previous3,990 parent and two NMS repetitions per fresh input.
+[Full evidence](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json),
+[independent replay](random05/results/record3990-coupling-split-full-v80/action_audit-4011.json),
+[frozen protocol](random05/experiments/fresh-validation-v5-protocol.json).
 
 AtK16320/mix0.5, bias3's eight paired development planner seeds have1.61% higher
 aggregate than bias0 (five positive). These include the configuration-selection
@@ -326,6 +327,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T03:06:09.957953+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K20160/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3985 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.6% | [Full evidence](random05/results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json) |
 
 | 2026-09-21T03:26:06.798792+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.75; `--trick RANDOM-05` | 3990 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.8% | [Full evidence](random05/results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json) |
+| 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed0; move bias3; triage1.25/mix1; `--trick RANDOM-05` | 4011 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +26.5% | [Full evidence](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
+
 
 ## Reference evidence supplied by the user
 
@@ -1736,3 +1739,26 @@ directional mixes0.25/0.75 score3,979/3,990. All four full runs pass independent
 replay and strict resource checks. The0.75 mix is12 above its matched parent,
 and5 above the intervening3,985 K20160 record. Mean512.857/max564.625ms,
 RSS546312KiB. No paired-seed or fresh-input claim is made for this new setting.
+
+### 2026-09-21 03:50 UTC: archived threshold crossed at4,011
+
+Increasing the directional cutoff mix from0.75 to1 adds21tasks on the selected
+planner seed0 atK16320. Full independent replay checks1.6million robot steps,
+assignments and task events. Longest completed order1944steps;130initial orders
+remain unfinished,86unopened. Eventual maximum latency remains censored at2000.
+The4011candidate is frozen before generating V5 inputs50009/50010, alongside
+the3990parent and two NMS repeats. Exact archived reproduction is also required.
+K20160/mix0.5 on planner seeds5/7 yields3880/3944, below their K16320 values
+3941/3948. More compute remains non-monotonic; all attempts are retained.
+
+### 2026-09-21 04:17 UTC: exact repeat and positive fresh refinement
+
+The4011configuration repeats all2,000steps with exact equality of actions,
+schedules, task events and revealed tasks; resource/timing and independent
+replay audits pass. On untouched V5 task/start seeds50009/50010, the frozen
+candidate finishes3912/4047 versus3901/4023 for the previous3990configuration.
+The aggregate refinement is+35tasks (+0.442%), positive on both inputs. Four
+NMS repetitions are still running; the full predeclared validation remains
+pending and the goal stays ACTIVE. The fresh4047 count is a different task
+stream, not a new archived-input frontier.
+[Frozen validation](random05/FRESH_VALIDATION_V5.md).

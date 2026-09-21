@@ -1,0 +1,49 @@
+{
+  "checked_utc": "2026-09-21T04:12:41.181889+00:00",
+  "pairs": [
+    {
+      "seed": 5,
+      "keep10": 2343,
+      "keep14": 2439,
+      "only_environment_difference": {
+        "R05_WINDOW_KEEP": [
+          "10",
+          "14"
+        ]
+      },
+      "baseline": "random05/results/random03-window-work-split-full-v81/trick-random-03-window-keep10-iters2048/summary.json",
+      "candidate": "random05/results/random-window2343-followup-split-full-v81/trick-random-03-window2343-keep14/summary.json"
+    },
+    {
+      "seed": 0,
+      "keep10": 2357,
+      "keep14": 2415,
+      "only_environment_difference": {
+        "R05_WINDOW_KEEP": [
+          "10",
+          "14"
+        ]
+      },
+      "baseline": "random05/results/random-window2343-followup-split-full-v81/trick-random-03-window2343-seed0/summary.json",
+      "candidate": "random05/results/random03-window2439-followup-split-full-v81/trick-random-03-window2439-seed0/summary.json"
+    },
+    {
+      "seed": 3,
+      "keep10": 2344,
+      "keep14": 2420,
+      "only_environment_difference": {
+        "R05_WINDOW_KEEP": [
+          "10",
+          "14"
+        ]
+      },
+      "baseline": "random05/results/random-window2343-followup-split-full-v81/trick-random-03-window2343-seed3/summary.json",
+      "candidate": "random05/results/random03-window2439-followup-split-full-v81/trick-random-03-window2439-seed3/summary.json"
+    }
+  ],
+  "baseline_total": 7044,
+  "candidate_total": 7274,
+  "gain_percent": 3.265190232822257,
+  "positive_pairs": 3,
+  "caveat": "Three development planner seeds on one fixed task/start input, including the setting-selection seed5; not fresh-input validation."
+}

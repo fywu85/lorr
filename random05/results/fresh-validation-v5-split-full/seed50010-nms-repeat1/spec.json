@@ -1,0 +1,35 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T03:57:39.895593+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "e46f57bf6b732fcc489c59d7758c190ba29d037d",
+  "hosts": "research32|research33|research35|research36|research37|research39|research40|research41|research45|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "cases": [
+    {
+      "name": "seed50010-nms-repeat1",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v5/seed50010/RANDOM-05.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 2000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v5/seed50010/RANDOM-05.json": "014d3f035087c25f0817b6e105f524cb67b50001ba95c64b7a064953d291def8",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v5/seed50010/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v5/seed50010/agents.agents": "575eaaed99f7490741b1440da9146162f556dc9f7c306fed70fc1366c6b94839",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-v5/seed50010/tasks.tasks": "d933f7c466ce2ef89cbf8314a5a38089e8c65c81191ea17884e1df85e5d5536d"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-validation-v5-split-full/seed50010-nms-repeat1.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1
+}

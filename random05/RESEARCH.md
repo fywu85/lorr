@@ -1162,3 +1162,23 @@ window. This tests whether progress-based ranking avoids preferring a stationary
 seed under cumulative travel-cost scoring. The LNS objective is unchanged, and
 the one-start control retains its original ranking. The same mobility regression
 and threshold remain in place; diagnostic output now identifies a failed setting.
+
+
+## Retained-prefix initialization (source84/85 experiment)
+
+Source83 extra fresh starts lost throughput, especially guided RANDOM-03. A fresh
+pipeline seed begins with no pending forward motion. Source84 tested retaining
+the short prefix in every candidate and comparing seeds by the LNS path-cost
+objective; it failed the existing dense mobility regression (39 moves, threshold
+>150). The failed patch and build are archived, with no benchmark or threshold
+change. Source85 instead retains source83's progress ranking and varies only
+the tail after the committed prefix. This isolates whether repeated fresh starts
+caused the performance loss. Default `R05_WINDOW_RETAIN=0` preserves source83.
+The original and new failed-repair, worker/cache and checkpoint checks remain.
+
+Source85 also failed the unchanged mobility floor (38 moves); the original
+fresh-start and failed-repair controls passed. Both proposed retained-prefix
+variants are rejected, and source is restored to f217eee. Their patches, exact
+builds, and regression logs remain in results/build-v84 and build-v85. No full
+benchmark used either failed build. Retaining the prefix by itself is insufficient
+to cure this crowded-state failure.

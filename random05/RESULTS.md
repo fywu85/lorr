@@ -14,13 +14,16 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,990 | 3,172 | +25.8% | 513 / 565ms | 559MB |
+| 16 physical cores / 32 workers | 4,011 | 3,172 | +26.5% | 534 / 622ms | 559MB |
 
-The current goal is4,000 tasks,10 above the record. AtK16320 on planner seed0,
-increasing the directional mix in the explicit horizon-cutoff trick from0.5
-to0.75 gives3,990 versus3,978. This is5 above the intervening K20160/mix0.5
-record3,985. Independent replay passed. The new mix is a selected setting;
-paired-seed and fresh task/start validation remain pending.
+The archived4,000 threshold is crossed at4,011. Raising the explicit cutoff's
+directional mix from0.75 to1 adds21tasks atK16320 on planner seed0. Full action
+and task-event replay passes, and the archived repeat is exact. Fresh V5 runs
+score3912/4047 versus3901/4023 for the previous3990configuration (+0.442%
+aggregate). NMS repetitions and the final eight-run audit remain pending.
+The goal stays active. Candidate settings,
+previous3,990 baseline, two NMS repeats per input, and acceptance criteria are
+[frozen before generation](experiments/fresh-validation-v5-protocol.json).
 
 AtK16320/mix0.5, move bias3 has a1.61% higher aggregate across eight paired
 development planner seeds (five positive, including the selection seed). More
@@ -83,13 +86,13 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All84 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All85 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
-[completed-goal audit](results/completion-audit.json).
+[previous goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,956 steps,
+The current development records' longest completed orders take1,941/1,944 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

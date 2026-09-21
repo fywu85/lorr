@@ -1,7 +1,8 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-RANDOM-05 still targets4,000. Large maps are outside active development.
+RANDOM-05 has crossed4,000 on the archived input; frozen fresh validation is pending.
+Large maps are outside active development.
 
 ## Comparison rules
 
@@ -11,17 +12,17 @@ RANDOM-05 still targets4,000. Large maps are outside active development.
 - Apply general variants across all five densities before claiming broad benefit. Selecting different settings by instance name counts as a trick. Geometry-independent density rules remain hypotheses until tested.
 - Preserve all original failures. Selected maxima, paired planner-seed means and fresh task/start validation are distinct.
 - The five cases share one layout; improvements across densities do not establish transfer to unseen geometry.
-- Inputs50001–50008 remain excluded from tuning. Future fresh-input protocols must precede generation.
+- Inputs50001–50010 remain excluded from tuning. Future fresh-input protocols must precede generation.
 
 ## Current records
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
-| RANDOM-02 | 200 | 600 | 1370 | 1122 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2182 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2486 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 3990 | 3172 |
+| RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
+| RANDOM-03 | 400 | 800 | 1582 | 2439 | 2359 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2516 | 2580 |
+| RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -82,6 +83,14 @@ has been added yet.
 | 2026-09-21T03:05:40.755316+00:00 | RANDOM-04 | trick | 2486 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-search-split-full-v80/trick-random-04-depth10/summary.json) |
 | 2026-09-21T03:10:39.990229+00:00 | RANDOM-03 | trick | 2182 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-crowded-seeds-split-full-v80/trick-random-03-selected-seed6/summary.json) |
 | 2026-09-21T03:26:06.798792+00:00 | RANDOM-05 | trick | 3990 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json) |
+| 2026-09-21T03:50:40.471914+00:00 | RANDOM-05 | trick | 4011 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
+| 2026-09-21T03:52:44.850465+00:00 | RANDOM-03 | trick | 2343 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Full run](results/random03-window-work-split-full-v81/trick-random-03-window-keep10-iters2048/summary.json) |
+| 2026-09-21T03:57:59.092064+00:00 | RANDOM-04 | trick | 2500 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth-coupling-split-full-v80/trick-random-04-depth12/summary.json) |
+| 2026-09-21T04:00:21.635220+00:00 | RANDOM-03 | trick | 2354 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Full run](results/random-window2343-followup-split-full-v81/trick-random-03-window2343-horizon15/summary.json) |
+| 2026-09-21T04:01:36.001191+00:00 | RANDOM-02 | general | 1376 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Full run](results/random-window2343-followup-split-full-v81/general-random-02-window-h20-i2048-keep10/summary.json) |
+| 2026-09-21T04:01:59.631782+00:00 | RANDOM-03 | trick | 2439 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Full run](results/random-window2343-followup-split-full-v81/trick-random-03-window2343-keep14/summary.json) |
+| 2026-09-21T04:10:48.680394+00:00 | RANDOM-04 | trick | 2505 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed0/summary.json) |
+| 2026-09-21T04:11:29.934441+00:00 | RANDOM-04 | trick | 2516 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed3/summary.json) |
 
 
 ## September21: first development comparisons
@@ -257,3 +266,75 @@ five positive pairs). This supersedes the initial four-seed +2.60% estimate;
 both histories are retained. The seeds include selected development cases and
 are not independent task/start validation.
 [All eight paired outcomes](results/move-bias-seeds-split-full-v77/paired-eight-seeds.json).
+
+### RANDOM-05 crosses4,000; validation frozen
+
+The audited4,011 record usesK16320/seed0/bias3 and directional cutoff mix1.
+Mean534ms,max622ms,RSS559MB; +26.5%versus matched NMS3172. The exact repeat
+and V5 fresh-input validation are required before declaring the goal complete.
+Both retained-prefix initialization prototypes failed the unchanged crowded
+mobility test (39/38 moves, required>150). Their exact patches/logs remain in
+results/build-v84 and build-v85; source was restored to f217eee, with no full
+benchmark on either failed build. RANDOM-03/04 controlled work continues.
+
+### Controlled RANDOM-03/04 gains, 2026-09-21 03:58 UTC
+
+RANDOM-03 guided window search, source4b70a80, starts at1,910 with window20,
+keep6 and512iterations. Raising iterations to2048 gives2,194; keep10 alone
+gives2,126; together they give **2,343**, just16below matched NMS2,359. The
+best has mean282/max353ms and453MB RSS. Guidance is an explicit RANDOM-03
+trick; the horizon is off. All four runs pass strict full-run replay, including
+the weaker horizon-enabled1,922 result. This is a configuration interaction,
+not proof that either adjustment wins at every density.
+[Full audit](results/random03-window-work-split-full-v81/audit.json).
+
+RANDOM-04 reaches **2,500** by increasing reactive look-ahead depth from10to12,
+withK16320/seed5 unchanged. Mean669/max717ms, fully replayed. Increasing only
+Kto20160 gives2,482; depth10 with mix0.75 gives2,486; move bias3 gives2,468.
+Further depth/seed comparisons are declared separately.
+[Full audit](results/random04-depth-coupling-split-full-v80/audit.json).
+
+RANDOM-05's last two work/cutoff combinations finish3,983 (K20160/mix0.75)
+and3,987 (K20160/mix1), below4,011 atK16320/mix1. All three are independently
+audited. V5 validation is frozen in commit e46f57b before generation.
+
+### RANDOM-03 exceeds NMS; another general RANDOM-02 gain
+
+With window20 and2048iterations fixed, keeping14steps scores **2,439** on
+RANDOM-03, **+3.4%** versus matched NMS2,359. The guided field remains an
+explicit trick, with no known-horizon rule. Keeping10steps at window15 scores
+2,354. Keeping10/window20 on seeds5/0/3/4 gives2,343/2,357/2,344/2,352
+(mean2,349), so the2,439 gain is a configuration change, not merely a new
+planner seed. Its repeated-seed and longer-window tests remain pending.
+The same window20/2048iterations/keep10 general configuration gives720/1376
+on RANDOM-01/02, compared with722/1370 for keep6 on the same planner seed5.
+The RANDOM-02 record is **1,376 (+12.1% versus NMS1,228)**. On unguided
+RANDOM-03 this common setting gives1,253, below the previous general1,582;
+do not claim a universal benefit. More islands at keep10 give2,351, also
+below keep14's2,439, despite using more compute.
+[Full comparisons](results/random-window2343-followup-split-full-v81/audit.json).
+
+### Confirmation and high-density transfer
+
+Keeping14 rather than10 steps improves RANDOM-03 on all three paired planner
+seeds5/0/3:2439/2415/2420 versus2343/2357/2344. The aggregate gain is3.27%;
+input/binary hashes match and retained length is the only environment change.
+This includes the selection seed, so it remains a development comparison.
+[Paired evidence](results/random03-window2439-followup-split-full-v81/paired-keep-lengths.json).
+Keep18/H20, keep18/H24 and keep14/islands64 give2436/2439/2435; none raises
+the selected record. All five follow-ups independently replay.
+
+The same window profile remains weaker at high density: guided512/2048 repairs
+give1383/1425 on RANDOM-04 and2034/2110 on RANDOM-05. Unguided2048 gives995/1527.
+All six are full strict successes with independent replay. They support keeping
+the reactive planner for crowded cases; increasing repair work has not closed
+that architectural gap.
+[Transfer audit](results/crowded-window-transfer-split-full-v81/audit.json).
+
+Reactive depth12 on RANDOM-04 scores2500/2505/2516 on seeds5/0/3. The selected
+**2516** remains64below NMS2580. Depth14 gives2487; depth12/mix1 gives2470.
+Four explicitly flagged guidance-pattern trials and a bounded depth16/K14400
+comparison are now declared separately. No new source change is involved.
+
+RANDOM-05 repeats4011exactly. Fresh frozen candidate/baseline results are
+3912/3901 and4047/4023; NMS and the final protocol audit remain pending.

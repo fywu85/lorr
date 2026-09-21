@@ -1,0 +1,89 @@
+diff --git a/random05/src/engine.cpp b/random05/src/engine.cpp
+index 222bc4e..e9fc29d 100644
+--- a/random05/src/engine.cpp
++++ b/random05/src/engine.cpp
+@@ -148,6 +148,7 @@ Config Config::environment(const SharedEnvironment& env) {
+     c.window_neighborhood=integer("R05_WINDOW_NEIGHBORHOOD",8);
+     c.window_expansions=integer("R05_WINDOW_EXPANSIONS",20000);
+     c.window_starts=integer("R05_WINDOW_STARTS",1);
++    c.window_retain=integer("R05_WINDOW_RETAIN",0);
+     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
+     c.window_equal=integer("R05_WINDOW_EQUAL",0);
+     if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
+diff --git a/random05/src/engine.hpp b/random05/src/engine.hpp
+index f2e4a0c..4c87dfa 100644
+--- a/random05/src/engine.hpp
++++ b/random05/src/engine.hpp
+@@ -20,6 +20,7 @@ struct Config {
+     int score_rank_steps=0;
+     int window=0, window_keep=6, window_islands=32, window_iterations=24, window_neighborhood=8, window_expansions=20000;
+     int window_starts=1;
++    bool window_retain=false;
+     bool window_blockers=false, window_equal=false;
+     int rescore_roots=0, rescore_branches=64;
+     float rescore_blend=0, rescore_static_weight=-1;
+diff --git a/random05/src/window.cpp b/random05/src/window.cpp
+index 156c1a3..88ccbde 100644
+--- a/random05/src/window.cpp
++++ b/random05/src/window.cpp
+@@ -181,8 +181,21 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
+         }
+         return value;
+     };
+-    Paths base=seed(false,best_offsets_);Cost base_cost=total_cost(base);
+-    double base_merit=cfg.window_starts>1?seed_merit(base):0;
++    const bool have_previous=!window_paths_.empty();
++    if(have_previous) {
++        for(int a=0;a<n;++a)if(window_paths_[a].size()!=size_t(h+1) ||
++              window_paths_[a][1]!=initial.loc[a]*4+initial.dir[a])
++            throw std::runtime_error("persistent window disagrees with simulator");
++    }
++    // A fresh pipeline seed starts with a stationary pending action. Replacing
++    // the incumbent with a fresh seed every step can postpone actual movement.
++    // In retained-start mode all candidates share the committed short prefix;
++    // only their tails vary, and all use the same objective as LNS. Repairs may
++    // still revise the prefix once a complete replacement has been certified.
++    const bool retain_starts=cfg.window_retain && have_previous;
++    const bool rank_progress=cfg.window_starts>1 && !cfg.window_retain;
++    Paths base=seed(retain_starts,best_offsets_);Cost base_cost=total_cost(base);
++    double base_merit=rank_progress?seed_merit(base):0;
+     auto selected_offsets=best_offsets_;
+     if(cfg.window_starts>1) {
+         std::vector<Paths> starts(cfg.window_starts-1);
+@@ -196,7 +209,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
+                 std::seed_seq keys{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(k),uint32_t(0x53454544)};
+                 std::mt19937 random(keys);std::uniform_real_distribution<float> noise(-cfg.noise,cfg.noise);
+                 offsets[k].resize(n);for(float& value:offsets[k])value=noise(random);
+-                starts[k]=seed(false,offsets[k]);costs[k]=total_cost(starts[k]);merits[k]=seed_merit(starts[k]);
++                starts[k]=seed(retain_starts,offsets[k]);costs[k]=total_cost(starts[k]);
++                merits[k]=rank_progress?seed_merit(starts[k]):0;
+             } catch(...) {failures[k]=std::current_exception();}
+         }
+         for(int k=0;k<cfg.window_starts-1;++k) {
+@@ -206,10 +220,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
+             }
+         }
+     }
+-    if(!window_paths_.empty()) {
+-        for(int a=0;a<n;++a)if(window_paths_[a].size()!=size_t(h+1) ||
+-              window_paths_[a][1]!=initial.loc[a]*4+initial.dir[a])
+-            throw std::runtime_error("persistent window disagrees with simulator");
++    if(have_previous && !cfg.window_retain) {
+         Paths shifted=seed(true,best_offsets_);Cost cost=total_cost(shifted);
+         const double merit=cfg.window_starts>1?seed_merit(shifted):0;
+         if((cfg.window_starts==1 && better(cost,base_cost)) ||
+diff --git a/random05/tests/engine_tests.cpp b/random05/tests/engine_tests.cpp
+index 845c5f1..4b8c42e 100644
+--- a/random05/tests/engine_tests.cpp
++++ b/random05/tests/engine_tests.cpp
+@@ -879,6 +879,10 @@ void window_reproducibility() {
+     const auto linked=simulate(cfg,8,5,5,true);
+     cfg.threads=1;require(linked==simulate(cfg,8),"blocker-based window repairs depend on worker count");
+     cfg.cost_cache=false;require(linked==simulate(cfg,8),"blocker guides depend on cost caching");
++    cfg.window_retain=true;cfg.cost_cache=true;
++    const auto retained=simulate(cfg,8,5,5,true);
++    cfg.threads=2;require(retained==simulate(cfg,8),"retained window starts depend on worker count");
++    cfg.cost_cache=false;require(retained==simulate(cfg,8),"retained window starts depend on cost caching");
+     cfg.window_expansions=1;cfg.window_iterations=3;
+     const auto failed_repairs=simulate(cfg,8);
+     cfg.window_iterations=0;
