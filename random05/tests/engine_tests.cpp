@@ -1922,6 +1922,23 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"mixed repair groups accepted a non-boolean value");
     }
+    {
+        Setting price("R05_WINDOW_COMPLETION_PRICE","0.25"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"completion weighting bypassed its explicit trick gate");
+        general.trick_instance="RANDOM-03";
+        require(Config::environment(general).window_completion_price==.25f,"declared completion weighting was rejected");
+        Setting disabled("R05_WINDOW","0");rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"completion weighting accepted a missing window");
+    }
+    for(const char* value:{"-1","9","nan","inf"}) {
+        Setting price("R05_WINDOW_COMPLETION_PRICE",value);auto general=environment(5,5,4);
+        general.trick_instance="RANDOM-03";bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"completion weighting accepted an invalid price");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2001,13 +2018,14 @@ void window_local_goal_optimum() {
     // Exhaustive finite-horizon dynamic programming independently checks the
     // bounded A* repair and complete-plan evaluator on a changing goal chain.
     // Both repeated goals and direction-dependent local prices are exercised.
+    for(float completion_price:{0.f,.125f,.5f,2.f})for(bool nearby:{false,true}) {
     auto e=environment(5,5,1);e.trick_instance="RANDOM-03";
     e.curr_states[0].orientation=0;
-    Task task;task.task_id=1;task.locations={24,24,2};e.task_pool[1]=task;
+    Task task;task.task_id=1;task.locations=nearby?std::vector<int>{4,4,2}:std::vector<int>{24,24,2};e.task_pool[1]=task;
     Config cfg;cfg.guidance="lanes";cfg.goal_local_radius=3;cfg.goal_local_mix=.75;
     cfg.window=12;cfg.window_keep=3;cfg.window_islands=1;cfg.window_iterations=1;
     cfg.window_neighborhood=1;cfg.window_expansions=50000;cfg.threads=1;
-    cfg.wait_cost=2;cfg.turn_cost=2;cfg.cost_cache=true;
+    cfg.wait_cost=2;cfg.turn_cost=2;cfg.cost_cache=true;cfg.window_completion_price=completion_price;
     Engine engine(cfg);engine.initialize(&e);std::vector<Action> actions;std::vector<int> schedule;
     engine.compute(&e,actions,schedule);
     require(schedule==std::vector<int>{1},"single-agent local guidance changed the assignment");
@@ -2026,6 +2044,7 @@ void window_local_goal_optimum() {
             for(int dest:destinations)if(dest>=0) {
                 double price=dest==state?(active?cfg.wait_cost:0):
                     dest/4==cell?g.weight[cell][4]:g.forward_weight(goal,cell,dir);
+                if(active)price+=completion_price;
                 int future_stage=stage+(active && dest/4==goal);
                 auto& best=next[future_stage*states+dest];best=std::min(best,previous+price);
             }
@@ -2043,10 +2062,12 @@ void window_local_goal_optimum() {
         const int goal=active?chain.goals[stage]:-1;
         actual+=to==from?(active?cfg.wait_cost:0):to/4==from/4?g.weight[from/4][4]:
             g.forward_weight(goal,from/4,from%4);
+        if(active)actual+=completion_price;
         if(active && to/4==goal)++stage;
     }
     actual+=chain.cost(g,stage,path.back()/4,path.back()%4);
-    require(std::abs(actual-optimum)<1e-4,"goal-local window repair differs from exhaustive optimum");
+    require(std::abs(actual-optimum)<1e-4,"goal-local/completion window repair differs from exhaustive optimum");
+    }
 }
 
 void window_reproducibility() {
@@ -2155,6 +2176,12 @@ void window_reproducibility() {
         require(mixed_sizes==simulate(cfg,8),"mixed repair sizes depend on workers, caches, heap or storage");
         require(mixed_sizes==simulate(cfg,8,5,5,true),"mixed repair sizes changed after checkpoint restoration");
     }
+    cfg.window_completion_price=.5;cfg.window_neighborhood=5;
+    cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+    const auto completion_weighted=simulate(cfg,8,5,5,true);
+    cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+    require(completion_weighted==simulate(cfg,8),"completion weighting depends on workers, caches, heap or storage");
+    require(completion_weighted==simulate(cfg,8,5,5,true),"completion weighting changed after checkpoint restoration");
     cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

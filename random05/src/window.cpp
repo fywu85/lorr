@@ -23,8 +23,11 @@ float action_cost(const Graph& g,const Config& cfg,int from,int to,int goal) {
     if(goal<0 && from==to)return 0;
     // Use the same current-waypoint edge prices as the exact chained heuristic,
     // including its optional local guidance taper. Completed chains have no goal.
-    if(from/4!=to/4)return g.forward_weight(goal,from/4,from%4);
-    return from==to?cfg.wait_cost:g.weight[from/4][4];
+    const float price=from/4!=to/4?g.forward_weight(goal,from/4,from%4):
+        (from==to?cfg.wait_cost:g.weight[from/4][4]);
+    // Charge each timestep until the visible assigned chain finishes. This
+    // optional task-priority objective does not see future unreleased orders.
+    return goal>=0?price+cfg.window_completion_price:price;
 }
 int arrived(const Chain* chain,int stage,int state) {
     // The simulator consumes at most one waypoint per physical action,
@@ -84,6 +87,7 @@ struct Search {
     std::vector<uint32_t> seen;
     std::vector<Node> heap;
     std::vector<const float*> heuristic_rows;
+    std::vector<int> completion_hops;
     uint32_t epoch=0;
     uint64_t expanded=0;
     // A four-way heap uses the same complete ordering as the binary reference.
@@ -131,15 +135,27 @@ struct Search {
         if(!chain)stage=0;
         heuristic_rows.assign(stages,nullptr);
         if(chain)for(int k=0;k<stages-1;++k)heuristic_rows[k]=chain->cached_row(g,k);
-        auto estimate=[&](int k,int s) {
+        if(cfg.window_completion_price>0 && chain) {
+            completion_hops.assign(stages,0);
+            for(int k=stages-3;k>=0;--k)
+                completion_hops[k]=completion_hops[k+1]+g.hop(chain->goals[k],chain->goals[k+1]);
+        }
+        auto estimate=[&](int k,int s,int time) {
             if(!chain || k==stages-1)return 0.f;
-            return heuristic_rows[k]?heuristic_rows[k][s]:chain->cost(g,k,s/4,s%4);
+            const float route=heuristic_rows[k]?heuristic_rows[k][s]:chain->cost(g,k,s/4,s%4);
+            if(cfg.window_completion_price==0)return route;
+            // Cell-hop work lower-bounds the unfinished physical timesteps.
+            // Clip at the remaining window, since the terminal cost contains
+            // only the original route potential. Repeated goals may weaken this
+            // bound but cannot make it overestimate the completion charge.
+            const int hops=g.hop(chain->goals[k],s/4)+completion_hops[k];
+            return route+cfg.window_completion_price*std::min(horizon-time,hops);
         };
         auto push=[&](int time,int k,int s,float cost,int previous) {
             int id=(time*stages+k)*g.states+s;
             if(seen[id]==epoch && costs[id]<=cost)return;
             seen[id]=epoch;costs[id]=cost;parent[id]=previous;
-            float h=estimate(k,s);insert({cost+h,h,cost,id,time,s,k},cfg.window_heap4);
+            float h=estimate(k,s,time);insert({cost+h,h,cost,id,time,s,k},cfg.window_heap4);
         };
         push(0,stage,state,0,-1);int count=0;
         while(!heap.empty() && count<cfg.window_expansions) {

@@ -187,6 +187,10 @@ Config Config::environment(const SharedEnvironment& env) {
        (!c.window || c.window_neighborhood<2 || c.window_neighborhood>32)))
         throw std::invalid_argument("mixed window groups need an enabled window, base size2..32 and a boolean value");
     c.window_group_mix=group_mix;
+    c.window_completion_price=real("R05_WINDOW_COMPLETION_PRICE",0);
+    if(!std::isfinite(c.window_completion_price) || c.window_completion_price<0 || c.window_completion_price>8 ||
+       (c.window_completion_price>0 && (!c.window || !random_trick)))
+        throw std::invalid_argument("window completion price needs an enabled window, price0..8 and an explicit trick");
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);
