@@ -1011,3 +1011,17 @@ PersistentR03caps340/360/380 score2467/2536/2546 and do not transfer the R05gain
 Active full tests retain the selected first guidance flip while adding1–4 further
 flips on both densities. R04also tests caps540/550/570/580 on its current2777
 combination. These are explicitly flagged tricks; no held-out input is used.
+
+### 2026-09-21 16:39 UTC — negative closures and independent-edge search
+
+Source136progress ties giveR03=2556versus exact2602; source137local goal guidance
+radii1/2/4 and mixes0.25/0.5 give2543/2564,2573/2561,2558/2563, control2602exact.
+R04largerK10240/12288 gives2751/2754; rootmutation0.05/0.15/0.2/0.3 gives
+2703/2690/2679/2634. All are fully audited; no new record. Nonlinear matching138
+also loses at both densities; its full audit is being finalized.
+
+Source139/fd1a724d passes44.82s regression and preserves selected guidance flips
+while adding one independent edge mutation. Controls plus extraseeds0–3 per
+density are active. The earlier nested flips all included the same second edge;
+this experiment tests different second edges without undoing the selected first.
+R04still61tasks below2838; freshR04inputs50013/50014remain ungenerated.

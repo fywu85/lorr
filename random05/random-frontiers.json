@@ -172,10 +172,10 @@
   },
   "RANDOM-02": {
     "general": {
-      "source_commit": "4b70a80",
-      "evidence": "random05/results/random-window2343-followup-split-full-v81/general-random-02-window-h20-i2048-keep10/summary.json",
+      "source_commit": "05fd4b76",
+      "evidence": "random05/results/random02-window-progress-qualification-split-full-v136/general-random-02-record1385-seed4/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v81/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v136/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
         "cores": 16,
         "smt": 2,
@@ -183,7 +183,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": false,
-        "name": "general-random-02-window-h20-i2048-keep10",
+        "name": "general-random-02-record1385-seed4",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -207,7 +207,7 @@
           "R05_SCHED_GUIDE": "1",
           "R05_FLOW_OUTPUT_PENALTY": "2.4",
           "R05_RANDOM_BY_STEP": "1",
-          "R05_SEED": "5",
+          "R05_SEED": "4",
           "R05_FLOW_FLIPS": "0",
           "R05_FLOW_FLIP_SEED": "5",
           "R05_CONTINUATIONS": "18",
@@ -240,10 +240,11 @@
           "R05_WINDOW_NEIGHBORHOOD": "8",
           "R05_WINDOW_EXPANSIONS": "5000",
           "R05_OPERATIONS": "0",
-          "R05_MOVE_BIAS": "0"
+          "R05_MOVE_BIAS": "0",
+          "R05_WINDOW_PROGRESS_TIE": "1"
         },
-        "binary_sha256": "928ae4bb6c92d92c642dcfa6d827ba13980ce713ef653f3aac482e787598178e",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v81/build/lifelong_random05",
+        "binary_sha256": "2b8345852259c9842525484d12613677976baefd43fb8ed741aec6c869fe277e",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v136/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json": "9d0a4856a404ebacb9871286db80fdd79d0e9b9d4b130eb2ce51ab594e3040e1",
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
@@ -251,13 +252,13 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 1376,
-      "finished_utc": "2026-09-21T04:01:36.001191+00:00",
-      "audit": "random05/results/random-window2343-followup-split-full-v81/audit.json"
+      "tasks": 1390,
+      "finished_utc": "2026-09-21T16:15:26.435917+00:00",
+      "audit": "random05/results/random02-window-progress-qualification-split-full-v136/audit.json"
     },
     "trick": {
       "source_commit": "027df4d9",
-      "evidence": "random05/results/random12-resume-validation-split-full-v132/trick-random-02-resume-validation-seed2/summary.json",
+      "evidence": "random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json",
       "case": {
         "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-02.json",
@@ -267,7 +268,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-02",
-        "name": "trick-random-02-resume-validation-seed2",
+        "name": "trick-random-02-resume-cutoff-0p875",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -278,7 +279,7 @@
           "R05_HORIZON": "600",
           "R05_COST_CACHE": "1",
           "R05_WAIT_COST": "2",
-          "R05_TRIAGE_SCALE": "0.75",
+          "R05_TRIAGE_SCALE": "0.875",
           "R05_TURN_COST": "2",
           "R05_FLOW_AVERAGE": "1",
           "R05_FLOW_NORMALIZE": "1",
@@ -338,9 +339,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 1401,
-      "finished_utc": "2026-09-21T15:20:50.685874+00:00",
-      "audit": "random05/results/random12-resume-validation-split-full-v132/audit.json"
+      "tasks": 1408,
+      "finished_utc": "2026-09-21T15:54:03.792427+00:00",
+      "audit": "random05/results/random12-resume-cutoff-split-full-v132/audit.json"
     },
     "nms32_tasks": 1228
   },
@@ -763,7 +764,7 @@
     },
     "trick": {
       "source_commit": "027df4d9",
-      "evidence": "random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json",
+      "evidence": "random05/results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json",
       "case": {
         "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v132/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
@@ -773,7 +774,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-05",
-        "name": "trick-random-05-resume-cap680",
+        "name": "trick-random-05-record4175-coupling-triage1",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -785,7 +786,7 @@
           "R05_HORIZON": "2000",
           "R05_COST_CACHE": "1",
           "R05_WAIT_COST": "0.5",
-          "R05_TRIAGE_SCALE": "1.25",
+          "R05_TRIAGE_SCALE": "1",
           "R05_TURN_COST": "0.6",
           "R05_FLOW_AVERAGE": "1",
           "R05_FLOW_NORMALIZE": "1",
@@ -843,9 +844,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 4175,
-      "finished_utc": "2026-09-21T15:23:22.109240+00:00",
-      "audit": "random05/results/random05-resume-transfer-split-full-v132/audit.json"
+      "tasks": 4197,
+      "finished_utc": "2026-09-21T16:24:44.415657+00:00",
+      "audit": "random05/results/random05-record4175-coupling-split-full-v132/audit.json"
     },
     "nms32_tasks": 3172
   }

@@ -1,11 +1,16 @@
 # RANDOM-05 results
 
-**Current selected archived best:4,175tasks** (+31.62% versus matched NMS32),
+**Current selected archived best:4,197tasks** (+32.31% versus matched NMS32),
 source[027df4d9](https://github.com/fywu85/lorr/commit/027df4d9), plannerseed0.
-The explicit680active-order cap leaves all800robots movable. All2000steps pass
-strict timing/resource checks and independent replay. Repetition and fresh-input
-validation of this new configuration are pending.
-[Admission-transfer audit](results/random05-resume-transfer-split-full-v132/audit.json).
+The explicit680active-order cap leaves all800robots movable; cutoffscale1
+replaces1.25 in the preceding4175profile. All2000steps pass strict timing/resource
+checks and independent replay. Mean569.038/max802.896ms, RSS490.828MB.
+Exact repetition and new-seed qualification of4197are pending. The preceding
+4175profile has exact repeats and four valid planner seeds. FrozenV6validates
+it at +31.99%against NMS and +5.25%against the previous solver on two new task/start
+inputs; that validation does not qualify4197.
+[Fresh admission comparison](FRESH_VALIDATION_V6.md).
+[Current full audit](results/random05-record4175-coupling-split-full-v132/audit.json).
 
 The **4,000-task milestone is independently verified**:4,011 on the full archived
 RANDOM-05 combined benchmark, reproduced exactly. On two untouched task/start
@@ -24,7 +29,7 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,175 | 3,172 | +31.6% | 559 / 872ms | 492MB |
+| 16 physical cores / 32 workers | 4,197 | 3,172 | +32.3% | 569 / 803ms | 491MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
@@ -100,7 +105,7 @@ restored. Larger work budgets do not reliably improve throughput.
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,964 steps,
+The current development records' longest completed orders take1,941/1,977 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

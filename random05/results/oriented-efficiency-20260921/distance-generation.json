@@ -1,0 +1,29 @@
+{
+  "checked_utc": "2026-09-21T16:28:01.348573+00:00",
+  "map": "Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map",
+  "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+  "source": "random05/tools/oriented_distances.cpp",
+  "source_sha256": "32e96a5dc9d2a80bab2cd05f7eaefdca6c7c601b5346df0ca17e035792dc0604",
+  "binary_sha256": "e25550a18395277c590f5acdd1826f22c7d7a6309dcfac5147de54e9eb2b32b9",
+  "distance_sha256": "52c4d46cc6da1499a3ff937825dd13f39c6074a167a9ad496fc8e27c233238bb",
+  "output_byte_order": "little endian",
+  "cells": 819,
+  "oriented_states": 3276,
+  "compile_command": [
+    "env/bin/x86_64-conda-linux-gnu-c++",
+    "-O3",
+    "-std=c++17",
+    "-static-libstdc++",
+    "-static-libgcc",
+    "random05/tools/oriented_distances.cpp",
+    "-o",
+    "runs/random05/oriented_distances"
+  ],
+  "fixture_checks": [
+    "0E to2E=2",
+    "0E to0W=2",
+    "2E to0E=6",
+    "0E to1W=3"
+  ],
+  "all_completed_tasks_lower_bound_le_actual": true
+}

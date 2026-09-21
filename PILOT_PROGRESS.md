@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 15:35 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 16:36 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -30,10 +30,10 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | CITY-02 | — | 16,997 | KK | — | Not evaluated | — | — |
 | GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
 | RANDOM-01 | 729 | 688 | KK | +5.96% | TRICK | 4 | 100.09 |
-| RANDOM-02 | 1,401 | 1,260 | KK | +11.19% | TRICK | 2 | 494.12 |
+| RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
 | RANDOM-03 | 2,602 | 2,334 | NMS | +11.48% | TRICK | 5 | 709.83 |
 | RANDOM-04 | 2,777 | 2,547 | NMS | +9.03% | TRICK | 4 | 779.60 |
-| RANDOM-05 | 4,175 | 3,050 | NMS | +36.89% | TRICK | 0 | 872.17 |
+| RANDOM-05 | 4,197 | 3,050 | NMS | +37.61% | TRICK | 0 | 802.90 |
 
 **Published scores are historical targets, not matched local baselines.**
 This table uses the stronger published result from NMS and Kitty Knight.
@@ -54,10 +54,10 @@ assignment and task-event replay checks.
 | Instance | PILOT | Matched local NMS32 | Difference |
 |---|---:|---:|---:|
 | RANDOM-01 | 729 | 649 | +12.33% |
-| RANDOM-02 | 1,401 | 1,228 | +14.09% |
+| RANDOM-02 | 1,408 | 1,228 | +14.66% |
 | RANDOM-03 | 2,602 | 2,359 | +10.30% |
 | RANDOM-04 | 2,777 | 2,580 | +7.64% |
-| RANDOM-05 | 4,175 | 3,172 | +31.62% |
+| RANDOM-05 | 4,197 | 3,172 | +32.31% |
 
 These are selected individual bests, not an average or one universal preset.
 GENERAL means no map-specific guidance or known-horizon rule was enabled;
@@ -77,20 +77,20 @@ not unseen-map validation.
 | CITY-02 | — | — |
 | GAME | — | — |
 | RANDOM-01 | 726 | 729 |
-| RANDOM-02 | 1,376 | 1,401 |
+| RANDOM-02 | 1,390 | 1,408 |
 | RANDOM-03 | 1,582 | 2,602 |
 | RANDOM-04 | 1,558 | 2,777 |
-| RANDOM-05 | 2,226 | 4,175 |
+| RANDOM-05 | 2,226 | 4,197 |
 
 Current selected records are pinned to their completion timestamps and source commits:
 
 | Instance | Completed UTC | Source | Full-run evidence |
 |---|---|---|---|
 | RANDOM-01 | 2026-09-21T15:05:19.829832+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/summary.json) |
-| RANDOM-02 | 2026-09-21T15:20:50.685874+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-validation-split-full-v132/trick-random-02-resume-validation-seed2/summary.json) |
+| RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | RANDOM-03 | 2026-09-21T07:48:41.498854+00:00 | [02bccaa7](https://github.com/fywu85/lorr/commit/02bccaa7) | [Run](random05/results/random03-merge-coupling-split-full-v102/trick-random-03-merge-coupling-triage0875/summary.json) |
 | RANDOM-04 | 2026-09-21T11:26:13.386904+00:00 | [caedcce7](https://github.com/fywu85/lorr/commit/caedcce7) | [Run](random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/summary.json) |
-| RANDOM-05 | 2026-09-21T15:23:22.109240+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
+| RANDOM-05 | 2026-09-21T16:24:44.415657+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json) |
 
 **RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
 2,359 matched NMS (+10.30%). The frozen fresh-input comparison gives
@@ -111,6 +111,15 @@ repetitions below 491 ms; a later equivalent source control peaked at
 [Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).
 
 
+**The 4,175-task admission profile passes frozen fresh validation V6:**
+4,182/4,177 versus the stronger NMS repetitions 3,155/3,178,
+**+31.99% in aggregate** and +5.25% over the preceding 4,011 recipe.
+All eight runs pass strict timing/resource checks and independent replay;
+candidate maxima are 774/799 ms. Its archived exact repeat and four
+planner seeds also pass. This validates the frozen 4,175 profile,
+not the later 4,197 cutoff refinement or unseen layouts.
+[Frozen V6 comparison](random05/FRESH_VALIDATION_V6.md).
+
 **The earlier RANDOM-05 4,000-task milestone is independently verified.** The archived
 4,011-task configuration repeated exactly. Frozen fresh task/start inputs
 50009 and 50010 produced 3,912 and 4,047 versus the stronger NMS repetitions
@@ -124,8 +133,8 @@ All eight original fresh runs passed strict timing, resource and replay checks.
 
 The four-core RANDOM-05 record stays separate: **3,770 versus matched NMS4
 2,914 (+29.4%)**. Its earlier frozen fresh comparison was +25.42%.
-The current 32-worker archived record averages 559 ms per step, peaks at
-872 ms, and uses 492 MB peak RSS. Its longest completed order takes 1,964
+The current 32-worker archived record averages 569 ms per step, peaks at
+803 ms, and uses 491 MB peak RSS. Its longest completed order takes 1,977
 steps; some initial orders remain unfinished at 2,000, so the eventual
 maximum wait is unknown. Throughput, rather than fairness, selected these runs.
 [Completed and censored waits](random05/WAITING_PROGRESS.md),

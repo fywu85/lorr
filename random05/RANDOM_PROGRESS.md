@@ -23,7 +23,7 @@ Large maps are outside active development.
 | RANDOM-02 | 200 | 600 | 1390 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 4175 | 3172 |
+| RANDOM-05 | 800 | 2000 | 2226 | 4197 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -156,7 +156,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T15:54:03.792427+00:00 | RANDOM-02 | trick | 1408 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | 2026-09-21T16:00:46.717567+00:00 | RANDOM-02 | general | 1385 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random123-window-progress-split-full-v136/general-random-02-window-progress-early/summary.json) |
 | 2026-09-21T16:15:26.435917+00:00 | RANDOM-02 | general | 1390 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random02-window-progress-qualification-split-full-v136/general-random-02-record1385-seed4/summary.json) |
-
+| 2026-09-21T16:24:44.415657+00:00 | RANDOM-05 | trick | 4197 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-record4175-coupling-split-full-v132/trick-random-05-record4175-coupling-triage1/summary.json) |
 
 ## September21: first development comparisons
 
@@ -832,3 +832,54 @@ Regression checks verify exact retained/extra edge counts, preservation of each
 selected edge and all edge prices, worker/checkpoint reproducibility and the trick
 gate. Following regression, R03/R04will test one additional edge with seeds0–3,
 plus controls, on their frozen2602/2777profiles. No held-out input participates.
+
+### Audited4197record and negative closures,16:31 UTC
+
+R05cutoffscale1 improves4175to4197; mean569.038/max802.896ms, RSS490.828MB,
+longest completed order1977steps and150initial orders still unfinished. This
+selected result now updates both32-worker best manifests and both progress logs.
+Its exact repeat and planner-seed checks are next; frozen freshV6still tests4175.
+All six coupling and all four shared-cache runs are audited. Shared caching
+preserves4175and4135exactly but is slower and uses more RAM; largerK19584/23040
+scores4073/4162. Keep the uncached fixedK16320profile.
+
+All seven source137R03local-guidance cases are audited. Control2602 is exact;
+radii1/2/4 with mix0.25/0.5 score2543/2564,2573/2561,2558/2563. Leave it off.
+Source136generalR02plannerseeds0..6 score1378/1374/1382/1376/1390/1385/1380.
+Promote the selected general1390; the1385seed5repeat is exact. Adding progress
+ties to the1408horizon profile loses1399; its disabled1408control is exact.
+The independent oriented route-efficiency diagnosis covers all five selected
+PILOT traces and matchedNMS traces; see results/oriented-efficiency-20260921/REPORT.md.
+
+Source139/fd1a724d passes44.82s regression (44.83s total), binarySHA
+3dcfbffe50b75d414c0d9c7db7029b7f04ad27e8e83c48e0eb39e79c9d90a6b7.
+Ten full cases now compare controls and extra-edge seeds0–3 onR03/R04.
+The entire selected first edge remains fixed; only the independent additional
+edge changes. No new run length, task/start input or work budget is selected.
+
+### Frozen freshV6 passes,16:35 UTC
+
+The immutable4175candidate scores4182/4177 against baseline4001/3941 and NMS
+3154/3155,3178/3149. Aggregate gains are31.9912%over the stronger NMS repetition
+per input and5.2506%over the preceding configuration; both inputs improve.
+All eight runs pass independent full replay and protocol/source/resource/timing
+checks. Candidatemax774.0/798.8ms, peakRSSbelow490MB. FRESH_VALIDATION_V6.md records
+full tables and waiting metrics. Seeds50015/50016 remain held out permanently.
+The new4197cutoff is not qualified by this earlier frozen protocol.
+
+### Sparse window-length follow-up and nonlinear matching closure,16:38 UTC
+
+Four full source132cases extend the currentR01/R02planning windows from20to24/32,
+retaining their old prefix lengths, repair counts, seed and scheduling settings.
+These are window lengths, not changes to the known600-step simulation horizon.
+The new generalR02record1390(seed4, source136) also receives an exact full repeat.
+
+Source138nonlinear matching loses at every density. Powers0.5/2 score723/721,
+1395/1401,2565/2546,2710/2734,4122/4047 against729/1408/2602/2777/4175 controls.
+All runners complete strictly; full independent batch audit is in progress.
+Keep the feature disabled. The direct benefit of nonlinear cost preferences is
+not established by their algebra or the successful regression fixture.
+
+All fifteen source138matching runs now pass independent full replay and resource
+checks. Its five power1controls match729/1408/2602/2777/4175in all six fields.
+Default identity is preserved; neither nonlinear alternative improves throughput.
