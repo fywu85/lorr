@@ -464,12 +464,20 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         problem.turn_cost = guidance_turn_cost_;
         problem.wait_cost = window_options_.wait_cost ? window_options_.wait_cost : flow_cost_scale_;
         problem.oracle = &chain_potential_; problem.free = cert_.free; problem.fixed = pinned;
+        problem.locked_prefix.assign(n_, 0);
         problem.forward.resize(cells);
         for (int u = 0; u < cells; ++u) for (int d = 0; d < 4; ++d)
             problem.forward[u][d] = turn_oracle_.forward_cost(u, d);
         problem.allowed.resize(n_); problem.entry_allowed.resize(n_); problem.chains.resize(n_); problem.tasks.resize(n_); problem.seed.resize(n_);
         for (int r = 0; r < n_; ++r) {
             check(); problem.tasks[r] = agents_[r].task;
+            // CGAR still dictates the physical primary/support action. Only its
+            // ordinary future forecast may be repaired; active evacuation waves,
+            // witness cells and parked/capacity bootstrap paths remain frozen.
+            if (window_options_.protected_prefix && pinned[r] && !parked_[r] && !agents_[r].in_txn &&
+                !witness[loc_[r]] && next_[r] >= 0 && next_[r] < cells && !witness[next_[r]] && (!capacity_mode_ || parking_ready_)) {
+                problem.fixed[r] = false; problem.locked_prefix[r] = 1;
+            }
             std::vector<int> stops;
             const auto found = env_->task_pool.find(agents_[r].task);
             if (agents_[r].goal >= 0) {
@@ -484,7 +492,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 problem.fixed[r] = true;
             problem.allowed[r].assign(cells, false); problem.entry_allowed[r].assign(cells, false);
             for (int u = 0; u < cells; ++u) {
-                problem.allowed[r][u] = cert_.core[u] && allowed(r, u) && !witness[u];
+                problem.allowed[r][u] = (cert_.core[u] || problem.locked_prefix[r]) && allowed(r, u) && !witness[u];
                 problem.entry_allowed[r][u] = problem.allowed[r][u] && (intent_owner[u] < 0 || intent_owner[u] == r);
             }
             auto& path = problem.seed[r]; path.reserve(problem.horizon + 1); path.push_back(loc_[r] * 4 + ori_[r]);
@@ -506,8 +514,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         if (!window.completed) throw std::logic_error("CGAR exposed an incomplete rolling window");
         for (int r = 0; r < n_; ++r) {
             const Action selected = static_cast<Action>(problem.action(paths[r][0], paths[r][1]));
-            if (problem.fixed[r] && selected != actions[r]) throw std::logic_error("rolling window changed a protected first action");
-            if (!problem.fixed[r]) { actions[r] = selected; next_[r] = paths[r][1] / 4; }
+            if ((pinned[r] || problem.fixed[r]) && selected != actions[r]) throw std::logic_error("rolling window changed a protected first action");
+            if (!pinned[r] && !problem.fixed[r]) { actions[r] = selected; next_[r] = paths[r][1] / 4; }
         }
         ++stats_.window_calls; stats_.window.merge(window);
         stats_.window_changed_first += window.changed_first;

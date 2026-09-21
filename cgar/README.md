@@ -228,3 +228,15 @@ objective. Default0 retains the previous comparisons. The primary A* objective
 remains checked against independent action search, with both tie modes and
 serial/parallel production coverage. Receipts report all three remaining-cost
 values alongside their total costs. No future completion-time guarantee is implied.
+
+`CGAR_WINDOW_PROTECTED_PREFIX=1` retains the exact physical first action of the
+CGAR primary and its supporting robots while allowing compatible later forecasts
+to move. Active transactions, witness cells, parked robots and capacity bootstrap
+paths stay frozen for the entire window. Pocket forecasts use the robot's existing
+CGAR pocket permissions; other robots still cannot enter its protected intent.
+The adapter preserves the primary's real commitment and proposed destination,
+including turn actions whose committed destination differs from the occupied cell.
+No actual CGAR protected action is changed. Future paths remain forecasts and are
+revalidated at the next step; this is not a new liveness proof. Default0 keeps the
+original fully frozen tails. Regression exercises changed forecasts with unchanged
+first actions, pocket recovery, capacity mode and serial/parallel production.

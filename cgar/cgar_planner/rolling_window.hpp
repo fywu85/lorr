@@ -14,7 +14,7 @@
 namespace cgar {
 struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
-    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0;
+    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0;
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -24,8 +24,9 @@ struct WindowProblem {
     std::vector<std::array<int, 4>> forward;
     std::vector<std::vector<char>> allowed, entry_allowed;
     std::vector<ChainPotential::Chain> chains;
-    std::vector<int> tasks;
+    std::vector<int> tasks, locked_prefix;
     std::vector<WindowPath> seed;
+    int prefix(int r) const { return locked_prefix.empty() ? 0 : locked_prefix[r]; }
     int neighbor(int cell, int d) const {
         if (d == 0) return cell % cols + 1 < cols ? cell + 1 : -1;
         if (d == 1) return cell / cols + 1 < rows ? cell + cols : -1;
@@ -83,14 +84,17 @@ struct WindowProblem {
         if (!oracle || !oracle->ready() || rows <= 0 || cols <= 0 || rows * cols != cells ||
             horizon < 1 || fixed.size() != seed.size() || allowed.size() != seed.size() || entry_allowed.size() != seed.size() ||
             chains.size() != seed.size() || tasks.size() != seed.size() || paths.size() != seed.size() ||
-            forward.size() != free.size() || turn_cost < 1 || wait_cost < 1)
+            forward.size() != free.size() || turn_cost < 1 || wait_cost < 1 ||
+            (!locked_prefix.empty() && locked_prefix.size() != seed.size()))
             throw std::invalid_argument("invalid rolling-window problem");
         std::vector<int> owners(cells, -1);
         for (int r = 0; r < robots; ++r) {
             if (seed[r].size() != size_t(horizon + 1) || paths[r].size() != seed[r].size() ||
                 paths[r][0] != seed[r][0] || allowed[r].size() != free.size() || entry_allowed[r].size() != free.size() ||
-                (fixed[r] && paths[r] != seed[r]))
+                prefix(r) < 0 || prefix(r) > horizon || (fixed[r] && paths[r] != seed[r]))
                 throw std::logic_error("rolling-window seed or protected path changed");
+            for (int t = 0; t <= prefix(r); ++t)
+                if (paths[r][t] != seed[r][t]) throw std::logic_error("rolling-window protected prefix changed");
         }
         for (int t = 0; t <= horizon; ++t) {
             check(); std::fill(owners.begin(), owners.end(), -1);
@@ -290,7 +294,8 @@ public:
             }
             for (int a = 0; a < 4; ++a) {
                 const int next = p_.next(node.state, a), time = node.time + 1;
-                if (!p_.permits(r, node.state, next) || owner(time, next / 4) >= 0) continue;
+                if (!p_.permits(r, node.state, next) || owner(time, next / 4) >= 0 ||
+                    (time <= p_.prefix(r) && next != p_.seed[r][time])) continue;
                 const int other = owner(time, node.state / 4);
                 if (other >= 0 && paths_[other][time - 1] / 4 == next / 4) continue;
                 const int stage = node.stage + (node.stage < int(p_.chains[r].goals.size()) &&
@@ -409,7 +414,8 @@ public:
                 bool valid = true;
                 for (int t = 1; t <= p.horizon; ++t) {
                     candidate[r][t] = history_[r][std::min(t + 1, options.keep + 1)];
-                    valid = valid && p.permits(r, candidate[r][t - 1], candidate[r][t]);
+                    valid = valid && p.permits(r, candidate[r][t - 1], candidate[r][t]) &&
+                        (t > p.prefix(r) || candidate[r][t] == p.seed[r][t]);
                 }
                 if (valid) retained[r] = true;
                 else candidate[r] = p.seed[r];
@@ -480,7 +486,7 @@ public:
             throw std::logic_error("rolling-window tie regressed terminal progress");
         stats.final_cost = best_cost; stats.final_remaining = best_remaining; stats.selected_worker = best;
         for (size_t r = 0; r < result.size(); ++r) {
-            stats.changed_first += result[r][1] != p.seed[r][1]; stats.protected_robots += bool(p.fixed[r]);
+            stats.changed_first += result[r][1] != p.seed[r][1]; stats.protected_robots += bool(p.fixed[r] || p.prefix(r));
         }
         tick_ = tick; history_ = result; tasks_ = p.tasks; goals_.clear();
         for (const auto& chain : p.chains) goals_.push_back(chain.goals);

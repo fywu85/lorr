@@ -246,7 +246,8 @@ def main():
                     rollout=int(case['environment'].get('CGAR_WINDOW_SEED_ROLLOUT','0'))
                     assert int(cfg.get('seed_rollout','0'))==rollout
                     progress_ties=int(case['environment'].get('CGAR_WINDOW_PROGRESS_TIES','0'));assert int(cfg.get('progress_ties','0'))==progress_ties
-                    assert cfg['seed']=='cgar' and cfg['protected']=='immutable' and cfg['objective']=='paid_plus_chain'
+                    assert int(cfg.get('protected_prefix','0'))==int(case['environment'].get('CGAR_WINDOW_PROTECTED_PREFIX','0'))
+                    assert cfg['seed']=='cgar' and cfg['protected'] in ('immutable','immutable_first_action') and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
                     assert 1<=int(cfg['turn_cost'])<=255 and 1<=int(cfg['wait_cost'])<=255
