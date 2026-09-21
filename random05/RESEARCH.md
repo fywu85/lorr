@@ -1708,3 +1708,38 @@ tasks and change no simulator or reference team. Full replay, strict deadlines,
 source identity and exact disabled controls remain required. These are hypotheses,
 not measured gains. The independent prefix-search experiment continues on
 RANDOM-01/02/03, and both new coordination mechanisms have full all-five trials.
+
+
+## 2026-09-21: physical impossibility gate for unopened task matching (source161)
+
+The independent all-random-bottlenecks-v2 deadline audit counts assignment changes
+in the final200steps whose visible chains cannot finish even on collision-free
+unit-action shortest paths: PILOT01/02/03/04/05=263/14/969/0/764. Most associated
+PILOT actions are waits, so these counts are not an estimate of recoverable work.
+They motivate a narrower test than previously unsuccessful approximate late
+penalties: remove only pairs with a physical impossibility certificate.
+
+`R05_MATCH_FEASIBLE=1` (default0) requires a known horizon and --trick INSTANCE.
+An independent unguided graph uses true doubled unit-action prices, regardless
+of lane fields or planner turn prices. Currently visible whole chains, actual
+poses and the remaining physical timesteps give a conservative completion lower
+bound. Collisions, committed pipeline constraints and repeated-waypoint service
+can only make real execution slower. Already opened tasks stay locked. No task
+is removed from the environment and no hidden future task is read.
+
+Reject infeasible pairs in greedy matching. For joint matching, add optional
+idle slots only when needed, preserve declared admission caps/idle preferences,
+and make rejected pairs more expensive than an available idle slot. With no
+explicit idle price, prioritize maximum feasible cardinality before the existing
+cost objective. Check the completed assignment before publishing it. Both exact
+Hungarian and bounded complete-auction/fallback paths are covered. Early periods
+with every pair feasible retain the original matching dimensions and prices.
+A global physical-distance upper bound avoids per-robot checks for safely short
+chains. The extra immutable physical table is built during preprocessing and
+shared by nested forecasts; it remains below the32GB budget on these random maps.
+
+Regression targets rotation-sensitive feasibility despite altered planner costs,
+opened-task protection, all-infeasible idling, capacity and configured idle-price
+semantics, maximum feasible cardinality, auction/greedy/Hungarian paths, workers,
+caches, checkpoints, shadow forecasts and window repairs. Source161 is an
+unmeasured hypothesis until regression and all-five full comparisons pass.

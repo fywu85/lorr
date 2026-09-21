@@ -387,6 +387,10 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("compact idle matching requires a boolean value");
     c.compact_idle=compact_idle;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
+    const int match_feasible=integer("R05_MATCH_FEASIBLE",0);
+    if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
+        throw std::invalid_argument("physical deadline matching needs a known horizon, boolean value and explicit trick instance");
+    c.match_feasible=match_feasible;
     if(!std::isfinite(c.active_cap_triage_credit) || c.active_cap_triage_credit<0 ||
        c.active_cap_triage_credit>1 || (c.active_cap_triage_credit>0 &&
        (!random_trick || c.horizon<=0 || c.active_task_cap<=0)))
@@ -1030,6 +1034,14 @@ void Engine::initialize(SharedEnvironment* env) {
         if(cfg.guidance_distance_mix>0)prepared_graph->blend_distances(*physical,cfg.guidance_distance_mix,cfg.threads);
         if(cfg.plain_score>0)score_graph_=std::move(physical);
     }
+    if(cfg.match_feasible) {
+        // A separate unit-action metric must not inherit lane preferences or
+        // tuned rotation prices. Its doubled costs are physical lower bounds.
+        Config metric;metric.threads=cfg.threads;metric.loops=false;
+        auto physical=std::make_shared<Graph>(*env,metric);
+        deadline_max_distance_=*std::max_element(physical->distance.begin(),physical->distance.end());
+        deadline_graph_=std::move(physical);
+    }
     // Publish immutable shared graph storage only after preprocessing is done.
     graph=std::move(prepared_graph);
     const int n=env->num_of_agents;
@@ -1202,7 +1214,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             throw std::overflow_error("nonlinear assignment price overflow");
         return float(transformed);
     };
-    const float idle_price=admission_price>=0?assignment_price(admission_price):admission_price;
+    float idle_price=admission_price>=0?assignment_price(admission_price):admission_price;
     std::vector<int> agents, tasks;std::unordered_set<int> locked;int suppressed_opened=0;
     for(int i=0;i<n;++i) {
         int id=schedule[i];
@@ -1258,12 +1270,35 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     }
     const double match_steps_per_cell=travel_steps_per_cell();
     const double remaining_steps=cfg.horizon-env->curr_timestep;
+    // Test actual poses against currently visible chains only. Ignoring the
+    // pipeline's committed action, collisions and repeated-waypoint service
+    // ticks relaxes feasibility; a rejected pair still provably cannot finish.
+    std::vector<unsigned char> deadline_forbidden;
+    int impossible_pairs=0;
+    if(cfg.match_feasible) {
+        if(!deadline_graph_)throw std::logic_error("missing physical deadline metric");
+        deadline_forbidden.assign(agents.size()*tasks.size(),0);
+        const auto& physical=*deadline_graph_;
+        for(size_t j=0;j<tasks.size();++j) {
+            const auto& task=env->task_pool.at(tasks[j]);Chain chain(physical,task);
+            const int stage=task.idx_next_loc;
+            if(stage>=int(chain.goals.size()))continue;
+            const float upper=(deadline_max_distance_+*std::max_element(chain.tail[stage].begin(),chain.tail[stage].end()))/2;
+            if(std::max(1.f,upper)<=remaining_steps)continue;
+            for(size_t row=0;row<agents.size();++row) {
+                const auto& state=env->curr_states[agents[row]];
+                const float bound=std::max(1.f,chain.cost(physical,stage,physical.from_grid[state.location],state.orientation)/2);
+                if(bound>remaining_steps){deadline_forbidden[row*tasks.size()+j]=1;++impossible_pairs;}
+            }
+        }
+    }
+    const bool deadline_gate=impossible_pairs>0;
     struct Pair { float cost;int agent,task; };
-    const int dummy_columns=(capped || admission_price>=0)?int(agents.size())-std::min(capacity,int(tasks.size())):0;
+    const int dummy_columns=(capped || admission_price>=0 || deadline_gate)?int(agents.size())-std::min(capacity,int(tasks.size())):0;
     // Additional idle columns make the remaining slots optional at this price.
     // The original, strictly cheaper cap dummies stay last so their exact
     // Hungarian-prefix optimization remains valid.
-    const int optional_columns=admission_price>=0?std::min(capacity,int(tasks.size())):0;
+    const int optional_columns=(admission_price>=0 || deadline_gate)?std::min(capacity,int(tasks.size())):0;
     const int columns=int(tasks.size())+optional_columns+dummy_columns;
     const bool exact=cfg.hungarian_limit>0 && int(agents.size())<=cfg.hungarian_limit && columns>=int(agents.size());
     std::vector<float> matrix(exact?agents.size()*columns:0);
@@ -1274,6 +1309,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         if(cfg.predict_matching && !pending_.empty())p=pending_[a];
         for(int j=0;j<int(tasks.size());++j) {
             int t=tasks[j];const auto& task=env->task_pool.at(t);
+            if(deadline_gate && deadline_forbidden[size_t(row)*tasks.size()+j])continue;
             float cost=g.hop(g.from_grid[task.locations[task.idx_next_loc]],p)+length_weight*length[j];
             if(cfg.guided_matching) {
                 const int goal=g.from_grid[task.locations[task.idx_next_loc]];
@@ -1302,6 +1338,23 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             else pairs.push_back({cost,a,j});
         }
     }
+    if(exact && deadline_gate) {
+        double magnitude=1;
+        for(float cost:matrix) {
+            if(!std::isfinite(cost))throw std::invalid_argument("nonfinite deadline matching price");
+            magnitude=std::max(magnitude,std::abs(double(cost)));
+        }
+        // Without a configured idle price, maximize the number of feasible
+        // real assignments before minimizing their original total price.
+        // An explicit idle preference retains its existing meaning.
+        if(admission_price<0)idle_price=float((2*agents.size()+3)*magnitude+1);
+        magnitude=std::max(magnitude,std::abs(double(idle_price)));
+        const double forbidden=(2*agents.size()+3)*magnitude+agents.size()*cfg.auction_epsilon+1;
+        if(!std::isfinite(forbidden) || forbidden>=1e29 || !std::isfinite(idle_price))
+            throw std::overflow_error("deadline matching price overflow");
+        for(size_t row=0;row<agents.size();++row)for(size_t j=0;j<tasks.size();++j)
+            if(deadline_forbidden[row*tasks.size()+j])matrix[row*columns+j]=float(forbidden);
+    }
     if(exact && optional_columns) {
         for(size_t row=0;row<agents.size();++row)
             std::fill(matrix.begin()+row*columns+tasks.size(),
@@ -1323,6 +1376,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     auto report_match=[&]() {
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
             const auto now=std::chrono::steady_clock::now();
+            if(cfg.match_feasible)std::fprintf(stderr,"R05_DEADLINE_MATCH t=%d impossible_pairs=%d\n",env->curr_timestep,impossible_pairs);
             std::fprintf(stderr,"R05_MATCH_PROFILE t=%d agents=%zu tasks=%zu matrix_ms=%.3f solve_ms=%.3f\n",
                 env->curr_timestep,agents.size(),tasks.size(),
                 std::chrono::duration<double,std::milli>(matrix_done-match_start).count(),
@@ -1339,8 +1393,11 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         if(cfg.profile && cfg.auction_epsilon>0 && (env->curr_timestep<5 || env->curr_timestep%100==0))
             std::fprintf(stderr,"R05_AUCTION_PROFILE t=%d epsilon=%.6f bids=%llu fallback=%d\n",
                 env->curr_timestep,cfg.auction_epsilon,(unsigned long long)auction_bids,int(auction_fallback));
-        for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
+        for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size())) {
+            if(deadline_gate && deadline_forbidden[row*tasks.size()+selected[row]])
+                throw std::runtime_error("matching selected a physically impossible deadline pair");
             schedule[agents[row]]=tasks[selected[row]];
+        }
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
             std::vector<float> admitted_costs;
             for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))

@@ -2160,6 +2160,84 @@ void horizon_aware_matching() {
     require(rejected,"horizon matching accepted an unknown end");
 }
 
+void physical_deadline_matching() {
+    // A cheap pickup hides a long chain. The alternative needs two turns and
+    // one forward step, despite arbitrary planner rotation/guidance prices.
+    for(int threshold:{0,1000})for(float epsilon:{0.f,.125f}) {
+        if(!threshold && epsilon)continue;
+        auto env=environment(1,7,1);env.curr_states[0].orientation=2;
+        Task long_task;long_task.task_id=10;long_task.locations={0,6};env.task_pool[10]=long_task;
+        Task short_task;short_task.task_id=20;short_task.locations={1};env.task_pool[20]=short_task;
+        Config cfg;cfg.length_weight=0;cfg.keep_bonus=100;cfg.turn_cost=50;cfg.guidance="lanes";
+        cfg.hungarian_limit=threshold;cfg.auction_epsilon=epsilon;cfg.horizon=3;
+        env.curr_task_schedule[0]=10;
+        auto match=[&](Config c){Engine engine(c);engine.initialize(&env);std::vector<int> schedule;engine.match(&env,schedule);return schedule;};
+        require(match(cfg)==std::vector<int>{10},"deadline fixture did not retain the cheaper impossible chain");
+        cfg.match_feasible=true;
+        require(match(cfg)==std::vector<int>{20},"physical deadline gate used planner prices or retained an impossible pair");
+        env.curr_timestep=1;
+        require(match(cfg)==std::vector<int>{-1},"deadline gate ignored two required orientation changes");
+        env.curr_timestep=3;
+        require(match(cfg)==std::vector<int>{-1},"expired known horizon assigned a new task");
+        env.curr_timestep=0;env.task_pool[10].idx_next_loc=1;
+        require(match(cfg)==std::vector<int>{10},"deadline gate reassigned an opened task");
+        env.task_pool[10].idx_next_loc=0;env.curr_task_schedule[0]=-1;
+        cfg.horizon=100;
+        require(match(cfg)==std::vector<int>{10},"feasible early assignments changed under the deadline gate");
+    }
+    // Cardinality takes precedence over aggregate cost when no idle price is
+    // configured. Row0 must take task20 so row1 can take task30; both finish.
+    for(float epsilon:{0.f,.125f})for(bool compact:{false,true}) {
+        auto env=environment(1,5,2);env.curr_states[1].orientation=0;
+        for(auto item:std::vector<std::pair<int,std::vector<int>>>{{10,{0,4}},{20,{1}},{30,{3}}}) {
+            Task task;task.task_id=item.first;task.locations=item.second;env.task_pool[task.task_id]=task;
+        }
+        Config cfg;cfg.horizon=2;cfg.match_feasible=true;cfg.length_weight=0;cfg.keep_bonus=0;
+        cfg.hungarian_limit=1000;cfg.auction_epsilon=epsilon;cfg.compact_idle=compact;cfg.fast_admission=true;
+        auto match=[&](Config c){Engine engine(c);engine.initialize(&env);std::vector<int> schedule;engine.match(&env,schedule);return schedule;};
+        require(match(cfg)==std::vector<int>({20,30}),"deadline matching failed maximum feasible cardinality");
+        cfg.active_task_cap=1;
+        require(match(cfg)==std::vector<int>({-1,20}),"deadline matching violated the mandatory admission cap");
+        cfg.active_task_cap=0;cfg.admission_price=0;
+        const auto priced=match(cfg);
+        require(priced[0]==-1 && (priced[1]==20 || priced[1]==-1),"deadline matching overrode the declared optional idle price");
+    }
+    Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.horizon=18;
+    cfg.match_feasible=true;cfg.hungarian_limit=1000;cfg.guidance="lanes";cfg.turn_cost=.6;
+    cfg.threads=1;cfg.active_task_cap=18;cfg.fast_admission=true;
+    const auto serial=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.cost_cache=true;cfg.goal_cache=true;
+    cfg.shared_rankings_mb=16;cfg.shared_orders=true;
+    require(serial==simulate(cfg,12,5,5,true),"deadline matching depends on workers, ranking caches or checkpoint replay");
+    cfg.replan_roots=1;cfg.replan_futures=1;cfg.replan_steps=2;cfg.replan_k=1;cfg.replan_continuations=1;
+    require(serial==simulate(cfg,12,5,5,true,true),"shadow forecasts lost the immutable deadline metric");
+    cfg.replan_roots=0;cfg.window=8;cfg.window_keep=3;cfg.window_islands=2;cfg.window_iterations=4;
+    const auto window=simulate(cfg,12,5,5,true);cfg.threads=1;
+    require(window==simulate(cfg,12,5,5,true),"window repairs and deadline matching depend on workers/checkpoints");
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting option("R05_MATCH_FEASIBLE","1"),horizon("R05_HORIZON","100");
+    auto gate=environment(3,3,2);gate.trick_instance="RANDOM-01";
+    require(Config::environment(gate).match_feasible,"physical matching option was rejected");
+    gate.trick_instance.clear();bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"known-horizon matching escaped the explicit trick gate");gate.trick_instance="RANDOM-05";
+    {
+        Setting disabled("R05_HORIZON","0");rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"physical matching accepted an unknown horizon");
+    }
+    for(const char* value:{"-1","2"}) {
+        Setting invalid("R05_MATCH_FEASIBLE",value);rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"physical matching accepted a non-boolean option");
+    }
+}
+
 void destination_demand_matching() {
     auto env=environment(1,5,2);env.curr_states[1].location=2;
     Task locked;locked.task_id=7;locked.locations={0,1};locked.idx_next_loc=1;locked.agent_assigned=0;
@@ -2818,6 +2896,7 @@ int main() {
     optional_immediate_moves();
     remaining_work_priorities();
     horizon_aware_matching();
+    physical_deadline_matching();
     destination_demand_matching();
     guidance_reversal();
     window_configuration();

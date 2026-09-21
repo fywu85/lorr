@@ -1,0 +1,497 @@
+{
+  "checked_utc": "2026-09-21T23:13:05.779865+00:00",
+  "source_sha256": "13cb7a85aeb589101d93183f113b9d552761e39ff6ee7ff268d713c39e1b4935",
+  "distance_sha256": "52c4d46cc6da1499a3ff937825dd13f39c6074a167a9ad496fc8e27c233238bb",
+  "manifest_sha256": "e30cda3856afb4ecd5318544012d459afacf48edf5a9a1c2efd3e08dd974d7d7",
+  "rows": [
+    {
+      "name": "RANDOM-01-PILOT",
+      "compare_to": "RANDOM-01-KK",
+      "source_commit": "027df4d9",
+      "audit": "random05/results/random12-resume-horizon-split-full-v132/audit.json",
+      "result": "runs/random05/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/trick-random-01-resume-horizon-0p75/result.json",
+      "tasks": 729,
+      "result_sha256": "caf967c098750b993ad59ab44c9d6afe28a147a9e904177c36e4b1e3056de94c",
+      "first_step": 401,
+      "last_step": 600,
+      "robot_steps": 20000,
+      "counts": {
+        "all": {
+          "F": 12743,
+          "C": 1762,
+          "R": 1804,
+          "W": 3691
+        },
+        "opened": {
+          "F": 11579,
+          "C": 1495,
+          "R": 1554,
+          "W": 1253
+        },
+        "unopened": {
+          "F": 1164,
+          "R": 250,
+          "C": 267,
+          "W": 2438
+        },
+        "assignment_changes": {
+          "unopened": 524,
+          "provably_late_unopened": 263
+        },
+        "provably_late_unopened": {
+          "W": 2400,
+          "F": 154,
+          "R": 36,
+          "C": 41
+        },
+        "provably_late_opened": {
+          "C": 79,
+          "F": 530,
+          "W": 1029,
+          "R": 80
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-01-KK",
+      "audit": "random05/results/random-nms-kk-baselines-v1/audit.json",
+      "result": "runs/random05/random-nms-kk-baselines-split-full-v1/random-01-kk-repeat1/random-01-kk-repeat1/result.json",
+      "tasks": 692,
+      "result_sha256": "aa7ace0be7bc5feb6b62e02ae334f5ea37528bb091b895d21b332fb95080a00b",
+      "first_step": 401,
+      "last_step": 600,
+      "robot_steps": 20000,
+      "counts": {
+        "all": {
+          "F": 14918,
+          "W": 558,
+          "R": 2548,
+          "C": 1976
+        },
+        "opened": {
+          "F": 12899,
+          "W": 477,
+          "R": 1981,
+          "C": 1662
+        },
+        "unopened": {
+          "F": 2019,
+          "C": 314,
+          "R": 567,
+          "W": 81
+        },
+        "assignment_changes": {
+          "unopened": 661,
+          "provably_late_unopened": 299
+        },
+        "provably_late_unopened": {
+          "F": 803,
+          "R": 258,
+          "W": 43,
+          "C": 131
+        },
+        "provably_late_opened": {
+          "C": 368,
+          "F": 2784,
+          "R": 465,
+          "W": 110
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-02-PILOT",
+      "compare_to": "RANDOM-02-KK",
+      "source_commit": "027df4d9",
+      "audit": "random05/results/random12-resume-cutoff-split-full-v132/audit.json",
+      "result": "runs/random05/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/trick-random-02-resume-cutoff-0p875/result.json",
+      "tasks": 1408,
+      "result_sha256": "00dc988868d24ab7f90bdc4ef3b482078479113e17f65aedfa15e857db7a5060",
+      "first_step": 401,
+      "last_step": 600,
+      "robot_steps": 40000,
+      "counts": {
+        "all": {
+          "F": 23295,
+          "C": 3688,
+          "W": 9375,
+          "R": 3642
+        },
+        "opened": {
+          "F": 21612,
+          "C": 3238,
+          "W": 2141,
+          "R": 3167
+        },
+        "unopened": {
+          "F": 1505,
+          "R": 420,
+          "W": 220,
+          "C": 397
+        },
+        "assignment_changes": {
+          "unopened": 571,
+          "provably_late_unopened": 14
+        },
+        "idle": {
+          "W": 7014,
+          "R": 55,
+          "F": 178,
+          "C": 53
+        },
+        "provably_late_opened": {
+          "R": 19,
+          "F": 94,
+          "W": 1145,
+          "C": 20
+        },
+        "provably_late_unopened": {
+          "R": 7,
+          "F": 8,
+          "W": 29,
+          "C": 1
+        }
+      }
+    },
+    {
+      "name": "RANDOM-02-KK",
+      "audit": "random05/results/random-nms-kk-baselines-v1/audit.json",
+      "result": "runs/random05/random-nms-kk-baselines-split-full-v1/random-02-kk-repeat2/random-02-kk-repeat2/result.json",
+      "tasks": 1256,
+      "result_sha256": "f7e168ded6f705d26e5be6b9d9829f271bae8eed36d7f162b3417ea830517088",
+      "first_step": 401,
+      "last_step": 600,
+      "robot_steps": 40000,
+      "counts": {
+        "all": {
+          "F": 27597,
+          "R": 5332,
+          "W": 2720,
+          "C": 4351
+        },
+        "opened": {
+          "F": 24706,
+          "R": 4428,
+          "W": 2477,
+          "C": 3757
+        },
+        "unopened": {
+          "F": 2891,
+          "C": 594,
+          "R": 904,
+          "W": 243
+        },
+        "assignment_changes": {
+          "unopened": 1368,
+          "provably_late_unopened": 689
+        },
+        "provably_late_unopened": {
+          "F": 1284,
+          "R": 407,
+          "C": 286,
+          "W": 112
+        },
+        "provably_late_opened": {
+          "C": 787,
+          "F": 5033,
+          "R": 961,
+          "W": 571
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-03-PILOT",
+      "compare_to": "RANDOM-03-NMS",
+      "source_commit": "1a3076420bc245d5f56839936d7814eb9087b050",
+      "audit": "random05/results/random03-record2614-split-full-v153/audit.json",
+      "result": "runs/random05/random03-record2614-split-full-v153/trick-random-03-record2614-seed3/trick-random-03-record2614-seed3/result.json",
+      "tasks": 2620,
+      "result_sha256": "a70e66dfa74f13ea0ddf64e88d78926db2765e2a929ad3871ab00c63e22df111",
+      "first_step": 601,
+      "last_step": 800,
+      "robot_steps": 80000,
+      "counts": {
+        "all": {
+          "F": 41409,
+          "C": 8149,
+          "R": 8424,
+          "W": 22018
+        },
+        "opened": {
+          "F": 38590,
+          "C": 7299,
+          "R": 7543,
+          "W": 14793
+        },
+        "unopened": {
+          "F": 2819,
+          "C": 850,
+          "R": 881,
+          "W": 7225
+        },
+        "assignment_changes": {
+          "unopened": 2044,
+          "provably_late_unopened": 969
+        },
+        "provably_late_opened": {
+          "W": 11521,
+          "C": 160,
+          "F": 608,
+          "R": 127
+        },
+        "provably_late_unopened": {
+          "W": 6527,
+          "F": 386,
+          "C": 84,
+          "R": 109
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-03-NMS",
+      "audit": "random05/results/generalization-20260921/audit.json",
+      "result": "runs/random05/generalization-nms-split-full/nms32-random-03/nms32-random-03/result.json",
+      "tasks": 2359,
+      "result_sha256": "865f695154653d561fcc29811aafeb3c5c002effbad32f0388ee5081cbb37f99",
+      "first_step": 601,
+      "last_step": 800,
+      "robot_steps": 80000,
+      "counts": {
+        "all": {
+          "R": 13251,
+          "C": 8909,
+          "F": 45878,
+          "W": 11962
+        },
+        "opened": {
+          "R": 12014,
+          "C": 8196,
+          "F": 42908,
+          "W": 11023
+        },
+        "unopened": {
+          "F": 2970,
+          "W": 939,
+          "R": 1237,
+          "C": 713
+        },
+        "assignment_changes": {
+          "unopened": 1591,
+          "provably_late_unopened": 634
+        },
+        "provably_late_unopened": {
+          "R": 473,
+          "F": 1001,
+          "C": 273,
+          "W": 326
+        },
+        "provably_late_opened": {
+          "F": 11322,
+          "C": 2494,
+          "R": 3967,
+          "W": 3314
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-04-PILOT",
+      "compare_to": "RANDOM-04-NMS",
+      "source_commit": "88551e69",
+      "audit": "random05/results/random45-progress-triage-split-full-v144/audit.json",
+      "result": "runs/random05/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/trick-random-04-progress-triage-mixp25-span32/result.json",
+      "tasks": 2782,
+      "result_sha256": "bf4d8cf6526c2b2b23cb8fe5ff53c0977846b93ae392968f7e21287ace765cca",
+      "first_step": 801,
+      "last_step": 1000,
+      "robot_steps": 140000,
+      "counts": {
+        "all": {
+          "F": 50197,
+          "R": 18029,
+          "W": 58902,
+          "C": 12872
+        },
+        "opened": {
+          "F": 35132,
+          "R": 11586,
+          "W": 27002,
+          "C": 8470
+        },
+        "idle": {
+          "C": 4156,
+          "R": 6086,
+          "W": 31343,
+          "F": 14255
+        },
+        "unopened": {
+          "F": 810,
+          "W": 557,
+          "C": 246,
+          "R": 357
+        },
+        "assignment_changes": {
+          "unopened": 597
+        },
+        "provably_late_opened": {
+          "W": 5329,
+          "F": 1862,
+          "R": 758,
+          "C": 548
+        }
+      }
+    },
+    {
+      "name": "RANDOM-04-NMS",
+      "audit": "random05/results/random-nms-kk-baselines-v1/audit.json",
+      "result": "runs/random05/random-nms-kk-baselines-split-full-v1/random-04-nms-repeat1/random-04-nms-repeat1/result.json",
+      "tasks": 2649,
+      "result_sha256": "798b69b78d60e09f091874d9fb96819d465604e9da291398450bd61e23f2013d",
+      "first_step": 801,
+      "last_step": 1000,
+      "robot_steps": 140000,
+      "counts": {
+        "all": {
+          "C": 19024,
+          "F": 53795,
+          "W": 31512,
+          "R": 35669
+        },
+        "opened": {
+          "C": 17970,
+          "F": 50965,
+          "W": 29664,
+          "R": 33629
+        },
+        "unopened": {
+          "F": 2830,
+          "W": 1848,
+          "C": 1054,
+          "R": 2040
+        },
+        "assignment_changes": {
+          "unopened": 1992,
+          "provably_late_unopened": 868
+        },
+        "provably_late_opened": {
+          "C": 7912,
+          "W": 12339,
+          "F": 16683,
+          "R": 16104
+        },
+        "provably_late_unopened": {
+          "W": 740,
+          "R": 900,
+          "C": 421,
+          "F": 1006
+        },
+        "idle": {}
+      }
+    },
+    {
+      "name": "RANDOM-05-PILOT",
+      "compare_to": "RANDOM-05-NMS",
+      "source_commit": "88551e69df5b6f5ee14600dfe3a7ae8fe586783c",
+      "audit": "random05/results/random05-startup-progress-split-full-v144/audit.json",
+      "result": "runs/random05/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/trick-random-05-startup-progress-mixp125/result.json",
+      "tasks": 4242,
+      "result_sha256": "fefeaefb9bd7aee53ea32f07c950ec85601dbd457775a650c82a952bbf5b74e7",
+      "first_step": 1801,
+      "last_step": 2000,
+      "robot_steps": 160000,
+      "counts": {
+        "all": {
+          "W": 69936,
+          "F": 49781,
+          "C": 16241,
+          "R": 24042
+        },
+        "opened": {
+          "W": 53170,
+          "F": 40911,
+          "C": 13000,
+          "R": 19018
+        },
+        "idle": {
+          "R": 3571,
+          "C": 2272,
+          "W": 12078,
+          "F": 6079
+        },
+        "unopened": {
+          "F": 2791,
+          "R": 1453,
+          "W": 4688,
+          "C": 969
+        },
+        "assignment_changes": {
+          "unopened": 1652,
+          "provably_late_unopened": 764
+        },
+        "provably_late_opened": {
+          "W": 19191,
+          "R": 5743,
+          "F": 10328,
+          "C": 3709
+        },
+        "provably_late_unopened": {
+          "R": 607,
+          "W": 2358,
+          "F": 1186,
+          "C": 423
+        }
+      }
+    },
+    {
+      "name": "RANDOM-05-NMS",
+      "audit": "random05/results/generalization-20260921/reference-random05.json",
+      "result": "runs/random05/nms-original-full-v1/nms-original-s0/result.json",
+      "tasks": 3172,
+      "result_sha256": "24cee6f6efbbcf029334a79242641f37a748ef2f1a56a2ab01bb0a9671d0d9d6",
+      "first_step": 1801,
+      "last_step": 2000,
+      "robot_steps": 160000,
+      "counts": {
+        "all": {
+          "F": 52351,
+          "W": 50203,
+          "R": 35254,
+          "C": 22192
+        },
+        "opened": {
+          "F": 50061,
+          "W": 47092,
+          "R": 33620,
+          "C": 21180
+        },
+        "unopened": {
+          "F": 2290,
+          "W": 3111,
+          "C": 1012,
+          "R": 1634
+        },
+        "assignment_changes": {
+          "unopened": 1837,
+          "provably_late_unopened": 580
+        },
+        "provably_late_opened": {
+          "C": 8206,
+          "W": 17019,
+          "R": 12817,
+          "F": 17235
+        },
+        "provably_late_unopened": {
+          "C": 309,
+          "W": 909,
+          "R": 515,
+          "F": 692
+        },
+        "idle": {}
+      }
+    }
+  ],
+  "caveat": "Uses only each currently assigned visible chain, current pose and declared end. Directed unit-action distances ignore collisions and later repeated-waypoint service ticks, so late classifications are conservative impossibility certificates. Robot motion can help others even when its own task cannot finish; these are not wasted-work estimates or recoverable throughput. Planner suppression state is unavailable from traces. All traces were previously independently replayed; no solver or benchmark is modified."
+}

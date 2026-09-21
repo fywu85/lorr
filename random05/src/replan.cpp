@@ -21,6 +21,7 @@ struct Forecast {double score=0;int completed=0,decisions=0,pool_after=0;};
 void Engine::copy_replan_state(Engine& target,const Config& config) const {
     ++target.ranking_epoch_;
     target.cfg=config;target.quiet_=true;target.graph=graph;target.rng_=rng_;
+    target.deadline_graph_=deadline_graph_;target.deadline_max_distance_=deadline_max_distance_;
     target.policy_profile_active_=false;target.replan_stats_=ReplanStats{};
     target.total_forward_=total_forward_;target.total_agent_steps_=total_agent_steps_;
     target.active_forward_=active_forward_;target.active_agent_steps_=active_agent_steps_;
