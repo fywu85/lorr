@@ -191,3 +191,11 @@ completed window repairs; `2` also salvages components after a bounded repair
 failure. Unplanned dependencies retain their old paths. Default0 preserves the
 previous whole-group acceptance. This optional general mechanism requires
 `R05_WINDOW>0` and still completes every declared repair order.
+
+
+`R05_MATCH_AUCTION=epsilon` selects bounded capacitated auction matching when the
+eligible-agent count is at most`R05_HUNGARIAN`. Default0 uses Hungarian assignment.
+`R05_AUCTION_BIDS` sets the fixed bid limit per eligible agent (default128).
+Completed proposals certify price tolerance and caps; budget exhaustion falls
+back to a complete Hungarian assignment. There is no timed partial schedule.
+Nonzero tolerance can change throughput.

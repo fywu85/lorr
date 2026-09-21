@@ -1555,3 +1555,32 @@ staggered path updates and recursive temporal displacement with fallback paths.
 Its task-completion-delay experiments are different from this competition.
 The present component salvage is a smaller independent change to our existing
 LNS, not an implementation or reproduction of PUSH.
+
+
+## 2026-09-21: bounded capacitated auction matching (source157)
+
+`R05_MATCH_AUCTION=epsilon` enables an independent deterministic epsilon-auction
+in the existing joint-matching branch; default0 retains Hungarian assignment.
+Identical optional idle slots and mandatory cap slots form capacitated objects.
+Each object keeps its highest bids and evicts its lowest bidder when full. Prices
+stay zero while capacity is unused. The completed assignment is checked for
+capacity, mandatory admission and epsilon-complementary slackness before use.
+Real-task costs, keep bonus, opened-task protection and visible tasks are unchanged.
+This is a general mechanism; existing guidance, horizon and admission settings
+keep their explicit trick gates.
+
+Mandatory idle prices receive a common larger negative constant so the admission
+cap is preserved within the additive rows*epsilon tolerance. This changes no
+ranking between assignments that fill the required idle slots. Bid work is
+bounded byrows*R05_AUCTION_BIDS(default128). If it fails to complete, discard the
+incomplete assignment and run the complete existing Hungarian solver. The bound
+uses bids, never elapsed wall time. No partial schedule is emitted.
+
+The hypothesis is that almost-optimal joint matching can retain the throughput
+lost by greedy matching while reducing startup/scheduling latency. It may also
+alter ties or lose throughput; no gain is assumed. This is a serial independent
+implementation of the auction/transportation pattern, not copied external code.
+Reference: [Bertsekas,1990 tutorial](https://www.mit.edu/~dimitrib/Auction_Interfaces_Published.pdf).
+Regression compares810 rectangular, tied and negative-price fixtures with
+Hungarian optima, verifies admission and additive cost tolerance, and checks
+turnover replay across workers, caches and checkpoint restoration.

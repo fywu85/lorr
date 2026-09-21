@@ -1347,6 +1347,51 @@ void rectangular_matching_optimality() {
             "equal-price matching changed its stable column ties");
 }
 
+void capacitated_auction() {
+    std::mt19937 random(9354157);
+    for(int rows:{1,2,5,9,32})for(int extra:{0,3,11})for(int trial=0;trial<18;++trial)
+    for(double epsilon:{.01,.125,1.}) {
+        const int mandatory=trial%3==0?rows/3:0;
+        const int optional=trial%3==1?std::max(1,rows/2):0;
+        const int columns=rows+extra+optional,real=columns-optional-mandatory;
+        std::vector<float> matrix(size_t(rows)*columns);
+        for(int row=0;row<rows;++row) {
+            for(int j=0;j<real;++j)matrix[size_t(row)*columns+j]=(int(random()%161)-80)*.125f;
+            for(int j=real;j<real+optional;++j)matrix[size_t(row)*columns+j]=trial%2?-1.f:3.f;
+            for(int j=real+optional;j<columns;++j)matrix[size_t(row)*columns+j]=-11.f;
+        }
+        uint64_t bids=0;
+        const auto auction=auction_assignment(matrix,rows,columns,epsilon,uint64_t(rows)*8192,mandatory,optional,&bids);
+        const auto exact=hungarian_assignment(matrix,rows,columns,mandatory,false,false,nullptr,optional,false);
+        require(auction.size()==size_t(rows),"auction did not complete a small bounded matching fixture");
+        double actual=0,optimum=0;int idle=0;std::vector<unsigned char> used(columns,0);
+        for(int row=0;row<rows;++row) {
+            const int j=auction[row];require(j>=0 && j<columns && !used[j],"auction lost a row or reused a slot");
+            used[j]=1;actual+=matrix[size_t(row)*columns+j];optimum+=matrix[size_t(row)*columns+exact[row]];
+            idle+=j>=columns-mandatory;
+        }
+        require(idle==mandatory,"auction changed a mandatory admission cap");
+        require(actual>=optimum-1e-8 && actual<=optimum+rows*epsilon+1e-7,
+                "auction exceeds the additive assignment-cost tolerance");
+        require(bids>=uint64_t(rows) && bids<=uint64_t(rows)*8192,"auction bid accounting is inconsistent");
+    }
+    require(auction_assignment({},0,0,.1,0).empty(),"empty auction was not empty");
+    require(auction_assignment(std::vector<float>(24,0),4,6,.1,3).empty(),"auction exposed an incomplete assignment");
+    require(auction_assignment(std::vector<float>(24,0),4,6,.1,100)==std::vector<int>({0,1,2,3}),
+            "auction flat ties are not deterministic");
+    bool refused=false;
+    try{auction_assignment({0,1,2,0,1,3},2,3,.1,100,0,2);}catch(const std::invalid_argument&){refused=true;}
+    require(refused,"auction merged nonidentical idle slots");
+    for(double epsilon:{.01,.125,1.})for(int cap:{0,12}) {
+        Config cfg;cfg.hungarian_limit=1000;cfg.auction_epsilon=epsilon;cfg.auction_bids_per_row=128;
+        cfg.active_task_cap=cap;cfg.fast_admission=true;cfg.random_by_step=true;
+        cfg.futures=16;cfg.depth=5;cfg.cost_cache=true;cfg.threads=1;
+        const auto reference=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.cost_cache=false;
+        require(reference==simulate(cfg,12),"auction matching depends on workers or cost caches");
+        require(reference==simulate(cfg,12,5,5,true),"auction matching changed checkpoint replay");
+    }
+}
+
 void free_matching_ties() {
     // A large flat optimum has no reason to revisit occupied columns. Count
     // augmenting scans rather than making a hardware-dependent timing assertion.
@@ -2064,6 +2109,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"window progress ties accepted a non-boolean value");
     }
+    {
+        Setting auction("R05_MATCH_AUCTION","0.125"),matching("R05_HUNGARIAN","1000"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).auction_epsilon==.125f,"general auction matching was rejected");
+        Setting disabled("R05_HUNGARIAN","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"auction enabled without its joint-matching branch");
+    }
+    for(const char* value:{"-1","9","nan"}) {
+        Setting auction("R05_MATCH_AUCTION",value);auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"auction accepted an invalid tolerance");
+    }
     for(const char* mode:{"1","2"}) {
         Setting components("R05_WINDOW_COMPONENT_REPAIR",mode),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
         auto general=environment(5,5,4);
@@ -2606,7 +2664,7 @@ int main() {
     compact_prepared_rankings();
     active_travel_calibration();
     observed_progress_triage();
-    rectangular_matching_optimality();free_matching_ties();compact_optional_matching();
+    rectangular_matching_optimality();capacitated_auction();free_matching_ties();compact_optional_matching();
     exact_dummy_prefix();
     active_task_admission();initial_task_admission();
     priced_task_admission();

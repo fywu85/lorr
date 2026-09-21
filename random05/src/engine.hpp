@@ -105,7 +105,8 @@ struct Config {
     bool flow_average=false, flow_normalize=false, flow_reverse=false;
     int loop_extent=2;
     bool predict_matching=false, rollout_age=false, rollout_match=false, cost_cache=false, pocket_components=false;
-    int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0;
+    int local_trials=0, horizon=0, hungarian_limit=0, mutation_radius=0, auction_bids_per_row=128;
+    float auction_epsilon=0;
     bool prospective_wait=false, chain_matching=false, random_by_step=false;
     int age_cap=0, pre_cycles=0, intent_mode=0;
     float pre_cycle_gain=0, idle_eviction=0;
@@ -125,6 +126,9 @@ struct Config {
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int rows,int columns,
                                       int dummy_columns=0,bool fast_dummy_prefix=false,bool prefer_free_ties=false,uint64_t* augment_scans=nullptr,
                                       int optional_columns=0,bool compact_optional=false);
+// Empty on an exhausted fixed bid budget; callers retain a complete fallback.
+std::vector<int> auction_assignment(const std::vector<float>& matrix,int rows,int columns,
+    double epsilon,uint64_t bid_limit,int dummy_columns=0,int optional_columns=0,uint64_t* bids=nullptr);
 double weighted_static_future_score(const std::vector<double>& scores,double static_weight);
 std::vector<double> rank_progress_weights(const std::vector<float>& remaining,float power);
 std::vector<double> progress_time_factors(const std::vector<double>& work,

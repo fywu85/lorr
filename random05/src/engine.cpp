@@ -362,6 +362,11 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.age_cap>0 && !random_trick)
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
+    c.auction_epsilon=real("R05_MATCH_AUCTION",0);
+    c.auction_bids_per_row=integer("R05_AUCTION_BIDS",128);
+    if(!std::isfinite(c.auction_epsilon) || c.auction_epsilon<0 || c.auction_epsilon>8 ||
+       c.auction_bids_per_row<1 || c.auction_bids_per_row>4096 || (c.auction_epsilon>0 && c.hungarian_limit<=0))
+        throw std::invalid_argument("auction matching needs a positive matching threshold, epsilon0..8 and bid budget1..4096");
     const int free_ties=integer("R05_MATCH_FREE_TIES",0);
     if(free_ties<0 || free_ties>1 || (free_ties && c.hungarian_limit<=0))
         throw std::invalid_argument("free-column matching ties need exact matching and a boolean value");
@@ -1295,7 +1300,15 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
     };
     if(exact) {
-        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
+        std::vector<int> selected;uint64_t auction_bids=0;
+        if(cfg.auction_epsilon>0)
+            selected=auction_assignment(matrix,int(agents.size()),columns,cfg.auction_epsilon,
+                uint64_t(agents.size())*cfg.auction_bids_per_row,dummy_columns,optional_columns,&auction_bids);
+        const bool auction_fallback=cfg.auction_epsilon>0 && selected.empty();
+        if(selected.empty())selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
+        if(cfg.profile && cfg.auction_epsilon>0 && (env->curr_timestep<5 || env->curr_timestep%100==0))
+            std::fprintf(stderr,"R05_AUCTION_PROFILE t=%d epsilon=%.6f bids=%llu fallback=%d\n",
+                env->curr_timestep,cfg.auction_epsilon,(unsigned long long)auction_bids,int(auction_fallback));
         for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
             schedule[agents[row]]=tasks[selected[row]];
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
