@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 18:46 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 19:22 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -31,7 +31,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
 | RANDOM-01 | 729 | 688 | KK | +5.96% | TRICK | 4 | 100.09 |
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
-| RANDOM-03 | 2,606 | 2,334 | NMS | +11.65% | TRICK | 5 | 731.22 |
+| RANDOM-03 | 2,614 | 2,334 | NMS | +12.00% | TRICK | 5 | 640.10 |
 | RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% | TRICK | 4 | 739.55 |
 | RANDOM-05 | 4,242 | 3,050 | NMS | +39.08% | TRICK | 0 | 780.49 |
 
@@ -55,7 +55,7 @@ assignment and task-event replay checks.
 |---|---:|---:|---:|
 | RANDOM-01 | 729 | 649 | +12.33% |
 | RANDOM-02 | 1,408 | 1,228 | +14.66% |
-| RANDOM-03 | 2,606 | 2,359 | +10.47% |
+| RANDOM-03 | 2,614 | 2,359 | +10.81% |
 | RANDOM-04 | 2,782 | 2,580 | +7.83% |
 | RANDOM-05 | 4,242 | 3,172 | +33.73% |
 
@@ -78,7 +78,7 @@ not unseen-map validation.
 | GAME | — | — |
 | RANDOM-01 | 726 | 729 |
 | RANDOM-02 | 1,397 | 1,408 |
-| RANDOM-03 | 1,582 | 2,606 |
+| RANDOM-03 | 1,582 | 2,614 |
 | RANDOM-04 | 1,558 | 2,782 |
 | RANDOM-05 | 2,226 | 4,242 |
 
@@ -88,7 +88,7 @@ Current selected records are pinned to their completion timestamps and source co
 |---|---|---|---|
 | RANDOM-01 | 2026-09-21T15:05:19.829832+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-horizon-split-full-v132/trick-random-01-resume-horizon-0p75/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
-| RANDOM-03 | 2026-09-21T16:52:42.436655+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random03-field-price-split-full-v132/trick-random-03-field-price-physical0p25/summary.json) |
+| RANDOM-03 | 2026-09-21T19:18:56.863316+00:00 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Run](random05/results/random123-heuristic-weight-split-full-v153/trick-random-03-heuristic-weight1p2/summary.json) |
 | RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 | RANDOM-05 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Run](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 
@@ -99,11 +99,14 @@ Current selected records are pinned to their completion timestamps and source co
 All eight fresh runs passed timing/resource checks and independent replay.
 The candidate stays below 701 ms on both fresh inputs; its archived exact
 repeat and two other planner seeds peak below 675 ms.
-The later 2,606-task routing-cost refinement is a development best;
+The earlier 2,606-task routing-cost refinement is a development result;
 the preceding fresh-input validation does not qualify that change.
 The 2,606 profile repeats exactly. Paired seeds5/0/3 score2,606/2,572/2,590
 versus2,602/2,548/2,566, +0.674% in aggregate and positive on each;
 all pass full replay and peak below767ms.
+The later heuristic-priority search reaches **2,614**, mean/max439/640ms,
+with complete independent replay. Exact repetition and other planner
+seeds are in progress; the earlier fresh validation does not qualify it.
 RANDOM-04 currently reaches **2,782** (+7.83% above matched NMS),
 **56 tasks short** of 2,838. Its record peaks at 739.6 ms;
 The earlier 2,777-task profile repeated exactly. Eight planner seeds score
@@ -117,7 +120,7 @@ These two streams per density use the same layout, not unseen maps.
 [RANDOM-02](random05/RANDOM02_FRESH_VALIDATION_V1.md).
 
 The new2,782 record uses task-specific observed progress to adjust the
-known-horizon estimate. Exact repetition passes; four planner seeds improve
+known-horizon estimate. Exact repetition passes; the new profile improves
 the eight-seed aggregate by0.340% (six gains, two losses). Seed11's later
 extension fails the strict first-step deadline; it has no valid score.
 [Replication](random05/results/random124-seed-extension-split-full/paired-comparison.json).

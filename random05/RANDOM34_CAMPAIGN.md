@@ -11,7 +11,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,606 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,614 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,782 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
@@ -1025,3 +1025,20 @@ while adding one independent edge mutation. Controls plus extraseeds0–3 per
 density are active. The earlier nested flips all included the same second edge;
 this experiment tests different second edges without undoing the selected first.
 R04still61tasks below2838; freshR04inputs50013/50014remain ungenerated.
+
+
+### 2026-09-21 19:25 UTC — RANDOM-03 advances to2,614
+
+A general heuristic-priority change in the bounded window proposal search raises
+the selected full score2,606->2,614, with mean439/max640ms and independent replay.
+Source1a307642/build153, weight1.2, other profile settings unchanged. Queue priority
+changes; complete unweighted cost still governs acceptance. The2,614 exact repeat,
+two additional planner seeds, nearby weights and higher fixed work are running.
+Fresh-input evidence still applies to the earlier2,602 recipe only.
+
+RANDOM-04 remains2,782,56tasks below2,838. Recent cap/dispersion/contrast/cutoff
+changes all lose or fail their deadline. Exact matching-column compression cuts
+startup solve time about9%; overall means are mixed but full traces remain exact.
+The completed waiting-front analysis does not identify idle robots as the dominant
+obstacle. A declared smooth route-price search preserves selected street directions
+and mean cost, requires the explicit trick flag, and uses only development inputs.

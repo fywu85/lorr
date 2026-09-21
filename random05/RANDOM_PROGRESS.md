@@ -21,7 +21,7 @@ Large maps are outside active development.
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2606 | 2359 |
+| RANDOM-03 | 400 | 800 | 1582 | 2614 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2782 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3172 |
 
@@ -164,6 +164,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T17:35:08.379917+00:00 | RANDOM-04 | trick | 2778 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp5-span64/summary.json) |
 | 2026-09-21T17:35:31.545879+00:00 | RANDOM-04 | trick | 2782 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Full run](results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 | 2026-09-21T18:11:42.053845+00:00 | RANDOM-05 | trick | 4242 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | [Full run](results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
+| 2026-09-21T19:18:56.863316+00:00 | RANDOM-03 | trick | 2614 | [1a3076420bc245d5f56839936d7814eb9087b050](https://github.com/fywu85/lorr/commit/1a3076420bc245d5f56839936d7814eb9087b050) | [Full run](results/random123-heuristic-weight-split-full-v153/trick-random-03-heuristic-weight1p2/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1065,3 +1066,36 @@ All four full runs are independently audited. Exact repetition matches all six f
 ### 2026-09-21 18:46 UTC: completed negative trials and runtime checks
 
 Source149unchanged-cost reuse passes all ten full six-field comparisons, but R03mean532.298/536.234ms does not show a gain. Source148initial caps all lose; all11cases and three full default controls are audited/exact. The16seed extensions add no record; R04eightpairedseeds improve0.3402%aggregate,6positive/2negative,while extensionseed11fails the first-step deadline at1050.759ms. Current-scheduler132all14attempts are audited and lose orfail; R03keep2fails t0at1102.232ms. All these failures remain excluded, without an inferred host cause. Detailed arrays and proofs remain in their results directories.
+
+
+### 2026-09-21 19:25 UTC: faster RANDOM-03 proposal search reaches2,614
+
+Source1a3076420bc245d5f56839936d7814eb9087b050/build153 passes49.27s regression.
+Heuristic priority1.2 gives a fully audited2,614 tasks, mean438.994/max640.097ms,
+RSS432.021MB. Originalweight1 still gives2,606; weights1.01/1.05 give2,583/2,603.
+All20 full comparisons are audited. OnR01/R02, weights1.01/1.05 preserve the
+selected scores;1.2 loses. Complete group acceptance still uses the original
+unweighted objective; this is a proposal search change, not a partial budget.
+The2,614 exact repeat, planner seeds0/3, weights1.1/1.15/1.3/1.5/2, and higher
+fixed budgets7,168/8,192 are running. Prior freshV1 continues to qualify2,602 only.
+
+Source150free-column ties preserves all12 successful full traces;R03/R04on
+fail first entries1,080.753/1,043.654ms. Source151optional-column compression
+passes all six full runs;5 declared reference comparisons are exact. R04startup
+matching falls from522ms to477ms; maximum full-run entries off/on are838/777ms
+(seed4) and814/767ms(seed0), but average runtime is mixed. R02 stays1,408.
+Source152query caching also preserves all10 successful traces but slowsR03:
+mean555ms off,580/592ms at512/2048queries. GeneralR02cache512fails timestep2
+at1,003.501ms. Keep query reuse off. Full failures and resource checks are archived.
+
+The waiting-front diagnostic is observational: unassigned robots make up15.6%
+of stationary fronts faced by assigned waiters onR04, versus24.0% of robot-time;
+R05figures are9.9% and15.0%. This does not support treating unassigned robots as
+the dominant local obstacle, and does not infer intended moves or recoverable tasks.
+
+Sourcea1f66070ee2d42eba95408564e2d3ebec48eded6/build154 passes49.56s regression.
+The explicit field-jitter trick varies undirected road costs smoothly, keeping
+both directional costs in proportion and restoring their mean before any optional
+physical-edge mixture. Twenty-two fullR04/R05comparisons freeze strengths.025/.05/.1
+onR04 and.05/.1 onR05, seeds0..3, with controls. R04uses the verified exact compact
+idle-column option to reduce startup cost. No field-search gain is claimed yet.

@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 18:01 UTC. The user explicitly resumed the campaign and expanded
+Updated 2026-09-21 19:25 UTC. The user explicitly resumed the campaign and expanded
 the active objective to maximum throughput on all five RANDOM instances.
 The RANDOM-05 4,000-task milestone is achieved and independently audited.
 The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
@@ -26,40 +26,82 @@ Full horizons: 600 / 600 / 800 / 1000 / 2000. Strict 1s entry / 30s preprocessin
 32 decimal GB process guard. EPYC9354 allocation: 16 physical cores / 32 SMT
 workers, actual binding and no-quota checks. Shared hosts are allowed. Fixed
 work completes or the run fails; do not truncate work on a wall-clock deadline.
-All inputs50001–50012 and newly reserved50015/50016 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
+All inputs50001–50012,50015/50016 and50017/50018 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
 Any further fresh validation requires freezing protocol/config before generation.
 
 ## Current resumed execution
 
-Updated 2026-09-21 18:28 UTC. User resumed and expanded optimization across all five RANDOM cases. Continue work through compactions; no source151 started. No subagents or Fable retry.
+Updated 2026-09-21 19:25 UTC. The all-five optimization campaign is active.
+Continue across compactions. No subagents. Do not retry Fable without a change
+in its usage-credit failure. Latest successful push: e3215efe4326c4415e28185c3488dacf3c555f91.
 
-Selected audited records **729 /1408 /2606 /2782 /4242**; general **726 /1397 /1582 /1558 /2226**. R04 target2838 remains56tasks away. Latest newR05record4242: source144/88551e69, startup rank.125/250steps plusprogressmix.125/span32 oncap680, full2000steps, mean589.171/max780.487ms,RSS489.562MB. All90R05frontier rows audited. Exactrepeat/seeds1/2/3 audited. Waitingmax1983,initialunfinished147/unopened110,censoredoldest2000. FrozenV6onlyqualifies4175.
-Prior4236exactrepeat,seeds0/1/2/3=4236/4051/4172/4096 vs4197/4168/4179/4143: aggregate-0.7910%,1positive/3negative. Keepselectedmaximum separate from better4197seedaggregate. Allaudited;max827.104ms.
-R04=2782 source144/88551e69progressmix.25/span32. Exactrepeat andseeds0/3/4/5=2749/2741/2782/2781 versus2726/2742/2777/2771 (+0.3359%,3positive/1negative),max846.852ms. Refinementslose. No freshR04inputs exist.
-R03=2606 source132/027df4d9physicaledgemix.25. Exactrepeat andseeds5/0/3=2606/2572/2590 versus2602/2548/2566 (+0.674%,allpositive). FreshV1onlyqualifies2602.
-GeneralR02=1397 source141/611aa2a6 pairedorders2/I1536/progresstie1,seed0. Equalpotentialwork seven-seed comparison+0.3607%,5positive/1tie/1negative. PriorI2048comparison+0.7657%,allpositive. Fullsource143/145/147controls repeat exactly.
+Selected audited records: **729 / 1408 / 2614 / 2782 / 4242**.
+General records: **726 / 1397 / 1582 / 1558 / 2226**.
+RANDOM-04 remains56 tasks below its retained matched-NMS target2838.
 
-ACTIVE GRID batches (2026-09-21 18:46 UTC):
-- random45-progress-coupling-split-full-v144:16fullcases,source88551e69/build144,jobs8903754–8903769,start18:35UTC. EightR04single-value changesaround2782(cap540/580,dispersion.2/.6,contrast2.1/2.3,cutoff.8125/.9375);eightR05around4242(cap660/700,dispersion.6/1,contrast2.2/2.6,cutoff.875/1.125). R04contrast2.3andcutoff.8125failedfirstentries1028.486/1025.277ms; preserve. Remainingpending(expectedR04about18:45,R05about18:55). Auditallwhencomplete.
-- random-all-match-free-ties-split-full-v150:14fulloff/oncases,general/trickR01/R02plusR03/R04/R05currentrecords. Source1d1022fa4b0342b6589f80188c1241eaf6d59204/build150,regression45.81s,binary9676644c51f9c31e034eba41802f1e44b7bb1b0552d9190f549999b0e3075394. Defaultoff `R05_MATCH_FREE_TIES=1` choosesfreecolumnsonexactreduced-costties:optimalcostpreserved,optimalpairingscanchange. Testsincludeindependentexhaustiveoptima,scancountreductiononflatcosts,dummyprefixequivalence,worker/checkpoint/flags. Jobsstart8903789,submissionexec58586needsdrain. ExpectedfullR05about19:05.
+Recent qualification:
+- R05/source144/88551e69:4242 exact repetition; seeds0/1/2/3 give
+  4242/4028/4183/4128, +0.157% against the previous4236 profile (3positive,
+  1negative), but -0.635% against the more consistent4197 profile. Largest
+  entry782.280ms. All90 chronological frontier rows audited. No fresh
+  qualification of4242; frozenV6 still applies only to4175.
+- R04/source144:2782 exact repetition. Paired seeds0..7 give
+  2749/2773/2781/2741/2782/2781/2750/2763 against
+  2726/2757/2766/2742/2777/2771/2753/2753: +0.3402%,6positive/2negative.
+  Extended seeds8/9/10 give2718/2777/2742; seed11 fails first entry1050.759ms.
+  No fresh R04 input has been generated.
+- R03/source132:2606 exact repetition; seeds5/0/3 give2606/2572/2590,
+  +0.674% versus2602/2548/2566. FreshV1 qualifies2602, not2606.
+- GeneralR02/source141:1397 two-order repair with1536 iterations and progress
+  ties. Seven paired planner seeds beat one-order3072 by0.361% aggregate.
 
-ALL OTHER DECLARED BATCHES THROUGH149COMPLETEANDAUDITED. No active auditor execsessions. Source150islatestcode; no source151started. Source149costreusefulloff/onall10tracesexact; timingsmostlytinyormixed,R03notfaster(532.298/536.234msmeans),keepoffpendingevidence.
-FreshR01/R02validation**completed andpassed**all16originalruns. Protocolf74286e6beforegeneration50017/50018. R01trick730/702,general727/698,NMS645/654and630/630: selected+11.526%,general+10.981%aggregate. R02trick1382/1348,general1376/1338,NMS1213/1203and1198/1182: selected+13.231%,general+12.567%. Eachinputpositive. Source/resource/timeandfullreplayauditsarchived,andRANDOM01_FRESH_VALIDATION_V1.md/RANDOM02_FRESH_VALIDATION_V1.mdwritten. Newstreamsarenottuningdataanddonotpromoteoldinputrecords.
-4242qualificationcomplete:exactrepeatall6fields,seeds0/1/2/3=4242/4028/4183/4128,+0.157%vsprevious4236profile(3positive/1negative),still-0.635%versusstable4197profile,max782.280ms. No freshqualification. RootlogsandPILOTupdated. RendererquoteSyntaxErrorfromanunescapedapostrophewasfixedandpy_compilerenderpassed; no benchmark data affected.
-R04new8seedcomparison0..7:2749/2773/2781/2741/2782/2781/2750/2763vs2726/2757/2766/2742/2777/2771/2753/2753,+0.3402%,6positive/2negative. Extension8/9/10=2718/2777/2742;seed11failsstep0,1050.759ms. All16mixed-sourceextensioncasesaudited;R01seeds7..10=723/724/720/722,R02=1386/1398/1399/1390. Nofrontiergain.
-Source148all11audited,allstartupcapslose. R05caps480until100/250=4176/4064,560until100/250=4120/4160;4236/4197controlsandR04=2782all6fieldsexact. Keepinitialcapoff.
-Current-scheduler132all14audited,noneimproves. R03length.125/.375/.5/1=2586/2592/2587/2593,chain2605,keep0=2585,late4=2595,caps360/380=2584/2594;keep2failsfirststep1102.232ms. R01length.125/.375=725/719;R02=1390/943. Thelow943coincideswithraisinglengthcostwhileoptionalidlepricestays32; donotconflateitwiththecost-weight-onlyolderruns.
+Fresh RANDOM-01/02 V1 is complete, audited and pushed. Protocolf74286e6 was
+committed before generating50017/50018. All16 full runs pass replay and strict
+resource/time checks. R01 selected730/702, general727/698 versus strongest
+NMS654/630: +11.526%/+10.981% aggregate. R02 selected1382/1348,
+ general1376/1338 versus1213/1198: +13.231%/+12.567%. Every input is positive.
+These are new task/start streams on the same layout, not tuning data or unseen
+geometry. Do not promote fresh730 over the archived-input729 record.
 
-COMPLETED/AUDITED recently:
--144startup-progress:4236exactcontrol,4242newrecord,mix.25atspan32/64=4230/4230. Fullproofarchived. Wholehistoryaudit90rowsdone. RendererinitiallycalledbeforehistoryauditfinishedandhitStopIteration; rerunafterauditpassed, dashboardnowcurrent. No solvercheckfailed.
--145mixedgroups:general/trickR01=717/725,R02=1389/1381,alllose;R03controlfailsstep8at1031.163ms,andmixedfailsstep77at1038.732ms. Nohostcauseclaimed. All10audited,fourvalidcontrolsall6fieldsexact.
--146completionpricing:12validfullruns,offcontrols729/1408/2606exact;prices.125/.5/2loseR01=722/725/719,R02=1396/1394/1393,R03=2582/2597/2604. Keepoff. Allaudited.
--147pathbuffers:10validfullruns,all6fieldsidenticaltoselectedreferenceswithreuseoffandon. Mixedtiming,no consistent speedup:R03off/onmean516.248/529.674,max752.221/797.388ms;R02trickmean309.784/332.675ms. Keepoffpendingconvincingevidence. Source888c1d51,regression44.91s,binary53bf672d2262a48b1f81e597eb6172a78c601f15a80fbd9e22d83dab21da2828.
--148startupcaps tests45.17s,binaryfd40a45ddf4ea596ed9f8d5489bc477f68d347fff1c3be9d0973d0c9d9a539e3. Openedtaskslocked,allrobotsmovable,exactinitial/steady/expiryboundaries. Benchpendingabove.
+Active GRID work (2026-09-21 19:25 UTC):
+- random03-record2614-split-full-v153, source1a3076420bc245d5f56839936d7814eb9087b050,
+  ten full runs, jobs8903878–8903887, started19:21. Exact repeat, seeds0/3,
+  weights1.1/1.15/1.3/1.5/2, and I7168/8192 (fixed startup6144).
+- random45-smooth-field-split-full-v154, sourcea1f66070ee2d42eba95408564e2d3ebec48eded6,
+ 22 full runs, jobs8903889 onward, started19:22. R04 strength.025/.05/.1 and
+  R05 strength.05/.1, seeds0..3 each, plus controls. R04 compact_idle=1 is
+  exact in six-field checks from151; other selected settings retained.
+  Build154 regression49.56s, binary71cfd49dcab7dad56c620e83274cb66865841b900f811072a338235ce80d8251.
+  Submission65594 was drained. No audit sessions active. No source155 started.
 
-Lastsuccessfulpush**cd8915a373c88978adf1340991c962852834eca6**. Sources147–150andfreshprotocolarelocallycommitted;4242frontier/qualification,allrecentaudits,andfreshR01/R02reportsarebeingcommittedandpushednow. Metadataforbuild146–150archived;rawbuildlogsremainignored.
+All earlier batches are complete and independently audited, including150–153.
+New R03 selected record2614 is promoted to random-frontiers and PILOT_PROGRESS.
+Source153 heuristic weight1.2, full800steps, mean438.994/max640.097ms,RSS432MB;
+record repetition/seed qualification pending above. Original weight1 gives2606;
+1.01/1.05 give2583/2603. Sparse profiles preserve selected scores at1.01/1.05;
+weight1.2 loses. Default controls and every fully equal trace are archived via
+new reusable audit_exact_controls.py; trajectory-comparison.json also keeps
+all changed trajectories, including equal-score cases if any.
 
-Heldout50001–50012,50015/50016,**50017/50018**excludedfromtuningatanydensity;50013/50014remainreservedandungeneratedR04. FreshV6qualifies4175(+31.99%vsNMS,+5.25%vsbaseline), notlaterselectedrecords. Structuredgoalstale-pausedcannotberesumedviaAPI;continuetheuser-authorizedworkwithoutfalsegoalcompletionornew-goalworkaround.
+Source151 exact idle-column compression: all six full runs audited. R02off/on
+1408;R04seed4off/on2782,seed0off/on2749. Matching startup522->477ms. Full
+maxima838->777ms and814->767ms, but means mixed. Keep unmeasured universal
+runtime claims out of the logs. Source150ties has12 successful exact full traces
+and R03/R04on failures1080.753/1043.654ms. Default free-tie flag remains off.
+Source152query cache preserves all10 successful traces but slowsR03mean555->
+580/592ms at512/2048queries. GeneralR02cache fails t2 at1003.501ms. Keep it off.
+
+The source144 dense progress-coupling batch is fully audited, all16 attempts:
+no improvement. R04contrast2.3/cutoff.8125 fail first entries1028.486/1025.277ms.
+R05best variants4235/4236 remain below4242. All source145–149 failures/negative
+results remain archived. The current-dense-blocked-fronts diagnostic reports
+only observational adjacency; it does not imply intended movement or recoverable
+throughput. Idle robots are not overrepresented in the counted front obstacles.
+
+Held-out50001–50012,50015/50016,50017/50018 are excluded from tuning at every
+density;50013/50014 remain reserved and ungenerated for R04. Existing structured
+goal is stale-paused and cannot be resumed through the API. Continue the user's
+authorized work without falsely completing it or creating a workaround goal.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
