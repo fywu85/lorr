@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2552 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2634 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2641 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -130,6 +130,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T06:01:05.809867+00:00 | RANDOM-03 | trick | 2551 | [dabfcc7](https://github.com/fywu85/lorr/commit/dabfcc7) | [Full run](results/random03-cooperative-triage-split-full-v89/trick-random-03-cooperative-triage-triage100/summary.json) |
 | 2026-09-21T06:14:53.457614+00:00 | RANDOM-03 | trick | 2552 | [de0b763](https://github.com/fywu85/lorr/commit/de0b763) | [Full run](results/random03-anneal-split-full-v91/trick-random-03-anneal-temperature4/summary.json) |
 | 2026-09-21T06:18:03.840528+00:00 | RANDOM-04 | trick | 2634 | [ac5cbc9](https://github.com/fywu85/lorr/commit/ac5cbc9) | [Full run](results/random04-forecast-split-full-v90/trick-random-04-forecast-mutation01/summary.json) |
+| 2026-09-21T07:11:31.028236+00:00 | RANDOM-04 | trick | 2641 | [fa98fd1d](https://github.com/fywu85/lorr/commit/fa98fd1d) | [Full run](results/random04-matching-refine-split-full-v96/trick-random-04-matching-refine-keep0/summary.json) |
 
 
 ## September21: first development comparisons

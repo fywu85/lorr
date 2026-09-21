@@ -270,3 +270,25 @@ new assignments after forecast completions, which may undervalue finishing;
 these are tests of that hypothesis. No unpublished future tasks are consulted.
 The new pending-position and chain-cost settings already exist as general
 options; the density-specific selected combinations remain explicit tricks.
+
+## September 21, 07:12 UTC: safe plan composition and traffic-policy probes
+
+Source99/db2d9bc5 adds optional merging of complete LNS windows. Cross-parent
+vertex and reverse-edge conflicts link agents into indivisible components.
+Only cost-improving complete components are copied; the resulting whole plan
+is validated before use. Tests enumerate every mix in late-vertex and edge-swap
+fixtures and check dense mobility, worker determinism and checkpoint replay.
+Six full R03 cases compare control, merging at group4/group6, annealing, mixed
+temporal neighborhoods, and half the work. Source98 temporal tests remain
+separate; neither mechanism is claimed to improve throughput yet.
+
+The2634 R04 trace has completed-waypoint intervals with p95=182, p99=234 and
+maximum322 steps. Eight full source96 cases test priority caps64/128/256, two
+early-fill thresholds, soft guidance confidence0.5/1 and construction penalty2.4.
+Priority caps and guidance choices are explicitly marked tricks; completed
+and censored order waits are retained by the audits. No new held-out data.
+
+Source97's four-way heap repeats2551/2552 exactly in all six fields. Mean
+runtime494->459ms and489->471ms, while maxima917->759 and683->780ms.
+These single pairs support a mean-runtime improvement, not a uniform peak-time
+claim. Every listed run is complete and strict-valid.

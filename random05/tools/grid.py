@@ -13,10 +13,11 @@ def write(p,x):
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
 def submit(a):
+    if a.ipo and a.kind!='build':raise ValueError('--ipo is only valid for a PILOT build')
     out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec={'kind':a.kind,'created_utc':now(),'repo':str(ROOT),
           'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
-          'hosts':a.hosts,'required_cpu_model':a.cpu_model}
+          'hosts':a.hosts,'required_cpu_model':a.cpu_model,'interprocedural_optimization':a.ipo}
     if a.kind=='nms4-build':
         shutil.copytree(ROOT/'nms',out/'source',ignore=shutil.ignore_patterns('build','.git','__pycache__','*.log','printer.txt'))
         p=out/'source/Solution/settings.hpp';body=p.read_text();assert body.count('THREADS = 32;')==1
@@ -106,6 +107,8 @@ def execute(a):
                    '-DCMAKE_BUILD_TYPE=Release','-DCMAKE_CXX_COMPILER='+str(ROOT/'env/bin/x86_64-conda-linux-gnu-c++'),'-DCMAKE_PREFIX_PATH='+str(ROOT/'env'),'-DBUILD_TESTING=ON'],
                   [str(ROOT/'env/bin/cmake'),'--build',str(out/'build'),'--parallel','4'],
                   [str(ROOT/'env/bin/ctest'),'--test-dir',str(out/'build'),'--output-on-failure']]
+        if spec['kind']=='build' and spec.get('interprocedural_optimization'):
+            commands[0]+=['-DPILOT_IPO=ON']
         if spec['kind']=='nms4-build':
             commands[0]+=['-D'+k+'='+v for k,v in spec['reference_flags'].items()]
             commands[1]+=['--target','lifelong'];commands=commands[:2]
@@ -163,5 +166,6 @@ def main():
     p.add_argument('--kind',choices=['build','nms4-build','benchmark']);p.add_argument('--output',type=Path,required=True);p.add_argument('--cases',type=Path)
     p.add_argument('--hosts',help='GRID host patterns separated by | for matched-hardware validation')
     p.add_argument('--cpu-model',help='Exact CPU model required at job startup')
+    p.add_argument('--ipo',action='store_true',help='Enable portable whole-program optimization for a PILOT build')
     a=p.parse_args();return execute(a) if a.action=='execute' else submit(a)
 if __name__=='__main__':raise SystemExit(main())

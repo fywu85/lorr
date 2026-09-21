@@ -60,6 +60,11 @@ Build and test on GRID:
 python3 random05/tools/grid.py submit --kind build --output runs/random05/my-build
 ```
 
+Add `--ipo` to the build command to test interprocedural optimization
+(`-DPILOT_IPO=ON` in CMake). The frozen build specification records this choice.
+It keeps the ordinary instruction-set and floating-point options; full trace
+comparisons check that a compiler optimization preserves decisions.
+
 For a benchmark, copy a case JSON from `experiments/`, set its binary to the
 completed build, then submit:
 
