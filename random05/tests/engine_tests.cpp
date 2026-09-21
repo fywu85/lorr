@@ -269,6 +269,57 @@ void exact_matching() {
     std::vector<int> schedule;engine.match(&e,schedule);
     require(schedule[0]==11 && schedule[1]==10,"joint minimum-cost matching failed the greedy trap");
 }
+void nonlinear_matching() {
+    // Linear matching retains two moderate trips because of a small keep bonus.
+    // Concavity instead gives one robot an immediate pickup and the other the
+    // longer trip. Both choices preserve exactly one assignment per task.
+    auto env=environment(1,20,2);env.curr_states[0].location=0;env.curr_states[1].location=4;
+    Task a;a.task_id=10;a.locations={4,4};env.task_pool[10]=a;
+    Task b;b.task_id=11;b.locations={19,19};env.task_pool[11]=b;
+    env.curr_task_schedule={10,11};
+    Config cfg;cfg.hungarian_limit=1000;cfg.guided_matching=false;
+    cfg.length_weight=0;cfg.keep_bonus=.25;std::vector<int> schedule;
+    Engine linear(cfg);linear.initialize(&env);linear.match(&env,schedule);
+    require(schedule==std::vector<int>({10,11}),"nonlinear fixture lacks its linear baseline");
+    cfg.match_power=.5;Engine concave(cfg);concave.initialize(&env);concave.match(&env,schedule);
+    require(schedule==std::vector<int>({11,10}),"concave matching did not favor the immediate pickup");
+    env.curr_task_schedule=schedule;env.task_pool[10].idx_next_loc=1;
+    concave.match(&env,schedule);
+    require(schedule[1]==10,"nonlinear matching reassigned an opened task");
+    // Transform optional idle prices as well: without a keep bonus, the same
+    // monotone one-pair threshold must hold for concave and convex costs.
+    for(float power:{.5f,1.f,2.f})for(int limit:{0,1000}) {
+        auto e=environment(1,6,1);Task task;task.task_id=0;task.locations={3,3};e.task_pool[0]=task;
+        Config c;c.match_power=power;c.keep_bonus=0;c.length_weight=0;c.hungarian_limit=limit;
+        c.admission_price=2.5;Engine refuse(c);refuse.initialize(&e);refuse.match(&e,schedule);
+        require(schedule==std::vector<int>({-1}),"nonlinear pricing changed the optional-idle threshold below cost");
+        c.admission_price=3.5;Engine admit(c);admit.initialize(&e);admit.match(&e,schedule);
+        require(schedule==std::vector<int>({0}),"nonlinear pricing changed the optional-idle threshold above cost");
+    }
+    for(float power:{.5f,2.f}) {
+        cfg=Config{};cfg.match_power=power;cfg.active_task_cap=18;cfg.admission_price=4;
+        cfg.hungarian_limit=1000;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;
+        cfg.cost_cache=true;cfg.threads=1;
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.fast_admission=true;cfg.threads=3;cfg.candidate_cache=true;
+        require(reference==simulate(cfg,12),"nonlinear matching depends on dummy-prefix optimization or workers");
+        require(reference==simulate(cfg,12,5,5,true),"nonlinear matching changed after checkpoint restoration");
+    }
+    const char* old=std::getenv("R05_MATCH_POWER");const bool present=old;
+    const std::string saved=old?old:"";setenv("R05_MATCH_POWER",".5",1);
+    auto gate=environment(3,3,2);bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"nonlinear matching escaped the explicit trick gate");
+    gate.trick_instance="RANDOM-01";
+    require(Config::environment(gate).match_power==.5f,"nonlinear matching lost its declared curvature");
+    for(const char* invalid:{"0","-1","3","nan"}) {
+        setenv("R05_MATCH_POWER",invalid,1);rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"nonlinear matching accepted invalid curvature");
+    }
+    if(present)setenv("R05_MATCH_POWER",saved.c_str(),1);else unsetenv("R05_MATCH_POWER");
+}
+
 void idle_pocket_eviction() {
     auto e=environment(3,4,1);e.map[3]=e.map[11]=1;
     e.curr_states[0].location=7;e.curr_states[0].orientation=0;
@@ -2038,5 +2089,6 @@ int main() {
     triage_task_change();
     occupied_ring();
     exact_matching();
+    nonlinear_matching();
     std::cout<<"All Random05 checks passed\n";
 }

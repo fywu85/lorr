@@ -20,7 +20,7 @@ Large maps are outside active development.
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
-| RANDOM-02 | 200 | 600 | 1376 | 1408 | 1228 |
+| RANDOM-02 | 200 | 600 | 1385 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4175 | 3172 |
@@ -154,6 +154,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T15:23:12.914641+00:00 | RANDOM-05 | trick | 4090 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap760/summary.json) |
 | 2026-09-21T15:23:22.109240+00:00 | RANDOM-05 | trick | 4175 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
 | 2026-09-21T15:54:03.792427+00:00 | RANDOM-02 | trick | 1408 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
+| 2026-09-21T16:00:46.717567+00:00 | RANDOM-02 | general | 1385 | [05fd4b76](https://github.com/fywu85/lorr/commit/05fd4b76) | [Full run](results/random123-window-progress-split-full-v136/general-random-02-window-progress-early/summary.json) |
 
 
 ## September21: first development comparisons
@@ -763,3 +764,45 @@ multi-waypoint/repeated-goal repair against the exact optimum. Dense full-trace
 fixtures exercise workers, cache modes, heaps and checkpoint restoration. This
 addresses a cost-model compatibility limitation; it is not a measured throughput
 gain. After regression, fullR03controls and radius/mix pairs will test the idea.
+
+### Admission and scheduling interactions on frozen development input, 16:05 UTC
+
+Six fullR05source132cases change one logical factor from the4175profile: cutoff
+scale1/1.5 (current1.25), directional cutoffmix0.75 (current1), late pairing
+weight4/16 with optional idleprice32, and keepbonus0 (current0.5). The late-pairing
+pair tests the same compound mechanism previously measured onR04. These cases
+use only the archived development input. The freshV6candidate remains frozen
+at4175regardless of their outcomes; no held-out input is used for selection.
+
+Source137/73134b7c passes40.28s regression, including the independent dynamic
+programming optimum. BuildSHA2de14db1773bd6b94412ccc6726944b663fd611c9137c361d8d39b8814e41c6a.
+Seven fullR03cases declare an unchanged2602control and local guidance radii1/2/4
+crossed with mix0.25/0.5. Work, seed and other settings stay fixed. All are
+explicitR03tricks and all must pass the same strict full-run audit.
+
+Source136's complete ten-case batch is audited. The optional progress tie-break
+loses onR01(719general/723trick) andR03(2556), but improves generalR02to1385.
+The horizonR02case ties1401 on different trajectories. All five disabled controls
+match their archived trajectories in all six fields. The new general1385record
+receives an exact repeat and six additional planner seeds; a separate off/on
+pair tests its interaction with the now-selected1408horizon profile.
+
+The1408repeat is exact. Seeds0/1/2/3=1396/1391/1408/1393; all are audited and
+strict-valid. This remains seed-selected performance on the archived input.
+
+### Source138 hypothesis: nonlinear assignment prices (explicit trick)
+
+The scheduler minimizes a sum of linear approach-plus-chain costs. An increasing
+concave transform may favor more immediately cheap pairings, while a convex one
+may distribute trips more evenly. R05_MATCH_POWER defaults to1 (exact identity).
+Other powers in[0.25,2] require the explicit instance trick flag. The transform is
+32*((1+c/32)^p-1)/p, applied before the existing keep bonus; optional idle prices
+use the same transform so their unbonused acceptance threshold stays unchanged.
+Opened tasks remain locked and mandatory admission caps are unchanged. This is
+an assignment hypothesis, not a theorem about throughput; adverse fairness is
+possible and completed/censored waiting statistics remain mandatory.
+
+Regression fixtures check a real matching decision change, protection of opened
+orders, unchanged single-pair idle thresholds in both matching backends, exact
+fast-dummy/worker/cache/checkpoint equivalence, and trick/range guards. Only after
+regression will powers0.5/1/2 run on all five selected archived profiles.

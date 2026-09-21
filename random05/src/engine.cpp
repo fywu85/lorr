@@ -326,6 +326,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.active_travel_rate=integer("R05_ACTIVE_TRAVEL_RATE",0);
     if(c.active_travel_rate && (!random_trick || c.horizon<=0))
         throw std::invalid_argument("active travel calibration requires a declared horizon and explicit trick instance");
+    c.match_power=real("R05_MATCH_POWER",1);
+    if(!std::isfinite(c.match_power) || c.match_power<.25f || c.match_power>2 ||
+       (c.match_power!=1 && !random_trick))
+        throw std::invalid_argument("nonlinear assignment costs need power in [.25,2] and an explicit trick instance");
     c.match_horizon_weight=real("R05_MATCH_HORIZON_WEIGHT",0);
     if(!std::isfinite(c.match_horizon_weight) || c.match_horizon_weight<0 ||
        (c.match_horizon_weight>0 && (!random_trick || c.horizon<=0)))
@@ -986,6 +990,20 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         ?cfg.admission_price:-1;
     const float length_weight=cfg.initial_length_weight>=0 && env->curr_timestep<cfg.initial_length_steps
         ?cfg.initial_length_weight:cfg.length_weight;
+    // Increasing concave prices favor a few particularly cheap assignments;
+    // convex prices prefer distributing work more evenly. Transform real and
+    // optional-idle costs consistently, leaving mandatory cap dummies cheaper.
+    // Power1 is an exact identity, including the old tie-breaking arithmetic.
+    auto assignment_price=[&](float value) {
+        if(cfg.match_power==1)return value;
+        if(!std::isfinite(value) || value<0)
+            throw std::invalid_argument("nonlinear matching requires nonnegative finite base costs");
+        const double transformed=32*std::expm1(double(cfg.match_power)*std::log1p(double(value)/32))/cfg.match_power;
+        if(!std::isfinite(transformed) || transformed>std::numeric_limits<float>::max())
+            throw std::overflow_error("nonlinear assignment price overflow");
+        return float(transformed);
+    };
+    const float idle_price=admission_price>=0?assignment_price(admission_price):admission_price;
     std::vector<int> agents, tasks;std::unordered_set<int> locked;int suppressed_opened=0;
     for(int i=0;i<n;++i) {
         int id=schedule[i];
@@ -1074,6 +1092,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 const double estimate=hops*match_steps_per_cell*cfg.triage_scale;
                 cost+=cfg.match_horizon_weight*float(std::max(0.0,estimate-remaining_steps));
             }
+            cost=assignment_price(cost);
             if(t==env->curr_task_schedule[a])cost-=cfg.keep_bonus;
             if(exact)matrix[size_t(row)*columns+j]=cost;
             else pairs.push_back({cost,a,j});
@@ -1082,7 +1101,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     if(exact && optional_columns) {
         for(size_t row=0;row<agents.size();++row)
             std::fill(matrix.begin()+row*columns+tasks.size(),
-                      matrix.begin()+row*columns+tasks.size()+optional_columns,admission_price);
+                      matrix.begin()+row*columns+tasks.size()+optional_columns,idle_price);
     }
     if(exact && dummy_columns) {
         float minimum=0;
@@ -1127,7 +1146,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     });
     std::vector<bool> used(tasks.size(),false);int admitted=0;
     for(const auto& p:pairs) {
-        if(admitted>=capacity || (admission_price>=0 && p.cost>admission_price))break;
+        if(admitted>=capacity || (admission_price>=0 && p.cost>idle_price))break;
         if(schedule[p.agent]<0 && !used[p.task]) {
             schedule[p.agent]=tasks[p.task];used[p.task]=true;++admitted;
         }
