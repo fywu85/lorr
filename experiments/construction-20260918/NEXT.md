@@ -1,6 +1,6 @@
 # Continue CGAR across ten instances
 
-Updated 2026-09-21T12:56:17.499902+00:00. The user is asleep and explicitly requests continued iteration.
+Updated 2026-09-21T13:02:09.256814+00:00. The user is asleep and explicitly requests continued iteration.
 
 Targets: +10% over max(published NMS, KK) on RANDOM-01 through RANDOM-05; stretch +5% on the other five. Throughput is primary, fairness secondary. Selected-seed maxima count, but distinguish those from replicated gains. The old formal Warehouse160k goal text is obsolete; continue the latest all-map scope. No internal subagents.
 
@@ -21,19 +21,19 @@ All shell calls require_escalated (default bwrap fails); Python3.7. Heavy builds
 | WAREHOUSE | 155173 | 0 | 944.766 |
 | SORTATION | 150894 | 0 | 993.898 |
 | CITY-01 | 8440 | 2 | 752.710 |
-| CITY-02 | 16315 | 0 | 821.718 |
+| CITY-02 | 16830 | 0 | 809.831 |
 | GAME | 24447 | 4 | 826.520 |
 | RANDOM-01 | 693 | 4 | 488.915 |
 | RANDOM-02 | 1215 | 2 | 359.375 |
 | RANDOM-03 | 1982 | 2 | 662.922 |
-| RANDOM-04 | 2298 | 2 | 306.426 |
+| RANDOM-04 | 2304 | 2 | 304.051 |
 | RANDOM-05 | 3610 | 10 | 729.825 |
 
 All are full-horizon TRICK profiles. Warehouse and Sortation reserve8 physical cores; others4. GAME and RANDOM05 meet the selected-seed margin target. Published baselines are historical targets, not matched competitor reruns. No starvation-free claim. RANDOM05 parks31 capacity robots and its best now adds cap700. GAME restricts the active fleet. Warehouse has exclusive qualification and100M-action replay; other results have simulator plus complete movement/wait audits.
 
-Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-125437.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, move-promises/best-random04.json and best-random05.json.
+Canonical files: selected-full-results.json, BEST_HISTORY.md, active-targets.json, CGAR_PROGRESS.md. Latest all10 proof: selected-results-checks-20260921-130003.json. Exact RANDOM best profiles: history-rollout/best-random01.json, rolling-window/best-random02.json, window-delay/best-random03.json, future-crowd/best-random04.json, move-promises/best-random05.json and stronger-lanes/best-city02.json.
 
-Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on seeds0/2/4, +16.319% aggregate, all positive. Forward-only gains11.529%. RANDOM05 seed10:3065 ->3391mode1 ->3571mode2, then3610 with cap700. Cap composition adds39 (+1.09%) on one seed; no replicated cap claim. R05 uncapped replication is still pending.
+Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on seeds0/2/4, +16.319% aggregate, all positive. Forward-only gains11.529%. RANDOM05 seed10:3065 ->3391mode1 ->3571mode2, then3610 with cap700. Cap composition adds39 (+1.09%) on one seed; no replicated cap claim. R05 uncapped replication is complete:3532/3531/3571 versus3043/3015/3065 on seeds0/2/10, +16.5625% aggregate, all positive. All three mode1 scores also exceed3355. Cap composition remains single-seed evidence.
 
 ## Finished negative comparisons
 
@@ -41,8 +41,8 @@ Motion commitments: RANDOM04 controls2059/1901/1843 -> mode2 2237/2298/2215 on s
 - Window+motion commitments lose on all sparse selected seeds: RANDOM01 693/687/688, RANDOM02 1215/1197/1172, RANDOM03 1982/1848/1942 (control/mode1/mode2).
 - New window/scheduler2x2 also loses: R01 693/691/685/686, R02 1215/1212, R03 1982/1982/1872/1883 (control/horizon mean/more rematching/both). All controls reproduce full trajectories.
 - Cap700 without commitments gives +1.129% aggregate over seeds0/2/10, one loss. Nearby caps625/650/675 lose to700. Superseded by current commitment+cap profile.
-- Sortation wider matching gives150863 versus150894 control; both valid. Warehouse raw summaries155173control/154829wider are complete but verifier retries are pending.
-- CITY01 stronger lane prices16/24/32/48 give8440/8413/8409/8394, all valid. Lower prices also lost earlier. Keep16. CITY02 stronger comparison still pending.
+- Sortation wider matching gives150863 versus150894 control; both valid. Warehouse155173control/154829wider is fully verified; current width32 remains.
+- CITY01 stronger lane prices16/24/32/48 give8440/8413/8409/8394, all valid. Lower prices also lost earlier. Keep16. CITY02 price24 improves16315 to16830 (+515,+3.16%);32=16526 and48=16615. Replication on seeds2/4 is pending.
 
 Older exact assignment, sparse action prices, regional-future roots, and various window/history/annealing changes lost. Consult feature logs before repeating unchanged arms. Earlier replicated sparse gains: R01 uniform field +2.69%, refreshedkeep10 +1.88%; R03 delay3 +3.293%, each across three seeds.
 
@@ -58,17 +58,14 @@ Earlier qualified source44986ddf54fc381f478ba5116b9660389c3fb693 composes window
 
 ## Pending jobs
 
-- warehouse-matching-width-full-v1: matrix 8902771, verifier 8902892, source 311d0480, 8 physical cores/case. Two parser failures preserved. Analysis-only retry requires absent diagnostics for disabled regional cap, matching compiled source; no solver rerun.
-- random05-move-promises-replicate-full-v2: matrix 8902815, verifier 8902816, source e66daa2f, 4 physical cores/case.
-- city02-stronger-lanes-full-v1: matrix 8902848, verifier 8902849, source 59c73dc8, 4 physical cores/case.
-- random04-move-weights-full-v7: matrix 8902877, verifier 8902878, source e66daa2f, 4 physical cores/case.
-- random04-future-crowd-full-v1: matrix 8902880, verifier 8902881, source b6d526fc, 4 physical cores/case.
+- city02-stronger-lanes-replicate-full-v2: matrix 8902894, verifier 8902895, source 59c73dc8, 4 physical cores/case.
+- random04-future-crowd-replicate-full-v2: matrix 8902896, verifier 8902897, source b6d526fc, 4 physical cores/case.
 
-Warehouse verifier: first KeyError on omitted CGAR_TEMPORAL_REGION_CANDIDATE_LIMIT, then wrongly expected diagnostic lines at disabled cap0. Exact production source only prints those at positive cap. Both failures are preserved in warehouse-sortation-matching. factor-analysis-r3 now uses default0 and requires absent cap diagnostics; solver outputs and declarations are unchanged, no rerun. Check all remaining assertions; do not promote until verification passes.
+Warehouse verification is complete after two preserved parser failures: missing cap defaults to0, and the compiled solver emits no cap diagnostics at0. The third analysis verifies both unchanged solver outputs. No solver was rerun. Evidence and failures are in warehouse-sortation-matching.
 
 ## Next bounded work
 
-1. Collect pending R05 replication, CITY02, R04 weights and crowd cost. Promote only verified full runs and update exact best profiles. Replicate meaningful new gains.
+1. Collect CITY02 lane24 replication (seeds2/4) and RANDOM04 crowd16 replication (seeds0/4). R04 crowd16 selectedseed2 improves2298 to2304 (+6 only); weaker priority weights lose1974/1535. Promote only verified full records; tiny selected-seed gains are not robust claims.
 2. Prepare explicit RANDOM reference-strength interpolation toward uniform20. This is NOT implemented yet. Existing NMS costs20/60; KK03 ranges2..62; KK04 ranges6..64. Low-cost routes can favor long detours. Hypothesis: 25/50/75% of the existing field contrast may improve physical throughput. Keep turns fixed and masks/topology unchanged; default100 byte-identical. Reference1/2 only, explicit --trick RANDOM instance, native static metric, reject simultaneous uniform mode. Generate immutable hashes/FNV from verified base assets. All oracles/pickup remain on the same transformed metric. Need parser, runner, diagnostic identities and independent oracle/integration tests. Prior whole-PILOT-field substitution lost; this is a different contrast factor.
 
 Immutable PILOT source copies: /tmp/cgar-pilot-readonly-d51/engine.cpp and engine.hpp, commitd51bdbf2c4e6830f8cabacb52ac9cfa8234aa663; source review proof pilot-transfer/source-review-20260921-1112.json. Do not inspect independent current results.

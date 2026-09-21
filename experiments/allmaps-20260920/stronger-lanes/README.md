@@ -27,3 +27,8 @@ submitting these new profiles. No older run may mix runner hashes.
 CITY01 full results: 8,440 at the current price16; 8,413/8,409/8,394 at24/32/48.
 All valid within one second, with an exact control trajectory. Retain16. CITY02
 remains pending. The stronger settings are available but are not promoted.
+
+CITY02 full results:16=16,315;24=16,830;32=16,526;48=16,615. All valid;
+control repeats its entire selected trajectory. Price24 gains515 (+3.16%) on
+seed0, max809.83ms. This is a selected-seed gain; a matched16/24 comparison on
+seeds2/4 is declared next. Other settings remain fixed.

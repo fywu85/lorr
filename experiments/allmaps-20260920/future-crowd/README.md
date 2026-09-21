@@ -26,3 +26,8 @@ against pairprices8/16/32. Nativeforward20 makes these0.4/0.8/1.6forward-step un
 per pair. Keep all scheduling, fields, declarations and explicit --trick RANDOM-04
 settings fixed. Full1000steps, strict1s32decimalGB,4bound physicalcores. Replicate
 any positive selected-seed result. No throughput claim before verification.
+
+First full RANDOM04 results: control2298; pairprice8=2268,16=2304,32=2292.
+All valid and the control repeats its exact full trajectory. The six-task gain
+at16 is a selected-seed record, not a robust improvement. A matched control/16
+comparison on seeds0/4 is declared next. Max entry304.05ms for2304.

@@ -99,3 +99,10 @@ seed2 comparison is now declared for rank weights under mode2: current squared
 weights, linear weights, and equal weights. New movement continuity may reduce
 the earlier need for strong priority weights. Primary CGAR protections stay in
 place; all other factors fixed. Full1000, strict1s32decimalGB,4physical/case.
+
+RANDOM05 replication is complete. Controls3043/3015/3065 versus forward-only
+3461/3473/3391 and forward/wait3532/3531/3571 on seeds0/2/10. Both improve all
+three seeds; mode2 gains16.56% aggregate, and every candidate exceeds3355. All
+full runs are valid within1s and32decimalGB. Existing map/horizon/parking tricks
+remain; no new task cap in this comparison. See random05-three-seed-summary.json.
+RANDOM04 squared/linear/equal comparison gives2298/1974/1535; keep squared.

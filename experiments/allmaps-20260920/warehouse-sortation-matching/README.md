@@ -16,3 +16,9 @@ features remain absent. Controls155173/150894 must reproduce full trajectories.
 Sortation's selected control previously peaked at993.90ms, so a strict timeout
 will be recorded as failure without accepting a partial run. Full inputs are
 hashed, including Warehouse's newly declared single-instance manifest.
+
+Both maps now have verified full results. Warehouse155173control/154829wider;
+Sortation150894control/150863wider. All valid, and both controls repeat complete
+selected trajectories. Keep current matching width32. Warehouse verification
+needed two parser corrections for a disabled candidate cap; both failures and
+the unchanged solver artifacts are preserved. No solver rerun was performed.

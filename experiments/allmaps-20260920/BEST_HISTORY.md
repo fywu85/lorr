@@ -737,3 +737,19 @@ Previous selected maximum 3391. Full 2000 steps; 4 physical cores, strict 1,000 
 | 3610 | 2026-09-21T12:34:04.829181+00:00 | [e66daa2f](https://github.com/fywu85/lorr/commit/e66daa2f065e2b9589f1e2c972c3437f2e636f2d) | trick_move2_cap700, seed 10, `--trick RANDOM-05` | [verification](results/random05-move-cap-composition-full-v3/verification.json) |
 
 Previous selected maximum 3571. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 729.83 ms. The RANDOM05 cap interaction gains39 tasks over a trajectory-identical3571control on seed10. Selected-seed evidence; cap interaction is not yet replicated. Both full2000-step runs satisfy strict1s/32decimalGB. Historical competitor target3050; no matched competitor or starvation-free claim.
+
+## CITY-02 16830 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 16830 | 2026-09-21T12:53:10.047111+00:00 | [59c73dc8](https://github.com/fywu85/lorr/commit/59c73dc82fb0cbaa2a2d2f7021461b7cbe8ed4fe) | trick_lane24, seed 0, `--trick CITY-02` | [verification](results/city02-stronger-lanes-full-v1/verification.json) |
+
+Previous selected maximum 16315. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 809.83 ms. Full matched controls repeat their exact prior trajectories. CITY02 price24 gains515 onseed0; RANDOM04 crowd price16 gains6 onseed2. Both new selected maxima require the separately declared replication before consistent-gain claims. All complete runs pass strict1s/32decimalGB.
+
+## RANDOM-04 2304 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2304 | 2026-09-21T12:55:08.457466+00:00 | [b6d526fc](https://github.com/fywu85/lorr/commit/b6d526fcf4d1e39b102b1083bdf30ac0c7e6962f) | trick_terminal_pairs16, seed 2, `--trick RANDOM-04` | [verification](results/random04-future-crowd-full-v1/verification.json) |
+
+Previous selected maximum 2298. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 304.05 ms. Full matched controls repeat their exact prior trajectories. CITY02 price24 gains515 onseed0; RANDOM04 crowd price16 gains6 onseed2. Both new selected maxima require the separately declared replication before consistent-gain claims. All complete runs pass strict1s/32decimalGB.

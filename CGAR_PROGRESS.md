@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T12:54:37.569142+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T13:00:03.244629+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -13,12 +13,12 @@ use eight physical cores; the other selected rows use four.
 | WAREHOUSE | 155,173 | 154,795 | 162,535 | 7,362 | 0 | 944.77 |
 | SORTATION | 150,894 | 152,714 | 160,350 | 9,456 | 0 | 993.90 |
 | CITY-01 | 8,440 | 8,445 | 8,868 | 428 | 2 | 752.71 |
-| CITY-02 | 16,315 | 16,997 | 17,847 | 1,532 | 0 | 821.72 |
+| CITY-02 | 16,830 | 16,997 | 17,847 | 1,017 | 0 | 809.83 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
 | RANDOM-01 | 693 | 688 | 757 | 64 | 4 | 488.91 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,982 | 2,334 | 2,568 | 586 | 2 | 662.92 |
-| RANDOM-04 | 2,298 | 2,547 | 2,802 | 504 | 2 | 306.43 |
+| RANDOM-04 | 2,304 | 2,547 | 2,802 | 498 | 2 | 304.05 |
 | RANDOM-05 | 3,610 | 3,050 | 3,355 | 0 | 10 | 729.83 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-125437.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-130003.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -268,3 +268,11 @@ explicit cap700 to mode2 movement commitments (3571matchedcontrol,+39). Bothfull
 2000-step runs pass strict1s; control is trajectory-identical. This cap interaction
 is single-seed evidence. No starvation-free claim.
 [Evidence](experiments/allmaps-20260920/move-promises/cap-composition-results.json).
+
+2026-09-21T13:00:02.970449+00:00 — CITY-02 reaches **16,830** at opposing lane price24, up515
+(+3.16%) from its matched16,315 control, max809.83ms. RANDOM-04 reaches**2,304**
+with terminal crowd price16, a six-task selected-seed gain. Both full controls
+repeat exact trajectories; replication is queued before claiming consistency.
+RANDOM-05 movement commitments now improve all three matched seeds by16.56%
+in aggregate (3532/3531/3571 vs3043/3015/3065), all strict1s. The3610 cap result
+remains a separate selected-seed record.

@@ -10,13 +10,13 @@ than matched competitor runs. Every selected profile requires --trick INSTANCE.
 | WAREHOUSE | 155173 | Qualified eight-core profile; bounded wider assignment comparison running. +5% remains a stretch. |
 | SORTATION | 150894 | Bounded wider assignment comparison running; runtime alternative150865 retains more deadline headroom. |
 | CITY-01 | 8440 | Wider matching, horizon selection, lower and higher lane prices all lose; keep price16. |
-| CITY-02 | 16315 | Budget2 gain replicates; lower lane prices, horizon triage and wider matching lose. |
+| CITY-02 | 16830 | Opposing lane price24 gains515 on seed0; seeds2/4 replication running. |
 | GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
 | RANDOM-01 | 693 | Retained-tail refresh replicates; exact assignment and turn/wait price interactions lose. |
 | RANDOM-02 | 1215 | Delay, tail refresh, annealing, wider matching and exact chain assignment lose. |
 | RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment and turn/wait price interactions lose. |
-| RANDOM-04 | 2298 | Forward/wait commitments improve all three seeds (+16.32% aggregate); H20 retained. Test a bounded congestion objective next. |
-| RANDOM-05 | 3610 | Margin target met on seed10 with movement commitments and cap700; uncapped commitment replication still running. Cap interaction gains39 on one seed. |
+| RANDOM-04 | 2304 | Motion commitments replicate; terminal pairprice16 adds6 on seed2, replication running. Keep squared priority weights. |
+| RANDOM-05 | 3610 | Margin target met on seed10 with movement commitments and cap700; uncapped commitments gain16.56% over three seeds. Cap interaction gains39 on one seed. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
 then a refreshed retained tail (+1.88%, all three positive). More attempts and

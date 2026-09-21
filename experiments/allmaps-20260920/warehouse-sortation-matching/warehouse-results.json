@@ -1,0 +1,31 @@
+{
+  "checked_utc": "2026-09-21T13:00:02.970449+00:00",
+  "rows": [
+    {
+      "instance": "WAREHOUSE",
+      "variant": "trick_current_control",
+      "seed": 0,
+      "tasks": 155173,
+      "valid": true,
+      "max_entry_seconds": 0.949673062,
+      "peak_rss_bytes": 15381618688,
+      "trajectory_sha256": "b57ad3d8433ee9610c7af25214fe1d93d947aed9ec73211d4ed8d8cac9ae0ce0",
+      "evidence": "results/warehouse-matching-width-full-v1/verification.json",
+      "source_commit": "311d04800c369f227407b63641c1c4f0a7102186"
+    },
+    {
+      "instance": "WAREHOUSE",
+      "variant": "trick_width64_groups32",
+      "seed": 0,
+      "tasks": 154829,
+      "valid": true,
+      "max_entry_seconds": 0.957937465,
+      "peak_rss_bytes": 15424626688,
+      "trajectory_sha256": "fe4fb6d0f95a7cdbb9beb2b1e7834266ee7ab1c4e7168898eac63403ec6784b4",
+      "evidence": "results/warehouse-matching-width-full-v1/verification.json",
+      "source_commit": "311d04800c369f227407b63641c1c4f0a7102186"
+    }
+  ],
+  "control_trajectory_exact": true,
+  "decision": "Width64groups32 loses344:154829 versus155173control. Allfull5000 valid. Two verifier failures preserved; corrected third attempt uses exact compiled cap0 default and absent diagnostic cadence. Solver output was never rerun."
+}
