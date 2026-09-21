@@ -1,0 +1,29 @@
+{
+  "declared_utc": "2026-09-21T03:54:24.998474+00:00",
+  "candidate_source_commit": "a2ff2b2",
+  "candidate_binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "baseline_source_commit": "a2ff2b2",
+  "baseline_binary_sha256": "2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232",
+  "manifest": "random05/experiments/fresh-validation-v5-full.json",
+  "generation": "random05/results/fresh-validation-v5/generation.json",
+  "seeds": [
+    50009,
+    50010
+  ],
+  "candidate_development_tasks": 4011,
+  "baseline_development_tasks": 3990,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "archived_reproduction": "Repeat the frozen 4011 configuration on the archived input: >=4000 tasks and exact equality of all six action/schedule/event/task fields.",
+    "fresh_validation": "Both fresh inputs must complete strictly; candidate must beat the stronger of two NMS repetitions on each input and exceed the sum of the immediately previous 3990 configuration over both inputs.",
+    "timing": "Every entry <=1 second, preprocessing <=30 seconds; no partial search portfolio; 32GB process guard.",
+    "integrity": "No tuning on seeds50001-50010. Keep every original attempt and report failures. Independent full movement/scheduling/task-event replay for each successful run."
+  },
+  "description": "First audited archived-input goal crossing is frozen before new input generation. Candidate is the 3990 recipe with only directional cutoff mix changed from0.75 to1. Other in-flight development cases cannot change this validation candidate. Passing archived4k does not imply4k on each distinct fresh task stream."
+}
