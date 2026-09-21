@@ -45,7 +45,7 @@ public:
     std::vector<int> selections(int timestep, int cells, const std::vector<int>& locations,
             const std::vector<int>& orientations, const std::vector<int>& goals,
             const std::vector<std::vector<TemporalChoice>>& choices, const std::vector<char>& fixed,
-            TemporalWarmStats& stats, Deadline check) const {
+            TemporalWarmStats& stats, Deadline check, bool after_turn_only = false) const {
         const int count = static_cast<int>(choices.size());
         if (locations.size() != choices.size() || orientations.size() != choices.size() ||
             goals.size() != choices.size() || fixed.size() != choices.size())
@@ -62,7 +62,8 @@ public:
         for (int r = 0; r < count; ++r) {
             if ((r & 63) == 0) check();
             const int operation = shifted_operation(operations_[r]);
-            if (!fixed[r] && goals[r] >= 0 && goals[r] == goals_[r] && operation != 0) {
+            if (!fixed[r] && goals[r] >= 0 && goals[r] == goals_[r] && operation != 0 &&
+                (!after_turn_only || paths_[r].first_action == 1 || paths_[r].first_action == 2)) {
                 for (int k = 1; k < static_cast<int>(choices[r].size()); ++k)
                     if (choices[r][k].operation == operation) { selected[r] = k; warm[r] = true; break; }
             }
@@ -106,6 +107,40 @@ public:
         for (char kept : warm) stats.retained += kept;
         check();
         return selected;
+    }
+
+    // Keep the ordinary seed at index zero as the unchanged score baseline.
+    // Promised robots start at a nonzero compatible suffix. Every searchable
+    // alternative (indices >= 1) has the same first action; successful searches
+    // and their rollbacks therefore preserve it. Filtering preserves cost order
+    // and operation IDs. The adapter also checks the final emitted action.
+    template<class Deadline>
+    static std::vector<int> constrain_first_actions(std::vector<std::vector<TemporalChoice>>& choices,
+            std::vector<int>& selected, const std::vector<char>& fixed, Deadline check) {
+        if (fixed.size() != choices.size() || (!selected.empty() && selected.size() != choices.size()))
+            throw std::logic_error("invalid temporal promise dimensions");
+        std::vector<int> promised(choices.size(), -1);
+        if (selected.empty()) { check(); return promised; }
+        for (size_t r = 0; r < choices.size(); ++r) {
+            check();
+            const int old = selected[r];
+            if (old < 0 || old >= static_cast<int>(choices[r].size()) || (fixed[r] && old))
+                throw std::logic_error("invalid temporal promise selection");
+            if (!old) continue;
+            const int action = choices[r][old].path->first_action;
+            std::vector<TemporalChoice> allowed;
+            allowed.reserve(choices[r].size()); allowed.push_back(choices[r][0]);
+            int remapped = -1;
+            for (int k = 1; k < static_cast<int>(choices[r].size()); ++k) {
+                if (choices[r][k].path->first_action != action) continue;
+                if (k == old) remapped = static_cast<int>(allowed.size());
+                allowed.push_back(choices[r][k]);
+            }
+            if (remapped <= 0) throw std::logic_error("temporal promise lost its complete suffix");
+            choices[r] = std::move(allowed); selected[r] = remapped; promised[r] = action;
+        }
+        check();
+        return promised;
     }
 
 private:

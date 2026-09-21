@@ -1,6 +1,6 @@
 # Next bounded general transfer: preserve a movement decision after turning
 
-Status: design only, not implemented or benchmarked. Motivated by the read-only
+Status: opt-in prototype implemented; full tests and benchmarks pending. Motivated by the read-only
 [actual-action audit](rotation-audit-v1/audit.json) and the reference's movement
 pipeline, not a claimed causal explanation of the whole throughput gap.
 
@@ -20,13 +20,15 @@ history, without implementing the reference's whole two-step pipeline:
 2. Keep CGAR primary/recovery/pocket/witness paths authoritative. Reuse the
    existing monotone collision-reset closure before retaining any promise.
    Robots with no eligible promise reset to the ordinary compatible seed.
-3. Replace each retained robot's seed with its selected compatible suffix and
-   restrict its current candidate set to that promised first action. Retain
-   all five-slot collision checks and fixed search work. Do not constrain an
-   incompatible promise or output a partially finished portfolio on timeout.
-4. Skip the adapter's ordinary-seed auto-rotation for these replaced seeds;
-   otherwise a promised wait/forward could accidentally become a rotation.
-   Preserve the real operation ID and remember the actual resulting heading.
+3. Start retained robots at a nonzero compatible suffix and restrict searchable
+   alternatives to its first action. Keep the ordinary seed at index zero solely
+   as the unchanged score reference; search alternatives and rollbacks cannot
+   return a promised robot to that unconstrained seed. This preserves the score
+   offset used by annealing and the diagnostics' current-cell convention.
+4. Validate that every final promised choice is still nonzero and has the
+   promised first action. Ordinary-seed auto-rotation cannot run for it. Keep
+   operation IDs, candidate cost order, actual expected headings, all five-slot
+   collision checks and complete fixed search work. A deadline is an error.
 5. Disable ordinary warm/mixed starts in the first prototype to isolate the
    constraint. Default OFF must preserve complete historical trajectories.
 
@@ -38,3 +40,15 @@ retained/reset counts. Evaluate full matched controls at1s on both maps.
 This is a restricted one-step promise after a planned turn. It is not the full
 reference pipeline, multi-future evaluation, or a new liveness proof. If it loses,
 retain the negative result before designing a more faithful rollout transfer.
+
+Selector: `CGAR_TEMPORAL_PROMISE_AFTER_TURN=1`, default OFF, strict boolean.
+This general mechanism uses no map name, density threshold or horizon. It
+excludes ordinary-seed auto-rotations, retaining only planned rotations. The
+first prototype does not coexist with warm/mixed starts. Cumulative activation,
+retention and collision-reset receipts are separate from warm-start counters.
+
+Current test coverage includes full occupied forward and delayed-forward cycles,
+protected/goal-change dependency reset, unchanged score reference, sorted legal
+alternatives, non-turn exclusion, stale state, timeout propagation, disabled
+trajectory equivalence, and serial/parallel production episodes with protected
+primary paths and guidance updates. Results are pending GRID execution.

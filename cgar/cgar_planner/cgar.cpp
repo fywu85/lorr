@@ -768,6 +768,14 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         throw std::invalid_argument("native prewarm requires native static guidance, orientation mode1 and compact tables");
     temporal_ = env_int("CGAR_TEMPORAL", 0) != 0;
     temporal_warm_start_ = env_int("CGAR_TEMPORAL_WARM_START", 0) != 0;
+    const char* promise = std::getenv("CGAR_TEMPORAL_PROMISE_AFTER_TURN");
+    if (promise && std::string(promise) != "0" && std::string(promise) != "1")
+        throw std::invalid_argument("CGAR_TEMPORAL_PROMISE_AFTER_TURN must be 0 or 1");
+    temporal_promise_after_turn_ = promise && std::string(promise) == "1";
+    if (temporal_promise_after_turn_ && (!temporal_ || temporal_warm_start_))
+        throw std::invalid_argument("after-turn promises require temporal planning with ordinary warm starts disabled");
+    if (temporal_promise_after_turn_)
+        std::printf("[cgar-temporal-promise-config] after_turn=1 actions=1 protected_priority=1 fixed_work=1\n");
     const int strict_wait_turns = env_int("CGAR_TEMPORAL_STRICT_WAIT_TURNS", 0);
     if (strict_wait_turns < 0 || strict_wait_turns > 1 || (strict_wait_turns && !temporal_))
         throw std::invalid_argument("strict wait turns require temporal planning and a boolean setting");

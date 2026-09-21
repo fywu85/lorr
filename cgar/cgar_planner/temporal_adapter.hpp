@@ -246,14 +246,23 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     std::vector<double> power(n_, 0);
     for (int rank = 0; rank < n_; ++rank) if (agents_[order[rank]].goal >= 0)
         power[order[rank]] = temporal_equal_weight_ ? 1.0 : static_cast<double>(n_ + 1 - rank) / (n_ + 1);
-    TemporalWarmStats warm_stats;
-    std::vector<int> initial;
+    TemporalWarmStats warm_stats, promise_stats;
+    std::vector<int> initial, promised_first;
     if (temporal_warm_start_) {
         initial = temporal_history_.selections(env_->curr_timestep, cells, loc_, ori_, goals, choices, pinned,
             warm_stats, [&] { check_deadline(deadline_, "temporal_warm_start"); });
         ++stats_.temporal_warm_calls;
         stats_.temporal_warm_retained += warm_stats.retained;
         stats_.temporal_warm_collision_resets += warm_stats.collision_resets;
+    }
+    if (temporal_promise_after_turn_) {
+        auto check = [&] { check_deadline(deadline_, "temporal_after_turn_promise"); };
+        initial = temporal_history_.selections(env_->curr_timestep, cells, loc_, ori_, goals, choices, pinned,
+            promise_stats, check, true);
+        promised_first = TemporalWarmStart::constrain_first_actions(choices, initial, pinned, check);
+        ++stats_.temporal_promise_calls;
+        stats_.temporal_promise_retained += promise_stats.retained;
+        stats_.temporal_promise_collision_resets += promise_stats.collision_resets;
     }
     std::vector<uint64_t> seeds_for_workers(temporal_workers_);
     for (auto& seed : seeds_for_workers) seed = temporal_rng_();
@@ -275,7 +284,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 // All alternatives finish. In mixed mode only worker0 reuses
                 // the previous complete suffix; exact-score ties retain it.
                 const auto* worker_initial = !initial.empty() && (!temporal_mixed_start_ || worker == 0) ? &initial : nullptr;
-                warm_started[worker] = worker_initial != nullptr;
+                warm_started[worker] = temporal_warm_start_ && worker_initial != nullptr;
                 run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker], worker_initial);
                 run->construct(temporal_priority_noise_ ? priority_batch.orders[worker] : order,
                     [&] { check_deadline(deadline_, "temporal_construction"); });
@@ -346,6 +355,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 std::chrono::duration<double>(Clock::now() - regions_finished).count());
     }
     auto& search = transaction ? *transaction : (regional ? *regional : *results[best]);
+    // A promise constrains only an ordinary first action. Search and regional
+    // repair may change its tail but must never return to the unconstrained seed.
+    for (size_t i = 0; i < promised_first.size(); ++i) if (promised_first[i] >= 0 &&
+        (pinned[i] || search.selected(i) == 0 || search.choice(i).path->first_action != promised_first[i]))
+        throw std::logic_error("temporal search violated an after-turn promise");
     // Validate the complete temporal result before exposing its first action.
     std::vector<int> owners(cells, -1), previous(n_);
     for (int t = 0; t < 5; ++t) {
@@ -406,7 +420,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 env_->curr_timestep + 1, temporal_workers_, temporal_priority_noise_, priority_batch.changed_orders,
                 priority_batch.reused, best, static_cast<unsigned long long>(TemporalPriorityPortfolio::fingerprint(priority_batch.offsets[best])));
     }
-    if (temporal_warm_start_) {
+    if (temporal_warm_start_ || temporal_promise_after_turn_) {
         std::vector<int> expected_orientation = ori_;
         for (int r = 0; r < n_; ++r) {
             if (actions[r] == Action::CR) expected_orientation[r] = (ori_[r] + 1) % 4;
@@ -516,6 +530,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 guide_options_.reconnect_steps, guide_stats.reconnect_attempts, guide_stats.reconnected, guide_stats.reconnect_actions, guide_stats.reconnect_expanded,
                 guide_options_.refine_batch, guide_stats.refine_attempted, guide_stats.refined, guide_stats.refine_limited,
                 guide_stats.refine_expanded, guide_stats.refine_cost_saved);
+        if (temporal_promise_after_turn_)
+            std::printf("[cgar-temporal-promise] step=%d after_turn=1 history=%d retained=%d initial_resets=%d collision_resets=%d calls=%lld retained_total=%lld collision_resets_total=%lld\n",
+                env_->curr_timestep + 1, int(promise_stats.history_valid), promise_stats.retained,
+                promise_stats.initial_resets, promise_stats.collision_resets, stats_.temporal_promise_calls,
+                stats_.temporal_promise_retained, stats_.temporal_promise_collision_resets);
         if (temporal_warm_start_)
             std::printf("[cgar-temporal-warm] step=%d history=%d retained=%d initial_resets=%d collision_resets=%d\n",
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,
