@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 05:09 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 05:56 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2439 / 2565 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2514 / 2565 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +3.4% / -0.6% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +6.6% / -0.6% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -77,63 +77,56 @@ at05:07 UTC after the evidence and PILOT dashboard were committed/pushed in
 a87f097. Reproduce with tools/audit_4000_milestone.py. The broader RANDOM
 campaign remains authorized; the goal completion does not claim all maps solved.
 
-## Latest RANDOM-04 experiments and next research
+## Active RANDOM-03/04 ten-percent work
 
-New batch random34-tenpercent-first-split-full has12 active cases,
-jobs8901631–8901642: eight R03 routing/scheduling variants (source81) and
-four R04 runtime controls (source80). Audit using --source-map
-random05/experiments/random34-tenpercent-source-map.json, because the
-batch deliberately uses two frozen binaries. The older batch below is closed. All six original attempts in
-random04-depth16-validation-split-full-v80 are terminal and audited.
-Source a2ff2b2/build80, explicit --trick RANDOM-04:
-- depth16/K14400 seed4 =2565, mean832/max949ms, RSS440MB (new selected record);
-- the same configuration seed6 =2536, mean826/max892ms;
-- depth18/K13056 seed5 =2525, mean904/max987ms;
-- depth16 seeds0/3 fail at step1/217, 1197/1007ms respectively;
-- depth20/K12240 is rejected at initialization: K must be divisible by96.
-All failures are retained. No throughput claim for invalid runs and no unproven
-assertion that host contention caused the timing spikes. Corrected depth20
-would require K12288 or another multiple of96, declared as a distinct trial.
+The goal remains ACTIVE. Targets2595 and2838 plus robust subsecond qualification.
+Current R03=2514 source49f9724/build88, full800steps, mean544/max714ms,
+source/input/resource checks and independent action/waiting replay passed.
+Guided H20/keep14/I8192/group4/32islands/two sharing rounds/storage reuse,seed5;
+horizonOFF. Exact case is the frontier manifest. Source86 independent control
+2479 (mean520/max733), source88 exact control2479 and storage reuse2479
+(mean509/max695), sharing4/8=2483/2469,KK400=2429. All full/audited.
 
-The 2565 record is only15 tasks below local NMS2580; it is a selected planner
-seed gain from previous2551, not a new algorithm or fresh-input result. Priority
-is throughput plus runtime headroom. Candidate directions: reduce per-future
-cost without changing trajectories, controlled lower-work/depth combinations,
-and small scheduling/guidance ablations after profiling. Do not consume held-out
-inputs for tuning. Additional fresh validation needs a newly frozen protocol.
+R04 record2565 remains sourcea2ff2b2/build80 depth16/K14400/seed4. Same-budget
+seeds0/3 and source87 repeated control/fused calls time out: this profile is NOT
+robustly qualified. Original failures are archived. LowerworkK8064/B10=2501,
+mean506/max575ms;B18=2473,B6=2355,B8=2461. All full/audited.
 
-Earlier random04-throughput-followup-split-full-v80 is fully audited:
-loop threshold2/3 =2523/2526, length0.5=2546, rank0.25=2531; none beat2551.
-Field/depth batch: depth16/K14400 seed5=2551, mean831/max902ms, RSS436MB;
-depth12 field seeds0/1/2/3=2304/2302/2395/2361. Prior depth12 seeds5/0/3
-=2500/2505/2516; depth14/seed5=2487; depth12/mix1=2470. No new source change.
+Closed batches: random34-tenpercent-first-split-full (12cases incl one binding
+refusal and one timeout; mixed source map), random03-window-budget-split-full-v86
+(5), random04-cache-fusion-split-full-v87(3,2timeouts),
+random03-cooperative-split-full-v88(6), random04-cheaper-search-split-full-v80(8).
+Audits/equivalence proofs and all failures archived. Cache128/512/cyclemask
+exactly reproduce2565; fusedK11520 exactly reproduces2500 (mean686/max742ms),
+but observed single-run timing is not yet a robust speedup claim.
 
-## RANDOM-03 and general improvements
+Current source dabfcc7/build89 passes regression23.04s; binarySHA
+28020e7bf00bdd4d921d049b5a375047d327972d48641569c2cf13ba195b6616.
+It compactly aligns CachedRanking (104->96bytes) without policy changes.
+Source87 fuse flag defaultoff; source88 sharing default1/storage reuseoff.
 
-R03 record2439 uses source4b70a80/build81, guided windowH20/keep14/I2048,
-32 islands, blocker/equal repair, turn2/wait2, seed5, horizonOFF.
-Case trick-random-03-window2343-keep14, random-window2343-followup-split-full-v81.
-Keep14 vs keep10 paired seeds5/0/3:2439/2415/2420 vs2343/2357/2344,
-aggregate+3.27%, all positive, including the selection seed. Evidence in
-random03-window2439-followup-split-full-v81/paired-keep-lengths.json.
-Longer window/keep or more islands ties at best. No fresh R03 inputs tested.
+ACTIVE full batches submitted05:54UTC:
+- random03-cooperative-triage-split-full-v89, jobs8901724–29: source89 exact
+  2514control plus horizon800triage0.45/0.75/1/1.25 and scale1/guidedmix1.
+- random04-compact-followup-split-full-v89, jobs8901730–38: B10/K8064exact2501
+  control, K11520, then separate triage0.75/1, mix1, turn1, dispersion0.4;
+  two exact B18/K11520controls (2500), fusedoff/on.
+Audit both with --build build-v89 --source dabfcc7. Collect then promote only
+valid full records; preserve original failures. Source/config freeze before
+fresh task/start validation. No new fresh inputs have been generated.
 
-General H20/I2048/keep10 gives720/1376/1253 on R01/02/03: improves R02,
-not universal. R01 record726 remains. The same guided window profile loses
-at high density: R04 I512/I2048=1383/1425; R05=2034/2110. Unguided=995/1527.
-All six strict/full/replayed, so retain reactive planning for crowded cases.
+R04 routing diagnostic: completed loaded forwards/lowerbound=2.05 for2565
+versus1.67 in NMS's archived2580 trace. Different selected tasks, observational
+only. Consider weaker guidance/detour penalties and trajectory efficiency, not
+more compute alone. Existing public NMS/KK weights lose badly on this policy.
 
 ## Rejected source experiments / tool notes
 
 Source86 raises only the explicit WINDOW_ITERS ceiling2048->8192, default
-unchanged. Regression/build and full2048 controls are required before crediting
-the larger work budget. All other current source matches f217eee (build83),
-default WINDOW_STARTS=1. Extra starts
-lost on R03. Source84 cost-ranked retained-prefix and source85 progress-ranked
-retained-prefix attempts failed the unchanged dense mobility floor (39/38 moves,
-required>150). Both patches/logs are in results/build-v84/v85. All four modified
-source/test files were restored. No full benchmark used either failed build.
-Do not weaken mobility tests or silently resurrect the failed approach.
+unchanged. Full regression and exact six-field2439 control passed. The older
+source84/85 retained-prefix proposals failed the unchanged dense mobility
+floor (39/38moves,required>150); patches/logs preserved and source restored.
+Do not weaken the test or silently resurrect the approach.
 
 Audit: tools/audit_random_cases.py --batch NAME --build build-vNN --source HASH.
 Promote R01–04 with tools/promote_random_records.py AUDIT; R05 also requires its
@@ -153,7 +146,7 @@ Only scoped git operations; never reset/amend others' work. Public push:
 env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
 Check git log before assuming the current HEAD; other agents commit independently.
 
-Hosts: research32|research33|research35|research36|research37|research39|research40|
+Hosts: research32|research33|research35|research36|research37|research39|
 research41|research45|research46|research47|research48|research49|research50|
-research51|research52|research54|research55|research56. Avoid34/42 binding refusal
+research51|research52|research54|research55|research56. Avoid34/40/42 binding refusal
 and53/58 timing spikes; causes unproven. Actual allocation guards are mandatory.

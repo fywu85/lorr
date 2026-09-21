@@ -20,7 +20,7 @@ Large maps are outside active development.
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
-| RANDOM-03 | 400 | 800 | 1582 | 2479 | 2359 |
+| RANDOM-03 | 400 | 800 | 1582 | 2514 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2565 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
@@ -124,6 +124,8 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T05:30:41.179219+00:00 | RANDOM-03 | trick | 2466 | [f60f254](https://github.com/fywu85/lorr/commit/f60f254) | [Full run](results/random03-window-budget-split-full-v86/trick-random-03-window-budget-group4-iterations4096/summary.json) |
 | 2026-09-21T05:33:41.589621+00:00 | RANDOM-03 | trick | 2469 | [f60f254](https://github.com/fywu85/lorr/commit/f60f254) | [Full run](results/random03-window-budget-split-full-v86/trick-random-03-window-budget-iterations4096/summary.json) |
 | 2026-09-21T05:33:47.702672+00:00 | RANDOM-03 | trick | 2479 | [f60f254](https://github.com/fywu85/lorr/commit/f60f254) | [Full run](results/random03-window-budget-split-full-v86/trick-random-03-window-budget-group4-iterations8192/summary.json) |
+| 2026-09-21T05:47:24.158096+00:00 | RANDOM-03 | trick | 2483 | [49f9724](https://github.com/fywu85/lorr/commit/49f9724) | [Full run](results/random03-cooperative-split-full-v88/trick-random-03-cooperative-rounds4/summary.json) |
+| 2026-09-21T05:47:36.178484+00:00 | RANDOM-03 | trick | 2514 | [49f9724](https://github.com/fywu85/lorr/commit/49f9724) | [Full run](results/random03-cooperative-split-full-v88/trick-random-03-cooperative-rounds2/summary.json) |
 
 
 ## September21: first development comparisons
@@ -448,3 +450,18 @@ registered RANDOM-05 4,000-task goal was marked complete after its final evidenc
 and dashboard were committed and pushed in a87f097. The primary RANDOM-05 log
 remains root RANDOM05_PROGRESS.md.
 [Full follow-up audit](results/random04-depth16-validation-split-full-v80/audit.json).
+
+### 2026-09-21 05:56 UTC: cooperative search reaches RANDOM-03 2,514
+
+Fixed two-round sharing across32 LNS islands reaches2514 (+6.57% versus
+matchedNMS2359), mean544/max714ms; full800steps, all source/resource/input,
+independent replay and waiting checks pass. Source[49f9724](https://github.com/fywu85/lorr/commit/49f9724).
+It improves2479 at the same8192 repairs/island. Four/eight rounds give2483/2469.
+The exact independent/storage-reuse controls both reproduce2479 in all six
+trace fields. [Full cooperative audit](results/random03-cooperative-split-full-v88/audit.json).
+
+R04 lowerworkB10/K8064 yields2501 withmean506/max575ms; no throughput record,
+but useful timing headroom. More aggressiveK14400 still has timeout attempts,
+so the2565frontier must not be called robust. [Cheaper-search audit](results/random04-cheaper-search-split-full-v80/audit.json).
+The new campaign still needs2595/2838, exact repeats, three-seed timing checks
+and newly frozen fresh-input validation. Held-out50001–10 remain excluded.

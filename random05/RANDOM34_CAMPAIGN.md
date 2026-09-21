@@ -7,7 +7,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,439 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,514 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,565 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
@@ -96,3 +96,22 @@ The next eight RANDOM-04 cases use source80 andK8064/first4032 for runtime
 headroom. Compare18/6/8/10 forecasts per candidate, an8-forecast depth12 case,
 public NMS/KK guidance, and noise100. Complete branch groups are checked before
 submission. All are explicit RANDOM-04 presets and use the full1000-step run.
+
+## Cooperative and runtime results; next declared controls
+
+Source88 sharing twice reaches2514 on RANDOM-03 (mean544/max714ms), versus
+2479 for independent islands. Four/eight rounds give2483/2469; KK400 gives2429.
+Exact reusable-storage control stays2479, mean509/max695ms. Source89 passes
+regressions and introduces only the compact cache representation. The next six
+R03 cases repeat2514 and test known-horizon triage scales0.45/0.75/1/1.25, plus
+guided mix1 atscale1. This horizon assumption is explicitly a trick; the general
+cooperative optimizer remains independent of the map/horizon.
+
+At lower fixed workK8064, RANDOM-04 B18/B6/B8/B10 give2473/2355/2461/2501.
+The B10 case mean506/max575ms provides useful headroom. Depth12 atB8 gives2405;
+NMS/KK fields give2187/2163, noise100 gives2460. None improves the2565 record.
+Next source89 cases repeat theB10 control, increase its work toK11520, then
+separately test triage0.75/1, guided mix1, turncost1, dispersion0.4. TwoB18/K11520
+controls test the compact layout and optional fused read against2500. All full
+1000 steps, with fixed work and strict deadlines. The earlier fusedK11520 run
+finishes2500 atmean686/max742ms; exact replay equivalence is checked separately.

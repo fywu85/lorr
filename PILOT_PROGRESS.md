@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 05:40 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 05:54 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -29,7 +29,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | GAME | — | 23,274 | — | Not evaluated | — | — |
 | RANDOM-01 | 726 | 639 | +13.62% | GENERAL | 4 | 98.23 |
 | RANDOM-02 | 1,376 | 1,221 | +12.69% | GENERAL | 5 | 451.06 |
-| RANDOM-03 | 2,479 | 2,334 | +6.21% | TRICK | 5 | 733.46 |
+| RANDOM-03 | 2,514 | 2,334 | +7.71% | TRICK | 5 | 714.27 |
 | RANDOM-04 | 2,565 | 2,547 | +0.71% | TRICK | 4 | 948.62 |
 | RANDOM-05 | 4,011 | 3,050 | +31.51% | TRICK | 0 | 621.75 |
 
@@ -49,7 +49,7 @@ assignment and task-event replay checks.
 |---|---:|---:|---:|
 | RANDOM-01 | 726 | 649 | +11.86% |
 | RANDOM-02 | 1,376 | 1,228 | +12.05% |
-| RANDOM-03 | 2,479 | 2,359 | +5.09% |
+| RANDOM-03 | 2,514 | 2,359 | +6.57% |
 | RANDOM-04 | 2,565 | 2,580 | -0.58% |
 | RANDOM-05 | 4,011 | 3,172 | +26.45% |
 
@@ -70,7 +70,7 @@ cases share one layout: this is density transfer, not unseen-map validation.
 | GAME | — | — |
 | RANDOM-01 | 726 | 628 |
 | RANDOM-02 | 1,376 | 1,122 |
-| RANDOM-03 | 1,582 | 2,479 |
+| RANDOM-03 | 1,582 | 2,514 |
 | RANDOM-04 | 1,558 | 2,565 |
 | RANDOM-05 | 2,226 | 4,011 |
 
@@ -80,7 +80,7 @@ Current selected records are pinned to their completion timestamps and source co
 |---|---|---|---|
 | RANDOM-01 | 2026-09-21T02:53:18.408890+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random-window-followup-split-full-v80/general-random-01-window-selected-seed4/summary.json) |
 | RANDOM-02 | 2026-09-21T04:01:36.001191+00:00 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Run](random05/results/random-window2343-followup-split-full-v81/general-random-02-window-h20-i2048-keep10/summary.json) |
-| RANDOM-03 | 2026-09-21T05:33:47.702672+00:00 | [f60f254](https://github.com/fywu85/lorr/commit/f60f254) | [Run](random05/results/random03-window-budget-split-full-v86/trick-random-03-window-budget-group4-iterations8192/summary.json) |
+| RANDOM-03 | 2026-09-21T05:47:36.178484+00:00 | [49f9724](https://github.com/fywu85/lorr/commit/49f9724) | [Run](random05/results/random03-cooperative-split-full-v88/trick-random-03-cooperative-rounds2/summary.json) |
 | RANDOM-04 | 2026-09-21T05:05:35.466739+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random04-depth16-validation-split-full-v80/trick-random-04-depth16-k14400-seed4/summary.json) |
 | RANDOM-05 | 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
 

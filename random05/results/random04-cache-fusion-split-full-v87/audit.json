@@ -1,0 +1,254 @@
+{
+  "checked_utc": "2026-09-21T05:53:05.040921+00:00",
+  "source": {
+    "commit": "846a8e7",
+    "binary_sha256": "12f6e6dcd27fb293c562a09a3cad57e5a3cd38326f3bb748314847c30c7d75db",
+    "checked_files": [
+      "CMakeLists.txt",
+      "simulator/inc/Logger.h",
+      "simulator/inc/Evaluation.h",
+      "simulator/inc/TaskManager.h",
+      "simulator/inc/common.h",
+      "simulator/inc/States.h",
+      "simulator/inc/SharedEnv.h",
+      "simulator/inc/Tasks.h",
+      "simulator/inc/Simulator.h",
+      "simulator/inc/CompetitionSystem.h",
+      "simulator/inc/ActionModel.h",
+      "simulator/inc/Grid.h",
+      "simulator/inc/Entry.h",
+      "simulator/inc/nlohmann/json_fwd.hpp",
+      "simulator/inc/nlohmann/json.hpp",
+      "simulator/src/Grid.cpp",
+      "simulator/src/CompetitionSystem.cpp",
+      "simulator/src/ActionModel.cpp",
+      "simulator/src/States.cpp",
+      "simulator/src/driver.cpp",
+      "simulator/src/Logger.cpp",
+      "simulator/src/TaskManager.cpp",
+      "simulator/src/common.cpp",
+      "simulator/src/Simulator.cpp",
+      "simulator/src/Evaluation.cpp",
+      "src/operations.cpp",
+      "src/engine.hpp",
+      "src/rescore.cpp",
+      "src/replan.cpp",
+      "src/engine.cpp",
+      "src/diagnostics.cpp",
+      "src/Entry.cpp",
+      "src/components.cpp",
+      "src/window.cpp"
+    ]
+  },
+  "sources_by_binary": {
+    "12f6e6dcd27fb293c562a09a3cad57e5a3cd38326f3bb748314847c30c7d75db": {
+      "commit": "846a8e7",
+      "binary_sha256": "12f6e6dcd27fb293c562a09a3cad57e5a3cd38326f3bb748314847c30c7d75db",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/window.cpp"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-cache-fusion-control",
+      "valid": false,
+      "source_commit": "846a8e7",
+      "finished_utc": "2026-09-21T05:34:24.009679+00:00",
+      "exit": 124,
+      "evidence": "random05/results/random04-cache-fusion-split-full-v87/trick-random-04-cache-fusion-control/summary.json",
+      "peak_rss_bytes": 330158080,
+      "latency_seconds": null,
+      "result": null,
+      "note": "Original unsuccessful attempt retained; not a frontier candidate."
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-cache-fusion-fused",
+      "valid": false,
+      "source_commit": "846a8e7",
+      "finished_utc": "2026-09-21T05:35:41.590903+00:00",
+      "exit": 124,
+      "evidence": "random05/results/random04-cache-fusion-split-full-v87/trick-random-04-cache-fusion-fused/summary.json",
+      "peak_rss_bytes": 384593920,
+      "latency_seconds": null,
+      "result": null,
+      "note": "Original unsuccessful attempt retained; not a frontier candidate."
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-cache-fusion-fused-k11520-profile",
+      "valid": true,
+      "source_commit": "846a8e7",
+      "finished_utc": "2026-09-21T05:45:49.169293+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-cache-fusion-split-full-v87/trick-random-04-cache-fusion-fused-k11520-profile/summary.json",
+      "peak_rss_bytes": 421134336,
+      "latency_seconds": {
+        "mean": 0.686257702166,
+        "max": 0.741947702
+      },
+      "tasks": 2500,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-cache-fusion-split-full-v87/trick-random-04-cache-fusion-fused-k11520-profile/trick-random-04-cache-fusion-fused-k11520-profile/result.json",
+        "result_sha256": "15fce11d0a6d82c09f86b453254214bb61b9c4dc12529724bf018e4dae2ff72d",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2500,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 21025,
+            "C": 6369,
+            "R": 9437,
+            "F": 18955
+          },
+          "loaded": {
+            "F": 259786,
+            "R": 103984,
+            "W": 206114,
+            "C": 74330
+          },
+          "idle": {}
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 10302,
+              "F": 14142,
+              "R": 7233,
+              "C": 4864
+            },
+            "loaded": {
+              "C": 66651,
+              "F": 233684,
+              "W": 155784,
+              "R": 92870
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 2204,
+              "W": 10723,
+              "F": 4813,
+              "C": 1505
+            },
+            "loaded": {
+              "R": 11114,
+              "W": 50330,
+              "F": 26102,
+              "C": 7679
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 111802,
+        "completed_loaded_detour_cells": 121882,
+        "completed_loaded_mean_steps": 219.5956,
+        "completed_chain_lengths": {
+          "2": 820,
+          "3": 751,
+          "4": 569,
+          "5": 360
+        },
+        "unopened_reassignments": 5739,
+        "task_starts": 3076,
+        "waiting_streaks": {
+          "count": 121349,
+          "p50": 1,
+          "p90": 3,
+          "p99": 12,
+          "maximum": 343
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-cache-fusion-split-full-v87/trick-random-04-cache-fusion-fused-k11520-profile/trick-random-04-cache-fusion-fused-k11520-profile/result.json",
+        "result_sha256": "15fce11d0a6d82c09f86b453254214bb61b9c4dc12529724bf018e4dae2ff72d",
+        "horizon_steps": 1000,
+        "tasks_finished": 2500,
+        "tasks_revealed": 3550,
+        "completed_latency": {
+          "count": 2500,
+          "mean_steps": 262.2892,
+          "p50_steps": 224,
+          "p95_steps": 620,
+          "p99_steps": 890
+        },
+        "maximum_release_to_completion": {
+          "steps": 977,
+          "task_id": 553,
+          "released_at": 0,
+          "observed_at": 977
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 948,
+          "task_id": 1054,
+          "released_at": 12,
+          "observed_at": 960
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 474,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 389.9847619047619,
+        "initial_still_unfinished": 140,
+        "initial_still_unopened": 95,
+        "initial_started_unfinished": 45,
+        "event_accounting_valid": true
+      }
+    }
+  ],
+  "pending": [],
+  "complete": true,
+  "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
+}
