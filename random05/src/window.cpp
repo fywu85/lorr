@@ -348,10 +348,18 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             std::vector<Cost> costs(n);
             for(int a=0;a<n;++a)costs[a]=agent_cost(a,island.paths[a]);
             std::vector<int> group(n);std::vector<float> keys(n);
-            const int count=std::min(cfg.window_neighborhood,n);
-            std::vector<int> linked;linked.reserve(count);
+            const int largest_count=std::min(cfg.window_neighborhood*(cfg.window_group_mix?2:1),n);
+            std::vector<int> linked;linked.reserve(largest_count);
             std::vector<uint32_t> marked(n,0);
             for(int iteration=0;iteration<iterations/cfg.window_rounds;++iteration) {
+                // Fixed multiscale groups expose larger interacting coalitions
+                // without increasing the mean requested agents per four repairs.
+                // Small repairs refine local choices between the larger repairs.
+                // No adaptation to wall time, random draws or map identity.
+                const int base_size=cfg.window_neighborhood;
+                const std::array<int,4> group_sizes={base_size/2,base_size-base_size/2,base_size,2*base_size};
+                const int requested=cfg.window_group_mix?group_sizes[iteration%4]:base_size;
+                const int count=std::min(requested,n);
                 int pivot=int(random()%n),time=int(random()%(h+1));
                 // Earliest-first blockers can repeat the same small repair
                 // group. Rotate the conflict scan using its existing sampled
@@ -560,8 +568,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     }
     pending_=predicted_loc_;window_paths_=std::move(chosen);best_offsets_=std::move(selected_offsets);
     if(!quiet_ && (env.curr_timestep<5 || env.curr_timestep%100==0))
-        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
-            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,accepted,skipped_sorts,
+        std::fprintf(stderr,"R05_WINDOW t=%d horizon=%d islands=%d iterations=%d rounds=%d repair_orders=%d group_mix=%d accepted=%d skipped_sorts=%d expansions=%llu cost=%.3f base=%.3f\n",
+            env.curr_timestep,h,cfg.window_islands,iterations,cfg.window_rounds,cfg.window_repair_orders,int(cfg.window_group_mix),accepted,skipped_sorts,
             (unsigned long long)expanded,islands[best].cost.total,base_cost.total);
 }
 }

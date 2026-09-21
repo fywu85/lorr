@@ -1904,6 +1904,24 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"seed merging accepted a non-boolean value");
     }
+    {
+        Setting mixed("R05_WINDOW_GROUP_MIX","1"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_group_mix,"general mixed repair groups were rejected");
+        for(const char* size:{"1","33"}) {
+            Setting bad_size("R05_WINDOW_NEIGHBORHOOD",size);bool rejected=false;
+            try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+            require(rejected,"mixed repair groups accepted an unsupported base size");
+        }
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"mixed repair groups accepted a missing window");
+    }
+    {
+        Setting mixed("R05_WINDOW_GROUP_MIX","2");auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"mixed repair groups accepted a non-boolean value");
+    }
     for(const char* value:{"0","3"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
@@ -2128,8 +2146,16 @@ void window_reproducibility() {
     const auto seed_only=simulate(cfg,8,5,5,true);
     cfg.threads=1;
     require(seed_only==simulate(cfg,8),"unoptimized legal seed merging depends on workers");
-    cfg.window_seed_merge=false;
-    cfg.window_expansions=1;cfg.window_iterations=3;
+    cfg.window_seed_merge=false;cfg.window_group_mix=true;cfg.window_iterations=12;
+    for(int size:{5,16}) {
+        cfg.window_neighborhood=size;cfg.threads=1;cfg.window_repair_orders=2;
+        cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+        const auto mixed_sizes=simulate(cfg,8,5,5,true);
+        cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+        require(mixed_sizes==simulate(cfg,8),"mixed repair sizes depend on workers, caches, heap or storage");
+        require(mixed_sizes==simulate(cfg,8,5,5,true),"mixed repair sizes changed after checkpoint restoration");
+    }
+    cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
     require(failed_repairs==simulate(cfg,8),"failed window repairs damaged the complete fallback plan");

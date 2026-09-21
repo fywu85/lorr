@@ -182,6 +182,11 @@ Config Config::environment(const SharedEnvironment& env) {
     if(seed_merge<0 || seed_merge>1 || (seed_merge && !c.window))
         throw std::invalid_argument("window seed merging requires an enabled window and a boolean value");
     c.window_seed_merge=seed_merge;
+    const int group_mix=integer("R05_WINDOW_GROUP_MIX",0);
+    if(group_mix<0 || group_mix>1 || (group_mix &&
+       (!c.window || c.window_neighborhood<2 || c.window_neighborhood>32)))
+        throw std::invalid_argument("mixed window groups need an enabled window, base size2..32 and a boolean value");
+    c.window_group_mix=group_mix;
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
     c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);
