@@ -1459,6 +1459,14 @@ void joint_assignment_semantics() {
     {Setting repair("R05_JOINT_REPAIR_ROUNDS","2");
      require(Config::environment(env).joint_repair_rounds==2,"valid joint repair rejected");}
 
+    {Setting groups("R05_JOINT_GROUPS","129");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"joint components escaped their complete-work bound");}
+    {Setting groups("R05_JOINT_GROUPS","16");
+     require(Config::environment(env).joint_groups==16,"valid joint component budget rejected");
+     Setting off("R05_JOINT_PROPOSALS","0");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"joint components accepted without a proposal source");}
     {Setting value("R05_JOINT_PROPOSALS","3");bool rejected=false;
      try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
      require(rejected,"joint proposal budget escaped its declared bound");}
@@ -1472,7 +1480,7 @@ void joint_assignment_futures() {
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
     cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
     for(int count:{1,2}) {
-        cfg.joint_proposals=count;cfg.joint_repair_rounds=count==2?4:0;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        cfg.joint_proposals=count;cfg.joint_repair_rounds=count==2?4:0;cfg.joint_groups=count==2?8:0;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
         cfg.reverse_penalty=count==2?.2f:0.f;
         const auto selected=simulate(cfg,12,5,5,true);
         cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
@@ -1484,6 +1492,9 @@ void joint_assignment_futures() {
     cfg.futures=192;cfg.screen_branches=2;cfg.screen_keep=2;cfg.threads=1;
     const auto screened=simulate(cfg,12,5,5,true);cfg.threads=3;
     require(screened==simulate(cfg,12),"joint proposals changed with screened worker scheduling");
+    cfg.joint_repair_rounds=0;cfg.joint_groups=32;cfg.threads=1;
+    const auto components=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(components==simulate(cfg,12),"unrepaired joint components changed across workers");
 }
 
 void optional_arrival_proposals() {

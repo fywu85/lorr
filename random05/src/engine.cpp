@@ -70,6 +70,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.component_trials=integer("R05_COMPONENT_TRIALS",0);
     c.joint_proposals=integer("R05_JOINT_PROPOSALS",0);
     c.joint_repair_rounds=integer("R05_JOINT_REPAIR_ROUNDS",0);
+    c.joint_groups=integer("R05_JOINT_GROUPS",0);
+    if(c.joint_groups<0 || c.joint_groups>128 || (c.joint_groups && !c.joint_proposals))
+        throw std::invalid_argument("joint component trials require proposals and a bound of zero to 128");
     if(c.joint_repair_rounds<0 || c.joint_repair_rounds>8 || (c.joint_repair_rounds && !c.joint_proposals))
         throw std::invalid_argument("joint repair rounds require proposals and a bound of zero to eight");
     if(c.joint_proposals<0 || c.joint_proposals>2)
@@ -2318,7 +2321,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
     }
     if(cfg.joint_proposals) {
-        const Rollout anchor=results[best];int accepted=0,canceled=0,repaired=0,branches=0;
+        const Rollout anchor=results[best];int accepted=0,canceled=0,repaired=0,branches=0,available_groups=0;
         for(int proposal_id=0;proposal_id<cfg.joint_proposals;++proposal_id) {
             const auto joint=joint_move_assignment(g,cfg,frame,assigned_,proposal_id?.5f:0.f);
             Rollout proposal=anchor;proposal.first.pending=joint.targets;
@@ -2346,12 +2349,72 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                (cfg.accept_equal && candidate.score>=results[best].score-1e-7)) {
                 results[best]=std::move(candidate);++accepted;
             }
+            if(cfg.joint_groups) {
+                // A whole coordinated proposal can lose despite containing a
+                // useful local move. Borrow complete dependency components so
+                // every hybrid retains both parents' collision guarantees.
+                struct Group {std::vector<int> agents;double gain=0;};
+                std::vector<Group> groups;
+                auto potential=[&](const Rollout& plan,int a) {
+                    const auto* chain=assigned_[a];const int stage=plan.first.stage[a];
+                    return chain && stage<int(chain->goals.size())?
+                        chain->cost(g,stage,plan.first.pending[a],plan.first.dir[a]):
+                        cfg.idle_eviction*g.pocket_depth[plan.first.pending[a]];
+                };
+                for(auto agents:decision_components(g,anchor,proposal)) {
+                    Group group;group.agents=std::move(agents);
+                    for(int a:group.agents)group.gain+=potential(anchor,a)-potential(proposal,a);
+                    groups.push_back(std::move(group));
+                }
+                available_groups+=int(groups.size());
+                std::stable_sort(groups.begin(),groups.end(),[](const Group& a,const Group& b) {
+                    return a.gain>b.gain;
+                });
+                std::vector<Rollout> hybrids(cfg.joint_groups,anchor),trials(cfg.joint_groups);
+                std::vector<std::exception_ptr> trial_errors(cfg.joint_groups);
+                for(int trial=0;trial<cfg.joint_groups;++trial) {
+                    auto& hybrid=hybrids[trial];
+                    // If fewer components exist, reevaluate an unchanged anchor
+                    // to keep the declared complete work independent of traffic.
+                    if(trial<int(groups.size()))for(int a:groups[trial].agents) {
+                        hybrid.first.pending[a]=proposal.first.pending[a];
+                        hybrid.first.dir[a]=proposal.first.dir[a];
+                        hybrid.actions[a]=proposal.actions[a];
+                        if(cfg.reverse_penalty>0)hybrid.first.last_actions[a]=proposal.first.last_actions[a];
+                    }
+                    if(cfg.reverse_penalty>0) {
+                        hybrid.first.reverse_turns=frame.reverse_turns;
+                        for(int a=0;a<n;++a)hybrid.first.reverse_turns+=
+                            (hybrid.actions[a]==CR && frame.last_actions[a]==CCR) ||
+                            (hybrid.actions[a]==CCR && frame.last_actions[a]==CR);
+                    }
+                    certify(g,frame.loc,hybrid.first.loc);certify(g,hybrid.first.loc,hybrid.first.pending);
+                }
+                #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+                for(int trial=0;trial<cfg.joint_groups;++trial) {
+                    try {trials[trial]=evaluate(frame,anchor.offsets,continuations,
+                                              anchor.cycle_moves,nullptr,&hybrids[trial]);}
+                    catch(...) {trial_errors[trial]=std::current_exception();}
+                }
+                for(int trial=0;trial<cfg.joint_groups;++trial) {
+                    if(trial_errors[trial])std::rethrow_exception(trial_errors[trial]);
+                    auto& hybrid=hybrids[trial];auto& candidate=trials[trial];
+                    branches+=candidate.evaluated_branches;
+                    if(candidate.actions!=hybrid.actions || candidate.first.pending!=hybrid.first.pending ||
+                       candidate.first.dir!=hybrid.first.dir)
+                        throw std::runtime_error("joint component changed during forecast evaluation");
+                    if(candidate.score>results[best].score+1e-7 ||
+                       (cfg.accept_equal && candidate.score>=results[best].score-1e-7)) {
+                        results[best]=std::move(candidate);++accepted;
+                    }
+                }
+            }
         }
-        if(branches!=cfg.joint_proposals*cfg.continuations)
+        if(branches!=cfg.joint_proposals*(1+cfg.joint_groups)*cfg.continuations)
             throw std::runtime_error("joint proposals changed declared continuation work");
         if(!quiet_ && env->curr_timestep%100==0)
-            std::fprintf(stderr,"R05_JOINT t=%d proposals=%d branches=%d accepted=%d canceled_swaps=%d repaired_swaps=%d repair_rounds=%d\n",
-                         env->curr_timestep,cfg.joint_proposals,branches,accepted,canceled,repaired,cfg.joint_repair_rounds);
+            std::fprintf(stderr,"R05_JOINT t=%d proposals=%d branches=%d accepted=%d canceled_swaps=%d repaired_swaps=%d repair_rounds=%d group_trials=%d available_groups=%d\n",
+                         env->curr_timestep,cfg.joint_proposals,branches,accepted,canceled,repaired,cfg.joint_repair_rounds,cfg.joint_groups,available_groups);
     }
     if(cfg.component_trials) {
         // Freeze several distinct first decisions from the completed portfolio.

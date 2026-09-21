@@ -1,7 +1,8 @@
 # PILOT RANDOM-03 and RANDOM-04: ten-percent campaign
 
-**Paused at the user's request, 2026-09-21 13:25 UTC.** All PILOT jobs have
-finished; the unfinished goal and evidence are preserved for a later resumption.
+**Resumed 2026-09-21 15:03 UTC.** The user requested further work on all five
+RANDOM instances. The earlier stopping checkpoint remains in the history;
+this RANDOM-03/04 qualification is a retained milestone within the broader work.
 
 Started 2026-09-21 05:17 UTC at the user's request. Throughput must be at least
 10% above matched local NMS on both instances, with runtime reliably below one

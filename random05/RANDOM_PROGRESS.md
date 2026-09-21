@@ -12,7 +12,7 @@ Large maps are outside active development.
 - Apply general variants across all five densities before claiming broad benefit. Selecting different settings by instance name counts as a trick. Geometry-independent density rules remain hypotheses until tested.
 - Preserve all original failures. Selected maxima, paired planner-seed means and fresh task/start validation are distinct.
 - The five cases share one layout; improvements across densities do not establish transfer to unseen geometry.
-- Inputs50001–50010 remain excluded from tuning. Future fresh-input protocols must precede generation.
+- Inputs50001–50012 remain excluded from tuning. Future fresh-input protocols must precede generation.
 
 ## Current records
 
@@ -513,3 +513,25 @@ exactly across source revisions and remains below1s on plannerseeds0/3/5.
 Larger budgets/windows still have preserved timeout attempts; startup work
 schedules and exact A* optimizations are being evaluated.
 [Runtime quantiles and qualification limits](results/random34-runtime/REPORT.md).
+
+## Resumed all-density campaign, 2026-09-21 15:03 UTC
+
+The user resumed work and requested maximum throughput on RANDOM-01 through
+RANDOM-05. Continue general improvements and explicitly flagged tricks, keeping
+strict1s steps, full horizons,32GB and bound32-worker allocations. The archived
+726/1376/2602/2777/4011 records and all fresh-input evidence are preserved.
+The existing RANDOM-03/04 qualification remains a milestone, not a stopping cap.
+
+The first declared wave uses frozen source027df4d9/build132 (regression38.30s),
+with five unchanged best-profile controls. Eight sparse-instance cases test
+exact storage/heap settings, more complete window repairs, smaller neighborhoods,
+and cooperative merging. Six separate horizon-only tricks test cutoff0.75/1/1.25
+on the strongest windowed RANDOM-01/02 configurations. These do not inherit the
+older reactive planner's negative horizon results as an assumption.
+
+RANDOM-03 separately tests8192repairs, and a24-step window with16 retained steps
+at5120repairs. RANDOM-04 compares6/14/18common futures against10, preserving the
+complete declared work atK8064/8000/8064. RANDOM-05 tests active-order caps600/680/760
+(all robots stay movable), and dispersion0.4. None is a performance claim.
+The28full runs are independent GRID jobs, selected before outcomes. No held-out
+input is used and no map-specific behavior bypasses its explicit trick flag.

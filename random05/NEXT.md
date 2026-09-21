@@ -1,7 +1,7 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 13:25 UTC. The user requested a stop after finishing, logging,
-committing and pushing the current work. Resume improvement work only on request.
+Updated 2026-09-21 15:03 UTC. The user explicitly resumed the campaign and expanded
+the active objective to maximum throughput on all five RANDOM instances.
 The RANDOM-05 4,000-task milestone is achieved and independently audited.
 The unfinished RANDOM-03/04 goal retains thresholds 2,595 and 2,838 against
 matched local NMS, with robust subsecond timing. RANDOM-03 is qualified;
@@ -29,7 +29,16 @@ work completes or the run fails; do not truncate work on a wall-clock deadline.
 All inputs 50001–50012 remain excluded from tuning. R03 validation inputs50011/50012 were generated only after protocol0fb8a953 was committed.
 Any further fresh validation requires freezing protocol/config before generation.
 
-## Stopping checkpoint (2026-09-21 13:25 UTC)
+## Current resumed execution
+
+First wave:28full source132 cases in random-all-resume-controls,
+random12-resume-general, random12-resume-horizon, random03-resume-search,
+random04-resume-futures and random05-resume-transfer (all suffix full-v132).
+See RANDOM_PROGRESS.md for hypotheses and experiments/ for frozen manifests.
+Source027df4d9, binary175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
+No new source implementation yet. Preserve historical paused records below.
+
+## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 
 No PILOT GRID jobs are running or queued. All declared cases through build132
 have completed and their results are audited. Other agents' CGAR jobs are
