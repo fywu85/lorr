@@ -1,6 +1,6 @@
 # Active CGAR throughput targets
 
-Updated 2026-09-21T10:46:41.652131+00:00. The user now requests **10% above max(NMS, KK)** for
+Updated 2026-09-21T11:23:21.966990+00:00. The user now requests **10% above max(NMS, KK)** for
 RANDOM-01–05 and a stretch **5% above max(NMS, KK)** for the other five instances. Integer
 targets round upward. Selected-seed maxima may qualify; replication and fairness
 remain separately reported. These are published historical baselines, not matched

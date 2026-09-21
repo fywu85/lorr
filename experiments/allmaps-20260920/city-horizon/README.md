@@ -13,3 +13,5 @@ avoiding new chains unlikely to finish before the known end can improve the
 boundary. The related CITY-02 experiment already lost and is not being repeated.
 This is a transfer test, not a prior claim of benefit. Source and binary are the
 qualified matching-width build7fd2cfc6, with no new production changes.
+
+All four complete and valid. Control8440, bound8410, mean8427, p90 8357; maxima756.89/755.34/762.74/770.28ms. Control repeats the full selected trajectory. No promotion; keep the horizon trick disabled.

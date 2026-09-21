@@ -1,6 +1,6 @@
 # CGAR next experiments across ten instances
 
-Updated 2026-09-21T11:00:04.984876+00:00
+Updated 2026-09-21T11:33 UTC
 Targets: +10% over max(published NMS,KK) on RANDOM01–05; stretch +5% on the other
 five. Throughput first, fairness secondary. These are historical targets rather
 than matched competitor runs. Every selected profile requires --trick INSTANCE.
@@ -9,14 +9,14 @@ than matched competitor runs. Every selected profile requires --trick INSTANCE.
 |---|---:|---|
 | WAREHOUSE | 155173 | Preserve qualified eight-core profile; +5% remains a stretch. |
 | SORTATION | 150894 | Runtime alternative 150865 has more measured deadline headroom. |
-| CITY-01 | 8440 | Wider matching loses; new-task known-horizon transfer running. |
+| CITY-01 | 8440 | Wider matching and known-horizon transfer lose; keep current profile. |
 | CITY-02 | 16315 | Budget2 gain replicates; lower lane prices, horizon triage and wider matching lose. |
 | GAME | 24447 | New margin target met; retain the explicit fleet/rank tricks. |
-| RANDOM-01 | 693 | Retained-tail refresh replicates; delay, annealing and wider matching lose. Exact chain assignment next. |
-| RANDOM-02 | 1215 | Delay, tail refresh, annealing and wider matching lose. Exact chain assignment next. |
-| RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; history/annealing interaction loses. Exact chain assignment next. |
-| RANDOM-04 | 2059 | H20 is best selected seed, H15 has better mean; crowded windows lose. Exact chain assignment next. |
-| RANDOM-05 | 3065 | Chain-scored seed plus window is running. Exact chain assignment is a separate next comparison. |
+| RANDOM-01 | 693 | Retained-tail refresh replicates; exact chain assignment loses. Turn/wait price interaction queued. |
+| RANDOM-02 | 1215 | Delay, tail refresh, annealing, wider matching and exact chain assignment lose. |
+| RANDOM-03 | 1982 | Delay3 gains +3.29% across three seeds; exact assignment loses. Turn/wait price interaction queued. |
+| RANDOM-04 | 2059 | H20 is best selected seed, H15 has better mean; paid-chain scoring loses. Dynamic task cap queued. |
+| RANDOM-05 | 3065 | Chain-seed windows and exact assignment lose. Paid-chain scoring and dynamic task caps running. |
 
 RANDOM-01 improved at matched work with uniform guidance (+2.69% over three seeds),
 then a refreshed retained tail (+1.88%, all three positive). More attempts and

@@ -30,3 +30,7 @@ four physical cores/case, strict1000ms,32decimalGB, node-local logs. Controls ar
 The composition currently being tested on RANDOM05 is a separate experiment and
 is not included here. Repeat positive gains on additional seeds before claiming
 reliability. No edits to the independent RANDOM05/PILOT workspace.
+
+First four complete pairs, all strict1s and valid: RANDOM01 693→677 (-2.31%); RANDOM02 1215→1200 (-1.23%); RANDOM03 1982→1779 (-10.24%); RANDOM04 2059→1814 (-11.90%). All controls repeat their full selected trajectory hashes. No promotion. RANDOM05 is pending. Keep the optional scheduler cost off.
+
+RANDOM05 also completes:3065control versus3055exact assignment (-0.33%), max702.11ms, identical control trace. All five selected-seed comparisons lose; no promotion.

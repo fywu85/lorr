@@ -26,3 +26,5 @@ per island,4 islands,2048nodes,group4,wait20,protected first actions, complete
 CGAR seed rollout and progress ties. Explicit --trick RANDOM-05 is required for
 the unchanged guidance/horizon profile. Other agent's independent solver is
 untouched. No throughput result yet.
+
+All four full runs valid: control3065; H10keep0 3008; H20keep0 2896; H20keep10refresh2985. Maximum entry702.67/795.90/766.60/790.87ms. Control repeats its complete selected trace. The gains from repairing the weaker seed do not compose with the stronger chain root. Keep the window disabled on RANDOM05.
