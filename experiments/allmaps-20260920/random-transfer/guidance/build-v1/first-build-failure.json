@@ -1,0 +1,7 @@
+{
+  "raw": "runs/cgar-random-native-build-v1-20260920",
+  "source_commit": "ad53050636064bcf1a74805fb53c7a3162d2a8b9",
+  "failure": "New test used off-core tasks in RANDOM-05 capacity mode, so pickup field was never exercised; corrected to core-eligible tasks. Production code unchanged by retry.",
+  "binding_issue": "Old build helper reported 64 physical cores despite requesting four, without rejecting. Retry helper rejects incorrect binding and passed on four bound cores.",
+  "accepted_binary": false
+}

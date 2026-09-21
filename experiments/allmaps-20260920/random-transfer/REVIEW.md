@@ -77,3 +77,32 @@ continuation check, not the exact whole-chain dynamic program described above.
 These selectors are mutually exclusive and tested in separate profiles. Same
 full RANDOM-04/05 inputs, seed0, single worker4Mglobal and4Mregional caps,
 four physical cores,5sdevelopment deadline. No map tricks or horizon knowledge.
+
+
+## Completed evidence and next structural diagnostic
+
+All 18 strict one-second portfolio replications passed. Eight candidates improve
+both maps on all three planner seeds; noise50 consistently helps RANDOM-05 over
+the eight-candidate control, but is mixed on RANDOM-04. Persistent vectors and
+both simpler objective changes were weaker. See the linked campaign result
+matrices rather than inferring success from the standalone mechanism alone.
+
+A read-only certificate/event audit found an additional barrier on RANDOM-05:
+819 free cells, certified core788, capacity787,31 initially parked robots. Its
+capacity policy permanently excludes any chain with an off-core stop. In the
+2036-task seed0 run,427 of431 never-assigned tasks are excluded by this rule;
+none of these427 was assigned or completed. The other773 outstanding tasks are
+core-eligible. On RANDOM-04 the capacity filter is inactive:124 off-core tasks
+were completed. [Audit](capacity-audit-v1/audit.json). This is direct structural
+evidence, not a counterfactual throughput estimate.
+
+`capacity-variants.json` declares a diagnostic comparison using the existing
+`CGAR_CERT=0` switch against the noise50 control: same two archived inputs,
+planner seed0, full horizons, four physical cores, shared EPYC9354, enforced1s.
+This ablates pocket certificates and capacity filtering. It retains the CGAR
+primary/recovery and temporal machinery, but **does not preserve the original
+certificate's liveness premise**. It is a diagnostic ablation, not an automatic
+production change or a claim that ignoring dead ends is safe for progress.
+The standalone solver explicitly handles pocket evacuation, so success there
+would motivate a compatible CGAR mechanism; simply toggling the switch is not
+that transfer. Keep all failures and stalls. No map-specific tuning is added.
