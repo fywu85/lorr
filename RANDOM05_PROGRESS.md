@@ -6,6 +6,7 @@ continues as the detailed RANDOM-05 history.
 
 Goal (retargeted 2026-09-20): reach **4,000 completed tasks** on the full archived
 RANDOM-05 combined benchmark, then independently validate the selected improvement.
+Status: **achieved and independently validated on 2026-09-21**.
 Keep separate four-core and 32-worker records under the existing comparison rules.
 The previous target of approaching the colleague's 27–28% matched NMS gain was
 met at +25.42% on fresh inputs. Their private absolute counts are not matched

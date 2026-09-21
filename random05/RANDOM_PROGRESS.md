@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2439 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2551 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2565 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -120,6 +120,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T04:10:48.680394+00:00 | RANDOM-04 | trick | 2505 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed0/summary.json) |
 | 2026-09-21T04:11:29.934441+00:00 | RANDOM-04 | trick | 2516 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth12-followup-split-full-v80/trick-random-04-depth12-seed3/summary.json) |
 | 2026-09-21T04:28:57.667303+00:00 | RANDOM-04 | trick | 2551 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-field-depth-split-full-v80/trick-random-04-depth16-k14400/summary.json) |
+| 2026-09-21T05:05:35.466739+00:00 | RANDOM-04 | trick | 2565 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-depth16-validation-split-full-v80/trick-random-04-depth16-k14400-seed4/summary.json) |
 
 
 ## September21: first development comparisons
@@ -428,3 +429,19 @@ initialization because the work count is not divisible into complete screening
 groups (K must be a multiple of96 here). These are retained unsuccessful attempts
 and do not change the frontier. The other three runs remain pending. Timing
 variation is observed, but a host or algorithmic cause has not been established.
+
+### 2026-09-21 05:09 UTC: all current runs closed; RANDOM-04 reaches 2,565
+
+The full depth16/K14400 run on planner seed4 reaches **2,565 tasks**, 15 below
+matched local NMS2,580. Mean832ms, maximum949ms, RSS440MB; sourcea2ff2b2.
+It passes source/input/resource checks and independent movement, assignment,
+task-event and waiting audits. Seed6 gives2,536; depth18/K13056/seed5 gives2,525.
+The two deadline failures and invalid depth20 configuration remain retained.
+All six original attempts are terminal and audited; no active job remains in
+this batch. This gain is a selected planner seed, not fresh-input validation.
+
+The new record is reflected in the manifest and root PILOT_PROGRESS.md. The
+registered RANDOM-05 4,000-task goal was marked complete after its final evidence
+and dashboard were committed and pushed in a87f097. The primary RANDOM-05 log
+remains root RANDOM05_PROGRESS.md.
+[Full follow-up audit](results/random04-depth16-validation-split-full-v80/audit.json).

@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 04:56 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 05:09 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. Broader authorized work develops general
 improvements and explicit tricks for RANDOM-01..05. Non-random maps are deferred.
 Latest user correction: RANDOM05_PROGRESS.md remains the authoritative detailed
@@ -29,9 +29,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2439 / 2551 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2439 / 2565 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests lead NMS by 11.9% / 12.1% / 3.4% / -1.1% / 26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +3.4% / -0.6% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -70,30 +70,37 @@ passes ten requirements. Supporting proofs include all starts/task chains on
 difference, unchanged held-out hashes, 52 unsuccessful attempts and 6 failed
 builds. results/trick-gates-v80/audit.json tests the actual frozen executable.
 All 85 main frontier rows and waiting metrics are checked; separate manifests
-and both user-facing logs are current. The goal can be closed after committing
-this completed evidence. Reproduce with tools/audit_4000_milestone.py.
+and all user-facing logs are current. The registered goal was marked COMPLETE
+at05:07 UTC after the evidence and PILOT dashboard were committed/pushed in
+a87f097. Reproduce with tools/audit_4000_milestone.py. The broader RANDOM
+campaign remains authorized; the goal completion does not claim all maps solved.
 
-## Active RANDOM-04 experiments
+## Latest RANDOM-04 experiments and next research
 
-Six full runs in random04-depth16-validation-split-full-v80, jobs8901595–8901600,
-submitted 04:51:31 UTC; expected completion around05:06–05:10 UTC:
-- depth16/K14400, planner seeds0/3/4/6;
-- depth18/K13056 and depth20/K12240, planner seed5.
-Source a2ff2b2/build80, explicit --trick RANDOM-04, otherwise selected2551config.
-At05:02 UTC, three attempts have failed and are preserved: depth16 seed0
-times out at step1 (1197ms); seed3 at step217 (1007ms); depth20/K12240 is an
-invalid configuration because K must be divisible by96. No cause is asserted
-for the timing variation. The other three runs continue. A corrected depth20
-experiment must use K12288 (or another multiple of96), retain the original
-failure, and be declared as a separate case. Collect actual handles, independently
-audit, and promote only valid improvements.
+No jobs from this RANDOM campaign remain active. All six original attempts in
+random04-depth16-validation-split-full-v80 are terminal and audited.
+Source a2ff2b2/build80, explicit --trick RANDOM-04:
+- depth16/K14400 seed4 =2565, mean832/max949ms, RSS440MB (new selected record);
+- the same configuration seed6 =2536, mean826/max892ms;
+- depth18/K13056 seed5 =2525, mean904/max987ms;
+- depth16 seeds0/3 fail at step1/217, 1197/1007ms respectively;
+- depth20/K12240 is rejected at initialization: K must be divisible by96.
+All failures are retained. No throughput claim for invalid runs and no unproven
+assertion that host contention caused the timing spikes. Corrected depth20
+would require K12288 or another multiple of96, declared as a distinct trial.
 
-Latest completed batch random04-throughput-followup-split-full-v80 is fully
-audited: loop threshold2/3 =2523/2526, scheduler length0.5=2546, rank0.25=2531.
-None beats2551. The prior random04-field-depth batch has depth16/K14400=2551
-(mean831/max902ms, RSS436MB), and depth12 field seeds0/1/2/3=2304/2302/2395/2361.
-Prior depth12 seeds5/0/3=2500/2505/2516; depth14/seed5=2487; depth12/mix1=2470.
-All attempts remain preserved. No new source change is involved.
+The 2565 record is only15 tasks below local NMS2580; it is a selected planner
+seed gain from previous2551, not a new algorithm or fresh-input result. Priority
+is throughput plus runtime headroom. Candidate directions: reduce per-future
+cost without changing trajectories, controlled lower-work/depth combinations,
+and small scheduling/guidance ablations after profiling. Do not consume held-out
+inputs for tuning. Additional fresh validation needs a newly frozen protocol.
+
+Earlier random04-throughput-followup-split-full-v80 is fully audited:
+loop threshold2/3 =2523/2526, length0.5=2546, rank0.25=2531; none beat2551.
+Field/depth batch: depth16/K14400 seed5=2551, mean831/max902ms, RSS436MB;
+depth12 field seeds0/1/2/3=2304/2302/2395/2361. Prior depth12 seeds5/0/3
+=2500/2505/2516; depth14/seed5=2487; depth12/mix1=2470. No new source change.
 
 ## RANDOM-03 and general improvements
 

@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 05:03 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 05:09 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -25,7 +25,7 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | RANDOM-01 | 726 | 639 | +13.62% | GENERAL | 4 | 98.23 |
 | RANDOM-02 | 1,376 | 1,221 | +12.69% | GENERAL | 5 | 451.06 |
 | RANDOM-03 | 2,439 | 2,334 | +4.50% | TRICK | 5 | 372.18 |
-| RANDOM-04 | 2,551 | 2,547 | +0.16% | TRICK | 5 | 902.18 |
+| RANDOM-04 | 2,565 | 2,547 | +0.71% | TRICK | 4 | 948.62 |
 | RANDOM-05 | 4,011 | 3,050 | +31.51% | TRICK | 0 | 621.75 |
 
 **Published NMS scores are historical targets, not matched local baselines.**
@@ -45,7 +45,7 @@ assignment and task-event replay checks.
 | RANDOM-01 | 726 | 649 | +11.86% |
 | RANDOM-02 | 1,376 | 1,228 | +12.05% |
 | RANDOM-03 | 2,439 | 2,359 | +3.39% |
-| RANDOM-04 | 2,551 | 2,580 | -1.12% |
+| RANDOM-04 | 2,565 | 2,580 | -0.58% |
 | RANDOM-05 | 4,011 | 3,172 | +26.45% |
 
 These are selected individual bests, not an average or one universal preset.
@@ -66,7 +66,7 @@ cases share one layout: this is density transfer, not unseen-map validation.
 | RANDOM-01 | 726 | 628 |
 | RANDOM-02 | 1,376 | 1,122 |
 | RANDOM-03 | 1,582 | 2,439 |
-| RANDOM-04 | 1,558 | 2,551 |
+| RANDOM-04 | 1,558 | 2,565 |
 | RANDOM-05 | 2,226 | 4,011 |
 
 Current selected records are pinned to their completion timestamps and source commits:
@@ -76,7 +76,7 @@ Current selected records are pinned to their completion timestamps and source co
 | RANDOM-01 | 2026-09-21T02:53:18.408890+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random-window-followup-split-full-v80/general-random-01-window-selected-seed4/summary.json) |
 | RANDOM-02 | 2026-09-21T04:01:36.001191+00:00 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Run](random05/results/random-window2343-followup-split-full-v81/general-random-02-window-h20-i2048-keep10/summary.json) |
 | RANDOM-03 | 2026-09-21T04:01:59.631782+00:00 | [4b70a80](https://github.com/fywu85/lorr/commit/4b70a80) | [Run](random05/results/random-window2343-followup-split-full-v81/trick-random-03-window2343-keep14/summary.json) |
-| RANDOM-04 | 2026-09-21T04:28:57.667303+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random04-field-depth-split-full-v80/trick-random-04-depth16-k14400/summary.json) |
+| RANDOM-04 | 2026-09-21T05:05:35.466739+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/random04-depth16-validation-split-full-v80/trick-random-04-depth16-k14400-seed4/summary.json) |
 | RANDOM-05 | 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
 
 **RANDOM-05's 4,000-task milestone is independently verified.** The archived
@@ -103,7 +103,12 @@ On guided RANDOM-03, keeping 14 instead of 10 previous plan steps improves
 all three paired planner seeds by 3.27% in aggregate. Reactive planning
 remains stronger on the two crowded cases; the windowed transfer trials
 there were substantially worse. RANDOM-04 is still close to the local NMS
-baseline; deeper look-ahead and seed sensitivity are the current follow-up.
+baseline; improving throughput and timing headroom there is the next priority.
+The latest depth16 follow-up reaches 2,565 on planner seed4, while seed6
+gives 2,536. Seeds0 and3 fail the strict deadline (1,197 and 1,007 ms);
+the original failures remain recorded. Depth18 gives 2,525. An invalid
+depth20 work count is rejected at initialization and has no throughput score.
+[All six original outcomes](random05/results/random04-depth16-validation-split-full-v80/audit.json).
 
 [Detailed RANDOM-05 throughput history](RANDOM05_PROGRESS.md) remains the
 authoritative RANDOM-05 log, as requested. This file is the general PILOT

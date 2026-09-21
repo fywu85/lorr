@@ -103,6 +103,15 @@ def render():
         commit = row['source_commit']
         lines.append('| {} | {} | [{}](https://github.com/fywu85/lorr/commit/{}) | [Run]({}) |'.format(
             instance, row['finished_utc'], commit, commit, row['evidence']))
+    current05 = selected['RANDOM-05'][2]
+    history = read('random05/results/progress-audit.json')['checks']
+    current05_check = next(c for c in reversed(history)
+                           if c['utc'] == selected['RANDOM-05'][1]['finished_utc']
+                           and c['tasks'] == selected['RANDOM-05'][1]['tasks'])
+    waits05 = current05_check['waiting_metrics']
+    four = read('random05/best-four-cores.json')
+    four_summary = next(r for r in read(four['evidence']) if r['name'] == four['case']['name'])
+    nms4 = 2914
     fresh = read('random05/results/fresh-validation-v5/audit.json')
     assert fresh['all_valid']
     lines += ['',
@@ -115,10 +124,12 @@ def render():
         'All eight original fresh runs passed strict timing, resource and replay checks.',
         '[Frozen comparison](random05/FRESH_VALIDATION_V5.md),',
         '[milestone audit](random05/results/completion-audit-4000/audit.json).', '',
-        'The four-core RANDOM-05 record stays separate: **3,770 versus matched NMS4',
-        '2,914 (+29.4%)**. Its earlier frozen fresh comparison was +25.42%.',
-        'The current 32-worker archived record averages 534 ms per step, peaks at',
-        '622 ms, and uses 559 MB peak RSS. Its longest completed order takes 1,944',
+        'The four-core RANDOM-05 record stays separate: **{:,} versus matched NMS4'.format(four_summary['result']['numTaskFinished']),
+        '{:,} ({:+.1f}%)**. Its earlier frozen fresh comparison was +25.42%.'.format(nms4, 100*(four_summary['result']['numTaskFinished']/nms4-1)),
+        'The current 32-worker archived record averages {:.0f} ms per step, peaks at'.format(1000*current05['latency_seconds']['mean']),
+        '{:.0f} ms, and uses {:.0f} MB peak RSS. Its longest completed order takes {:,}'.format(
+            1000*current05['latency_seconds']['max'], current05['usage']['peak_rss_kib']*1024/1e6,
+            waits05['maximum_release_to_completion']['steps']),
         'steps; some initial orders remain unfinished at 2,000, so the eventual',
         'maximum wait is unknown. Throughput, rather than fairness, selected these runs.',
         '[Completed and censored waits](random05/results/task-waiting-frontiers-20260920T1612/REPORT.md),',
@@ -128,7 +139,12 @@ def render():
         'all three paired planner seeds by 3.27% in aggregate. Reactive planning',
         'remains stronger on the two crowded cases; the windowed transfer trials',
         'there were substantially worse. RANDOM-04 is still close to the local NMS',
-        'baseline; deeper look-ahead and seed sensitivity are the current follow-up.', '',
+        'baseline; improving throughput and timing headroom there is the next priority.',
+        'The latest depth16 follow-up reaches 2,565 on planner seed4, while seed6',
+        'gives 2,536. Seeds0 and3 fail the strict deadline (1,197 and 1,007 ms);',
+        'the original failures remain recorded. Depth18 gives 2,525. An invalid',
+        'depth20 work count is rejected at initialization and has no throughput score.',
+        '[All six original outcomes](random05/results/random04-depth16-validation-split-full-v80/audit.json).', '',
         '[Detailed RANDOM-05 throughput history](RANDOM05_PROGRESS.md) remains the',
         'authoritative RANDOM-05 log, as requested. This file is the general PILOT',
         'dashboard and will gain non-RANDOM entries when valid results exist.',
