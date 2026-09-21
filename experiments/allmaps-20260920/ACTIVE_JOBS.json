@@ -1,66 +1,36 @@
 {
-  "updated_utc": "2026-09-21T09:06:29.778727+00:00",
+  "updated_utc": "2026-09-21T09:48:40.738119+00:00",
   "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
-      "suffix": "random03-window-horizons-full-v8",
-      "matrix_job": 8902385,
-      "verifier_job": 8902386,
+      "suffix": "random05-pickup-startup-full-v1",
+      "matrix_job": 8902470,
+      "verifier_job": 8902471,
       "physical_cores_per_case": 4,
-      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
+      "source_commit": "45b85ca8f744befd7eb47157453540de3f272142",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random03-window-horizons-full-v8-20260921",
-      "report": "experiments/allmaps-20260920/results/random03-window-horizons-full-v8"
+      "raw": "runs/cgar-random05-pickup-startup-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random05-pickup-startup-full-v1"
     },
     {
-      "suffix": "random05-common-futures-full-v1",
-      "matrix_job": 8902391,
-      "verifier_job": 8902392,
+      "suffix": "random04-regional-futures-full-v1",
+      "matrix_job": 8902504,
+      "verifier_job": 8902505,
       "physical_cores_per_case": 4,
-      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "source_commit": "697f423ec030e384860224998b2c7261adeb8b7a",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-common-futures-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-common-futures-full-v1"
+      "raw": "runs/cgar-random04-regional-futures-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random04-regional-futures-full-v1"
     },
     {
-      "suffix": "random01-window-uniform-seeds-full-v1",
-      "matrix_job": 8902398,
-      "verifier_job": 8902399,
+      "suffix": "random05-regional-futures-full-v1",
+      "matrix_job": 8902506,
+      "verifier_job": 8902507,
       "physical_cores_per_case": 4,
-      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
+      "source_commit": "697f423ec030e384860224998b2c7261adeb8b7a",
       "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random01-window-uniform-seeds-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random01-window-uniform-seeds-full-v1"
-    },
-    {
-      "suffix": "city01-rematch-transfer-full-v2",
-      "matrix_job": 8902400,
-      "verifier_job": 8902401,
-      "physical_cores_per_case": 4,
-      "source_commit": "cd145411374c2009c98c82e5050ab7c2cc7676a1",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-city01-rematch-transfer-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/city01-rematch-transfer-full-v2"
-    },
-    {
-      "suffix": "random04-common-futures-seeds-full-v1",
-      "matrix_job": 8902403,
-      "verifier_job": 8902404,
-      "physical_cores_per_case": 4,
-      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random04-common-futures-seeds-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random04-common-futures-seeds-full-v1"
-    },
-    {
-      "suffix": "random04-common-futures-depth-full-v2",
-      "matrix_job": 8902405,
-      "verifier_job": 8902407,
-      "physical_cores_per_case": 4,
-      "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random04-common-futures-depth-full-v2-20260921",
-      "report": "experiments/allmaps-20260920/results/random04-common-futures-depth-full-v2"
+      "raw": "runs/cgar-random05-regional-futures-full-v1-20260921",
+      "report": "experiments/allmaps-20260920/results/random05-regional-futures-full-v1"
     }
   ],
   "builds": [
@@ -98,6 +68,30 @@
       "job": 8902367,
       "raw": "runs/cgar-common-futures-build-v1-20260921",
       "source_commit": "965756fdbf5111441d2f40bf97d3b604f8a85a0b",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902417,
+      "raw": "runs/cgar-history-rollout-build-v1-20260921",
+      "source_commit": "4154b48222ab272f5209b4fa8160cf80182fe612",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902445,
+      "raw": "runs/cgar-pickup-startup-build-v1-20260921",
+      "source_commit": "45b85ca8f744befd7eb47157453540de3f272142",
+      "status": "complete; all40source/test hashes, binary and full regression verified"
+    },
+    {
+      "job": 8902483,
+      "raw": "runs/cgar-regional-futures-build-v1-20260921",
+      "source_commit": "1c8c6db5454b480f7ae8d3fbeb32b2851790135f",
+      "status": "failed regression SIGSEGV; checkpoint plan lifetime fix identified; not benchmark qualified"
+    },
+    {
+      "job": 8902497,
+      "raw": "runs/cgar-regional-futures-build-v2-20260921",
+      "source_commit": "697f423ec030e384860224998b2c7261adeb8b7a",
       "status": "complete; all40source/test hashes, binary and full regression verified"
     }
   ]

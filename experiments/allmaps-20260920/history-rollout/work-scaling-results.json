@@ -1,0 +1,42 @@
+{
+  "checked_utc": "2026-09-21T09:48:40.738119+00:00",
+  "source_commit": "4154b48222ab272f5209b4fa8160cf80182fe612",
+  "report": "experiments/allmaps-20260920/results/random01-history-work-full-v2/verification.json",
+  "rows": [
+    {
+      "variant": "trick_current_control",
+      "seed": 4,
+      "valid": true,
+      "tasks": 693,
+      "max_entry_seconds": 0.473108324,
+      "failure_lines": null
+    },
+    {
+      "variant": "trick_iterations8192",
+      "seed": 4,
+      "valid": true,
+      "tasks": 676,
+      "max_entry_seconds": 0.69738841,
+      "failure_lines": null
+    },
+    {
+      "variant": "trick_iterations16384",
+      "seed": 4,
+      "valid": false,
+      "tasks": null,
+      "max_entry_seconds": null,
+      "failure_lines": [
+        "CGAR_TIMEOUT timestep=163 elapsed_ms=1000.246 stage=rolling_window"
+      ]
+    },
+    {
+      "variant": "trick_group8",
+      "seed": 4,
+      "valid": true,
+      "tasks": 691,
+      "max_entry_seconds": 0.599202461,
+      "failure_lines": null
+    }
+  ],
+  "decision": "Keep4096attempts/group4. Doubling fixed work loses676vs693;16384times4timessteps fails atstep163;group8loses691vs693. No partial timeout score accepted."
+}

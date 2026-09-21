@@ -617,3 +617,43 @@ Previous selected maximum 662. Full 600 steps; 4 physical cores, strict 1,000 ms
 | 2023 | 2026-09-21T09:03:43.316338+00:00 | [965756fd](https://github.com/fywu85/lorr/commit/965756fdbf5111441d2f40bf97d3b604f8a85a0b) | trick_future_r4_h15_b2, seed 0, `--trick RANDOM-04` | [verification](results/random04-common-futures-full-v1/verification.json) |
 
 Previous selected maximum 1999. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 268.97 ms. General complete common-future selection, four roots, two branches and15action forecasts; existing KK/rank/matching tricks retained. Shorter10action forecasts lose. Selected seed result; replication pending.
+
+## RANDOM-01 671 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 671 | 2026-09-21T09:08:37.367615+00:00 | [cd145411](https://github.com/fywu85/lorr/commit/cd145411374c2009c98c82e5050ab7c2cc7676a1) | trick_uniform_turn20, seed 0, `--trick RANDOM-01` | [verification](results/random01-window-uniform-seeds-full-v1/verification.json) |
+
+Previous selected maximum 668. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 540.78 ms. Full fixed-work comparison under strict1s. RANDOM01uniform gain replicates across3seeds. RANDOM04H20is a new selected-seed depth gain; H15gain replicates across3seeds. Record maxima separately from average effects.
+
+## RANDOM-01 682 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 682 | 2026-09-21T09:08:17.668518+00:00 | [cd145411](https://github.com/fywu85/lorr/commit/cd145411374c2009c98c82e5050ab7c2cc7676a1) | trick_uniform_turn20, seed 4, `--trick RANDOM-01` | [verification](results/random01-window-uniform-seeds-full-v1/verification.json) |
+
+Previous selected maximum 671. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 440.69 ms. Full fixed-work comparison under strict1s. RANDOM01uniform gain replicates across3seeds. RANDOM04H20is a new selected-seed depth gain; H15gain replicates across3seeds. Record maxima separately from average effects.
+
+## RANDOM-04 2059 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 2059 | 2026-09-21T09:10:16.031488+00:00 | [965756fd](https://github.com/fywu85/lorr/commit/965756fdbf5111441d2f40bf97d3b604f8a85a0b) | trick_h20_b2, seed 0, `--trick RANDOM-04` | [verification](results/random04-common-futures-depth-full-v2/verification.json) |
+
+Previous selected maximum 2023. Full 1000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 283.86 ms. Full fixed-work comparison under strict1s. RANDOM01uniform gain replicates across3seeds. RANDOM04H20is a new selected-seed depth gain; H15gain replicates across3seeds. Record maxima separately from average effects.
+
+## CITY-01 8440 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 8440 | 2026-09-21T09:17:37.954132+00:00 | [cd145411](https://github.com/fywu85/lorr/commit/cd145411374c2009c98c82e5050ab7c2cc7676a1) | trick_pickup_groups, seed 2, `--trick CITY-01` | [verification](results/city01-rematch-transfer-full-v2/verification.json) |
+
+Previous selected maximum 8427. Full 3000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 752.71 ms. Complete strict1s selected-seed improvement. CITY01pickup groups and RANDOM01refreshed keep10 are experimental compositions; replication pending. Deeper common futures lose on RANDOM04 and change no actions on RANDOM05.
+
+## RANDOM-01 693 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 693 | 2026-09-21T09:21:08.553734+00:00 | [4154b482](https://github.com/fywu85/lorr/commit/4154b48222ab272f5209b4fa8160cf80182fe612) | trick_refresh_keep10, seed 4, `--trick RANDOM-01` | [verification](results/random01-history-rollout-full-v1/verification.json) |
+
+Previous selected maximum 682. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 488.91 ms. Complete strict1s selected-seed improvement. CITY01pickup groups and RANDOM01refreshed keep10 are experimental compositions; replication pending. Deeper common futures lose on RANDOM04 and change no actions on RANDOM05.

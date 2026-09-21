@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T09:06:12.707401+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T09:26:25.686106+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -12,13 +12,13 @@ use eight physical cores; the other selected rows use four.
 |---|---:|---:|---:|---:|---:|---:|
 | WAREHOUSE | 155,173 | 154,795 | 162,535 | 7,362 | 0 | 944.77 |
 | SORTATION | 150,894 | 152,714 | 160,350 | 9,456 | 0 | 993.90 |
-| CITY-01 | 8,427 | 8,445 | 8,868 | 441 | 2 | 753.90 |
+| CITY-01 | 8,440 | 8,445 | 8,868 | 428 | 2 | 752.71 |
 | CITY-02 | 16,315 | 16,997 | 17,847 | 1,532 | 0 | 821.72 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
-| RANDOM-01 | 668 | 688 | 757 | 89 | 2 | 467.96 |
+| RANDOM-01 | 693 | 688 | 757 | 64 | 4 | 488.91 |
 | RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,939 | 2,334 | 2,568 | 629 | 0 | 586.09 |
-| RANDOM-04 | 2,023 | 2,547 | 2,802 | 779 | 0 | 268.97 |
+| RANDOM-04 | 2,059 | 2,547 | 2,802 | 743 | 0 | 283.86 |
 | RANDOM-05 | 3,065 | 3,050 | 3,355 | 290 | 10 | 709.47 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
@@ -32,7 +32,7 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-090612.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-092625.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
 The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
@@ -75,10 +75,12 @@ separately score 2,946 with a 799.65 ms maximum; composition with32starts loses
 retention loses two of three seeds and the mean, so it remains off here.
 [Replication](experiments/allmaps-20260920/regional-search/random05-diversity-three-seed-summary.json).
 
-RANDOM-04 now reaches **2,023** with a general15-action common-continuation
-comparison of four complete CGAR roots. The seed0control repeats1,999; shorter
-10-action forecasts lose. The maximum is268.97ms on four cores. This selected-seed
-gain is awaiting replication. Existing KK field, turn2, hotter regional search
+RANDOM-04 now reaches **2,059** with a general20-action common-continuation
+comparison of four complete CGAR roots. The15-action version improves all three seeds:2,023/1,960/1,913versus
+1,999/1,938/1,876 (+1.43%aggregate). Extending it to20actions then gives2,059on
+seed0, with283.86ms maximum. The20-action version loses the other two seeds and reduces the three-seed mean
+by1.58%against the15-action version; its2,059is a selected-seed maximum.
+10-action forecasts and adding five-step chain scoring lose. Existing KK field, turn2, hotter regional search
 and peak retention remain explicit tricks. Peak retention alone had reduced the
 three-seed mean against the hot control. RANDOM-02 scheduling improvements
 replicate across three seeds and reach 1,197; nearby turn prices lost. CITY-02
@@ -129,11 +131,43 @@ A separate default-off experiment now compares complete CGAR roots under common
 longer continuations. It preserves protected actions, uses fixed complete work,
 and does not claim to reproduce PILOT's two-phase pipeline. Full regression passes, including7,200serial/parallel production actions, exact
 one-root trajectory identity and late-timeout failure. Forty source/test hashes
-match source965756fd. Full crowded-case benchmarks are running.
+match source965756fd. Full crowded-case benchmarks and replications are running.
 [Declared design](experiments/allmaps-20260920/common-futures/README.md).
 
-RANDOM-01 subsequently reaches **668** with uniform forward costs at the same
+RANDOM-01 first reaches **682** with uniform forward costs at the same
 4096repair attempts per island. Its662control repeats exactly; the uniform arm
-at lower2048work had reached656. Turn40loses in both fields. Two additional
-paired seeds are running before any average-gain claim. RANDOM-02 retains1215;
+at lower2048work had reached656. Turn40loses in both fields. The gain repeats across seeds0/2/4:671/668/682versus658/662/648,
+**+2.69%aggregate**, allpositive. RANDOM-02 retains1215;
 turn40and lower wait price lose. [Window cost factors](experiments/allmaps-20260920/results/random01-window-costs-full-v8/verification.json).
+
+Completing the joint tail of a retained10-action prefix then raises RANDOM-01 to
+**693**. It improves all three seeds:685/681/693versus671/668/682, **+1.88%aggregate**.
+Maximum488.91ms on the record run, four cores. This exceeds the published NMS/KK
+maximum688at one seed, but remains below the new757target. The same history option
+loses on RANDOM-02and falls just below the history-off RANDOM-03record.
+[Replication](experiments/allmaps-20260920/history-rollout/random01-three-seed-summary.json).
+
+CITY-01pickup-selected matching groups reach **8,440**, with8430/8440/8434versus
+8423/8427/8425on seeds0/2/4 (+0.11%aggregate). It is a small replicated gain, still
+below the published maximum8445and new8868target. More allowed rematches loses.
+[Replication](experiments/allmaps-20260920/rematch-budget/city01-transfer-three-seed-summary.json).
+
+All three original common-future RANDOM-05arms reproduce the exact3,065trajectory
+and change zero first actions; keep the option off there. Their fresh control
+failed at timestep0(1000.312ms, regional repair), and has no accepted score. The
+cause is not established. A new control is included in the startup comparison.
+[Failure and identity evidence](experiments/allmaps-20260920/common-futures/random05-first-diagnosis.json).
+The new oriented-startup option passes functional tests but loses on RANDOM01–04;
+RANDOM05is still running. No startup option has been promoted.
+
+RANDOM-01more work does not improve the selected method:8192attempts per island
+scores676versus693, group8scores691, and16384attempts fails at timestep163. The
+record keeps4096attempts/group4. Next work targets high-delay repair neighborhoods
+instead of increasing all work. [Fixed-work scaling](experiments/allmaps-20260920/history-rollout/work-scaling-results.json).
+
+The regional-checkpoint future pool passed full regression after a lifetime fix
+caught by its new integration test. All40source/test hashes match697f423e; the
+failed first build is preserved and was never benchmarked. Full RANDOM04/05
+matrices now compare complete regional checkpoints, because the original global
+roots never displaced RANDOM05's stronger regional incumbent.
+[Qualification](experiments/allmaps-20260920/common-futures/regional-build-v2/verification.json).

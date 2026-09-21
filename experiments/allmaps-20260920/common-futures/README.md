@@ -27,3 +27,9 @@ actions over700000actions. All fixed evaluations finish; source/binary checked.
 This selected-seed record needs replication. Declared next: seeds2/4matched
 control versus H15, plus seed0 H15/B4, H20/B2 and H15/B2with five-step chain
 scoring. All other factors retained, strict1s/four-core/full1000steps.
+
+The H15gain repeats on seeds2/4:1960/1913versus1938/1876. Across0/2/4,
+2023/1960/1913versus1999/1938/1876is+1.43%aggregate, allpositive. Seed0H20
+improves again to2059; H15/B4=2002and H15+chain-score=1899lose. Declarednext:
+H20versusH15on seeds2/4; seed0H25/H30/H20with8roots. Samebinary, fullhorizon,
+strict1s, fixedcompletework. These changes do not imply equal CPU work.

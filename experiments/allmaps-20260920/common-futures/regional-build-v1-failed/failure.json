@@ -1,0 +1,9 @@
+{
+  "checked_utc": "2026-09-21T09:38:34.034662+00:00",
+  "source_commit": "1c8c6db5",
+  "qualified": false,
+  "benchmark_submitted": false,
+  "failure": "Regression process SIGSEGV in new regional-future integration",
+  "diagnosis": "Checkpoint replay owners were local to the forecast block, but selected_search was used after that block. Extend ownership through full plan_temporal scope.",
+  "verification_required": "Rerun full regression after lifetime fix"
+}

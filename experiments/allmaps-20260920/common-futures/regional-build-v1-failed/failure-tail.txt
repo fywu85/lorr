@@ -1,0 +1,28 @@
+[cgar-pool-exchange] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 exchanges=0 pickup_saving=0 chain_delta=0 total_saving=0 missing_pickup=0 missing_chain=0 short_pickup=0 primary_protected=0 recovery_protected=0 fair_protected=0
+[cgar-unopened-match] t=0 enabled=0 passes=0 eligible=0 resident=0 missing=0 unreachable=0 groups=0 selected=0 anchors=0 full_groups=0 nodes=0 matrix_entries=0 cycles=0 accepted_cycles=0 moved=0 saving=0 primary_protected=0 recovery_protected=0 fair_protected=0 budget_protected=0 pickup_selected=0
+[cgar-temporal-allocation] workers=4 threads=1 preparation_threads=1 region_threads=1 table_threads=0 pickup_threads=0 allowed_cpus=4
+[cgar-future-config] roots=4 horizon=10 branches=2 threads=1 noise=50 regional_roots=1 turn_cost=2 wait_cost=1 cells=63 stored_bytes=254016 table_threads=1 seed=cgar protected=full_root_path objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1
+[cgar] certificate N=20 free=63 core=63 promotion_arcs=220 iterations=1 valid=1 capacity=20 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar-temporal-allocation] workers=4 threads=1 preparation_threads=1 region_threads=4 table_threads=0 pickup_threads=0 allowed_cpus=4
+[cgar-future-config] roots=4 horizon=10 branches=2 threads=4 noise=50 regional_roots=1 turn_cost=2 wait_cost=1 cells=63 stored_bytes=254016 table_threads=1 seed=cgar protected=full_root_path objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1
+[cgar] certificate N=20 free=63 core=63 promotion_arcs=220 iterations=1 valid=1 capacity=20 pockets=0 largest_pocket=0 secs=0.000 | stall=4 txn=1 cert=1
+[cgar] t=0 primary=-1 stall=-1 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 pickup_weight=1 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=108 route_manhattan=0 global_samples=0 global_evaluations=0 global_assignments=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+[cgar-reassignment] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 swaps=0 estimated_saving=0 table_pairs=0 manhattan_pairs=0 primary_protected=0 recovery_protected=0 fair_protected=0
+[cgar-pool-exchange] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 exchanges=0 pickup_saving=0 chain_delta=0 total_saving=0 missing_pickup=0 missing_chain=0 short_pickup=0 primary_protected=0 recovery_protected=0 fair_protected=0
+[cgar-unopened-match] t=0 enabled=0 passes=0 eligible=0 resident=0 missing=0 unreachable=0 groups=0 selected=0 anchors=0 full_groups=0 nodes=0 matrix_entries=0 cycles=0 accepted_cycles=0 moved=0 saving=0 primary_protected=0 recovery_protected=0 fair_protected=0 budget_protected=0 pickup_selected=0
+[cgar] t=0 primary=-1 stall=-1 txns=0 moves=0 aborts=0 no_hole=0 in_txn=0 locks=0 grants=0 safety_waits=0 idle=0 assigned=0 fair=0 tables=ok evacuations=0 parked=0 active_certified=1
+[cgar-scheduler] t=0 repair=1 samples=64 pickup_weight=1 calls=0 local=0 fallback=0 fair=0 searches=0 nodes=0 task_limits=0 node_limits=0 deadlines=0 empty=0 skipped_empty=0 sampled=0 sample_deadlines=0 improved=0 pickup_estimate=0 chain_estimate=0 route_queries=108 route_manhattan=0 global_samples=0 global_evaluations=0 global_assignments=0
+[cgar-estimates] t=0 refine=0 peek=0 stable_stall=0 refined_legs=0 changed_costs=0 invalidations=0 approximate_reads=0 table_reads=0 basis_resets=0
+[cgar-reassignment] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 swaps=0 estimated_saving=0 table_pairs=0 manhattan_pairs=0 primary_protected=0 recovery_protected=0 fair_protected=0
+[cgar-pool-exchange] t=0 enabled=0 passes=0 eligible=0 sources=0 nodes=0 pairs=0 exchanges=0 pickup_saving=0 chain_delta=0 total_saving=0 missing_pickup=0 missing_chain=0 short_pickup=0 primary_protected=0 recovery_protected=0 fair_protected=0
+[cgar-unopened-match] t=0 enabled=0 passes=0 eligible=0 resident=0 missing=0 unreachable=0 groups=0 selected=0 anchors=0 full_groups=0 nodes=0 matrix_entries=0 cycles=0 accepted_cycles=0 moved=0 saving=0 primary_protected=0 recovery_protected=0 fair_protected=0 budget_protected=0 pickup_selected=0
+Traceback (most recent call last):
+  File "/shared/share_mala/fw2449/lorr2024/experiments/assignment-20260918/build.py", line 55, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+  File "/shared/share_mala/fw2449/lorr2024/experiments/assignment-20260918/build.py", line 49, in main
+    subprocess.run([str(ROOT/'cgar/build/cgar_regression')],cwd=str(ROOT),env=env,check=True)
+  File "/usr/lib/python3.7/subprocess.py", line 487, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/shared/share_mala/fw2449/lorr2024/cgar/build/cgar_regression']' died with <Signals.SIGSEGV: 11>.
