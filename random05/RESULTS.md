@@ -14,19 +14,20 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,928 | 3,172 | +23.8% | 499 / 555ms | 559MB |
+| 16 physical cores / 32 workers | 3,933 | 3,172 | +24.0% | 531 / 597ms | 560MB |
 
-The current goal is4,000 tasks,72 above the record. B18 averaging reaches3,928
-on plannerseed5. Across seven paired seeds it has a0.27% lower aggregate than
-B14, despite four positive pairs. This is a higher selected maximum, not a
-replicated mean improvement. Independent replay passed. The previous3,917
-startup-trick result remains in the history; startup weighting is off in this record.
+The current goal is4,000 tasks,67 above the record. A small randomized
+preference in move proposals reaches3,933 on plannerseed5, five above the
+previous3,928. Independent replay passed. Checks on other planner seeds are
+pending, so this is a selected maximum, not an established mean improvement.
+The earlier B18-versus-B14 seven-seed comparison had a0.27% lower aggregate
+despite its higher maximum. Startup weighting and finalist rescoring are off.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf). Both use declared map-specific
+[acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Frozen independent-input comparison
@@ -78,13 +79,13 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All76 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All80 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [completed-goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,944 steps,
+The current development records' longest completed orders take1,941/1,959 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.

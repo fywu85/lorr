@@ -1,0 +1,35 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T01:24:15.196591+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "ca58498997cbea0dd2f566f1b56ac7da8608ee26",
+  "hosts": "research32|research33|research35|research36|research37|research39|research40|research41|research45|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "cases": [
+    {
+      "name": "nms32-warehouse",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 5000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/WAREHOUSE.json": "c65dc820e04477c644667806245a52d7ba88734118ea6554a3bba5dd46834e20",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/maps/warehouse_large.map": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/agents/warehouse_large_10000.agents": "9f21a8d495739d54e986d000e9fef3a71613b80c68b060df3b54d24f76f2677b",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/warehouse.domain/tasks/warehouse_large.tasks": "a5a5c3b43f3158d59076f98de0417af931367082432587d673182f42882cce8c"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/generalization-nms-split-full/nms32-warehouse.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1
+}

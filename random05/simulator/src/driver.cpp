@@ -46,7 +46,7 @@ int main(int argc, char **argv)
         ("output,o", po::value<std::string>()->default_value("./output.json"), "output results from the evaluation into a JSON formated file. If no file specified, the default name is 'output.json'")
         ("outputScreen,c", po::value<int>()->default_value(1), "the level of details in the output file, 1--showing all the output, 2--ignore the events and tasks, 3--ignore the events, tasks, errors, planner times, starts and paths")
         ("evaluationMode,m", po::value<bool>()->default_value(false), "evaluate an existing output file")
-        ("trick", po::value<std::string>(), "explicit map-specific policy; supported instance: RANDOM-05")
+        ("trick", po::value<std::string>(), "explicit map-specific policy; supported instances: RANDOM-01 through RANDOM-05")
         ("simulationTime,s", po::value<int>()->default_value(5000), "run simulation")
         ("fileStoragePath,f", po::value<std::string>()->default_value(""), "the large file storage path")
         ("planTimeLimit,t", po::value<int>()->default_value(1000), "the time limit for planner in milliseconds")
@@ -63,8 +63,10 @@ int main(int argc, char **argv)
     }
 
     po::notify(vm);
-    if (vm.count("trick") && vm["trick"].as<std::string>() != "RANDOM-05") {
-        std::cerr << "Only --trick RANDOM-05 is supported" << std::endl;
+    const std::map<std::string,int> trick_teams={{"RANDOM-01",100},{"RANDOM-02",200},
+        {"RANDOM-03",400},{"RANDOM-04",700},{"RANDOM-05",800}};
+    if (vm.count("trick") && !trick_teams.count(vm["trick"].as<std::string>())) {
+        std::cerr << "Supported trick instances are RANDOM-01 through RANDOM-05" << std::endl;
         return 2;
     }
 
@@ -122,8 +124,8 @@ int main(int argc, char **argv)
     Grid grid(base_folder + map_path);
     if (vm.count("trick")) {
         const auto name = vm["trick"].as<std::string>();
-        if (grid.rows != 32 || grid.cols != 32 || read_param_json<int>(data, "teamSize") != 800) {
-            std::cerr << "--trick RANDOM-05 requires the 32x32 / 800-agent instance" << std::endl;
+        if (grid.rows != 32 || grid.cols != 32 || read_param_json<int>(data, "teamSize") != trick_teams.at(name)) {
+            std::cerr << "--trick " << name << " requires the 32x32 / " << trick_teams.at(name) << "-agent instance" << std::endl;
             return 2;
         }
         planner->env->trick_instance = name;

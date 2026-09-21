@@ -1,0 +1,35 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T01:23:34.820096+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "ca58498997cbea0dd2f566f1b56ac7da8608ee26",
+  "hosts": "research32|research33|research35|research36|research37|research39|research40|research41|research45|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "cases": [
+    {
+      "name": "nms32-city-02",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 3000,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/CITY-02.json": "bd8140a7555416aa565d3e18e20ab32c8ebdc58be3695d4168566a29311a6199",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/maps/Paris_1_256.map": "85ec535004685c9fb474954a24bd14395a21cea338bdcfdf7d9a2f21c587f87d",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/agents/paris_1_256_3000.agents": "5c383125b9cd2f17c1656bfbe7fe479e45ee41737518bd47a57a58c76512fb4d",
+        "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/city.domain/tasks/paris_1_256.tasks": "2f9e7e9a12d88379482beebf9cc5d2200da96791a9f6c761e2f99c405f7ab3dc"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/generalization-nms-split-full/nms32-city-02.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1
+}

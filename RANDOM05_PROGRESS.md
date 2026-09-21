@@ -30,20 +30,24 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 00:19 UTC.
+Updated: 2026-09-21 01:28 UTC.
 
-**Best single run on the archived input: 3,928 tasks on 32 workers / 16 physical cores**,
-or **+23.8% versus matched NMS32=3,172**. Source
-[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf), planner seed5,
-firstK7968 thenK16320/B18/s2/q4/G4/E8/P8. Guidance and the directional horizon
-cutoff remain explicit tricks; startup weighting and finalist rescoring are off.
-Mean499ms, maximum555ms, RSS559MB; all2,000steps valid and independently replayed.
-This is11tasks above3,917. Across seven paired planner seeds, B18's aggregate
-is0.27% lower than B14, with four positive pairs. This is a selected maximum,
-not an established mean improvement.
-The4,000 target remains72tasks away.
-[Full evidence](random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json),
-[paired outcomes](random05/results/branch-seeds-split-full-v69/paired-outcomes.json).
+**Best single run on the archived input: 3,933 tasks on 32 workers / 16 physical cores**,
+or **+24.0% versus matched NMS32=3,172**. Source
+[acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7), planner seed5,
+firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias2.
+Guidance and the directional horizon cutoff remain explicit tricks;
+startup weighting and finalist rescoring are off.
+Mean531ms, maximum597ms, RSS560MB; all2,000steps valid and independently replayed.
+This is five tasks above3,928. It is a selected maximum; paired seed checks
+of the routing preference are pending. The4,000 target remains67tasks away.
+[Full evidence](random05/results/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json),
+[independent replay](random05/results/move-proposal-bias-split-full-v77/action_audit-3933.json).
+
+The previous3,928 record used the same B18 search without move-proposal bias.
+Across seven paired planner seeds, B18's aggregate is0.27% lower than B14,
+with four positive pairs. That earlier selected record did not establish a
+mean improvement. [Paired outcomes](random05/results/branch-seeds-split-full-v69/paired-outcomes.json).
 
 The previous3,852 record used scale1.5. A new diagnostic build reproduces its
 entire trajectory while recording exact pre-decision snapshots. Four of that
@@ -299,6 +303,8 @@ fix. Neither removes combined-track features.
 | 2026-09-20T23:58:38.632599+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3877 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.2% | [Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json) |
 | 2026-09-21T00:05:35.106669+00:00 | [1e266b0](https://github.com/fywu85/lorr/commit/1e266b0) | Startup rank power0.25 for250steps; K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; `--trick RANDOM-05` | 3917 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.5% | [Full evidence](random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json) |
 | 2026-09-21T00:19:49.212073+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3928 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.8% | [Full evidence](random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json) |
+
+| 2026-09-21T01:28:12.433277+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; move bias2; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3933 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +24.0% | [Full evidence](random05/results/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json) |
 
 ## Reference evidence supplied by the user
 

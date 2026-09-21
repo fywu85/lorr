@@ -131,7 +131,7 @@ def execute(a):
         command=['/usr/bin/taskset','-c',','.join(map(str,cpus)),str(work/'lifelong'),'-i',c['input'],
                  '-o',str(work/'result.json'),'-s',str(c.get('steps',2000)),'-t',str(c.get('limit_ms',1000)),
                  '-p',str(c.get('preprocess_ms',30000)),'-d','2']
-        if c.get('trick'):command+=['--trick','RANDOM-05']
+        if c.get('trick'):command+=['--trick',c['trick'] if isinstance(c['trick'],str) else 'RANDOM-05']
         command=['/usr/bin/python3',str(ROOT/'tools/run_with_usage.py'),'--output',str(work/'usage.json'),'--']+command
         write(work/'case.json',dict(c,cpus=cpus,started_utc=now(),command=command))
         inherited_as=resource.getrlimit(resource.RLIMIT_AS)[1]

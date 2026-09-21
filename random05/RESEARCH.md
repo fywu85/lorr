@@ -1062,3 +1062,10 @@ Build-v77 passes all regression tests (21.37 s). Compiled inputs match the works
 
 
 The first bias0.5 attempt finishes step0 computation in1,066.438ms and correctly exits124. Allocation passed16-core/no-quota checks onresearch53. The cause of the slow step is unproved; other amplitudes pass step0. Preserve this failure. Two separately declared attempts use identical source, seed and fixed search work: a strict repeat and a5s diagnostic. Only a complete strict run can update the frontier.
+
+
+Move bias2 reaches a replay-verified3,933 on B18/seed5, versus3,928 with bias0 (exact control). Bias0.125/0.25/1 gives3,885/3,757/3,905; the original0.5 attempt times out atstep0 and declared follow-ups remain separate. A five-task selected gain is not a replicated improvement. The bounded follow-up checks bias2 on planner seeds0/3/4 against their existing B18 controls, and biases3/4 onseed5. Other search settings remain frozen. Full strict runs only; no new task/start inputs are used.
+
+### Move-proposal results, 2026-09-21 01:28 UTC
+
+The zero-bias control gives3928; biases0.125/0.25/1/2 give3885/3757/3905/3933. Bias2 is a new selected maximum, five tasks above3928, with independent replay and strict timing passed. It does not yet establish a seed-averaged gain. The original bias0.5 case failed atstep0 (1066ms); its declared strict repeat and5s diagnostic both finish3745. The original failure remains in the evidence; its cause is unproved.

@@ -55,6 +55,8 @@ struct PolicyScratch {
 };
 }
 Config Config::environment(const SharedEnvironment& env) {
+    const bool random_trick=env.trick_instance=="RANDOM-01" || env.trick_instance=="RANDOM-02" ||
+        env.trick_instance=="RANDOM-03" || env.trick_instance=="RANDOM-04" || env.trick_instance=="RANDOM-05";
     Config c;
     c.futures=integer("R05_K",c.futures);c.depth=integer("R05_DEPTH",c.depth);
     c.first_futures=integer("R05_FIRST_K",0);
@@ -156,8 +158,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.initial_length_steps=integer("R05_INITIAL_LENGTH_STEPS",250);
     if((c.initial_length_weight<0 && c.initial_length_weight!=-1) || c.initial_length_steps<0)
         throw std::invalid_argument("invalid initial task-length preference");
-    if(c.initial_length_weight>=0 && env.trick_instance!="RANDOM-05")
-        throw std::invalid_argument("initial task-length preference requires --trick RANDOM-05");
+    if(c.initial_length_weight>=0 && !random_trick)
+        throw std::invalid_argument("initial task-length preference requires an explicit --trick RANDOM-01..05 instance");
     c.turn_cost=real("R05_TURN_COST",c.turn_cost);c.wait_cost=real("R05_WAIT_COST",c.wait_cost);
     c.matching=integer("R05_MATCH",1);c.loops=integer("R05_LOOPS",1);c.deadends=integer("R05_DEADENDS",1);
     c.progress_discount=real("R05_PROGRESS_DISCOUNT",1);c.flow_turn_load=real("R05_FLOW_TURN_LOAD",0);
@@ -170,8 +172,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("startup score window needs nonnegative steps and positive rank power");
     if(!std::isfinite(c.score_rank_power) || c.score_rank_power<0 || c.score_rank_power>4)
         throw std::invalid_argument("task progress rank power must be in [0,4]");
-    if(c.score_rank_power>0 && env.trick_instance!="RANDOM-05")
-        throw std::invalid_argument("short-remaining-task score preference requires --trick RANDOM-05");
+    if(c.score_rank_power>0 && !random_trick)
+        throw std::invalid_argument("short-remaining-task score preference requires an explicit --trick RANDOM-01..05 instance");
     if(c.completion_bonus<0)throw std::invalid_argument("completion bonus must be nonnegative");
     if(c.reverse_penalty<0)throw std::invalid_argument("reverse-turn penalty must be nonnegative");
     if(c.plain_score<0 || c.plain_score>1)
@@ -198,8 +200,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.waypoint_age_retain=real("R05_WAYPOINT_AGE_RETAIN",0);
     if(!std::isfinite(c.waypoint_age_retain) || c.waypoint_age_retain<0 || c.waypoint_age_retain>1)
         throw std::invalid_argument("waypoint age retention must be in [0,1]");
-    if(c.age_cap>0 && env.trick_instance!="RANDOM-05")
-        throw std::invalid_argument("capped priority aging requires --trick RANDOM-05");
+    if(c.age_cap>0 && !random_trick)
+        throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
@@ -208,8 +210,8 @@ Config Config::environment(const SharedEnvironment& env) {
     if(!std::isfinite(c.triage_guided_mix) || c.triage_guided_mix<0 || c.triage_guided_mix>1 ||
        (c.triage_guided_mix>0 && c.horizon<=0))
         throw std::invalid_argument("guided triage mix must be in [0,1] and requires a declared horizon");
-    if(c.horizon>0 && env.trick_instance!="RANDOM-05")
-        throw std::invalid_argument("known-horizon triage requires --trick RANDOM-05");
+    if(c.horizon>0 && !random_trick)
+        throw std::invalid_argument("known-horizon triage requires an explicit --trick RANDOM-01..05 instance");
     c.intent_rotation=integer("R05_INTENT_ROTATION",1);
     c.intent_mode=integer("R05_INTENT_MODE",0);
     if(c.intent_mode<0 || c.intent_mode>2 || (c.intent_mode && !c.intent_rotation))
@@ -237,7 +239,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.flow_flips=integer("R05_FLOW_FLIPS",0);c.flow_flip_seed=integer("R05_FLOW_FLIP_SEED",1);
     if(c.flow_flips<0 || (c.flow_flips && c.guidance!="flow"))
         throw std::invalid_argument("field flips require flow guidance and a nonnegative count");
-    if(c.guidance!="none" && env.trick_instance!="RANDOM-05")
+    if(c.guidance!="none" && !random_trick)
         throw std::invalid_argument("guidance experiments require --trick RANDOM-05");
     if(c.component_trials && (c.early_fill || c.operation_depth))
         throw std::invalid_argument("motion-component search requires the ordinary fixed first-position pipeline");

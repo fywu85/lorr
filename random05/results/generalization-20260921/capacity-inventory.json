@@ -1,0 +1,109 @@
+{
+  "created_utc": "2026-09-21T01:22:55.961255+00:00",
+  "source_commit": "233f5bf",
+  "source_location": "random05/src/engine.cpp Graph::Graph distance.assign(states*states)",
+  "process_budget_bytes": 32000000000,
+  "instances": [
+    {
+      "instance": "CITY-01",
+      "agents": 1500,
+      "steps": 3000,
+      "free_cells": 47240,
+      "oriented_distance_table_bytes": 142823526400,
+      "table_alone_fits_32gb": false,
+      "input_sha256": "f28ff22d58641a472fd1a4719365def8a29aa04933d9fa4ab4840114fc747e34",
+      "map_sha256": "85ec535004685c9fb474954a24bd14395a21cea338bdcfdf7d9a2f21c587f87d"
+    },
+    {
+      "instance": "CITY-02",
+      "agents": 3000,
+      "steps": 3000,
+      "free_cells": 47240,
+      "oriented_distance_table_bytes": 142823526400,
+      "table_alone_fits_32gb": false,
+      "input_sha256": "bd8140a7555416aa565d3e18e20ab32c8ebdc58be3695d4168566a29311a6199",
+      "map_sha256": "85ec535004685c9fb474954a24bd14395a21cea338bdcfdf7d9a2f21c587f87d"
+    },
+    {
+      "instance": "GAME",
+      "agents": 6500,
+      "steps": 5000,
+      "free_cells": 43151,
+      "oriented_distance_table_bytes": 119168563264,
+      "table_alone_fits_32gb": false,
+      "input_sha256": "f5c27fcc61ca7dd5c7ef98130a78589f2698dda039c3e1bf4b69314e266f7640",
+      "map_sha256": "ee4f1b89431452b6a07f7a56c6ca653edd7f9f9f32906ab8280fb1a76e4b8a24"
+    },
+    {
+      "instance": "RANDOM-01",
+      "agents": 100,
+      "steps": 600,
+      "free_cells": 819,
+      "oriented_distance_table_bytes": 42928704,
+      "table_alone_fits_32gb": true,
+      "input_sha256": "c09782a2d79e7779b82457095f8881b9fd5a08a6a6e4c68035a5e56a12445302",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56"
+    },
+    {
+      "instance": "RANDOM-02",
+      "agents": 200,
+      "steps": 600,
+      "free_cells": 819,
+      "oriented_distance_table_bytes": 42928704,
+      "table_alone_fits_32gb": true,
+      "input_sha256": "9d0a4856a404ebacb9871286db80fdd79d0e9b9d4b130eb2ce51ab594e3040e1",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56"
+    },
+    {
+      "instance": "RANDOM-03",
+      "agents": 400,
+      "steps": 800,
+      "free_cells": 819,
+      "oriented_distance_table_bytes": 42928704,
+      "table_alone_fits_32gb": true,
+      "input_sha256": "6055eabe6eb02b1ebe0208482f523e658348a1f565765d002992fd5528c96499",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56"
+    },
+    {
+      "instance": "RANDOM-04",
+      "agents": 700,
+      "steps": 1000,
+      "free_cells": 819,
+      "oriented_distance_table_bytes": 42928704,
+      "table_alone_fits_32gb": true,
+      "input_sha256": "ef81d9db98eb3679e5c4a7fc424f2d0f726d2a1fdfb564a2333aa0eae89faf37",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56"
+    },
+    {
+      "instance": "RANDOM-05",
+      "agents": 800,
+      "steps": 2000,
+      "free_cells": 819,
+      "oriented_distance_table_bytes": 42928704,
+      "table_alone_fits_32gb": true,
+      "input_sha256": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+      "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56"
+    },
+    {
+      "instance": "SORTATION",
+      "agents": 10000,
+      "steps": 5000,
+      "free_cells": 54320,
+      "oriented_distance_table_bytes": 188842393600,
+      "table_alone_fits_32gb": false,
+      "input_sha256": "cb436bcf9a0bf5e25c11d9a30252ad751fe20c4d64d2a8f0247b56546a8d832b",
+      "map_sha256": "edc993b6a9882f26c74810a8d31568bb4d175518d833fd41eedbfb8cdcfd115b"
+    },
+    {
+      "instance": "WAREHOUSE",
+      "agents": 10000,
+      "steps": 5000,
+      "free_cells": 38586,
+      "oriented_distance_table_bytes": 95288281344,
+      "table_alone_fits_32gb": false,
+      "input_sha256": "c65dc820e04477c644667806245a52d7ba88734118ea6554a3bba5dd46834e20",
+      "map_sha256": "9454bb74adac6fa3ec8b7fd5a6ea657bd6b581a743507b191b000f531cd57d2f"
+    }
+  ],
+  "note": "Oriented float distance table only; other storage is additional. Analytical capacity check, not an executed benchmark."
+}

@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-09-21T00:27:24.146311+00:00",
+  "created_utc": "2026-09-21T01:40:49.132481+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
@@ -7,7 +7,7 @@
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
   "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "a1a2565a3bd9adbacb68f5c0d9efc2c100072aa95013403562968632cee3ede9",
+  "manifest_sha256": "9031c60ea45d67af2a244a1d5b60e74d9f5695e7ea7e8f80125c66e1e2eb97a8",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -1204,6 +1204,52 @@
       "initial_still_unfinished": 130,
       "initial_still_unopened": 88,
       "initial_started_unfinished": 42,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-3933": {
+      "result": "runs/random05/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/32-move-bias2-b18-seed5/result.json",
+      "result_sha256": "3456feaef0a100e6e701efac14c4723484a88d87bb884a68a8aeb9ecffcaccc1",
+      "horizon_steps": 2000,
+      "tasks_finished": 3933,
+      "tasks_revealed": 5133,
+      "completed_latency": {
+        "count": 3933,
+        "mean_steps": 415.64810577167555,
+        "p50_steps": 339,
+        "p95_steps": 1072,
+        "p99_steps": 1623
+      },
+      "maximum_release_to_completion": {
+        "steps": 1959,
+        "task_id": 709,
+        "released_at": 0,
+        "observed_at": 1959
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1984,
+        "task_id": 253,
+        "released_at": 0,
+        "observed_at": 1984
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 467,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 635.4491666666667,
+      "initial_still_unfinished": 123,
+      "initial_still_unopened": 90,
+      "initial_started_unfinished": 33,
       "event_accounting_valid": true
     }
   }

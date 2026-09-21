@@ -1,114 +1,81 @@
 # RANDOM-05: active 4,000-task goal
 
-Updated 2026-09-21 01:14 UTC. The persistent goal is ACTIVE: reach at least
-4,000 tasks in a full 2,000-step combined run, then validate the selected
-configuration on fresh inputs. The verified best is 3,928, leaving 72 tasks.
-The user explicitly accepts a selected planner seed. Do not mark the goal
-complete or stop at a plan.
-
-## Scope and permissions
-
-Only edit, stage and commit `random05/` and `RANDOM05_PROGRESS.md`. Other agents
-share main, staging and GRID; leave their files and jobs alone. No delegation.
-The public `fywu85/lorr` repository may be pushed; preserve its visibility.
-Throughput is primary and waiting is secondary. Map tricks require the explicit
-`--trick RANDOM-05` flag and labels in commits and logs.
-
-Shared hosts and relaxed timing diagnostics are authorized. The strict frontier
-still requires 2,000 steps, 1s entry, 30s preprocessing and a 32 decimal GB guard.
-Finish all declared search work or raise a timeout; never return partial work.
-Task/start seeds 50001–50008 are excluded from tuning. No later fresh inputs
-have been generated. Freeze the next protocol, source and configuration first.
+Updated 2026-09-21 01:44 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
+combined run, then independently validate on fresh inputs. Best3,933, gap67.
+Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; other agents share
+main and GRID. No delegation. Public `fywu85/lorr` may be pushed. Preserve visibility.
+Throughput primary; waiting secondary. Tricks require explicit instance flags.
+Keep32GB/1s/30s strict frontier checks. Preserve failed attempts. Fresh task/start
+seeds50001–50008 are excluded from tuning; none later have been generated.
 
 ## Verified records
 
-- Overall: **3,928**, source `233f5bf`, build-v69, planner seed5, first K7968,
-  then K16320/B18, screening2/keep4, G4/E8/P8. Other settings are pinned in
-  `best-32-workers.json`: field15, one flip with seed5, directional cutoff
-  mix0.5/scale1.25. Startup weighting and finalist rescoring are OFF.
-  Finished 2026-09-21T00:19:49.212073+00:00. Mean499.181/max554.944ms,
-  RSS546252KiB. 32 workers on16 physical EPYC9354 cores. +23.8% versus NMS3172.
-  Evidence: `branch-seeds-split-full-v69/32-branch-seed-b18-seed5`.
-  Independent replay passed; all79 frontier rows are audited. Maximum completed
-  wait1952; initial unfinished130/unopened88; eventual maximum is censored>=2000.
-- B18 is a selected maximum, not a replicated mean improvement. Seven paired
-  planner seeds total26705 versus B14's26778 (-0.273%), with four positive pairs.
-- Previous3,917: source `1e266b0`, build-v74, seed4, B14/first8000/K16320,
-  rank power0.25 during the first250 steps. Replay passed. Mean488/max532ms.
-  Its five paired seeds total19155 versus19182 (-0.141%), two positive pairs.
-- Four-core record remains **3,770**, source `5f81613`, build-v65, seed3,
-  first4608/K5760/B12, G4/E8/P8, triage1.5/cache512. Mean788/max845ms.
-  +29.4% versus strongest NMS4=2914. `worker-affinity-four-full-v65` is UNSPLIT.
-- Frozen freshV4: 3680 versus NMS2907/2870 on50007; 3641 versus2930/2918
-  on50008. Aggregate+25.42% against stronger repeats. All six original runs,
-  compiled source checks and independent replays pass. Protocol `a7bad0c`
-  preceded generation. Later records do not replace this frozen comparison.
+- **3,933**: source`acdbfd7`, build77, B18/first7968/K16320/s2/q4/G4/E8/P8,
+  seed5, move bias2; field15/flip5, triage mix.5/scale1.25. Full configuration
+  in`best-32-workers.json`; startup/rescoring OFF. Finished01:28:12UTC Sep21.
+  Mean530.739/max596.969ms, RSS546476KiB, +24.0% versus NMS32=3172.
+  Replay passed, all80 frontier rows audited; max completed wait1959,
+  initial unfinished123/unopened90, eventual maximum censored>=2000.
+- Previous3928 source`233f5bf`, build69, same settings with bias0. Source77
+  zero-bias control reproduces all six trajectory fields exactly.
+  Seven B18/B14 planner pairs aggregate26705/26778 (-.273%), 4/7 positive.
+- Four-core3770 source`5f81613`, build65, seed3, first4608/K5760/B12,
+  G4/E8/P8, triage1.5/cache512; mean788/max845ms; +29.4% versus NMS4=2914.
+  `worker-affinity-four-full-v65` is UNSPLIT. Frozen freshV4 aggregate+25.42%
+  on50007/50008 (3680/3641), six original runs pass strict/source/replay checks.
+  Protocol`a7bad0c` preceded generation. Later maxima are development records.
 
-## Current source and tooling
+## Frozen generalization evaluation
 
-Build-v77 adds `R05_MOVE_BIAS` (default0): hash each candidate's priority offsets
-into a small preferred-direction bias for one quarter of agents. This changes
-proposal rankings only; rollout scoring and collision checks remain exact.
-Cached rankings stay unbiased; local kinematic masks are recomputed after
-reordering. Tests cover changed decisions, cache/worker/checkpoint equivalence.
-Binary SHA: `ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c`.
-Source77 will be committed with these notes. Future build snapshots now skip
-accumulated results, experiment manifests and reviews; all compiled inputs,
-tests, tools and assets remain included and hashed.
+User chose frozen solver first; report large-map limits, NO memory-bounded port.
+See`GENERALIZATION.md`. Full horizons, same16physical/32logical EPYC9354,
+1s/30s,32GB. Two frozen profiles on Random01–05: generic without map tricks
+(build69), and3928recipe transferred without tuning (build78). Only trick label
+and declared horizon vary. Random05control remains3928, not new3933recipe.
+All five Random cases share819-cell layout: density transfer, not unseen maps.
+Large pipeline all-pairs table alone95–189GB: analytically unsupported32GB.
+Five large NMS attempts exit124 at30s preprocessing, RSS12.1–16.1GB beforekill.
+Do not call these NMS RAM failures. All original evidence retained.
 
-Build-v76 adds optional `R05_RESCORE_STATIC_WEIGHT`: -1 preserves the original
-mean; [0,1] fixes the unchanged-priority branch's weight independently of the
-number of randomized futures. All declared branches finish. Nonzero risk with
-explicit weighting is rejected. Endpoint, duplicate-sample, worker, checkpoint
-and unchanged-decision tests pass (31.82 s). Binary SHA:
-`5332e1acf082031df3d6a56baadf526e15541427836b86cabb9b1bd65c330213`.
-Source76 and the current evidence are committed as `1ac8940`; link a later
-record to that source commit, not the old build-spec HEAD from the shared tree.
-Source75 is `e84533a`; source74 is `1e266b0`. The current overall frontier
-continues to use source69 `233f5bf`, with rescoring and startup weights off.
+Build78 changes only explicit trick-label support and runner forwarding;
+Random01..05 validate32x32 and100/200/400/700/800 robots. No search change.
+Regression22.19s, wrong-label negative check passed. SHA
+83f08d663ef9363c8579c5d83035b50e0c2006d848e740c19b713c797ab42f6e.
+Source78 is the commit containing these notes; verify source via build hashes.
+Tool`audit_generalization.py --trick-source COMMIT` checks source/binary/input,
+allocation/deadline/RAM and independently replays every successful run.
 
-`audit_fresh.py` now accepts a frozen allocation declaration (legacy default:
-four cores) and optional `baseline_source_commit` / `baseline_binary_sha256`
-with `seedN-baseline` cases. It checks solver and simulator files plus protocol
-commit order. Three allocation tests pass and the old V4 comparison reproduces
-exactly+25.42%; evidence is in `fresh-auditor-32-preparation`. No new protocol or
-candidate has been frozen yet.
+## Active batches
 
-## Active GRID batches
+Collect with`python3 random05/tools/split_grid.py collect --output runs/random05/BATCH`.
 
-Collect with `python3 random05/tools/split_grid.py collect --output runs/random05/BATCH`.
-
-- `rescore-static-mixture-split-full-v76`, jobs 8901070–77: eight full strict
-  cases, submitted around 00:57 UTC. B64 weights -1/0/.05/.1/.25 and B128
-  weights 1/64/.05/.1. R16, B14 main search, planner seed4, no startup.
-  Legacy control must reproduce 3,906 exactly.
-- `future-mutation-retune-split-full-v75`, jobs8901089–94: B18/seed5 future
-  rates0.1/0.2/0.5/0.8 and B14/rescore/seed4 rates0.5/0.8. Full strict.
-- `move-proposal-bias-split-full-v77`, jobs8901107–12: biases0/.125/.25/.5/1/2,
-  B18/seed5. Build-v77 regression passed21.37s; zero must reproduce3,928.
-  Bias0.5 failed strictly atstep0,1,066.438ms; retain the original failure.
-- `move-bias-half-timeout-followup-split-full-v77`, jobs8901118–19: identical
-  bias0.5 strict repeat and5s diagnostic. Only strict can update the frontier.
-
-
-All earlier batches through new-guidance-fields are complete and archived.
+- `generalization-random-generic-split-full-v69`: Random01–04=647/1079/1582/1558;
+  Random05control pending. Jobs8901129–33.
+- `generalization-random-frozen-trick-split-full-v78`:592/1122/2171/2456;
+  Random05control pending. Jobs8901152–56.
+- `generalization-nms-split-full`: all9done. Random01–04=649/1228/2359/2580;
+  five large prep-timeout failures as above. Archive and audit all.
+- `move-bias-followup-split-full-v77`: jobs8901160–64; bias2/B18 plannerseeds0/3/4
+  plusbias3/4 seed5. Baselines3666/3675/3877,seed5=3928. Await paired results.
 
 ## Latest completed comparisons
 
-- Source75 controls reproduce 3,928 and 3,917 exactly in all six trajectory
-  fields. Independent R16B64 rescoring at B14 improves planner seeds0/3/4
-  by27/48/34 tasks: totals11,604 versus11,495 (+0.948%). These are paired
-  planner seeds on one input, not fresh task/start validation.
-- Startup + rescoring scores3,867 (R4B32) and3,769 (R16B64), below3,917.
-  At B18/seed5, startup alone3,747; R4B32 alone3,898; both startup and
-  R16B64 give3,845. The R16B64-only case had an allocation refusal; its declared identical
-  strict repeat scores3,704, also a loss.
-- The sixteen predeclared B18 planner seeds9–24 produce15 valid full runs,
-  best3,904 atseed24. Seed11 hits the strict deadline atstep1455,1,189ms;
-  no claim about its unproved cause and no completed score. Preserve it.
-- Guidance fields49–56 score3,394/3,323/3,722/3,533/3,670/3,755/3,367/3,899.
-  All valid; none improves3,928. These remain labeled map-specific tricks.
-- The separately declared startup0.25/125 allocation repeat scores3,718.
+- Move biases0/.125/.25/1/2:3928/3885/3757/3905/3933. Original.5 failsstep0,
+ 1066ms. Declared strict repeat and5s diagnostic both3745, six fields exact;
+ preserve original failure, no proven cause. Only strict counts.
+- Static rescoring weights B64 legacy/0/.05/.1/.25:3906/3769/3863/3808/3834;
+ B1281/64/.05/.1:3797/3918/3888. All strict; legacy3906 exact vsbuild75.
+- Future mutation B18seed5 rates.1/.2/.5/.8:3651/3730/3793/3863 vs3928.
+ B14R16B64seed4 rates.5/.8:3753/3897 vs3906. Keep default.3.
+- IndependentR16B64 atB14 paired0/3/4 gains27/48/34 (+.948% aggregate).
+ B18seed5 identical allocation-repeat3704 vs3928; originalrefusalretained.
+- Source75 controls3928/3917 exact. Startup+rescoring3867/3769 vs3917;
+ B18seed5startup3747,R4B32resc3898,startup+R16B643845.
+- ExpandedB18 seeds9–24:15valid,best3904seed24; seed11timesoutstep1455.
+ Guidance fields49–56 allvalid,best3899. No further blind expansion planned.
+- Late assignment maximum-cardinality proxy shows only0/0/3/4/2/0 extra
+ feasible assignments at1250/1500/1750/1850/1900/1950. Not a causal bound.
+ Decision-diversity diagnostic exists, no diversity-selection feature written.
 
 ## Important completed results
 
@@ -134,30 +101,22 @@ All earlier batches through new-guidance-fields are complete and archived.
   component recombination and the eight local guidance retunes all lose.
   Keep these failed presets off. Full details remain in progress/research logs.
 
-## Audits, resources and consultation
+## Evidence and consultation
 
-Phase audit `startup-rescore-phase-v75` shows startup3917 is29 behind atstep500,
-then recovers. Rescoring3906 also gains mainly later. Different trajectories mean
-blockwise gains cannot be added. Older seven-state counterfactual diagnostics
-are a small correlated sample, not proof of recoverable throughput.
+For a new maximum: independent replay, source/binary/input checks, best manifests,
+timestamped row, waiting manifest, audit_progress.py, audit_task_waits.py,
+render_waiting_report.py. Archive only direct and one-level metadata JSON;
+never raw trajectories or NMS cwd. Source77`acdbfd7` and source76`1ac8940`.
 
-The verified EPYC9354 list is `results/reference-host-expansion-20260920/hosts.txt`.
-New batches exclude research34,42 and58 after binding refusals. The installed GRID
-manual says binding is advisory; `m_topology_inuse` is not consumable. The specific
-cause of each refusal remains unproved. Keep the actual affinity/quota/32GB guard.
-Never alter other jobs or allocations, or silently discard refused attempts.
+No V5 protocol or fresh50009+ yet. Freeze source/config/seed before generation.
+Fresh auditor supports32workers and a prior baseline. All prior checks pass.
 
-Archive only direct `*.json` and `*/*.json` metadata named summary, completion,
-spec, allocation, submission or batch. Never copy raw traces or NMS cwd into git.
-For a new maximum: independent action/task replay; source/binary/input checks;
-best manifests; timestamped progress row; waiting manifest; `audit_progress.py`;
-`audit_task_waits.py`; `render_waiting_report.py`. Keep selected maxima separate
-from paired means and independent-input validation.
+Fable CLI session27a4316e-b79d-46cf-86b4-41b0f558938a failed provider credits
+at21:55UTC; no new review. Do not retry unchanged quota. Approved79KBpayload
+remains unchanged inruns/random05/fable-review-01/.
 
-Fable CLI session `27a4316e-b79d-46cf-86b4-41b0f558938a` failed provider credits
-at21:55UTC. No new review was received. Do not retry unchanged quota or claim
-feedback. The exact approved79KB payload remains under `runs/random05/fable-review-01/`.
+Use actual affinity/quota guards. SGE binding is advisory; refusals/spikes have
+unproved causes. Never alter other jobs. Newhostlist excludes34/42/53/58.
 
-Push using the per-command helper to bypass stale VSCode askpass:
-`env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
-Use `git commit --only ... -- random05 RANDOM05_PROGRESS.md` to preserve other staging.
+Push helper: `env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
+Commit only owned paths with`git commit --only ... -- random05 RANDOM05_PROGRESS.md`.
