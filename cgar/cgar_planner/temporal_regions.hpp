@@ -14,7 +14,7 @@ struct TemporalRegionOptions {
     // Per region and round; zero preserves the original attempt-only budget.
     // Stop between complete attempts, so the last attempt can exceed this count.
     long long candidate_limit = 0;
-    bool audit_peaks = false;
+    bool audit_peaks = false, keep_peak = false;
 };
 
 struct TemporalRegionPeaks {
@@ -42,7 +42,7 @@ struct TemporalRegionPeaks {
 struct TemporalRegionStats {
     long long active_robots = 0, candidates = 0, repairs = 0, accepted = 0;
     long long kept_regions = 0, reverted_regions = 0, frozen_crossers = 0;
-    long long candidate_limited_batches = 0, max_batch_candidates = 0;
+    long long candidate_limited_batches = 0, max_batch_candidates = 0, peaks_restored = 0;
     double score_before = 0, score_after = 0;
     std::vector<double> round_scores;
     TemporalRegionPeaks peaks;
@@ -119,7 +119,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
                     auto search = std::make_unique<TemporalPibt>(cells, choices, fixed[region], power,
                         displacement_limit, seeds[region], &selected, &choice_regions, region);
                     search->repair(options.steps, check, options.candidate_limit, &roots[region], options.temperature_ppm,
-                                   options.audit_peaks ? &audits[region] : nullptr);
+                                   options.audit_peaks ? &audits[region] : nullptr, options.keep_peak);
                     check(); results[region] = std::move(search);
                 } catch (...) { errors[region] = std::current_exception(); }
             }
@@ -149,6 +149,7 @@ std::unique_ptr<TemporalPibt> repair_temporal_regions(
             stats.max_batch_candidates = std::max(stats.max_batch_candidates, observed.candidates);
             stats.candidate_limited_batches += options.candidate_limit &&
                 observed.candidates >= options.candidate_limit && observed.repairs < options.steps;
+            stats.peaks_restored += observed.repair_peaks_restored;
             stats.kept_regions += observed.repair_batches_kept;
             stats.reverted_regions += observed.repair_batches_reverted;
             if (options.audit_peaks) stats.peaks.observe(audits[region]);

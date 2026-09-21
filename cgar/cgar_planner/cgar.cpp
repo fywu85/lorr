@@ -938,6 +938,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         }
         return value;
     };
+    temporal_region_options_.keep_peak = priority_setting("CGAR_TEMPORAL_REGION_KEEP_PEAK", 0, 1) != 0;
+    if (temporal_region_options_.keep_peak && !temporal_regions_)
+        throw std::invalid_argument("regional peak retention requires enabled regions");
+    if (temporal_region_options_.keep_peak)
+        std::printf("[cgar-regional-keep-peak-config] enabled=1 fixed_work=1 timeout_is_failure=1\n");
     temporal_priority_noise_ = priority_setting("CGAR_TEMPORAL_PRIORITY_NOISE", 0, 1000000);
     const int priority_persist = priority_setting("CGAR_TEMPORAL_PRIORITY_PERSIST", 0, 1);
     const int priority_mutation = priority_setting("CGAR_TEMPORAL_PRIORITY_MUTATION", 30, 100);

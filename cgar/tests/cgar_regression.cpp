@@ -1383,6 +1383,8 @@ void temporal_region_adapter_regression() {
      serial.stats().flow_cache_resets!=parallel.stats().flow_cache_resets||(refresh&&serial.stats().flow_cache_resets<2))
    throw std::runtime_error("production learned-flow publications or cache resets differ across threads");
  }
+ if(serial.stats().regional_peaks_restored!=parallel.stats().regional_peaks_restored)
+  throw std::runtime_error("regional peak retention depends on thread scheduling");
  if(std::getenv("CGAR_TEMPORAL_WARM_START")&&
     (!serial.stats().temporal_warm_retained||serial.stats().temporal_warm_retained!=parallel.stats().temporal_warm_retained||
      serial.stats().temporal_warm_collision_resets!=parallel.stats().temporal_warm_collision_resets))
@@ -1408,7 +1410,7 @@ void temporal_region_adapter_regression() {
  std::cout<<"TEMPORAL_REGION_ADAPTER passed identical_robot_decisions="<<checked<<" threads=1,4 preparation_threads=1,4 valid_episodes=1\n";
 }
 
-void temporal_regions_regression(long long candidate_limit = 0) {
+void temporal_regions_regression(long long candidate_limit = 0, bool keep_peak = false) {
  const int rows=9,cols=11,cells=rows*cols,count=48;
  std::vector<char> free(cells,true);TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
  int checked=0,boundary_cases=0,improved_cases=0,temperature_changes=0;long long searched_candidates=0,limited_batches=0;bool work_reduced=false;
@@ -1429,18 +1431,20 @@ void temporal_regions_regression(long long candidate_limit = 0) {
   TemporalPibt initial(cells,choices,fixed,power,8192,trial);initial.construct(order,[]{});initial.repair(512,[]{});
   fixed[trial%count]=true; // Protect a complete path that may already be moving.
   TemporalRegionOptions options;options.parts=4;options.rounds=trial%2?4:1;options.steps=256;options.threads=1;options.temperature_ppm=temperature;
-  options.candidate_limit=candidate_limit;
+  options.candidate_limit=candidate_limit;options.keep_peak=keep_peak;
   std::mt19937_64 serial_rng(trial+100),parallel_rng(trial+100);TemporalRegionStats a_stats,b_stats;
   auto serial=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,serial_rng,a_stats,[]{});
   options.threads=4;
   auto parallel=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,parallel_rng,b_stats,[]{});
-  if(serial->selections()!=parallel->selections()||a_stats.candidates!=b_stats.candidates||a_stats.repairs!=b_stats.repairs||serial_rng!=parallel_rng)
+  if(serial->selections()!=parallel->selections()||a_stats.candidates!=b_stats.candidates||a_stats.repairs!=b_stats.repairs||
+     a_stats.peaks_restored!=b_stats.peaks_restored||(!keep_peak&&a_stats.peaks_restored)||serial_rng!=parallel_rng)
    throw std::runtime_error("regional parallel scheduling changed the complete result");
   TemporalRegionStats audit_stats;std::mt19937_64 audit_rng(trial+100);options.audit_peaks=true;
   auto audited=repair_temporal_regions(rows,cols,locations,choices,fixed,power,8192,initial,options,audit_rng,audit_stats,[]{});
   if(audited->selections()!=serial->selections()||audited->score()!=serial->score()||audit_rng!=serial_rng||
      audit_stats.candidates!=a_stats.candidates||audit_stats.repairs!=a_stats.repairs||audit_stats.accepted!=a_stats.accepted||
      audit_stats.kept_regions!=a_stats.kept_regions||audit_stats.reverted_regions!=a_stats.reverted_regions||
+     audit_stats.peaks_restored!=a_stats.peaks_restored||
      audit_stats.round_scores!=a_stats.round_scores||!audit_stats.peaks.batches||
      audit_stats.peaks.attempts!=audit_stats.repairs||
      (!candidate_limit&&audit_stats.peaks.attempts!=audit_stats.peaks.batches*options.steps)||audit_stats.peaks.max_peak_attempt>options.steps)
@@ -3411,6 +3415,74 @@ void temporal_peak_audit_regression() {
  unsetenv("CGAR_TEMPORAL_REGIONS");setenv("CGAR_TEMPORAL_REGION_PEAK_AUDIT","1",1);
  temporal_region_adapter_regression();unsetenv("CGAR_TEMPORAL_REGION_PEAK_AUDIT");
  std::cout<<"TEMPORAL_PEAK_AUDIT passed known_transient_peaks="<<lost<<" independent_three_score_fixture=1 unchanged_continuations=64 no_partial_audit=1 protected_actions=4800\n";
+}
+
+
+void temporal_keep_peak_regression() {
+ TemporalGeometry geometry;geometry.initialize(std::vector<char>(49,true),7,7,[]{});
+ const auto& paths=geometry.paths(24,0);int deep=-1,shallow=-1;
+ for(int op=1;op<129;++op)if(paths[op].valid){if(paths[op].depth==5)deep=op;if(paths[op].depth==3)shallow=op;}
+ if(deep<0||shallow<0)throw std::runtime_error("missing peak-retention geometric fixture");
+ std::vector<std::vector<TemporalChoice>> choices{{{&paths[0],1000,0},{&paths[deep],0,deep},{&paths[shallow],900,shallow}}};
+ std::vector<char> fixed{false};std::vector<double> power{1};std::vector<int> initial{2};int restored=0,timeout_seed=-1;
+ auto same_work=[](const TemporalStats&a,const TemporalStats&b){return
+  std::tie(a.roots,a.accepted,a.recursive_calls,a.candidates,a.budget_exhausted,a.repairs,a.repairs_accepted,a.max_depth)==
+  std::tie(b.roots,b.accepted,b.recursive_calls,b.candidates,b.budget_exhausted,b.repairs,b.repairs_accepted,b.max_depth);};
+ for(int seed=0;seed<64;++seed){
+  TemporalPibt ordinary(49,choices,fixed,power,8192,seed,&initial),disabled(49,choices,fixed,power,8192,seed,&initial);
+  TemporalPibt retained(49,choices,fixed,power,8192,seed,&initial),unobserved(49,choices,fixed,power,8192,seed,&initial);
+  TemporalRepairAudit legacy,audit;
+  ordinary.repair(300,[]{},0,nullptr,1000000,&legacy);disabled.repair(300,[]{},0,nullptr,1000000,nullptr,false);
+  retained.repair(300,[]{},0,nullptr,1000000,&audit,true);unobserved.repair(300,[]{},0,nullptr,1000000,nullptr,true);
+  if(!audit.completed||audit.attempts!=300||audit.initial_score!=100||audit.peak_score!=legacy.peak_score||
+     audit.final_score!=legacy.final_score||audit.peak_attempt!=legacy.peak_attempt||audit.peak_updates!=legacy.peak_updates||
+     !same_work(ordinary.stats,retained.stats)||!same_work(retained.stats,unobserved.stats)||
+     retained.score()!=audit.peak_score||audit.returned_score!=retained.score()||
+     retained.selections()!=unobserved.selections()||retained.score()!=unobserved.score())
+   throw std::runtime_error("peak retention changed fixed search work or failed the analytic maximum");
+  const bool lost=legacy.peak_score>legacy.final_score+1e-6;
+  if(retained.stats.repair_peaks_restored!=int(lost)||
+     retained.stats.repair_batches_kept!=int(audit.peak_score>audit.initial_score)||
+     retained.stats.repair_batches_kept+retained.stats.repair_batches_reverted!=1)
+   throw std::runtime_error("peak restoration counters disagree with the known search history");
+  if(lost){++restored;timeout_seed=seed;}
+  auto selected=retained.selections();TemporalPibt rebuilt(49,choices,fixed,power,8192,0,&selected);
+  if(rebuilt.score()!=retained.score())throw std::runtime_error("retained peak has inconsistent reservations or score");
+  TemporalRegionPeaks totals;totals.observe(audit);
+  if(totals.lost_peaks||totals.discarded_gain!=0)throw std::runtime_error("retention discarded an analytic peak");
+  for(int continuation=0;continuation<2;++continuation){
+   if(ordinary.selections()!=disabled.selections()||ordinary.score()!=disabled.score()||
+      !same_work(ordinary.stats,disabled.stats)||ordinary.stats.repair_batches_kept!=disabled.stats.repair_batches_kept||
+      ordinary.stats.repair_batches_reverted!=disabled.stats.repair_batches_reverted||disabled.stats.repair_peaks_restored)
+    throw std::runtime_error("disabled peak retention changed legacy decisions or RNG");
+   ordinary.repair(300,[]{},0,nullptr,1000000);disabled.repair(300,[]{},0,nullptr,1000000,nullptr,false);
+   retained.repair(300,[]{},0,nullptr,1000000,nullptr,true);unobserved.repair(300,[]{},0,nullptr,1000000,nullptr,true);
+   if(retained.selections()!=unobserved.selections()||retained.score()!=unobserved.score()||!same_work(retained.stats,unobserved.stats))
+    throw std::runtime_error("peak-retention audit changed subsequent RNG trajectory");
+  }
+ }
+ if(!restored||timeout_seed<0)throw std::runtime_error("peak-retention fixture never restored a strictly better plan");
+ TemporalPibt interrupted(49,choices,fixed,power,8192,timeout_seed,&initial);TemporalRepairAudit unfinished;bool failed=false;
+ try{interrupted.repair(300,[&]{if(unfinished.peak_score==1000&&unfinished.attempts>=130)throw Timeout("retained_peak_fixture");},0,nullptr,1000000,&unfinished,true);}
+ catch(const Timeout&){failed=true;}
+ if(!failed||unfinished.completed||unfinished.peak_score!=1000||interrupted.stats.repair_peaks_restored)
+  throw std::runtime_error("a visited peak converted a deadline failure into partial success");
+ setenv("CGAR_TEMPORAL","1",1);setenv("CGAR_ORIENTATION_GUIDANCE","1",1);
+ for(const char* value:{"-1","2","bad","1x","","999999999999999999999"}){
+  setenv("CGAR_TEMPORAL_REGION_KEEP_PEAK",value,1);setenv("CGAR_TEMPORAL_REGIONS","4",1);
+  SharedEnvironment e;e.rows=e.cols=1;e.map={0};e.num_of_agents=0;bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("malformed regional peak-retention selector accepted");
+ }
+ setenv("CGAR_TEMPORAL_REGION_KEEP_PEAK","1",1);setenv("CGAR_TEMPORAL_REGIONS","0",1);
+ {SharedEnvironment e;e.rows=e.cols=1;e.map={0};e.num_of_agents=0;bool rejected=false;
+  try{Cgar c;c.initialize(&e,1000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("peak retention without regions accepted");}
+ unsetenv("CGAR_TEMPORAL_REGIONS");setenv("CGAR_TEMPORAL_REGION_PEAK_AUDIT","1",1);
+ temporal_region_adapter_regression();
+ unsetenv("CGAR_TEMPORAL_REGION_KEEP_PEAK");unsetenv("CGAR_TEMPORAL_REGION_PEAK_AUDIT");
+ temporal_regions_regression(512,true);
+ std::cout<<"TEMPORAL_KEEP_PEAK passed known_peaks_restored="<<restored<<" unchanged_fixed_attempts=300 seeds=64 disabled_rng_continuations=128 no_timeout_fallback=1 serial_parallel_actions=4800\n";
 }
 
 void temporal_group_snapshot_regression() {
@@ -5422,4 +5494,4 @@ void geometric_horizon_regression() {
  std::cout<<"GEOMETRIC_HORIZON passed independent_action_bfs="<<cases<<" production_actions="<<checked_actions<<" pockets_allowed=1 legacy_guard=1 default_and_distant_horizon_identity=1 held_started_protected=1 repeated_service=1 deadline=1 explicit_cli=1\n";
 }
 
-int main(){try{geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+int main(){try{temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

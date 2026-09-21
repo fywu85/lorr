@@ -342,6 +342,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         temporal_budget_, *results[best], temporal_region_options_, temporal_rng_, region_stats,
         [&] { check_deadline(deadline_, "temporal_region_repair"); });
     if (temporal_region_options_.audit_peaks) stats_.regional_peaks.merge(region_stats.peaks);
+    stats_.regional_peaks_restored += region_stats.peaks_restored;
     const auto regions_finished = Clock::now();
     TemporalTransactionStats transaction_stats;
     auto transaction = repair_temporal_transactions(cells, choices, pinned, power, temporal_budget_,
@@ -551,6 +552,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 env_->curr_timestep + 1, int(warm_stats.history_valid), warm_stats.retained,
                 warm_stats.initial_resets, warm_stats.collision_resets);
         if (temporal_regions_) {
+            if (temporal_region_options_.keep_peak)
+                std::printf("[cgar-regional-keep-peak] step=%d restored_batches=%lld total_restored_batches=%lld\n",
+                    env_->curr_timestep + 1, region_stats.peaks_restored, stats_.regional_peaks_restored);
             if (temporal_region_options_.audit_peaks) {
                 const auto& p = stats_.regional_peaks;
                 std::printf("[cgar-regional-peaks] step=%d batches=%lld attempts=%lld peak_updates=%lld lost_peaks=%lld lost_improvements=%lld peak_gain=%.6f final_gain=%.6f discarded_gain=%.6f peak_attempt_sum=%lld max_peak_attempt=%d\n",

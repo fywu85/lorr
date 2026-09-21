@@ -83,7 +83,7 @@ struct TemporalRepairAudit {
 struct TemporalStats {
     long long roots = 0, accepted = 0, recursive_calls = 0, candidates = 0;
     long long budget_exhausted = 0, repairs = 0, repairs_accepted = 0;
-    long long repair_batches_kept = 0, repair_batches_reverted = 0;
+    long long repair_batches_kept = 0, repair_batches_reverted = 0, repair_peaks_restored = 0;
     int max_depth = 0;
 };
 
@@ -136,7 +136,7 @@ public:
 
     template<class Deadline>
     void repair(int steps, Deadline check, long long candidate_limit = 0, const std::vector<int>* roots = nullptr,
-                int temperature_ppm = 1000, TemporalRepairAudit* audit = nullptr) {
+                int temperature_ppm = 1000, TemporalRepairAudit* audit = nullptr, bool keep_peak = false) {
         if (temperature_ppm < 0 || temperature_ppm > 1000000)
             throw std::invalid_argument("temporal repair temperature must be in [0,1000000] ppm");
         if (audit) {
@@ -144,7 +144,8 @@ public:
             audit->initial_score = audit->peak_score = audit->final_score = audit->returned_score = score_;
         }
         if (roots && roots->empty()) { if (audit) audit->completed = true; return; }
-        double best_score = score_;
+        const double initial_score = score_;
+        double best_score = initial_score;
         auto best = selected_;
         temperature_ = static_cast<double>(temperature_ppm) / 1000000.0;
         // A positive limit prescribes a deterministic amount of candidate work,
@@ -158,6 +159,12 @@ public:
             ++stats.repairs;
             if (!fixed_[r] && attempt(r, true, check)) ++stats.repairs_accepted;
             temperature_ *= 0.999;
+            // Save only complete reservation states. This does not change the
+            // search stream or its prescribed stopping point; later attempts
+            // continue from the current annealing state, not this snapshot.
+            if (keep_peak && score_ > best_score + 1e-6) {
+                best_score = score_; best = selected_;
+            }
             if (audit) {
                 ++audit->attempts;
                 if (score_ > audit->peak_score + 1e-6) {
@@ -166,10 +173,14 @@ public:
             }
         }
         if (audit) audit->final_score = score_;
-        // NMS compares the final search state to construction. Keep the same
-        // rule; do not let wall-clock time choose a different stopping point.
-        if (score_ <= best_score + 1e-6) {
-            ++stats.repair_batches_reverted;
+        // Default: preserve NMS's final-versus-initial acceptance rule exactly.
+        // Optional retention chooses a strictly better visited plan only after
+        // all fixed work has completed. A deadline exception still propagates.
+        const bool restore_peak = keep_peak && best_score > score_ + 1e-6;
+        if (restore_peak || score_ <= initial_score + 1e-6) {
+            if (restore_peak) ++stats.repair_peaks_restored;
+            if (keep_peak && best_score > initial_score + 1e-6) ++stats.repair_batches_kept;
+            else ++stats.repair_batches_reverted;
             for (int r = 0; r < static_cast<int>(choices_.size()); ++r) remove(r);
             selected_ = std::move(best); score_ = 0;
             for (int r = 0; r < static_cast<int>(choices_.size()); ++r) add(r);

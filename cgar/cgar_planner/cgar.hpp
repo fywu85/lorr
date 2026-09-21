@@ -259,6 +259,7 @@ struct MovementStats {
 struct Stats {
     long long match_repeat_moves = 0, match_max_task_moves = 0;
     TemporalRegionPeaks regional_peaks;
+    long long regional_peaks_restored = 0;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;

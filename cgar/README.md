@@ -112,3 +112,18 @@ Please refer to the [Submission_Instruction.md](./Submission_Instruction.md).
 
 
 
+
+### Optional regional peak retention
+
+`CGAR_TEMPORAL_REGION_KEEP_PEAK=1` retains the highest-scoring complete plan visited
+inside each regional repair batch. It is off by default and requires enabled
+regions. The search still finishes its prescribed attempts/candidate work; later
+attempts continue from the current search state. Only afterward may a strictly
+better retained plan replace the final state. A timeout remains an error, including
+when a better plan was already visited. Equal-score final plans retain the existing
+acceptance behavior. This mechanism does not inspect map identities or task horizons.
+
+The configuration receipt and `[cgar-regional-keep-peak]` counters record activation
+and actual restored batches. `CGAR_TEMPORAL_REGION_PEAK_AUDIT=1` adds read-only
+observations of initial, peak, final and returned scores. Higher local scores do
+not establish a throughput gain; keep this option experimental until full A/B runs.
