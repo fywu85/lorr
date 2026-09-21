@@ -1333,6 +1333,45 @@ void free_matching_ties() {
     }
 }
 
+void compact_optional_matching() {
+    // Compare the exact selected assignment, not just its cost, for mixtures
+    // of real, optional-idle and strictly cheaper mandatory-idle columns.
+    std::mt19937 random(530918);int comparisons=0;
+    for(int rows=1;rows<=9;++rows)for(int optional=0;optional<=rows;++optional)
+    for(int mandatory=0;mandatory<=rows;++mandatory)for(int trial=0;trial<8;++trial) {
+        const int real=rows+2,columns=real+optional+mandatory;
+        std::vector<float> matrix(size_t(rows)*columns);float minimum=0;
+        for(int row=0;row<rows;++row) {
+            const float idle=(int(random()%13)-6)*.25f;minimum=std::min(minimum,idle);
+            for(int j=0;j<real;++j) {
+                const float value=(int(random()%29)-14)*(trial%2?.37f:.25f);
+                matrix[size_t(row)*columns+j]=value;minimum=std::min(minimum,value);
+            }
+            for(int j=real;j<real+optional;++j)matrix[size_t(row)*columns+j]=idle;
+        }
+        for(int row=0;row<rows;++row)for(int j=real+optional;j<columns;++j)
+            matrix[size_t(row)*columns+j]=minimum-1;
+        for(bool fast:{false,true})for(bool free_ties:{false,true}) {
+            const auto ordinary=hungarian_assignment(matrix,rows,columns,mandatory,fast,free_ties);
+            const auto compact=hungarian_assignment(matrix,rows,columns,mandatory,fast,free_ties,nullptr,optional,true);
+            require(ordinary==compact,"optional-column compression changed an exact selected assignment");
+            ++comparisons;
+        }
+    }
+    bool rejected=false;
+    try{hungarian_assignment({0,1,2,0,1,3},2,3,0,false,false,nullptr,2,true);}
+    catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"optional-column compression accepted nonidentical columns");
+    Config cfg;cfg.hungarian_limit=1000;cfg.admission_price=4;cfg.active_task_cap=22;
+    cfg.fast_admission=true;cfg.futures=8;cfg.depth=6;cfg.threads=1;
+    for(bool free_ties:{false,true}) {
+        cfg.match_free_ties=free_ties;cfg.compact_idle=false;
+        const auto reference=simulate(cfg,12,5,5,true);cfg.compact_idle=true;cfg.threads=3;
+        require(reference==simulate(cfg,12,5,5,true),"optional-column compression changed workers/checkpoints/trajectories");
+    }
+    std::cout<<"exact optional-column assignments="<<comparisons<<"\n";
+}
+
 void exact_dummy_prefix() {
     std::mt19937 random(194837);
     int comparisons=0;
@@ -2372,7 +2411,7 @@ int main() {
     compact_prepared_rankings();
     active_travel_calibration();
     observed_progress_triage();
-    rectangular_matching_optimality();free_matching_ties();
+    rectangular_matching_optimality();free_matching_ties();compact_optional_matching();
     exact_dummy_prefix();
     active_task_admission();initial_task_admission();
     priced_task_admission();

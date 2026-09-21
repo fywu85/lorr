@@ -352,6 +352,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(free_ties<0 || free_ties>1 || (free_ties && c.hungarian_limit<=0))
         throw std::invalid_argument("free-column matching ties need exact matching and a boolean value");
     c.match_free_ties=free_ties;
+    const int compact_idle=integer("R05_COMPACT_IDLE",0);
+    if(compact_idle<0 || compact_idle>1)
+        throw std::invalid_argument("compact idle matching requires a boolean value");
+    c.compact_idle=compact_idle;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     if(!std::isfinite(c.active_cap_triage_credit) || c.active_cap_triage_credit<0 ||
        c.active_cap_triage_credit>1 || (c.active_cap_triage_credit>0 &&
@@ -1014,9 +1018,17 @@ void Engine::record_travel(const std::vector<Action>& actions) {
 }
 
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
-    int dummy_columns,bool fast_dummy_prefix,bool prefer_free_ties,uint64_t* augment_scans) {
+    int dummy_columns,bool fast_dummy_prefix,bool prefer_free_ties,uint64_t* augment_scans,
+    int optional_columns,bool compact_optional) {
     if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
         throw std::invalid_argument("invalid rectangular matching problem");
+    if(optional_columns<0 || optional_columns>nc-dummy_columns)
+        throw std::invalid_argument("invalid optional matching columns");
+    const int optional_start=nc-dummy_columns-optional_columns+1,optional_end=nc-dummy_columns;
+    const bool compact=compact_optional && optional_columns>1;
+    if(compact)for(int row=0;row<nr;++row)for(int j=optional_start+1;j<=optional_end;++j)
+        if(matrix[size_t(row)*nc+j-1]!=matrix[size_t(row)*nc+optional_start-1])
+            throw std::invalid_argument("optional matching columns must be identical");
     if(augment_scans)*augment_scans=0;
     std::vector<double> u(nr+1),v(nc+1);
     std::vector<int> owner(nc+1),previous(nc+1);
@@ -1042,14 +1054,29 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
     // operation in the original order (including deterministic tie-breaking).
     std::vector<double> distance(nc+1);
     std::vector<uint8_t> visited(nc+1);
+    std::vector<int> scan_columns;if(compact)scan_columns.reserve(nc+1);
     for(int row=first_row;row<=nr;++row) {
+        if(compact) {
+            scan_columns.clear();scan_columns.push_back(0);bool free_kept=false;
+            for(int j=1;j<=nc;++j) {
+                if(j>=optional_start && j<=optional_end && owner[j]==0) {
+                    // Free identical columns all have zero dual potential and
+                    // identical slack/predecessors within this augmentation.
+                    // Only their lowest index can win the original stable scan.
+                    // The set of free columns changes only after augmentation.
+                    if(free_kept)continue;
+                    free_kept=true;
+                }
+                scan_columns.push_back(j);
+            }
+        }
         owner[0]=row;int column=0;
         std::fill(distance.begin(),distance.end(),1e30);
         std::fill(visited.begin(),visited.end(),0);
         do {
             if(augment_scans)++*augment_scans;
             visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
-            for(int j=1;j<=nc;++j)if(!visited[j]) {
+            auto relax=[&](int j) {if(!visited[j]) {
                 double reduced=matrix[size_t(active-1)*nc+j-1]-u[active]-v[j];
                 if(reduced<distance[j]){distance[j]=reduced;previous[j]=column;}
                 // Any minimum reduced-distance column is valid. Prefer a free
@@ -1058,11 +1085,17 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
                 // optimal assignment is selected; it is an explicit option.
                 if(distance[j]<delta || (prefer_free_ties && distance[j]==delta &&
                    owner[j]==0 && owner[next_column]!=0)){delta=distance[j];next_column=j;}
-            }
-            for(int j=0;j<=nc;++j) {
+            }};
+            if(compact)for(size_t k=1;k<scan_columns.size();++k)relax(scan_columns[k]);
+            else for(int j=1;j<=nc;++j)relax(j);
+            auto update=[&](int j) {
                 if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
                 else distance[j]-=delta;
-            }
+            };
+            // Ignored free columns cannot be visited; their distances are reset
+            // before they could become a representative in a later augmentation.
+            if(compact)for(int j:scan_columns)update(j);
+            else for(int j=0;j<=nc;++j)update(j);
             column=next_column;
         } while(owner[column]);
         do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
@@ -1222,7 +1255,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
     };
     if(exact) {
-        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties);
+        const auto selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
         for(size_t row=0;row<agents.size();++row)if(selected[row]>=0 && selected[row]<int(tasks.size()))
             schedule[agents[row]]=tasks[selected[row]];
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
