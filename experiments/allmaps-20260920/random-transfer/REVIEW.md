@@ -61,3 +61,19 @@ and latency rather than calling nominal4M an exact equal-work guarantee.
 Full RANDOM-04 and RANDOM-05 horizons determine scores;4physical cores per case,
 32decimalGB and5sdevelopment limit. Recheck promising settings at1s and on fresh
 planner seeds. Fairness tails are reported without vetoing higher throughput.
+
+## Controlled scoring checks alongside the new portfolio
+
+The frozen RANDOM-05 rollout score is remaining-chain potential decrease; it
+does not add a paid-edge surcharge to that final score. Its policy still ranks
+moves by edge cost plus future cost. To isolate whether the distinction matters
+in CGAR, test the existing generic `CGAR_TEMPORAL_REMAINING_FLOW=1` separately
+from the chain-rank control. This removes the extra paid forward penalty in
+CGAR's temporal score while retaining the learned field and motion kernel.
+
+A separate existing `CGAR_TEMPORAL_NEXT_ERRAND=1` test uses the next visible
+errand when its cached oriented table is available. This is a partial chain
+continuation check, not the exact whole-chain dynamic program described above.
+These selectors are mutually exclusive and tested in separate profiles. Same
+full RANDOM-04/05 inputs, seed0, single worker4Mglobal and4Mregional caps,
+four physical cores,5sdevelopment deadline. No map tricks or horizon knowledge.
