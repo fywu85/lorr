@@ -1,94 +1,63 @@
 # CGAR competition progress
 
-Updated 2026-09-21 UTC. The active goal is to carry the CGAR framework across all ten
-2024 instances after finishing Warehouse's strict one-second validation.
-NMS remains the primary reference. Matching or exceeding throughput is the first
-milestone; +20%per instance is a stretch goal. Fairness is secondary under the
-latest user clarification: track and disclose waiting regressions without making
-them a veto on a throughput improvement.
+Updated 2026-09-21 UTC. The active research scope is all ten LoRR2024 instances;
+NMS is the primary target. Throughput comes first and fairness is a secondary,
+reported metric. The latest focused work transfers ideas from the independent
+RANDOM-05 solver into CGAR without modifying that solver's working tree.
 
-[Campaign and protocol](experiments/allmaps-20260920/README.md).
-[Published NMS targets for all ten instances](experiments/allmaps-20260920/TARGETS.md).
-[Warehouse best history](WAREHOUSE_PROGRESS.md).
-[RANDOM-05 independent campaign, read-only](RANDOM05_PROGRESS.md).
-
-| Instance | Current selected full CGAR result | Status |
+| Instance | Selected full-run tasks | Evidence status |
 |---|---:|---|
-| WAREHOUSE |155173|TRICK; full strict1s seeds0/2 confirmed, max945/958ms|
-| SORTATION |150353|TRICK; full shared5s development, max1152ms; strict1s work remains|
-| CITY-01 |7305|Generic; full shared5s development, generic_regions_4m|
-| CITY-02 |14068|Generic; full shared5s development, generic_regions_4m|
-| GAME |6519|Generic; full shared5s development, generic_regions_4m|
-| RANDOM-01 |611|Generic; full shared5s development, generic_match64_direct|
-| RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
-| RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
-| RANDOM-04 |1503|Generic; full strict1s, direct pickup4 +64-group matching, seed0|
-| RANDOM-05 |2574|TRICK; full strict1s, field +direct pickup4 +matching, seed0; max171ms|
+| WAREHOUSE | 155173 | TRICK; strict1s seeds0/2, max945/958ms |
+| SORTATION | 150353 | TRICK; seed0,5s development, max1152ms; runtime work remains |
+| CITY-01 | 7305 | Generic; full5s development |
+| CITY-02 | 14068 | Generic; full5s development |
+| GAME | 6519 | Generic; full5s development |
+| RANDOM-01 | 611 | Generic; full5s development |
+| RANDOM-02 | 1084 | Generic; full5s development |
+| RANDOM-03 | 1484 | Generic; full5s development |
+| RANDOM-04 | 1503 | Generic; strict1s, direct pickup4 +64-group matching, seed0 |
+| RANDOM-05 | 2608 | TRICK; strict1s, tuned field +direct pickup4 +matching, seed2 |
 
-The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
-Warehouse matching/trick work; it is a starting measurement, not each instance's
-best possible configuration. Full evidence and source hashes are linked in the
-[campaign inventory](experiments/allmaps-20260920/baseline-inventory.json).
-Do not compare its counts directly to capped reference runs or label every row
-competition-qualified. Future record rows will include exact source links and
-run-completion timestamps as in the Warehouse log.
+These are individual maxima with different explicit configurations, not one
+universal preset. [Timestamped best history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
+[exact selected records](experiments/allmaps-20260920/selected-full-results.json),
+[published NMS targets](experiments/allmaps-20260920/TARGETS.md),
+[Warehouse history](WAREHOUSE_PROGRESS.md). Published targets are not fresh matched
+local controls. RANDOM-05's selected2608 remains14.49% below the historical3050 target.
 
-Warehouse strict confirmation completed2026-09-20T23:23:25.627892+00:00,
-source[3e319f1](https://github.com/fywu85/lorr/commit/3e319f175859396b91f97364b320c6794a85cbb7),
-[verified10000entries and100millionactions](experiments/construction-20260918/results/strict-runtime-full-v123/summary.md).
-The original155173record timestamp/source remain in the Warehouse history.
-The two-budget/eight-instance matrix and the six-factor RANDOM-01..04 matrix
-are complete: all40full runs verified, no failed runs. Those original regional/factor
-results come from sourceeb99380; later selected records have their own source links. [Timestamped history and configurations](experiments/allmaps-20260920/BEST_HISTORY.md).
-RANDOM-04 remaining-chain ordering and rank weights reach1249versus842under the
-same bounded control, one seed. Direct-cost assignment with local matching gives
-611/1084/1484on RANDOM-01/02/03. Fairness remains recorded as secondary.
+The dense-map transfers are measured, not inferred from the independent solver:
 
-The user requested a deeper read of the separate RANDOM-05 algorithm for transfer
-into CGAR on RANDOM-04/05. [Frozen source study and next experiments](experiments/allmaps-20260920/random-transfer/REVIEW.md).
-The first optional persistent-priority implementation passed the full regression
-suite and its ten full dense-map runs. The eight-worker control scores1330/1989;
-noise50without retention scores1306/2036. Retention itself was weaker. Selected
-maxima remain individual-seed records. All18strict1sseed0/2/4runs passed, with
-seed0 whole trajectories unchanged and maximum307.61ms. It preserves CGAR's existing kernel and
-protections. SORTATION's full explicit-trick comparison is complete: control146460,
-native lanes149321, native lanes with outer-band costs150353. The control's whole
-trajectory is unchanged. The selected trick is still above1s on its slowest steps.
-[Full SORTATION evidence](experiments/allmaps-20260920/results/sortation-native-full-v1/summary.md).
+* General priority portfolios improved both maps. Fresh priority noise helped
+  RANDOM-05 across three planner seeds; retaining old priority vectors was weaker.
+* The explicitly flagged integer guidance field improved RANDOM-05's mean from
+  2032.67 to2478.33 (+21.93%). It did not improve RANDOM-04's mean.
+* Direct pickup weighting plus existing unopened-task matching improved all
+  three tested pairs. RANDOM-04 scores1503/1480/1494, mean1492.33 versus1301.33
+  control (+14.68%). RANDOM-05 scores2574/2608/2528, mean2570 versus2478.33 field
+  control (+3.70%), or26.43% above the earlier generic mean2032.67.
 
-The first full CGAR RANDOM-05 comparison completed with1534(control) and
-1847(remaining-chain rank); mean123/124ms, maximum183/178ms,191MBRAM.
-These were enforced5sdevelopment runs, not strict1squalification.
-[Full evidence](experiments/allmaps-20260920/results/random05-baseline-full-v1/summary.md).
-Rows above use different exploratory configurations; they are not one universal
-preset or an automatic per-map dispatcher.
+All these dense replications use full horizons, enforced1000ms decisions and
+four bound physical cores per process on shared EPYC9354 hosts. The selected
+profiles average about100ms, peak below171ms and use under0.2GB RAM. There were
+no solver timeouts or simulator errors in the reported accepted matrices.
+Planner seeds vary on the same archived task/start stream; they are not
+independent input streams. [Exact dense configurations and evidence](experiments/allmaps-20260920/random-transfer/BEST.md).
 
-The original one-worker full controls reproduce both earlier whole trajectory
-fingerprints across sourceeb99380->5d3c5bf, with new features disabled.
-[Equivalence](experiments/allmaps-20260920/random-transfer/disabled-full-equivalence.json).
-Both existing scoring alternatives lost in the six full dense-map checks;
-[all outcomes](experiments/allmaps-20260920/results/dense-objectives-full-v1/summary.md).
-An analysis allocation preflight failed before reading results; its unchanged
-retry succeeded. This was not a solver failure.
+CGAR's primary/recovery protections and complete-work timeout behavior remain.
+The motion kernel still includes the documented NMS-derived temporal PIBT code.
+The borrowed RANDOM field and scheduling settings do not replace CGAR with the
+standalone solver. All field use requires `--trick RANDOM-04` or `--trick RANDOM-05`.
+There is no implicit map dispatch or known-horizon rule in the dense selected profiles.
 
-The standalone RANDOM field has been exported reproducibly and installed behind
-explicit `--trick RANDOM-04` / `--trick RANDOM-05` gates, including exact occupancy
-and team-size checks. An integer adaptation and uniform-cost control are declared;
-the first full strict1s comparisons now pass: RANDOM-04 control1306/uniform1205/field1353;
-RANDOM-05 control2036/uniform1941/field2457 (+20.68%over its generic control).
-The field profiles max at136/178ms. Further planner seeds are next.
+Fairness limitations remain explicit. In the2036-task RANDOM-05 control, the
+capacity policy permanently excludes427 of431 never-assigned tasks because
+one or more stops lie outside the certified core. Disabling that certificate
+reduced throughput on both maps; it remains enabled. The structural exclusion
+still exists in the selected configuration. [Certificate/event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json),
+[negative ablation](experiments/allmaps-20260920/results/dense-capacity-full-v1/summary.md).
 
-Strict dense-map means: RANDOM-04 one-worker1235.67, eight-worker1307.00,
-noise50=1301.33; RANDOM-05 one-worker1829.67, eight-worker1960.33, noise50=2032.67.
-[Full replication](experiments/allmaps-20260920/results/priority-portfolio-strict-seeds-v2/summary.md).
-
-The RANDOM-05 capacity policy excludes any task with a stop outside the core.
-A read-only audit attributes427of431never-assigned tasks in the2036control to
-this rule. This is a structural limitation, not a measured counterfactual gain.
-[Certificate and event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json).
-
-The field gain replicated across planner seeds0/2/4 on RANDOM-05: mean2478.33
-versus2032.67 (+21.93%); RANDOM-04 mean1299versus1301.33 (-0.18%).
-The subsequent16strict1s scheduling tests all passed and selected the new1503/2574
-records above. Those scheduling combinations have one seed so far.
-[Transfer details and exact controls](experiments/allmaps-20260920/random-transfer/SCHEDULING_TRANSFER.md).
+The next general mechanism to investigate is consistent movement after a turn.
+The2574-task run has105055 immediate inverse-turn pairs away from task/goal
+changes (18.22% of eligible turn transitions). A movement promise must yield to
+CGAR's protected paths and preserve collision validity; this diagnostic alone
+does not establish a throughput gain. [Source review and transfer roadmap](experiments/allmaps-20260920/random-transfer/REVIEW.md).

@@ -79,3 +79,11 @@ on average. All full runs passed strict1s. [Replication](random-transfer/guidanc
 | RANDOM-05 | 2574 | 0 | TRICK | 2026-09-21T01:06:30.020067+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_match64_direct_pickup4 |
 
 The new scheduling profiles are still seed0 results. RANDOM-04 selects **generic1503** (direct pickup weight4 +64-group unopened matching), above the best field profile1481. RANDOM-05 selects **TRICK2574** (same scheduling combination plus the field), versus field control2457; generic matching/direct reaches2068. New selected maxima stayed below171ms. Matching alone with the field gives2544; direct pickup4alone gives2421. Interactions matter: the combined field/scheduling profile loses on RANDOM-04, so there is no universal preset claim. [Generic factors](results/dense-scheduler-generic-full-v1/summary.md), [RANDOM-04 field factors](results/random04-scheduler-field-full-v1/summary.md), [RANDOM-05 field factors](results/random05-scheduler-field-full-v1/summary.md). All control trajectories match prior runs; fairness remains secondary and recorded.
+
+## Scheduling replication, all ten added runs valid
+
+| Instance | Tasks | Seed | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|
+| RANDOM-05 | 2608 | 2 | 2026-09-21T01:14:54.037778+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_match64_direct_pickup4, --trick RANDOM-05 |
+
+RANDOM-04 generic selected profile scores1503/1480/1494, mean1492.33 versus1301.33 control (+14.68%). RANDOM-05 selected trick scores2574/2608/2528, mean2570 versus2478.33 field control (+3.70%); matching-only scores2544/2475/2532, mean2517. Overall selected R05 mean is26.43% above the earlier generic mean2032.67. Every selected-profile pair improves its control, but matching-only is mixed. The new2608 best is14.49% below historical NMS3050. [Full three-seed summary](random-transfer/scheduling-three-seed-summary.json).

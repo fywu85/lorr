@@ -1,0 +1,105 @@
+{
+  "checked_utc": "2026-09-21T01:19:00.184107+00:00",
+  "scope": "Three planner seeds on one archived input per instance. Strict1s full runs on four bound physical cores; shared hosts. No independent start/task streams or matched NMS comparison.",
+  "results": {
+    "RANDOM-04": {
+      "generic_scheduler_control": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          1306,
+          1231,
+          1367
+        ],
+        "mean": 1301.3333333333333
+      },
+      "generic_match64_direct_pickup4": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          1503,
+          1480,
+          1494
+        ],
+        "mean": 1492.3333333333333
+      }
+    },
+    "RANDOM-05": {
+      "trick_scheduler_control": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          2457,
+          2537,
+          2441
+        ],
+        "mean": 2478.3333333333335
+      },
+      "trick_match64": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          2544,
+          2475,
+          2532
+        ],
+        "mean": 2517
+      },
+      "trick_match64_direct_pickup4": {
+        "seeds": [
+          0,
+          2,
+          4
+        ],
+        "tasks": [
+          2574,
+          2608,
+          2528
+        ],
+        "mean": 2570
+      }
+    }
+  },
+  "control_equivalence": [
+    {
+      "instance": "RANDOM-04",
+      "seed": 2,
+      "tasks": 1231,
+      "whole_trajectory_sha256": "2bb29d0b0290c2f7ff1dde3795e121eada896b20c079d814219ed83cbaf7de6e",
+      "complete_trajectory_identical": true
+    },
+    {
+      "instance": "RANDOM-04",
+      "seed": 4,
+      "tasks": 1367,
+      "whole_trajectory_sha256": "4f6a17a822c2bb8d39be70f20a6e69604f9781abcb394163028c38853c04aeb2",
+      "complete_trajectory_identical": true
+    },
+    {
+      "instance": "RANDOM-05",
+      "seed": 2,
+      "tasks": 2537,
+      "whole_trajectory_sha256": "6253c905e38e63ab8a56c45c2214248ba2555302d68f6320ef0db683bd978687",
+      "complete_trajectory_identical": true
+    },
+    {
+      "instance": "RANDOM-05",
+      "seed": 4,
+      "tasks": 2441,
+      "whole_trajectory_sha256": "52885ee96bad7d64f2e50374d22bceca56aa221f961c138389672f4bfd0ac443",
+      "complete_trajectory_identical": true
+    }
+  ]
+}

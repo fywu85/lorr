@@ -1,0 +1,120 @@
+{
+  "checked_utc": "2026-09-21T01:16:40.051172+00:00",
+  "rows": [
+    {
+      "case": "random04_generic1503",
+      "tasks": 1503,
+      "robots": 700,
+      "steps": 1000,
+      "action_counts": {
+        "R": 154294,
+        "W": 179200,
+        "F": 269320,
+        "C": 97186
+      },
+      "action_transitions": {
+        "RW": 31584,
+        "WW": 58429,
+        "WF": 91027,
+        "FC": 59520,
+        "CF": 54195,
+        "FF": 57270,
+        "FR": 85761,
+        "RC": 19052,
+        "CW": 22310,
+        "RF": 66806,
+        "FW": 66548,
+        "RR": 36698,
+        "CR": 12793,
+        "CC": 7777,
+        "WC": 10712,
+        "WR": 18818
+      },
+      "turns_per_forward": 0.9337590969849993,
+      "stable_goal_turn_predecessors": 247923,
+      "stable_goal_immediate_inverse_pairs": 31652,
+      "stable_goal_inverse_fraction": 0.12766867132133766,
+      "stable_goal_turn_then_forward": 118688,
+      "stable_goal_turn_then_forward_fraction": 0.4787292828821852,
+      "stable_goal_turn_then_wait": 53568,
+      "stable_goal_three_consecutive_turn_windows": 22150
+    },
+    {
+      "case": "random05_generic2036",
+      "tasks": 2036,
+      "robots": 800,
+      "steps": 2000,
+      "action_counts": {
+        "R": 350671,
+        "F": 513335,
+        "C": 223382,
+        "W": 512612
+      },
+      "action_transitions": {
+        "RR": 86419,
+        "RF": 131712,
+        "FC": 122554,
+        "CF": 108587,
+        "FR": 177567,
+        "FW": 150773,
+        "WW": 220013,
+        "WF": 210818,
+        "FF": 62210,
+        "CW": 59679,
+        "WR": 51325,
+        "RW": 81625,
+        "WC": 30189,
+        "CR": 35164,
+        "RC": 50718,
+        "CC": 19847
+      },
+      "turns_per_forward": 1.1182814341511877,
+      "stable_goal_turn_predecessors": 569931,
+      "stable_goal_immediate_inverse_pairs": 85711,
+      "stable_goal_inverse_fraction": 0.15038838034779647,
+      "stable_goal_turn_then_forward": 237483,
+      "stable_goal_turn_then_forward_fraction": 0.4166872831974397,
+      "stable_goal_turn_then_wait": 140921,
+      "stable_goal_three_consecutive_turn_windows": 61556
+    },
+    {
+      "case": "random05_field2574",
+      "tasks": 2574,
+      "robots": 800,
+      "steps": 2000,
+      "action_counts": {
+        "C": 226226,
+        "R": 357514,
+        "F": 453960,
+        "W": 562300
+      },
+      "action_transitions": {
+        "CR": 44056,
+        "RR": 93024,
+        "RF": 113019,
+        "FC": 107965,
+        "CF": 94468,
+        "CC": 21604,
+        "RW": 89649,
+        "WW": 267398,
+        "WF": 201320,
+        "FR": 161706,
+        "WC": 34869,
+        "FW": 138994,
+        "WR": 58429,
+        "CW": 65952,
+        "RC": 61602,
+        "FF": 45145
+      },
+      "turns_per_forward": 1.2858842188739097,
+      "stable_goal_turn_predecessors": 576449,
+      "stable_goal_immediate_inverse_pairs": 105055,
+      "stable_goal_inverse_fraction": 0.18224509019878601,
+      "stable_goal_turn_then_forward": 203227,
+      "stable_goal_turn_then_forward_fraction": 0.3525498352846479,
+      "stable_goal_turn_then_wait": 154502,
+      "stable_goal_three_consecutive_turn_windows": 78117
+    }
+  ],
+  "scope": "Observed actual actions only. Adjacent task/waypoint/assignment events are excluded conservatively for stable-goal counts. A reversal has zero net pose change over two ticks, but the audit does not prove that forcing a forward move is feasible or improves throughput. No policy/source mutation."
+}

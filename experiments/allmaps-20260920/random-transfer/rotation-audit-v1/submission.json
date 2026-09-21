@@ -1,0 +1,32 @@
+{
+  "command": [
+    "qsub",
+    "-h",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research44.grid.gsb",
+    "-pe",
+    "threaded",
+    "1",
+    "-binding",
+    "linear:1",
+    "-l",
+    "exclusive=false,h_rt=00:10:00,h_vmem=4G",
+    "-m",
+    "n",
+    "-N",
+    "cgar_rotation_audit",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-dense-rotation-audit-v1-20260920/job.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-dense-rotation-audit-v1-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8901122\n"
+}
