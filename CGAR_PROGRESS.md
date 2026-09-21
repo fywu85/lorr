@@ -23,7 +23,7 @@ them a veto on a throughput improvement.
 | RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-04 |1367|Generic; full strict1s, noise50 seed4; eight-worker control has better three-seed mean|
-| RANDOM-05 |2036|Generic; full strict1s, noise50 seed0; three-seed mean2032.67|
+| RANDOM-05 |2457|TRICK; full strict1s, tuned integer field, seed0; max178ms|
 
 The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
 Warehouse matching/trick work; it is a starting measurement, not each instance's
@@ -74,8 +74,15 @@ retry succeeded. This was not a solver failure.
 The standalone RANDOM field has been exported reproducibly and installed behind
 explicit `--trick RANDOM-04` / `--trick RANDOM-05` gates, including exact occupancy
 and team-size checks. An integer adaptation and uniform-cost control are declared;
-there is no throughput claim before the new full comparisons finish.
+the first full strict1s comparisons now pass: RANDOM-04 control1306/uniform1205/field1353;
+RANDOM-05 control2036/uniform1941/field2457 (+20.68%over its generic control).
+The field profiles max at136/178ms. Further planner seeds are next.
 
 Strict dense-map means: RANDOM-04 one-worker1235.67, eight-worker1307.00,
 noise50=1301.33; RANDOM-05 one-worker1829.67, eight-worker1960.33, noise50=2032.67.
 [Full replication](experiments/allmaps-20260920/results/priority-portfolio-strict-seeds-v2/summary.md).
+
+The RANDOM-05 capacity policy excludes any task with a stop outside the core.
+A read-only audit attributes427of431never-assigned tasks in the2036control to
+this rule. This is a structural limitation, not a measured counterfactual gain.
+[Certificate and event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json).

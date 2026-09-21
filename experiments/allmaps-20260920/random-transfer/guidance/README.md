@@ -33,3 +33,13 @@ profiles, including the lanes-off control. The source remains CGAR; the standalo
 RANDOM-05 tree, jobs and held-out evaluation streams are untouched. Any timeout
 is a failed run, never a partial result. Seed0 and one archived input per instance
 provide exploratory evidence, not a broad generalization claim.
+
+
+## Replication declaration
+
+After the first full seed0 comparison (RANDOM-04:1306/1353, RANDOM-05:2036/2457,
+generic control versus field), repeat both profiles at planner seeds2 and4 with
+the same strict1s budget, exact inputs, full horizons and four bound physical
+cores. `replication-variants.json` changes no solver setting. Report all pairs
+and means together with the original seed0 evidence, including any failures.
+These planner seeds are not independent task/start streams.

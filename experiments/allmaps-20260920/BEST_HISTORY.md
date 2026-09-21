@@ -54,3 +54,12 @@ All 18 full runs passed with planner seeds0/2/4. The seed0 whole trajectories ar
 | RANDOM-04 | 1367 | 4 | 2026-09-21T00:42:58.452817+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_noise50_cold |
 
 Mean tasks (one worker / eight workers / eight with noise50): RANDOM-04 **1235.67 / 1307.00 / 1301.33**; RANDOM-05 **1829.67 / 1960.33 / 2032.67**. Every paired eight-worker run beats one worker. Noise consistently helps RANDOM-05 versus eight workers, but is mixed on RANDOM-04. The selected RANDOM-04 maximum is a seed4 result, not the best mean. Maximum decision time across all 18 runs is 307.61 ms. [Evidence](results/priority-portfolio-strict-seeds-v2/summary.md), [whole-trajectory confirmation and means](results/priority-portfolio-strict-seeds-v2/replication.json).
+
+## First explicit RANDOM guidance transfer
+
+| Instance | Tasks | Completed UTC | Source | Profile |
+|---|---:|---|---|---|
+| RANDOM-04 | 1353 | 2026-09-21T00:56:18.761005+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_random_field, --trick RANDOM-04 |
+| RANDOM-05 | 2457 | 2026-09-21T00:57:55.998209+00:00 | [8352226](https://github.com/fywu85/lorr/commit/83522266d6ae8c88241d11e91a125e30848cbca9) | trick_random_field, --trick RANDOM-05 |
+
+RANDOM-05 sets the new overall selected CGAR best, **2457** versus2036on the same seed (+20.68%). RANDOM-04 reaches1353versus1306on seed0 (+3.60%); its generic seed4record1367 remains higher. These are full **strict1s TRICK** runs, four bound physical cores, shared EPYC9354; maximum field-profile decision times136.28/177.58ms. The uniform forward20/turn6 controls score1205/1941, so the nonuniform field contributes148/516tasks relative to the same scalar convention. One seed only; this is still19.44%below the historical NMS RANDOM-05 target3050. No cutoff or short-task trick was enabled. Both lanes-off whole trajectories exactly reproduce their earlier generic controls. [RANDOM-04](results/random04-guidance-full-v1/summary.md), [RANDOM-05](results/random05-guidance-full-v1/summary.md).
