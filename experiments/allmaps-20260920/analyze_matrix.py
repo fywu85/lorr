@@ -245,6 +245,7 @@ def main():
                         assert int(cfg[field])==int(case['environment'].get(key,str(default)))
                     rollout=int(case['environment'].get('CGAR_WINDOW_SEED_ROLLOUT','0'))
                     assert int(cfg.get('seed_rollout','0'))==rollout
+                    progress_ties=int(case['environment'].get('CGAR_WINDOW_PROGRESS_TIES','0'));assert int(cfg.get('progress_ties','0'))==progress_ties
                     assert cfg['seed']=='cgar' and cfg['protected']=='immutable' and cfg['objective']=='paid_plus_chain'
                     assert cfg['service']=='after_action' and cfg['fixed_work']==cfg['timeout_is_failure']=='1'
                     assert int(cfg['stored_bytes'])==64*cells*cells<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
@@ -261,6 +262,10 @@ def main():
                         assert 0<=int(x['expanded'])<=int(x['searches'])*int(cfg['nodes'])
                         assert int(x['capped'])+int(x['failed'])<=int(x['searches'])
                         assert 0<=int(x['final_cost'])<=int(x['initial_cost'])<=int(x['seed_cost'])
+                        if progress_ties and x['final_cost']==x['initial_cost']:
+                            assert int(x['final_remaining'])<=int(x['initial_remaining'])
+                        if progress_ties and x['seed_cost']==x['initial_cost']:
+                            assert int(x['initial_remaining'])<=int(x['seed_remaining'])
                         assert 0<=int(x['selected_worker'])<int(cfg['workers'])
                         assert 0<=int(x['changed_first'])<=row['robots']-int(x['protected'])
                         assert 0<=int(x['retained'])<=row['robots'] and 0<=int(x['history_resets'])<=row['robots']

@@ -513,10 +513,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.window_changed_first += window.changed_first;
         stats_.window_retained += window.retained; stats_.window_history_resets += window.history_resets;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
+            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld seed_remaining=%lld initial_remaining=%lld final_remaining=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld seconds=%.6f\n",
                 env_->curr_timestep + 1, rollout_batches, window.attempts, window.accepted, window.improved, window.searches,
                 window.expanded, window.capped, window.failed, window.retained, window.history_resets,
                 static_cast<long long>(window.seed_cost), static_cast<long long>(window.initial_cost), static_cast<long long>(window.final_cost),
+                static_cast<long long>(window.seed_remaining), static_cast<long long>(window.initial_remaining), static_cast<long long>(window.final_remaining),
                 window.changed_first, window.protected_robots, window.selected_worker, stats_.window_calls,
                 stats_.window.attempts, stats_.window_changed_first, stats_.window_retained, stats_.window_history_resets,
                 std::chrono::duration<double>(Clock::now() - started).count());

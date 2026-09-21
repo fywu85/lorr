@@ -14,7 +14,7 @@
 namespace cgar {
 struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
-    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0;
+    int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0;
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -58,6 +58,17 @@ struct WindowProblem {
             if (stage < chains[r].goals.size() && path[t] / 4 == chains[r].goals[stage]) ++stage;
         }
         return paid + oracle->value(chains[r], stage, path.back() / 4, path.back() % 4);
+    }
+    int64_t remaining(int r, const WindowPath& path) const {
+        size_t stage = 0;
+        for (int t = 1; t <= horizon; ++t)
+            if (stage < chains[r].goals.size() && path[t] / 4 == chains[r].goals[stage]) ++stage;
+        return oracle->value(chains[r], stage, path.back() / 4, path.back() % 4);
+    }
+    int64_t remaining_score(const std::vector<WindowPath>& paths) const {
+        int64_t value = 0;
+        for (size_t r = 0; r < paths.size(); ++r) if (!fixed[r]) value += remaining(r, paths[r]);
+        return value;
     }
     int64_t score(const std::vector<WindowPath>& paths) const {
         int64_t value = 0;
@@ -183,6 +194,7 @@ struct WindowStats {
     long long attempts = 0, accepted = 0, improved = 0, searches = 0, expanded = 0;
     long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
+    int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
     int changed_first = 0, protected_robots = 0, selected_worker = 0;
     void merge(const WindowStats& other) {
         attempts += other.attempts; accepted += other.accepted; improved += other.improved;
@@ -195,8 +207,10 @@ struct WindowStats {
 struct WindowScratch {
     struct Node { int state, time, stage, parent; int64_t paid, estimate; };
     struct Earlier {
+        bool progress = false;
         bool operator()(const Node& a, const Node& b) const {
             if (a.estimate != b.estimate) return a.estimate > b.estimate;
+            if (progress && a.paid != b.paid) return a.paid < b.paid;
             if (a.time != b.time) return a.time < b.time;
             if (a.paid != b.paid) return a.paid < b.paid;
             return a.parent > b.parent;
@@ -255,13 +269,13 @@ public:
             WindowScratch::Node node{state, time, stage, parent, paid, paid + heuristic};
             const int index = scratch_.nodes.size(); scratch_.nodes.push_back(node);
             node.parent = index; scratch_.heap.push_back(node);
-            std::push_heap(scratch_.heap.begin(), scratch_.heap.end(), WindowScratch::Earlier{});
+            std::push_heap(scratch_.heap.begin(), scratch_.heap.end(), WindowScratch::Earlier{bool(o_.progress_ties)});
         };
         push(paths_[r][0], 0, 0, 0, -1);
         int expanded = 0;
         while (!scratch_.heap.empty()) {
             if ((expanded & 63) == 0) check();
-            std::pop_heap(scratch_.heap.begin(), scratch_.heap.end(), WindowScratch::Earlier{});
+            std::pop_heap(scratch_.heap.begin(), scratch_.heap.end(), WindowScratch::Earlier{bool(o_.progress_ties)});
             const int index = scratch_.heap.back().parent; scratch_.heap.pop_back();
             const auto node = scratch_.nodes[index];
             if (scratch_.best[key(node.state, node.time, node.stage)] != node.paid) continue;
@@ -296,16 +310,19 @@ public:
             auto group = neighborhood(root);
             if (iteration & 1) std::shuffle(group.begin(), group.end(), rng_);
             std::vector<WindowPath> before; before.reserve(group.size());
-            int64_t old_cost = 0;
-            for (int r : group) { old_cost += p_.cost(r, paths_[r]); before.push_back(paths_[r]); reserve(r, false); }
-            int repaired = 0; int64_t new_cost = 0;
+            int64_t old_cost = 0, old_remaining = 0;
+            for (int r : group) { old_cost += p_.cost(r, paths_[r]); if (o_.progress_ties) old_remaining += p_.remaining(r, paths_[r]); before.push_back(paths_[r]); reserve(r, false); }
+            int repaired = 0; int64_t new_cost = 0, new_remaining = 0;
             for (int r : group) {
                 WindowPath proposed;
                 if (!path(r, proposed, check)) break;
-                paths_[r] = std::move(proposed); new_cost += p_.cost(r, paths_[r]); reserve(r, true); ++repaired;
+                paths_[r] = std::move(proposed); new_cost += p_.cost(r, paths_[r]);
+                if (o_.progress_ties) new_remaining += p_.remaining(r, paths_[r]);
+                reserve(r, true); ++repaired;
             }
-            if (repaired == int(group.size()) && new_cost <= old_cost) {
-                ++stats.accepted; stats.improved += new_cost < old_cost;
+            if (repaired == int(group.size()) && (new_cost < old_cost ||
+                (new_cost == old_cost && (!o_.progress_ties || new_remaining <= old_remaining)))) {
+                ++stats.accepted; stats.improved += new_cost < old_cost || (o_.progress_ties && new_remaining < old_remaining);
             } else {
                 stats.partial_rollbacks += repaired > 0 && repaired < int(group.size());
                 for (int k = 0; k < repaired; ++k) reserve(group[k], false);
@@ -379,7 +396,7 @@ public:
             throw std::invalid_argument("invalid rolling-window work declaration");
         p.validate(p.seed, check);
         auto initial = p.seed;
-        stats.seed_cost = p.score(initial);
+        stats.seed_cost = p.score(initial); stats.seed_remaining = p.remaining_score(initial);
         if (options.keep && tick == tick_ + 1 && history_.size() == p.seed.size()) {
             auto candidate = p.seed;
             std::vector<char> retained(p.seed.size(), false);
@@ -425,11 +442,12 @@ public:
                 stats.history_resets += count; if (!count) break;
             }
             p.validate(candidate, check);
-            if (p.score(candidate) <= stats.seed_cost) {
+            const int64_t cost = p.score(candidate), remaining = p.remaining_score(candidate);
+            if (cost < stats.seed_cost || (cost == stats.seed_cost && (!options.progress_ties || remaining <= stats.seed_remaining))) {
                 initial = std::move(candidate); stats.retained = std::count(retained.begin(), retained.end(), true);
             }
         }
-        stats.initial_cost = p.score(initial);
+        stats.initial_cost = p.score(initial); stats.initial_remaining = p.remaining_score(initial);
         scratch_.resize(options.workers);
         std::vector<std::unique_ptr<WindowSearch>> results(options.workers);
         std::vector<std::exception_ptr> errors(options.workers); std::atomic<int> next{0};
@@ -447,16 +465,20 @@ public:
         catch (...) { for (auto& t : threads) t.join(); throw; }
         work(); for (auto& t : threads) t.join();
         for (const auto& error : errors) if (error) std::rethrow_exception(error);
-        int best = 0; int64_t best_cost = p.score(results[0]->paths());
+        int best = 0; int64_t best_cost = p.score(results[0]->paths()), best_remaining = p.remaining_score(results[0]->paths());
         for (int id = 0; id < options.workers; ++id) {
             if (!results[id]->stats.completed) throw std::logic_error("partial rolling-window result");
             stats.merge(results[id]->stats);
-            const int64_t cost = p.score(results[id]->paths());
-            if (cost < best_cost) { best = id; best_cost = cost; }
+            const int64_t cost = p.score(results[id]->paths()), remaining = p.remaining_score(results[id]->paths());
+            if (cost < best_cost || (options.progress_ties && cost == best_cost && remaining < best_remaining)) {
+                best = id; best_cost = cost; best_remaining = remaining;
+            }
         }
         auto result = results[best]->paths(); p.validate(result, check); check();
         if (best_cost > stats.initial_cost) throw std::logic_error("rolling-window objective regressed");
-        stats.final_cost = best_cost; stats.selected_worker = best;
+        if (options.progress_ties && best_cost == stats.initial_cost && best_remaining > stats.initial_remaining)
+            throw std::logic_error("rolling-window tie regressed terminal progress");
+        stats.final_cost = best_cost; stats.final_remaining = best_remaining; stats.selected_worker = best;
         for (size_t r = 0; r < result.size(); ++r) {
             stats.changed_first += result[r][1] != p.seed[r][1]; stats.protected_robots += bool(p.fixed[r]);
         }

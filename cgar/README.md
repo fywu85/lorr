@@ -219,3 +219,12 @@ The first five CGAR seed actions remain unchanged by this extension. Default 0.
 Window randomness has an independent seeded stream. A node-capped no-op overlay
 with history disabled therefore preserves the complete original CGAR trajectory,
 not just its immediate first action. This identity is tested in production.
+
+`CGAR_WINDOW_PROGRESS_TIES=1` favors lower remaining-chain cost among equal
+paid-plus-remaining group objectives, seed choices and completed islands. Within
+A*, equal primary estimates prefer lower heuristic cost before deeper time.
+This is a secondary progress preference; it never accepts a worse primary group
+objective. Default0 retains the previous comparisons. The primary A* objective
+remains checked against independent action search, with both tie modes and
+serial/parallel production coverage. Receipts report all three remaining-cost
+values alongside their total costs. No future completion-time guarantee is implied.
