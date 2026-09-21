@@ -184,3 +184,10 @@ complete trajectories. `R05_WINDOW_ROUNDS=r` adds deterministic plan sharing:
 all islands start the next round from the best complete plan in the previous
 round. The fixed total iterations per island must be divisible by r (1–32).
 Defaults remain reuse off and one round; no wall-clock cutoff changes the work.
+
+
+`R05_WINDOW_COMPONENT_REPAIR=1` accepts compatible improving components of
+completed window repairs; `2` also salvages components after a bounded repair
+failure. Unplanned dependencies retain their old paths. Default0 preserves the
+previous whole-group acceptance. This optional general mechanism requires
+`R05_WINDOW>0` and still completes every declared repair order.

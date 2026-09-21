@@ -2064,6 +2064,19 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"window progress ties accepted a non-boolean value");
     }
+    for(const char* mode:{"1","2"}) {
+        Setting components("R05_WINDOW_COMPONENT_REPAIR",mode),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+        auto general=environment(5,5,4);
+        require(Config::environment(general).window_component_repair==std::atoi(mode),"general component repair was rejected");
+        Setting disabled("R05_WINDOW","0");bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"component repair accepted a missing window");
+    }
+    for(const char* mode:{"-1","3"}) {
+        Setting components("R05_WINDOW_COMPONENT_REPAIR",mode);auto general=environment(5,5,4);bool rejected=false;
+        try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"component repair accepted an unsupported mode");
+    }
     {
         Setting orders("R05_WINDOW_REPAIR_ORDERS","2"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
         auto general=environment(5,5,4);
@@ -2234,6 +2247,27 @@ void window_components() {
     require(certify_mix(left,right)==std::vector<std::vector<int>>({{0,1}}),
             "cross-parent reverse edge was split across components");
     require(window_conflict_components(g,left,left).empty(),"identical windows produced changed components");
+    require(window_repair_components(left,right)==std::vector<std::vector<int>>({{0,1}}),
+            "small-group components missed a reverse-edge dependency");
+    // Agent0's successful repair occupies agent1's old cell; agent1 was not
+    // replanned. They must both fall back, while agent2's change can survive.
+    left={{0,0},{4,4},{40,40}};right={{0,4},{4,4},{40,44}};
+    const auto partial=window_repair_components(left,right);
+    require(partial==std::vector<std::vector<int>>({{0,1},{2}}),"partial repair lost its unplanned blocker");
+    const std::vector<unsigned char> built={1,0,1};Paths salvaged=left;
+    for(const auto& component:partial) {
+        bool ready=true;for(int a:component)ready&=built[a];
+        if(ready)for(int a:component)salvaged[a]=right[a];
+    }
+    require(salvaged==Paths({{0,0},{4,4},{40,44}}),"partial repair discarded an independent legal change");
+    std::vector<int> from,to;
+    for(const auto& path:salvaged){from.push_back(path[0]/4);to.push_back(path[1]/4);}
+    Engine::certify(g,from,to);
+    // A blocked reverse edge also binds the failed old path to the proposer.
+    left={{0,4},{8,8},{40,40}};right={{0,0},{8,4},{40,44}};
+    require(window_repair_components(left,right)==std::vector<std::vector<int>>({{0,1},{2}}),
+            "small repair missed a cross-choice vertex conflict");
+
 }
 
 void window_single_agent() {
@@ -2499,10 +2533,24 @@ void window_reproducibility() {
         require(forecast==simulate(cfg,12,5,5,true),"next-pickup forecast changed checkpoint replay");
     }
     cfg.window_next_pickup_hops=0;
+    for(int mode:{1,2})for(int orders:{1,2}) {
+        cfg.window_component_repair=mode;cfg.window_repair_orders=orders;
+        cfg.window_query_cache=0;cfg.threads=1;
+        const auto components=simulate(cfg,12,5,5,true);
+        cfg.window_query_cache=512;cfg.threads=3;
+        require(components==simulate(cfg,12),"component repairs depend on workers or query reuse");
+        require(components==simulate(cfg,12,5,5,true),"component repairs changed checkpoint replay");
+    }
+    cfg.window_component_repair=0;
     cfg.window_query_cache=0;cfg.window_expansions=1;cfg.window_iterations=12;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_query_cache=512;
     require(failed_repairs==simulate(cfg,8,5,5,true),"cached bounded failures changed fallback paths");
+    for(int mode:{1,2}) {
+        cfg.window_component_repair=mode;
+        require(failed_repairs==simulate(cfg,8),"component repair damaged a wholly failed fallback");
+    }
+    cfg.window_component_repair=0;
     cfg.window_iterations=0;
     require(failed_repairs==simulate(cfg,8),"failed window repairs damaged the complete fallback plan");
 }

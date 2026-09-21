@@ -1530,3 +1530,28 @@ Tests check unique hints, claimed/opened-task exclusion, remaining-work bounds,
 read-only task pools, insertion-order independence, dense task turnover,
 worker/query-cache/checkpoint invariance and configuration guards. No measured
 throughput benefit is claimed before full comparisons.
+
+
+## 2026-09-21: component-wise window repair (source156)
+
+`R05_WINDOW_COMPONENT_REPAIR=0` preserves the previous all-or-nothing repair.
+Mode1 splits completed repairs into dependency components; mode2 also salvages
+components when later agents exhaust bounded A*. Cross-choice vertex and reverse
+edge conflicts bind choices. A component containing any unplanned member keeps
+all its old paths. Other components may keep only non-worsening path changes,
+under the existing complete-window objective and optional equal-cost rule.
+One or two declared priority orders are completed; the final group always contains
+a collision-free path for every member. This is a general mechanism, default off,
+with unchanged work bounds, scheduler, task pool and known-horizon behavior.
+
+The hypothesis is that an unrelated expensive or failed repair can hide a useful
+compatible change. Existing cross-island mixing operates later on fully accepted
+plans and cannot recover these discarded proposals. Small groups use pairwise
+conflict scans without allocating a map-sized owner table per timestep. This is
+an experiment, with no throughput improvement claimed before full evaluation.
+
+Recent literature review: [PUSH (2026)](https://arxiv.org/abs/2608.06702) uses
+staggered path updates and recursive temporal displacement with fallback paths.
+Its task-completion-delay experiments are different from this competition.
+The present component salvage is a smaller independent change to our existing
+LNS, not an implementation or reproduction of PUSH.

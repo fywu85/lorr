@@ -65,4 +65,35 @@ std::vector<std::vector<int>> window_conflict_components(const Graph& graph,
     return result;
 }
 
+// Pairwise scans avoid allocating/clearing a map-sized owner table for every
+// tiny LNS repair. Unlike whole-plan mixing, the right choice can be a legal
+// planned prefix of agents plus old paths for unplanned members. Any resulting
+// right-right conflict then also appears as a cross-choice conflict below.
+std::vector<std::vector<int>> window_repair_components(
+    const std::vector<std::vector<int>>& left,const std::vector<std::vector<int>>& right) {
+    const int n=int(left.size());
+    if(right.size()!=left.size())throw std::invalid_argument("repair component team mismatch");
+    if(!n)return {};
+    const int steps=int(left[0].size());
+    if(!steps)throw std::invalid_argument("empty repair component path");
+    for(int a=0;a<n;++a)if(int(left[a].size())!=steps || int(right[a].size())!=steps || left[a][0]!=right[a][0])
+        throw std::invalid_argument("repair components require common starts and horizons");
+    std::vector<int> parent(n);std::iota(parent.begin(),parent.end(),0);
+    auto root=[&](int a){while(parent[a]!=a){parent[a]=parent[parent[a]];a=parent[a];}return a;};
+    for(int a=0;a<n;++a)for(int b=a+1;b<n;++b) {
+        bool conflict=false;
+        for(int t=1;t<steps && !conflict;++t) {
+            const int la=left[a][t]/4,lb=left[b][t]/4,ra=right[a][t]/4,rb=right[b][t]/4;
+            conflict=la==rb || lb==ra ||
+                (la==right[b][t-1]/4 && left[a][t-1]/4==rb) ||
+                (lb==right[a][t-1]/4 && left[b][t-1]/4==ra);
+        }
+        if(conflict){int x=root(a),y=root(b);if(x!=y)parent[x]=y;}
+    }
+    std::vector<std::vector<int>> groups(n),result;
+    for(int a=0;a<n;++a)groups[root(a)].push_back(a);
+    for(auto& group:groups)if(!group.empty())result.push_back(std::move(group));
+    return result;
+}
+
 }
