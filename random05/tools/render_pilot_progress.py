@@ -121,6 +121,19 @@ def render():
     nms4 = 2914
     fresh = read('random05/results/fresh-validation-v5/audit.json')
     assert fresh['all_valid']
+    fresh03 = read('random05/results/random03-fresh-validation-v1/audit.json')
+    assert fresh03['all_valid']
+    lines += ['',
+        '**RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus',
+        '2,359 matched NMS (+10.30%). The frozen fresh-input comparison gives',
+        '2,599/2,557 versus the stronger NMS repetitions 2,327/2,343:',
+        '**+{:.2f}% aggregate**, with individual gains +11.69% and +9.13%.'.format(fresh03['aggregate_gain_percent']),
+        'All eight fresh runs passed timing/resource checks and independent replay.',
+        'The candidate stays below 701 ms on both fresh inputs; its archived exact',
+        'repeat and two other planner seeds peak below 675 ms. RANDOM-04 remains',
+        'short of its throughput target, despite a five-seed timing check below',
+        '498 ms per step for its current profile.',
+        '[Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).', '']
     lines += ['',
         '**RANDOM-05\'s 4,000-task milestone is independently verified.** The archived',
         '4,011-task configuration repeated exactly. Frozen fresh task/start inputs',

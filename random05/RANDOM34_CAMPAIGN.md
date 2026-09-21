@@ -376,3 +376,35 @@ generating task/start seeds50011/50012. Compare candidate2602, previous2580
 with identical source, and two unmodified NMS repetitions on each input.
 Archived exact repetition and seeds0/3 are also declared. Other development
 results cannot change this frozen configuration or its validation seeds.
+
+## September 21, 08:16 UTC: RANDOM-03 qualification and next R04 work
+
+The frozen2602 recipe repeats exactly in all six trace fields; planner seeds0/3
+score2548/2566, with maxima655/674ms, versus661ms for the exact repeat.
+Fresh50011/50012 score2599/2557 versus stronger NMS2327/2343 (+11.69%/+9.13%,
++10.41% aggregate). All eight original fresh runs pass full replay, source,
+resource and timing checks. Both fresh candidate maxima are below701ms. See
+RANDOM03_FRESH_VALIDATION_V1.md. Keep these inputs excluded from tuning.
+The overall goal remains ACTIVE because R04 still needs197 tasks to reach2838.
+
+R04 current2641 recipe has five planner seeds0/1/3/4/5 with scores2526/2601/
+2596/2641/2628; all maxima<498ms. Profiling is observational and preserves the
+2641 trajectory exactly. R03 extra merged-window work gives2579/2558/2556,
+so the additional budget did not improve the2580 control. Full evidence remains.
+
+Source104/1436f231 aligns shared rankings to64bytes and optionally delays raw
+cost-row resolution. Four full controls test shared/private and eager/lazy
+lookup; expect exact2641 actions. Source105/aa370473 optionally prices current
+destination demand from already opened visible tasks, with coefficients1/4/16/64
+and a zero control. The first nine job submissions incorrectly required the
+abbreviated CPU model string; all were refused before solver launch. Preserve
+those audit records; identical cases run in the cpufix batches with the exact
+EPYC9354 model string. No host defect or solver failure is inferred.
+
+Source106/75723ed8 passes full regression. At identical complete rollout work,
+eight R04 cases compare control, restart periods0/2/8/16 (default4), and minimum
+elite decision differences1%/3%/10%. Diversity compares planned next moves,
+retains the incumbent and excludes incomplete candidates. A semantic fixture
+checks selection; dense simulations check collisions, task locks, checkpoint
+replay and worker independence. These general options default to old behavior;
+per-instance experiments remain explicitly flagged. No fresh R04 input exists.

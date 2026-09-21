@@ -21,10 +21,21 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R03-merge-seed1 | 2562 | 519.9 | 570.8 | 598.1 | 732.0 | 426 | 30.9 |
 | R03-merge-seed3 | 2558 | 518.2 | 570.7 | 594.1 | 731.1 | 432 | 30.8 |
 | R03-merge-seed4 | 2558 | 520.3 | 572.4 | 592.6 | 733.4 | 434 | 30.9 |
+| R03-record2602 | 2602 | 507.1 | 554.8 | 578.5 | 709.8 | 433 | 31.1 |
+| R03-2602-repeat | 2602 | 474.7 | 517.1 | 539.1 | 661.0 | 428 | 31.1 |
+| R03-2602-seed0 | 2548 | 472.2 | 524.4 | 545.6 | 655.3 | 437 | 31.1 |
+| R03-2602-seed3 | 2566 | 471.7 | 519.3 | 537.8 | 674.1 | 442 | 31.1 |
+| R04-2641-seed0 | 2526 | 444.6 | 463.3 | 467.5 | 486.0 | 1536 | 31.6 |
+| R04-2641-seed1 | 2601 | 440.3 | 458.4 | 462.5 | 473.7 | 1543 | 31.6 |
+| R04-2641-seed3 | 2596 | 443.5 | 461.1 | 465.7 | 480.9 | 1569 | 31.6 |
+| R04-2641-seed5 | 2628 | 439.8 | 458.4 | 461.3 | 475.4 | 1539 | 31.6 |
+| R04-2641-profile | 2641 | 429.0 | 448.2 | 454.3 | 490.1 | 1570 | 31.6 |
+| R03-fresh50011 | 2599 | 507.8 | 563.5 | 576.6 | 700.1 | 433 | 31.1 |
+| R03-fresh50012 | 2557 | 471.9 | 513.9 | 533.6 | 675.6 | 429 | 31.1 |
 
-The current 2,580-task merged-window recipe has five planner-seed observations: 2,549–2,580 tasks, with all measured maxima below 737 ms. Its exact four-way-heap control averages 471 ms and peaks at 672 ms. Those seeds share the archived input; they are not fresh task/start validation.
+The current 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original and repeat plus both other seeds all peak below 710 ms. The independently frozen fresh-input candidate gives 2,599/2,557 tasks; its two gains over the stronger NMS repetition are +11.69%/+9.13%, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 
-The 2,641-task RANDOM-04 recipe has an exact repeat and an exact IPO build control. Additional planner seeds remain needed for this latest scheduler setting. The earlier 2,634-task recipe has three-seed observations. Neither instance has reached the ten-percent throughput target.
+The 2,641-task RANDOM-04 recipe has exact repetitions and planner seeds 0/1/3/4/5: 2,526/2,601/2,596/2,641/2,628 tasks. All those qualification runs peak below 498 ms. This runtime headroom is useful, but the archived throughput is only +2.36% above NMS, short of +10%.
 
 CPU averages count occupied logical CPUs over the process lifetime, including initialization and OpenMP waiting. Each allocation contains 16 physical cores / 32 logical CPUs. RAM is peak RSS in decimal MB.
 

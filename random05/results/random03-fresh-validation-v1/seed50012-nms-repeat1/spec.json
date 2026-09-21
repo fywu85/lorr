@@ -1,0 +1,36 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-21T07:55:11.348453+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "0fb8a953e571d66e37aa0bd4d01eba34f60f6c5c",
+  "hosts": "research32|research33|research35|research36|research37|research39|research41|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "interprocedural_optimization": false,
+  "cases": [
+    {
+      "name": "seed50012-nms-repeat1",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-inputs/seed50012/RANDOM-03.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 800,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-inputs/seed50012/RANDOM-03.json": "5eb9cb3bebf21576b3982b63d8747d4536e952aa719529962d7a6190ae27d405",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-inputs/seed50012/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-inputs/seed50012/agents.agents": "49ade2873a4056e21a13878833fc6cbae0cb769abc190a00ea7cc056baecca74",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-inputs/seed50012/tasks.tasks": "0966852bf52b2daee2b176b1a391a91bb0941b0e8b8bbf6868edabd56beb982b"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v1-split-full/seed50012-nms-repeat1.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1
+}

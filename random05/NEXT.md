@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 07:56 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 08:15 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -79,119 +79,60 @@ campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Active RANDOM-03/04 ten-percent work
 
-LATEST OVERRIDE (07:56UTC): R03 **2602**, source02bccaa7/build102, batch
-random03-merge-coupling-split-full-v102, case triage0875. All2580 merge6
-settings +heap4=1 and triage0.875. Mean507/max710ms/RSS434MB, completed
-07:48:41.498854 UTC. Independently replayed; archived target crossed (+10.30%).
-Protocol **0fb8a953e571d66e37aa0bd4d01eba34f60f6c5c** committed07:55UTC
-BEFORE generating50011/50012. Frozen JSON and manifest:
-experiments/random03-fresh-validation-v1-{protocol,full}.json. Generation
-metadata at results/random03-fresh-validation-v1/generation.json.
-Active fresh batch random03-fresh-validation-v1-split-full jobs8902162–69:
-candidate2602, previous2580 (same source102), NMS twice on each fresh input.
-Active archived qualification random03-record2602-validation-split-full-v102,
-jobs8902159–61: exact repeat and seeds0/3. No changing this frozen candidate
-based on other ongoing development or fresh outcomes. Overall goal ACTIVE:
-R04 still2641, target2838; R03 fresh and repetition audits still pending.
+R03 **2602**, source02bccaa7/build102, batchrandom03-merge-coupling-split-full-v102,
+case trick-random-03-merge-coupling-triage0875. H20/keep14/I6144/group6,
+32islands/2rounds/window_merge1/heap4=1/fastgroups1/storage1/temperature0;
+field15/flip5/contrast2.4,turn2/wait2,seed5,horizon800/triage0.875/hop-onlymix0.
+Mean507/max710ms/RSS434MB. Finished07:48:41.498854UTC, independently replayed.
+Archived repeat2602 exactlymatches all six fields. Seeds0/3=2548/2566;
+qualificationrepeat/seeds max661/655/674ms. R03 archived threshold crossed.
 
-Current source104/1436f231, regression passed, SHA
-d8853056bd9182f22abec9974e993c8d31afaeb884a17b2c78d2cbe51b2ca355.
-PreparedRanking48->64-byte alignment; optional R05_LAZY_COST_ROWS. Needsfull
-exact-control benchmark. Source103/eb43ba4a adds optional guidance reversal;
-all14full guidance variants lost. Source102 fixes environment parsing for
-weighted windows; all6actual weighted runs lose2466–2571. Preserve source101
-initialization rejections separately. Source102 extra merge rounds/horizons
-lose2532–2579. R04 closed-loop forecasts lose or exceed1s; visible-task rollout
-original refused allocation onresearch45, identical retry scores2511.
-Exclude research45 as well as34/40/42 from future submissions.
+FROZEN R03 validation COMPLETE: protocol0fb8a953 committed07:55:00UTC before
+generation07:55:03.289264. Inputs50011/50012; candidate2599/2557, previous2580
+recipe2590/2535, NMS2318/2327 and2343/2322. Gains11.69%/9.13%, aggregate10.41%.
+All8valid and independentlyreplayed; candidatefreshmax700/676ms. Do nottune
+these inputs. RANDOM03_FRESH_VALIDATION_V1.md contains source/timing/wait evidence.
+The audit now checks actualtimingseries: NMSplannerTimes vsPILOTentryComputeTimes;
+it no longer requiresPILOT-specificentryComputeSamples fromunmodifiedNMS.
+Protocol/source/configurations unchanged. OverallgoalACTIVE: R04notattarget.
 
-Other active: random03-merge-budget-split-full-v100 (4,source03b68098), fixed
-I8192/rounds4/I10240 warmup withIPO+heap4; collect/audit. All older batches
-through guidance/merge-coupling and R04seed validation are closed/audited.
-R04 latest2641 recipe seeds0/1/3/5=2526/2601/2596/2628, allstrict. Profile
-shows setup~40% of sampled policy time. Physical16-worker R03 fails first
-step1156ms; R04 remains2641 butmean680/max861ms versus32-worker463/487.
-Last verified push c332609a; later freeze/source/evidence commits need push.
+R04 **2641**, sourcefa98fd1d/build96, batchrandom04-matching-refine-split-full-v96,
+case trick-random-04-matching-refine-keep0. B10/K8064/first4032,depth16/G4/E8/P8,
+screen2/keep4,rootmutation0.1/noise200/seed4,sharedrankings2048MiB,keepbonus0;
+field15/flip5/contrast2.4,turn0.6/wait0.5/dispersion0.8,
+horizon1000/triage1.25/mix0.5,guidedmatching/length0.25.
+Mean441/max498ms/RSS1551MB. Completed07:11:31.028236UTC,fullyaudited.
+Seeds0/1/3/4/5=2526/2601/2596/2641/2628; everymax<498ms. Exactprofile/control/
+IPO/32and16workerscompareall6fields. Reduced16workersmean680/max861ms.
+197tasks short of2838. No freshR04inputgenerated; reserve50013+onlyafterfreeze.
 
-The following section retains earlier context; use the latest override above.
+Current source106/75723ed8, buildpassed08:12:32UTC,
+SHA5a743c32b2fce8a4193176d83d7996fc4321cde2e3414376e7ed9928c7cacab3.
+Configurable restartperiod(default4;0disables), elitenext-decisiondifference
+(default0). Source105/aa370473 optionalR05_DESTINATION_LOAD (openedvisible
+orders only); source104/1436f231 sharedranking64bytealignment and optional
+R05_LAZY_COST_ROWS. Defaults preservebehavior; full exactcontrols pending.
 
-Goal ACTIVE: archived targets 2595 / 2838 plus strict subsecond qualification,
-selected exact repeat, three planner seeds and subsequently frozen fresh inputs.
-R03 inputs50011/50012 now exist only for frozen validation. Never tune on50001–50012. No fresh R04 input has been generated.
+ACTIVE at08:16UTC:
+- random04-cache-layout-cpufix-split-full-v104:4cases,source1436f231.
+  shared2048/private0 x eager/lazy; expectexact2641. Jobs8902193-96.
+- random04-destination-load-cpufix-split-full-v105:5cases,sourceaa370473.
+  control andcoefficients1/4/16/64. Jobs8902197-2201.
+- random04-root-diversity-split-full-v106:8cases,source75723ed8.
+  control/restart0/2/8/16/elitefraction.01/.03/.1; jobs8902214onward.
+The corresponding non-cpufix104/105batches were refusedbeforelaunch solely
+because I supplied the abbreviatedCPUmodel. Archived/audited; no solver score.
+Useexact --cpu-model 'AMD EPYC 9354 32-Core Processor' goingforward.
 
-R03 best **2580**, source db2d9bc5 / build99, batch
-random03-window-merge-split-full-v99, case trick-random-03-window-merge-merge6.
-H20/keep14, I6144, group6, 32 islands, 2 rounds, storage reuse1, fastgroups1,
-window merge1, temperature0; field15/flip5/contrast2.4, turn2/wait2, seed5,
-horizon800/triage1/hop-only. Mean535/max736ms. Independently replayed/promoted.
-15 tasks short. General mechanism merges cost-improving complete components
-across island plans; cross-parent vertex and edge-swap conflicts link agents.
-All mixed windows validated; fixture tests enumerate every component combination.
-Same batch: control2551, merge/group4=2562, annealed/group4=2544,
-mixed-temporal/group4=2541, half-work=2481. All strict-valid/audited.
-Earlier2552 annealed best remains in history, not the current frontier.
+All older batches throughsource103 plusR03merge-budgetv100 arefullyclosedand
+audited. Lastsevenmissingfull6-fieldexactproofs nowwritten. Runtime report
+contains28rows includingR03qualification/fresh andR04five-seedtiming.
+Morewindowrepairs2579/2558/2556 do notbeat2580. Guidanceexpansion14variants
+alllost; weightedwindow2466-2571; merge-round/horizon2532-2579. R04visible-task
+forecast2511; otherclosedloopforecastsloseortimeout. SeeRANDOM34_CAMPAIGN.md.
 
-R04 best **2641**, source fa98fd1d / build96, batch
-random04-matching-refine-split-full-v96, case trick-random-04-matching-refine-keep0.
-The prior2634 recipe with keep bonus0 instead of0.5 and shared rankings2048MiB.
-B10/K8064/first4032, depth16/G4/E8/P8/screen2/keep4, mutation0.1,
-noise200/seed4; field15/flip5/contrast2.4, turn0.6/wait0.5/dispersion0.8,
-horizon1000/triage1.25/mix0.5. Mean441/max498ms, RSS1551MB.
-Completed 07:11:31.028236 UTC, independently replayed/promoted. 197 tasks short.
-Other matching/forecast variants2391–2589. No replicated10% claim.
-
-Exact runtime improvements remain separate from throughput selection:
-- Shared rankings source92 preserves2634 in all six fields. Private mean489/
-  max540ms versus2048MiB mean447/max485, RSS1558MB. Later source96 control
-  repeats2634 at427/502ms. Cache default off; selected2641 enables it.
-- Four-way heap source97 preserves2551/2552 in all six fields. Mean494->459
-  and489->471ms; max917->759 and683->780. Mean benefit, no uniform max claim.
-- Source96 A-star state/row reuse preserves2551/2552 exactly. More work and
-  larger windows mostly time out; H32/I4096 scores2486 max982ms. Preserve failures.
-- Source94 fast blocker groups exact2551; mean gain but varying maxima.
-  results/random34-runtime/REPORT.md covers earlier timing evidence.
-
-Recent closed trials: field23 low-work R03=2517 versus2483, but full-work
-refinement2504–2545 loses current frontier. Eight new R04 fields all lose.
-R04 policy transfers lose1489–2616; intent mode1 is particularly bad, preserve
-negative evidence. R03 temporal blocker scans score2523–2535 versus2551;
-source98 control exact evidence still to write. These options remain off.
-
-Sources/builds after96, all full regression passed:
-97 /6343b03c: optional exact four-way A-star heap. SHA6e4e038b91a1470ee5fa4662ca493f8ea403894f025675f789ee27d32eb90223.
-98 /aaab5e04: temporal blocker scans (mode0 unchanged,1 rotated,2 mixed).
-99 /db2d9bc5: safe full-window component merging, default off.
-100 /03b68098: optional portable IPO/LTO build; this build explicitly uses --ipo.
-101 /8ecb72fe: apply explicit task rank weights to window cost/merit/delay;
-  default score rank0 remains unchanged. Last code build; SHA
-  66160cc6d5b5c668eea46bcba4b94d2028c64bcb0e1dc22a534e0552debf8123.
-Build100 SHA8abcc422288a979d0ac89b6129a3e027fbbc4b7199a09d635a5e06f8991bd69b.
-Source95 disables shared cache construction in parallel forecast shadows.
-
-ACTIVE at07:23UTC:
-- random04-flow-policy-split-full-v96 (8): six done, age64/128/256 gives
-  2573/2581/2621; confidence0.5/1 gives2463/2460; construction penalty2.4=2505.
-  Two early-fill cases pending. Sourcefa98fd1d. Audit all when complete.
-- random04-components-split-full-v96 (6), jobs8902014–19:2641 control,
-  component trials32/64/128, rounds4 and min-group4. Sourcefa98fd1d.
-- random34-ipo-runtime-split-full-v100 (4), jobs8902022–25: exact2551
-  binary/4way,2552/4way,2641 controls. Audit source03b68098; prove six fields.
-- random03-window-rank-split-full-v101 (7), jobs8902028 onward: merged-group6
-  control2580 withheap4, powers0.125/.25/.5/1, startup .5/200 and .25/400.
-  Explicit task-priority tricks. Source8ecb72fe. Full800 steps, strict1s.
-- random03-merge-refine-split-full-v99 (6): merged-group6 seeds0/1/3/4,
-  group5/I7168 and group8/I4096. Sourcedb2d9bc5. Submission session34563
-  may still need closing. Every case is full800, no held-out data.
-
-Last verified public push 4cc6aef0. Later owned source/evidence commits need push.
-Commit scope remains random05/ + PILOT_PROGRESS.md + RANDOM05_PROGRESS.md only.
-Pending: update campaign table/runtime report; exact source98/99 controls;
-collect/audit active batches; qualify promising candidates before fresh generation.
-
-R04 motion diagnostic: loaded forwards/lowerbound2.05for2565 versus1.67NMS;
-first200steps428vs638. This is observational on diverging task sets; routing
-softening mostly lost. Current2634 waypoint intervals p95=182,p99=234,max322;
-priority-cap tests are explicit tricks, and waiting metrics stay secondary.
+Last verifiedpushc332609a; laterownedcommitsneedpush. Freeze/ref/protocoland
+sourcecommits areonmain. Onlyownedscopesmaybestaged/committed. KeepR05unchanged.
 
 ## Rejected source experiments / tool notes
 

@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 07:51 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 08:15 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -84,6 +84,18 @@ Current selected records are pinned to their completion timestamps and source co
 | RANDOM-03 | 2026-09-21T07:48:41.498854+00:00 | [02bccaa7](https://github.com/fywu85/lorr/commit/02bccaa7) | [Run](random05/results/random03-merge-coupling-split-full-v102/trick-random-03-merge-coupling-triage0875/summary.json) |
 | RANDOM-04 | 2026-09-21T07:11:31.028236+00:00 | [fa98fd1d](https://github.com/fywu85/lorr/commit/fa98fd1d) | [Run](random05/results/random04-matching-refine-split-full-v96/trick-random-04-matching-refine-keep0/summary.json) |
 | RANDOM-05 | 2026-09-21T03:50:40.471914+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Run](random05/results/record3990-coupling-split-full-v80/32-record3990-mix1/summary.json) |
+
+**RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
+2,359 matched NMS (+10.30%). The frozen fresh-input comparison gives
+2,599/2,557 versus the stronger NMS repetitions 2,327/2,343:
+**+10.41% aggregate**, with individual gains +11.69% and +9.13%.
+All eight fresh runs passed timing/resource checks and independent replay.
+The candidate stays below 701 ms on both fresh inputs; its archived exact
+repeat and two other planner seeds peak below 675 ms. RANDOM-04 remains
+short of its throughput target, despite a five-seed timing check below
+498 ms per step for its current profile.
+[Frozen RANDOM-03 comparison](random05/RANDOM03_FRESH_VALIDATION_V1.md).
+
 
 **RANDOM-05's 4,000-task milestone is independently verified.** The archived
 4,011-task configuration repeated exactly. Frozen fresh task/start inputs
