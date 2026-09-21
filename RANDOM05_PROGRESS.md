@@ -30,19 +30,24 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 01:28 UTC.
+Updated: 2026-09-21 01:50 UTC.
 
-**Best single run on the archived input: 3,933 tasks on 32 workers / 16 physical cores**,
-or **+24.0% versus matched NMS32=3,172**. Source
+**Best single run on the archived input: 3,941 tasks on 32 workers / 16 physical cores**,
+or **+24.2% versus matched NMS32=3,172**. Source
 [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7), planner seed5,
-firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias2.
+firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias3.
 Guidance and the directional horizon cutoff remain explicit tricks;
 startup weighting and finalist rescoring are off.
-Mean531ms, maximum597ms, RSS560MB; all2,000steps valid and independently replayed.
-This is five tasks above3,928. It is a selected maximum; paired seed checks
-of the routing preference are pending. The4,000 target remains67tasks away.
-[Full evidence](random05/results/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json),
-[independent replay](random05/results/move-proposal-bias-split-full-v77/action_audit-3933.json).
+Mean514ms, maximum590ms, RSS561MB; all2,000steps valid and independently replayed.
+This is eight tasks above3,933. It is a selected maximum; bias3 has no paired
+seed result yet. Bias2 averages1.84% higher across four development planner
+seeds (three positive), including the seed that selected that setting. This is
+not independent task/start validation. The4,000 target remains59tasks away.
+[Full evidence](random05/results/move-bias-followup-split-full-v77/32-move-bias3-b18-seed5/summary.json),
+[independent replay](random05/results/move-bias-followup-split-full-v77/action_audit-3941.json).
+
+The3,933 intermediate record used move bias2; the same source's zero-bias
+control exactly reproduces3,928 in all six trajectory fields.
 
 The previous3,928 record used the same B18 search without move-proposal bias.
 Across seven paired planner seeds, B18's aggregate is0.27% lower than B14,
@@ -305,6 +310,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T00:19:49.212073+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3928 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.8% | [Full evidence](random05/results/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json) |
 
 | 2026-09-21T01:28:12.433277+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; move bias2; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3933 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +24.0% | [Full evidence](random05/results/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json) |
+
+| 2026-09-21T01:50:46.795715+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed5; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3941 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +24.2% | [Full evidence](random05/results/move-bias-followup-split-full-v77/32-move-bias3-b18-seed5/summary.json) |
 
 ## Reference evidence supplied by the user
 

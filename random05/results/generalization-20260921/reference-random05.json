@@ -1,0 +1,264 @@
+{
+  "checked_utc": "2026-09-21T01:52:30.570939+00:00",
+  "source": "unchanged NMS32 binary",
+  "summary": {
+    "exit": 0,
+    "finished_utc": "2026-09-20T08:17:59.889383+00:00",
+    "name": "nms-original-s0",
+    "steps": 2000,
+    "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+    "environment": {},
+    "trick": false,
+    "result": {
+      "numTaskFinished": 3172,
+      "makespan": 2000,
+      "numPlannerErrors": 0,
+      "numScheduleErrors": 0,
+      "numEntryTimeouts": 0
+    },
+    "errors": 0,
+    "scheduleErrors": 0,
+    "latency_seconds": {
+      "mean": 0.9506749777345017,
+      "max": 0.951106442
+    },
+    "valid": true,
+    "usage": {
+      "user_seconds": 60622.941009,
+      "system_seconds": 14.490576,
+      "peak_rss_kib": 1691720,
+      "wall_seconds": 1903.5108358189464,
+      "exit": 0
+    }
+  },
+  "case": {
+    "name": "nms-original-s0",
+    "team": "nms",
+    "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
+    "cores": 16,
+    "smt": 2,
+    "steps": 2000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "env": {},
+    "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+    "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+    "input_hashes": {
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/agents/random_32_32_20_800.agents": "223cb7a217a2ceef635cc7f3bdabbebeefd166a61f1791ad03573a722bd15364",
+      "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
+    }
+  },
+  "allocation": {
+    "hostname": "research54",
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "logical_cpu_affinity": [
+      32,
+      33,
+      34,
+      35,
+      40,
+      41,
+      42,
+      43,
+      48,
+      49,
+      50,
+      51,
+      56,
+      57,
+      58,
+      59,
+      96,
+      97,
+      98,
+      99,
+      104,
+      105,
+      106,
+      107,
+      112,
+      113,
+      114,
+      115,
+      120,
+      121,
+      122,
+      123
+    ],
+    "logical_cpus_by_physical_core": [
+      [
+        32,
+        96
+      ],
+      [
+        33,
+        97
+      ],
+      [
+        34,
+        98
+      ],
+      [
+        35,
+        99
+      ],
+      [
+        40,
+        104
+      ],
+      [
+        41,
+        105
+      ],
+      [
+        42,
+        106
+      ],
+      [
+        43,
+        107
+      ],
+      [
+        48,
+        112
+      ],
+      [
+        49,
+        113
+      ],
+      [
+        50,
+        114
+      ],
+      [
+        51,
+        115
+      ],
+      [
+        56,
+        120
+      ],
+      [
+        57,
+        121
+      ],
+      [
+        58,
+        122
+      ],
+      [
+        59,
+        123
+      ]
+    ],
+    "address_space_limit_bytes": [
+      274877906944,
+      274877906944
+    ],
+    "physical_cores_visible": 16,
+    "representative_cpus": [
+      32,
+      33,
+      34,
+      35,
+      40,
+      41,
+      42,
+      43,
+      48,
+      49,
+      50,
+      51,
+      56,
+      57,
+      58,
+      59
+    ],
+    "cgroup_cpu_limits": [
+      {
+        "path": "/sys/fs/cgroup/cpu,cpuacct",
+        "quota_us": -1,
+        "period_us": 100000
+      }
+    ],
+    "effective_cpu_quota": null
+  },
+  "replay": {
+    "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/nms-original-full-v1/nms-original-s0/result.json",
+    "result_sha256": "24cee6f6efbbcf029334a79242641f37a748ef2f1a56a2ab01bb0a9671d0d9d6",
+    "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+    "tasks": 3172,
+    "steps": 2000,
+    "agents": 800,
+    "robot_steps": 1600000,
+    "phases": {
+      "unopened": {
+        "R": 19313,
+        "W": 29594,
+        "C": 11730,
+        "F": 25027
+      },
+      "loaded": {
+        "W": 475108,
+        "R": 332982,
+        "C": 210493,
+        "F": 495753
+      },
+      "idle": {}
+    },
+    "work_by_final_status": {
+      "completed": {
+        "unopened": {
+          "R": 14131,
+          "W": 21500,
+          "F": 18856,
+          "C": 8588
+        },
+        "loaded": {
+          "W": 334268,
+          "F": 356866,
+          "C": 143035,
+          "R": 222082
+        }
+      },
+      "unfinished": {
+        "unopened": {
+          "C": 3142,
+          "R": 5182,
+          "F": 6171,
+          "W": 8094
+        },
+        "loaded": {
+          "C": 67458,
+          "F": 138887,
+          "R": 110900,
+          "W": 140840
+        }
+      }
+    },
+    "completed_loaded_lower_bound_cells": 139268,
+    "completed_loaded_detour_cells": 217598,
+    "completed_loaded_mean_steps": 332.9921185372005,
+    "completed_chain_lengths": {
+      "2": 1061,
+      "3": 973,
+      "4": 748,
+      "5": 390
+    },
+    "unopened_reassignments": 17505,
+    "task_starts": 3941,
+    "waiting_streaks": {
+      "count": 299545,
+      "p50": 1,
+      "p90": 3,
+      "p99": 6,
+      "maximum": 995
+    },
+    "replay_valid": true,
+    "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+  },
+  "same_inputs_and_allocation": true
+}

@@ -1069,3 +1069,13 @@ Move bias2 reaches a replay-verified3,933 on B18/seed5, versus3,928 with bias0 (
 ### Move-proposal results, 2026-09-21 01:28 UTC
 
 The zero-bias control gives3928; biases0.125/0.25/1/2 give3885/3757/3905/3933. Bias2 is a new selected maximum, five tasks above3928, with independent replay and strict timing passed. It does not yet establish a seed-averaged gain. The original bias0.5 case failed atstep0 (1066ms); its declared strict repeat and5s diagnostic both finish3745. The original failure remains in the evidence; its cause is unproved.
+
+### Frozen transfer completed, 2026-09-21 01:52 UTC
+
+Generic no-tricks Random01..05:647/1079/1582/1558/2226. Frozen3928recipe:592/1122/2171/2456/3928; the Random05control is identical in all six fields. Matched shipped NMS01..04:649/1228/2359/2580. All14new successes independently replay and pass1s/32GB. Five large pipeline representations analytically need95–189GB; user chose report-only, no port. Five new NMS large attempts fail30s preprocessing (12.1–16.1GB observed RSS), not demonstrated RAM failures. Generalization is limited in these frozen profiles; one input per density, no density-specific tuning, identical819-cell geometry. See GENERALIZATION.md and linked audit.
+
+### Move-proposal refinement declared, 2026-09-21 01:55 UTC
+
+Bias3/seed5 scores3941 (strict full run, mean514/max590ms, independent replay passed), eight above3933. Bias4 gives3894. Bias2 seed0 gives3798 (+132 against its3666 baseline); seed4 gives3785 (-92 against3877); seed3 remains running. The selected maximum does not establish a mean gain. Next freeze six full comparisons on source77: bias3 on seeds0/3/4; amplitudes2.5/3.5 onseed5; and bias3/seed5 withK24480 but identical first7968. The larger budget tests whether broader move proposals benefit from more roots within remaining runtime; earlier larger-budget tests without this feature were negative, so no gain is assumed. All runs remain strict1s/32GB; startup/rescoring off. No generalization outputs are used for tuning.
+
+Bias2 follow-up complete: seeds0/3/4/5 score3798/3909/3785/3933 against3666/3675/3877/3928 (+132/+234/-92/+5). Aggregate15425 versus15146 (+1.842%), three of four positive. Seed5 selected the setting; the other three are planner seeds on this same development input, not fresh task/start validation. Inputs, search settings and16physical/32worker allocations match. Evidence: results/move-bias-followup-split-full-v77/paired-bias2-outcomes.json.

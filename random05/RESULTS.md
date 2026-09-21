@@ -14,13 +14,15 @@ NMS comparisons use the same archived input and matched EPYC9354 allocations.
 | Allocation | Our best | NMS reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 3,933 | 3,172 | +24.0% | 531 / 597ms | 560MB |
+| 16 physical cores / 32 workers | 3,941 | 3,172 | +24.2% | 514 / 590ms | 561MB |
 
-The current goal is4,000 tasks,67 above the record. A small randomized
-preference in move proposals reaches3,933 on plannerseed5, five above the
-previous3,928. Independent replay passed. Checks on other planner seeds are
+The current goal is4,000 tasks,59 above the record. A small randomized
+preference in move proposals reaches3,941 on plannerseed5, eight above the
+previous3,933. Independent replay passed. Checks on other planner seeds are
 pending, so this is a selected maximum, not an established mean improvement.
-The earlier B18-versus-B14 seven-seed comparison had a0.27% lower aggregate
+Bias2 has a1.84% higher aggregate across four development planner seeds
+(three positive, including the seed used to select it). This is not independent-input
+validation. The earlier B18-versus-B14 seven-seed comparison had a0.27% lower aggregate
 despite its higher maximum. Startup weighting and finalist rescoring are off.
 
 These are selected single-seed maxima. Exact configurations and executable hashes
@@ -79,16 +81,26 @@ for the transient spike is asserted. Setup-loop fusion was also rejected after
 full controls showed exact outputs but slower runtime; the faster source was
 restored. Larger work budgets do not reliably improve throughput.
 
-[All80 timestamped frontier records](../RANDOM05_PROGRESS.md),
+[All81 timestamped frontier records](../RANDOM05_PROGRESS.md),
 [full frontier audit](results/progress-audit.json),
 [completed-goal audit](results/completion-audit.json).
 
 ## Secondary waiting metrics
 
-The current development records' longest completed orders take1,941/1,959 steps,
+The current development records' longest completed orders take1,941/1,956 steps,
 versus NMS1,997/1,976. All solvers still leave some initial orders unfinished at
 step2,000, so eventual maximum latency is unknown and at least2,000. These are
 censored statistics, not a fairness guarantee; throughput selected the runs.
 [Current comparison](results/task-waiting-frontiers-20260920T1612/REPORT.md),
 [fresh-input waiting metrics](results/fresh-validation-v4/WAITING.md),
 [history](WAITING_PROGRESS.md).
+
+## Frozen transfer to other instances
+
+On RANDOM-01..04, the unchanged RANDOM-05 recipe scores592/1122/2171/2456
+against shipped NMS649/1228/2359/2580. Disabling guidance and known-horizon
+triage gives647/1079/1582/1558. These are single archived-input runs across
+densities on the same layout, not retuned configurations or unseen layouts.
+The pipeline's five large-map distance tables need95–189GB before other
+allocations; they cannot fit the32GB limit. NMS's new large-map attempts hit
+the30s preprocessing deadline. [Complete evaluation](GENERALIZATION.md).

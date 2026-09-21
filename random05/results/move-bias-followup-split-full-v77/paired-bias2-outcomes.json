@@ -1,0 +1,46 @@
+{
+  "checked_utc": "2026-09-21T01:57:54.903131+00:00",
+  "pairs": [
+    {
+      "planner_seed": 0,
+      "bias0_tasks": 3666,
+      "bias2_tasks": 3798,
+      "difference": 132,
+      "baseline_evidence": "runs/random05/branch-seeds-split-full-v69/32-branch-seed-b18-seed0/summary.json",
+      "candidate_evidence": "runs/random05/move-bias-followup-split-full-v77/32-move-bias2-b18-seed0/summary.json",
+      "same_inputs_search_settings_and_allocation": true
+    },
+    {
+      "planner_seed": 3,
+      "bias0_tasks": 3675,
+      "bias2_tasks": 3909,
+      "difference": 234,
+      "baseline_evidence": "runs/random05/branch-seeds-split-full-v69/32-branch-seed-b18-seed3/summary.json",
+      "candidate_evidence": "runs/random05/move-bias-followup-split-full-v77/32-move-bias2-b18-seed3/summary.json",
+      "same_inputs_search_settings_and_allocation": true
+    },
+    {
+      "planner_seed": 4,
+      "bias0_tasks": 3877,
+      "bias2_tasks": 3785,
+      "difference": -92,
+      "baseline_evidence": "runs/random05/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json",
+      "candidate_evidence": "runs/random05/move-bias-followup-split-full-v77/32-move-bias2-b18-seed4/summary.json",
+      "same_inputs_search_settings_and_allocation": true
+    },
+    {
+      "planner_seed": 5,
+      "bias0_tasks": 3928,
+      "bias2_tasks": 3933,
+      "difference": 5,
+      "baseline_evidence": "runs/random05/branch-seeds-split-full-v69/32-branch-seed-b18-seed5/summary.json",
+      "candidate_evidence": "runs/random05/move-proposal-bias-split-full-v77/32-move-bias2-b18-seed5/summary.json",
+      "same_inputs_search_settings_and_allocation": true
+    }
+  ],
+  "baseline_total": 15146,
+  "candidate_total": 15425,
+  "gain_percent": 1.8420705136669824,
+  "positive_pairs": 3,
+  "caveat": "Planner seeds on one development input. Seed5 selected the bias2 configuration; three follow-up seeds are previously used development seeds, not independent task/start inputs."
+}

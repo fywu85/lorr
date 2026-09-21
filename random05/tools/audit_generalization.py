@@ -84,6 +84,12 @@ def main():
             for filename, digest in case['input_hashes'].items():
                 assert sha(Path(filename)) == digest, filename
             assert case['input_hashes'][case['input']] == item['input_sha256']
+            map_path = next(Path(p) for p in case['input_hashes'] if p.endswith('.map'))
+            assert sha(map_path) == item['map_sha256']
+            free_cells = sum(c not in '@T' for line in map_path.read_text().splitlines()[4:] for c in line)
+            assert free_cells == item['free_cells']
+            assert (4*free_cells)**2*4 == item['oriented_distance_table_bytes']
+            assert item['table_alone_fits_32gb'] == (item['oriented_distance_table_bytes'] <= 32000000000)
             common = {k:v for k,v in case['input_hashes'].items() if '/assets/' not in k}
             if instance in paired_inputs:
                 assert paired_inputs[instance] == common, ('unmatched inputs', instance)

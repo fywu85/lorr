@@ -1,7 +1,7 @@
 # RANDOM-05: active 4,000-task goal
 
-Updated 2026-09-21 01:44 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
-combined run, then independently validate on fresh inputs. Best3,933, gap67.
+Updated 2026-09-21 01:59 UTC. Goal ACTIVE: reach4,000 in a strict full2,000-step
+combined run, then independently validate on fresh inputs. Best3,941, gap59.
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`; other agents share
 main and GRID. No delegation. Public `fywu85/lorr` may be pushed. Preserve visibility.
 Throughput primary; waiting secondary. Tricks require explicit instance flags.
@@ -10,12 +10,12 @@ seeds50001–50008 are excluded from tuning; none later have been generated.
 
 ## Verified records
 
-- **3,933**: source`acdbfd7`, build77, B18/first7968/K16320/s2/q4/G4/E8/P8,
-  seed5, move bias2; field15/flip5, triage mix.5/scale1.25. Full configuration
-  in`best-32-workers.json`; startup/rescoring OFF. Finished01:28:12UTC Sep21.
-  Mean530.739/max596.969ms, RSS546476KiB, +24.0% versus NMS32=3172.
-  Replay passed, all80 frontier rows audited; max completed wait1959,
-  initial unfinished123/unopened90, eventual maximum censored>=2000.
+- **3,941**: source`acdbfd7`, build77, B18/first7968/K16320/s2/q4/G4/E8/P8,
+  seed5, move bias3; field15/flip5, triage mix.5/scale1.25. Full configuration
+  in`best-32-workers.json`; startup/rescoring OFF. Finished01:50:46UTC Sep21.
+  Mean513.765/max589.633ms, RSS547440KiB, +24.2% versus NMS32=3172.
+  Replay passed, all81 frontier rows audited; max completed wait1956,
+  initial unfinished124/unopened90, eventual maximum censored>=2000.
 - Previous3928 source`233f5bf`, build69, same settings with bias0. Source77
   zero-bias control reproduces all six trajectory fields exactly.
   Seven B18/B14 planner pairs aggregate26705/26778 (-.273%), 4/7 positive.
@@ -41,7 +41,7 @@ Build78 changes only explicit trick-label support and runner forwarding;
 Random01..05 validate32x32 and100/200/400/700/800 robots. No search change.
 Regression22.19s, wrong-label negative check passed. SHA
 83f08d663ef9363c8579c5d83035b50e0c2006d848e740c19b713c797ab42f6e.
-Source78 is the commit containing these notes; verify source via build hashes.
+Source78 is`6b40cd5`; source hashes and all fourteen new trajectories verified.
 Tool`audit_generalization.py --trick-source COMMIT` checks source/binary/input,
 allocation/deadline/RAM and independently replays every successful run.
 
@@ -50,13 +50,19 @@ allocation/deadline/RAM and independently replays every successful run.
 Collect with`python3 random05/tools/split_grid.py collect --output runs/random05/BATCH`.
 
 - `generalization-random-generic-split-full-v69`: Random01–04=647/1079/1582/1558;
-  Random05control pending. Jobs8901129–33.
+  Random05control2226. COMPLETE, all replay checks pass. Jobs8901129–33.
 - `generalization-random-frozen-trick-split-full-v78`:592/1122/2171/2456;
-  Random05control pending. Jobs8901152–56.
+  Random05control3928, all six fields exact vsoriginal. COMPLETE. Jobs8901152–56.
 - `generalization-nms-split-full`: all9done. Random01–04=649/1228/2359/2580;
-  five large prep-timeout failures as above. Archive and audit all.
-- `move-bias-followup-split-full-v77`: jobs8901160–64; bias2/B18 plannerseeds0/3/4
-  plusbias3/4 seed5. Baselines3666/3675/3877,seed5=3928. Await paired results.
+  five large prep-timeout failures as above. All19attempts archived/audited;
+  historicalNMS05=3172 inputs/allocation and independent replay also pass.
+- `move-bias-refinement-split-full-v77`: six strict cases, jobs8901185–90.
+  Bias3 seeds0/3/4, amplitudes2.5/3.5 seed5, and bias3/seed5 K24480 with
+  unchanged first7968. Source77/build77; frozen full cases in experiments/.
+- All previous followup jobs8901160–64 COMPLETE. Bias2 seeds0/3/4/5 versus
+  zero:3798/3909/3785/3933 vs3666/3675/3877/3928 (+1.842% aggregate,3/4positive).
+  Includes selectionseed5; same development input, no fresh validation.
+  Bias3/4seed5:3941/3894. All strict,3941 independently replayed.
 
 ## Latest completed comparisons
 
