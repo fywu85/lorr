@@ -1413,6 +1413,69 @@ void optional_immediate_moves() {
     require(rescored==simulate(cfg,12),"rescoring substituted an optional immediate-move decision");
 }
 
+void joint_assignment_semantics() {
+    Config cfg;
+    {auto env=environment(1,2,2);Graph g(env,cfg);Frame f;
+     f.loc={0,1};f.pending=f.loc;f.dir={0,2};f.stage={0,0};
+     Task x;x.task_id=0;x.locations={1};Task y;y.task_id=1;y.locations={0};
+     Chain a(g,x,false),b(g,y,false);
+     auto move=joint_move_assignment(g,cfg,f,{&a,&b},0);
+     require(move.targets==f.loc && move.canceled_swaps==1,"joint assignment executed a head-on swap");}
+    {auto env=environment(2,2,4);Graph g(env,cfg);Frame f;
+     f.loc={0,1,3,2};f.pending=f.loc;f.dir={0,1,2,3};f.stage.assign(4,0);
+     std::vector<std::unique_ptr<Chain>> storage;std::vector<const Chain*> tasks;
+     const std::vector<int> targets={1,3,2,0};
+     for(int a=0;a<4;++a){Task t;t.task_id=a;t.locations={targets[a]};
+       storage.push_back(std::make_unique<Chain>(g,t,false));tasks.push_back(storage.back().get());}
+     auto move=joint_move_assignment(g,cfg,f,tasks,0);
+     require(move.targets==targets && move.canceled_swaps==0,"joint assignment lost a legal simultaneous cycle");}
+    {auto env=environment(1,3,2);Graph g(env,cfg);Frame f;
+     f.loc={0,1};f.pending=f.loc;f.dir={0,0};f.stage={0,0};
+     Task t;t.task_id=0;t.locations={2};Chain chain(g,t,false);
+     auto move=joint_move_assignment(g,cfg,f,{&chain,nullptr},0);
+     require(move.targets==std::vector<int>({1,2}),"joint assignment lost a push chain into a hole");}
+    {auto env=environment(3,3,1);Graph g(env,cfg);Frame f;
+     f.loc={3};f.pending={4};f.dir={0};f.stage={0};
+     Task t;t.task_id=0;t.locations={1};Chain chain(g,t,false);
+     auto move=joint_move_assignment(g,cfg,f,{&chain},0);
+     require(move.headings[0]==0 && (move.targets[0]==4 || move.targets[0]==5),
+             "joint assignment rotated a robot during its promised forward action");}
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    auto env=environment(3,3,1);Setting proposal("R05_JOINT_PROPOSALS","1");
+    require(Config::environment(env).joint_proposals==1,"general joint proposal option rejected");
+    {Setting value("R05_JOINT_PROPOSALS","3");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"joint proposal budget escaped its declared bound");}
+    {Setting window("R05_WINDOW","8");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"joint proposal accepted an unsupported temporal model");}
+}
+
+void joint_assignment_futures() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    for(int count:{1,2}) {
+        cfg.joint_proposals=count;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        cfg.reverse_penalty=count==2?.2f:0.f;
+        const auto selected=simulate(cfg,12,5,5,true);
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(selected==simulate(cfg,12),"joint proposals changed with caches or workers");
+        cfg.share_prefix=false;
+        require(selected==simulate(cfg,12),"joint proposal changed with shared futures");
+        cfg.share_prefix=true;
+    }
+    cfg.futures=192;cfg.screen_branches=2;cfg.screen_keep=2;cfg.threads=1;
+    const auto screened=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(screened==simulate(cfg,12),"joint proposals changed with screened worker scheduling");
+}
+
 void optional_arrival_proposals() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -1674,6 +1737,7 @@ void window_reproducibility() {
 int main() {
     arrival_priority_semantics();
     optional_arrival_proposals();
+    joint_assignment_semantics();joint_assignment_futures();
     for(float bonus:{50.f,200.f}) {
         Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
         cfg.arrival_priority=bonus;cfg.threads=1;cfg.active_task_cap=18;

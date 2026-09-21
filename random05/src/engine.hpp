@@ -60,6 +60,7 @@ struct Config {
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
     int screen_branches=0, screen_keep=4;
     int component_trials=0, component_rounds=2, component_parents=8, component_min_agents=1;
+    int joint_proposals=0;
     int replan_roots=0, replan_futures=1, replan_k=32, replan_steps=8, replan_continuations=4, replan_start=0;
     int replan_threads=1;
     bool replan_policy=false;
@@ -173,6 +174,13 @@ std::vector<std::vector<int>> priority_dependencies(const Graph& graph,const Fra
     const std::vector<const Chain*>& assigned,int preferred_edges);
 std::vector<int> dependency_neighborhood(const std::vector<std::vector<int>>& dependencies,
     int center,int limit);
+struct JointMoves {
+    std::vector<int> targets,headings;
+    int canceled_swaps=0;
+};
+// One legal proposal on the exact promised occupancy; two-cycles become waits.
+JointMoves joint_move_assignment(const Graph& graph,const Config& config,const Frame& frame,
+    const std::vector<const Chain*>& assigned,float movement_price);
 struct PriorityChange { int agent;float offset; };
 using Continuation = std::vector<std::vector<PriorityChange>>;
 struct Rollout {

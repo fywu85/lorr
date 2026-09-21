@@ -68,6 +68,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.screen_branches=integer("R05_SCREEN_BRANCHES",0);
     c.screen_keep=integer("R05_SCREEN_KEEP",4);
     c.component_trials=integer("R05_COMPONENT_TRIALS",0);
+    c.joint_proposals=integer("R05_JOINT_PROPOSALS",0);
+    if(c.joint_proposals<0 || c.joint_proposals>2)
+        throw std::invalid_argument("joint movement proposals must be zero, one or two");
     c.component_rounds=integer("R05_COMPONENT_ROUNDS",2);
     c.component_parents=integer("R05_COMPONENT_PARENTS",8);
     c.component_min_agents=integer("R05_COMPONENT_MIN_AGENTS",1);
@@ -382,6 +385,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.joint_proposals && (c.window || c.operation_depth || c.early_fill || c.early_root_period ||
+       c.arrival_root_period || c.rescore_roots || c.replan_roots || c.component_trials))
+        throw std::invalid_argument("joint proposals require the ordinary pipeline without other root operators");
     if(c.arrival_root_period>0 && (c.component_trials || c.replan_roots))
         throw std::invalid_argument("arrival root portfolio does not support component or replanning search");
     if(c.arrival_priority>0 && (c.operation_depth || c.window))
@@ -2307,6 +2313,42 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         Rollout candidate=evaluate(frame,local,continuations,results[best].cycle_moves,nullptr,nullptr,results[best].early_moves,results[best].arrival_moves);
         if(candidate.score>results[best].score+1e-7 ||
            (cfg.accept_equal && candidate.score>=results[best].score-1e-7))results[best]=std::move(candidate);
+    }
+    if(cfg.joint_proposals) {
+        const Rollout anchor=results[best];int accepted=0,canceled=0,branches=0;
+        for(int proposal_id=0;proposal_id<cfg.joint_proposals;++proposal_id) {
+            const auto joint=joint_move_assignment(g,cfg,frame,assigned_,proposal_id?.5f:0.f);
+            Rollout proposal=anchor;proposal.first.pending=joint.targets;
+            if(proposal.first.loc!=frame.pending)throw std::runtime_error("joint proposal lost promised occupancy");
+            proposal.first.reverse_turns=frame.reverse_turns;
+            for(int a=0;a<n;++a) {
+                const bool moving=frame.pending[a]!=frame.loc[a];
+                const int heading=joint.headings[a],delta=(heading-frame.dir[a]+4)%4;
+                if(delta==2)throw std::runtime_error("joint proposal requires an impossible half turn");
+                proposal.actions[a]=moving?FW:delta==1?CR:delta==3?CCR:W;
+                proposal.first.dir[a]=heading;
+                if(cfg.reverse_penalty>0) {
+                    const auto action=proposal.actions[a],previous=frame.last_actions[a];
+                    proposal.first.reverse_turns+=(action==CR && previous==CCR) || (action==CCR && previous==CR);
+                    proposal.first.last_actions[a]=action;
+                }
+            }
+            certify(g,frame.loc,proposal.first.loc);certify(g,proposal.first.loc,proposal.first.pending);
+            Rollout candidate=evaluate(frame,anchor.offsets,continuations,anchor.cycle_moves,nullptr,&proposal);
+            branches+=candidate.evaluated_branches;canceled+=joint.canceled_swaps;
+            if(candidate.actions!=proposal.actions || candidate.first.pending!=proposal.first.pending ||
+               candidate.first.dir!=proposal.first.dir)
+                throw std::runtime_error("joint proposal changed during forecast evaluation");
+            if(candidate.score>results[best].score+1e-7 ||
+               (cfg.accept_equal && candidate.score>=results[best].score-1e-7)) {
+                results[best]=std::move(candidate);++accepted;
+            }
+        }
+        if(branches!=cfg.joint_proposals*cfg.continuations)
+            throw std::runtime_error("joint proposals changed declared continuation work");
+        if(!quiet_ && env->curr_timestep%100==0)
+            std::fprintf(stderr,"R05_JOINT t=%d proposals=%d branches=%d accepted=%d canceled_swaps=%d\n",
+                         env->curr_timestep,cfg.joint_proposals,branches,accepted,canceled);
     }
     if(cfg.component_trials) {
         // Freeze several distinct first decisions from the completed portfolio.
