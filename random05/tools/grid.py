@@ -3,6 +3,7 @@
 import argparse, datetime, hashlib, json, os, re, resource, shlex, shutil, subprocess, sys, time
 from pathlib import Path
 from result_horizon import executed_steps
+from process_resources import monitored_run
 ROOT=Path(__file__).resolve().parents[2]
 if (Path(__file__).parent/'spec.json').exists():
     ROOT=Path(json.loads((Path(__file__).parent/'spec.json').read_text())['repo'])
@@ -118,6 +119,9 @@ def submit(a):
     helper=Path(__file__).with_name('result_horizon.py')
     shutil.copy2(helper,out/'result_horizon.py')
     spec['runner_dependencies']={'result_horizon.py':sha(helper)}
+    resource_helper=Path(__file__).with_name('process_resources.py')
+    shutil.copy2(resource_helper,out/'process_resources.py')
+    spec['runner_dependencies']['process_resources.py']=sha(resource_helper)
     write(out/'spec.json',spec)
     # Freeze the runner too; ROOT for the frozen script is supplied by its spec.
     shutil.copy2(Path(__file__),out/'runner.py')
@@ -200,8 +204,10 @@ def execute(a):
         as_limit=32000000000 if inherited_as==resource.RLIM_INFINITY else min(32000000000,inherited_as)
         command=['/usr/bin/prlimit','--as='+str(as_limit),'--']+command
         with (work/'native.log').open('w') as f:
-            r=subprocess.run(command,cwd=work/'cwd',env=env,stdout=f,stderr=subprocess.STDOUT)
-        summary={'exit':r.returncode,'finished_utc':now(),'name':c['name'],'steps':c.get('steps',2000),
+            if c.get('sample_resources'):
+                returncode=monitored_run(command,work/'cwd',env,work/'process-resources.json',f)
+            else:returncode=subprocess.run(command,cwd=work/'cwd',env=env,stdout=f,stderr=subprocess.STDOUT).returncode
+        summary={'exit':returncode,'finished_utc':now(),'name':c['name'],'steps':c.get('steps',2000),
                  'binary_sha256':c['binary_sha256'],'environment':c.get('env',{}),'trick':c.get('trick',False)}
         if (work/'result.json').exists():
             data=json.loads((work/'result.json').read_text())
@@ -218,7 +224,7 @@ def execute(a):
                 summary['result']['executedSteps']=horizon
             except (AssertionError,KeyError,TypeError,ValueError) as error:
                 horizon=-1;summary['horizon_error']=str(error)
-            summary['valid']=r.returncode==0 and horizon==c.get('steps',2000) and len(times)==horizon and all(data.get(k,0)==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts']) and not data.get('errors') and not data.get('scheduleErrors')
+            summary['valid']=returncode==0 and horizon==c.get('steps',2000) and len(times)==horizon and all(data.get(k,0)==0 for k in ['numPlannerErrors','numScheduleErrors','numEntryTimeouts']) and not data.get('errors') and not data.get('scheduleErrors')
         else:summary['valid']=False
         if (work/'usage.json').exists():summary['usage']=json.loads((work/'usage.json').read_text())
         write(work/'summary.json',summary);return summary
