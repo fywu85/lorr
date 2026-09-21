@@ -1786,3 +1786,19 @@ repetition and paired planner seeds before a repeatability claim. No held-out
 stream is touched. The new2621RANDOM-03 physical-gate record also gets its own
 exact repeat and pairedseeds0/1/2/3/4 (nine additional runs including the original
 selectingseed3pair). A one-task selected increase is not a proven mean gain.
+
+
+## Sparse annealing selected735 and qualification (2026-09-21T23:56:01.085148+00:00)
+
+All16full sparse trials pass independent replay/strict limits. Four off controls
+are exact. General01 temperatures0/.25/1/4 give727/727/727/727; selected01
+gives733/735/732/729. General02 gives1397/1387/1392/1391; selected02 gives
+1408/1389/1398/1394. Mild annealing is a selected01gain, not a universal gain.
+
+Freeze five source162 full01runs: exact735 repeat atplannerseed1, plus0/2/3/4.
+Paired zero-temperature controls are the same-binary gate-on qualification runs
+729/733/729/727/732 atseeds0/1/2/3/4; the zero-temperature selectedseed1 also
+reproduces its earlier733trace exactly in the annealing batch. Only temperature
+changes to0.25, and all budgets/configurations/input hashes remain fixed. These
+are deterministic development-input seed checks with historical exact controls,
+not fresh or concurrent randomized trials. Preserve every outcome.

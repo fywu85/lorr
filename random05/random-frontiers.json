@@ -87,7 +87,7 @@
     },
     "trick": {
       "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
-      "evidence": "random05/results/random01-record732-split-full-v162/trick-random-01-record732-seed1-feasible1/summary.json",
+      "evidence": "random05/results/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/summary.json",
       "case": {
         "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
@@ -97,7 +97,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-01",
-        "name": "trick-random-01-record732-seed1-feasible1",
+        "name": "trick-random-01-anneal-temp0p25",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -155,7 +155,8 @@
           "R05_WINDOW_EXPANSIONS": "5000",
           "R05_OPERATIONS": "0",
           "R05_MOVE_BIAS": "0",
-          "R05_MATCH_FEASIBLE": "1"
+          "R05_MATCH_FEASIBLE": "1",
+          "R05_WINDOW_TEMPERATURE": "0.25"
         },
         "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
         "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
@@ -166,9 +167,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 733,
-      "finished_utc": "2026-09-21T23:35:12.917204+00:00",
-      "audit": "random05/results/random01-record732-split-full-v162/audit.json"
+      "tasks": 735,
+      "finished_utc": "2026-09-21T23:45:46.330230+00:00",
+      "audit": "random05/results/random12-anneal-split-full-v162/audit.json"
     },
     "nms32_tasks": 649
   },
