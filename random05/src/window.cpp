@@ -316,6 +316,11 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
             std::vector<uint32_t> marked(n,0);
             for(int iteration=0;iteration<iterations/cfg.window_rounds;++iteration) {
                 int pivot=int(random()%n),time=int(random()%(h+1));
+                // Earliest-first blockers can repeat the same small repair
+                // group. Rotate the conflict scan using its existing sampled
+                // time; mode2 mixes early-first and rotated search islands.
+                const int blocker_start=(cfg.window_blocker_rotation==1 ||
+                    (cfg.window_blocker_rotation==2 && index%2))?time%h:0;
                 // Half the neighborhoods emphasize delayed routes; the rest
                 // explore uniformly. Neighbors follow current planned positions.
                 if(iteration%2)for(int k=0;k<3;++k) {
@@ -345,7 +350,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     };
                     for(size_t k=0;k<linked.size() && int(linked.size())<count;++k) {
                         const auto& route=guides[linked[k]];
-                        for(int t=1;t<=h && int(linked.size())<count;++t) {
+                        for(int offset=0;offset<h && int(linked.size())<count;++offset) {
+                            const int t=1+(blocker_start+offset)%h;
                             add(reserve.owner(t,route[t]/4));
                             const int crossing=reserve.owner(t-1,route[t]/4);
                             if(crossing>=0 && reserve.owner(t,route[t-1]/4)==crossing)add(crossing);
@@ -368,7 +374,8 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     };
                     for(size_t k=0;k<linked.size() && int(linked.size())<count;++k) {
                         const auto& route=guides[linked[k]];
-                        for(int t=1;t<=h && int(linked.size())<count;++t) {
+                        for(int offset=0;offset<h && int(linked.size())<count;++offset) {
+                            const int t=1+(blocker_start+offset)%h;
                             add(reserve.owner(t,route[t]/4));
                             const int crossing=reserve.owner(t-1,route[t]/4);
                             if(crossing>=0 && reserve.owner(t,route[t-1]/4)==crossing)add(crossing);

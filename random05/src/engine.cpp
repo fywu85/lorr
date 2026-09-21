@@ -160,6 +160,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_heap4=integer("R05_WINDOW_HEAP4",0);
     c.window_temperature=real("R05_WINDOW_TEMPERATURE",0);
     c.window_blockers=integer("R05_WINDOW_BLOCKERS",0);
+    c.window_blocker_rotation=integer("R05_WINDOW_BLOCKER_ROTATION",0);
     c.window_equal=integer("R05_WINDOW_EQUAL",0);
     if(c.window<0 || c.window>32 || c.window_keep<0 || (c.window && c.window_keep>=c.window) ||
        c.window_islands<1 || c.window_islands>128 || c.window_iterations<0 || c.window_iterations>16384 ||
@@ -167,6 +168,7 @@ Config Config::environment(const SharedEnvironment& env) {
        c.window_rounds<1 || c.window_rounds>32 || c.window_iterations%c.window_rounds ||
        c.window_first_iterations<0 || c.window_first_iterations>c.window_iterations || c.window_first_iterations%c.window_rounds ||
        c.window_initial_steps<1 || c.window_initial_steps>128 ||
+       c.window_blocker_rotation<0 || c.window_blocker_rotation>2 ||
        !std::isfinite(c.window_temperature) || c.window_temperature<0 || c.window_temperature>100)
         throw std::invalid_argument("invalid windowed search configuration");
     c.threads=integer("R05_THREADS",c.threads);c.seed=integer("R05_SEED",c.seed);

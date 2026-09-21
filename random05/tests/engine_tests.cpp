@@ -929,6 +929,14 @@ void window_reproducibility() {
     require(linked==simulate(cfg,8),"fast blocker groups changed across workers or cost caching");
     cfg.window_heap4=true;
     require(linked==simulate(cfg,8,5,5,true),"four-way heap changed blocker repairs or checkpoint replay");
+    cfg.window_blocker_rotation=1;
+    const auto rotated=simulate(cfg,8,5,5,true);
+    cfg.threads=1;cfg.window_fast_groups=false;
+    require(rotated==simulate(cfg,8),"rotated blocker groups changed across workers or spatial-sort optimization");
+    cfg.window_blocker_rotation=2;
+    const auto mixed=simulate(cfg,8,5,5,true);
+    cfg.threads=2;cfg.window_fast_groups=true;
+    require(mixed==simulate(cfg,8),"mixed blocker neighborhoods depend on worker scheduling");
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;

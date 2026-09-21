@@ -242,7 +242,7 @@ keep16/18 uses8192/4096; H28keep20uses6144/2048. H32keep22 uses4096/1024
 and16startupcalls. Everydeclared count completes; all original source94
 timeouts stay retained. This does not treat a rejected partial run as a score.
 
-## September 21, 07:01 UTC: layout screen and next full comparisons
+## September 21, 06:57 UTC: layout screen and next full comparisons
 
 At I4096, RANDOM-03 field23 scores2517 against2483 for the inherited field.
 The other seven new layouts score2318–2481. Next six full source96 cases test
