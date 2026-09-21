@@ -1,0 +1,21 @@
+{
+  "declared_utc": "2026-09-21T20:11:04.078035+00:00",
+  "purpose": "Matched max(NMS,Kitty Knight) baselines, by explicit user reporting request",
+  "manifest": "random05/experiments/random-nms-kk-baselines-full-v1.json",
+  "kk_submission": "Code-Archive/2024 Competition/Team_Kitty_Knight/da7d428b40cc1425b381adefe9709d4accbfdfe1",
+  "kk_binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+  "nms_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "development": "Two unchanged NMS32 and two unchanged KK32 runs per archived RANDOM case; report each and use stronger valid score of each team. Do not replace missing or failed teams by zero.",
+  "fresh": "Two KK32 repetitions on each previously frozen RANDOM01/02 V1 and RANDOM03 V2 stream. No PILOT retuning and no fresh inputs generated. Original NMS repetitions and frozen PILOT results are retained.",
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor",
+    "entry_ms": 1000,
+    "preprocess_ms": 30000,
+    "memory_bytes": 32000000000
+  },
+  "validity": "Full horizons and independent movement, collision, scheduling and task-event replay. Preserve timeout/overrun and failed attempts; report measured timing.",
+  "publication": "Published max(NMS,KK) remains separately identified as a historical comparison."
+}
