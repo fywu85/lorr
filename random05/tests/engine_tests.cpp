@@ -920,6 +920,26 @@ void rollout_elite_diversity() {
     }
 }
 
+void optional_immediate_moves() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.share_prefix=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto ordinary=simulate(cfg,12);bool changed=false;
+    for(int period:{1,2,4}) {
+        cfg.early_root_period=period;cfg.threads=1;cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        const auto selected=simulate(cfg,12,5,5,true);changed|=selected!=ordinary;
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(selected==simulate(cfg,12),"optional immediate moves changed with cache or workers");
+        cfg.share_prefix=false;
+        require(selected==simulate(cfg,12),"shared continuations changed optional first moves");
+        cfg.share_prefix=true;
+    }
+    require(changed,"optional immediate moves never affected the dense fixture");
+    cfg.futures=192;cfg.screen_branches=2;cfg.screen_keep=2;cfg.threads=1;
+    const auto screened=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(screened==simulate(cfg,12),"screened immediate-move proposals changed with worker scheduling");
+}
+
 void remaining_work_priorities() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -1157,6 +1177,7 @@ void window_reproducibility() {
 int main() {
     feasible_move_proposals();
     rollout_elite_diversity();
+    optional_immediate_moves();
     remaining_work_priorities();
     horizon_aware_matching();
     destination_demand_matching();

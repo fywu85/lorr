@@ -48,7 +48,7 @@ struct Config {
     int shared_rankings_mb=0;
     int restart_period=4;
     float elite_decision_distance=0, priority_remaining_weight=0;
-    int priority_remaining_steps=0;
+    int priority_remaining_steps=0, early_root_period=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;
     int move_bias_mode=0;
@@ -123,7 +123,7 @@ struct Rollout {
     std::vector<Action> actions;
     std::vector<float> offsets;
     int moves=0;
-    bool cycle_moves=true, fully_evaluated=true;
+    bool cycle_moves=true, early_moves=false, fully_evaluated=true;
     int evaluated_branches=1;
     uint64_t expansions=0;
 };
@@ -237,17 +237,19 @@ private:
     void match_future(Frame& frame) const;
     Rollout rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves=true,
                     const Continuation* continuation=nullptr,RolloutPrefix* save=nullptr,
-                    const RolloutPrefix* resume=nullptr,const Rollout* forced_first=nullptr) const;
+                    const RolloutPrefix* resume=nullptr,const Rollout* forced_first=nullptr,
+                    bool early_moves=false) const;
     Rollout evaluate(const Frame& frame,const std::vector<float>& offsets,
                      const std::vector<Continuation>& continuations,bool cycle_moves,
-                     std::vector<double>* branch_scores=nullptr,const Rollout* forced_first=nullptr) const;
+                     std::vector<double>* branch_scores=nullptr,const Rollout* forced_first=nullptr,
+                     bool early_moves=false) const;
     void evaluate_until(const Frame& frame,const std::vector<float>& offsets,
                         const std::vector<Continuation>& continuations,bool cycle_moves,
-                        int branches,ScreenedRollout& state) const;
+                        int branches,ScreenedRollout& state,bool early_moves=false) const;
     void advance_operations(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
                             uint64_t& expansions) const;
     void fill_ready_moves(const Frame& frame, const std::vector<float>& offsets, std::vector<int>& to) const;
     void advance(Frame& frame,const std::vector<float>& offsets,std::vector<Action>& actions,
-                 uint64_t& expansions,bool cycle_moves) const;
+                 uint64_t& expansions,bool cycle_moves,bool early_moves=false) const;
 };
 }
