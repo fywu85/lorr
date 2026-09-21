@@ -327,3 +327,14 @@ did not exercise environment parsing. The follow-up removes the obsolete rank
 exclusion and adds a parser test for acceptance with the matching trick flag,
 rejection without it, and continued rejection of unsupported future matching.
 The full suite and full-horizon cases will rerun before evaluating the idea.
+
+## September 21, 07:29 UTC: closed-loop forecast transfer
+
+R04 component refinements give2550–2618 versus2641; priority caps, early fill
+and softer field confidence also fail to improve it. The next eight source96
+full cases compare a half-work control with visible-task replacement inside
+rollouts, then six closed-loop forecasts that reschedule/replan using only the
+current visible task pool. Configurations specify every root, future, inner
+work count and nested worker count, all within32 workers. No hidden future
+tasks are introduced. Source95 already fixed shared-cache construction in
+parallel forecast shadows; these runs explicitly use private caches.
