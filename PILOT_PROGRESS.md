@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 22:32 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 23:04 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -85,7 +85,7 @@ not unseen-map validation.
 | RANDOM-01 | 727 | +5.06% | 729 | +5.35% | 692 |
 | RANDOM-02 | 1,397 | +11.23% | 1,408 | +12.10% | 1,256 |
 | RANDOM-03 | 1,634 | -30.73% | 2,620 | +11.06% | 2,359 |
-| RANDOM-04 | 1,595 | -39.79% | 2,782 | +5.02% | 2,649 |
+| RANDOM-04 | 1,616 | -39.00% | 2,782 | +5.02% | 2,649 |
 | RANDOM-05 | 2,226 | -29.82% | 4,242 | +33.73% | 3,172 |
 
 Current selected records are pinned to their completion timestamps and source commits:

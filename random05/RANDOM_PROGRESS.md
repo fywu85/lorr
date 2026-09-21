@@ -23,7 +23,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 727 | 729 | 688 | +5.96% |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1260 | +11.75% |
 | RANDOM-03 | 400 | 800 | 1634 | 2620 | 2334 | +12.25% |
-| RANDOM-04 | 700 | 1000 | 1595 | 2782 | 2547 | +9.23% |
+| RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2547 | +9.23% |
 | RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3050 | +39.08% |
 
 Published rows are historical targets on different inputs/hardware, not matched
@@ -178,6 +178,8 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T20:35:51.119225+00:00 | RANDOM-04 | general | 1567 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random12345-auction-split-full-v157/general-random-04-auction-eps0p01/summary.json) |
 | 2026-09-21T20:35:53.375565+00:00 | RANDOM-04 | general | 1577 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random12345-auction-split-full-v157/general-random-04-auction-eps0p125/summary.json) |
 | 2026-09-21T21:11:09.447875+00:00 | RANDOM-04 | general | 1595 | [f80f7caa09906b2ee14e63e2d652c3a33103c23c](https://github.com/fywu85/lorr/commit/f80f7caa09906b2ee14e63e2d652c3a33103c23c) | [Full run](results/random34-general-auction-check-split-full-v157/general-random-04-auction-check-seed1-eps0p125/summary.json) |
+| 2026-09-21T22:47:03.801161+00:00 | RANDOM-04 | general | 1597 | [1bd28feed8368b2a61b2fc9a08867a518b2d0c9f](https://github.com/fywu85/lorr/commit/1bd28feed8368b2a61b2fc9a08867a518b2d0c9f) | [Full run](results/random12345-face-cycles-split-full-v158/general-random-04-face-cycles16/summary.json) |
+| 2026-09-21T22:49:58.306922+00:00 | RANDOM-04 | general | 1616 | [1bd28feed8368b2a61b2fc9a08867a518b2d0c9f](https://github.com/fywu85/lorr/commit/1bd28feed8368b2a61b2fc9a08867a518b2d0c9f) | [Full run](results/random12345-face-cycles-split-full-v158/general-random-04-face-cycles8/summary.json) |
 
 
 ## September21: first development comparisons
