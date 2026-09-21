@@ -174,6 +174,20 @@ def main():
                     assert all(int(x['squared'])==1 and 0<=int(x['changed_total'])<=row['robots']*int(x['step']) for x in rank_samples)
                 else:
                     assert not rank_samples and not rank_config
+                fleet_limit=int(case['environment'].get('CGAR_TRICK_GAME_ACTIVE_LIMIT','0'))
+                fleet=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_GAME_FLEET] ')]
+                if fleet_limit:
+                    assert a.trick=='GAME' and len(fleet)==1
+                    f=fleet[0];tabu=int(case['environment'].get('CGAR_TRICK_GAME_TABU','0'))
+                    assert int(f['nominal_active'])==fleet_limit and int(f['tabu'])==tabu
+                    assert int(f['disabled'])==min(row['robots']-fleet_limit,int(f['eligible_pool']))
+                    assert int(f['active'])==row['robots']-int(f['disabled'])
+                    assert f['selection']=='once' and f['rng']=='independent_splitmix' and f['idle_motion']=='cgar' and f['held_tasks']=='protected'
+                    assert f['asset_sha256']==('15e86aa9a3f5d45a822bd699db8a7adc2a34ca76e1bcca7e8e18640d28103681' if tabu else 'none')
+                    assert 0<=int(f['tabu_kept'])<=int(f['active']) and 0<=int(f['held_kept'])<=int(f['active'])
+                    assert int(f['mask_fnv1a64'])>0
+                else:
+                    assert not fleet
                 after_turn=int(case['environment'].get('CGAR_TEMPORAL_PROMISE_AFTER_TURN','0'))
                 promise_samples=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise] ')]
                 promise_config=[fields(l) for l in logs if l.startswith('[cgar-temporal-promise-config] ')]
@@ -189,7 +203,7 @@ def main():
                 else:
                     assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m)
-                work[key]=dict(rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(game_fleet=fleet,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)

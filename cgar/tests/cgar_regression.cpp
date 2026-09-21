@@ -5198,4 +5198,90 @@ void fresh_pickup_audit_regression() {
  std::cout<<"FRESH_PICKUP_AUDIT passed actual_forward_field_cycle=1 task_column_tier_guard=1 three_way=1 identity=1 missing_field=1 started_protected=1 task_disjoint=1 deadline=1 real_work_exact=1 config_guards=7\n";
 }
 
-int main(){try{random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+void game_fleet_trick_regression() {
+ using namespace cgar::tricks;
+ auto require=[](bool value,const char* message){if(!value)throw std::runtime_error(message);};
+ auto rejects=[&](auto run,const char* message){bool rejected=false;try{run();}catch(const std::invalid_argument&){rejected=true;}require(rejected,message);};
+ setenv("CGAR_TRICK_LANES","0",1);
+ for(const char* value:{"","-1","6501","true","1.5","999999999999999999999"}){
+  setenv("CGAR_TRICK_GAME_ACTIVE_LIMIT",value,1);rejects([&]{options("GAME");},"malformed GAME fleet limit accepted");
+ }
+ for(const char* value:{"0","2750","6500"}){
+  setenv("CGAR_TRICK_GAME_ACTIVE_LIMIT",value,1);
+  for(const char* name:{"","WAREHOUSE","SORTATION","CITY-01","RANDOM-03","RANDOM-05"})
+   rejects([&]{options(name);},"GAME fleet accepted without matching explicit CLI");
+  require(options("GAME").game_active_limit==std::stoi(value),"GAME active limit parsed incorrectly");
+ }
+ setenv("CGAR_TRICK_GAME_ACTIVE_LIMIT","2750",1);
+ for(const char* value:{"","2","true","-1"}){setenv("CGAR_TRICK_GAME_TABU",value,1);rejects([&]{options("GAME");},"malformed GAME tabu accepted");}
+ setenv("CGAR_TRICK_GAME_ACTIVE_LIMIT","0",1);setenv("CGAR_TRICK_GAME_TABU","1",1);
+ rejects([&]{options("GAME");},"GAME tabu accepted with disabled fleet selector");
+ unsetenv("CGAR_TRICK_GAME_ACTIVE_LIMIT");unsetenv("CGAR_TRICK_GAME_TABU");unsetenv("CGAR_TRICK_LANES");
+ require(std::is_sorted(std::begin(game_tabu_cells),std::end(game_tabu_cells))&&
+  std::adjacent_find(std::begin(game_tabu_cells),std::end(game_tabu_cells))==std::end(game_tabu_cells),"GAME exemption asset is not a sorted set");
+ const std::set<int> exemptions(std::begin(game_tabu_cells),std::end(game_tabu_cells));
+ for(int cell=0;cell<481*530;++cell)require(game_tabu_location(cell)==bool(exemptions.count(cell)),"GAME exemption lookup differs from set");
+ const std::vector<int> starts{game_tabu_cells[0],10,11,12,13,14,15,16};
+ const std::vector<int> held{-1,123,-1,-1,-1,-1,-1,-1};
+ auto small=select_game_fleet(starts,held,1,true,0,[]{});
+ require(small.disabled==6&&!small.excluded[0]&&!small.excluded[1]&&small.tabu_kept==1&&small.held_kept==1,
+  "GAME fleet cap dropped a held task or exemption instead of retaining more than nominal");
+ auto same=select_game_fleet(starts,held,4,false,7,[]{}),repeat=select_game_fleet(starts,held,4,false,7,[]{});
+ require(same.excluded==repeat.excluded&&same.fingerprint==repeat.fingerprint&&same.disabled==4&&!same.excluded[1],"GAME fleet selection is not reproducible or dropped ownership");
+ require(select_game_fleet(starts,held,8,false,7,[]{}).disabled==0,"GAME full-fleet selector excluded robots");
+ int checks=0;bool timeout=false;
+ try{select_game_fleet(starts,held,4,false,7,[&]{if(++checks==2)throw Timeout("game_fleet_test");});}catch(const Timeout&){timeout=true;}
+ require(timeout&&held[1]==123&&starts[0]==game_tabu_cells[0],"GAME fleet failed deadline propagation or changed inputs");
+ rejects([&]{select_game_fleet(starts,held,9,false,0,[]{});},"GAME selector accepted impossible size");
+
+ SharedEnvironment base;base.rows=game_rows;base.cols=game_cols;base.num_of_agents=6500;
+ std::vector<int> free;
+ for(int cell=0;cell<game_rows*game_cols;++cell){base.map.push_back(game_masks[cell]=='x');if(!base.map.back())free.push_back(cell);}
+ const auto cert=build_certificate_feasible(base.map,base.rows,base.cols,6500);
+ std::vector<int> core;for(int c:free)if(cert.core[c])core.push_back(c);
+ require(core.size()>6500,"GAME fleet fixture lacks core capacity");
+ base.curr_task_schedule.assign(6500,-1);base.goal_locations.resize(6500);
+ // Spread across the exact map without depending on a filename or archived tasks.
+ for(int r=0;r<6500;++r)base.curr_states.emplace_back(free[size_t(r)*free.size()/6500],0,r%4);
+ for(int id=0;id<96;++id){Task t;t.task_id=id;t.t_revealed=0;t.locations={core[(id*137+51)%core.size()],core[(id*193+79)%core.size()]};base.task_pool.emplace(id,t);}
+ Task owned;owned.task_id=1000;owned.locations={base.curr_states[0].location,core[core.size()/2]};owned.idx_next_loc=1;owned.agent_assigned=0;
+ base.task_pool.emplace(1000,owned);base.curr_task_schedule[0]=1000;base.goal_locations[0]={{owned.locations[1],0}};
+ const std::vector<std::pair<const char*,const char*>> settings={{"CGAR_TEMPORAL","1"},{"CGAR_TEMPORAL_STEPS","8"},
+  {"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_TURN_TABLE_MB","16"},{"CGAR_TURN_BUILD_LIMIT","4"},
+  {"CGAR_SCHED_TABLES","4"},{"CGAR_PLAN_TABLES","4"},{"CGAR_TURN_COMPACT","1"},{"CGAR_SEED","7"}};
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ struct Trace{std::vector<int> schedule,actions;GameFleetSelection selection;};
+ auto run=[&](int mode){
+  auto e=base;
+  unsetenv("CGAR_TRICK_GAME_ACTIVE_LIMIT");unsetenv("CGAR_TRICK_GAME_TABU");unsetenv("CGAR_TRICK_LANES");
+  if(mode>=0){e.trick_instance="GAME";setenv("CGAR_TRICK_LANES","0",1);setenv("CGAR_TRICK_GAME_ACTIVE_LIMIT",mode?"2750":"0",1);setenv("CGAR_TRICK_GAME_TABU",mode==2?"1":"0",1);}
+  Cgar planner;planner.initialize(&e,30000);Trace out;planner.schedule(&e,30000,out.schedule);
+  require(out.schedule[0]==1000&&e.task_pool.at(1000).idx_next_loc==1&&e.task_pool.at(1000).agent_assigned==0,
+   "GAME fleet changed a started task or simulator metadata");
+  out.selection=planner.game_fleet_selection();
+  if(mode>0){
+   require(out.selection.disabled>0&&out.selection.excluded.size()==6500&&!out.selection.excluded[0],"GAME production fleet selection did not activate or excluded owner");
+   for(int r=0;r<6500;++r)require(!out.selection.excluded[r]||out.schedule[r]==-1,"GAME assigned a new task to an excluded robot");
+   if(mode==2)for(int r=0;r<6500;++r)require(!game_tabu_location(base.curr_states[r].location)||!out.selection.excluded[r],"GAME production ignored a tabu exemption");
+  }else require(out.selection.excluded.empty(),"disabled GAME selector performed fleet work");
+  e.curr_task_schedule=out.schedule;
+  for(int r=0;r<6500;++r)if(out.schedule[r]>=0){auto& t=e.task_pool.at(out.schedule[r]);t.agent_assigned=r;e.goal_locations[r]={{t.locations[t.idx_next_loc],0}};}
+  for(int tick=0;tick<3;++tick){
+   e.curr_timestep=tick;std::vector<Action>a;planner.plan(&e,30000,a);auto next=step(e,e.curr_states,a);
+   require(next.size()==6500,"GAME fleet introduced a collision or invalid action");for(auto x:a)out.actions.push_back(int(x));e.curr_states=next;
+  }
+  // Selection stays fixed after robots move; every held task remains assigned.
+  std::vector<int> again;planner.schedule(&e,30000,again);
+  require(planner.game_fleet_selection().fingerprint==out.selection.fingerprint, "GAME fleet reselection changed the mask");
+  for(int r=0;r<6500;++r)if(out.schedule[r]>=0)require(again[r]==out.schedule[r],"GAME fleet changed a held assignment");
+  return out;
+ };
+ auto generic=run(-1),disabled=run(0),uniform=run(1),tabu=run(2);
+ require(generic.schedule==disabled.schedule&&generic.actions==disabled.actions,"default-off GAME fleet changed generic behavior");
+ require(uniform.schedule!=generic.schedule&&tabu.schedule!=generic.schedule,"GAME production admission mask had no decision effect");
+ for(auto setting:settings)unsetenv(setting.first);
+ for(const char* key:{"CGAR_TRICK_LANES","CGAR_TRICK_GAME_ACTIVE_LIMIT","CGAR_TRICK_GAME_TABU"})unsetenv(key);
+ std::cout<<"GAME_FLEET_TRICK passed valid_robot_actions=78000 exact_membership_cells=254930 deterministic_mask=1 disabled_identity=1 held_tasks=protected stable_after_movement=1 explicit_gates=1 deadline=1\n";
+}
+
+int main(){try{game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

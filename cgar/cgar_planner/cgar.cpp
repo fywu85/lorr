@@ -749,6 +749,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         (native_trick_metric_ && (!static_trick_metric_ || !trick_options.remaining_flow)))
         throw std::invalid_argument("native metric requires explicit static lanes and remaining-flow; native bands require native metric");
     short_task_trick_ = trick_options.short_tasks;
+    game_active_limit_ = trick_options.game_active_limit;
+    game_tabu_ = trick_options.game_tabu;
+    game_fleet_ready_ = false;
+    game_fleet_selection_ = {};
     known_horizon_ = trick_options.known_horizon;
     horizon_margin_ = trick_options.horizon_margin;
     match_horizon_ = trick_options.match_horizon;
@@ -1119,11 +1123,12 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             if (!static_trick_metric_)
                 std::printf("[CGAR_TRICK] instance=%s provider=%s field_sha256=none learned_publications=enabled\n",
                     env->trick_instance.c_str(), short_task_trick_ ? "short-task-preference" : "ablation-control");
-            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s%s%s\n",
+            const std::string fleet_components = game_active_limit_ ? " game_active_limit=" + std::to_string(game_active_limit_) + " game_tabu=" + std::to_string(game_tabu_) : "";
+            std::printf("[CGAR_TRICK_COMPONENTS] instance=%s lanes=%d short_tasks=%d matching=%d remaining_flow=%d native_metric=%d native_bands=%d hrrn=%d oldest_admission=%d started_tasks=protected%s%s%s%s\n",
                 env->trick_instance.c_str(), static_trick_metric_, short_task_trick_, trick_options.matching, trick_options.remaining_flow, native_trick_metric_, trick_options.native_bands, hrrn_, !short_task_trick_,
                 tricks::random_instance(env->trick_instance) ? (trick_options.random_uniform ? " random_uniform=1" : " random_uniform=0") : "",
                 temporal_rank_squared_ ? " rank_squared=1" : "",
-                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : "");
+                trick_options.random_reference == 1 ? " random_reference=1" : trick_options.random_reference == 2 ? " random_reference=2" : "", fleet_components.c_str());
         }
         if (flow_strength_ && !static_trick_metric_) flow_guidance_.initialize(cert_.free, cert_.rows, cert_.cols,
             env_int("CGAR_FLOW_WARMUP", 128), flow_strength_, env_int("CGAR_FLOW_MIN_SAMPLES", 8),
@@ -2879,6 +2884,21 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     if (horizon_margin_) { horizon_margins_.observe(*env); check_deadline(deadline_, "horizon_margin_observe"); }
     proposed = env->curr_task_schedule;
     proposed.resize(n_, -1);
+    if (game_active_limit_ && !game_fleet_ready_) {
+        if (env->curr_states.size() != static_cast<size_t>(n_))
+            throw std::invalid_argument("GAME fleet selection requires complete observed starts");
+        std::vector<int> starts; starts.reserve(n_);
+        for (const auto& state : env->curr_states) starts.push_back(state.location);
+        auto selection = select_game_fleet(starts, proposed, game_active_limit_, game_tabu_,
+            static_cast<uint64_t>(env_int("CGAR_SEED", 0)),
+            [&] { check_deadline(deadline_, "game_fleet_selection"); });
+        game_fleet_selection_ = std::move(selection); game_fleet_ready_ = true;
+        std::printf("[CGAR_TRICK_GAME_FLEET] nominal_active=%d active=%d disabled=%d tabu=%d tabu_kept=%d held_kept=%d eligible_pool=%d mask_fnv1a64=%llu asset_sha256=%s selection=once rng=independent_splitmix idle_motion=cgar held_tasks=protected\n",
+            game_active_limit_, n_ - game_fleet_selection_.disabled, game_fleet_selection_.disabled,
+            game_tabu_, game_fleet_selection_.tabu_kept, game_fleet_selection_.held_kept,
+            game_fleet_selection_.eligible_pool, static_cast<unsigned long long>(game_fleet_selection_.fingerprint),
+            game_tabu_ ? tricks::game_tabu_source_sha256 : "none");
+    }
     prepare_capacity_mode();
     if (capacity_mode_ && !parking_ready_) { check_deadline(deadline_, "capacity_schedule"); return; }
     table_budget_ = sched_tables_;
@@ -2891,7 +2911,8 @@ void Cgar::schedule(SharedEnvironment* env, Clock::time_point deadline, std::vec
     if (chain_flow_pricing_) for (auto it = chain_table_basis_.begin(); it != chain_table_basis_.end();)
         it = free_tasks_.count(it->first) ? std::next(it) : chain_table_basis_.erase(it);
     std::vector<int> robots;
-    for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i]) robots.push_back(i);
+    for (int i = 0; i < n_; ++i) if (proposed[i] == -1 && !parked_[i] &&
+        (!game_active_limit_ || !game_fleet_selection_.excluded[i])) robots.push_back(i);
     if (robots.empty() || free_tasks_.empty()) {
         reassign_unopened(proposed);
         exchange_unopened_with_pool(proposed);

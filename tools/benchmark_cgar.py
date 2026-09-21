@@ -50,7 +50,7 @@ def trick_receipt_valid(log, instance, expected_hash, expected_components=None):
             return False
         actual = dict(field.split('=', 1) for field in components[0].split()[1:] if '=' in field)
         # Legacy binaries predate these explicit components; absent means OFF.
-        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands', 'rank_squared', 'random_reference'):
+        for key in ('matching', 'remaining_flow', 'native_metric', 'native_bands', 'rank_squared', 'random_reference', 'game_active_limit', 'game_tabu'):
             if key in expected_components:
                 actual.setdefault(key, '0')
         valid = valid and actual == dict(instance=instance, started_tasks='protected',
@@ -121,8 +121,8 @@ def main():
     binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
-    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED']
-    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment
+    component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED', 'CGAR_TRICK_GAME_TABU']
+    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment or 'CGAR_TRICK_GAME_ACTIVE_LIMIT' in environment
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick <instance>')
     if any(environment.get(k, '0') not in ('0', '1') for k in component_keys):
@@ -130,6 +130,13 @@ def main():
     reference = environment.get('CGAR_TRICK_RANDOM_REFERENCE', '0')
     if reference not in ('0','1','2'):
         parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1 or 2')
+    game_active = environment.get('CGAR_TRICK_GAME_ACTIVE_LIMIT', '0')
+    if not re.fullmatch(r'[0-9]+', game_active) or int(game_active) > 6500:
+        parser.error('CGAR_TRICK_GAME_ACTIVE_LIMIT must be in [0,6500]')
+    if any(k in environment for k in ('CGAR_TRICK_GAME_ACTIVE_LIMIT','CGAR_TRICK_GAME_TABU')) and args.trick != 'GAME':
+        parser.error('GAME fleet settings require --trick GAME')
+    if environment.get('CGAR_TRICK_GAME_TABU','0') == '1' and not int(game_active):
+        parser.error('GAME tabu selection requires a positive active limit')
     expected_components = None
     if args.trick and explicit_components:
         short = int(environment.get('CGAR_TRICK_SHORT_TASKS', '0'))
@@ -145,6 +152,13 @@ def main():
     if args.trick in ('RANDOM-01', 'RANDOM-02', 'RANDOM-03', 'RANDOM-04', 'RANDOM-05') and expected_components is not None:
         expected_components['random_uniform'] = int(environment.get('CGAR_TRICK_RANDOM_UNIFORM', '0'))
         expected_components['random_reference'] = int(reference)
+    if args.trick == 'GAME' and expected_components is not None:
+        expected_components['game_active_limit'] = int(game_active)
+        expected_components['game_tabu'] = int(environment.get('CGAR_TRICK_GAME_TABU','0'))
+    if int(game_active) and environment.get('CGAR_TRICK_GAME_TABU','0') == '1' and provenance is not None:
+        fleet_asset = 'cgar/tricks/game_fleet_tabu.hpp'
+        if provenance['sources'].get(fleet_asset) != hashlib.sha256((ROOT/fleet_asset).read_bytes()).hexdigest():
+            parser.error('GAME fleet asset does not match the frozen binary source manifest')
     expected_trick_field = 'none' if args.trick else None
     if args.trick and environment.get('CGAR_TRICK_LANES', '1') == '1':
         native = environment.get('CGAR_TRICK_NATIVE_METRIC', '0') == '1'

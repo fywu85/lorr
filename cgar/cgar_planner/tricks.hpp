@@ -26,7 +26,7 @@ inline void validate_name(const std::string& name) {
         throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04, RANDOM-05");
 }
 
-struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; };
+struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; bool rank_squared = false; int random_reference = 0; int game_active_limit = 0; bool game_tabu = false; };
 
 // Environment settings select components only after explicit CLI activation.
 // Even a zero-valued setting without --trick is rejected to prevent silent use.
@@ -47,8 +47,10 @@ inline Options options(const std::string& instance) {
     const char* random_uniform = std::getenv("CGAR_TRICK_RANDOM_UNIFORM");
     const char* rank_squared = std::getenv("CGAR_TRICK_RANK_SQUARED");
     const char* reference = std::getenv("CGAR_TRICK_RANDOM_REFERENCE");
+    const char* game_active = std::getenv("CGAR_TRICK_GAME_ACTIVE_LIMIT");
+    const char* game_tabu = std::getenv("CGAR_TRICK_GAME_TABU");
     if (instance.empty()) {
-        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference)
+        if (lanes || short_tasks || matching || remaining_flow || native_metric || native_bands || known_horizon || horizon_margin || margin_percentile || neutral_tail || match_horizon || native_turn_cost || prewarm_threads || random_uniform || rank_squared || reference || game_active || game_tabu)
             throw std::invalid_argument("CGAR_TRICK component settings require --trick <instance>");
         return {};
     }
@@ -59,6 +61,20 @@ inline Options options(const std::string& instance) {
         if (std::string(value) == "1") return true;
         throw std::invalid_argument("CGAR_TRICK component settings must be 0 or 1");
     };
+    int active_limit = 0;
+    if ((game_active || game_tabu) && instance != "GAME")
+        throw std::invalid_argument("GAME fleet selectors require --trick GAME");
+    if (game_active) {
+        if (!*game_active) throw std::invalid_argument("GAME active limit must be an integer in [0,6500]");
+        for (const char* p = game_active; *p; ++p) {
+            if (*p < '0' || *p > '9' || active_limit > (6500 - (*p - '0')) / 10)
+                throw std::invalid_argument("GAME active limit must be an integer in [0,6500]");
+            active_limit = active_limit * 10 + (*p - '0');
+        }
+    }
+    const bool preserve_tabu = boolean(game_tabu, false);
+    if (preserve_tabu && !active_limit)
+        throw std::invalid_argument("GAME tabu selection requires a positive active limit");
     int reference_id = 0;
     if (reference) {
         const std::string value(reference);
@@ -135,7 +151,7 @@ inline Options options(const std::string& instance) {
     if (guard && (!horizon || !boolean(matching, false)))
         throw std::invalid_argument("matching horizon guard requires configured horizon and unopened matching");
     return {boolean(lanes, true), boolean(short_tasks, false), boolean(matching, false), boolean(remaining_flow, false),
-            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id};
+            boolean(native_metric, false), boolean(native_bands, false), horizon, margin, percentile, neutral, guard, native_turn, prewarm, uniform, squared, reference_id, active_limit, preserve_tabu};
 }
 
 // Select only after an explicit CLI name. No filename or size based dispatch:

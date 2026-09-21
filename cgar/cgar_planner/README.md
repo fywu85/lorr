@@ -534,3 +534,14 @@ and the oriented oracle supports edges below that value. Uniform forward20
 controls are available with `CGAR_TRICK_RANDOM_UNIFORM=1`. All fields retain
 occupancy/fleet gates and fingerprints; field source and costs appear in receipts.
 [Source verification and approximation scope](../../experiments/allmaps-20260920/random-reference/README.md).
+
+## Explicit GAME fleet-selection experiment
+
+`--trick GAME` with `CGAR_TRICK_GAME_ACTIVE_LIMIT=2750` restricts new task
+admissions to a deterministic fleet selected once. The default0 performs no
+selection. `CGAR_TRICK_GAME_TABU=1` preserves the starting-cell exemptions from
+Kitty Knight's archived asset; it requires a positive limit. Existing task
+owners always remain eligible, even if that exceeds the nominal fleet size.
+All robots remain movable by CGAR, and the motion/primary/recovery code is
+unchanged. This is a separate throughput experiment, not a liveness guarantee.
+[Design, attribution, and planned ablation](../../experiments/allmaps-20260920/game-fleet/README.md).

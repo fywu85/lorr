@@ -34,6 +34,7 @@
 #include "temporal_warm_start.hpp"
 #include "flow_guidance.hpp"
 #include "tricks.hpp"
+#include "game_fleet.hpp"
 #include "guide_routes.hpp"
 
 #include <array>
@@ -463,6 +464,7 @@ public:
     void plan(SharedEnvironment* env, int time_limit_ms, std::vector<Action>& actions);
     void plan(SharedEnvironment* env, std::chrono::steady_clock::time_point deadline, std::vector<Action>& actions);
 
+    const GameFleetSelection& game_fleet_selection() const { return game_fleet_selection_; }
     int primary() const { return primary_; }
     int parked_count() const;
     bool active_certified() const { return active_certified_; }
@@ -602,6 +604,9 @@ private:
     bool enable_locks_ = true;
     bool hrrn_ = true;
     bool short_task_trick_ = false;
+    int game_active_limit_ = 0;
+    bool game_tabu_ = false, game_fleet_ready_ = false;
+    GameFleetSelection game_fleet_selection_;
     int known_horizon_ = 0;
     bool known_horizon_passed_ = false;
     bool horizon_margin_ = false;
