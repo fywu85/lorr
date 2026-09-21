@@ -257,6 +257,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     }
     std::vector<uint64_t> seeds_for_workers(temporal_workers_);
     for (auto& seed : seeds_for_workers) seed = temporal_rng_();
+    TemporalPriorityBatch priority_batch;
+    if (temporal_priority_noise_) priority_batch = temporal_priority_portfolio_.prepare(
+        priorities, order, goals, temporal_workers_, flow_cost_scale_, env_->curr_timestep,
+        [&] { check_deadline(deadline_, "temporal_priority_portfolio"); });
     const auto search_started = Clock::now();
     std::vector<std::unique_ptr<TemporalPibt>> results(temporal_workers_);
     std::vector<std::exception_ptr> errors(temporal_workers_);
@@ -273,7 +277,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 const auto* worker_initial = !initial.empty() && (!temporal_mixed_start_ || worker == 0) ? &initial : nullptr;
                 warm_started[worker] = worker_initial != nullptr;
                 run = std::make_unique<TemporalPibt>(cells, choices, pinned, power, temporal_budget_, seeds_for_workers[worker], worker_initial);
-                run->construct(order, [&] { check_deadline(deadline_, "temporal_construction"); });
+                run->construct(temporal_priority_noise_ ? priority_batch.orders[worker] : order,
+                    [&] { check_deadline(deadline_, "temporal_construction"); });
                 if (temporal_steps_) run->repair(temporal_steps_, [&] { check_deadline(deadline_, "temporal_repair"); }, temporal_candidate_limit_);
                 check_deadline(deadline_, "temporal_worker_complete");
                 results[worker] = std::move(run);
@@ -393,6 +398,13 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 orient_wait(wait, right, left);
             }
         }
+    }
+    if (temporal_priority_noise_) {
+        temporal_priority_portfolio_.remember(priority_batch, best, env_->curr_timestep);
+        if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
+            std::printf("[cgar-priority-portfolio] step=%d workers=%d noise=%d changed_orders=%d reused=%d selected_worker=%d offsets_fnv1a64=%llu\n",
+                env_->curr_timestep + 1, temporal_workers_, temporal_priority_noise_, priority_batch.changed_orders,
+                priority_batch.reused, best, static_cast<unsigned long long>(TemporalPriorityPortfolio::fingerprint(priority_batch.offsets[best])));
     }
     if (temporal_warm_start_) {
         std::vector<int> expected_orientation = ori_;

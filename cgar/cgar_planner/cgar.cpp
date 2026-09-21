@@ -901,6 +901,32 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     temporal_budget_ = std::max(1, std::min(32768, env_int("CGAR_TEMPORAL_BUDGET", 8192)));
     temporal_order_ = std::max(0, std::min(2, env_int("CGAR_TEMPORAL_ORDER", 1)));
     temporal_rng_.seed(static_cast<uint64_t>(env_int("CGAR_SEED", 0)));
+    // New selectors parse strictly; disabled defaults consume no RNG draws and
+    // do not allocate per-worker orders or change the existing repair streams.
+    auto priority_setting = [](const char* name, int fallback, int maximum) {
+        const char* raw = std::getenv(name);
+        if (!raw) return fallback;
+        int value = 0;
+        if (!*raw) throw std::invalid_argument(std::string(name) + " must be a bounded nonnegative integer");
+        for (const char* p = raw; *p; ++p) {
+            if (*p < '0' || *p > '9' || value > (maximum - (*p - '0')) / 10 || *p - '0' > maximum)
+                throw std::invalid_argument(std::string(name) + " must be a bounded nonnegative integer");
+            value = value * 10 + (*p - '0');
+        }
+        return value;
+    };
+    temporal_priority_noise_ = priority_setting("CGAR_TEMPORAL_PRIORITY_NOISE", 0, 1000000);
+    const int priority_persist = priority_setting("CGAR_TEMPORAL_PRIORITY_PERSIST", 0, 1);
+    const int priority_mutation = priority_setting("CGAR_TEMPORAL_PRIORITY_MUTATION", 30, 100);
+    if ((temporal_priority_noise_ && (!temporal_ || temporal_workers_ < 2 || !temporal_order_)) ||
+        (!temporal_priority_noise_ && (priority_persist || priority_mutation != 30)))
+        throw std::invalid_argument("priority portfolio requires temporal mode, distance ordering, at least two workers and positive noise for persistence/mutation");
+    temporal_priority_portfolio_.configure(temporal_priority_noise_, priority_persist, priority_mutation,
+        static_cast<uint64_t>(env_int("CGAR_SEED", 0)));
+    if (temporal_priority_noise_)
+        std::printf("[cgar-priority-portfolio-config] noise=%d persistent=%d mutation_percent=%d workers=%d units=base_forward_cost power=unchanged fixed_work=1\n",
+            temporal_priority_noise_, priority_persist, priority_mutation, temporal_workers_);
+
     if (temporal_ && !orientation_guidance_) throw std::invalid_argument("temporal policy requires orientation guidance");
     pibt_reference_ = env_int("CGAR_PIBT_REFERENCE", 0) != 0;
     pibt_tickets_ = env_int("CGAR_PIBT_TICKETS", 0) != 0;

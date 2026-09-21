@@ -1,0 +1,63 @@
+# Transfer from the independent RANDOM-05 solver into CGAR
+
+The user requested this focused study on2026-09-20, after making throughput the
+primary metric. Read-only reference: source233f5bf, the independently replayed
+3872-task standalone result. [Source fingerprints](source-review.json).
+The other agent's working tree, tests, builds and jobs remain untouched. New
+CGAR experiments may evaluate the archived RANDOM-05 input in separate CGAR
+run directories; they are not changes to the standalone solver.
+
+## What the code actually does
+
+| Mechanism | Frozen RANDOM-05 implementation | CGAR difference and transfer |
+|---|---|---|
+| Exact remaining task cost | `Chain::Chain/cost`, engine.cpp564-602: backward dynamic programming over all four arrival headings at every remaining waypoint | CGAR's main temporal score targets the current waypoint; remaining-chain order adds spatial tail distance. The existing next-errand option is not this full chain metric. A chain-conditioned oriented oracle is a substantial general candidate. |
+| Motion pipeline | `Engine::advance`,803-1144: execute prior forward promises, choose the following movement on exact predicted occupancy, pre-rotate idle robots; a moving robot can only continue straight in the next promised move | CGAR searches a five-step reservation footprint each call and usually discards its ordinary suffix. A pipeline proposal must be reconciled with CGAR primary/recovery paths, not substituted as a standalone solver. |
+| Priority search | `compute`,1482-1633: incumbent priority offsets, mutations, one-quarter global restarts, multiple elite parents and retained vectors | Existing CGAR workers share a construction order; repair random streams differ. First transfer: independently perturb construction order, optionally retain the winning offsets, then run the unchanged CGAR kernel. |
+| Multiple continuations | `rollout/evaluate`,1182-1347: several depth8 futures share the exact first actions and promises; average their progress scores | CGAR chooses workers using one five-step score. A later transfer can evaluate candidates under common future perturbations. It needs a faithful task/heading simulator and fixed complete work, not a renamed larger worker count. |
+| Assignment | `match`,631-732: jointly match idle and unopened-task robots to all eligible tasks, exact Hungarian below a declared size; guided pickup cost plus0.25chain length and small keep bonus | CGAR's later matching is bounded local unopened-task permutation, with cooldown and one-retarget limit. The present generic matching-factor test is a first measurement; full-pool joint assignment remains a separate proposed change. |
+| Cycles and dead ends | `advance`: evacuating pocket priority, optimistic spatial intent for turns, and profitable completely occupied rectangles move as one cycle | CGAR has certificates, protected recovery and temporal displacement. Test cycle proposals within those constraints if motion diagnostics justify them. Do not remove protections just to resemble the reference. |
+| Traffic field | `Graph`,324-455: all-pairs demand assignment, stronger opposing-flow prices, then soft directional edges; the selected field/flip is tuned to this map | CGAR currently learns flow from early trajectories. The chosen RANDOM-05 field is a trick; any field transfer must be behind `--trick RANDOM-04`/`RANDOM-05` and independently fingerprinted. |
+| Known horizon | `compute`: suppress goals unlikely to finish before the declared end, while retaining started-task ownership | This is a trick, not a generic scheduling guarantee. Keep it separate from pipeline/priority/chain improvements. |
+
+The standalone result without horizon triage is3503tasks on four cores; its
+field remains tuned. Therefore cutoff alone cannot explain its strength. The
+standalone3770four-core candidate also beat matched NMS on two frozen fresh
+inputs by25.42%aggregate. Those results establish useful ideas to study; they
+are not CGAR results or matched evidence for a CGAR transfer.
+
+Recent standalone work also supplies negative controls: operation-sequence
+prototypes remained weaker than its pipeline; component recombination, added
+completion rewards, and age retention lost in the recorded full cases. Do not
+assume more search, stronger fairness, or more elaborate scoring improves tasks.
+
+## First bounded transfer: persistent construction priorities
+
+`CGAR_TEMPORAL_PRIORITY_NOISE` defaults0. Positive noise perturbs the existing
+current-goal/remaining-chain distance order in physical-forward-cost units.
+This adapts the reference's priority-search structure; it does not copy its
+age-based PIBT policy. Candidate scoring/power stay identical across workers.
+Worker0 re-evaluates the parent unchanged, every fourth alternative restarts,
+and other alternatives mutate30%of entries by default. Optional persistence
+retains the selected complete search's offsets for the next consecutive step.
+No score, plan or assignment is reused without evaluating the current state.
+
+All candidates still use CGAR's temporal reservations, fixed primary and recovery
+seeds, collision checks and prescribed work. A deadline is an error, never a
+partial portfolio. Default0 must preserve original actions and random streams.
+This is a general opt-in mechanism with no filename or map-specific branch.
+
+The verified remaining-chain rank factor already scores1249on RANDOM-04 versus
+842for the same bounded-work control, on one full1000-step seed0run. The
+older uncapped profile scored997with much longer steps; NMS's published target
+is2547. This is progress, not a claim that the dense gap is closed.
+
+Predeclare new portfolio comparisons before running: chain-rank one-worker
+control (4Mglobal candidate cap), eight-worker control (0.5Mper worker), and
+8worker noise50 cold, noise50 persistent, noise200 persistent. Keep4regions x
+4Mcandidates x2rounds, the scheduler and all other options fixed. Eight-worker
+construction can overshoot per-worker caps, so compare measured candidate work
+and latency rather than calling nominal4M an exact equal-work guarantee.
+Full RANDOM-04 and RANDOM-05 horizons determine scores;4physical cores per case,
+32decimalGB and5sdevelopment limit. Recheck promising settings at1s and on fresh
+planner seeds. Fairness tails are reported without vetoing higher throughput.

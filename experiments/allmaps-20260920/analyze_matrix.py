@@ -41,6 +41,7 @@ def main():
     p.add_argument('--inputs', type=Path, required=True)
     p.add_argument('--control', required=True)
     p.add_argument('--trick', choices=['WAREHOUSE','SORTATION'])
+    p.add_argument('--allow-random05', action='store_true', help='Explicitly include CGAR runs on RANDOM-05 without modifying the separate solver')
     p.add_argument('--hold-job')
     p.add_argument('--execute', action='store_true')
     a=p.parse_args();raw=a.raw.resolve();out=a.output.resolve();support=raw/'factor-analysis-support'
@@ -55,9 +56,10 @@ def main():
             copies['experiments/'+name]=ROOT/'experiments'/name
         for name,source in copies.items():
             target=support/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
-        write(raw/'factor-analysis-request.json',dict(commit=a.commit,control=a.control,trick=a.trick,files={n:sha(support/n) for n in copies}))
+        write(raw/'factor-analysis-request.json',dict(commit=a.commit,control=a.control,trick=a.trick,allow_random05=a.allow_random05,files={n:sha(support/n) for n in copies}))
         command=['/usr/bin/python3',str(support/'analyze_matrix.py'),'--raw',str(raw),'--output',str(out),'--commit',a.commit,'--variants',str(support/'variants.json'),'--inputs',str(support/'inputs.json'),'--control',a.control,'--execute']
         if a.trick:command+=['--trick',a.trick]
+        if a.allow_random05:command+=['--allow-random05']
         job=raw/'factor-analysis.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,command))+'\n')
         submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q','-pe','threaded','1','-binding','linear:1',
                 '-l','exclusive=false,h_rt=00:45:00,h_vmem=12G','-m','n','-N','cgar_crossmap_analysis','-j','y','-o',str(raw/'factor-analysis.log'),'-S','/bin/bash']
@@ -66,7 +68,7 @@ def main():
         write(raw/'factor-analysis-submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout))
         r.check_returncode();assert re.fullmatch(r'\d+\s*',r.stdout);print(r.stdout,end='',flush=True)
         subprocess.run(['qrls',r.stdout.strip()],check=True);return
-    request=read(raw/'factor-analysis-request.json');assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick
+    request=read(raw/'factor-analysis-request.json');assert request['commit']==a.commit and request['control']==a.control and request['trick']==a.trick and request.get('allow_random05',False)==a.allow_random05
     for name,expected in request['files'].items():assert sha(support/name)==expected,name
     sys.path.insert(0,str(support));from cpu_resources import cpu_resources
     from warehouse_waiting import waiting_audit
@@ -79,7 +81,7 @@ def main():
     assert sha(raw/'lifelong')==build['binary_sha256']
     profiles=read(support/'variants.json');inputs=read(support/'inputs.json')
     for path,expected in inputs['sha256'].items():assert sha(Path(path))==expected,path
-    assert set(spec['instances'])==set(inputs['instances']) and 'RANDOM-05' not in spec['instances']
+    assert set(spec['instances'])==set(inputs['instances']) and (a.allow_random05 or 'RANDOM-05' not in spec['instances'])
     assert len(spec['cases'])==len(profiles) and a.control in profiles
     track='TRICK' if a.trick else 'GENERIC'
     assert spec['trick']==a.trick and spec['experiment_track']==track
@@ -160,7 +162,7 @@ def main():
                 source_and_test_files=len(source),binary_sha256=build['binary_sha256'],rows=rows,
                 valid_runs=sum(r['valid'] for r in rows),failed_runs=sum(not r['valid'] for r in rows),
                 disjoint_physical_core_groups=True,no_cpu_quota=True,decision_limit_ms=5000,
-                competition_budget_confirmed=False,random05_excluded=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,
+                competition_budget_confirmed=False,random05_excluded='RANDOM-05' not in spec['instances'],independent_random05_solver_untouched=True,trick=a.trick,control=a.control,full_horizons=spec['horizons'] is None,
                 scope='Archived inputs, one planner seed, frozen predeclared factor profiles. Throughput comparisons require full horizons. Shared-host5s development,32decimalGB. Simulator validates decisions; complete movement counters and waiting events are reconciled, not an independent full-action replay. No matched NMS or SoTA claim.')
     write(out/'verification.json',report);write(out/'fairness.json',fairness);write(out/'regional-work.json',work)
     for name in ['completion.json','submission.json','factor-analysis-request.json','factor-analysis-submission.json']:
@@ -170,7 +172,7 @@ def main():
            '|---|---:|---:|---:|---:|---:|']
     for r in rows:
         lines.append('| {} / {} | {} | {} | {} | {:.3f} | {} |'.format(r['instance'],r['variant'],r['tasks'] if r['valid'] else r['outcome'],round(r['mean_entry_ms'],2) if r['valid'] else 'n/a',round(r['max_entry_seconds']*1000,2) if r['valid'] else 'n/a',r['peak_rss_bytes']/1e9,r.get('outstanding_age_p90','n/a')))
-    lines+=['','Throughput is primary; fairness is a secondary reported metric. RANDOM-05 was excluded.','',
+    lines+=['','Throughput is primary; fairness is a secondary reported metric. The separate RANDOM-05 solver is untouched.','',
             '[Verification](verification.json), [paired effects](paired-results.json), [waiting](fairness.json), [regional work](regional-work.json).']
     (out/'summary.md').write_text('\n'.join(lines)+'\n')
     print('CGAR_FACTOR_MATRIX_VERIFIED',report['valid_runs'],'valid',report['failed_runs'],'failed',flush=True)

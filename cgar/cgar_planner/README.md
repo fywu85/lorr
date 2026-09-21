@@ -470,3 +470,16 @@ This requires `CGAR_TRICK_LANES=1`, `CGAR_TRICK_REMAINING_FLOW=1` and
 unchanged. `CGAR_TRICK_LANES=0` is an explicit generic ablation control.
 No Sortation profile is promoted solely by adding this capability. Provenance
 and controlled experiments live in `experiments/allmaps-20260920/sortation/`.
+
+`CGAR_TEMPORAL_PRIORITY_NOISE` enables a general priority portfolio around the
+existing temporal kernel (default0; integer0..1000000). It requires at least
+two workers and distance ordering1or2. Noise is measured in base-forward-cost
+units; scores and power weights remain shared across workers. Worker0 tests
+the current parent unchanged; every fourth alternative restarts, and others
+mutate `CGAR_TEMPORAL_PRIORITY_MUTATION` percent of entries (default30).
+`CGAR_TEMPORAL_PRIORITY_PERSIST=1` retains the selected complete search's
+offsets for the next consecutive step; default0 starts from zero each time.
+Every proposal is evaluated anew through CGAR reservations and protected paths.
+All worker searches must finish, and any deadline raises a timeout. This borrows
+priority-search structure from the separate RANDOM-05 solver; it does not yet
+implement its movement pipeline or multiple future continuations.

@@ -28,6 +28,7 @@
 #include "assignment_permutation.hpp"
 #include "temporal_geometry.hpp"
 #include "temporal_prepare.hpp"
+#include "temporal_priorities.hpp"
 #include "temporal_regions.hpp"
 #include "temporal_transactions.hpp"
 #include "temporal_warm_start.hpp"
@@ -546,6 +547,8 @@ private:
     bool temporal_mixed_start_ = false, temporal_next_errand_ = false;
     bool temporal_remaining_flow_ = false;
     std::mt19937_64 temporal_rng_{0};
+    TemporalPriorityPortfolio temporal_priority_portfolio_;
+    int temporal_priority_noise_ = 0;
     bool temporal_ = false, temporal_equal_weight_ = false;
     int temporal_steps_ = 0, temporal_budget_ = 8192, temporal_order_ = 1, temporal_distance_scale_ = 50;
     int temporal_candidate_limit_ = 0, turn_cost_ = 1, turn_prefetch_threads_ = 0, temporal_conflict_audit_stride_ = 0;
