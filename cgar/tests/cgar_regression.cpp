@@ -617,11 +617,26 @@ void assignment_permutation_regression() {
  }
  check(nonidentity>80&&forbidden_cases>100,"brute-force matrices do not exercise nontrivial/forbidden matching");
  // Integer arithmetic near INT_MAX must remain lossless for a maximum group.
- const int huge_inf=std::numeric_limits<int>::max();std::vector<int> huge(32*32,huge_inf);
- for(int i=0;i<32;++i){huge[i*32+i]=huge_inf-1;huge[i*32+(i+1)%32]=huge_inf-100;}
- auto huge_answer=minimum_pickup_permutation(huge,32,huge_inf,[]{});
- check(huge_answer.changed==32&&huge_answer.before==32LL*(huge_inf-1)&&
-       huge_answer.after==32LL*(huge_inf-100),"large finite pickup cost arithmetic overflowed");
+ const int huge_inf=std::numeric_limits<int>::max();
+ for(int n:{32,64,128,256}){
+  std::vector<int> huge(n*n,huge_inf);
+  for(int i=0;i<n;++i){huge[i*n+i]=huge_inf-1;huge[i*n+(i+1)%n]=huge_inf-100;}
+  auto answer=minimum_pickup_permutation(huge,n,huge_inf,[]{});
+  check(answer.changed==n&&answer.before==int64_t(n)*(huge_inf-1)&&answer.after==int64_t(n)*(huge_inf-100),
+   "wide finite pickup cost arithmetic overflowed");
+  // Independent row-minimum lower bound is attained by one full-width cycle.
+  std::vector<int> ring(n*n,inf);for(int i=0;i<n;++i){ring[i*n+i]=100;ring[i*n+(i+1)%n]=1;}
+  answer=minimum_pickup_permutation(ring,n,inf,[]{});
+  auto cycles=pickup_permutation_cycles(ring,answer,4,[]{});
+  check(answer.after==n&&cycles.size()==1&&cycles[0].rows.size()==size_t(n)&&cycles[0].accepted,
+   "wide assignment missed the row-minimum optimum or split its complete cycle");
+  int callbacks=0;bool timeout=false;
+  try{minimum_pickup_permutation(huge,n,huge_inf,[&]{if(++callbacks==n/2)throw Timeout("wide_assignment_fixture");});}
+  catch(const Timeout&){timeout=true;}
+  check(timeout,"wide augmentation deadline returned a partial permutation");
+ }
+ bool oversized=false;try{minimum_pickup_permutation(std::vector<int>(257*257,1),257,inf,[]{});}catch(const std::invalid_argument&){oversized=true;}
+ check(oversized,"oversized assignment escaped the fixed bound");
  // A strong cycle can be retained while a disjoint weak cycle stays identity.
  std::vector<int> split={100,1,inf,inf, 1,100,inf,inf, inf,inf,100,99, inf,inf,99,100};
  auto split_answer=minimum_pickup_permutation(split,4,inf,[]{});
@@ -637,7 +652,7 @@ void assignment_permutation_regression() {
   minimum_pickup_permutation(cycle_costs,3,inf,[]{throw Timeout("assignment_regression");});
  } catch(const Timeout&) { timeout=true; }
  check(timeout,"Hungarian callback exception was swallowed");
- std::cout<<"ASSIGNMENT_PERMUTATION passed brute_force_n<=6 matrices=192 nontrivial_optima=1 int_max_group32=1 partial_cycles=1 three_cycle=1 forbidden_edges=1 tie_break=1 explicit_callback=1\n";
+ std::cout<<"ASSIGNMENT_PERMUTATION passed brute_force_n<=6 matrices=192 nontrivial_optima=1 int_max_group256=1 wide_cycle_optima=1 wide_deadline_failure=1 partial_cycles=1 three_cycle=1 forbidden_edges=1 tie_break=1 explicit_callback=1\n";
 }
 void unopened_matching_production() {
  auto e=swap_fixture();e.num_of_agents=3;e.curr_states={State(0,0,0),State(11,0,2),State(1,0,0)};
@@ -735,6 +750,35 @@ void unopened_matching_production() {
  for(int i=0;i<130;++i)if(wide.curr_task_schedule[i]!=i||wide.task_pool.at(i).agent_assigned!=i||
     wide.task_pool.at(i).t_revealed!=-5||wide.task_pool.at(i).idx_next_loc!=0)
   throw std::runtime_error("all-resident matching changed simulator metadata");
+ const auto width32_reference=proposed;
+ // Wider complete groups retain the same ownership protections and fixed node
+ // allowance. Explicit32 must reproduce the unconfigured reference exactly.
+ int wide_matrices=0;
+ for(int width:{32,64,128,256}){
+  setenv("CGAR_REASSIGN_MATCH_GROUP_SIZE",std::to_string(width).c_str(),1);
+  auto trial=wide_initial;Cgar policy;policy.initialize(&trial,10000);
+  for(int t=0;t<2;++t){trial.curr_timestep=t;policy.plan(&trial,10000,actions);
+   auto next=step(trial,trial.curr_states,actions);if(next.empty())throw std::runtime_error("wide-group fixture collided");trial.curr_states=next;}
+  trial.curr_timestep=10;std::vector<int> result;policy.schedule(&trial,10000,result);
+  const auto& s=policy.stats();
+  if(result[0]!=0||result[1]!=129||result[129]!=1||std::set<int>(result.begin(),result.end()).size()!=130||
+   s.match_selected>4*width||s.match_groups>4||s.match_nodes>8192||s.match_matrix_entries>int64_t(4)*width*width)
+   throw std::runtime_error("wide-group work declaration, task bijection or primary protection failed");
+  if(width==32&&result!=width32_reference)throw std::runtime_error("explicit width32 changed default assignments");
+  if(width>32&&s.match_matrix_entries>s.match_selected*32)++wide_matrices;
+  for(int i=0;i<130;++i)if(trial.curr_task_schedule[i]!=i||trial.task_pool.at(i).agent_assigned!=i||trial.task_pool.at(i).idx_next_loc!=0)
+   throw std::runtime_error("wide-group matching changed simulator task metadata");
+ }
+ if(wide_matrices<2)throw std::runtime_error("wide-group production fixture did not exercise wider matrices");
+ for(const char* width:{"0","1","257","64x","-4"}){
+  setenv("CGAR_REASSIGN_MATCH_GROUP_SIZE",width,1);bool rejected=false;
+  try{auto trial=wide_initial;Cgar policy;policy.initialize(&trial,10000);}catch(const std::invalid_argument&){rejected=true;}
+  if(!rejected)throw std::runtime_error("invalid matching group width accepted");
+ }
+ setenv("CGAR_REASSIGN_MATCH_GROUP_SIZE","64",1);setenv("CGAR_REASSIGN_MATCH","0",1);bool width_rejected=false;
+ try{auto trial=wide_initial;Cgar policy;policy.initialize(&trial,10000);}catch(const std::invalid_argument&){width_rejected=true;}
+ if(!width_rejected)throw std::runtime_error("wide groups accepted without matching");
+ unsetenv("CGAR_REASSIGN_MATCH_GROUP_SIZE");setenv("CGAR_REASSIGN_MATCH","1",1);
  // A larger prescribed quota must genuinely reach beyond128participants,
  // while respecting its own groups/nodes/participants limits and protections.
  setenv("CGAR_REASSIGN_MATCH_GROUPS","64",1);
@@ -862,7 +906,7 @@ void unopened_matching_production() {
                       "CGAR_FLOW_STRENGTH","CGAR_FLOW_WARMUP","CGAR_FLOW_MIN_SAMPLES",
                       "CGAR_FLOW_MIN_MARGIN_PERCENT","CGAR_FLOW_REFRESH_INTERVAL","CGAR_PICKUP_FLOW","CGAR_GUIDE_ROUTES",
                       "CGAR_REASSIGN","CGAR_REASSIGN_POOL","CGAR_CHAIN_FLOW_PRICING","CGAR_TEMPORAL_REMAINING_FLOW"})unsetenv(key);
- std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1 bounded_broad_quota=1 pickup_near_far_holder=1\n";
+ std::cout<<"UNOPENED_MATCHING passed resident_tables=1 primary_protected=1 fixed_groups=1 cycle_commit=1 task_metadata_untouched=1 non_anchor_holder=1 fresh_holder=1 next_primary=1 fresh_fair_protected=1 bounded_broad_quota=1 wide_groups=1 width32_default_identity=1 pickup_near_far_holder=1\n";
 }
 void unopened_reassignment() {
  setenv("CGAR_REASSIGN","1",1);

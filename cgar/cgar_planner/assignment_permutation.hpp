@@ -7,6 +7,7 @@
 #include <vector>
 
 namespace cgar {
+inline constexpr int maximum_pickup_group = 256;
 struct AssignmentPermutation {
     std::vector<int> column;
     long long before = 0, after = 0;
@@ -17,7 +18,7 @@ template<class Check>
 AssignmentPermutation minimum_pickup_permutation(const std::vector<int>& costs, int n,
                                                 int unreachable, Check check) {
     check();
-    if (n < 0 || n > 32 || costs.size() != size_t(n) * n || unreachable < 1)
+    if (n < 0 || n > maximum_pickup_group || costs.size() != size_t(n) * n || unreachable < 1)
         throw std::invalid_argument("invalid bounded pickup matrix");
     int maximum = 0;
     for (int value : costs) {
@@ -83,7 +84,7 @@ template<class Check>
 std::vector<PickupPermutationCycle> pickup_permutation_cycles(const std::vector<int>& costs,
         const AssignmentPermutation& permutation, int unit_cost, Check check, int unit_limit = 16) {
     const int n = permutation.column.size();
-    if (n > 32 || costs.size() != size_t(n)*n || unit_limit < 1 || unit_limit > 255 || unit_cost < 1 || unit_cost > unit_limit)
+    if (n > maximum_pickup_group || costs.size() != size_t(n)*n || unit_limit < 1 || unit_limit > 255 || unit_cost < 1 || unit_cost > unit_limit)
         throw std::invalid_argument("invalid pickup cycle input");
     std::vector<char> used(n), targets(n);
     for (int column : permutation.column) {

@@ -652,7 +652,7 @@ private:
     int turn_build_limit_ = 32;
     int temporal_table_batch_ = 0, temporal_table_threads_ = 1;
     bool reassign_ = false, reassign_pool_ = false, reassign_match_ = false;
-    int match_group_limit_ = 4;
+    int match_group_limit_ = 4, match_group_size_ = 32;
     int match_task_budget_ = 1;
     std::unordered_map<int, int> match_task_moves_;
     int match_interval_ = 10;

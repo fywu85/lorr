@@ -1111,6 +1111,9 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     match_group_limit_ = env_int("CGAR_REASSIGN_MATCH_GROUPS", 4);
     if (match_group_limit_ < 1 || match_group_limit_ > 64 || (!reassign_match_ && match_group_limit_ != 4))
         throw std::invalid_argument("unopened matching group quota requires enabled matching and 1-64 groups (disabled default4)");
+    match_group_size_ = priority_setting("CGAR_REASSIGN_MATCH_GROUP_SIZE", 32, maximum_pickup_group);
+    if (match_group_size_ < 2 || (!reassign_match_ && match_group_size_ != 32))
+        throw std::invalid_argument("matching group size requires enabled matching and 2-256 robots (disabled default32)");
     const int match_pickup_groups = env_int("CGAR_REASSIGN_MATCH_PICKUP_GROUPS", 0);
     if (match_pickup_groups < 0 || match_pickup_groups > 1 || (match_pickup_groups && !reassign_match_))
         throw std::invalid_argument("pickup-neighborhood grouping requires enabled matching and a boolean selector");
@@ -1122,7 +1125,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     if (match_budget_audit_stride_)
         std::printf("[cgar-match-budget-shadow-config] stride=%d read_only=1 after_real_match=1 resident_only=1 include_budget=1 cooldown=20 task_disjoint_witnesses=1\n", match_budget_audit_stride_);
     if (reassign_match_)
-        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=32 node_limit=2048 task_budget=%d cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_task_budget_, match_pickup_groups_);
+        std::printf("[cgar-unopened-match] enabled=1 groups=%d group_size=%d node_limit=2048 task_budget=%d cooldown=20 resident_only=1 extra_tables=0 local_pool=all_resident anchor_candidates=128 pickup_groups=%d\n", match_group_limit_, match_group_size_, match_task_budget_, match_pickup_groups_);
     const int fresh_audit = env_int("CGAR_FRESH_PICKUP_AUDIT", 0);
     if (fresh_audit < 0 || fresh_audit > 1 || (fresh_audit &&
         (!diagnostics_ || !reassign_match_ || !hrrn_ || pickup_full_robots_ < 1 || pickup_full_robots_ > 64 || short_task_trick_)))
@@ -2616,7 +2619,8 @@ void Cgar::match_unopened(std::vector<int>& proposed) {
 
 void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& observed) {
     constexpr int anchor_limit = 128;
-    constexpr int group_size = 32, node_limit = 2048;
+    constexpr int node_limit = 2048;
+    const int group_size = match_group_size_;
     const int now = env_->curr_timestep;
     if (!reassign_match_ || now % match_interval_ != 0) return;
     ++observed.match_passes;
@@ -2674,7 +2678,7 @@ void Cgar::match_unopened_impl(std::vector<int>& proposed, bool shadow, Stats& o
     // Rotate a bounded list of anchors, then collect nearby holders from ALL
     // resident candidates. Prefiltering that spatial pool to the anchor quota
     // scatters it across a large map and leaves local groups mostly empty.
-    // The configured group quota and32-holder cap bound matrix participants.
+    // The configured group quota and per-group width bound matrix participants.
     // Rebuild the index from current states, without touching planner occupancy.
     auto& cursor = shadow ? match_budget_audit_cursor_ : match_cursor_;
     const size_t start = cursor % resident.size();
