@@ -1,6 +1,7 @@
 # Next bounded general transfer: preserve a movement decision after turning
 
-Status: opt-in prototype implemented; full tests and benchmarks pending. Motivated by the read-only
+Status: implemented and fully tested; all ten full seed0 benchmark cases verified.
+No winning setting; the prototype remains OFF in selected profiles. Motivated by the read-only
 [actual-action audit](rotation-audit-v1/audit.json) and the reference's movement
 pipeline, not a claimed causal explanation of the whole throughput gap.
 
@@ -51,7 +52,7 @@ Current test coverage includes full occupied forward and delayed-forward cycles,
 protected/goal-change dependency reset, unchanged score reference, sorted legal
 alternatives, non-turn exclusion, stale state, timeout propagation, disabled
 trajectory equivalence, and serial/parallel production episodes with protected
-primary paths and guidance updates. Results are pending GRID execution.
+primary paths and guidance updates. All fixtures and the complete existing suite passed on four bound GRID cores.
 
 ## Predeclared full-horizon comparison
 
@@ -78,3 +79,38 @@ The existing known-horizon scheduler requires an unrestricted full core, which
 these pocket-bearing instances do not provide. It cannot simply be enabled here;
 a future horizon transfer must use a valid free-space distance bound or a clearly
 labelled heuristic. Keep that change separate from this controlled comparison.
+
+## Complete measured outcome
+
+Source aa63d48cdb75f61774474faad025f049cc631f76; binary
+9fd0c126b7546880e08bce1e646f487d4f15cccf47a9e7a9f60e4964a111b82d.
+All10 full cases passed1000ms and32decimalGB checks. Maximum entry226.56ms.
+All three disabled controls exactly reproduce their previous complete
+trajectories. [Build proof](promise-build-v1/checks.json),
+[paired data and control equivalence](promise-summary.json).
+
+| Full seed0 case | Control | Promises | Short preference | Both |
+|---|---:|---:|---:|---:|
+| RANDOM-04 generic |1503|1388|—|—|
+| RANDOM-04 field +direct pickup4 |1481|1392|1346|1334|
+| RANDOM-05 field +matching +direct pickup4 |2574|2548|2539|2546|
+
+No variant improves its paired control. Keep the selected generic RANDOM-04 and
+field-guided RANDOM-05 profiles unchanged. These single-seed negatives do not
+prove that all forms of pipelining or less-fair scheduling lose. The movement
+constraint is much narrower than the standalone algorithm's fleet-wide two-step
+pipeline; compatibility resets discard most candidate after-turn suffixes.
+A faithful joint-prefix or multi-future mechanism remains a separate experiment.
+
+Full result details:
+[generic RANDOM-04](../results/random04-promise-generic-full-v1/summary.md),
+[field RANDOM-04](../results/random04-promise-trick-full-v1/summary.md),
+[field RANDOM-05](../results/random05-promise-trick-full-v1/summary.md).
+
+The [actual-action audit](promise-rotation-audit-v1/audit.json) confirms that
+promises reduce stable-goal inverse turns:12.77%->11.14% on generic RANDOM-04,
+16.43%->14.24% on field RANDOM-04,18.22%->16.76% on field RANDOM-05. Turn-to-forward
+transitions increase slightly. Throughput still falls. Therefore reducing this
+local symptom alone is not a successful throughput objective. Exact eligible
+promise retention/reset totals are retained in the paired summary; compatibility
+with the reset ordinary fleet cancels most proposed suffixes.

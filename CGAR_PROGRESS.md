@@ -56,8 +56,22 @@ reduced throughput on both maps; it remains enabled. The structural exclusion
 still exists in the selected configuration. [Certificate/event audit](experiments/allmaps-20260920/random-transfer/capacity-audit-v1/audit.json),
 [negative ablation](experiments/allmaps-20260920/results/dense-capacity-full-v1/summary.md).
 
-The next general mechanism to investigate is consistent movement after a turn.
+The first general movement-promise prototype has now been tested in full runs.
 The2574-task run has105055 immediate inverse-turn pairs away from task/goal
 changes (18.22% of eligible turn transitions). A movement promise must yield to
 CGAR's protected paths and preserve collision validity; this diagnostic alone
 does not establish a throughput gain. [Source review and transfer roadmap](experiments/allmaps-20260920/random-transfer/REVIEW.md).
+
+The after-turn promise prototype and the explicit removal of forced-oldest
+admissions both lost their paired seed0 controls. Generic RANDOM-04 changed
+1503->1388 with promises. Field-guided RANDOM-04 scored1481/1392/1346/1334
+(control/promises/short preference/both); RANDOM-05 scored2574/2548/2539/2546.
+All ten runs were valid under1s, and disabled controls preserved whole trajectories.
+Selected bests are unchanged. [Complete negative result](experiments/allmaps-20260920/random-transfer/MOVEMENT_PROMISE_DESIGN.md).
+
+The parallel trick track now includes explicit NMS CITY/GAME guidance providers,
+verified against the unchanged archived constructor and independent formulas.
+Their full CGAR tests/build and strict1s field/admission comparisons are underway.
+They require `--trick CITY-01`, `--trick CITY-02` or `--trick GAME`; no throughput
+gain is claimed before the complete measurements.
+[Declared CITY/GAME comparison](experiments/allmaps-20260920/city-game/README.md).

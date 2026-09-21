@@ -16,11 +16,13 @@ ROOT=next(p for p in Path(__file__).resolve().parents if (p/'tools/cpu_resources
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def write(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--raw',type=Path,required=True);p.add_argument('--execute',action='store_true');a=p.parse_args();raw=a.raw.resolve()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--raw',type=Path,required=True);p.add_argument('--execute',action='store_true');p.add_argument('--inputs',type=Path,help='Optional JSON mapping of case labels to frozen CGAR result paths');a=p.parse_args();raw=a.raw.resolve()
  if not a.execute:
   raw.mkdir(exist_ok=False);shutil.copy2(Path(__file__),raw/'audit.py')
   names={'random04_generic1503':'cgar-dense-scheduler-generic-full-v1-20260920/generic_match64_direct_pickup4-s0-r0/RANDOM-04.json','random05_generic2036':'cgar-priority-portfolio-strict-seeds-v2-20260920/generic_noise50_cold-s0-r0/RANDOM-05.json','random05_field2574':'cgar-random05-scheduler-field-full-v1-20260920/trick_match64_direct_pickup4-s0-r0/RANDOM-05.json'}
-  paths={n:str(ROOT/'runs'/r) for n,r in names.items()};write(raw/'request.json',dict(inputs=paths,sha256={n:sha(Path(p)) for n,p in paths.items()},helper_sha256=sha(raw/'audit.py')))
+  paths=json.loads(a.inputs.read_text()) if a.inputs else {n:str(ROOT/'runs'/r) for n,r in names.items()}
+  assert paths and all(isinstance(n,str) and isinstance(p,str) and Path(p).is_absolute() for n,p in paths.items())
+  write(raw/'request.json',dict(inputs=paths,sha256={n:sha(Path(p)) for n,p in paths.items()},helper_sha256=sha(raw/'audit.py')))
   cmd=['/usr/bin/python3',str(raw/'audit.py'),'--raw',str(raw),'--execute'];job=raw/'job.sh';job.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(map(shlex.quote,cmd))+'\n')
   submit=['qsub','-h','-terse','-w','e','-cwd','-q','debian.q@research44.grid.gsb','-pe','threaded','1','-binding','linear:1','-l','exclusive=false,h_rt=00:10:00,h_vmem=4G','-m','n','-N','cgar_rotation_audit','-j','y','-o',str(raw/'job.log'),'-S','/bin/bash',str(job)]
   r=subprocess.run(submit,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);write(raw/'submission.json',dict(command=submit,returncode=r.returncode,response=r.stdout));r.check_returncode();print(r.stdout,end='',flush=True);subprocess.run(['qrls',r.stdout.strip()],check=True);return
