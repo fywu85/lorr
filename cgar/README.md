@@ -424,3 +424,12 @@ Each declared continuation still completes before a root is selected; any deadli
 fails the whole entry. The counter takes O(grid cells +12*robots) work per forecast.
 Diagnostics reconcile base cost, pair count and total cost for the incumbent and
 selected root. This is a general optional objective; it is not implicit map tuning.
+
+
+`CGAR_TRICK_RANDOM_REFERENCE_STRENGTH=25|50|75|100` requires an explicit RANDOM
+instance and NMS/KK reference1/2 with native static guidance and uniform mode off.
+It blends each existing forward cost toward20, rounded to the nearest integer
+with half ties upward. Strength100 is the original field. Turn costs, physical
+action duration and field topology do not change; routing and pickup oracles
+share the transformed field. Every field has an immutable SHA256/FNV identity.
+This is an explicitly labelled instance trick, not an implicit density switch.

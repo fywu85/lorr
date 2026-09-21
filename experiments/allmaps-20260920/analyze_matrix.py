@@ -273,6 +273,15 @@ def main():
                     assert lane['provider']=='nms-lane-directions' and lane['forward_base']=='4' and lane['turn']=='4'
                     assert lane['opposing']==str(lane_price) and lane['learned_publications']=='disabled'
                     row['adapted_lane_price']=lane_price
+                reference_strength=int(case['environment'].get('CGAR_TRICK_RANDOM_REFERENCE_STRENGTH','100'))
+                strength_config=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_RANDOM_REFERENCE_STRENGTH] ')]
+                if reference_strength!=100:
+                    assert name.startswith('RANDOM-') and reference_strength in (25,50,75)
+                    assert case['environment'].get('CGAR_TRICK_RANDOM_REFERENCE') in ('1','2')
+                    assert case['environment'].get('CGAR_TRICK_RANDOM_UNIFORM','0')=='0'
+                    assert strength_config==[dict(value=str(reference_strength),base='20',rounding='nearest_half_up',turn='unchanged',geometry='unchanged',fixed_static='1')]
+                    row['random_reference_strength']=strength_config[0]
+                else:assert not strength_config
                 task_cap=int(case['environment'].get('CGAR_TRICK_RANDOM_TASK_CAP','0'))
                 task_cap_config=[fields(l) for l in logs if l.startswith('[CGAR_TRICK_RANDOM_TASK_CAP] ')]
                 task_cap_samples=[fields(l) for l in logs if l.startswith('[cgar-task-cap] ')]

@@ -141,7 +141,7 @@ def main():
     if provenance is not None and provenance["binary_sha256"] != binary_hash:
         parser.error("source-manifest does not describe this executable")
     component_keys = ['CGAR_TRICK_LANES', 'CGAR_TRICK_SHORT_TASKS', 'CGAR_TRICK_UNOPENED_MATCH', 'CGAR_TRICK_REMAINING_FLOW', 'CGAR_TRICK_NATIVE_METRIC', 'CGAR_TRICK_NATIVE_BANDS', 'CGAR_TRICK_RANDOM_UNIFORM', 'CGAR_TRICK_RANK_SQUARED', 'CGAR_TRICK_GAME_TABU', 'CGAR_TRICK_HORIZON_MANHATTAN']
-    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment or 'CGAR_TRICK_GAME_ACTIVE_LIMIT' in environment or 'CGAR_TRICK_LANE_COST' in environment
+    explicit_components = any(k in environment for k in component_keys) or 'CGAR_TRICK_RANDOM_REFERENCE' in environment or 'CGAR_TRICK_GAME_ACTIVE_LIMIT' in environment or 'CGAR_TRICK_LANE_COST' in environment or 'CGAR_TRICK_RANDOM_REFERENCE_STRENGTH' in environment
     if explicit_components and not args.trick:
         parser.error('CGAR_TRICK component settings require --trick <instance>')
     if any(environment.get(k, '0') not in ('0', '1') for k in component_keys):
@@ -149,6 +149,12 @@ def main():
     reference = environment.get('CGAR_TRICK_RANDOM_REFERENCE', '0')
     if reference not in ('0','1','2','3'):
         parser.error('CGAR_TRICK_RANDOM_REFERENCE must be 0, 1, 2 or 3')
+    reference_strength = environment.get('CGAR_TRICK_RANDOM_REFERENCE_STRENGTH', '100')
+    if reference_strength not in ('25','50','75','100'):
+        parser.error('CGAR_TRICK_RANDOM_REFERENCE_STRENGTH must be25,50,75 or100')
+    if 'CGAR_TRICK_RANDOM_REFERENCE_STRENGTH' in environment and (args.trick not in ('RANDOM-01','RANDOM-02','RANDOM-03','RANDOM-04','RANDOM-05') or reference not in ('1','2') or
+            environment.get('CGAR_TRICK_LANES','1') != '1' or environment.get('CGAR_TRICK_NATIVE_METRIC','0') != '1' or environment.get('CGAR_TRICK_RANDOM_UNIFORM','0') != '0'):
+        parser.error('reference strength requires explicit RANDOM NMS/KK native lanes without uniform mode')
     lane_cost = environment.get('CGAR_TRICK_LANE_COST', '16')
     if lane_cost not in ('4','8','12','16','24','32','48','64'):
         parser.error('CGAR_TRICK_LANE_COST must be 4, 8, 12, 16, 24, 32, 48 or 64')
@@ -207,6 +213,14 @@ def main():
             declaration = asset_prefix + '_lane' + lane_cost + '_field_sha256'
         if random_field and environment.get('CGAR_TRICK_RANDOM_UNIFORM', '0') == '1':
             declaration = 'random_uniform_field_sha256'
+        if reference_strength != '100':
+            # Verify both the unchanged base asset above and the derived identity
+            # header against the exact frozen source manifest.
+            contrast_name = 'cgar/tricks/random_reference_contrast.hpp'
+            asset = (ROOT / contrast_name).read_bytes()
+            if provenance is not None and provenance['sources'].get(contrast_name) != hashlib.sha256(asset).hexdigest():
+                parser.error('reference contrast identity does not match frozen binary source')
+            declaration = asset_prefix + '_contrast' + reference_strength + '_native_nobands_field_sha256'
         match = re.search(declaration + r'\[\] = "([0-9a-f]{64})"', asset.decode())
         if not match:
             parser.error('trick asset does not declare its field hash')
