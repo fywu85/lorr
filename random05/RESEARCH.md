@@ -1681,3 +1681,30 @@ invariance, two-order component salvage and exhausted expansion budgets. Full
 RANDOM-01/02 and selected RANDOM-03 comparisons are required before promotion;
 there is no throughput claim yet. Larger-label memory and search overhead are
 explicit risks, especially near the strict one-second bound.
+
+
+## 2026-09-21: all-density follow-ups after stronger-reference phase audit
+
+The read-only all-random-bottlenecks-v2 report compares every current selected
+trace with max(NMS,KK) on that exact archived input. RANDOM-01 has only5.7% of
+all robot steps in excess of the relaxed completed-loaded-route bound, versus
+33.0%/46.4%/59.6% on03/04/05. Those gaps include unavoidable collisions and are
+not a throughput forecast. RANDOM-04 and NMS2649 are tied at2417 completions
+atstep900; the entire selected133-task lead appears in the final100steps.
+
+Two predeclared configuration tests reuse the fully audited source159 binary:
+- Crowded04/05: briefly raise the admission cap (04:620/700 versus560;
+ 05:740/800 versus680) for25/100steps, then restore the ordinary cap while
+ preserving already opened tasks. Prior source148 startup tests only lowered
+ caps. Ten full cases include unchanged2782/4242 controls.
+- Sparse01/02: rank-weight the window objective by remaining visible task work,
+ using the already implemented score rank powers0/0.125/0.5/1. No previous
+ archived01/02 manifest enabled these nonzero powers. Eight full cases include
+ unchanged729/1408 controls. This tests concentrating limited conflict resolution
+ on earlier completions, while all proposals remain complete and legal.
+
+Both are explicitly labelled --trick INSTANCE presets. They use no hidden future
+tasks and change no simulator or reference team. Full replay, strict deadlines,
+source identity and exact disabled controls remain required. These are hypotheses,
+not measured gains. The independent prefix-search experiment continues on
+RANDOM-01/02/03, and both new coordination mechanisms have full all-five trials.
