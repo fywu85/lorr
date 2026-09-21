@@ -65,7 +65,8 @@ int Engine::rescore_candidates(const SharedEnvironment& env,const Frame& frame,
             const auto& old=results[finalists[j]];
             std::vector<double> branch_scores;
             checked[j]=evaluate(frame,old.offsets,futures,old.cycle_moves,
-                                cfg.rescore_static_weight>=0?&branch_scores:nullptr);
+                                cfg.rescore_static_weight>=0?&branch_scores:nullptr,
+                                nullptr,old.early_moves);
             if(cfg.rescore_static_weight>=0)
                 checked[j].score=weighted_static_future_score(branch_scores,cfg.rescore_static_weight);
             const auto& fresh=checked[j];

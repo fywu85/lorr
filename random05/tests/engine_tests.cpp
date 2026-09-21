@@ -938,6 +938,9 @@ void optional_immediate_moves() {
     cfg.futures=192;cfg.screen_branches=2;cfg.screen_keep=2;cfg.threads=1;
     const auto screened=simulate(cfg,12,5,5,true);cfg.threads=3;
     require(screened==simulate(cfg,12),"screened immediate-move proposals changed with worker scheduling");
+    cfg.rescore_roots=2;cfg.rescore_branches=4;cfg.threads=1;
+    const auto rescored=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(rescored==simulate(cfg,12),"rescoring substituted an optional immediate-move decision");
 }
 
 void remaining_work_priorities() {
