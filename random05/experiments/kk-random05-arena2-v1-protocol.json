@@ -1,0 +1,15 @@
+{
+  "declared_utc": "2026-09-21T20:28:54.667270+00:00",
+  "purpose": "Test allocator arena cap after original KK exhausts 32GB virtual address space with low resident RAM",
+  "evidence": "Monitored unchanged source fails on research35 and research36 at timestep35. PeakVmSize~31,248,748KiB (~31,998,717,952 bytes),RSS~89MB,33threads,process-count limit>6million. Original limit32000000000bytes retained.",
+  "cases": [
+    "random05/experiments/kk-random05-arena2-research35-full-v1.json",
+    "random05/experiments/kk-random05-arena2-research36-full-v1.json"
+  ],
+  "sole_environment_change": {
+    "MALLOC_ARENA_MAX": "2"
+  },
+  "unchanged": "Binary, input, task pool, source,32workers,16physicalcores,1sentries,30spreprocessing,32decimalGBaddress-spaceguard,full2000steps; retain read-only sampling.",
+  "claim": "Allocator reservation is a hypothesis being tested; no throughput baseline or fix is claimed before completion.",
+  "preserve_failures": true
+}
