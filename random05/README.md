@@ -33,6 +33,15 @@ rank weighting (`R05_SCORE_RANK_POWER`) applies to reactive look-ahead and
 windowed LNS costs. It favors shorter remaining chains and requires a trick flag;
 a declared `R05_SCORE_RANK_STEPS` can limit it to startup.
 
+Optional `R05_MATCH_FEASIBLE=1` also requires a known `R05_HORIZON` and the
+matching trick flag. It rejects unopened task/robot pairs whose physical
+collision-free completion lower bound exceeds the remaining steps, using an
+independent unit-action metric. Opened tasks remain locked; no task leaves the
+visible pool. Idle alternatives preserve admission caps and configured idle
+prices. Without an idle price, joint matching prefers maximum feasible
+cardinality before the existing cost objective. The option is experimental and
+disabled by default; see [the diagnosis](results/all-random-bottlenecks-v2/REPORT.md).
+
 Development uses a fixed number of complete futures (`R05_K`) of depth
 `R05_DEPTH`. An optional `R05_FIRST_K` declares a smaller fixed count for
 timestep 0 to leave room for startup work. `R05_THREADS` controls parallel workers. A deadline overrun raises an

@@ -1,6 +1,6 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-21 22:56 UTC following the user's explicit scope and baseline corrections.
+Updated 2026-09-21 23:28 UTC following the user's explicit scope and baseline corrections.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04 and RANDOM-05. Make a substantial, evidence-driven effort on every instance, developing general improvements and separately labelled instance tricks. Always compare each instance with max(NMS, Kitty Knight).**
 
@@ -28,6 +28,8 @@ The table's10% values are useful yardsticks for all instances. Only RANDOM-03/04
 
 ## Current next work
 
-The general auction gains now have five paired planner seeds: +1.85% on RANDOM-03 and +4.31% on RANDOM-04, positive in every pair. They leave the selected bests unchanged. Two new general coordination mechanisms are undergoing full comparisons on all five densities (32 face-cycle cases and30 failed-wait retry cases). A separate14-case prefix-progress search experiment targets both general and trick RANDOM-01/02 profiles plus the windowed RANDOM-03 profile. Build, regression, full replay and strict runtime checks precede any promotion. Current selected records remain729/1408/2620/2782/4242.
+The general auction gain has five paired planner seeds (+1.85% on RANDOM-03 and +4.31% on RANDOM-04). General RANDOM-04 reaches1,616 with added face cycles, with paired-seed qualification pending. The32-case all-five face-cycle batch,30-case all-five PIBT retry batch,14 sparse/medium prefix-search cases and8 sparse completion-priority cases are fully audited. None raises the selected729/1408/2620/2782/4242 records. All disabled controls reproduce complete traces.
+
+Higher startup-admission presets on RANDOM-04/05 and general RANDOM-04 face-cycle qualification remain in GRID. A newly diagnosed physical deadline gate for unopened matching has frozen full-run comparisons on all five. Its initial regression fixture used the wrong run length; that failure remains archived, and a corrected build must pass before benchmarks. Keep substantive work across all five densities, pursue measured bottlenecks, and retain negative results rather than promoting attractive mechanisms without throughput evidence.
 
 The campaign remains active. Further increases in selected maxima are useful evidence; they do not alone establish a repeatable gain, fresh-input transfer or that performance cannot be improved.
