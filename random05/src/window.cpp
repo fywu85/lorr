@@ -60,7 +60,7 @@ struct Reservations {
         return from==to || other<0 || owner(t+1,from)!=other;
     }
 };
-struct Node {float f,h,g;int id,time;};
+struct Node {float f,h,g;int id,time,state,stage;};
 struct Greater {
     bool operator()(const Node& a,const Node& b) const {
         if(a.f!=b.f)return a.f>b.f;
@@ -74,6 +74,7 @@ struct Search {
     std::vector<int> parent;
     std::vector<uint32_t> seen;
     std::vector<Node> heap;
+    std::vector<const float*> heuristic_rows;
     uint32_t epoch=0;
     uint64_t expanded=0;
     bool solve(const Graph& g,const Config& cfg,const Reservations& reserve,
@@ -85,12 +86,17 @@ struct Search {
         if(++epoch==0){std::fill(seen.begin(),seen.end(),0);++epoch;}
         heap.clear();
         if(!chain)stage=0;
-        auto estimate=[&](int k,int s){return chain?chain->cost(g,k,s/4,s%4):0.f;};
+        heuristic_rows.assign(stages,nullptr);
+        if(chain)for(int k=0;k<stages-1;++k)heuristic_rows[k]=chain->cached_row(g,k);
+        auto estimate=[&](int k,int s) {
+            if(!chain || k==stages-1)return 0.f;
+            return heuristic_rows[k]?heuristic_rows[k][s]:chain->cost(g,k,s/4,s%4);
+        };
         auto push=[&](int time,int k,int s,float cost,int previous) {
             int id=(time*stages+k)*g.states+s;
             if(seen[id]==epoch && costs[id]<=cost)return;
             seen[id]=epoch;costs[id]=cost;parent[id]=previous;
-            float h=estimate(k,s);heap.push_back({cost+h,h,cost,id,time});
+            float h=estimate(k,s);heap.push_back({cost+h,h,cost,id,time,s,k});
             std::push_heap(heap.begin(),heap.end(),Greater{});
         };
         push(0,stage,state,0,-1);int count=0;
@@ -98,7 +104,7 @@ struct Search {
             std::pop_heap(heap.begin(),heap.end(),Greater{});const Node node=heap.back();heap.pop_back();
             if(costs[node.id]!=node.g)continue;
             ++count;++expanded;
-            const int s=node.id%g.states,k=(node.id/g.states)%stages,t=node.time;
+            const int s=node.state,k=node.stage,t=node.time;
             if(t==horizon) {
                 path.resize(horizon+1);int id=node.id;
                 for(int j=horizon;j>=0;--j){path[j]=id%g.states;id=parent[id];}
@@ -120,9 +126,9 @@ struct Island { Paths paths;Cost cost;uint64_t expansions=0;int accepted=0,skipp
 
 void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::vector<Action>& plan) {
     const auto& g=*graph;const int n=int(initial.loc.size()),h=cfg.window;
-    // The first call has no previous plan to warm-start repairs. Its declared
-    // fixed budget can reserve headroom without any elapsed-time early return.
-    const int iterations=env.curr_timestep==0 && cfg.window_first_iterations>0
+    // Initial calls have a weak or absent retained plan. Their declared fixed
+    // budget can reserve headroom without any elapsed-time early return.
+    const int iterations=env.curr_timestep<cfg.window_initial_steps && cfg.window_first_iterations>0
         ?cfg.window_first_iterations:cfg.window_iterations;
     auto total_cost=[&](const Paths& paths) {
         Cost out;

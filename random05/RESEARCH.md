@@ -1319,3 +1319,20 @@ construction in inner configurations. A nested-worker/checkpoint trajectory
 comparison now enables the outer cache flag and verifies the private-cache
 control is preserved. Every full source92cache benchmark has replan_roots0
 and never enters this branch, so those completed controls are unaffected.
+
+## Window A* state and heuristic reuse; declared warmup (source96)
+
+The search hot loop decodes state/stage from an integer ID with division and
+repeatedly resolves the same task heuristic row. Carry state/stage in each
+heap node and resolve stage rows once per repair. IDs, f/h scores, comparison
+ties, parent links and uncached fallbacks remain exact; no search rule changes.
+Existing worker/cached-versus-uncached/checkpoint tests and full trajectory
+controls must pass before crediting timing.
+
+Source94skipsroughly84–87% of spatial sorts and the2551 full fast-group run
+means475ms, but larger budgets/windows still overrun atstep1 (oneH24case at150).
+The initial retained plan can remain expensive beyond the first call. Add
+R05_WINDOW_INITIAL_STEPS (default1) to declare how many initial calls use the
+smaller FIRST_ITERS budget. This is a predetermined iteration schedule, not a
+clock-based cutoff. Test warmup8 separately; the subsequent strict deadline is
+unchanged and later failures remain failures.
