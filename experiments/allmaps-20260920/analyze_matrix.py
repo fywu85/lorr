@@ -41,7 +41,7 @@ def main():
     p.add_argument('--inputs', type=Path, required=True)
     p.add_argument('--control', required=True)
     p.add_argument('--seeds',type=int,nargs='+',default=[0])
-    p.add_argument('--trick', choices=['WAREHOUSE','SORTATION','RANDOM-04','RANDOM-05'])
+    p.add_argument('--trick', choices=['WAREHOUSE','SORTATION','CITY-01','CITY-02','GAME','RANDOM-04','RANDOM-05'])
     p.add_argument('--allow-random05', action='store_true', help='Explicitly include CGAR runs on RANDOM-05 without modifying the separate solver')
     p.add_argument('--hold-job')
     p.add_argument('--execute', action='store_true')

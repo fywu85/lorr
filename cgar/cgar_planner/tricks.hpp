@@ -5,6 +5,8 @@
 #include "../tricks/warehouse_native.hpp"
 #include "../tricks/sortation_native.hpp"
 #include "../tricks/random_native.hpp"
+#include "../tricks/city_native.hpp"
+#include "../tricks/game_native.hpp"
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -15,9 +17,11 @@ namespace cgar { namespace tricks {
 
 inline bool random_instance(const std::string& name) { return name == "RANDOM-04" || name == "RANDOM-05"; }
 
+inline bool grid_instance(const std::string& name) { return name == "CITY-01" || name == "CITY-02" || name == "GAME"; }
+
 inline void validate_name(const std::string& name) {
-    if (name != "WAREHOUSE" && name != "SORTATION" && !random_instance(name))
-        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, RANDOM-04, RANDOM-05");
+    if (name != "WAREHOUSE" && name != "SORTATION" && !random_instance(name) && !grid_instance(name))
+        throw std::invalid_argument("unknown --trick instance: " + name + "; supported: WAREHOUSE, SORTATION, CITY-01, CITY-02, GAME, RANDOM-04, RANDOM-05");
 }
 
 struct Options { bool lanes = false, short_tasks = false, matching = false, remaining_flow = false, native_metric = false, native_bands = false; int known_horizon = 0; bool horizon_margin = false; int horizon_margin_percentile = 0; bool native_neutral_tail = false; bool match_horizon = false; int native_turn_cost = 1; int native_prewarm_threads = 0; bool random_uniform = false; };
@@ -57,6 +61,8 @@ inline Options options(const std::string& instance) {
     if (random_instance(instance) && (boolean(native_bands, false) ||
         (boolean(lanes, true) && !boolean(native_metric, false))))
         throw std::invalid_argument("RANDOM-04/05 field requires explicit native metric without bands");
+    if (grid_instance(instance) && boolean(native_bands, false))
+        throw std::invalid_argument("CITY/GAME native fields have no outer-band surcharge");
     int horizon = 0;
     if (known_horizon) {
         if (!*known_horizon) throw std::invalid_argument("CGAR_TRICK_KNOWN_HORIZON must be an integer in [0,1000000]");
@@ -131,6 +137,14 @@ inline FieldAsset field_asset(const std::string& name) {
         return {random_rows, random_cols, random_free, random_masks, nullptr,
                 random_occupancy_sha256, nullptr, nullptr, random_native_nobands_field_sha256,
                 0, random_native_nobands_fnv1a64, random_forward};
+    if (name == "CITY-01" || name == "CITY-02")
+        return {city_rows, city_cols, city_free, city_masks, nullptr,
+                city_occupancy_sha256, city_field_sha256, nullptr, city_native_nobands_field_sha256,
+                0, city_native_nobands_fnv1a64};
+    if (name == "GAME")
+        return {game_rows, game_cols, game_free, game_masks, nullptr,
+                game_occupancy_sha256, game_field_sha256, nullptr, game_native_nobands_field_sha256,
+                0, game_native_nobands_fnv1a64};
     if (name == "SORTATION")
         return {sortation_rows, sortation_cols, sortation_free, sortation_masks,
                 sortation_native_band_hex, sortation_occupancy_sha256, sortation_field_sha256,
@@ -159,13 +173,15 @@ inline void validate_map(const std::string& name, const std::vector<int>& map, i
 inline void validate_instance(const std::string& name, const std::vector<int>& map,
                               int rows, int cols, int robots) {
     validate_map(name, map, rows, cols);
-    if ((name == "RANDOM-04" && robots != 700) || (name == "RANDOM-05" && robots != 800))
+    if ((name == "RANDOM-04" && robots != 700) || (name == "RANDOM-05" && robots != 800) ||
+        (name == "CITY-01" && robots != 1500) || (name == "CITY-02" && robots != 3000) ||
+        (name == "GAME" && robots != 6500))
         throw std::invalid_argument("--trick " + name + " requires its exact MR24 team size");
 }
 
 inline void validate_native_options(const std::string& name, bool bands, bool uniform) {
     validate_name(name);
-    if ((random_instance(name) && bands) || (uniform && !random_instance(name)))
+    if (((random_instance(name) || grid_instance(name)) && bands) || (uniform && !random_instance(name)))
         throw std::invalid_argument("native field bands/uniform selector incompatible with named instance");
 }
 

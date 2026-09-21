@@ -1,0 +1,77 @@
+{
+  "completed_utc": "2026-09-21T01:42:22.311677+00:00",
+  "track": "TRICK",
+  "status": "Verified assets only; not installed, dispatched or benchmarked in CGAR",
+  "native_source_unchanged": true,
+  "compiler_command": [
+    "/shared/share_mala/fw2449/lorr2024/env/bin/x86_64-conda-linux-gnu-c++",
+    "-std=c++17",
+    "-O2",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/Solution",
+    "-I/shared/share_mala/fw2449/lorr2024/nms/inc",
+    "-isystem",
+    "/shared/share_mala/fw2449/lorr2024/env/include",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-city-game-assets-v1-20260921/support/dump_native.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/graph_guidance.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/map.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Environment/info.cpp",
+    "/shared/share_mala/fw2449/lorr2024/nms/Solution/Objects/Basic/position.cpp",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-city-game-assets-v1-20260921/dump_native"
+  ],
+  "native_binary_sha256": "79d8aaaaca376f3cd3db680e97e93484b2095cc455e8f21107d42b5b7eaadf12",
+  "wall_normalization": "unused20 in native field; NMS stores0 on walls",
+  "records": [
+    {
+      "name": "city",
+      "rows": 256,
+      "cols": 256,
+      "free_cells": 47240,
+      "header_sha256": "c807dc5be1dc5a112b03f8fa527134d9d23296013cf824bbdc323ab575859265",
+      "dump_sha256": "37b57946b7fd9a0ca0ae54e199359ce45ba0f066f0c3623e81eb771b5837b456",
+      "field_hashes": {
+        "city_map_sha256": "85ec535004685c9fb474954a24bd14395a21cea338bdcfdf7d9a2f21c587f87d",
+        "city_occupancy_sha256": "526e12a60ef4593aff9b71c7378b1a016f0e78896392db3a3afd40d6e25b781a",
+        "city_field_sha256": "04047a005f0d3b0f2f31f167bcc4df139219d17baab981f941979d93631c30a5",
+        "city_native_nobands_field_sha256": "6308f060c71c0d341b2cf1eb75d5c340da8a95defe2c0cb64309090eac4806a3"
+      },
+      "native_fnv1a64": 13870463150038177701,
+      "verified_forward_values": 262144,
+      "verified_nonforward_values": 786432,
+      "independent_formula_check": true,
+      "direction_offsets": [
+        1,
+        256,
+        -1,
+        -256
+      ]
+    },
+    {
+      "name": "game",
+      "rows": 481,
+      "cols": 530,
+      "free_cells": 43151,
+      "header_sha256": "d63b7eafd0fb91f27a37e1b91d07e3deeaa30b5ba36cbdbcc9bf9f1d0982def0",
+      "dump_sha256": "7b0c15a4d7c3dcb17ca3c2122d7877ea4cfe96f96a10d620f88c89fb33ede1c7",
+      "field_hashes": {
+        "game_map_sha256": "ee4f1b89431452b6a07f7a56c6ca653edd7f9f9f32906ab8280fb1a76e4b8a24",
+        "game_occupancy_sha256": "9b631cfdb1b13cbd0e9da40538847aab7e7346035da1560331a43032ba86d7b2",
+        "game_field_sha256": "8c4d511afc2cdcf4f069cb997d6c7f1ba5882c422a4f866e76470644dd31432c",
+        "game_native_nobands_field_sha256": "f25e710f77f359ef7f1fe5cef09316782ea7da671346543cbb4c8b435b243dea"
+      },
+      "native_fnv1a64": 2396239673730235117,
+      "verified_forward_values": 1019720,
+      "verified_nonforward_values": 3059160,
+      "independent_formula_check": true,
+      "direction_offsets": [
+        1,
+        530,
+        -1,
+        -530
+      ]
+    }
+  ]
+}
