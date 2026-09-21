@@ -1,6 +1,6 @@
 # CGAR competition progress
 
-Updated 2026-09-21T06:56:53.762074+00:00. General CGAR improvements and explicit instance tricks proceed
+Updated 2026-09-21T08:15:09.351434+00:00. General CGAR improvements and explicit instance tricks proceed
 together across all ten LoRR2024 instances. Throughput is primary; fairness is
 reported separately. The independent RANDOM-05 solver remains untouched.
 
@@ -15,11 +15,11 @@ use eight physical cores; the other selected rows use four.
 | CITY-01 | 8,427 | 8,445 | 8,868 | 441 | 2 | 753.90 |
 | CITY-02 | 16,315 | 16,997 | 17,847 | 1,532 | 0 | 821.72 |
 | GAME | 24,447 | 23,274 | 24,438 | 0 | 4 | 826.52 |
-| RANDOM-01 | 647 | 688 | 757 | 110 | 2 | 202.09 |
-| RANDOM-02 | 1,197 | 1,260 | 1,386 | 189 | 4 | 183.38 |
+| RANDOM-01 | 662 | 688 | 757 | 95 | 2 | 431.85 |
+| RANDOM-02 | 1,215 | 1,260 | 1,386 | 171 | 2 | 359.38 |
 | RANDOM-03 | 1,902 | 2,334 | 2,568 | 666 | 0 | 298.41 |
 | RANDOM-04 | 1,999 | 2,547 | 2,802 | 803 | 0 | 238.42 |
-| RANDOM-05 | 3,027 | 3,050 | 3,355 | 328 | 0 | 744.30 |
+| RANDOM-05 | 3,065 | 3,050 | 3,355 | 290 | 10 | 709.47 |
 
 Every selected profile is a **TRICK**, enabled through `--trick INSTANCE`. These
 are selected seed maxima, not averages of one universal configuration. The new
@@ -32,10 +32,10 @@ and waiting accounting.
 
 [Timestamped history and source commits](experiments/allmaps-20260920/BEST_HISTORY.md),
 [exact settings and evidence](experiments/allmaps-20260920/selected-full-results.json),
-[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-0656.json),
+[all-ten checks](experiments/allmaps-20260920/selected-results-checks-20260921-081509.json),
 [published targets](experiments/allmaps-20260920/TARGETS.md).
 
-RANDOM-01 reaches **647** with general remaining-chain scoring and priority
+The earlier RANDOM-01 chain profile reached **647** with general remaining-chain scoring and priority
 ordering, combined with its existing field and scheduler tricks. Three new seeds
 score 645/647/595 versus 621/635/631 for the control: both means are 629. The earlier
 seed 8 scored 644 versus 638. Thus three observed seeds exceed published NMS 639,
@@ -58,12 +58,20 @@ this is a deliberate fairness tradeoff, not a starvation-free claim. Held and
 started tasks remain protected. Known-horizon admission loses on GAME and CITY-02.
 [Replication](experiments/allmaps-20260920/game-fleet/dispatch-three-seed-summary.json).
 
-RANDOM-05 now reaches **3,027** with complete-chain scoring and the previous
-priority order, versus its exact 2,956 control. Replication is running. The prior
+RANDOM-05 now reaches **3,065** (selected seed 10) with an explicit known-horizon admission trick
+composed with complete-chain scoring. The mean-margin variant adds 16 tasks to the
+identical 3,027 control on seed 0. Its three-seed aggregate gain is 0.19%, with
+one loss. A declared seed scan gives 2,988/3,019/3,065/2,913 on seeds 6/8/10/12.
+This exceeds historical NMS 3,050 at one seed; it is not a matched comparison.
+[Horizon comparison](experiments/allmaps-20260920/chain-potential/random05-horizon-summary.json).
+The underlying chain-score gain, retaining the previous priority order, replicates across seeds0/2/4: 3,027/3,010/3,022 versus
+2,956/2,900/2,889 (+3.59% aggregate), all with identical repeated control trajectories.
+[Chain replication](experiments/allmaps-20260920/chain-potential/random05-three-seed-summary.json). The prior
 32-start change improved all three seeds: 2,956/2,900/2,889 versus 2,877/2,865/2,836.
 Nominal global candidate caps sum to 4M in both cases, but construction and
 completed-attempt work can differ. Eight regions and 16 rounds on eight cores
-separately score 2,946 with a 799.65 ms maximum; composition is running. Peak
+separately score 2,946 with a 799.65 ms maximum; composition with32starts loses
+(2,926/2,893/2,946 versus2,956). Peak
 retention loses two of three seeds and the mean, so it remains off here.
 [Replication](experiments/allmaps-20260920/regional-search/random05-diversity-three-seed-summary.json).
 
@@ -73,10 +81,12 @@ three-seed mean against the hot control. RANDOM-02 scheduling improvements
 replicate across three seeds and reach 1,197; nearby turn prices lost. CITY-02
 similarly reaches 16,315. More frequent finite rematching loses on RANDOM-03.
 
-SORTATION retains **150,894**. Its identical trajectory repeats at 989.60 ms
-maximum, still close to the deadline. A reduced-work alternative scores 150,780
-with a 900.70 ms maximum and is recorded separately. Parallel starting-plan
-comparisons are running. Earlier failed runs retain no accepted partial score.
+SORTATION retains **150,894**. Its identical trajectory repeats at998.94ms maximum,
+still close to the deadline. Two parallel starts of1Mcandidate work score150,830
+with an888.48ms maximum; this improved runtime alternative is recorded separately
+without replacing the throughput frontier. Four-start variants also lose.
+[Runtime alternative](experiments/allmaps-20260920/sortation/runtime-alternative-v2.json).
+Earlier failed runs retain no accepted partial score.
 
 The solver retains CGAR primary/recovery mechanisms and its documented NMS-derived
 temporal PIBT component. These guidance, scheduling and fleet adaptations do not
@@ -86,3 +96,20 @@ The user explicitly authorized further PILOT references. Its sparse/medium maps
 use longer coordinated windows; its crowded maps use a two-phase movement pipeline
 and common future continuations. These mechanisms remain distinct from the chain
 score already transferred. [Frozen review and next implementation](experiments/allmaps-20260920/pilot-transfer/NEXT_TRANSFER.md).
+
+The optional CGAR-seeded 20-step window now reaches **662 on RANDOM-01** and
+**1,215 on RANDOM-02**, above the previous selected 647 and 1,197. The key change
+keeps real primary/support actions immutable while allowing compatible later
+forecasts to move. All three matched window controls reproduce their full earlier
+trajectories. Against the previous frontier profiles, RANDOM-01 scores 658/662/648 versus
+645/647/595 (+4.29% aggregate, all positive). RANDOM-02 scores 1180/1215/1202
+versus 1188/1189/1197 (+0.64% aggregate, one loss). Earlier control trajectories repeat.
+RANDOM-03 remains at 1,902: the best new prefix result is only 1,849. More search
+and safer future forecasts are separate factors; neither is enabled universally.
+[Protected-forecast comparisons](experiments/allmaps-20260920/rolling-window/protected-prefix-results.json).
+
+SORTATION's new runtime alternative scores **150,865**, only 29 below its frontier,
+with a maximum **894.99 ms** in the measured run. It combines two parallel starts
+with more frequent bounded rematching. This remains an alternative with more
+observed timing headroom, not a throughput record.
+[Exact configuration](experiments/allmaps-20260920/sortation/runtime-alternative-v3.json).

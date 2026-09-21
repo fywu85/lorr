@@ -71,7 +71,11 @@ budget; do not silently allocate quadratic tables on large maps.
    disabled trajectory identity and failure after a visited improvement. Run
    full strict one-second comparisons before recording a frontier improvement.
 
-This is a proposal for implementation, not an implemented or measured improvement.
+This design is implemented in15640f8d, with coordinated seed extension in72418383,
+progress ties in441e8a15, and protected-prefix forecasts in339718b3. The first three
+builds pass full regression; protected-prefix build qualification is pending.
+Full window comparisons remain below selected RANDOM01/02/03records. No throughput
+improvement has been promoted from the new window layer.
 The crowded pipeline/continuation transfer remains a subsequent, separate change.
 A useful read-only diagnostic first measures how often a five-step plan advertises
 a forward move next step, then replans another wait under an unchanged task and
@@ -83,3 +87,18 @@ The exact full-chain transfer is already implemented: RANDOM-05 score-only impro
 reach 647, but its new three-seed mean is unchanged. RANDOM-02/03/04 regress.
 Do not enable the new chain score globally or merge its ordering effect into a
 claimed general throughput improvement.
+
+Read the current allmaps/rolling-window reports before extending this work. The
+initial uniform arms mistakenly used reference0and were rejected before running;
+corrected profiles retain reference1with uniform1and verified constant20weights.
+Window RNG is independent as of72418383; a no-op enabled layer preserves complete
+CGAR trajectories. Four physical cores suffice for all completed window variants
+so far (max500.4ms); future higher fixed work may use8or16cores within32GB.
+
+A structural hypothesis remains: freezing protected tails for20steps can suppress
+feasible future traffic even when only their actual first action must be fixed.
+The protected-prefix option tests this without changing real primary/recovery
+actions or real commitment destinations. Active recovery witnesses remain frozen.
+A subsequent crowded-map direction is common-future scoring of complete CGAR
+candidate plans, with a true motion pipeline; adding more unrelated5stepstarts
+was already tested and is not that transfer.

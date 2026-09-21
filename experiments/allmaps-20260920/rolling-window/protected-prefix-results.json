@@ -1,0 +1,108 @@
+{
+  "checked_utc": "2026-09-21T08:12:00.444679+00:00",
+  "scope": "Full horizons, strict 1000ms, shared hosts, bound physical cores; selected maxima and controls kept distinct.",
+  "matrices": {
+    "RANDOM-01": {
+      "verification": "experiments/allmaps-20260920/results/random01-rolling-window-prefix-full-v5/verification.json",
+      "control_whole_trajectory_repeats": true,
+      "rows": [
+        {
+          "variant": "trick_current2048_control",
+          "seed": 2,
+          "tasks": 642,
+          "max_entry_seconds": 0.316932686,
+          "trajectory_sha256": "12580123f3d6007f157eb19332a6f5ee2356851ab8dae8687d49166f870c275b"
+        },
+        {
+          "variant": "trick_current2048_prefix",
+          "seed": 2,
+          "tasks": 660,
+          "max_entry_seconds": 0.310683493,
+          "trajectory_sha256": "03796d3c8ff4b3ea70449ee39b43ab8c64f570ca28a83e8547936bc86b87af4f"
+        },
+        {
+          "variant": "trick_current4096_prefix",
+          "seed": 2,
+          "tasks": 662,
+          "max_entry_seconds": 0.431847366,
+          "trajectory_sha256": "d856cd763196368b13f984cb281f0bb827285c96645d52466dbc496f2df953c7"
+        },
+        {
+          "variant": "trick_uniform2048_prefix",
+          "seed": 2,
+          "tasks": 656,
+          "max_entry_seconds": 0.389477275,
+          "trajectory_sha256": "e6eebc6e89c74f1dc8d25e64e1e90a13ce5756b10309a47591a680f8cb172b64"
+        }
+      ]
+    },
+    "RANDOM-02": {
+      "verification": "experiments/allmaps-20260920/results/random02-rolling-window-prefix-full-v5/verification.json",
+      "control_whole_trajectory_repeats": true,
+      "rows": [
+        {
+          "variant": "trick_current2048_control",
+          "seed": 4,
+          "tasks": 1144,
+          "max_entry_seconds": 0.391881612,
+          "trajectory_sha256": "9303a9e3d3c1c26f751de991167d085072aa308303fa36c4803e883145c6596b"
+        },
+        {
+          "variant": "trick_current2048_prefix",
+          "seed": 4,
+          "tasks": 1202,
+          "max_entry_seconds": 0.361245045,
+          "trajectory_sha256": "9494163326b017bd3a966369b2e1e0af011139bc5b4274e7a6a252ca4fd03720"
+        },
+        {
+          "variant": "trick_current4096_prefix",
+          "seed": 4,
+          "tasks": 1199,
+          "max_entry_seconds": 0.499735275,
+          "trajectory_sha256": "163399ef44456ea7fac1af76f3c748d55d212c796717d296a7924759331d3908"
+        },
+        {
+          "variant": "trick_uniform2048_prefix",
+          "seed": 4,
+          "tasks": 1063,
+          "max_entry_seconds": 0.381462056,
+          "trajectory_sha256": "7963246964febcb21c1c57352ef4b3f572fef4b213e8a74b9531091aa77ec83b"
+        }
+      ]
+    },
+    "RANDOM-03": {
+      "verification": "experiments/allmaps-20260920/results/random03-rolling-window-prefix-full-v5/verification.json",
+      "control_whole_trajectory_repeats": true,
+      "rows": [
+        {
+          "variant": "trick_current2048_control",
+          "seed": 0,
+          "tasks": 1829,
+          "max_entry_seconds": 0.483113353,
+          "trajectory_sha256": "17d0feb867079a35d63812b46731f4bc33e792ab8289481c03960f79530172ff"
+        },
+        {
+          "variant": "trick_current2048_prefix",
+          "seed": 0,
+          "tasks": 1678,
+          "max_entry_seconds": 0.498475328,
+          "trajectory_sha256": "8b89143c8803063b6c11967bcd371a340fb6b21a96b98650d3959715f763b5c0"
+        },
+        {
+          "variant": "trick_current4096_prefix",
+          "seed": 0,
+          "tasks": 1849,
+          "max_entry_seconds": 0.591202302,
+          "trajectory_sha256": "2fa03e94b4b83beedea1360831879de200cfe00edf86e1ba79ae00dfe5d79f38"
+        },
+        {
+          "variant": "trick_uniform2048_prefix",
+          "seed": 0,
+          "tasks": 1737,
+          "max_entry_seconds": 0.474241503,
+          "trajectory_sha256": "d8920ffc9c95a2a60c2036b1edf1e1becab99c3c243871e13220e76f9c4db785"
+        }
+      ]
+    }
+  }
+}

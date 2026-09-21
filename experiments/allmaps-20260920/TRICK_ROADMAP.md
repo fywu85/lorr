@@ -9,15 +9,15 @@ code, builds, jobs and held-out streams remain outside this campaign's edit scop
 | Instance | Selected full strict1s | Next comparison |
 |---|---:|---|
 |WAREHOUSE|155173|Preserve the qualified eight-core profile.|
-|SORTATION|150894|Parallel starting plans for throughput plus timing margin.|
+|SORTATION|150894|Two1Mstarts provide150830with888.48ms max; finite rematching is running on that runtime alternative.|
 |CITY-01|8427|Retain8427; extend general improvements only after controlled evidence.|
-|CITY-02|16315|Remaining-potential score and chain priority, separate factors. Horizon lost.|
+|CITY-02|16315|Remaining-potential score, chain priority and horizon all lost. Investigate trip lengths/assignment; waiting is under2%.|
 |GAME|24447|Pickup12 improves all three seeds; active fleet remains an explicit fairness tradeoff.|
-|RANDOM-01|647|Three of four observed seeds exceed639; new three-seed mean unchanged. Preserve selected maximum.|
-|RANDOM-02|1197|Retain1197; chain score/order lost on seed4.|
-|RANDOM-03|1902|Finite unopened-task rematching; investigate coherent multi-step motion after chain losses.|
+|RANDOM-01|647|Rolling-window variants reach642but remain below647. Protected future forecasts are the next factor.|
+|RANDOM-02|1197|Longer-window/current-field variant1144still loses. Preserve1197while isolating forecast constraints.|
+|RANDOM-03|1902|Finite rematching and construction diversity lost. Window/current-field1829at2048attempts; forecast constraints and additional work remain to test.|
 |RANDOM-04|1999|Preserve1999; coordinated motion remains structural candidate; chain cost alone lost.|
-|RANDOM-05|3027|Replicate chain score-only; original priority retained. Eight-core composition pending.|
+|RANDOM-05|3043|Chain scoring replicated+3.59%; known-horizon mean margins add16onseed0. Margin replication and explicit selected-seed scan running.|
 
 General complete-chain guidance is implemented and tested (defaultoff). It retains
 all arrival headings, advances one service after each action, and exposes no
@@ -45,3 +45,11 @@ gain. Horizon admission loses on the latest GAME/CITY02 controls.
 The next substantial transfer is [a CGAR-seeded rolling-window repair layer](pilot-transfer/NEXT_TRANSFER.md),
 with explicit primary/recovery protection and fixed completed work. PILOT remains
 a read-only reference; its results are never counted as CGAR records.
+
+The CGAR-seeded rolling window is now implemented with fixed complete attempts,
+atomic group rollback, optional joint seed extension and progress tie preferences.
+All variants remain defaultoff and below current selected maxima. A new optional
+protected-prefix forecast preserves actual CGAR primary/support actions and leaves
+transactions/witnesses/parked paths frozen; full tests/benchmarks are being completed.
+[Window factors](rolling-window/rollout-progress-results.json),
+[city/Sortation movement diagnosis](motion-bottleneck-20260921.json).

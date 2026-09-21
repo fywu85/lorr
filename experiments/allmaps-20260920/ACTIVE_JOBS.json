@@ -1,36 +1,42 @@
 {
-  "updated_utc": "2026-09-21T06:56:53.762074+00:00",
-  "scope": "Only CGAR-owned frozen matrices; do not alter PILOT or random05-owned jobs.",
+  "updated_utc": "2026-09-21T08:15:09.351434+00:00",
+  "scope": "Only CGAR-owned frozen jobs; do not alter PILOT or random05-owned jobs.",
   "jobs": [
     {
-      "suffix": "sortation-parallel-starts-full-v1",
-      "matrix_job": 8901857,
-      "verifier_job": 8901868,
+      "suffix": "random03-rolling-window-scale8-full-v6",
+      "matrix_job": 8902208,
+      "verifier_job": 8902209,
       "physical_cores_per_case": 8,
-      "source_commit": "90df94f",
-      "analysis_tag": "factor-analysis-r2",
-      "raw": "runs/cgar-sortation-parallel-starts-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/sortation-parallel-starts-full-v1"
+      "source_commit": "339718b3bc0364afb1f780033304b5f88d6d3ce9",
+      "analysis_tag": "factor-analysis",
+      "raw": "runs/cgar-random03-rolling-window-scale8-full-v6-20260921",
+      "report": "experiments/allmaps-20260920/results/random03-rolling-window-scale8-full-v6"
+    }
+  ],
+  "builds": [
+    {
+      "job": 8902027,
+      "raw": "runs/cgar-rolling-window-build-v1-20260921",
+      "source_commit": "15640f8d",
+      "status": "complete; all39source/test hashes and full regression verified"
     },
     {
-      "suffix": "random05-composed8-full-v1",
-      "matrix_job": 8901886,
-      "verifier_job": 8901888,
-      "physical_cores_per_case": 8,
-      "source_commit": "90df94f",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-composed8-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-composed8-full-v1"
+      "job": 8902096,
+      "raw": "runs/cgar-rolling-window-build-v2-20260921",
+      "source_commit": "72418383",
+      "status": "complete; all39source/test hashes and full regression verified"
     },
     {
-      "suffix": "random05-chain-potential-seeds-full-v1",
-      "matrix_job": 8901946,
-      "verifier_job": 8901947,
-      "physical_cores_per_case": 4,
-      "source_commit": "7783736",
-      "analysis_tag": "factor-analysis",
-      "raw": "runs/cgar-random05-chain-potential-seeds-full-v1-20260921",
-      "report": "experiments/allmaps-20260920/results/random05-chain-potential-seeds-full-v1"
+      "job": 8902131,
+      "raw": "runs/cgar-rolling-window-build-v3-20260921",
+      "source_commit": "441e8a1560f71e68a37ae7db070a6a83bec70be3",
+      "status": "complete; all39source/test hashes and full regression verified"
+    },
+    {
+      "job": 8902157,
+      "raw": "runs/cgar-rolling-window-build-v4-20260921",
+      "source_commit": "339718b3",
+      "status": "complete; all39source/test hashes and full regression verified"
     }
   ]
 }

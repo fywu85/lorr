@@ -1,0 +1,209 @@
+{
+  "checked_utc": "2026-09-21T07:37:14.579142+00:00",
+  "qualified_build": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+  "matrices": [
+    {
+      "report": "experiments/allmaps-20260920/results/random01-rolling-window-full-v1/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_seed_control",
+          "tasks": 635,
+          "valid": true,
+          "outcome": "success",
+          "seed": 2
+        },
+        {
+          "variant": "trick_window_current",
+          "tasks": 629,
+          "valid": true,
+          "outcome": "success",
+          "seed": 2
+        },
+        {
+          "variant": "trick_uniform_seed",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 2
+        },
+        {
+          "variant": "trick_window_uniform",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 2
+        }
+      ]
+    },
+    {
+      "report": "experiments/allmaps-20260920/results/random01-rolling-window-uniform-full-v2/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_uniform_control",
+          "tasks": 625,
+          "valid": true,
+          "outcome": "success",
+          "seed": 2
+        },
+        {
+          "variant": "trick_window128",
+          "tasks": 604,
+          "valid": true,
+          "outcome": "success",
+          "seed": 2
+        },
+        {
+          "variant": "trick_window512",
+          "tasks": 623,
+          "valid": true,
+          "outcome": "success",
+          "seed": 2
+        }
+      ]
+    },
+    {
+      "report": "experiments/allmaps-20260920/results/random02-rolling-window-full-v1/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_seed_control",
+          "tasks": 1197,
+          "valid": true,
+          "outcome": "success",
+          "seed": 4
+        },
+        {
+          "variant": "trick_window_current",
+          "tasks": 955,
+          "valid": true,
+          "outcome": "success",
+          "seed": 4
+        },
+        {
+          "variant": "trick_uniform_seed",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 4
+        },
+        {
+          "variant": "trick_window_uniform",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 4
+        }
+      ]
+    },
+    {
+      "report": "experiments/allmaps-20260920/results/random02-rolling-window-uniform-full-v2/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_uniform_control",
+          "tasks": 1026,
+          "valid": true,
+          "outcome": "success",
+          "seed": 4
+        },
+        {
+          "variant": "trick_window128",
+          "tasks": 946,
+          "valid": true,
+          "outcome": "success",
+          "seed": 4
+        },
+        {
+          "variant": "trick_window512",
+          "tasks": 1038,
+          "valid": true,
+          "outcome": "success",
+          "seed": 4
+        }
+      ]
+    },
+    {
+      "report": "experiments/allmaps-20260920/results/random03-rolling-window-full-v1/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_seed_control",
+          "tasks": 1902,
+          "valid": true,
+          "outcome": "success",
+          "seed": 0
+        },
+        {
+          "variant": "trick_window_current",
+          "tasks": 1256,
+          "valid": true,
+          "outcome": "success",
+          "seed": 0
+        },
+        {
+          "variant": "trick_uniform_seed",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 0
+        },
+        {
+          "variant": "trick_window_uniform",
+          "tasks": null,
+          "valid": false,
+          "outcome": "flag_mismatch",
+          "seed": 0
+        }
+      ]
+    },
+    {
+      "report": "experiments/allmaps-20260920/results/random03-rolling-window-uniform-full-v2/verification.json",
+      "source_commit": "15640f8d52e8db60f32e3062b98f6b0a2e4dc49c",
+      "rows": [
+        {
+          "variant": "trick_uniform_control",
+          "tasks": 1472,
+          "valid": true,
+          "outcome": "success",
+          "seed": 0
+        },
+        {
+          "variant": "trick_window128",
+          "tasks": 1377,
+          "valid": true,
+          "outcome": "success",
+          "seed": 0
+        },
+        {
+          "variant": "trick_window512",
+          "tasks": 1493,
+          "valid": true,
+          "outcome": "success",
+          "seed": 0
+        }
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "instance": "RANDOM-01",
+      "seed": 2,
+      "control_trajectory_identical": true
+    },
+    {
+      "instance": "RANDOM-02",
+      "seed": 4,
+      "control_trajectory_identical": true
+    },
+    {
+      "instance": "RANDOM-03",
+      "seed": 0,
+      "control_trajectory_identical": true
+    }
+  ],
+  "frontier_promoted": false,
+  "configuration_failure": "The first uniform arms requested reference0 on sparse RANDOM cases; the explicit reference-provider guard rejected initialization. Those failures remain recorded. Uniform-v2 retains reference1 for map declaration while uniform1 installs the independently fingerprinted constant20 field.",
+  "interpretation": "Wait-extended window seeds lose against all current selected frontiers. More repair work helps relative to the128-attempt overlay. Coordinated seed extension and independent window RNG are implemented in72418383 and undergoing regression qualification; no throughput result yet."
+}

@@ -1,7 +1,7 @@
 # Active CGAR throughput targets
 
-Updated 2026-09-21T06:49:40.561595+00:00. The user now requests **10% above max(NMS, KK)** for
-RANDOM-01–05 and **5% above max(NMS, KK)** for the other five instances. Integer
+Updated 2026-09-21T08:15:09.351434+00:00. The user now requests **10% above max(NMS, KK)** for
+RANDOM-01–05 and a stretch **5% above max(NMS, KK)** for the other five instances. Integer
 targets round upward. Selected-seed maxima may qualify; replication and fairness
 remain separately reported. These are published historical baselines, not matched
 local competitor measurements.
@@ -13,11 +13,11 @@ local competitor measurements.
 | CITY-01 | 8,420 | 8,445 | 8,445 | 5% | 8,868 | 8,427 |
 | CITY-02 | 16,787 | 16,997 | 16,997 | 5% | 17,847 | 16,315 |
 | GAME | 23,274 | 22,604 | 23,274 | 5% | 24,438 | 24,447 |
-| RANDOM-01 | 639 | 688 | 688 | 10% | 757 | 647 |
-| RANDOM-02 | 1,221 | 1,260 | 1,260 | 10% | 1,386 | 1,197 |
+| RANDOM-01 | 639 | 688 | 688 | 10% | 757 | 662 |
+| RANDOM-02 | 1,221 | 1,260 | 1,260 | 10% | 1,386 | 1,215 |
 | RANDOM-03 | 2,334 | 2,084 | 2,334 | 10% | 2,568 | 1,902 |
 | RANDOM-04 | 2,547 | 1,405 | 2,547 | 10% | 2,802 | 1,999 |
-| RANDOM-05 | 3,050 | 2,085 | 3,050 | 10% | 3,355 | 3,027 |
+| RANDOM-05 | 3,050 | 2,085 | 3,050 | 10% | 3,355 | 3,065 |
 
 GAME currently meets the new +5% target. KK sets the stronger reference on CITY-01,
 CITY-02, RANDOM-01 and RANDOM-02. The remaining references come from NMS.

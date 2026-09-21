@@ -1,0 +1,51 @@
+{
+  "checked_utc": "2026-09-21T07:55:09.265593+00:00",
+  "rows": [
+    {
+      "instance": "SORTATION",
+      "case": "trick_age_pickup8_match64-s0-r0",
+      "robots_steps": 50000000,
+      "actions": {
+        "fw": 48150525,
+        "cr": 662464,
+        "ccr": 624907,
+        "wait": 562104
+      },
+      "forward_percent": 96.30105,
+      "turn_percent": 2.574742,
+      "wait_percent": 1.124208,
+      "source_metrics": "experiments/allmaps-20260920/results/sortation-dispatch-full-v1/metrics.json"
+    },
+    {
+      "instance": "CITY-01",
+      "case": "trick_pickup16-s2-r0",
+      "robots_steps": 4500000,
+      "actions": {
+        "fw": 4234040,
+        "cr": 118354,
+        "ccr": 115759,
+        "wait": 31847
+      },
+      "forward_percent": 94.08977777777778,
+      "turn_percent": 5.202511111111111,
+      "wait_percent": 0.7077111111111111,
+      "source_metrics": "experiments/allmaps-20260920/results/city-01-target-seeds-v1/metrics.json"
+    },
+    {
+      "instance": "CITY-02",
+      "case": "trick_budget2-s0-r0",
+      "robots_steps": 9000000,
+      "actions": {
+        "fw": 8308381,
+        "cr": 273232,
+        "ccr": 262006,
+        "wait": 156381
+      },
+      "forward_percent": 92.31534444444445,
+      "turn_percent": 5.947088888888889,
+      "wait_percent": 1.7375666666666667,
+      "source_metrics": "experiments/allmaps-20260920/results/city-02-rematch-budget-full-v1/metrics.json"
+    }
+  ],
+  "interpretation": "Current city and Sortation profiles spend most robot time in forward travel; queues occupy less than2%of robot time. This supports investigating trip lengths/assignment before transferring GAME fleet reduction; it is not a formal throughput upper bound."
+}

@@ -541,3 +541,55 @@ Candidates24326/24360/24447 versus controls23977/23917/23888 on seeds0/2/4. All 
 | 3027 | 2026-09-21T06:42:55.693457+00:00 | [7783736](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | TRICK, chain score only, seed0 | [verification](results/random05-chain-potential-full-v1/verification.json) |
 
 Control2956 repeats its full trajectory. Score-only3027 (+2.40%), exact-priority-only2850, both2958. Full2000steps, four physical cores, strict1000ms. Max744.30ms, RSS0.239GB. Retain the original priority order; this is a single seed pending replication.
+
+## RANDOM-05 known-horizon composition
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+|3043|2026-09-21T07:42:16.947356+00:00|[7783736](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c)|trick_chain_horizon_mean, seed0, --trick RANDOM-05|[verification](results/random05-chain-horizon-full-v1/verification.json)|
+
+The prior3027whole trajectory repeats. Bare known-horizon admission is also3027;
+prospective mean margins3043; p90margins3037. This is an explicit2000step run-length
+trick for new assignments. Held and started tasks remain protected. Peak entry
+742.14ms, full2000steps, four physical cores, strict1s/32decimalGB. One seed;
+replication pending. Outstanding-task agep90 remains2000: no starvation-free claim.
+
+## RANDOM-01 protected-forecast window record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 662 | 2026-09-21T08:03:09.477723+00:00 | [339718b3](https://github.com/fywu85/lorr/commit/339718b3bc0364afb1f780033304b5f88d6d3ce9) | trick_current4096_prefix, seed 2, `--trick RANDOM-01` | [verification](results/random01-rolling-window-prefix-full-v5/verification.json) |
+
+Complete CGAR first actions stay protected; compatible future forecasts can be repaired.
+This increases the selected frontier from 647 to 662. Four physical cores, full 600 steps,
+strict 1000 ms; maximum 431.85 ms. The matched long-window control
+reproduces its previous entire trajectory. This is a selected-seed result;
+replication against the previous frontier profile is pending.
+
+## RANDOM-02 protected-forecast window record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1202 | 2026-09-21T08:02:50.155207+00:00 | [339718b3](https://github.com/fywu85/lorr/commit/339718b3bc0364afb1f780033304b5f88d6d3ce9) | trick_current2048_prefix, seed 4, `--trick RANDOM-02` | [verification](results/random02-rolling-window-prefix-full-v5/verification.json) |
+
+Complete CGAR first actions stay protected; compatible future forecasts can be repaired.
+This increases the selected frontier from 1197 to 1202. Four physical cores, full 600 steps,
+strict 1000 ms; maximum 361.25 ms. The matched long-window control
+reproduces its previous entire trajectory. This is a selected-seed result;
+replication against the previous frontier profile is pending.
+
+## RANDOM-02 1215 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 1215 | 2026-09-21T08:13:20.292239+00:00 | [339718b3](https://github.com/fywu85/lorr/commit/339718b3bc0364afb1f780033304b5f88d6d3ce9) | trick_window_prefix, seed 2, `--trick RANDOM-02` | [verification](results/random02-rolling-window-prefix-seeds-full-v1/verification.json) |
+
+Previous selected maximum 1202. Full 600 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 359.38 ms. Protected-forecast rolling-window replication; seed selection is explicit. Across seeds 0/2/4 the candidate scores 1180/1215/1202 against 1188/1189/1197. One seed loses; no uniform improvement claim.
+
+## RANDOM-05 3065 full-run record
+
+| Tasks | Completed UTC | Source | Profile | Evidence |
+|---:|---|---|---|---|
+| 3065 | 2026-09-21T08:08:28.600941+00:00 | [7783736f](https://github.com/fywu85/lorr/commit/7783736fec8dd929316fdaa2bd6d0b4fdd92c94c) | trick_selected, seed 10, `--trick RANDOM-05` | [verification](results/random05-chain-horizon-seedscan-full-v1/verification.json) |
+
+Previous selected maximum 3043. Full 2000 steps; 4 physical cores, strict 1,000 ms and 32 decimal GB. Maximum 709.47 ms. Best of the declared planner-seed scan 6/8/10/12: 2988/3019/3065/2913. Same frozen horizon-and-chain profile, no new algorithm change. Above published NMS 3050 on this archived input and selected seed, not a matched competitor run. Target remains 3355; starvation is not eliminated.
