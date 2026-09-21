@@ -1364,6 +1364,59 @@ void active_task_admission() {
     if(present)setenv("R05_ACTIVE_TASK_CAP",saved.c_str(),1);else unsetenv("R05_ACTIVE_TASK_CAP");
 }
 
+void initial_task_admission() {
+    auto env=environment(3,3,4);env.curr_states[3].location=8;
+    for(int j=0;j<4;++j){Task t;t.task_id=j;t.locations={8,8};env.task_pool[j]=t;}
+    for(int exact:{0,1000})for(bool fast:{false,true}) {
+        Config cfg;cfg.active_task_cap=3;cfg.initial_active_cap=1;cfg.initial_active_steps=10;
+        cfg.active_cap_steps=20;cfg.hungarian_limit=exact;cfg.fast_admission=fast;
+        Engine engine(cfg);engine.initialize(&env);std::vector<int> schedule;
+        for(int tick:{0,9,10,19,20}) {
+            env.curr_timestep=tick;engine.match(&env,schedule);
+            const int expected=tick<10?1:tick<20?3:4;
+            require(std::count_if(schedule.begin(),schedule.end(),[](int id){return id>=0;})==expected,
+                    "initial/steady/expired admission cardinality changed at the wrong boundary");
+        }
+        auto opened=env;opened.curr_task_schedule={0,1,-1,-1};
+        opened.task_pool.at(0).idx_next_loc=1;opened.task_pool.at(1).idx_next_loc=1;
+        opened.curr_timestep=9;engine.match(&opened,schedule);
+        require(schedule==opened.curr_task_schedule,"initial cap reassigned opened tasks above its cap");
+        opened.curr_timestep=10;engine.match(&opened,schedule);
+        require(schedule[0]==0 && schedule[1]==1 &&
+                std::count_if(schedule.begin(),schedule.end(),[](int id){return id>=0;})==3,
+                "steady cap failed to retain opened tasks and admit its new slot");
+    }
+    Config cfg;cfg.active_task_cap=22;cfg.initial_active_cap=12;cfg.initial_active_steps=51;
+    cfg.hungarian_limit=1000;cfg.fast_admission=true;cfg.futures=32;cfg.continuations=4;
+    cfg.continuation_start=2;cfg.depth=6;cfg.random_by_step=true;cfg.share_prefix=true;
+    cfg.threads=1;cfg.cost_cache=true;cfg.candidate_cache=true;
+    const auto reference=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(reference==simulate(cfg,12,5,5,true),"initial admission depends on workers/checkpoints");
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* name,const char* value):key(name),present(std::getenv(name)!=nullptr) {
+            if(present)old=std::getenv(name);
+            require(setenv(name,value,1)==0,"could not set initial admission fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting initial("R05_INITIAL_ACTIVE_CAP","1"),duration("R05_INITIAL_ACTIVE_STEPS","10"),steady("R05_ACTIVE_TASK_CAP","3");
+    SharedEnvironment gate;bool rejected=false;
+    try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"initial admission bypassed its trick flag");
+    gate.trick_instance="RANDOM-04";require(Config::environment(gate).initial_active_cap==1,"declared initial admission was rejected");
+    for(const char* value:{"0","-1"}) {
+        Setting invalid("R05_INITIAL_ACTIVE_STEPS",value);rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"initial admission accepted a missing/negative duration");
+    }
+    {
+        Setting missing("R05_ACTIVE_TASK_CAP","0");rejected=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"initial admission accepted a missing steady cap");
+    }
+}
+
 void deferred_task_admission_credit() {
     auto initial=environment(3,3,3);
     Task a;a.task_id=7;a.locations={0,8};a.idx_next_loc=1;initial.task_pool[7]=a;
@@ -2263,7 +2316,7 @@ int main() {
     observed_progress_triage();
     rectangular_matching_optimality();
     exact_dummy_prefix();
-    active_task_admission();
+    active_task_admission();initial_task_admission();
     priced_task_admission();
     nonlinear_progress_objective();
     deferred_task_admission_credit();

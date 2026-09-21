@@ -257,6 +257,12 @@ Config Config::environment(const SharedEnvironment& env) {
     c.length_weight=real("R05_LENGTH_WEIGHT",c.length_weight);c.keep_bonus=real("R05_KEEP_BONUS",c.keep_bonus);
     c.active_task_cap=integer("R05_ACTIVE_TASK_CAP",0);
     c.active_cap_steps=integer("R05_ACTIVE_CAP_STEPS",0);
+    c.initial_active_cap=integer("R05_INITIAL_ACTIVE_CAP",0);
+    c.initial_active_steps=integer("R05_INITIAL_ACTIVE_STEPS",0);
+    if(c.initial_active_cap<0 || c.initial_active_steps<0 ||
+       ((c.initial_active_cap>0)!=(c.initial_active_steps>0)) ||
+       (c.initial_active_cap>0 && (!random_trick || c.active_task_cap<=0)))
+        throw std::invalid_argument("initial active cap needs positive cap/duration, a steady cap and an explicit trick");
     c.active_cap_triage_credit=real("R05_ACTIVE_CAP_TRIAGE_CREDIT",0);
     c.fast_admission=integer("R05_FAST_ADMISSION",0);
     const int idle_alignment=integer("R05_IDLE_ALIGN",0);
@@ -1086,12 +1092,17 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         }
         agents.push_back(i);schedule[i]=-1;
     }
-    const bool capped=cfg.active_task_cap>0 &&
+    // A declared startup phase may use a different cardinality, then returns
+    // to the ordinary cap at the exact fixed timestep. Every robot remains in
+    // motion planning; opened tasks remain locked across both boundaries.
+    const int active_task_cap=cfg.initial_active_cap>0 && env->curr_timestep<cfg.initial_active_steps
+        ?cfg.initial_active_cap:cfg.active_task_cap;
+    const bool capped=active_task_cap>0 &&
         (!cfg.active_cap_steps || env->curr_timestep<cfg.active_cap_steps);
     // Opened tasks remain protected even if they temporarily exceed the cap.
     // All robots remain in the collision planner and may yield or be pushed.
     const int credited_opened=capped?int(std::floor(cfg.active_cap_triage_credit*suppressed_opened)):0;
-    const int capacity=capped?std::min(int(agents.size()),std::max(0,cfg.active_task_cap-int(locked.size())+credited_opened)):int(agents.size());
+    const int capacity=capped?std::min(int(agents.size()),std::max(0,active_task_cap-int(locked.size())+credited_opened)):int(agents.size());
     for(const auto& kv:env->task_pool)if(!locked.count(kv.first))tasks.push_back(kv.first);
     std::sort(tasks.begin(),tasks.end());
     std::vector<float> length(tasks.size(),0);
