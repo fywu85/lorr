@@ -1,0 +1,30 @@
+{
+  "declared_utc": "2026-09-21T15:55:39.907080+00:00",
+  "instance": "RANDOM-05",
+  "candidate_source_commit": "027df4d9",
+  "candidate_binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "baseline_source_commit": "027df4d9",
+  "baseline_binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+  "manifest": "random05/experiments/fresh-validation-v6-full.json",
+  "generation": "random05/results/fresh-validation-v6/generation.json",
+  "seeds": [
+    50015,
+    50016
+  ],
+  "candidate_development_tasks": 4175,
+  "baseline_development_tasks": 4011,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "archived_reproduction": "Already passed:4175 repeated exactly in all six fields on source132 and source135 controls; seeds0/1/2/3=4175/4151/4171/4120, all strict-valid.",
+    "fresh_validation": "Both fresh inputs must complete strictly; compare candidate against the stronger of two unmodified NMS repetitions per input and the frozen previous4011 recipe. Report both individual and aggregate effects, including negative effects.",
+    "timing": "Every entry <1 second; preprocessing <=30 seconds; complete declared work or failure; 32 decimal GB process guard.",
+    "integrity": "Freeze this protocol and all eight configurations in git before generation. No tuning on seeds50001\u201350012 or50015/50016. R04seeds50013/50014 remain reserved and ungenerated. Preserve every original attempt. Full independent movement, assignment and task-event replay for every successful run."
+  },
+  "description": "The admission cap680/fastadmission1 is the only candidate configuration change from the previous4011 recipe. Both roles use source132; its uncapped archived control is six-field identical to source80/4011. Candidate is fixed regardless of other development results. New task/start streams share the same layout and are not the colleague's private instances."
+}
