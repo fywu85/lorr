@@ -5,6 +5,7 @@
 #include "chain_potential.hpp"
 #include "temporal_geometry.hpp"
 #include <atomic>
+#include <cmath>
 #include <memory>
 #include <numeric>
 #include <queue>
@@ -16,6 +17,7 @@ struct WindowOptions {
     int horizon = 0, keep = 6, iterations = 128, nodes = 2048, group = 4;
     int workers = 4, threads = 4, wait_cost = 0, seed_rollout = 0, progress_ties = 0, protected_prefix = 0, history_rollout = 0;
     int delay_samples = 0;  // extra candidates on half the repair attempts; zero preserves the old random stream
+    int temperature = 0;  // initial cost units; cooling is by completed iteration count
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -207,6 +209,7 @@ struct WindowStats {
     long long attempts = 0, accepted = 0, improved = 0, searches = 0, expanded = 0;
     long long capped = 0, failed = 0, retained = 0, history_resets = 0, partial_rollbacks = 0, history_batches = 0;
     long long delay_draws = 0, delay_replacements = 0;
+    long long uphill_accepted = 0, incumbent_updates = 0, incumbent_restores = 0;
     int64_t seed_cost = 0, initial_cost = 0, final_cost = 0;
     int64_t seed_remaining = 0, initial_remaining = 0, final_remaining = 0;
     int changed_first = 0, protected_robots = 0, selected_worker = 0;
@@ -214,6 +217,7 @@ struct WindowStats {
         attempts += other.attempts; accepted += other.accepted; improved += other.improved;
         searches += other.searches; expanded += other.expanded; capped += other.capped; failed += other.failed; partial_rollbacks += other.partial_rollbacks; history_batches += other.history_batches;
         delay_draws += other.delay_draws; delay_replacements += other.delay_replacements;
+        uphill_accepted += other.uphill_accepted; incumbent_updates += other.incumbent_updates; incumbent_restores += other.incumbent_restores;
     }
 };
 
@@ -329,6 +333,18 @@ public:
     template<class Check>
     void run(Check check) {
         auto order = eligible_; std::shuffle(order.begin(), order.end(), rng_);
+        std::vector<WindowPath> incumbent;
+        std::vector<char> dirty;
+        std::vector<int> changed;
+        int64_t current_cost = 0, current_remaining = 0, best_cost = 0, best_remaining = 0;
+        if (o_.temperature) {
+            incumbent = paths_; dirty.assign(paths_.size(), false);
+            current_cost = best_cost = p_.score(paths_);
+            if (o_.progress_ties) current_remaining = best_remaining = p_.remaining_score(paths_);
+        }
+        auto better = [&](int64_t cost, int64_t remaining, int64_t other_cost, int64_t other_remaining) {
+            return cost < other_cost || (o_.progress_ties && cost == other_cost && remaining < other_remaining);
+        };
         for (int iteration = 0; iteration < o_.iterations; ++iteration) {
             check(); ++stats.attempts;
             if (eligible_.empty()) continue;
@@ -360,10 +376,30 @@ public:
                 if (o_.progress_ties) new_remaining += p_.remaining(r, paths_[r]);
                 reserve(r, true); ++repaired;
             }
-            if (repaired == int(group.size()) && (new_cost < old_cost ||
-                (new_cost == old_cost && (!o_.progress_ties || new_remaining <= old_remaining)))) {
-                ++stats.accepted; stats.improved += new_cost < old_cost || (o_.progress_ties && new_remaining < old_remaining);
+            bool accept = repaired == int(group.size()) && (new_cost < old_cost ||
+                (new_cost == old_cost && (!o_.progress_ties || new_remaining <= old_remaining)));
+            bool uphill = false;
+            if (!accept && repaired == int(group.size()) && o_.temperature) {
+                const double temperature = double(o_.temperature) * (o_.iterations - iteration) / o_.iterations;
+                const int64_t increase = std::max(int64_t(0), new_cost - old_cost);
+                accept = std::generate_canonical<double, 53>(rng_) < std::exp(-double(increase) / temperature);
+                uphill = accept;
+            }
+            if (accept) {
+                ++stats.accepted; stats.improved += better(new_cost, new_remaining, old_cost, old_remaining);
+                stats.uphill_accepted += uphill;
                 if (o_.delay_samples) for (size_t k = 0; k < group.size(); ++k) costs_[group[k]] = proposed_costs[k];
+                if (o_.temperature) {
+                    current_cost += new_cost - old_cost; current_remaining += new_remaining - old_remaining;
+                    for (int r : group) if (!dirty[r]) { dirty[r] = true; changed.push_back(r); }
+                    if (better(current_cost, current_remaining, best_cost, best_remaining)) {
+                        // Snapshot only paths changed since the last retained best.
+                        // Whole-plan copying on every improvement is unnecessary.
+                        for (int r : changed) { incumbent[r] = paths_[r]; dirty[r] = false; }
+                        changed.clear(); best_cost = current_cost; best_remaining = current_remaining;
+                        ++stats.incumbent_updates;
+                    }
+                }
             } else {
                 stats.partial_rollbacks += repaired > 0 && repaired < int(group.size());
                 for (int k = 0; k < repaired; ++k) reserve(group[k], false);
@@ -376,6 +412,21 @@ public:
             check();
             if (costs_[r] != p_.cost(r, paths_[r])) throw std::logic_error("rolling-window delay cache disagrees with committed paths");
         }
+        if (o_.temperature) {
+            check();
+            if (p_.score(paths_) != current_cost || (o_.progress_ties && p_.remaining_score(paths_) != current_remaining))
+                throw std::logic_error("annealed window walk cost disagrees with committed paths");
+            if (p_.score(incumbent) != best_cost || (o_.progress_ties && p_.remaining_score(incumbent) != best_remaining))
+                throw std::logic_error("annealed window retained best cost disagrees with snapshot");
+            p_.validate(incumbent, check);
+            stats.incumbent_restores = paths_ != incumbent;
+            paths_ = std::move(incumbent);
+            std::fill(owners_.begin(), owners_.end(), -1);
+            for (int r = 0; r < int(paths_.size()); ++r) reserve(r, true);
+            if (o_.delay_samples) for (int r : eligible_) costs_[r] = p_.cost(r, paths_[r]);
+        }
+        // No early best-so-far return: every declared attempt and validation
+        // must finish. A deadline exception leaves completed false.
         check(); stats.completed = true;
     }
 private:
@@ -441,6 +492,7 @@ public:
             options.keep < 0 || options.keep >= p.horizon || options.iterations < 1 || options.nodes < 1 ||
             options.group < 1 || options.workers < 1 || options.workers > 32 || options.threads < 1 ||
             options.threads > options.workers || options.delay_samples < 0 || options.delay_samples > 16 ||
+            options.temperature < 0 || options.temperature > 65536 ||
             seeds.size() != size_t(options.workers))
             throw std::invalid_argument("invalid rolling-window work declaration");
         if (options.history_rollout < 0 || options.history_rollout > 1 ||

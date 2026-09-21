@@ -5896,6 +5896,35 @@ void rolling_window_search_regression() {
   catch(const Timeout&){timeout=true;}
   require(timeout&&interrupted.stats.improved>0&&!interrupted.stats.completed,"delay-directed deadline after improvement returned success");
  }
+ // Annealing may visit worse complete plans, but only the independently
+ // rechecked best may leave a finished island. Exercise cache composition too.
+ long long uphill=0,best_updates=0,restores=0;
+ for(int temperature:{2,8,32})for(int delay:{0,3}){
+  auto annealed=options;annealed.temperature=temperature;annealed.delay_samples=delay;annealed.progress_ties=1;annealed.threads=1;
+  RollingWindow as,ap;WindowStats sa,sb;auto x=as.solve(p,annealed,0,seeds,sa,[]{});annealed.threads=4;
+  auto y=ap.solve(p,annealed,0,seeds,sb,[]{});p.validate(x,[]{});
+  require(x==y&&sa.completed&&sb.completed&&sa.attempts==256&&sa.expanded==sb.expanded&&
+   sa.uphill_accepted==sb.uphill_accepted&&sa.incumbent_updates==sb.incumbent_updates&&sa.incumbent_restores==sb.incumbent_restores,
+   "annealed whole-plan choice depends on thread count or skipped fixed work");
+  require(sa.final_cost==p.score(x)&&sa.final_cost<=sa.initial_cost&&
+   (sa.final_cost<sa.initial_cost||sa.final_remaining<=sa.initial_remaining),"annealing returned a worse walk endpoint");
+  uphill+=sa.uphill_accepted;best_updates+=sa.incumbent_updates;restores+=sa.incumbent_restores;
+  for(int cap:{1,9,16,32}){
+   auto capped=annealed;capped.nodes=cap;RollingWindow engine;WindowStats observed;
+   auto result=engine.solve(p,capped,0,seeds,observed,[]{});p.validate(result,[]{});
+   require(observed.completed&&observed.attempts==256&&observed.final_cost==p.score(result)&&observed.final_cost<=observed.seed_cost,
+    "annealed partial group corrupted best snapshot");
+   if(cap==1)require(result==p.seed&&!observed.accepted,"annealed node exhaustion changed the seed");
+  }
+ }
+ require(uphill>0&&best_updates>0&&restores>0,"annealed worse steps, improvements or best restoration unexercised");
+ {
+  auto annealed=options;annealed.temperature=32;annealed.progress_ties=1;WindowScratch scratch;
+  WindowSearch interrupted(p,annealed,p.seed,scratch,13);bool timeout=false;
+  try{interrupted.run([&]{if(interrupted.stats.incumbent_updates)throw Timeout("annealed_window_after_best_fixture");});}
+  catch(const Timeout&){timeout=true;}
+  require(timeout&&interrupted.stats.incumbent_updates>0&&!interrupted.stats.completed,"annealing exposed best-so-far after deadline");
+ }
  // Returning one complete path cannot authorize a partial group replacement.
  for(int cap:{1,9,16,32}){
   auto capped=options;capped.nodes=cap;RollingWindow engine;WindowStats observed;
@@ -5926,7 +5955,7 @@ void rolling_window_search_regression() {
  auto intent=p;intent.entry_allowed[2][start[2]]=false;intent.validate(intent.seed,[]{});
  require(intent.permits(2,intent.seed[2][0],intent.next(intent.seed[2][0],1)),"occupied foreign intent cannot rotate");
  require(!intent.permits(2,(start[2]-1)*4,start[2]*4),"foreign intent permits re-entry");
- std::cout<<"ROLLING_WINDOW_SEARCH passed independent_layered_optima="<<checked<<" progress_tie_choices="<<progress_choices<<" serial_parallel=1 complete_group_rollback="<<rollback_cases<<" delay_replacements="<<delay_replacements<<" delay_rollbacks="<<delay_rollbacks<<" fixed_attempts=1 protected_paths=1 protected_prefix=1 repeated_service=1 task_swap_history=1 deadline_after_improvement=1\n";
+ std::cout<<"ROLLING_WINDOW_SEARCH passed independent_layered_optima="<<checked<<" progress_tie_choices="<<progress_choices<<" serial_parallel=1 complete_group_rollback="<<rollback_cases<<" delay_replacements="<<delay_replacements<<" delay_rollbacks="<<delay_rollbacks<<" uphill="<<uphill<<" best_updates="<<best_updates<<" restores="<<restores<<" fixed_attempts=1 protected_paths=1 protected_prefix=1 repeated_service=1 task_swap_history=1 deadline_after_improvement=1\n";
 }
 
 void rolling_window_production_regression() {
@@ -5939,16 +5968,17 @@ void rolling_window_production_regression() {
    Task t;t.task_id=r;t.agent_assigned=r;t.locations={r*3,r*3,62-r*3};e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
  for(auto s:settings)setenv(s.first,s.second,1);
  const std::vector<std::pair<const char*,const char*>> active={{"CGAR_WINDOW","12"},{"CGAR_WINDOW_KEEP","6"},
-  {"CGAR_WINDOW_ITERS","32"},{"CGAR_WINDOW_NODES","512"},{"CGAR_WINDOW_WORKERS","4"},{"CGAR_WINDOW_THREADS","1"},{"CGAR_WINDOW_WAIT_COST","2"},{"CGAR_WINDOW_SEED_ROLLOUT","0"},{"CGAR_WINDOW_PROGRESS_TIES","0"},{"CGAR_WINDOW_PROTECTED_PREFIX","0"},{"CGAR_WINDOW_HISTORY_ROLLOUT","0"},{"CGAR_WINDOW_DELAY_SAMPLES","0"}};
+  {"CGAR_WINDOW_ITERS","32"},{"CGAR_WINDOW_NODES","512"},{"CGAR_WINDOW_WORKERS","4"},{"CGAR_WINDOW_THREADS","1"},{"CGAR_WINDOW_WAIT_COST","2"},{"CGAR_WINDOW_SEED_ROLLOUT","0"},{"CGAR_WINDOW_PROGRESS_TIES","0"},{"CGAR_WINDOW_PROTECTED_PREFIX","0"},{"CGAR_WINDOW_HISTORY_ROLLOUT","0"},{"CGAR_WINDOW_DELAY_SAMPLES","0"},{"CGAR_WINDOW_TEMPERATURE","0"}};
  std::vector<int> absent,disabled;int checked=0,services=0;long long changed=0,retained=0;
- for(int mode=-1;mode<8;++mode){
+ for(int mode=-1;mode<9;++mode){
   if(mode==0)setenv("CGAR_WINDOW","0",1);if(mode>0)for(auto s:active)setenv(s.first,s.second,1);
   if(mode==2){setenv("CGAR_WINDOW_NODES","1",1);setenv("CGAR_WINDOW_ITERS","1",1);setenv("CGAR_WINDOW_KEEP","0",1);}
   if(mode>=3)setenv("CGAR_WINDOW_SEED_ROLLOUT","1",1);
   if(mode>=4)setenv("CGAR_WINDOW_PROGRESS_TIES","1",1);
   if(mode>=5)setenv("CGAR_WINDOW_PROTECTED_PREFIX","1",1);
   if(mode>=6)setenv("CGAR_WINDOW_HISTORY_ROLLOUT","1",1);
-  if(mode==7)setenv("CGAR_WINDOW_DELAY_SAMPLES","3",1);
+  if(mode>=7)setenv("CGAR_WINDOW_DELAY_SAMPLES","3",1);
+  if(mode==8)setenv("CGAR_WINDOW_TEMPERATURE","8",1);
   std::vector<int> noop;
   auto e=fixture();Cgar serial;serial.initialize(&e,5000);
   if(mode>0)setenv("CGAR_WINDOW_THREADS","4",1);Cgar parallel;parallel.initialize(&e,5000);
@@ -5968,7 +5998,8 @@ void rolling_window_production_regression() {
   if(mode>0){require(serial.stats().window_calls==60&&serial.stats().window.attempts==60*(mode==2?1:32)*4,"production fixed work accounting failed");
    require(serial.stats().window.expanded==parallel.stats().window.expanded,"worker work depends on thread count");
    if(mode>=6)require(serial.stats().window.history_batches>0&&serial.stats().window.history_batches==parallel.stats().window.history_batches,"history rollout was unused or changed with thread count");
-   if(mode==7)require(serial.stats().window.delay_draws>0&&serial.stats().window.delay_replacements>0&&serial.stats().window.delay_draws==parallel.stats().window.delay_draws,"delay-directed production selection was unused or changed with threads");
+   if(mode>=7)require(serial.stats().window.delay_draws>0&&serial.stats().window.delay_replacements>0&&serial.stats().window.delay_draws==parallel.stats().window.delay_draws,"delay-directed production selection was unused or changed with threads");
+   if(mode==8)require(serial.stats().window.uphill_accepted>0&&serial.stats().window.incumbent_updates>0&&serial.stats().window.uphill_accepted==parallel.stats().window.uphill_accepted,"annealed production work was unused or nondeterministic");
    if(mode==2)require(noop==absent&&!serial.stats().window_changed_first,"no-op overlay perturbed CGAR decisions or random stream");
    else {changed+=serial.stats().window_changed_first;retained+=serial.stats().window_retained;
     require(serial.stats().window_changed_first>0&&serial.stats().window_retained>0,"production overlay or history was unused");}
@@ -5979,6 +6010,7 @@ void rolling_window_production_regression() {
  // Reject invalid and silently ignored configurations before planning.
  for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_WINDOW","5"},{"CGAR_WINDOW","33"},{"CGAR_WINDOW","-1"},
   {"CGAR_WINDOW","20x"},{"CGAR_WINDOW_KEEP","12"},{"CGAR_WINDOW_ITERS","0"},{"CGAR_WINDOW_NODES","0"},
+  {"CGAR_WINDOW_TEMPERATURE","65537"},{"CGAR_WINDOW_TEMPERATURE","-1"},{"CGAR_WINDOW_TEMPERATURE","8x"},
   {"CGAR_WINDOW_DELAY_SAMPLES","17"},{"CGAR_WINDOW_DELAY_SAMPLES","-1"},{"CGAR_WINDOW_DELAY_SAMPLES","3x"},
   {"CGAR_WINDOW_HISTORY_ROLLOUT","2"},{"CGAR_WINDOW_HISTORY_ROLLOUT","1"},{"CGAR_WINDOW_PROTECTED_PREFIX","2"},{"CGAR_WINDOW_PROGRESS_TIES","2"},{"CGAR_WINDOW_SEED_ROLLOUT","2"},{"CGAR_WINDOW_GROUP","0"},{"CGAR_WINDOW_WORKERS","0"},{"CGAR_WINDOW_THREADS","5"},{"CGAR_WINDOW_WAIT_COST","256"},
   {"CGAR_TEMPORAL_CHAIN_MODE","1"},{"CGAR_TEMPORAL_WARM_START","1"},{"CGAR_TEMPORAL_PROMISE_AFTER_TURN","1"},{"CGAR_FLOW_STRENGTH","4"}}){
@@ -5991,11 +6023,13 @@ void rolling_window_production_regression() {
  require(rejected,"disabled work override accepted");unsetenv("CGAR_WINDOW_ITERS");
  setenv("CGAR_WINDOW_DELAY_SAMPLES","3",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
  require(rejected,"disabled delay override accepted");unsetenv("CGAR_WINDOW_DELAY_SAMPLES");
+ setenv("CGAR_WINDOW_TEMPERATURE","8",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
+ require(rejected,"disabled annealing override accepted");unsetenv("CGAR_WINDOW_TEMPERATURE");
  for(auto s:active)setenv(s.first,s.second,1);
  setenv("CGAR_WINDOW_PROTECTED_PREFIX","1",1);
  temporal_primary_regression(); // real protected primary and recovery/pocket fixtures
  for(auto s:active)unsetenv(s.first);for(auto s:settings)unsetenv(s.first);
- std::cout<<"ROLLING_WINDOW_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" retained="<<retained<<" disabled_identity=1 noop_rng_identity=1 seed_rollout=1 history_rollout=1 delay_tournament=1 progress_ties=1 protected_prefix=1 primary_recovery=1 strict_parser=1\n";
+ std::cout<<"ROLLING_WINDOW_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" retained="<<retained<<" disabled_identity=1 noop_rng_identity=1 seed_rollout=1 history_rollout=1 delay_tournament=1 annealed_best=1 progress_ties=1 protected_prefix=1 primary_recovery=1 strict_parser=1\n";
 }
 
 

@@ -952,6 +952,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     window_options_.protected_prefix = priority_setting("CGAR_WINDOW_PROTECTED_PREFIX", 0, 1);
     window_options_.history_rollout = priority_setting("CGAR_WINDOW_HISTORY_ROLLOUT", 0, 1);
     window_options_.delay_samples = priority_setting("CGAR_WINDOW_DELAY_SAMPLES", 0, 16);
+    window_options_.temperature = priority_setting("CGAR_WINDOW_TEMPERATURE", 0, 65536);
     window_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0xa0761d6478bd642fULL);
     window_history_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0x8ebc6af09c88c6e3ULL);
     rolling_window_ = RollingWindow();
@@ -965,7 +966,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
             (flow_strength_ && !static_trick_metric_))
             throw std::invalid_argument("rolling window requires static temporal guidance, horizon6-32, keep<horizon and positive fixed work; guide/next-errand/neutral-tail/legacy-history are incompatible");
     } else if (window_options_.keep != 6 || window_options_.iterations != 128 || window_options_.nodes != 2048 ||
-               window_options_.group != 4 || window_options_.workers != 4 || window_options_.threads != 4 || window_options_.wait_cost || window_options_.seed_rollout || window_options_.progress_ties || window_options_.protected_prefix || window_options_.history_rollout || window_options_.delay_samples)
+               window_options_.group != 4 || window_options_.workers != 4 || window_options_.threads != 4 || window_options_.wait_cost || window_options_.seed_rollout || window_options_.progress_ties || window_options_.protected_prefix || window_options_.history_rollout || window_options_.delay_samples || window_options_.temperature)
         throw std::invalid_argument("rolling-window work overrides require an enabled window");
     future_options_ = FutureOptions();
     future_options_.roots = priority_setting("CGAR_FUTURE_ROOTS", 0, 32);
@@ -1240,10 +1241,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         if (temporal_chain_mode_) std::printf("[cgar-chain-config] mode=%d score=%d order=%d complete=1 cells=%d stored_bytes=%zu threads=%d service=after_action domain=core_goal_pocket_escape fixed_work=1\n",
             temporal_chain_mode_, int(bool(temporal_chain_mode_ & 1)), int(bool(temporal_chain_mode_ & 2)),
             chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_);
-        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
+        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d temperature=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
             window_options_.horizon, window_options_.keep, window_options_.iterations, window_options_.nodes,
             window_options_.group, window_options_.workers, window_options_.threads, guidance_turn_cost_, wait,
-            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples);
+            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature);
     }
 
     if (future_options_.roots)
