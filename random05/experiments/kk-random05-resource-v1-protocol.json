@@ -1,0 +1,18 @@
+{
+  "declared_utc": "2026-09-21T20:24:53.489564+00:00",
+  "purpose": "Diagnose original KK thread-creation failures without altering algorithm, allocator, work or memory limits",
+  "original_batch": "random-nms-kk-baselines-split-full-v1",
+  "original_failures": [
+    "random-05-kk-repeat1",
+    "random-05-kk-repeat2"
+  ],
+  "original_host": "research33",
+  "original_exit": 134,
+  "observed": "Both failed during timestep35 with libgomp thread creation failed and std::system_error resource deadlock avoided; qacct sampled maxvmem3.618GiB and RSS~89MB. Root cause not established.",
+  "reruns": [
+    "research35",
+    "research36"
+  ],
+  "changes": "Host placement and read-only descendant process sampling; same binary, input,32 workers,1s entries,30s preprocessing,32 decimal GB address-space limit and full2000steps.",
+  "preserve_original_failures": true
+}
