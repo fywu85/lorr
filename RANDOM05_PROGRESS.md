@@ -30,25 +30,29 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 03:06 UTC.
+Updated: 2026-09-21 03:26 UTC.
 
-**Best single run on the archived input: 3,985 tasks on 32 workers / 16 physical cores**,
-or **+25.6% versus matched NMS32=3,172**. Source
+**Best single run on the archived input: 3,990 tasks on 32 workers / 16 physical cores**,
+or **+25.8% versus matched NMS32=3,172**. Source
 [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2), planner seed0,
-firstK7968 thenK20160/B18/s2/q4/G4/E8/P8, move-proposal bias3.
+firstK7968 thenK16320/B18/s2/q4/G4/E8/P8, move-proposal bias3,
+triage scale1.25 with directional mix0.75.
 This run uses the reactive planner; the new windowed mode is off.
-Guidance and the directional horizon cutoff remain explicit tricks;
+Guidance and the known-horizon cutoff remain explicit tricks;
 startup weighting and finalist rescoring are off.
-Mean649ms, maximum693ms, RSS581MB; all2,000steps valid and independently replayed.
-It is7tasks above3,978 and a selected maximum, not a replicated K improvement.
-The4,000 target remains15tasks away. AtK16320, bias3's four paired development
-planner seeds have2.60% higher aggregate than bias0, with three positive pairs.
-No fresh task/start validation of the latest maximum has been performed.
-[Full evidence](random05/results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json),
-[independent replay](random05/results/move-bias-seed0-split-full-v80/action_audit-3985.json).
+Mean513ms, maximum565ms, RSS559MB; all2,000steps valid and independently replayed.
+It is12tasks above its K16320/mix0.5 parent3,978 and5 above the previous selected
+record3,985 (K20160/mix0.5). These are selected maxima; the new mix has not been
+replicated across planner seeds or fresh task/start inputs. The4,000 target
+remains10tasks away.
+[Full evidence](random05/results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json),
+[independent replay](random05/results/record3978-triage-split-full-v80/action_audit-3990.json).
 
-The new build's K16320 control reproduces3,978 exactly in all six trajectory
-fields. K24480 gives3,872, so increasing work is not monotonically beneficial.
+AtK16320/mix0.5, bias3's eight paired development planner seeds have1.61% higher
+aggregate than bias0 (five positive). These include the configuration-selection
+seed and an earlier strong baseline seed, so they are not an independent sample. The source80 control reproduces3,978
+exactly in all six trajectory fields. K24480/mix0.5 gives3,872, so increasing
+work is not monotonically beneficial.
 
 The3,933 intermediate record used move bias2; the same source's zero-bias
 control exactly reproduces3,928 in all six trajectory fields.
@@ -320,6 +324,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T02:16:03.845916+00:00 | [acdbfd7](https://github.com/fywu85/lorr/commit/acdbfd7) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3978 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.4% | [Full evidence](random05/results/move-bias-refinement-split-full-v77/32-move-bias3-b18-seed0/summary.json) |
 
 | 2026-09-21T03:06:09.957953+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K20160/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3985 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.6% | [Full evidence](random05/results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json) |
+
+| 2026-09-21T03:26:06.798792+00:00 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | K16320/B18/s2/q4/G4/E8/P8; first7968; planner seed0; move bias3; triage1.25/directional mix0.75; `--trick RANDOM-05` | 3990 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +25.8% | [Full evidence](random05/results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1721,3 +1727,12 @@ passes. K24480 gives3,872. These K variants are not a paired-seed mean gain.
 Biases2.5/3.5 onseed0 give3,872/3,888; fractions.125/.5 give3,798/3,917.
 All7 full cases are strict successes. Four new explicit horizon-cutoff refinements
 around the3,978 preset are running; fresh task/start validation remains pending.
+
+
+### 2026-09-21 03:26 UTC: 3,990 from a declared cutoff refinement
+
+At the3,978/K16320/seed0 configuration, triage scales1.1/1.4 score3,969/3,976;
+directional mixes0.25/0.75 score3,979/3,990. All four full runs pass independent
+replay and strict resource checks. The0.75 mix is12 above its matched parent,
+and5 above the intervening3,985 K20160 record. Mean512.857/max564.625ms,
+RSS546312KiB. No paired-seed or fresh-input claim is made for this new setting.

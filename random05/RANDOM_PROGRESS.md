@@ -21,7 +21,7 @@ RANDOM-05 still targets4,000. Large maps are outside active development.
 | RANDOM-02 | 200 | 600 | 1370 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2182 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2486 | 2580 |
-| RANDOM-05 | 800 | 2000 | 2226 | 3985 | 3172 |
+| RANDOM-05 | 800 | 2000 | 2226 | 3990 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -81,6 +81,7 @@ has been added yet.
 | 2026-09-21T03:06:09.957953+00:00 | RANDOM-05 | trick | 3985 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/move-bias-seed0-split-full-v80/32-move-bias3-seed0-k20160/summary.json) |
 | 2026-09-21T03:05:40.755316+00:00 | RANDOM-04 | trick | 2486 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random04-search-split-full-v80/trick-random-04-depth10/summary.json) |
 | 2026-09-21T03:10:39.990229+00:00 | RANDOM-03 | trick | 2182 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-crowded-seeds-split-full-v80/trick-random-03-selected-seed6/summary.json) |
+| 2026-09-21T03:26:06.798792+00:00 | RANDOM-05 | trick | 3990 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/record3978-triage-split-full-v80/32-record3978-triage-mix0.75/summary.json) |
 
 
 ## September21: first development comparisons
@@ -229,3 +230,30 @@ match its frozen build. Full experiments will include one-start controls. This
 passes regression, not a throughput claim. Two additional RANDOM-05 runs test
 the3985record's K20160 budget on planner seeds5/7; four earlier horizon variants
 still use the3978/K16320 recipe. No fresh50009+ input has been generated.
+
+
+### Initialization portfolio rejected; RANDOM-05 reaches3,990
+
+All16 source83 full runs are strict and independently replayed; the four one-start
+controls exactly match source81 in all six trajectory fields. Extra16/64 starts
+atnoise30, or16 atnoise100, score716/717/716 on RANDOM-01 versus718;
+1312/1309/1316 on RANDOM-02 versus1314;1148/1124/1144 on unguided RANDOM-03
+versus1270; and916/877/1063 on guided RANDOM-03 versus1910. Keep
+`R05_WINDOW_STARTS=1`. Passing safety/regression checks did not establish a
+throughput gain. A possible cause is repeatedly choosing fresh pipeline seeds,
+whose first action cannot move, in place of a retained plan. This remains a
+hypothesis; a retained-prefix portfolio would test it.
+[Audit and controls](results/random-window-starts-split-full-v83/audit.json).
+
+RANDOM-05's explicit cutoff refinement reaches3,990 atK16320/seed0/mix0.75,
+versus3,978 for its mix0.5 parent. This is5 above the intervening K20160 record.
+Mean513ms,max565ms,RSS559MB; independent replay and all84frontier audits pass.
+Waiting maximum among completed orders is1945steps;130 initial orders remain
+unfinished and91unopened. The4,000 target remains10tasks away. Two K20160
+planner-seed runs and three cutoff/budget combinations are pending.
+
+The complete eight-seed move-bias assessment is31,103 versus30,609 (+1.61%,
+five positive pairs). This supersedes the initial four-seed +2.60% estimate;
+both histories are retained. The seeds include selected development cases and
+are not independent task/start validation.
+[All eight paired outcomes](results/move-bias-seeds-split-full-v77/paired-eight-seeds.json).

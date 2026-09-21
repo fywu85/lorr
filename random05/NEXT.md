@@ -1,163 +1,172 @@
 # Active RANDOM campaign
 
-Updated 2026-09-21 03:04 UTC. Persistent goal ACTIVE: reach4,000 on full2,000-step
-RANDOM-05 combined, then independently validate the selected improvement on fresh
-inputs. Best3,978, gap22. User also requests general improvements AND explicit
-tricks for RANDOM-01..04. Preserve this expanded scope across continuations.
-Non-random maps are deferred; no memory-bounded port is requested.
+Updated2026-09-21 03:36UTC. Persistent goal ACTIVE: >=4,000 completed tasks on
+full2,000-step RANDOM-05 combined, then independent fresh-input validation.
+Currentbest3,990, gap10. Do not mark complete. User also requests general
+improvements AND explicit tricks on RANDOM-01..04; preserve that scope through
+continuations. Non-random work is deferred. No new large-map port/evaluation.
 
 ## Boundaries
 
 Only edit/stage/commit `random05/` and `RANDOM05_PROGRESS.md`. Other agents share
-main and GRID; leave their files, staging and jobs alone. No delegation. Public
-`fywu85/lorr` may be pushed; preserve visibility. Throughput primary, waiting
-secondary. All instance-specific choices require the matching `--trick RANDOM-0N`.
-Selected maxima, planner-seed means and fresh-input validation are distinct.
+main/staging/GRID; leave their files and jobs alone. No delegation. Public
+`fywu85/lorr` may be pushed; preserve visibility. Throughput primary; waiting
+secondary. Instance-specific choices require the matching `--trick RANDOM-0N`.
+Selected maxima, planner-seed averages and fresh-input validation are distinct.
 
 Full archived horizons600/600/800/1000/2000. Strict1s entry,30s preprocessing,
-32decimalGB address-space guard. Allocation16physical/32SMT EPYC9354; keep actual
-affinity/no-quota checks. Shared hosts allowed. Fixed declared work completes or
-entry times out; no wall-time truncation. Preserve every failed original attempt.
-Fresh task/start seeds50001–50008 are excluded from tuning. No50009+ generated.
+32decimalGB address-space guard.16physical/32SMT EPYC9354, actualaffinity/no-quota
+checks. Sharedhosts allowed. Fixedwork completes or entry fails; no time-truncated
+portfolio. Preserve every original failure. No delegation. No50009+generated;
+50001–50008 are excluded from tuning. Freeze any fresh protocol before generation.
 
-## Current records and logs
+## Current verified records
 
-All-five ledger `RANDOM_PROGRESS.md`, frozen configurations `random-frontiers.json`.
-General01..05:726/1370/1582/1558/2226. Trick01..05:628/1122/2171/2462/3978.
-Matched NMS32:649/1228/2359/2580/3172. General records are independent algorithmic
-variants, not an automatic per-instance dispatcher. Selecting by map name is a
-trick. All cases share one819-cell layout, not unseen-geometry validation.
+All-five ledger`RANDOM_PROGRESS.md`, configurations`random-frontiers.json`.
+General01..05=726/1370/1582/1558/2226. Trick01..05=628/1122/2182/2486/3990.
+Matched NMS32=649/1228/2359/2580/3172. These are selected development records;
+all successful records independently replayed. One819-cell layout at5densities,
+not unseen-geometry validation. Per-case index is not an automatic dispatcher;
+selecting settings by map name counts as a trick.
 
-R01 windowH20/512iterations/turn2/wait2/seed4:726. Fixed settings on planner
-seeds5/0/3/4 give718/717/714/726 (mean718.75). R02windowH20/2048iterations/seed5:
-1370. EarlierH15/512 fixed settings give1314/1323/1319/1325 (mean1320.25).
-All strict/replayed, source80 `a2ff2b2`. No guidance or horizon tricks. New
-maxima+11.9%/+11.6% versus a single matched NMS run; not fresh-input claims.
+R01:windowH20/I512/turn2/wait2/seed4=726. Fixed512settings on seeds5/0/3/4:
+718/717/714/726(mean718.75). R02:H20/I2048/seed5=1370; priorH15/I512 on
+5/0/3/4=1314/1323/1319/1325(mean1320.25). Source80a2ff2b2; no guidance/horizon.
+CommonH20/I2048/seed5 gives722/1370 on01/02; unguided03only1372.
+R03:reactiveB18/K16320/seed0=2182, samefield15/flip5/mix.5 as old2171seed5.
+R04:reactiveB18/K16320/depth10/seed5=2486. EarlierK24480/depth8=2462.
+All matched NMS gaps: +11.9%/+11.6%/-7.5%/-3.6%/+25.8%.
 
-R05best3,978 source`acdbfd7`, build77, plannerseed0, movebias3/fraction.25,
+R05NEW3,990, source`a2ff2b2`, build80, plannerseed0, movebias3/fraction.25,
 B18/first7968/K16320/s2/q4/G4/E8/P8, field15/flip5, contrast2.4,
-triage mix.5/scale1.25, turn.6/wait.5; startup and finalist rescoring OFF.
-Finished2026-09-21T02:16:03.845916+00:00. Mean616.646/max785.890ms,
-RSS546628KiB, +25.4% against3172. Replay and all82progress rows verified.
-Maxcompletedwait1959; initialunfinished130/unopened92, oldestcensored2000.
-Evidence`move-bias-refinement-split-full-v77/32-move-bias3-b18-seed0`.
-`best.json` and `best-32-workers.json` pin it. Mainlog`RANDOM05_PROGRESS.md`.
+triagescale1.25/directional mix.75, turn.6/wait.5. Windowedmode OFF;
+startup/finalist rescoring OFF. `best.json` and `best-32-workers.json` pin it.
+Finished2026-09-21T03:26:06.798792+00:00. Mean512.857/max564.625ms,
+RSS546312KiB(+25.8%vs3172). Evidencebatch`record3978-triage-split-full-v80`,
+case`32-record3978-triage-mix0.75`. Replay/source/resource checks pass.
+All84mainfrontierrows audited; waitingreport rendered. Completedmaxwait1945,
+initialunfinished130/unopened91, oldestunfinished censored2000.
 
-R05bias3 seeds0/3/4/5:3978/3839/3782/3941 vsbias0 3666/3675/3877/3928,
-aggregate+2.601%,3/4positive. Additional6/7/8/24:3901/3948/3850/3864 vszero
-3832/3851/3876/3904. All strict/replayed. Eight-seed aggregate not yet written.
-Bias2 four-seed aggregate+1.842%. These are one development input, not fresh.
+Its matchedK16320/mix.5parent=3978. PreviousselectedK20160/mix.5=3985.
+K24480/mix.5=3872, notmonotonic. Latestmix.75has no paired/fresh validation.
+Eightpaired bias3 vsbias0 plannerseeds0/3/4/5/6/7/8/24 total31103/30609,
++1.6139%,5/8positive. Supersedes initialfour-seed+2.60%; includes selectedseed5
+andoldstrongseed24, not independent input sampling. Evidencepaired-eight-seeds.json.
 
-Four-core best3770 source`5f81613`, build65, seed3, first4608/K5760/B12,
-G4/E8/P8, triage1.5/cache512. Mean788/max845ms,+29.4%vsNMS4=2914.
-Frozen freshV4 protocol`a7bad0c` preceded generation50007/50008:3680/3641
-vsstrongerNMS2907/2930,aggregate+25.42%. Six original runs strict/replayed.
-Later selected maxima are not independently validated yet.
+Four-core3770source5f81613/build65/seed3/first4608/K5760/B12/G4/E8/P8,
+triage1.5/cache512;mean788/max845ms,+29.4%vsNMS4=2914. FrozenfreshV4protocol
+`a7bad0c` predates50007/50008generation:3680/3641vsstrongerNMS2907/2930,
+aggregate+25.42%. All6originalrunsstrict/replayed. Latermaxima notfresh-validated.
 
-## Sources/builds
-
--77 `acdbfd7`, SHAca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c:
-move-bias proposal. Zero control exactly reproduces3928 in six trajectory fields.
--78 `6b40cd5`: explicit trick labels01..05 only, control3928 exact.
--79 `9e9dbfa`, SHA5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6:
-fraction knob; .25control3941 exactly matches six fields. Other fractions lose.
--80 `a2ff2b2`, SHA2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232:
-optional fixed-work windowed LNS. Regression35.39s,35compiled/test inputs verified.
-Window starts from fresh pipeline or retained6steps+newtail; time-space A* repairs
-small groups in deterministic parallel islands. All complete paths certified.
-R05_WINDOW=0default preserves reactive mode. No participant source copied.
--81 buildcomplete03:00:15UTC, job8901349, SHA
-928ae4bb6c92d92c642dcfa6d827ba13980ce713ef653f3aac482e787598178e.
-Optional WINDOW_BLOCKERS/EQUAL, bothoffdefault. Guides find actual route blockers;
-equal complete paths permit plateau exploration. Regression34.67s,35input hashes
-verified. Needs source commit pin before benchmark submission (commit next).
-New tests cover dense safety, worker/cache equivalence, checkpoints and failed
-repair restoration. Source81 changes are inengine.hpp/engine.cpp/window.cpp/tests.
-
-## Active/pending batches
+## Active jobs (only five at this checkpoint)
 
 Collect`python3 random05/tools/split_grid.py collect --output runs/random05/BATCH`.
 
-- `move-bias-seed0-split-full-v80`, jobs8901291–97:3978control, K20160/K24480,
-  biases2.5/3.5, fractions.125/.5. Allseed0/source80. Control must matchsource77
-  inall6fields. At03:00UTC mostat1500–1800; K24480at1100. No results collectedyet.
-- `random04-search-split-full-v80`, jobs8901343–48: B4/8/10/14nearK16320 and
-  depths6/10; source80, explicitR04tricks. Compare2456 frozen baseline/2462best.
-- `random03-reactive-guidance-split-full-v80`, jobs8901350–58:2171control,
-  flowseeds0–5 (sameflipseed5), KK400andNMSfiles. All explicitR03tricks/source80.
-- Source81 planned: commonH20/512/turn2/wait2 on01–03 with oldcontrol,
-  blockers/equal/both; R03flow2.4 samefourvariants withtrick. Not submittedyet.
+- `record3985-seeds-split-full-v80`, jobs8901421/22:K20160/mix.5/seeds5/7.
+  Source80a2ff2b2. Both pendingatlastcollect. Comparepriorseed0record3985.
+- `record3990-coupling-split-full-v80`, jobs8901451–53:source80/seed0,
+  mix.75/K20160;mix1/K16320;mix1/K20160. All explicitR05tricks.
+  Compare3990mix.75/K16320 and3985mix.5/K20160. No fresh inputs.
 
-## Completed expansion batches
+All other batches submitted in this turn are terminal and archived/audited.
+No live exec_command/functions cells should remain after final push.
 
-All successful cases below have full source/input/resource/action/waiting audits.
-`tools/audit_random_cases.py --batch NAME --build build-vNN --source COMMIT`.
-`tools/promote_random_records.py AUDIT...` updates01–04index and timestampedledger;
-R05requiresmainfrontierpromotion separately. Retain failed cases in audits.
+## Sources and architecture
 
-- `random-density-first-split-full-v79`:23cases. Noise50/dispersion0/both generally
-  lose; dispersion0R02=1106. Horizon-only01/02/03=628/1063/1667. R04contrast1.6/
-  dispersion.4/noise100/bias2/K24480=2267/2421/2358/2436/2462.
-- `random-operations-split-full-v79`:K128/K512 on01–03=645/651,989/1038,1084/1186.
-- `random-window-split-full-v80`:H15/iters8/24 turn.6/wait.5 gridlocksabove100.
-  R01bestunitturn/wait1=685. R02best823,R03best162,dense04/05best6/2.
-- `random-window-work-split-full-v80`:H15I128unit1=699/1172/145;
-  H15I512unit1=710/1289/149; turn/wait2=714/1314/1237;
-  H20I512turn/wait2=718/1314/1270. Unguided forward cost is2.
-- `random-window-followup-split-full-v80`:11cases, seed repeats above;
-  H15I2048R01/02=717/1351; H20I2048=722/1370/1372. All audited/promoted.
-- `random03-window-guidance-split-full-v80`:lanes/KK400/flow1.6/flow2.4=
-  1149/1797/1809/1839, belowreactive2171. R03trick/nohorizon/H20I512turn2wait2.
-  KK400asset provenance+MITnotice copied; source80binary file input separately hashed.
-- `random04-triage-split-full-v80`:scales.75/1.5/hop-only=2428/2452/2447.
-  Originalno-horizonfails125(configurationmix.5requireshorizon). Separate
-  `random04-no-horizon-configfix-split-full-v80` setsmix0,horizon0=2298. Bothaudited.
+- Source77acdbfd7, SHAca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c:
+  move-proposal bias, old3978record. Zero-bias control3928exact in6fields.
+- Source79`9e9dbfa`, SHA5338e02c5cfa2b42dbb7bdda4a5b1c6dd52a6dfe483d614d8f3dddbb96accee6:
+  configurablefraction. Quartercontrol3941exact; otherfractionslose.
+- Source80`a2ff2b2`, SHA2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232:
+  optionalwindowLNS, defaultoff. Regression35.39s;35compiled/testinputsverified.
+  Freshpipeline vsretained6steps+newtail, independentLNSislands,time-spaceA*,
+  complete reservations and certifiedpaths. WINDOW counts replace reactiveK.
+  No participant source copied. NewR05records usewindowOFF.
+- Source81`4b70a80`, SHA928ae4bb6c92d92c642dcfa6d827ba13980ce713ef653f3aac482e787598178e:
+  WINDOW_BLOCKERS/EQUAL bothdefaultoff. Regression34.67s. Four controls exact.
+- Source82 FAILED mobility regression before benchmarking. Failed-source.patch
+  against4b70a80 plusregression.log/buildmetadata inresults/build-v82. Retained
+  originalmobilitythreshold. Do not usefailedbinary or claimperformance.
+- Source83`f217eee`, SHA346e291a6ae48a94eca5f2753aeffa32c633d850e1aa29120595b60b46cff82e:
+  WINDOW_STARTS default1, fixedportfolio extra starts ranked by summedremaining
+  taskcost. Regression22.76s passes unchangedmobility/worker/cache/checkpoints;
+  all35compiled/testinput hashesverified. Fourfullone-startcontrols exact.
+  FULLBENCHMARKSNEGATIVE: keepWINDOW_STARTS=1; no promotion fromthisfeature.
 
-## Record promotion and validation
+## Important completed experiments
 
-Archive directandone-level JSONmetadata only:summary/completion/spec/allocation/
-submission/batch. Never rawtraces/NMScwd. Independentaction replay, source/binary/
-input/resource checks precede any promotion. Fieldsforbitwisecontrols:
+Full evidence is inRANDOM_PROGRESS.md, mainRANDOM05_PROGRESS.md, RESEARCH.md.
+All successes below have source/input/resource/action/waiting audits.
+
+R05:
+- `move-bias-seed0-split-full-v80` all7: control3978(exact6fields),K201603985,
+  K244803872,bias2.53872,bias3.53888,fraction.1253798,fraction.53917.
+- `record3978-triage-split-full-v80` all4:scale1.13969,scale1.43976,
+  mix.253979,mix.753990. Newmaxpromoted; main84audits/waitingcomplete.
+- Source77additionalbias3seeds6/7/8/24=3901/3948/3850/3864.
+  All8paired outcomes+1.61%nowreflectedinleadingreports; do not citeonly+2.60%.
+
+OtherRandom:
+- First23configtrials:noise50/dispersion0 generallylose;R02dispersion0=1106.
+  Horizon-only01/02/03=628/1063/1667. R04contrast1.6/disp.4/noise100/bias2/
+  K24480=2267/2421/2358/2436/2462.
+- Three-actionpolicyK128/K512 on01–03=645/651,989/1038,1084/1186.
+- InitialwindowH15/24 withturn.6/wait.5 gridlocksabove100robots. Turn/wait2
+  andmoreLNS work give current01/02wins. Plainforwardcost is2. R03no-guidance
+  H20I512/I2048=1270/1372, belowreactive1582. Guidance crucial butinsufficient.
+- WindowR03H20I512:nohorizon,lanes1149,KK4001797,flow1.61809,flow2.41839.
+- Source81control/blockers/equal/both atH20I512:
+  R01=718/723/718/718;R02=1314/1318/1331/1318;
+  R03plain=1270/1090/1291/1105;R03flow2.4=1839/1865/1886/1910.
+  Noall-densitygain; bothflagsoptional.
+- Source83starts16noise30/64noise30/16noise100:
+  R01=716/717/716vs718;R02=1312/1309/1316vs1314;
+  R03plain=1148/1124/1144vs1270;R03guided=916/877/1063vs1910.
+  All16audited, fourcontrols exact. Rejectdirectionascurrentlyimplemented.
+  Plausiblecause: freshpipeline seeds firstactionneverFW; repeatedly replacing
+  retainedplan mayprocrastinate. This isnotyetacausalmeasurement. Nextwindow
+  hypothesis: keepcommittedprefix inallportfolio candidates, varyonlytail, and
+  compareunderoneobjective. No suchcodeadded; source83 remainsoptional/off.
+- ReactiveR03flowseeds0–5=2039/2055/2035/2078/2040/2024;
+  KK400andNMSfileboth2001withdifferenttrajectories.2171control exact6fields.
+- R04cutoffscales.75/1.5/hop-only=2428/2452/2447vs2456baseline.
+  Originalno-horizonfails125(configmix.5requireshorizon);separateconfigfixmix0
+  gives2298. Failurepreserved, bothaudited.
+- R04B4/8/10/14=2441/2384/2417/2426;depth6/10=2258/2486.
+- Crowdedseedbatchsource80: R03seeds0/3/4/6=2182/2158/2157/2182;
+  R04K24480/depth8=2439/2441/2431/2470. All8audited,2182promoted.
+
+## Audits, next work and reproduction
+
+Use audit_random_cases.py --batchNAME --buildbuild-vNN --sourceCOMMIT for complete
+source/input/resource/action/waitingaudit. --allow-pendingretains pendinglabels.
+`promote_random_records.py AUDIT...` promotes01–04; R05usesmainfrontieraudittoo.
+Archiveonlydirectandone-levelsummary/completion/spec/allocation/submission/batch
+JSON. Neverrawtraces orNMScwd. Default-control equivalencefields:
 actualPaths,plannerPaths,actualSchedule,plannerSchedule,events,tasks.
-R05newmaxupdatebestmanifests/mainlog/RESULTS/waitingmanifest/all5index+ledger/NEXT;
-run audit_progress.py,audit_task_waits.py,render_waiting_report.py. Waitingmanifest
-atresults/task-waiting-frontiers-20260920T1612/manifest.json.
 
-NoV5or50009+yet. Freezeexactcandidate/source/plannerseed/protocolbeforegeneration.
-Freshauditor supports16physical/32SMT and a priorbaseline. Comparecandidate+prior
-+twoNMSrepeats perinput with predeclared criteria. Do not retune onfreshinputs.
-`env/bin/python`hasNumPy; generatorreplicatesorganizerrecipe. PriorV4audits pass.
+FornewR05max:replay,source/binary/input/resourcechecks; bestmanifests;
+mainlogtimestamp/source/evidence;RESULTS;waitingmanifest;all5index/ledger;NEXT.
+Then audit_progress.py,audit_task_waits.py,render_waiting_report.py.
+Waitingmanifest:results/task-waiting-frontiers-20260920T1612/manifest.json.
 
-Fablepersistentsession27a4316e-b79d-46cf-86b4-41b0f558938a failedcredits21:55UTC;
-no new review. Do not retry unchanged quota or send unapproved newpayload. Existing
-approved79KBpayload remainsruns/random05/fable-review-01/payload.txt.
+Priorities:collectfiveactiveR05runs; followpromisingcutoff/workinteraction,
+continue general/declaredtricks on03/04 (currentgaps177/94tasks). A retained-prefix
+windowinitialization isahypothesis, notpermission toskipfullcontrols/regressions.
+Further sparseimprovements canuse currentlowlatencyheadroom; preserve common
+config comparisons, don'tclaimselectedper-casefrontiers are onefrozen solver.
 
-Last push251cf5d includes source80+685record. Later records/source81 needcommit/push.
-Use `git commit --quiet --only -m '...' -- random05 RANDOM05_PROGRESS.md` after
-staging onlythosepaths. Push:
-`env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
-Hostlist32/33/35/36/37/39/40/41/45/46/47/48/49/50/51/52/54/55/56; avoid34/42/53/58.
-SGEbindingadvisory; actualguardsmandatory. Refusal/spike causes remain unproven.
+NoV5or50009+yet. Whenreadyfreezeexactsource/config/plannerseed/protocolbefore
+`generate_fresh.py`. Fresh auditt supports16physical/32SMT pluspriorbaseline.
+Comparecandidate+strongprior+twoNMSrepeats perinput withpredeclaredcriteria;
+neverretuneonfreshinputs. env/bin/pythonhasNumPy. PriorV4allpass.
 
-Source81commit`4b70a80` verified. Declared16casebatchrandom-window-blockers-full-v81: H20I512turn2wait2 on01–03 andR03flow2.4, eachcontrol/blockers/equal/both. Separate8casebatchrandom-crowded-seeds-full-v80 takesbesttrick03/04settingswithseeds0/3/4/6. R04usesK24480best2462; R03usesK16320best2171. Originalinputs,notfreshvalidation.
+Fablepersistentsession27a4316e-b79d-46cf-86b4-41b0f558938a failedcredits21:55UTC.
+No new review; do not retry unchanged quota or send unapprovednewpayload.
+Approved79KBpayload staysruns/random05/fable-review-01/payload.txt.
 
-## Updates after03:12UTC (override earlier active notes)
-
-R05NEW3,985 sourcea2ff2b2/build80/seed0/K20160/first7968/B18; allother3978settings.
-Finished03:06:09.957953UTC. Mean649.393/max693.366ms,RSS566944KiB,+25.6%vsNMS.
-Bestmanifests/mainlog/RESULTS/all5index updated; all83frontierrows audited;
-waitingmax1962,initialunfinished121/unopened87. K24480=3872, so notmonotonic.
-All7 source80seed0cases audited;3978control exact allsixfields.
-NewR04depth10record2486 audited/promoted (source80,K16320,seed5). R04seedbatch
-usesoldbestK24480/depth8; preserve that distinction. R03seed0/6=2182pendingaudit,
-seed3/4=2158/2157; allfourvalid. FourR04seedcasespendingatlastcollect.
-Source81blocker/equalall16valid/replayed; allfourcontrols exact. Outcomes inledger.
-GuidedR03both1910 vs1839control butbelowreactive2171. Noall-densitygain.
-Source82prototype FAILED densemobility regression. Archivedfailed-source.patch
-against4b70a80,regression.log andmetadata. No benchmark. Source83progress-ranking
-revision buildingjob8901420; sourcechangesUNCOMMITTED. Keep same regressionfloor.
-FourR05triagerefinements jobs8901393–96 ongoing around3978/K16320, NOT3985/K20160.
-
-Source83 progress-based initialization PASSES unchanged mobility/worker/cache/checkpoint regressions22.76s, finished03:20:18UTC. All35compiled/test inputs verified. SHA346e291a6ae48a94eca5f2753aeffa32c633d850e1aa29120595b60b46cff82e. Committhenrunexplicitstarts controls; source82remainsfailed. All8crowdedseedrunscomplete: R04seeds0/3/4/6=2439/2441/2431/2470(K24480depth8), below2486depth10record. R03new2182candidateawaitingaudit. R05fourtriagecasesstillrunning.
-
-Crowdedseedauditcomplete8/8. R03best2182promoted; R04current2486. NewR05record3985-seeds-split-full-v80 jobs8901421/22 (K20160seeds5/7). Source83readyforcommit,then16initializationportfolio cases with exactcontrols. All83progress/waitingauditscompleteandrendered.
+Commit/pushonlyownedpaths. Source83f217eeecommitted; latestresults needfinalcommit.
+Lastknownremote251cf5d beforefinalpush. Usegitcommit --only -- random05 RANDOM05_PROGRESS.md.
+Push:`env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main`.
+Hostlist32/33/35/36/37/39/40/41/45/46/47/48/49/50/51/52/54/55/56;avoid34/42/53/58.
+SGEbindingadvisory;actualguardsmandatory. Refusal/spikecausesunproven.
