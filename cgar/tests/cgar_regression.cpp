@@ -3914,7 +3914,7 @@ void city_game_trick_regression() {
    require(adapted[4*cell+h]==(base.map[cell]?4:against?16:4),"CITY/GAME adapted parity formula mismatch");++field_values;
   }
   require(options(name).lane_cost==16,"default adapted lane price changed");
-  for(int price:{4,8,12,16,24,32,48,64}) {
+  for(int price:{4,8,12,16,20,24,28,32,48,64}) {
    setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
    require(options(name).lane_cost==price,"explicit lane price lost");
    rejects([&]{options("");},"lane price accepted without CLI");
@@ -3932,7 +3932,7 @@ void city_game_trick_regression() {
     require(contrast[cell*4+h]==(base.map[cell]?4:against?price:4),"adapted contrast differs from independent parity formula");++contrast_values;
    }
   }
-  for(const char* value:{"","0","-1","6","20","08","8.0","true"}) {
+  for(const char* value:{"","0","-1","6","18","08","8.0","true"}) {
    setenv("CGAR_TRICK_LANE_COST",value,1);rejects([&]{options(name);},"invalid lane price accepted");
   }
   unsetenv("CGAR_TRICK_LANE_COST");
@@ -4003,7 +4003,7 @@ void city_game_trick_regression() {
   }
   setenv("CGAR_FLOW_COST_SCALE","4",1);
   std::vector<Action> explicit_default;
-  for(int price:{4,8,12,16,24,32,48,64}) {
+  for(int price:{4,8,12,16,20,24,28,32,48,64}) {
    setenv("CGAR_TRICK_LANE_COST",std::to_string(price).c_str(),1);
    auto active=base;active.trick_instance=name;active.curr_timestep=10;Cgar planner;planner.initialize(&active,30000);
    std::vector<int> schedule;planner.schedule(&active,30000,schedule);require(planner.stats().pickup_full_fields>0,"adapted price pickup inactive");install(active,schedule);

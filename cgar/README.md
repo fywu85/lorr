@@ -294,7 +294,7 @@ Optional field comparisons (all require the matching `--trick INSTANCE`):
   field previously available as dense reference 0; no new field is fitted.
   Explicit references default to turn price 20, overridable as before. Field
   geometry and configuration selection are tricks; the CGAR planner is retained.
-- `CGAR_TRICK_LANE_COST=4|8|12|16|24|32|48|64` changes the opposing-edge price in the adapted
+- `CGAR_TRICK_LANE_COST=4|8|12|16|20|24|28|32|48|64` changes the opposing-edge price in the adapted
   CITY-01, CITY-02 and GAME lane fields. Preferred edges and turns cost 4. The
   default 16 preserves earlier behavior; 4 gives uniform forward costs. Native
   metrics, lanes-off mode and other instances reject this selector. Each field
