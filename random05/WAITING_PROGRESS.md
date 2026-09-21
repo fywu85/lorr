@@ -94,3 +94,4 @@ See [matched NMS waiting times](results/task-waiting-frontiers-20260920T1612/REP
 | 2026-09-20T22:04:50.502045+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | 3857 | 32 / 16 | 411.3 | 1026 | 1937 | 2000 | 135 / 102 |
 | 2026-09-20T22:49:18.963497+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | 3872 | 32 / 16 | 411.2 | 1019 | 1944 | 2000 | 138 / 96 |
 | 2026-09-20T23:58:38.632599+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | 3877 | 32 / 16 | 421.1 | 1065 | 1966 | 2000 | 131 / 94 |
+| 2026-09-21T00:05:35.106669+00:00 | [1e266b0](https://github.com/fywu85/lorr/commit/1e266b0) | 3917 | 32 / 16 | 414.9 | 1040 | 1953 | 2000 | 126 / 97 |

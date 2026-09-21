@@ -936,3 +936,15 @@ measured seeds0/3. Inputs, horizon and all other settings stay frozen; these
 are planner randomness comparisons, not new or held-out task/start inputs.
 Retain all outcomes, update the selected best if justified, and report paired
 means separately. The user's success criterion allows a selected planner seed.
+
+
+## Follow up the3,917 startup-preference result
+
+Source74 power.25 for250steps completes3,917, independently replayed, versus
+3,872 for the unchanged control. Power.5for100/250/500 gives3,879/3,756/3,801;
+power1for250 gives3,755. Stronger preference is not better. The chosen gain is
+45tasks on one planner seed and is not yet replicated. Next declare10full
+strict runs: powers.125/.375 for250; power.25for125/375/500; the selected
+.25/250 with B18 instead ofB14; and its plannerseeds0/3/5/6. Baseline B14
+seeds0/3 already exist and5/6 are running. All task/start inputs remain the
+same development instance; no held-out input is consulted.

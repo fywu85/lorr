@@ -1,0 +1,74 @@
+{
+  "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/32-startup-rank-power.25-steps250-seed4/result.json",
+  "result_sha256": "dffa9bee317b67160a4b7792b9b5211baffee26cdabc4afe0d1d6946176b49bb",
+  "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+  "tasks": 3917,
+  "steps": 2000,
+  "agents": 800,
+  "robot_steps": 1600000,
+  "phases": {
+    "unopened": {
+      "W": 46240,
+      "C": 12952,
+      "R": 20006,
+      "F": 30848
+    },
+    "loaded": {
+      "F": 472916,
+      "W": 594512,
+      "R": 250696,
+      "C": 171830
+    },
+    "idle": {}
+  },
+  "work_by_final_status": {
+    "completed": {
+      "unopened": {
+        "W": 33421,
+        "F": 24874,
+        "C": 10739,
+        "R": 16691
+      },
+      "loaded": {
+        "F": 434724,
+        "C": 158461,
+        "W": 513880,
+        "R": 231059
+      }
+    },
+    "unfinished": {
+      "unopened": {
+        "W": 12819,
+        "F": 5974,
+        "C": 2213,
+        "R": 3315
+      },
+      "loaded": {
+        "W": 80632,
+        "F": 38192,
+        "R": 19637,
+        "C": 13369
+      }
+    }
+  },
+  "completed_loaded_lower_bound_cells": 184340,
+  "completed_loaded_detour_cells": 250384,
+  "completed_loaded_mean_steps": 341.6196068419709,
+  "completed_chain_lengths": {
+    "2": 1212,
+    "3": 1121,
+    "4": 953,
+    "5": 631
+  },
+  "unopened_reassignments": 9150,
+  "task_starts": 4614,
+  "waiting_streaks": {
+    "count": 304207,
+    "p50": 1,
+    "p90": 4,
+    "p99": 13,
+    "maximum": 385
+  },
+  "replay_valid": true,
+  "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+}

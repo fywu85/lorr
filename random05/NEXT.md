@@ -2,7 +2,7 @@
 
 Updated2026-09-20 23:57UTC. Goal ACTIVE: at least4,000 full2,000-step combined
 completions, then independent fresh-input validation of the selected improvement.
-Current best3,877; goal not achieved. Continue rather than stopping at a plan.
+Current best3,917; goal not achieved. Continue rather than stopping at a plan.
 
 ## Scope and rules
 
@@ -130,3 +130,21 @@ B18seeds0/3 and B14/B18eachseeds5/6/7/8. Strictfull. Notfreshinputvalidation.
 Faithful legacy3752control exactsixfields; smallerK64=3785,K96failedstrict.
 Twoheavierforecast5sdiagnosticsstillrunning. Newrecord archivepartialbatchclearly
 marked incomplete while remainingcases finish. Startup/rescorebothpending.
+
+
+## 00:14UTC update
+
+Verifiedbest3917 source1e266b0/build-v74, startup-rank-split-full-v74/power.25
+for250steps, seed4, B14first8000/K16320. Finished00:05:35.106669UTC,
+mean487.500/max531.571ms,RSS565272KiB. Fullreplaypassed;78frontier rowsaudited.
+Maxcompletedwait1953;initial unfinished126/unopened97. 3879finishedafter3917
+andisnotafrontier. Allotherstartupnonzerocasesloseexcept.5for100=3879.
+Controls0=3872/unlimited.5=3845exactallsixfields. Results/currentmanifestsupdated.
+Tenstartup-followup-split-full-v74 jobs8900937..46 test.125/.375powerat250,
+.25powerdurations125/375/500, B18coupling, andseeds0/3/5/6. Fullstrict.
+Branchallocationcomplete: B18/B22/B26fixedroots3837/3871/3772. Allsixvalid.
+Independentrescore partialR4B32=3885,R16B64=3906,blend.5=3819.0/R1controls
+3872exactallsixfields. TwoB128variantsstillpending. Source75e84533a pushed.
+Fresh auditor extendedforfrozen32workerallocationandoptionalbaseline. Three
+allocationtests passed; V4regressionexact+25.42%, evidencefresh-auditor-32-preparation.
+Noinputs50009+generated. Currentrecordchangesawaitnextcommit.

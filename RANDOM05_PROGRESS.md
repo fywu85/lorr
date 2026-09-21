@@ -30,19 +30,19 @@ baselines. All prior fresh inputs 50001–50008 remain excluded from tuning.
 
 ## Verified local frontier
 
-Updated: 2026-09-20 23:58 UTC.
+Updated: 2026-09-21 00:05 UTC.
 
-**Best single run on the archived input: 3,877 tasks on 32 workers / 16 physical cores**,
-or **+22.2% versus matched NMS32=3,172**. Source
-[233f5bf](https://github.com/fywu85/lorr/commit/233f5bf), planner seed4,
-firstK7968 thenK16320/B18/s2/q4/G4/E8/P8. The declared horizon trick uses
-scale1.25 and a0.5 blend of normalized directional remaining cost.
-Mean484ms, maximum526ms, RSS559MB; all2,000steps valid and independently replayed.
-This selected run is five tasks above3,872. It reallocates the same steady-state
-work to18 futures per finalist and fewer initial candidates; startup work changes
-slightly to fit whole groups. No replicated gain is established.
-The4,000 target remains123tasks away.
-[Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json).
+**Best single run on the archived input: 3,917 tasks on 32 workers / 16 physical cores**,
+or **+23.5% versus matched NMS32=3,172**. Source
+[1e266b0](https://github.com/fywu85/lorr/commit/1e266b0), planner seed4,
+firstK8000 thenK16320/B14/s2/q4/G4/E8/P8. It uses an explicit startup trick:
+rank-weighted short-chain progress with power0.25 for the first250steps, then
+ordinary equal scoring. Guidance and the directional horizon cutoff remain enabled.
+Mean488ms, maximum532ms, RSS579MB; all2,000steps valid and independently replayed.
+This is45tasks above its unchanged3,872 control and40above the preceding3,877
+record. It remains a selected seed; paired seed checks are running.
+The4,000 target remains83tasks away.
+[Full evidence](random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json).
 
 The previous3,852 record used scale1.5. A new diagnostic build reproduces its
 entire trajectory while recording exact pre-decision snapshots. Four of that
@@ -296,6 +296,7 @@ fix. Neither removes combined-track features.
 | 2026-09-20T22:04:50.502045+00:00 | [5f81613](https://github.com/fywu85/lorr/commit/5f81613) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25; `--trick RANDOM-05` | 3857 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +21.6% | [Full evidence](random05/results/record-triage-split-full-v65/32-record-triage1.25-seed4/summary.json) |
 | 2026-09-20T22:49:18.963497+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3872 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.1% | [Full evidence](random05/results/directed-triage-split-full-v69/32-directed-triage-mix0.5-scale1.25-seed4/summary.json) |
 | 2026-09-20T23:58:38.632599+00:00 | [233f5bf](https://github.com/fywu85/lorr/commit/233f5bf) | K16320/B18/s2/q4/G4/E8/P8; first7968; seed4; triage1.25/directional mix0.5; `--trick RANDOM-05` | 3877 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +22.2% | [Full evidence](random05/results/branch-allocation-split-full-v69/32-branch-allocation-b18-fixedwork-k16320-seed4/summary.json) |
+| 2026-09-21T00:05:35.106669+00:00 | [1e266b0](https://github.com/fywu85/lorr/commit/1e266b0) | Startup rank power0.25 for250steps; K16320/B14/s2/q4/G4/E8/P8; first8000; seed4; `--trick RANDOM-05` | 3917 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +23.5% | [Full evidence](random05/results/startup-rank-split-full-v74/32-startup-rank-power.25-steps250-seed4/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1597,3 +1598,29 @@ input/binary hashes and allocation are linked in the audits.
   on previously measured seeds0/3. These are RNG-seed comparisons on the same
   archived development input; no new task/start inputs or held-out data are used.
   All77frontier rows and updated waiting metrics passed the source/full-run audit.
+
+- **Startup trick reaches3,917** at power.25 for250steps, source1e266b0,
+  completed2026-09-21T00:05:35.106669+00:00. Mean487.500ms/max531.571ms,
+  RSS565272KiB. Independent full replay passed; controls exactly reproduce
+ 3,872 (power0) and3,845 (unlimited.5) in all six trajectory fields.
+  Power.5for100/250/500 gives3,879/3,756/3,801; power1for250 gives3,755.
+  The3,879 run completed after3,917, so it is not a separate frontier.
+  Maxcompletedwait1953steps; initial unfinished126/unopened97.
+  [Replay](random05/results/startup-rank-split-full-v74/replay-3917.json).
+- Ten follow-up full runs test milder/stronger startup preference, duration,
+  coupling with B18, and planner seeds0/3/5/6. This is development selection
+  and paired-seed checking; no fresh task/start input has been generated.
+
+- All six extra-averaging runs finish strict valid. At roughly fixedwork,
+  B18/B22/B26 give3,877/3,732/3,705; at fixed3,264roots they give
+ 3,837/3,871/3,772. Only the small B18fixedwork gain survives this batch;
+  its paired-seed test is running.
+- Independent rescoring partial results: off/one-finalist controls both3,872,
+  exact allsixfields. R4B32=3,885; R16B64=3,906; half-original blend=3,819.
+  Pure R16B64 improves34 over its exact3,872control, but stays below the
+ 3,917startup record. Two128-branch variants still run.
+- The fresh-input auditor now reads a frozen allocation declaration, preserving
+  the four-core default, and can check a prior-solver baseline alongside NMS.
+  Allocation rejection tests pass; the original frozenV4 result remains exactly
+  +25.42%. It additionally verifies simulator source/headers and protocol-commit
+  order. No new validation inputs have been generated or candidate frozen yet.
