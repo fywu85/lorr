@@ -1658,3 +1658,5 @@ and deterministic behavior. This is a proposal change with no throughput claim.
 It also affects the pipelined seeds used by windowed LNS. After regression,
 compare off/one/two passes on all five general and trick profiles, preserving
 full fixed budgets, deadlines, source controls and held-out exclusions.
+
+Source159/307d5cc9 passes56.13s regression, including the explicit ancestor-retreat witness. Binary6a4346d5600610bfd912c53cf435cada0ab35a70894c513b627e2cd585cec425. Thirty full general/trick cases compare0/1/2 complete retry passes across all five instances. Existing fixed work and strict deadlines are preserved, and face cycles remain disabled to isolate this change. All ten off controls have frozen six-field references.
