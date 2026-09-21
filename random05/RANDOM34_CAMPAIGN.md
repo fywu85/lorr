@@ -338,3 +338,27 @@ current visible task pool. Configurations specify every root, future, inner
 work count and nested worker count, all within32 workers. No hidden future
 tasks are introduced. Source95 already fixed shared-cache construction in
 parallel forecast shadows; these runs explicitly use private caches.
+
+## September 21, 07:39 UTC: explicit guidance expansion and allocation refusal
+
+Source103/eb43ba4a adds whole-field direction reversal behind the trick gate.
+A regression verifies that every directed edge swaps prices with its reverse,
+while topology and turn costs remain identical. Fourteen full cases compare
+reversal onR03/R04, six additional R04 layout seeds, and four local edge flips.
+All use full work and archived inputs; no field is promoted from a shorter run.
+
+The original visible-task rollout was refused before solver launch onresearch45:
+64 physical cores were visible where16 were requested. Preserve that refusal,
+exclude45 from future submissions, and rerun the identical frozen case elsewhere.
+No throughput or timing conclusion can be drawn from an unlaunched solver.
+Reduced-worker R03 genuinely timed out at timestep0 (1156ms);32-worker controls
+pass. The complete weighted-window rerun is valid but loses2466–2571 versus2580.
+
+## September 21, 07:45 UTC: spend measured runtime headroom on fixed work
+
+The four-way heap reproduces2580 atmean471/max672ms. Four full source100 IPO
+cases now compare that recipe, I8192, I8192 with four sharing rounds, and
+I10240 with a declared eight-step4096 startup budget. These use complete fixed
+repair counts; a deadline overrun still fails the run. This specifically tests
+whether extra work benefits component merging, after the old independent
+optimizer showed weak scaling. No claim of a gain precedes the full results.

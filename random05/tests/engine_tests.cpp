@@ -582,6 +582,10 @@ void shared_task_rankings() {
         require(reference==simulate(cfg,12,7,7,true),"shared task rankings changed bounded-cache turnover or checkpoint replay");
         cfg.shared_rankings_mb=4;cfg.threads=2;cfg.fuse_cache_hits=true;
         require(reference==simulate(cfg,12,7,7),"shared rankings changed with cache capacity or worker scheduling");
+        cfg.lazy_cost_rows=true;
+        require(reference==simulate(cfg,12,7,7,true),"lazy cost rows changed shared rankings or checkpoint replay");
+        cfg.shared_rankings_mb=0;cfg.threads=1;
+        require(reference==simulate(cfg,12,7,7),"lazy cost rows changed the private-cache fallback");
     }
 }
 

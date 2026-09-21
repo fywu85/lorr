@@ -15,7 +15,7 @@ struct CachedMove {
     uint16_t v=0;
     uint8_t d=0, padding=0;
 };
-struct PreparedRanking {
+struct alignas(64) PreparedRanking {
     float base_cost=0;
     uint8_t idle_heading=0,count=0,kinematic_mask=0;
     std::array<CachedMove,5> candidates{};
@@ -23,7 +23,7 @@ struct PreparedRanking {
         for(int k=0;k<count;++k)target[k]={int(candidates[k].v),int(candidates[k].d),candidates[k].score};
     }
 };
-static_assert(sizeof(PreparedRanking)==48,"unexpected prepared ranking size");
+static_assert(sizeof(PreparedRanking)==64,"unexpected prepared ranking size");
 struct Config {
     int futures=16, first_futures=0, depth=8, threads=1, seed=0, expansion_limit=100000, generations=1, elites=1, persist_elites=1;
     int continuations=1, continuation_start=1, cache_slots=64, branch_diagnostics=0;
@@ -44,7 +44,7 @@ struct Config {
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
-    bool fuse_cache_hits=false;
+    bool fuse_cache_hits=false, lazy_cost_rows=false;
     int shared_rankings_mb=0;
     float noise=50, mutation=0.3, mutation_decay=1, dispersion=0, push_price=0, loop_threshold=1;
     float move_bias=0, move_bias_fraction=0.25f;

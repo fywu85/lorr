@@ -122,6 +122,7 @@ Config Config::environment(const SharedEnvironment& env) {
     c.radix_order=integer("R05_RADIX_ORDER",0);
     c.candidate_cache=integer("R05_CANDIDATE_CACHE",0);
     c.fuse_cache_hits=integer("R05_FUSE_CACHE_HITS",0);
+    c.lazy_cost_rows=integer("R05_LAZY_COST_ROWS",0);
     c.shared_rankings_mb=integer("R05_SHARED_RANKINGS_MB",0);
     if(c.shared_rankings_mb<0 || c.shared_rankings_mb>16384)
         throw std::invalid_argument("shared ranking cache budget must be 0..16384 MiB");
@@ -967,10 +968,14 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         const Chain* chain=assigned[a];
         if(chain && f.stage[a]<int(chain->goals.size())) {
             active_chain[a]=chain;
-            cost_table[a]=chain->cached_row(g,f.stage[a]);
+            if(!cfg.lazy_cost_rows)cost_table[a]=chain->cached_row(g,f.stage[a]);
         }
     }
     auto cost=[&](int a,int v,int d) {
+        // Shared ranking hits often need no raw cost lookup at all. Defer its
+        // row pointer until a cycle, rotation or cache miss actually needs it.
+        if(cfg.lazy_cost_rows && !cost_table[a] && active_chain[a])
+            cost_table[a]=active_chain[a]->cached_row(g,f.stage[a]);
         if(cost_table[a])return cost_table[a][v*4+d];
         if(active_chain[a])return active_chain[a]->cost(g,f.stage[a],v,d);
         return cfg.idle_eviction*g.pocket_depth[v];

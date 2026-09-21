@@ -184,6 +184,6 @@ env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper
 Check git log before assuming the current HEAD; other agents commit independently.
 
 Hosts: research32|research33|research35|research36|research37|research39|
-research41|research45|research46|research47|research48|research49|research50|
-research51|research52|research54|research55|research56. Avoid34/40/42 binding refusal
+research41|research46|research47|research48|research49|research50|
+research51|research52|research54|research55|research56. Avoid34/40/42/45 binding refusal
 and53/58 timing spikes; causes unproven. Actual allocation guards are mandatory.
