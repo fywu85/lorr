@@ -19,9 +19,11 @@ bool better(const Cost& a,const Cost& b) {
         (a.remaining<b.remaining-1e-5 || (std::abs(a.remaining-b.remaining)<=1e-5 &&
          a.integral<b.integral-1e-5)));
 }
-float action_cost(const Graph& g,const Config& cfg,int from,int to,bool active) {
-    if(!active && from==to)return 0;
-    if(from/4!=to/4)return g.weight[from/4][from%4];
+float action_cost(const Graph& g,const Config& cfg,int from,int to,int goal) {
+    if(goal<0 && from==to)return 0;
+    // Use the same current-waypoint edge prices as the exact chained heuristic,
+    // including its optional local guidance taper. Completed chains have no goal.
+    if(from/4!=to/4)return g.forward_weight(goal,from/4,from%4);
     return from==to?cfg.wait_cost:g.weight[from/4][4];
 }
 int arrived(const Chain* chain,int stage,int state) {
@@ -32,7 +34,7 @@ int arrived(const Chain* chain,int stage,int state) {
 Cost path_cost(const Graph& g,const Config& cfg,const Chain* chain,int stage,const std::vector<int>& path) {
     Cost value;
     for(size_t t=1;t<path.size();++t) {
-        value.total+=action_cost(g,cfg,path[t-1],path[t],chain && stage<int(chain->goals.size()));
+        value.total+=action_cost(g,cfg,path[t-1],path[t],chain && stage<int(chain->goals.size())?chain->goals[stage]:-1);
         stage=arrived(chain,stage,path[t]);
         // A tertiary preference for progress earlier in the complete window.
         // It never trades a worse primary path cost or terminal potential for
@@ -153,7 +155,7 @@ struct Search {
             const int cell=s/4,dir=s%4,forward=g.next[cell][dir];
             const std::array<int,4> options={forward<0?-1:forward*4+dir,cell*4+(dir+1)%4,cell*4+(dir+3)%4,s};
             for(int next:options)if(next>=0 && reserve.allowed(t,cell,next/4)) {
-                float cost=action_cost(g,cfg,s,next,chain && k<int(chain->goals.size()));
+                float cost=action_cost(g,cfg,s,next,chain && k<int(chain->goals.size())?chain->goals[k]:-1);
                 push(t+1,arrived(chain,k,next),next,node.g+cost,node.id);
             }
         }
@@ -289,7 +291,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                 for(int next:options)if(next>=0) {
                     int k=arrived(chain,stage,next);
                     float remaining=chain?chain->cost(g,k,next/4,next%4):0;
-                    float cost=remaining+action_cost(g,cfg,state,next,chain && stage<int(chain->goals.size()));
+                    float cost=remaining+action_cost(g,cfg,state,next,chain && stage<int(chain->goals.size())?chain->goals[stage]:-1);
                     if(cost<best || (cost==best && remaining<best_h)) {
                         best=cost;best_h=remaining;selected=next;
                     }

@@ -75,9 +75,11 @@ void local_goal_guidance() {
     setenv("R05_GOAL_LOCAL_RADIUS","2",1);setenv("R05_GOAL_LOCAL_MIX","1.5",1);rejected=false;
     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
     require(rejected,"goal-local guidance accepted an extrapolated mixture");
-    setenv("R05_GOAL_LOCAL_MIX",".5",1);Setting window("R05_WINDOW","8");rejected=false;
+    setenv("R05_GOAL_LOCAL_MIX",".5",1);Setting window("R05_WINDOW","8");
+    require(Config::environment(env).window==8,"consistent window cost model rejected goal-local guidance");
+    env.trick_instance.clear();rejected=false;
     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
-    require(rejected,"unsupported window cost model accepted goal-local guidance");
+    require(rejected,"window goal-local guidance escaped the explicit trick gate");
 
 }
 
@@ -1744,6 +1746,58 @@ void window_single_agent() {
     }
     require(completed==5,"window task-chain planner mishandled repeated waypoints");
 }
+void window_local_goal_optimum() {
+    // Exhaustive finite-horizon dynamic programming independently checks the
+    // bounded A* repair and complete-plan evaluator on a changing goal chain.
+    // Both repeated goals and direction-dependent local prices are exercised.
+    auto e=environment(5,5,1);e.trick_instance="RANDOM-03";
+    e.curr_states[0].orientation=0;
+    Task task;task.task_id=1;task.locations={24,24,2};e.task_pool[1]=task;
+    Config cfg;cfg.guidance="lanes";cfg.goal_local_radius=3;cfg.goal_local_mix=.75;
+    cfg.window=12;cfg.window_keep=3;cfg.window_islands=1;cfg.window_iterations=1;
+    cfg.window_neighborhood=1;cfg.window_expansions=50000;cfg.threads=1;
+    cfg.wait_cost=2;cfg.turn_cost=2;cfg.cost_cache=true;
+    Engine engine(cfg);engine.initialize(&e);std::vector<Action> actions;std::vector<int> schedule;
+    engine.compute(&e,actions,schedule);
+    require(schedule==std::vector<int>{1},"single-agent local guidance changed the assignment");
+    const auto& g=*engine.graph;Chain chain(g,task);
+    const int stages=int(chain.goals.size())+1,states=g.states;
+    std::vector<double> costs(stages*states,1e30),next(costs.size());
+    costs[e.curr_states[0].location*4+e.curr_states[0].orientation]=0;
+    for(int tick=0;tick<cfg.window;++tick) {
+        std::fill(next.begin(),next.end(),1e30);
+        for(int stage=0;stage<stages;++stage)for(int state=0;state<states;++state) {
+            const double previous=costs[stage*states+state];if(previous>=1e29)continue;
+            const bool active=stage<stages-1;const int goal=active?chain.goals[stage]:-1;
+            const int cell=state/4,dir=state%4,forward=g.next[cell][dir];
+            const std::array<int,4> destinations={state,cell*4+(dir+1)%4,
+                cell*4+(dir+3)%4,forward<0?-1:forward*4+dir};
+            for(int dest:destinations)if(dest>=0) {
+                double price=dest==state?(active?cfg.wait_cost:0):
+                    dest/4==cell?g.weight[cell][4]:g.forward_weight(goal,cell,dir);
+                int future_stage=stage+(active && dest/4==goal);
+                auto& best=next[future_stage*states+dest];best=std::min(best,previous+price);
+            }
+        }
+        costs.swap(next);
+    }
+    double optimum=1e30;
+    for(int stage=0;stage<stages;++stage)for(int state=0;state<states;++state)
+        optimum=std::min(optimum,costs[stage*states+state]+chain.cost(g,stage,state/4,state%4));
+    const auto paths=engine.checkpoint(e).at("window_paths").get<std::vector<std::vector<int>>>();
+    const auto& path=paths.at(0);require(path.size()==size_t(cfg.window+1),"local guidance lost its full window");
+    double actual=0;int stage=0;
+    for(size_t tick=1;tick<path.size();++tick) {
+        const int from=path[tick-1],to=path[tick];const bool active=stage<stages-1;
+        const int goal=active?chain.goals[stage]:-1;
+        actual+=to==from?(active?cfg.wait_cost:0):to/4==from/4?g.weight[from/4][4]:
+            g.forward_weight(goal,from/4,from%4);
+        if(active && to/4==goal)++stage;
+    }
+    actual+=chain.cost(g,stage,path.back()/4,path.back()%4);
+    require(std::abs(actual-optimum)<1e-4,"goal-local window repair differs from exhaustive optimum");
+}
+
 void window_reproducibility() {
     Config cfg;cfg.window=8;cfg.window_keep=3;cfg.window_islands=4;
     cfg.window_iterations=3;cfg.window_neighborhood=5;cfg.window_expansions=800;
@@ -1810,6 +1864,13 @@ void window_reproducibility() {
     cfg.threads=1;
     require(annealed_progress==simulate(cfg,8),"annealed progress ties depend on worker scheduling");
     cfg.window_progress_tie=false;cfg.window_temperature=0;
+    cfg.guidance="lanes";cfg.goal_local_radius=2;cfg.goal_local_mix=.5;
+    const auto local_guidance=simulate(cfg,8,5,5,true);
+    cfg.threads=2;cfg.cost_cache=false;cfg.window_heap4=true;
+    require(local_guidance==simulate(cfg,8),"goal-local windows depend on workers, chain caching or heap layout");
+    cfg.threads=1;cfg.cost_cache=true;
+    require(local_guidance==simulate(cfg,8,5,5,true),"goal-local windows changed after checkpoint restoration");
+    cfg.guidance="none";cfg.goal_local_radius=0;cfg.goal_local_mix=0;
     cfg.window_expansions=1;cfg.window_iterations=3;
     const auto failed_repairs=simulate(cfg,8);
     cfg.window_iterations=0;
@@ -1882,6 +1943,7 @@ int main() {
     window_configuration();
     window_components();
     window_single_agent();
+    window_local_goal_optimum();
     window_reproducibility();
     move_proposal_bias();
     ranked_task_progress();

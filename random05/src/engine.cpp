@@ -351,8 +351,8 @@ Config Config::environment(const SharedEnvironment& env) {
        c.goal_local_mix<0 || c.goal_local_mix>1 ||
        (c.goal_local_mix>0 && (c.goal_local_radius==0 || !random_trick)))
         throw std::invalid_argument("local goal guidance requires a positive radius, mix in [0,1] and explicit trick instance");
-    if(c.goal_local_mix>0 && (c.window || c.operation_depth || c.guidance_distance_mix>0))
-        throw std::invalid_argument("local goal guidance currently requires the pipelined policy and exact goal costs");
+    if(c.goal_local_mix>0 && (c.operation_depth || c.guidance_distance_mix>0))
+        throw std::invalid_argument("local goal guidance requires pipeline/window planning with exact goal costs");
     c.flow_turn=real("R05_FLOW_TURN",0);
     c.flow_power=real("R05_FLOW_POWER",1);c.flow_alpha=real("R05_FLOW_ALPHA",1);
     c.flow_confidence_power=real("R05_FLOW_CONFIDENCE_POWER",0);

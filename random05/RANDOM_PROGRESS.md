@@ -20,7 +20,7 @@ Large maps are outside active development.
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 100 | 600 | 726 | 729 | 649 |
-| RANDOM-02 | 200 | 600 | 1376 | 1401 | 1228 |
+| RANDOM-02 | 200 | 600 | 1376 | 1408 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4175 | 3172 |
@@ -153,6 +153,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T15:20:50.685874+00:00 | RANDOM-02 | trick | 1401 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-validation-split-full-v132/trick-random-02-resume-validation-seed2/summary.json) |
 | 2026-09-21T15:23:12.914641+00:00 | RANDOM-05 | trick | 4090 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap760/summary.json) |
 | 2026-09-21T15:23:22.109240+00:00 | RANDOM-05 | trick | 4175 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random05-resume-transfer-split-full-v132/trick-random-05-resume-cap680/summary.json) |
+| 2026-09-21T15:54:03.792427+00:00 | RANDOM-02 | trick | 1408 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Full run](results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 
 
 ## September21: first development comparisons
@@ -711,3 +712,54 @@ embedded. Full paired controls on the three windowed densities will decide wheth
 it helps. Regression checks cover worker counts, caches, heap layouts, checkpoint
 restoration, simulated annealing and invalid configuration combinations. No gain
 is claimed before compilation, regression and full-run audits.
+
+Source136/05fd4b76 compiles and passes45.53s of full regression (45.54s total).
+Ten declared full cases compare progress tie-breaking off/on: general and selected
+horizon-trick profiles onR01/R02, and the selectedR03profile. Same work budgets,
+seeds, source and settings within each pair; the direct comparison will measure
+both throughput and extra evaluation time. No parameter is selected from held-out
+input performance. Build SHA2b8345852259c9842525484d12613677976baefd43fb8ed741aec6c869fe277e.
+
+### RANDOM-05 repeat qualification and frozen fresh validationV6
+
+All nine record4175follow-ups and all ten idle-alignment pairs are now independently
+audited. Cap680seeds0/1/2/3 give4175/4151/4171/4120; qualificationmax816.066ms,
+peakRSSbelow491MB. Original4175max872.171ms remains preserved. Exact source132repeat
+and source135default-offcontrol match all six archived trace fields. Idle alignment
+loses at every density (719/1395/2545/2756/4130), so keep it disabled.
+
+FreshV6protocol1502afa3412d06e3f27d388653a4c89008fac4c8 froze candidate4175,
+baseline4011 and two unmodified NMS runs for each new seed50015/50016 before
+input generation. Both PILOT roles use source132; only cap680/fastadmission1 differ.
+The older50001–50012 remain held out, and50013/50014 remain ungenerated R04reserves.
+No fresh result may change this frozen candidate or serve as a tuning target.
+
+### Current-profile search interactions and sparse record repeat, 16:00 UTC
+
+The six cutoff refinements pass full audits. RANDOM-01 scales0.5/0.625/0.875
+score725/728/729; RANDOM-02 scores1400/1394/**1408**. The latter replaces1401
+as a selected seed2 record. An exact repeat and seeds0/1/3 are declared on the
+new profile before outcomes. Independent paths, assignments and task events
+are required in addition to throughput equality.
+
+RANDOM-04 declares two larger complete fixed-work budgetsK10240/K12288, retaining
+FIRST_K4032, and four root-mutation rates0.05/0.15/0.2/0.3 on the current2777
+configuration. Previous mutation/work tests predated the cap, guidance and late
+matching combination; these are interaction tests, not assumed gains. All retain
+strict full1000-step entries, fixed work,32workers and explicit --trick RANDOM-04.
+
+### Source137 hypothesis: goal-local lane costs in the window solver
+
+RANDOM-03's completed routes have substantial observed detours. A local guidance
+taper already exists for the reactive policy but was deliberately barred from
+windowed A*, whose action evaluator used global edge prices. Source137 makes
+all three window action-price consumers (complete-path score, bounded A*, blocker
+guides) use the current waypoint's exact edge price, then permits that existing
+option in window mode. The map-specific guidance choice still requires the
+explicit --trick flag. With localmix0 the edge price is exactly the old value.
+
+An independent exhaustive finite-horizon dynamic program checks a single-agent
+multi-waypoint/repeated-goal repair against the exact optimum. Dense full-trace
+fixtures exercise workers, cache modes, heaps and checkpoint restoration. This
+addresses a cost-model compatibility limitation; it is not a measured throughput
+gain. After regression, fullR03controls and radius/mix pairs will test the idea.
