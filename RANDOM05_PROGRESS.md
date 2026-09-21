@@ -1792,3 +1792,14 @@ traces, actual task definitions, and explicit trick flags. All 85 timestamped
 frontier records and their waiting metrics remain verified. Preserved failures
 and all ten held-out input bundles are included. The all-five campaign continues
 in [RANDOM_PROGRESS.md](random05/RANDOM_PROGRESS.md).
+
+### September 21, 11:45 UTC: common-engine preservation check
+
+The archived4,011 recipe finishes2,000steps unchanged on source
+[caedcce7](https://github.com/fywu85/lorr/commit/caedcce7), build124. All six
+action/schedule/event/task fields match the original source80 run exactly.
+Mean531.682/max572.148ms, peakRSS493MB; independent movement and order replay
+pass. This is an equivalent-source control, not a new throughput record.
+The original4,011 frontier, frozen fresh validation and held-out inputs remain
+unchanged. [Full audit](random05/results/random35-unified-control-split-full-v124/audit.json),
+[exact trace proof](random05/results/random35-unified-control-split-full-v124/control-equivalence.json).

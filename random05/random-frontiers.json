@@ -580,10 +580,10 @@
       "finished_utc": "2026-09-21T01:30:14.383662+00:00"
     },
     "trick": {
-      "source_commit": "487a35da",
-      "evidence": "random05/results/random04-admission-guidance-split-full-v119/trick-random-04-admission-guidance-contrast2p2/summary.json",
+      "source_commit": "caedcce7",
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v119/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v124/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
         "cores": 16,
         "smt": 2,
@@ -591,7 +591,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-04",
-        "name": "trick-random-04-admission-guidance-contrast2p2",
+        "name": "trick-random-04-triaged-credit-horizon16-price32",
         "env": {
           "R05_K": "8064",
           "R05_THREADS": "32",
@@ -652,10 +652,12 @@
           "R05_SHARED_RANKINGS_MB": "2048",
           "R05_ACTIVE_TASK_CAP": "560",
           "R05_SHARED_ORDERS": "1",
-          "R05_FAST_ADMISSION": "1"
+          "R05_FAST_ADMISSION": "1",
+          "R05_MATCH_HORIZON_WEIGHT": "16",
+          "R05_ADMISSION_PRICE": "32"
         },
-        "binary_sha256": "aa159805ec0ef1607fe6b3bb23f4df7ae4d89efca0f2cf00d2694bc15c181b58",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v119/build/lifelong_random05",
+        "binary_sha256": "d43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v124/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json": "ef81d9db98eb3679e5c4a7fc424f2d0f726d2a1fdfb564a2333aa0eae89faf37",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -664,9 +666,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 2776,
-      "finished_utc": "2026-09-21T10:45:33.558405+00:00",
-      "audit": "random05/results/random04-admission-guidance-split-full-v119/audit.json"
+      "tasks": 2777,
+      "finished_utc": "2026-09-21T11:26:13.386904+00:00",
+      "audit": "random05/results/random04-triaged-credit-split-full-v124/audit.json"
     },
     "nms32_tasks": 2580
   },

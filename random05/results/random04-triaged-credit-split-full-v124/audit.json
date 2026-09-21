@@ -1,0 +1,1220 @@
+{
+  "checked_utc": "2026-09-21T11:30:20.743791+00:00",
+  "source": {
+    "commit": "caedcce7",
+    "binary_sha256": "d43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237",
+    "checked_files": [
+      "CMakeLists.txt",
+      "simulator/inc/Logger.h",
+      "simulator/inc/Evaluation.h",
+      "simulator/inc/TaskManager.h",
+      "simulator/inc/common.h",
+      "simulator/inc/States.h",
+      "simulator/inc/SharedEnv.h",
+      "simulator/inc/Tasks.h",
+      "simulator/inc/Simulator.h",
+      "simulator/inc/CompetitionSystem.h",
+      "simulator/inc/ActionModel.h",
+      "simulator/inc/Grid.h",
+      "simulator/inc/Entry.h",
+      "simulator/inc/nlohmann/json_fwd.hpp",
+      "simulator/inc/nlohmann/json.hpp",
+      "simulator/src/Grid.cpp",
+      "simulator/src/CompetitionSystem.cpp",
+      "simulator/src/ActionModel.cpp",
+      "simulator/src/States.cpp",
+      "simulator/src/driver.cpp",
+      "simulator/src/Logger.cpp",
+      "simulator/src/TaskManager.cpp",
+      "simulator/src/common.cpp",
+      "simulator/src/Simulator.cpp",
+      "simulator/src/Evaluation.cpp",
+      "src/operations.cpp",
+      "src/engine.hpp",
+      "src/rescore.cpp",
+      "src/replan.cpp",
+      "src/shared_rankings.cpp",
+      "src/engine.cpp",
+      "src/diagnostics.cpp",
+      "src/Entry.cpp",
+      "src/components.cpp",
+      "src/window.cpp"
+    ]
+  },
+  "sources_by_binary": {
+    "d43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237": {
+      "commit": "caedcce7",
+      "binary_sha256": "d43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/window.cpp"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-control",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:53.616521+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-control/summary.json",
+      "peak_rss_bytes": 536137728,
+      "latency_seconds": {
+        "mean": 0.44984313068500054,
+        "max": 0.646465056
+      },
+      "tasks": 2776,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-control/trick-random-04-triaged-credit-control/result.json",
+        "result_sha256": "b911b45a9a6f6c5a88825ea0e9fe4742ecf807a68736ae7d78474f06d3b25751",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2776,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 8500,
+            "C": 2890,
+            "R": 4040,
+            "F": 9335
+          },
+          "loaded": {
+            "F": 233293,
+            "W": 160554,
+            "C": 59836,
+            "R": 81552
+          },
+          "idle": {
+            "W": 75621,
+            "R": 16724,
+            "C": 10992,
+            "F": 36663
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5237,
+              "R": 3324,
+              "F": 7506,
+              "C": 2401
+            },
+            "loaded": {
+              "R": 74950,
+              "F": 216458,
+              "C": 55170,
+              "W": 133604
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 716,
+              "F": 1829,
+              "W": 3263,
+              "C": 489
+            },
+            "loaded": {
+              "C": 4666,
+              "F": 16835,
+              "W": 26950,
+              "R": 6602
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122808,
+        "completed_loaded_detour_cells": 93650,
+        "completed_loaded_mean_steps": 172.97622478386168,
+        "completed_chain_lengths": {
+          "2": 896,
+          "3": 849,
+          "4": 664,
+          "5": 367
+        },
+        "unopened_reassignments": 4843,
+        "task_starts": 3267,
+        "waiting_streaks": {
+          "count": 121066,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 478
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-control/trick-random-04-triaged-credit-control/result.json",
+        "result_sha256": "b911b45a9a6f6c5a88825ea0e9fe4742ecf807a68736ae7d78474f06d3b25751",
+        "horizon_steps": 1000,
+        "tasks_finished": 2776,
+        "tasks_revealed": 3826,
+        "completed_latency": {
+          "count": 2776,
+          "mean_steps": 218.7762968299712,
+          "p50_steps": 171,
+          "p95_steps": 599,
+          "p99_steps": 889
+        },
+        "maximum_release_to_completion": {
+          "steps": 991,
+          "task_id": 274,
+          "released_at": 0,
+          "observed_at": 991
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 985,
+          "task_id": 1016,
+          "released_at": 0,
+          "observed_at": 985
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 559,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.75619047619045,
+        "initial_still_unfinished": 176,
+        "initial_still_unopened": 131,
+        "initial_started_unfinished": 45,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-quarter",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:51.459206+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-quarter/summary.json",
+      "peak_rss_bytes": 522280960,
+      "latency_seconds": {
+        "mean": 0.4476731255749997,
+        "max": 0.645057339
+      },
+      "tasks": 2766,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-quarter/trick-random-04-triaged-credit-quarter/result.json",
+        "result_sha256": "f472f5dbbf9bdb06d5010b04e322af2d1a8a55f48f67bfa6dfaf67899c35936e",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2766,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 10358,
+            "C": 2986,
+            "R": 4320,
+            "F": 9943
+          },
+          "loaded": {
+            "F": 234870,
+            "W": 165497,
+            "C": 60620,
+            "R": 82590
+          },
+          "idle": {
+            "W": 69079,
+            "R": 15626,
+            "C": 10179,
+            "F": 33932
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5320,
+              "R": 3320,
+              "F": 7542,
+              "C": 2395
+            },
+            "loaded": {
+              "R": 75061,
+              "F": 216250,
+              "C": 55340,
+              "W": 133816
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "W": 5038,
+              "F": 2401,
+              "C": 591,
+              "R": 1000
+            },
+            "loaded": {
+              "W": 31681,
+              "F": 18620,
+              "R": 7529,
+              "C": 5280
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122780,
+        "completed_loaded_detour_cells": 93470,
+        "completed_loaded_mean_steps": 173.70462762111353,
+        "completed_chain_lengths": {
+          "2": 892,
+          "3": 840,
+          "4": 658,
+          "5": 376
+        },
+        "unopened_reassignments": 5652,
+        "task_starts": 3356,
+        "waiting_streaks": {
+          "count": 120980,
+          "p50": 1,
+          "p90": 4,
+          "p99": 14,
+          "maximum": 478
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-quarter/trick-random-04-triaged-credit-quarter/result.json",
+        "result_sha256": "f472f5dbbf9bdb06d5010b04e322af2d1a8a55f48f67bfa6dfaf67899c35936e",
+        "horizon_steps": 1000,
+        "tasks_finished": 2766,
+        "tasks_revealed": 3816,
+        "completed_latency": {
+          "count": 2766,
+          "mean_steps": 220.46926970354303,
+          "p50_steps": 172,
+          "p95_steps": 601,
+          "p99_steps": 883
+        },
+        "maximum_release_to_completion": {
+          "steps": 992,
+          "task_id": 829,
+          "released_at": 0,
+          "observed_at": 992
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 993,
+          "task_id": 419,
+          "released_at": 0,
+          "observed_at": 993
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 460,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.8904761904762,
+        "initial_still_unfinished": 173,
+        "initial_still_unopened": 97,
+        "initial_started_unfinished": 76,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-half",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:49.612158+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-half/summary.json",
+      "peak_rss_bytes": 582402048,
+      "latency_seconds": {
+        "mean": 0.4458312222129999,
+        "max": 0.651465755
+      },
+      "tasks": 2757,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-half/trick-random-04-triaged-credit-half/result.json",
+        "result_sha256": "137ef83083c0dc8eb114438af524e4e754b9205f39a6e1d2e4433b914ccfa71f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2757,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 11544,
+            "C": 3345,
+            "R": 4543,
+            "F": 10597
+          },
+          "loaded": {
+            "F": 237114,
+            "W": 167059,
+            "C": 60938,
+            "R": 83325
+          },
+          "idle": {
+            "W": 65330,
+            "R": 14808,
+            "C": 9474,
+            "F": 31923
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5301,
+              "R": 3321,
+              "F": 7539,
+              "C": 2428
+            },
+            "loaded": {
+              "R": 74732,
+              "F": 215620,
+              "C": 54932,
+              "W": 133192
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 1222,
+              "W": 6243,
+              "F": 3058,
+              "C": 917
+            },
+            "loaded": {
+              "C": 6006,
+              "F": 21494,
+              "W": 33867,
+              "R": 8593
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122288,
+        "completed_loaded_detour_cells": 93332,
+        "completed_loaded_mean_steps": 173.54951033732317,
+        "completed_chain_lengths": {
+          "2": 889,
+          "3": 838,
+          "4": 662,
+          "5": 368
+        },
+        "unopened_reassignments": 7080,
+        "task_starts": 3341,
+        "waiting_streaks": {
+          "count": 121504,
+          "p50": 1,
+          "p90": 3,
+          "p99": 13,
+          "maximum": 478
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-half/trick-random-04-triaged-credit-half/result.json",
+        "result_sha256": "137ef83083c0dc8eb114438af524e4e754b9205f39a6e1d2e4433b914ccfa71f",
+        "horizon_steps": 1000,
+        "tasks_finished": 2757,
+        "tasks_revealed": 3807,
+        "completed_latency": {
+          "count": 2757,
+          "mean_steps": 220.16938701487123,
+          "p50_steps": 172,
+          "p95_steps": 601,
+          "p99_steps": 891
+        },
+        "maximum_release_to_completion": {
+          "steps": 997,
+          "task_id": 525,
+          "released_at": 0,
+          "observed_at": 997
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 964,
+          "task_id": 311,
+          "released_at": 0,
+          "observed_at": 964
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 466,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.83142857142855,
+        "initial_still_unfinished": 174,
+        "initial_still_unopened": 92,
+        "initial_started_unfinished": 82,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-full",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:49.805695+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full/summary.json",
+      "peak_rss_bytes": 551219200,
+      "latency_seconds": {
+        "mean": 0.446025531319,
+        "max": 0.640913639
+      },
+      "tasks": 2743,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full/trick-random-04-triaged-credit-full/result.json",
+        "result_sha256": "a0dff2ca5529f411465db8ca73e474b696787571304987979507f2d74f8f024e",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2743,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 11831,
+            "C": 3409,
+            "R": 4760,
+            "F": 10891
+          },
+          "loaded": {
+            "F": 237239,
+            "W": 170254,
+            "C": 61067,
+            "R": 83979
+          },
+          "idle": {
+            "W": 62711,
+            "R": 14152,
+            "C": 9095,
+            "F": 30612
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5492,
+              "R": 3430,
+              "F": 7800,
+              "C": 2492
+            },
+            "loaded": {
+              "R": 74583,
+              "F": 214340,
+              "C": 54721,
+              "W": 132802
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 1330,
+              "F": 3091,
+              "W": 6339,
+              "C": 917
+            },
+            "loaded": {
+              "C": 6346,
+              "F": 22899,
+              "W": 37452,
+              "R": 9396
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 121352,
+        "completed_loaded_detour_cells": 92988,
+        "completed_loaded_mean_steps": 173.69522420707256,
+        "completed_chain_lengths": {
+          "2": 885,
+          "3": 836,
+          "4": 658,
+          "5": 364
+        },
+        "unopened_reassignments": 7219,
+        "task_starts": 3340,
+        "waiting_streaks": {
+          "count": 121340,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 478
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full/trick-random-04-triaged-credit-full/result.json",
+        "result_sha256": "a0dff2ca5529f411465db8ca73e474b696787571304987979507f2d74f8f024e",
+        "horizon_steps": 1000,
+        "tasks_finished": 2743,
+        "tasks_revealed": 3793,
+        "completed_latency": {
+          "count": 2743,
+          "mean_steps": 219.83740430185927,
+          "p50_steps": 172,
+          "p95_steps": 597,
+          "p99_steps": 872
+        },
+        "maximum_release_to_completion": {
+          "steps": 997,
+          "task_id": 357,
+          "released_at": 0,
+          "observed_at": 997
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 990,
+          "task_id": 822,
+          "released_at": 0,
+          "observed_at": 990
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 453,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 392.0257142857143,
+        "initial_still_unfinished": 179,
+        "initial_still_unopened": 93,
+        "initial_started_unfinished": 86,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-full-horizon4-price32",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:26:11.356615+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon4-price32/summary.json",
+      "peak_rss_bytes": 700731392,
+      "latency_seconds": {
+        "mean": 0.46751317098599965,
+        "max": 0.78132731
+      },
+      "tasks": 2767,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon4-price32/trick-random-04-triaged-credit-full-horizon4-price32/result.json",
+        "result_sha256": "7d774bf3498f2f59eefe778b41924eda888d1e454c1b9a9bc449e2a970ed80b6",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2767,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 5688,
+            "C": 2533,
+            "R": 3554,
+            "F": 8018
+          },
+          "loaded": {
+            "F": 228329,
+            "W": 147445,
+            "C": 58503,
+            "R": 79802
+          },
+          "idle": {
+            "W": 91105,
+            "R": 19288,
+            "C": 12657,
+            "F": 43078
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5311,
+              "R": 3302,
+              "F": 7477,
+              "C": 2382
+            },
+            "loaded": {
+              "R": 75139,
+              "F": 216428,
+              "C": 55240,
+              "W": 133491
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 252,
+              "W": 377,
+              "F": 541,
+              "C": 151
+            },
+            "loaded": {
+              "C": 3263,
+              "F": 11901,
+              "W": 13954,
+              "R": 4663
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122456,
+        "completed_loaded_detour_cells": 93972,
+        "completed_loaded_mean_steps": 173.5807734007951,
+        "completed_chain_lengths": {
+          "2": 895,
+          "3": 843,
+          "4": 655,
+          "5": 374
+        },
+        "unopened_reassignments": 3639,
+        "task_starts": 2927,
+        "waiting_streaks": {
+          "count": 121305,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 552
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon4-price32/trick-random-04-triaged-credit-full-horizon4-price32/result.json",
+        "result_sha256": "7d774bf3498f2f59eefe778b41924eda888d1e454c1b9a9bc449e2a970ed80b6",
+        "horizon_steps": 1000,
+        "tasks_finished": 2767,
+        "tasks_revealed": 3817,
+        "completed_latency": {
+          "count": 2767,
+          "mean_steps": 219.14311528731477,
+          "p50_steps": 172,
+          "p95_steps": 597,
+          "p99_steps": 876
+        },
+        "maximum_release_to_completion": {
+          "steps": 991,
+          "task_id": 489,
+          "released_at": 0,
+          "observed_at": 991
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 798,
+          "task_id": 734,
+          "released_at": 0,
+          "observed_at": 798
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 890,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.9809523809524,
+        "initial_still_unfinished": 178,
+        "initial_still_unopened": 158,
+        "initial_started_unfinished": 20,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-full-horizon16-price32",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:53.242006+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16-price32/summary.json",
+      "peak_rss_bytes": 697815040,
+      "latency_seconds": {
+        "mean": 0.44951304748500004,
+        "max": 0.773648547
+      },
+      "tasks": 2762,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16-price32/trick-random-04-triaged-credit-full-horizon16-price32/result.json",
+        "result_sha256": "9f4f7dd051c0ebe81bcbabc6aefbdd61beb0a9464b5620b86862f6733cb0025c",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2762,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 5666,
+            "C": 2529,
+            "R": 3537,
+            "F": 7965
+          },
+          "loaded": {
+            "F": 227682,
+            "W": 146728,
+            "C": 58598,
+            "R": 79813
+          },
+          "idle": {
+            "W": 90985,
+            "R": 19614,
+            "C": 12910,
+            "F": 43973
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5332,
+              "R": 3339,
+              "F": 7490,
+              "C": 2403
+            },
+            "loaded": {
+              "R": 74810,
+              "F": 215367,
+              "C": 54911,
+              "W": 132581
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 198,
+              "W": 334,
+              "F": 475,
+              "C": 126
+            },
+            "loaded": {
+              "C": 3687,
+              "F": 12315,
+              "W": 14147,
+              "R": 5003
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 122145,
+        "completed_loaded_detour_cells": 93222,
+        "completed_loaded_mean_steps": 172.94315713251268,
+        "completed_chain_lengths": {
+          "2": 894,
+          "3": 844,
+          "4": 656,
+          "5": 368
+        },
+        "unopened_reassignments": 3676,
+        "task_starts": 2915,
+        "waiting_streaks": {
+          "count": 121341,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 552
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16-price32/trick-random-04-triaged-credit-full-horizon16-price32/result.json",
+        "result_sha256": "9f4f7dd051c0ebe81bcbabc6aefbdd61beb0a9464b5620b86862f6733cb0025c",
+        "horizon_steps": 1000,
+        "tasks_finished": 2762,
+        "tasks_revealed": 3812,
+        "completed_latency": {
+          "count": 2762,
+          "mean_steps": 219.2501810282404,
+          "p50_steps": 171,
+          "p95_steps": 597,
+          "p99_steps": 891
+        },
+        "maximum_release_to_completion": {
+          "steps": 999,
+          "task_id": 357,
+          "released_at": 0,
+          "observed_at": 999
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 798,
+          "task_id": 734,
+          "released_at": 0,
+          "observed_at": 798
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 897,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 392.01238095238097,
+        "initial_still_unfinished": 175,
+        "initial_still_unopened": 158,
+        "initial_started_unfinished": 17,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-horizon16-price32",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:26:13.386904+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/summary.json",
+      "peak_rss_bytes": 697294848,
+      "latency_seconds": {
+        "mean": 0.46953998013,
+        "max": 0.779602465
+      },
+      "tasks": 2777,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/trick-random-04-triaged-credit-horizon16-price32/result.json",
+        "result_sha256": "35ac4a67501d3220f3c27065ff7b19be2519fc88dbb70023fc55c07bd0fadd5f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2777,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 5529,
+            "C": 2517,
+            "R": 3525,
+            "F": 7905
+          },
+          "loaded": {
+            "F": 227437,
+            "W": 147080,
+            "C": 58376,
+            "R": 79331
+          },
+          "idle": {
+            "W": 92722,
+            "R": 19449,
+            "C": 12773,
+            "F": 43356
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5243,
+              "R": 3298,
+              "F": 7484,
+              "C": 2402
+            },
+            "loaded": {
+              "R": 74986,
+              "F": 216781,
+              "C": 55253,
+              "W": 133570
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 227,
+              "W": 286,
+              "F": 421,
+              "C": 115
+            },
+            "loaded": {
+              "C": 3123,
+              "F": 10656,
+              "W": 13510,
+              "R": 4345
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 123007,
+        "completed_loaded_detour_cells": 93774,
+        "completed_loaded_mean_steps": 173.06085703997118,
+        "completed_chain_lengths": {
+          "2": 899,
+          "3": 841,
+          "4": 661,
+          "5": 376
+        },
+        "unopened_reassignments": 3603,
+        "task_starts": 2922,
+        "waiting_streaks": {
+          "count": 120973,
+          "p50": 1,
+          "p90": 4,
+          "p99": 14,
+          "maximum": 552
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/trick-random-04-triaged-credit-horizon16-price32/result.json",
+        "result_sha256": "35ac4a67501d3220f3c27065ff7b19be2519fc88dbb70023fc55c07bd0fadd5f",
+        "horizon_steps": 1000,
+        "tasks_finished": 2777,
+        "tasks_revealed": 3827,
+        "completed_latency": {
+          "count": 2777,
+          "mean_steps": 219.51962549513863,
+          "p50_steps": 172,
+          "p95_steps": 601,
+          "p99_steps": 872
+        },
+        "maximum_release_to_completion": {
+          "steps": 998,
+          "task_id": 113,
+          "released_at": 0,
+          "observed_at": 998
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 798,
+          "task_id": 573,
+          "released_at": 0,
+          "observed_at": 798
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 905,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.68095238095236,
+        "initial_still_unfinished": 175,
+        "initial_still_unopened": 157,
+        "initial_started_unfinished": 18,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-triaged-credit-full-horizon16",
+      "valid": true,
+      "source_commit": "caedcce7",
+      "finished_utc": "2026-09-21T11:25:38.822580+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16/summary.json",
+      "peak_rss_bytes": 563523584,
+      "latency_seconds": {
+        "mean": 0.4350846474989993,
+        "max": 0.633178466
+      },
+      "tasks": 2693,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16/trick-random-04-triaged-credit-full-horizon16/result.json",
+        "result_sha256": "949ae458c5f15dc196ac81a7ce77b2519a2e64e69858ebca2f24b1e35cbd3f9f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2693,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 13348,
+            "C": 3963,
+            "R": 5488,
+            "F": 12945
+          },
+          "loaded": {
+            "F": 235012,
+            "W": 167206,
+            "C": 60498,
+            "R": 83062
+          },
+          "idle": {
+            "W": 63645,
+            "R": 14430,
+            "C": 9265,
+            "F": 31138
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5297,
+              "R": 3336,
+              "F": 7565,
+              "C": 2406
+            },
+            "loaded": {
+              "R": 74196,
+              "F": 212983,
+              "C": 54463,
+              "W": 131986
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 2152,
+              "W": 8051,
+              "F": 5380,
+              "C": 1557
+            },
+            "loaded": {
+              "C": 6035,
+              "F": 22029,
+              "W": 35220,
+              "R": 8866
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 120347,
+        "completed_loaded_detour_cells": 92636,
+        "completed_loaded_mean_steps": 175.8737467508355,
+        "completed_chain_lengths": {
+          "2": 844,
+          "3": 831,
+          "4": 655,
+          "5": 363
+        },
+        "unopened_reassignments": 10856,
+        "task_starts": 3270,
+        "waiting_streaks": {
+          "count": 121842,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 478
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-full-horizon16/trick-random-04-triaged-credit-full-horizon16/result.json",
+        "result_sha256": "949ae458c5f15dc196ac81a7ce77b2519a2e64e69858ebca2f24b1e35cbd3f9f",
+        "horizon_steps": 1000,
+        "tasks_finished": 2693,
+        "tasks_revealed": 3743,
+        "completed_latency": {
+          "count": 2693,
+          "mean_steps": 223.21128852580765,
+          "p50_steps": 174,
+          "p95_steps": 604,
+          "p99_steps": 887
+        },
+        "maximum_release_to_completion": {
+          "steps": 993,
+          "task_id": 597,
+          "released_at": 0,
+          "observed_at": 993
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 991,
+          "task_id": 933,
+          "released_at": 0,
+          "observed_at": 991
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 473,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 391.94,
+        "initial_still_unfinished": 176,
+        "initial_still_unopened": 100,
+        "initial_started_unfinished": 76,
+        "event_accounting_valid": true
+      }
+    }
+  ],
+  "pending": [],
+  "complete": true,
+  "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
+}

@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-21 10:53 UTC. The registered 4,000-task RANDOM-05 milestone is
+Updated 2026-09-21 11:35 UTC. The registered 4,000-task RANDOM-05 milestone is
 achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
 >=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
 subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
@@ -31,9 +31,9 @@ Any further fresh validation requires freezing protocol/config before generation
 ## Current records and evidence
 
 General RANDOM-01..05: 726 / 1376 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 628 / 1122 / 2602 / 2776 / 4011.
+Trick RANDOM-01..05: 628 / 1122 / 2602 / 2777 / 4011.
 Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +7.60% / +26.5%.
+Selected bests versus NMS: +11.9% / +12.1% / +10.3% / +7.64% / +26.5%.
 All records have full source/input/resource, independent replay and waiting
 checks. One archived layout at five densities is not unseen-layout transfer.
 Exact cases: random-frontiers.json. Consolidated ledger: RANDOM_PROGRESS.md.
@@ -95,7 +95,14 @@ RANDOM03_FRESH_VALIDATION_V1.md contains full source/timing/wait evidence.
 The auditor checks actualNMSplannerTimes versusPILOTentryComputeTimes, rather
 than requiring PILOT-onlyentryComputeSamples from the unmodified reference.
 
-R04 CURRENT **2776**, source487a35da/build119,
+R04 CURRENT **2777**, sourcecaedcce7/build124, batchrandom04-triaged-credit-split-full-v124,
+case trick-random-04-triaged-credit-horizon16-price32. This adds matchhorizonweight16
+and optionalidleprice32 to the2776 profile; admissioncredit remainsOFF. Full1000steps
+independently replayed; mean469.540/max779.602ms, RAM697MB. Onlyone extra task, not
+a substantial win; +7.64% versusNMS2580,61shortof2838. Exact repetition passes all6fields,max770.041ms.
+Longestcompleted998,initialunfinished175/unopened157,oldestunfinishedcensored1000.
+
+R04 preceding **2776**, source487a35da/build119,
 batchrandom04-admission-guidance-split-full-v119,
 case trick-random-04-admission-guidance-contrast2p2.
 Full independently replayed1000steps, mean434.778/max626.736ms.
@@ -132,7 +139,7 @@ retainreportedmakespan,andrejectuneven/truncatedpaths. Sixhelpertests pass;
 all10existinggeneral/trickfrontierhorizonsremainunchanged. Thehelperisfrozen
 andhashedwithnewGRIDrunners. No benchmarkdata,binaryorinputwasrewritten.
 
-CURRENT SOURCEd51bdbf2/build123, regression34.81s, SHA5b64d9eaa9acef92b998abb036b1a26e0eee13c563da99f183bc3339b9b3ffba.
+CURRENT SOURCEcaedcce7/build124, regression33.72s, SHAd43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237.
 Active-onlytravelratecalibrationdoesnotbeat2738control; leaveoff.
 Source118/ca22bb7c exact8byteordercache, fallback32Bwhenroutingbiasneedscores.
 Source119/487a35da exactdummy-prefixHungarianoptimization. All6cacheand3matching
@@ -160,17 +167,36 @@ best2776 improvesselectedbest butnotaggregate versus2.4. Cutoffvariantsalllose.
 Immediateperiods1/2/4/8=2732/2720/2724/2726. LargerworkK11520/13824/B12K11520
 =2771/2762/2771. OriginalB8K8192 initializationrejected(error125), nottimedout;
 K8192notdivisibleby4*14screeningwork. Originalpreserved, noteinexperiments.
-CorrectedB8K8064=2710, auditinprogress. Newlintchecksfullscreeninggroups;4tests.
+CorrectedB8K8064=2710, fullyaudited. Newlintchecksfullscreeninggroups;4tests.
 
-ACTIVE:random04-startup-price-split-full-v123, jobs8902702–09,8cases:
-priceoff2776control; original2741profileprice12until100/150/200/250;
-new2776profileprice12until150/200; newprofileprice16until300.
-Evidence: fixedprice12 fullfails874 buthas669tasksby200 vscontrol570/NMS638;
-price16has1206by400 vscontrol1121. Expiryrestoresordinarymatchingbutkeepscap560.
-No hidden future data; explicittrick. Needfullresultandauditbeforeclaiminggain.
-Verifyold-profileprefixesagainstconstant-price12 build121 untiltheexpiry.
-Allsourcecontrolsfor121/122exact6fields. NootheractivePILOTjobs exceptaudits.
+STARTUP123 CLOSED/AUDITED: control2776, oldprice12until100/150/200/250 gives
+2690/2661/2630/2547, newprice12until150/200 gives2710/2666, new16until300 gives2703.
+Early gains do not survive the full run. All4oldcases match theconstant-price12
+reference exactly through expiry in all6fields; firstactiondifference isexpiry+1.
+The2776control123 is6fieldexact. Keepstartuppriceoff; no positive claim.
 
+CLOSED/AUDITED: random04-triaged-credit-split-full-v124. Control2776 matchesall6fields.
+Credit0.25/0.5/1 loses2766/2757/2743; fullcredit+horizon4/16+price32 gives2767/2762;
+fullcredit+horizon16withoutprice2693. Credit staysOFF. Horizon16+price32only2777.
+
+CLOSED/AUDITED: pairing124, original2776repeat119 and unifiedR03/R05controls124.
+All6pairingvariantslose2705–2760. Exact2777repeat max770.041ms; original2776repeat
+max622.264ms; R03/R05currentengine max671.719/572.148ms. All4controls exact6fields.
+
+ACTIVE:
+- random04-goal-local-split-full-v125: control2776; radii2/4 andmixes.25/.5/1.
+  Source4dea3bc0/build125, regression34.04s,
+  SHA41cd19ae90ba487163b96f5cfa215086a5ccd852dc0bb80772cb796e330f5726.
+  Goal-relative forward prices blend toward2 near the currentwaypoint. Oriented
+  distances/chains/policy/sharedcache alluseconsistentedgecosts. Explicittrick,
+  defaultoff; unsupportedwindow/operations rejected. SemanticBellman,cache,
+  densemovement,checkpoint,workersandtrickgatespassed. No throughputclaimyet.
+  Diagnosticshowsroughly2xnear-goalawaymoves oncommoncompletedorders versusNMS;
+  observational, differenthistories. See goal-approach.json. Sevenfull1000steps.
+- random04-record2777-seeds-split-full-v124: plannerseeds0/3/5, same2777profile;
+  runtimequalification foroptionalprice+horizonpairing. No freshinputgenerated.
+
+NootherPILOTsimulationjobsactive. Audit/commit sessionsmayneedclosing.
 RECENT NEGATIVE EVIDENCE:
 - Horizon matching108/d879feda weights.25/1/4/16:2602/2573/2575/2585 vs2661.
 - Startup priority109/7714e8ca (shorter remainingwork) all variants2522–2630
@@ -203,7 +229,7 @@ failedusagecredits. Prior79KB approvaldoesnot cover thisnewpayload according
 toautomaticreview. Preserve rejection explanation in any final response while
 unresolved. Readstatus.json inthatdirectoryforcontext.
 
-Lastverifiedpublicpush236a04c6. Laterownedcommits/evidence needpush. Only
+Lastverifiedpublicpush311d0480. Laterownedcommits/evidence needpush. Only
 random05/,PILOT_PROGRESS.md,RANDOM05_PROGRESS.md may becommitted. Fablepayload
 stays inignoredruns; do not publish or reroute it to bypass the rejection.
 

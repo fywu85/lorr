@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2776 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2777 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -142,6 +142,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T10:34:13.678386+00:00 | RANDOM-04 | trick | 2762 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-coupling-split-full-v119/trick-random-04-admission-coupling-dispersion04/summary.json) |
 | 2026-09-21T10:43:18.044735+00:00 | RANDOM-04 | trick | 2772 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-dispersion-split-full-v119/trick-random-04-admission-dispersion-seed5/summary.json) |
 | 2026-09-21T10:45:33.558405+00:00 | RANDOM-04 | trick | 2776 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-guidance-split-full-v119/trick-random-04-admission-guidance-contrast2p2/summary.json) |
+| 2026-09-21T11:26:13.386904+00:00 | RANDOM-04 | trick | 2777 | [caedcce7](https://github.com/fywu85/lorr/commit/caedcce7) | [Full run](results/random04-triaged-credit-split-full-v124/trick-random-04-triaged-credit-horizon16-price32/summary.json) |
 
 
 ## September21: first development comparisons

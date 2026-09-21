@@ -8,7 +8,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
 | RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,776 | 2,580 | 2,838 | 1,000 |
+| RANDOM-04 | 2,777 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -641,3 +641,81 @@ worker equivalence. Eight full trials test price12 through100/150/200/250 on
 the original profile, price12 through150/200 on the2776 profile, price16 through
 300 on2776, and a priceoff2776 control. All are strict1s/full1000steps. No new
 RANDOM-04 validation inputs have been generated.
+
+## September 21, 11:20 UTC: startup gains disappear; test late admission accounting
+
+Every temporary-price run loses: on the2741 profile, price12 until100/150/200/250
+scores2690/2661/2630/2547; on2776, price12 until150/200 scores2710/2666, and
+price16 until300 scores2703. The2776 control is exact in all six trace fields.
+All four original-profile variants preserve the constant-price12 prefix through
+the declared expiry, and first differ in actions on expiry+1. The early boost
+was real but does not establish a full-run gain; retain the negative evidence.
+
+Sourcecaedcce7/build124 passes33.72s regression for fractional admission credit
+on previously deferred opened orders. At step900, the2776 control has528opened
+orders and only32new admission slots, while171assigned goals are deferred by the
+planner. Counting deferred opened work against the cap may prevent idle robots
+from serving additional finishable orders. The option discounts a declared
+fraction of previous-step suppressed task IDs from admission accounting. It never
+releases opened schedules. It is an estimate with a one-step delay, not a strict
+bound on the current number of active planner goals. Task IDs, not robot flags,
+prevent stale credits; the metadata survives checkpoints and shadow forecasts.
+
+Eight full cases compare credit0/0.25/0.5/1, combinations with horizon-aware
+matching and optional idle price32, and their controls. The price/horizon pair
+can leave an infeasible unopened assignment empty instead of forcibly filling it.
+All are explicit tricks with unchanged strict1s/32GB/full1000-step rules.
+Two additional full controls run the existing R03=2602 and R05=4011 recipes on
+build124 to check that common-engine changes preserve those frozen records.
+
+## September 21, 11:32 UTC: credit loses; refine admission pairing
+
+All eight source124 runs finish and independently replay. Credit fractions
+0/0.25/0.5/1 give2776/2766/2757/2743. Combining full credit with horizon
+weights4/16 and idle price32 gives2767/2762; without the price it gives2693.
+Keep credit off. Horizonweight16+price32 alone reaches2777, mean469.540/max
+779.602ms: a one-task selected record, not a substantial improvement. It is
+61tasks short of2838. The unchanged default control will be compared across
+all six raw fields. The original2776binary repetition is also queued.
+
+Next source124 tests retain the2776 profile and refine matching around its
+R05-derived length coefficient0.25:0.125/0.1875/0.3125/0.375. The new admission
+cap changes the cost of choosing more work, so the inherited coefficient may
+no longer be appropriate. Two separate trials penalize already-opened
+destination demand at0.5/2; no future task stream is available. A seventh case
+repeats2777 exactly for timing and reproducibility. These are full1000-step
+archived-input tests with explicit RANDOM-04 tricks, fixed work and strict1s.
+
+## September 21, 11:45 UTC: exact controls and local waypoint guidance
+
+The2777 repetition is exact in all six raw fields, mean442.631/max770.041ms.
+The original2776binary also repeats all six fields, mean428.880/max622.264ms.
+Source124 reproduces R03=2602 and R05=4011 exactly in all six fields, with
+maxima671.719/572.148ms and independent full replay. These preserve the
+existing recipes; they do not replace their original frontier source commits.
+
+Matching refinements all lose: length weights0.125/0.1875/0.3125/0.375 give
+2759/2732/2733/2705; destination demand0.5/2 gives2727/2760. Keep the prior
+pairing objective. No fresh R04 input has been generated.
+
+The [goal approach diagnostic](results/random04-admission-diagnosis/goal-approach.json)
+compares the same completed task IDs. At geometric distance1/2 from the next
+waypoint, PILOT takes1452/1707 forward moves away, versus679/697 for NMS.
+Their distance1 toward moves both equal5257, as expected for the common completed
+waypoints. At these distances PILOT also waits5462/5441 times versus3925/2998.
+Assignments and traffic histories differ; this is a hypothesis lead, not a causal
+estimate of recoverable tasks. Distant travel still needs traffic coordination.
+
+Source4dea3bc0/build125 tests goal-local lane prices. Within a declared hop radius,
+forward edge prices blend toward the uniform physical price2, linearly tapering
+to the existing lane field at the boundary. The current waypoint selects the
+field. Oriented backward shortest paths, chained task costs, move ranking and
+shared caches all use the same positive edge prices. Outside the radius the
+field is unchanged. This is an explicit trick, default off; unsupported window
+and operation modes are rejected. No extra future task data is used.
+
+Regression passes34.04s, including all-target Bellman checks, exact cache/worker
+equivalence, checkpoint restore, dense legal movement and public trick gates.
+Seven full1000-step cases compare the2776default control and radii2/4 with
+mixes0.25/0.5/1. Binary SHA41cd19ae90ba487163b96f5cfa215086a5ccd852dc0bb80772cb796e330f5726.
+All fixed work must finish under1s; no performance improvement is claimed yet.
