@@ -21,6 +21,7 @@ struct WindowOptions {
     int merge = 0;  // combine compatible paths only after every worker completes
     int blockers = 0;  // cached guide blockers: 1 earliest first, 2 rotated time scan
     int full_group = 0;  // fill the declared group size instead of sampling 1..group
+    int starts = 1, start_noise = 50;  // complete alternative tails, with bounded rank-position noise
 };
 using WindowPath = std::vector<int>;  // cell * 4 + heading, including time zero
 struct WindowProblem {
@@ -201,6 +202,73 @@ int extend_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
     p.validate(p.seed, check); check();
     if (p.score(p.seed) > before_cost) p.seed = before;
     return batches;
+}
+
+struct WindowSeedStats {
+    bool completed = false;
+    int starts = 0, batches = 0, selected = 0, changed_orders = 0;
+    int64_t first_cost = 0, selected_cost = 0, first_remaining = 0, selected_remaining = 0;
+};
+
+// Complete every declared joint continuation before selecting an initializer.
+// Candidate zero reproduces the original order and seed. Others perturb only
+// ordinary priority order for the forecast after CGAR's first five actions.
+// Nothing is written to p until all workers, validation and deadline checks pass.
+template<class Check>
+WindowSeedStats select_window_seed(WindowProblem& p, const TemporalGeometry& geometry,
+        const std::vector<int>& order, int displacement_limit, const std::vector<uint64_t>& seeds,
+        int threads, int noise, bool progress_ties, Check check) {
+    if (seeds.empty() || seeds.size() > 32 || threads < 1 || threads > 32 || noise < 0 || noise > 1024 ||
+        order.size() != p.seed.size()) throw std::invalid_argument("invalid complete window seed portfolio");
+    std::vector<char> seen(order.size(), false);
+    for (int r : order) {
+        if (r < 0 || r >= int(order.size()) || seen[r]) throw std::invalid_argument("invalid window seed priority order");
+        seen[r] = true;
+    }
+    const int count = seeds.size();
+    std::vector<std::vector<WindowPath>> paths(count);
+    std::vector<int64_t> costs(count), remaining(count);
+    std::vector<int> batches(count), changed(count);
+    std::vector<std::exception_ptr> errors(count); std::atomic<int> next{0};
+    auto work = [&] {
+        for (;;) {
+            const int id = next.fetch_add(1); if (id >= count) return;
+            try {
+                check(); auto candidate = p; auto priority = order;
+                if (id && noise) {
+                    std::mt19937_64 random(seeds[id] ^ 0xa4093822299f31d0ULL);
+                    std::vector<std::pair<int64_t, int>> keys; keys.reserve(order.size());
+                    for (int rank = 0; rank < int(order.size()); ++rank)
+                        keys.emplace_back(int64_t(rank) + int(random() % (2 * noise + 1)) - noise, rank);
+                    std::sort(keys.begin(), keys.end());
+                    for (size_t k = 0; k < keys.size(); ++k) priority[k] = order[keys[k].second];
+                    changed[id] = priority != order;
+                }
+                batches[id] = extend_window_seed(candidate, geometry, priority, displacement_limit, seeds[id], check);
+                for (size_t r = 0; r < p.seed.size(); ++r) for (int t = 0; t <= 5; ++t)
+                    if (candidate.seed[r][t] != p.seed[r][t]) throw std::logic_error("window initializer changed CGAR root prefix");
+                p.validate(candidate.seed, check);
+                costs[id] = p.score(candidate.seed); remaining[id] = p.remaining_score(candidate.seed);
+                paths[id] = std::move(candidate.seed);
+            } catch (...) { errors[id] = std::current_exception(); }
+        }
+    };
+    std::vector<std::thread> workers;
+    try { for (int t = 1; t < std::min(threads, count); ++t) workers.emplace_back(work); }
+    catch (...) { for (auto& t : workers) t.join(); throw; }
+    work(); for (auto& t : workers) t.join();
+    for (const auto& error : errors) if (error) std::rethrow_exception(error);
+    WindowSeedStats stats; stats.starts = count; int best = 0;
+    for (int id = 0; id < count; ++id) {
+        check(); stats.batches += batches[id]; stats.changed_orders += changed[id];
+        if (batches[id] != (p.horizon - 1) / 5 || paths[id].size() != p.seed.size())
+            throw std::logic_error("window seed portfolio did not complete its fixed continuations");
+        if (costs[id] < costs[best] || (progress_ties && costs[id] == costs[best] && remaining[id] < remaining[best])) best = id;
+    }
+    p.validate(paths[best], check); check();
+    stats.first_cost = costs[0]; stats.first_remaining = remaining[0];
+    stats.selected_cost = costs[best]; stats.selected_remaining = remaining[best]; stats.selected = best;
+    p.seed = std::move(paths[best]); stats.completed = true; return stats;
 }
 
 struct WindowRollout {

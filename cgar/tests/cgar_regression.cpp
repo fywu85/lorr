@@ -6242,6 +6242,35 @@ void rolling_window_search_regression() {
  for(int r=0;r<int(start.size());++r){for(int t=0;t<=5;++t)require(rolled.seed[r][t]==p.seed[r][t],"seed rollout changed CGAR's first five actions");
   extensions+=rolled.seed[r]!=p.seed[r];}
  require(extensions>0&&rolled.seed[0]==p.seed[0],"seed extension is vacuous or changed a protected path");
+ // Candidate zero must be exactly the old complete rollout. Enumerate all
+ // unperturbed alternatives independently through the legacy API, then require
+ // the new selector to return that exact minimum only after all candidates finish.
+ auto single=p;auto one=select_window_seed(single,geometry,order,8192,{71},4,50,false,[]{});
+ require(single.seed==rolled.seed&&one.completed&&one.starts==1&&one.batches==1&&one.selected==0,"single-start rollout changed legacy choices");
+ const std::vector<uint64_t> start_seeds{71,93,137,181};std::vector<std::vector<WindowPath>> candidates;int expected=0;
+ for(uint64_t seed:start_seeds){auto fork=p;extend_window_seed(fork,geometry,order,8192,seed,[]{});candidates.push_back(fork.seed);}
+ for(int k=1;k<4;++k)if(p.score(candidates[k])<p.score(candidates[expected])||
+  (p.score(candidates[k])==p.score(candidates[expected])&&p.remaining_score(candidates[k])<p.remaining_score(candidates[expected])))expected=k;
+ auto selected=p;auto full=select_window_seed(selected,geometry,order,8192,start_seeds,1,0,true,[]{});
+ require(full.completed&&full.starts==4&&full.batches==4&&full.selected==expected&&selected.seed==candidates[expected]&&!full.changed_orders,"complete start portfolio differs from enumerated legacy tails");
+ for(int noise:{0,7,50}){
+  auto serial_seed=p,parallel_seed=p;auto a=select_window_seed(serial_seed,geometry,order,8192,start_seeds,1,noise,true,[]{});
+  auto b=select_window_seed(parallel_seed,geometry,order,8192,start_seeds,4,noise,true,[]{});
+  require(serial_seed.seed==parallel_seed.seed&&a.selected==b.selected&&a.selected_cost==b.selected_cost&&a.changed_orders==b.changed_orders,"seed portfolio depends on thread completion order");
+  require(a.completed&&a.starts==4&&a.batches==4&&a.selected_cost<=a.first_cost&&
+   (a.selected_cost<a.first_cost||a.selected_remaining<=a.first_remaining),"portfolio skipped work or worsened initial objective");
+  if(noise)require(a.changed_orders>0,"priority perturbation fixture was unused");
+  for(size_t r=0;r<p.seed.size();++r)for(int t=0;t<=5;++t)require(serial_seed.seed[r][t]==p.seed[r][t],"alternative tail changed CGAR root prefix");
+  require(serial_seed.seed[0]==p.seed[0],"alternative seed changed fixed protected tail");
+ }
+ int legacy_checks=0;auto counted=p;extend_window_seed(counted,geometry,order,8192,71,[&]{++legacy_checks;});
+ auto failed_seed=p;bool start_failed=false;int start_checks=0;
+ try{select_window_seed(failed_seed,geometry,order,8192,start_seeds,1,50,true,[&]{if(++start_checks>legacy_checks+p.horizon+2)throw Timeout("window_seed_after_first_candidate");});}
+ catch(const Timeout&){start_failed=true;}
+ require(start_failed&&failed_seed.seed==p.seed,"seed portfolio published a best-so-far after a later candidate failed");
+ bool bad_seed=false;try{select_window_seed(failed_seed,geometry,order,8192,{},1,50,true,[]{});}catch(const std::invalid_argument&){bad_seed=true;}
+ require(bad_seed,"empty seed portfolio accepted");
+
  auto later=p;require(extend_window_seed(later,geometry,order,8192,71,[]{},6)==1,"history tail chunk count wrong");
  later.validate(later.seed,[]{});
  for(int r=0;r<int(start.size());++r)for(int t=0;t<=6;++t)require(later.seed[r][t]==p.seed[r][t],"history tail changed kept prefix");
@@ -6357,7 +6386,7 @@ void rolling_window_search_regression() {
  auto intent=p;intent.entry_allowed[2][start[2]]=false;intent.validate(intent.seed,[]{});
  require(intent.permits(2,intent.seed[2][0],intent.next(intent.seed[2][0],1)),"occupied foreign intent cannot rotate");
  require(!intent.permits(2,(start[2]-1)*4,start[2]*4),"foreign intent permits re-entry");
- std::cout<<"ROLLING_WINDOW_SEARCH passed independent_layered_optima="<<checked<<" progress_tie_choices="<<progress_choices<<" serial_parallel=1 complete_group_rollback="<<rollback_cases<<" delay_replacements="<<delay_replacements<<" delay_rollbacks="<<delay_rollbacks<<" uphill="<<uphill<<" best_updates="<<best_updates<<" restores="<<restores<<" fixed_attempts=1 protected_paths=1 protected_prefix=1 repeated_service=1 task_swap_history=1 deadline_after_improvement=1\n";
+ std::cout<<"ROLLING_WINDOW_SEARCH passed independent_layered_optima="<<checked<<" progress_tie_choices="<<progress_choices<<" serial_parallel=1 complete_group_rollback="<<rollback_cases<<" delay_replacements="<<delay_replacements<<" delay_rollbacks="<<delay_rollbacks<<" uphill="<<uphill<<" best_updates="<<best_updates<<" restores="<<restores<<" fixed_attempts=1 complete_seed_portfolio=1 legacy_single_start=1 protected_paths=1 protected_prefix=1 repeated_service=1 task_swap_history=1 deadline_after_improvement=1\n";
 }
 
 void rolling_window_production_regression() {
@@ -6370,9 +6399,9 @@ void rolling_window_production_regression() {
    Task t;t.task_id=r;t.agent_assigned=r;t.locations={r*3,r*3,62-r*3};e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
  for(auto s:settings)setenv(s.first,s.second,1);
  const std::vector<std::pair<const char*,const char*>> active={{"CGAR_WINDOW","12"},{"CGAR_WINDOW_KEEP","6"},
-  {"CGAR_WINDOW_ITERS","32"},{"CGAR_WINDOW_NODES","512"},{"CGAR_WINDOW_WORKERS","4"},{"CGAR_WINDOW_THREADS","1"},{"CGAR_WINDOW_WAIT_COST","2"},{"CGAR_WINDOW_SEED_ROLLOUT","0"},{"CGAR_WINDOW_PROGRESS_TIES","0"},{"CGAR_WINDOW_PROTECTED_PREFIX","0"},{"CGAR_WINDOW_HISTORY_ROLLOUT","0"},{"CGAR_WINDOW_DELAY_SAMPLES","0"},{"CGAR_WINDOW_TEMPERATURE","0"},{"CGAR_WINDOW_MERGE","0"},{"CGAR_WINDOW_BLOCKERS","0"},{"CGAR_WINDOW_FULL_GROUP","0"}};
+  {"CGAR_WINDOW_ITERS","32"},{"CGAR_WINDOW_NODES","512"},{"CGAR_WINDOW_WORKERS","4"},{"CGAR_WINDOW_THREADS","1"},{"CGAR_WINDOW_WAIT_COST","2"},{"CGAR_WINDOW_SEED_ROLLOUT","0"},{"CGAR_WINDOW_PROGRESS_TIES","0"},{"CGAR_WINDOW_PROTECTED_PREFIX","0"},{"CGAR_WINDOW_HISTORY_ROLLOUT","0"},{"CGAR_WINDOW_DELAY_SAMPLES","0"},{"CGAR_WINDOW_TEMPERATURE","0"},{"CGAR_WINDOW_MERGE","0"},{"CGAR_WINDOW_BLOCKERS","0"},{"CGAR_WINDOW_FULL_GROUP","0"},{"CGAR_WINDOW_STARTS","1"},{"CGAR_WINDOW_START_NOISE","50"}};
  std::vector<int> absent,disabled;int checked=0,services=0;long long changed=0,retained=0;
- for(int mode=-1;mode<15;++mode){
+ for(int mode=-1;mode<17;++mode){
   if(mode==0)setenv("CGAR_WINDOW","0",1);if(mode>0)for(auto s:active)setenv(s.first,s.second,1);
   if(mode==2){setenv("CGAR_WINDOW_NODES","1",1);setenv("CGAR_WINDOW_ITERS","1",1);setenv("CGAR_WINDOW_KEEP","0",1);}
   if(mode>=3)setenv("CGAR_WINDOW_SEED_ROLLOUT","1",1);
@@ -6385,6 +6414,8 @@ void rolling_window_production_regression() {
   if(mode==11)setenv("CGAR_WINDOW_BLOCKERS","1",1);
   if(mode==12||mode==13)setenv("CGAR_WINDOW_BLOCKERS","2",1);
   if(mode==13||mode==14)setenv("CGAR_WINDOW_FULL_GROUP","1",1);
+  if(mode>=15)setenv("CGAR_WINDOW_STARTS","4",1);
+  if(mode==16)setenv("CGAR_WINDOW_START_NOISE","0",1);
   std::vector<int> noop;
   auto e=fixture();Cgar serial;serial.initialize(&e,5000);
   if(mode>0)setenv("CGAR_WINDOW_THREADS","4",1);Cgar parallel;parallel.initialize(&e,5000);
@@ -6408,7 +6439,7 @@ void rolling_window_production_regression() {
    if(mode==8||mode==10)require(serial.stats().window.uphill_accepted>0&&serial.stats().window.incumbent_updates>0&&serial.stats().window.uphill_accepted==parallel.stats().window.uphill_accepted,"annealed production work was unused or nondeterministic");
    if(mode==9||mode==10)require(serial.stats().window.merge_donors==180&&serial.stats().window.merge_accepted>0&&serial.stats().window.merge_gain==parallel.stats().window.merge_gain,"production component merging unused or nondeterministic");
    if(mode>=11&&mode<=13)require(serial.stats().window.guide_paths>0&&serial.stats().window.blocker_links>0&&serial.stats().window.blocker_checks==parallel.stats().window.blocker_checks,"production causal selection unused or nondeterministic");
-   if(mode>=13)require(serial.stats().window.full_groups==60*32*4,"production full groups were not fully constructed");
+   if(mode==13||mode==14)require(serial.stats().window.full_groups==60*32*4,"production full groups were not fully constructed");
    if(mode==2)require(noop==absent&&!serial.stats().window_changed_first,"no-op overlay perturbed CGAR decisions or random stream");
    else {changed+=serial.stats().window_changed_first;retained+=serial.stats().window_retained;
     require(serial.stats().window_changed_first>0&&serial.stats().window_retained>0,"production overlay or history was unused");}
@@ -6419,6 +6450,7 @@ void rolling_window_production_regression() {
  // Reject invalid and silently ignored configurations before planning.
  for(auto bad:std::vector<std::pair<const char*,const char*>>{{"CGAR_WINDOW","5"},{"CGAR_WINDOW","33"},{"CGAR_WINDOW","-1"},
   {"CGAR_WINDOW","20x"},{"CGAR_WINDOW_KEEP","12"},{"CGAR_WINDOW_ITERS","0"},{"CGAR_WINDOW_NODES","0"},
+  {"CGAR_WINDOW_STARTS","0"},{"CGAR_WINDOW_STARTS","33"},{"CGAR_WINDOW_STARTS","2"},{"CGAR_WINDOW_STARTS","-1"},{"CGAR_WINDOW_STARTS","4x"},{"CGAR_WINDOW_START_NOISE","1025"},{"CGAR_WINDOW_START_NOISE","-1"},{"CGAR_WINDOW_START_NOISE","1x"},{"CGAR_WINDOW_START_NOISE","0"},
   {"CGAR_WINDOW_BLOCKERS","3"},{"CGAR_WINDOW_BLOCKERS","-1"},{"CGAR_WINDOW_BLOCKERS","1x"},{"CGAR_WINDOW_FULL_GROUP","2"},{"CGAR_WINDOW_FULL_GROUP","-1"},{"CGAR_WINDOW_FULL_GROUP","1x"},
   {"CGAR_WINDOW_MERGE","2"},{"CGAR_WINDOW_MERGE","-1"},{"CGAR_WINDOW_MERGE","1x"},{"CGAR_WINDOW_TEMPERATURE","65537"},{"CGAR_WINDOW_TEMPERATURE","-1"},{"CGAR_WINDOW_TEMPERATURE","8x"},
   {"CGAR_WINDOW_DELAY_SAMPLES","17"},{"CGAR_WINDOW_DELAY_SAMPLES","-1"},{"CGAR_WINDOW_DELAY_SAMPLES","3x"},
@@ -6435,6 +6467,7 @@ void rolling_window_production_regression() {
  require(rejected,"disabled delay override accepted");unsetenv("CGAR_WINDOW_DELAY_SAMPLES");
  setenv("CGAR_WINDOW_MERGE","1",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
  require(rejected,"disabled merge override accepted");unsetenv("CGAR_WINDOW_MERGE");
+ setenv("CGAR_WINDOW_STARTS","4",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}require(rejected,"disabled seed portfolio override accepted");unsetenv("CGAR_WINDOW_STARTS");
  for(const char* key:{"CGAR_WINDOW_BLOCKERS","CGAR_WINDOW_FULL_GROUP"}){setenv(key,"1",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}require(rejected,"disabled causal/full-group override accepted");unsetenv(key);}
  setenv("CGAR_WINDOW_TEMPERATURE","8",1);rejected=false;try{auto e=fixture();Cgar c;c.initialize(&e,5000);}catch(const std::invalid_argument&){rejected=true;}
  require(rejected,"disabled annealing override accepted");unsetenv("CGAR_WINDOW_TEMPERATURE");
@@ -6442,7 +6475,7 @@ void rolling_window_production_regression() {
  setenv("CGAR_WINDOW_PROTECTED_PREFIX","1",1);
  temporal_primary_regression(); // real protected primary and recovery/pocket fixtures
  for(auto s:active)unsetenv(s.first);for(auto s:settings)unsetenv(s.first);
- std::cout<<"ROLLING_WINDOW_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" retained="<<retained<<" disabled_identity=1 noop_rng_identity=1 seed_rollout=1 history_rollout=1 delay_tournament=1 annealed_best=1 component_merge=1 causal_blockers=1 full_groups=1 progress_ties=1 protected_prefix=1 primary_recovery=1 strict_parser=1\n";
+ std::cout<<"ROLLING_WINDOW_PRODUCTION passed serial_parallel_actions="<<checked<<" service_events="<<services<<" changed_first="<<changed<<" retained="<<retained<<" disabled_identity=1 noop_rng_identity=1 seed_rollout=1 history_rollout=1 delay_tournament=1 annealed_best=1 component_merge=1 causal_blockers=1 full_groups=1 complete_seed_portfolio=1 progress_ties=1 protected_prefix=1 primary_recovery=1 strict_parser=1\n";
 }
 
 

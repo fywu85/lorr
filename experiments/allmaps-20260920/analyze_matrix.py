@@ -421,6 +421,9 @@ def main():
                             ('threads','CGAR_WINDOW_THREADS',4),('table_threads','CGAR_TEMPORAL_CHAIN_THREADS',1)]:
                         assert int(cfg[field])==int(case['environment'].get(key,str(default)))
                     rollout=int(case['environment'].get('CGAR_WINDOW_SEED_ROLLOUT','0'))
+                    starts=int(case['environment'].get('CGAR_WINDOW_STARTS','1'));start_noise=int(case['environment'].get('CGAR_WINDOW_START_NOISE','50'))
+                    assert int(cfg.get('starts','1'))==starts and 1<=starts<=32
+                    assert int(cfg.get('start_noise','50'))==start_noise and 0<=start_noise<=1024
                     assert int(cfg.get('seed_rollout','0'))==rollout
                     progress_ties=int(case['environment'].get('CGAR_WINDOW_PROGRESS_TIES','0'));assert int(cfg.get('progress_ties','0'))==progress_ties
                     assert int(cfg.get('protected_prefix','0'))==int(case['environment'].get('CGAR_WINDOW_PROTECTED_PREFIX','0'))
@@ -441,6 +444,18 @@ def main():
                     for x in window_samples:
                         assert x['complete']=='1' and int(x['attempts'])==attempts
                         assert int(x.get('rollout_batches','0'))==((window_horizon-1)//5 if rollout else 0)
+                        if starts>1:assert 'rollout_starts' in x
+                        if 'rollout_starts' in x:
+                            assert int(x['rollout_starts'])==(starts if rollout else 0)
+                            assert int(x['rollout_total_batches'])==int(x['rollout_batches'])*starts
+                            assert 0<=int(x['rollout_selected'])<(starts if rollout else 1)
+                            assert 0<=int(x['rollout_changed_orders'])<starts
+                            first_cost=int(x['rollout_first_cost']);seed_cost=int(x['rollout_selected_cost'])
+                            assert 0<=seed_cost<=first_cost
+                            if rollout:assert seed_cost==int(x['seed_cost'])
+                            if progress_ties and seed_cost==first_cost:assert int(x['rollout_selected_remaining'])<=int(x['rollout_first_remaining'])
+                            if not start_noise or starts==1:assert int(x['rollout_changed_orders'])==0
+
                         history_batches=int(x.get('history_batches','0'));expected_history=(window_horizon-int(cfg['keep'])+4)//5
                         assert history_batches in ((0,expected_history) if history_rollout else (0,))
                         if history_rollout:assert 0<=int(x.get('total_history_batches','0'))<=expected_history*int(x['step'])
@@ -502,6 +517,7 @@ def main():
                     assert not int(case['environment'].get('CGAR_WINDOW_MERGE','0'))
                     assert not int(case['environment'].get('CGAR_WINDOW_BLOCKERS','0'))
                     assert not int(case['environment'].get('CGAR_WINDOW_FULL_GROUP','0'))
+                    assert int(case['environment'].get('CGAR_WINDOW_STARTS','1'))==1
                 future_roots=int(case['environment'].get('CGAR_FUTURE_ROOTS','0'))
                 future_config=[fields(l) for l in logs if l.startswith('[cgar-future-config] ')]
                 future_samples=[fields(l) for l in logs if l.startswith('[cgar-future] ')]

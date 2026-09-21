@@ -650,8 +650,18 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 path.push_back(state);
             }
         }
-        const int rollout_batches = window_options_.seed_rollout ?
-            extend_window_seed(problem, temporal_geometry_, order, temporal_budget_, window_rng_(), check) : 0;
+        int rollout_batches = 0; WindowSeedStats seed_stats;
+        if (window_options_.seed_rollout) {
+            // The original rollout/repair RNG consumes exactly its old draw.
+            // Extra tail candidates use a separate stream and ordered IDs.
+            std::vector<uint64_t> start_seeds(window_options_.starts);
+            start_seeds[0] = window_rng_();
+            for (int id = 1; id < window_options_.starts; ++id) start_seeds[id] = window_start_rng_();
+            seed_stats = select_window_seed(problem, temporal_geometry_, order, temporal_budget_, start_seeds,
+                window_options_.threads, window_options_.start_noise, window_options_.progress_ties, check);
+            if (!seed_stats.completed) throw std::logic_error("incomplete rolling-window initialization");
+            rollout_batches = (problem.horizon - 1) / 5;
+        }
         std::vector<uint64_t> seeds(window_options_.workers);
         for (auto& seed : seeds) seed = window_rng_();
         WindowStats window;
@@ -669,8 +679,9 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         stats_.window_changed_first += window.changed_first;
         stats_.window_retained += window.retained; stats_.window_history_resets += window.history_resets;
         if (diagnostics_ && (env_->curr_timestep + 1) % 200 == 0)
-            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d history_batches=%lld attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld seed_remaining=%lld initial_remaining=%lld final_remaining=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld total_history_batches=%lld delay_draws=%lld delay_replacements=%lld total_delay_draws=%lld total_delay_replacements=%lld uphill_accepted=%lld incumbent_updates=%lld incumbent_restores=%lld total_uphill_accepted=%lld total_incumbent_updates=%lld pre_merge_cost=%lld merge_donors=%lld merge_components=%lld merge_accepted=%lld merge_robots=%lld merge_gain=%lld total_merge_donors=%lld total_merge_accepted=%lld total_merge_gain=%lld eligible_agents=%lld guide_paths=%lld guide_steps=%lld blocker_checks=%lld blocker_links=%lld group_agents=%lld full_groups=%lld total_guide_paths=%lld total_blocker_checks=%lld total_blocker_links=%lld total_group_agents=%lld total_full_groups=%lld seconds=%.6f\n",
-                env_->curr_timestep + 1, rollout_batches, window.history_batches, window.attempts, window.accepted, window.improved, window.searches,
+            std::printf("[cgar-window] step=%d complete=1 rollout_batches=%d rollout_starts=%d rollout_total_batches=%d rollout_selected=%d rollout_changed_orders=%d rollout_first_cost=%lld rollout_selected_cost=%lld rollout_first_remaining=%lld rollout_selected_remaining=%lld history_batches=%lld attempts=%lld accepted=%lld improved=%lld searches=%lld expanded=%lld capped=%lld failed=%lld retained=%lld history_resets=%lld seed_cost=%lld initial_cost=%lld final_cost=%lld seed_remaining=%lld initial_remaining=%lld final_remaining=%lld changed_first=%d protected=%d selected_worker=%d calls=%lld total_attempts=%lld total_changed_first=%lld total_retained=%lld total_history_resets=%lld total_history_batches=%lld delay_draws=%lld delay_replacements=%lld total_delay_draws=%lld total_delay_replacements=%lld uphill_accepted=%lld incumbent_updates=%lld incumbent_restores=%lld total_uphill_accepted=%lld total_incumbent_updates=%lld pre_merge_cost=%lld merge_donors=%lld merge_components=%lld merge_accepted=%lld merge_robots=%lld merge_gain=%lld total_merge_donors=%lld total_merge_accepted=%lld total_merge_gain=%lld eligible_agents=%lld guide_paths=%lld guide_steps=%lld blocker_checks=%lld blocker_links=%lld group_agents=%lld full_groups=%lld total_guide_paths=%lld total_blocker_checks=%lld total_blocker_links=%lld total_group_agents=%lld total_full_groups=%lld seconds=%.6f\n",
+                env_->curr_timestep + 1, rollout_batches, seed_stats.starts, seed_stats.batches, seed_stats.selected, seed_stats.changed_orders,
+                static_cast<long long>(seed_stats.first_cost), static_cast<long long>(seed_stats.selected_cost), static_cast<long long>(seed_stats.first_remaining), static_cast<long long>(seed_stats.selected_remaining), window.history_batches, window.attempts, window.accepted, window.improved, window.searches,
                 window.expanded, window.capped, window.failed, window.retained, window.history_resets,
                 static_cast<long long>(window.seed_cost), static_cast<long long>(window.initial_cost), static_cast<long long>(window.final_cost),
                 static_cast<long long>(window.seed_remaining), static_cast<long long>(window.initial_remaining), static_cast<long long>(window.final_remaining),

@@ -967,6 +967,11 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
     window_options_.merge = priority_setting("CGAR_WINDOW_MERGE", 0, 1);
     window_options_.blockers = priority_setting("CGAR_WINDOW_BLOCKERS", 0, 2);
     window_options_.full_group = priority_setting("CGAR_WINDOW_FULL_GROUP", 0, 1);
+    window_options_.starts = priority_setting("CGAR_WINDOW_STARTS", 1, 32);
+    window_options_.start_noise = priority_setting("CGAR_WINDOW_START_NOISE", 50, 1024);
+    if (!window_options_.starts || ((window_options_.starts != 1 || window_options_.start_noise != 50) &&
+        (!window_options_.horizon || !window_options_.seed_rollout || window_options_.starts == 1)))
+        throw std::invalid_argument("window seed portfolio overrides require enabled joint rollout and at least two complete starts");
     window_move_promises_ = priority_setting("CGAR_WINDOW_MOVE_PROMISES", 0, 1) != 0;
     if (window_move_promises_ && (!window_options_.horizon || !temporal_move_promises_))
         throw std::invalid_argument("window move-promise composition requires an enabled window and one-action motion commitments");
@@ -974,6 +979,7 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         std::printf("[cgar-window-move-promises-config] enabled=1 first_cell=immutable wait_rotation=free next_promise=selected_window protected_priority=1 fixed_work=1 timeout_is_failure=1\n");
     window_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0xa0761d6478bd642fULL);
     window_history_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0x8ebc6af09c88c6e3ULL);
+    window_start_rng_.seed(uint64_t(env_int("CGAR_SEED", 0)) ^ 0x13198a2e03707344ULL);
     rolling_window_ = RollingWindow();
     if (window_options_.horizon) {
         if (window_options_.horizon < 6 || window_options_.keep >= window_options_.horizon ||
@@ -1282,10 +1288,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         if (temporal_chain_mode_) std::printf("[cgar-chain-config] mode=%d score=%d order=%d complete=1 cells=%d stored_bytes=%zu threads=%d service=after_action domain=core_goal_pocket_escape fixed_work=1\n",
             temporal_chain_mode_, int(bool(temporal_chain_mode_ & 1)), int(bool(temporal_chain_mode_ & 2)),
             chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_);
-        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d temperature=%d merge=%d blockers=%d full_group=%d chain_seed=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
+        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d temperature=%d merge=%d blockers=%d full_group=%d starts=%d start_noise=%d chain_seed=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
             window_options_.horizon, window_options_.keep, window_options_.iterations, window_options_.nodes,
             window_options_.group, window_options_.workers, window_options_.threads, guidance_turn_cost_, wait,
-            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature, window_options_.merge, window_options_.blockers, window_options_.full_group, window_chain_seed);
+            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature, window_options_.merge, window_options_.blockers, window_options_.full_group, window_options_.starts, window_options_.start_noise, window_chain_seed);
     }
 
     if (scheduler_chain_potential_)

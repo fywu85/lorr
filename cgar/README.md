@@ -456,3 +456,14 @@ joint validation. Zero preserves the previous neighborhood RNG and choices.
 maximum group size (or the number of eligible robots). It increases agents per
 attempt, so compare it as a fixed-work change. Both options require an enabled
 window and default to0; all declared attempts must finish before any answer.
+
+
+`CGAR_WINDOW_STARTS=1..32` can initialize an enabled joint window rollout from
+several complete CGAR tails. Candidate0 retains the original seed and priority
+order. Other candidates use an isolated RNG with bounded rank-position noise
+(`CGAR_WINDOW_START_NOISE=0..1024`, default50). They preserve CGAR's first five
+actions and every protected tail. All candidates finish before the lowest-cost
+complete seed is selected; equal costs use terminal progress when configured.
+Window worker count/attempts and their RNG remain unchanged. Starts1 preserves
+the old single-rollout result. Nondefault settings require enabled rollout and
+at least two starts; deadline errors publish no seed or partial answer.
