@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-21T00:43:56.228965+00:00",
+  "updated_utc": "2026-09-21T00:46:23.352414+00:00",
   "scope": "Selected maxima from complete generic and explicitly flagged trick matrices. Exact source, track and enforced limits are recorded per result; shared-host development is not full competition qualification or a matched NMS comparison.",
   "rows": [
     {
@@ -207,33 +207,34 @@
       "planner_seed": 0
     },
     {
-      "case": "generic_chain_rank_8workers-s0-r0",
-      "variant": "generic_chain_rank_8workers",
+      "case": "generic_noise50_cold-s4-r0",
+      "variant": "generic_noise50_cold",
       "instance": "RANDOM-04",
-      "seed": 0,
+      "seed": 4,
       "steps": 1000,
       "robots": 700,
       "valid": true,
       "outcome": "success",
-      "tasks": 1330,
-      "peak_rss_bytes": 115396608,
-      "wall_seconds": 102.925,
-      "mean_cpu_cores": 3.425722466988979,
+      "tasks": 1367,
+      "peak_rss_bytes": 115449856,
+      "wall_seconds": 103.224,
+      "mean_cpu_cores": 3.418644905734884,
       "reserved_physical_cores": 4,
-      "raw_result": "/shared/share_mala/fw2449/lorr2024/runs/cgar-priority-portfolio-dense-full-v1-20260920/generic_chain_rank_8workers-s0-r0/RANDOM-04.json",
-      "mean_entry_ms": 101.89240533700007,
-      "max_entry_seconds": 0.141557169,
-      "trajectory_sha256": "3a2f1ff86e5e584cdc64c101c4c59c84d9303ee69059ec62a3b69cfc2e9faad2",
+      "raw_result": "/shared/share_mala/fw2449/lorr2024/runs/cgar-priority-portfolio-strict-seeds-v2-20260920/generic_noise50_cold-s4-r0/RANDOM-04.json",
+      "mean_entry_ms": 102.095955368,
+      "max_entry_seconds": 0.138314952,
+      "trajectory_sha256": "4f6a17a822c2bb8d39be70f20a6e69604f9781abcb394163028c38853c04aeb2",
       "outstanding_age_p90": 1000,
       "competition_budget_confirmed": false,
       "source_commit": "5d3c5bf51147d9739de9c457a679d727e8492848",
       "binary_sha256": "878d47d086a120a866bd68fb0068850dee4db1085f514084f8c5c38a1bcf3a70",
-      "verification": "experiments/allmaps-20260920/results/priority-portfolio-dense-full-v1/verification.json",
-      "verified_utc": "2026-09-21T00:17:09.509373+00:00",
-      "track": "GENERIC",
-      "planner_seed": 0,
+      "verification": "experiments/allmaps-20260920/results/priority-portfolio-strict-seeds-v2/verification.json",
+      "verified_utc": "2026-09-21T00:44:54.180492+00:00",
+      "completed_utc": "2026-09-21T00:42:58.452817+00:00",
       "timestamp_kind": "result-file completion mtime UTC",
-      "completed_utc": "2026-09-21T00:08:40.438857+00:00"
+      "track": "GENERIC",
+      "planner_seed": 4,
+      "decision_limit_ms": 1000
     },
     {
       "case": "generic_noise50_cold-s0-r0",
@@ -262,7 +263,14 @@
       "track": "GENERIC",
       "planner_seed": 0,
       "timestamp_kind": "result-file completion mtime UTC",
-      "completed_utc": "2026-09-21T00:13:41.663822+00:00"
+      "completed_utc": "2026-09-21T00:13:41.663822+00:00",
+      "strict_one_second_confirmation": {
+        "verification": "experiments/allmaps-20260920/results/priority-portfolio-strict-seeds-v2/verification.json",
+        "case": "generic_noise50_cold-s0-r0",
+        "trajectory_sha256": "44e2a7009761d4ea345e5a46f82492eeb50d240893077fdb239b6b350611af0f",
+        "max_entry_seconds": 0.291668638,
+        "same_complete_trajectory": true
+      }
     }
   ]
 }

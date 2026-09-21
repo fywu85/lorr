@@ -1,0 +1,68 @@
+{
+  "checked_utc": "2026-09-21T00:46:23.345621+00:00",
+  "source_commit": "5d3c5bf51147d9739de9c457a679d727e8492848",
+  "binary_sha256": "878d47d086a120a866bd68fb0068850dee4db1085f514084f8c5c38a1bcf3a70",
+  "seed0_5s_to_1s": [
+    {
+      "instance": "RANDOM-04",
+      "variant": "generic_chain_rank_1worker",
+      "seed": 0,
+      "tasks": 1249,
+      "trajectory_sha256": "01b8994902f7704e40e1820cf56564b88fd27f9e8035dc1693d46ef530b5df17",
+      "same_complete_trajectory": true
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "generic_chain_rank_1worker",
+      "seed": 0,
+      "tasks": 1847,
+      "trajectory_sha256": "9a763e9b0f0081dadf0343e5b45eb5ce6a92d577de3bae964a4a2568626f0405",
+      "same_complete_trajectory": true
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "generic_chain_rank_8workers",
+      "seed": 0,
+      "tasks": 1330,
+      "trajectory_sha256": "3a2f1ff86e5e584cdc64c101c4c59c84d9303ee69059ec62a3b69cfc2e9faad2",
+      "same_complete_trajectory": true
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "generic_chain_rank_8workers",
+      "seed": 0,
+      "tasks": 1989,
+      "trajectory_sha256": "2d647dbb5b1335fa205e1ed31ff5395b3115de166e2a8d28b52b85ec1bb09d56",
+      "same_complete_trajectory": true
+    },
+    {
+      "instance": "RANDOM-04",
+      "variant": "generic_noise50_cold",
+      "seed": 0,
+      "tasks": 1306,
+      "trajectory_sha256": "e72022bd850174054d160e9228371367d4ab600da2659e4ec25724490f3a8c48",
+      "same_complete_trajectory": true
+    },
+    {
+      "instance": "RANDOM-05",
+      "variant": "generic_noise50_cold",
+      "seed": 0,
+      "tasks": 2036,
+      "trajectory_sha256": "44e2a7009761d4ea345e5a46f82492eeb50d240893077fdb239b6b350611af0f",
+      "same_complete_trajectory": true
+    }
+  ],
+  "means": {
+    "RANDOM-04": {
+      "generic_chain_rank_1worker": 1235.6666666666667,
+      "generic_chain_rank_8workers": 1307,
+      "generic_noise50_cold": 1301.3333333333333
+    },
+    "RANDOM-05": {
+      "generic_chain_rank_1worker": 1829.6666666666667,
+      "generic_chain_rank_8workers": 1960.3333333333333,
+      "generic_noise50_cold": 2032.6666666666667
+    }
+  },
+  "scope": "Three planner seeds on the same archived input; seed0 full trajectories unchanged under stricter deadlines. Not independent task/start streams."
+}

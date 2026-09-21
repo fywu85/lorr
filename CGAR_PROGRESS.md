@@ -22,8 +22,8 @@ them a veto on a throughput improvement.
 | RANDOM-01 |611|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-02 |1084|Generic; full shared5s development, generic_match64_direct|
 | RANDOM-03 |1484|Generic; full shared5s development, generic_match64_direct|
-| RANDOM-04 |1330|Generic; full shared5s development, generic_chain_rank_8workers|
-| RANDOM-05 |2036|Generic; full shared5s development, generic_noise50_cold|
+| RANDOM-04 |1367|Generic; full strict1s, noise50 seed4; eight-worker control has better three-seed mean|
+| RANDOM-05 |2036|Generic; full strict1s, noise50 seed0; three-seed mean2032.67|
 
 The initial nine-instance transfer used sourceabbe36b and one planner seed, before later
 Warehouse matching/trick work; it is a starting measurement, not each instance's
@@ -49,7 +49,8 @@ into CGAR on RANDOM-04/05. [Frozen source study and next experiments](experiment
 The first optional persistent-priority implementation passed the full regression
 suite and its ten full dense-map runs. The eight-worker control scores1330/1989;
 noise50without retention scores1306/2036. Retention itself was weaker. Selected
-maxima remain one-seed results; strict1sseed0/2/4replication is pending. It preserves CGAR's existing kernel and
+maxima remain individual-seed records. All18strict1sseed0/2/4runs passed, with
+seed0 whole trajectories unchanged and maximum307.61ms. It preserves CGAR's existing kernel and
 protections. SORTATION's full explicit-trick comparison is complete: control146460,
 native lanes149321, native lanes with outer-band costs150353. The control's whole
 trajectory is unchanged. The selected trick is still above1s on its slowest steps.
@@ -74,3 +75,7 @@ The standalone RANDOM field has been exported reproducibly and installed behind
 explicit `--trick RANDOM-04` / `--trick RANDOM-05` gates, including exact occupancy
 and team-size checks. An integer adaptation and uniform-cost control are declared;
 there is no throughput claim before the new full comparisons finish.
+
+Strict dense-map means: RANDOM-04 one-worker1235.67, eight-worker1307.00,
+noise50=1301.33; RANDOM-05 one-worker1829.67, eight-worker1960.33, noise50=2032.67.
+[Full replication](experiments/allmaps-20260920/results/priority-portfolio-strict-seeds-v2/summary.md).

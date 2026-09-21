@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/opt/n1ge/bin/lx24-amd64/qsub",
+    "-terse",
+    "-w",
+    "e",
+    "-cwd",
+    "-q",
+    "debian.q@research39.grid.gsb,debian.q@research43.grid.gsb,debian.q@research44.grid.gsb,debian.q@research47.grid.gsb,debian.q@research50.grid.gsb,debian.q@research53.grid.gsb,debian.q@research54.grid.gsb,debian.q@research57.grid.gsb",
+    "-pe",
+    "threaded",
+    "16",
+    "-binding",
+    "linear:16",
+    "-l",
+    "exclusive=false,h_rt=00:45:00,h_vmem=8G",
+    "-m",
+    "n",
+    "-N",
+    "lorr_matrix",
+    "-j",
+    "y",
+    "-o",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-priority-portfolio-strict-seeds-v2-20260920/scheduler.log",
+    "-S",
+    "/bin/bash",
+    "/shared/share_mala/fw2449/lorr2024/runs/cgar-priority-portfolio-strict-seeds-v2-20260920/job.sh"
+  ],
+  "returncode": 0,
+  "response": "8900997\n"
+}

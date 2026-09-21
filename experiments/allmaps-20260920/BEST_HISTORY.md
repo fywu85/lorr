@@ -44,3 +44,13 @@ Persistence itself did not beat the selected controls. RANDOM-04 favors the eigh
 | 150353 | 2026-09-21T00:34:06.943933+00:00 | [df94a52](https://github.com/fywu85/lorr/commit/df94a520c77fcb3a73a4a8c74b5b13cab542d1d6) | trick_sortation_native_bands1 | [verification](results/sortation-native-full-v1/verification.json) |
 
 Both are **TRICK**, seed0, full 5000 steps, four physical cores and enforced 5s development deadlines. The 150353 result is 2.66% above the unchanged 146460 control and 1.55% below the historical NMS target 152714. Mean/max decision time 524.64/1151.94 ms; it is not yet qualified at 1s. The control whole trajectory matches the previous generic source exactly.
+
+## Strict one-second dense-map replication
+
+All 18 full runs passed with planner seeds0/2/4. The seed0 whole trajectories are unchanged from 5s development. These are three planner seeds on each archived instance, not independent task/start streams.
+
+| Instance | Tasks | Seed | Completed UTC | Source | Profile |
+|---|---:|---:|---|---|---|
+| RANDOM-04 | 1367 | 4 | 2026-09-21T00:42:58.452817+00:00 | [5d3c5bf](https://github.com/fywu85/lorr/commit/5d3c5bf51147d9739de9c457a679d727e8492848) | generic_noise50_cold |
+
+Mean tasks (one worker / eight workers / eight with noise50): RANDOM-04 **1235.67 / 1307.00 / 1301.33**; RANDOM-05 **1829.67 / 1960.33 / 2032.67**. Every paired eight-worker run beats one worker. Noise consistently helps RANDOM-05 versus eight workers, but is mixed on RANDOM-04. The selected RANDOM-04 maximum is a seed4 result, not the best mean. Maximum decision time across all 18 runs is 307.61 ms. [Evidence](results/priority-portfolio-strict-seeds-v2/summary.md), [whole-trajectory confirmation and means](results/priority-portfolio-strict-seeds-v2/replication.json).
