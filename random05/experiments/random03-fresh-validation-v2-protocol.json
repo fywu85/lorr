@@ -1,0 +1,29 @@
+{
+  "declared_utc": "2026-09-21T19:33:52.084491+00:00",
+  "instance": "RANDOM-03",
+  "candidate_source_commit": "1a3076420bc245d5f56839936d7814eb9087b050",
+  "candidate_binary_sha256": "6e439865e75c828d49a20b87d7e6b8161f1787493698c93344b0d4b44f2dc523",
+  "baseline_source_commit": "1a3076420bc245d5f56839936d7814eb9087b050",
+  "baseline_binary_sha256": "6e439865e75c828d49a20b87d7e6b8161f1787493698c93344b0d4b44f2dc523",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "manifest": "random05/experiments/random03-fresh-validation-v2-full.json",
+  "generation": "random05/results/random03-fresh-validation-v2/generation.json",
+  "seeds": [
+    50019,
+    50020
+  ],
+  "candidate_development_tasks": 2620,
+  "baseline_development_tasks": 2590,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "comparison": "Report each input and aggregate against the stronger of two unchanged NMS repetitions. Seek at least10% aggregate and positive aggregate versus the matched planner-seed baseline; preserve any miss or failure.",
+    "timing": "Full800steps, strict1000ms entries,30000ms preprocessing and32decimalGB process guard. Complete declared fixed work or fail.",
+    "integrity": "Commit before generating50019/50020. Exclude both seeds from tuning at every density permanently. Preserve original attempts, independent full action/schedule/task replay and waiting metrics."
+  },
+  "description": "Freeze the weight1.2 window-proposal search on plannerseed3 against weight1 on the same source, seed and configuration. These differ only in R05_WINDOW_HEURISTIC_WEIGHT. New starts/tasks on the existing random layout, not new geometry. Later development cannot alter this comparison."
+}
