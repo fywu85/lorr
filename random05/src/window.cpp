@@ -253,6 +253,9 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     for(int index=0;index<cfg.window_islands;++index) {
         try {
             auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;
+            Paths incumbent_paths;
+            Cost current_cost=base_cost,incumbent_cost=base_cost;
+            if(cfg.window_temperature>0)incumbent_paths=island.paths;
             std::seed_seq seeds{uint32_t(cfg.seed),uint32_t(env.curr_timestep),uint32_t(index),
                                uint32_t(0x57494e44)+uint32_t(round)*uint32_t(0x9e3779b9)};
             std::mt19937 random(seeds);
@@ -320,17 +323,39 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                                  std::abs(proposed.remaining-previous.remaining)<=1e-8;
                 bool accept=planned==count && (better(proposed,previous) ||
                     (cfg.window_equal && equal && replacement!=old));
+                if(!accept && planned==count && cfg.window_temperature>0 && replacement!=old) {
+                    // Explore complete legal repairs above the incumbent, then
+                    // return the best complete plan visited, never this walk's
+                    // possibly worse endpoint. Cooling uses iteration count.
+                    const double fraction=1-double(iteration)/std::max(1,cfg.window_iterations/cfg.window_rounds);
+                    const double temperature=cfg.window_temperature*fraction;
+                    const double increase=std::max(0.0,proposed.total-previous.total);
+                    accept=std::generate_canonical<double,32>(random)<std::exp(-increase/temperature);
+                }
                 if(accept) {
                     ++island.accepted;
                     for(int k=0;k<count;++k) {
                         int a=group[k];island.paths[a]=std::move(replacement[k]);
                         costs[a]=path_cost(g,cfg,assigned_[a],initial.stage[a],island.paths[a]);
                     }
+                    if(cfg.window_temperature>0) {
+                        current_cost.total+=proposed.total-previous.total;
+                        current_cost.remaining+=proposed.remaining-previous.remaining;
+                        if(better(current_cost,incumbent_cost)) {
+                            // Recompute before retaining a new best so any
+                            // accumulated delta rounding cannot win selection.
+                            current_cost=total_cost(island.paths);
+                            if(better(current_cost,incumbent_cost)) {
+                                incumbent_cost=current_cost;incumbent_paths=island.paths;
+                            }
+                        }
+                    }
                 } else {
                     for(int k=0;k<planned;++k)reserve.set(group[k],replacement[k],false);
                     for(int k=0;k<count;++k)reserve.set(group[k],old[k],true);
                 }
             }
+            if(cfg.window_temperature>0)island.paths=std::move(incumbent_paths);
             island.cost=total_cost(island.paths);island.expansions=search.expanded;
         } catch(...) {errors[index]=std::current_exception();}
     }

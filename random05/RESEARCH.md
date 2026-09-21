@@ -1246,3 +1246,17 @@ epoch values above32bits also bypass caching, so truncation cannot cause false
 hits. No score/order/priority/work count changes. Existing dense uncached/cache,
 eviction, fused-read, checkpoint and worker controls test exact policy behavior.
 Full frozen controls and repeated timing measurements remain necessary.
+
+## Fixed-work annealed window repair (source91 experiment)
+
+Cooperative LNS still accepts only nonworsening repairs, which can trap the
+small groups around a local optimum. NMS's local push search also explores
+worse scores via simulated annealing (read-only pibts.cpp). Test the general
+idea in our own window optimizer: optional R05_WINDOW_TEMPERATURE allows a
+complete legal repair with probability exp(-cost_increase/temperature), cooling
+linearly by fixed iteration count. Each island separately preserves its best
+complete incumbent and returns that, so neither an incomplete repair nor a
+worse walk endpoint replaces the incumbent. Temperature0 is the exact default.
+Full-plan validation and no-worsening checks remain. Dense turnover/mobility,
+worker count, cached/uncached equivalence and checkpoint replay exercise the
+new path before full performance experiments. It is not a map-specific rule.
