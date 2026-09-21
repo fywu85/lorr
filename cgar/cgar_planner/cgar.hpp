@@ -36,6 +36,7 @@
 #include "tricks.hpp"
 #include "game_fleet.hpp"
 #include "horizon_bound.hpp"
+#include "chain_potential.hpp"
 #include "guide_routes.hpp"
 
 #include <array>
@@ -260,6 +261,8 @@ struct Stats {
     long long match_repeat_moves = 0, match_max_task_moves = 0;
     TemporalRegionPeaks regional_peaks;
     long long regional_peaks_restored = 0;
+    long long chain_robot_steps = 0, chain_fallback_steps = 0, chain_scored_choices = 0;
+    long long chain_service_choices = 0, chain_multi_service_choices = 0, chain_completed_choices = 0;
     MovementStats movement[3];  // idle, before pickup, after pickup
     long long expired_commitments = 0;
     long long oriented_builds = 0, oriented_guided = 0, oriented_fallback = 0;
@@ -555,6 +558,8 @@ private:
     bool temporal_promise_after_turn_ = false;
     bool temporal_mixed_start_ = false, temporal_next_errand_ = false;
     bool temporal_remaining_flow_ = false;
+    ChainPotential chain_potential_;
+    int temporal_chain_mode_ = 0, temporal_chain_mb_ = 512, temporal_chain_threads_ = 1;
     std::mt19937_64 temporal_rng_{0};
     TemporalPriorityPortfolio temporal_priority_portfolio_;
     int temporal_priority_noise_ = 0;

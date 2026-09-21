@@ -5494,4 +5494,179 @@ void geometric_horizon_regression() {
  std::cout<<"GEOMETRIC_HORIZON passed independent_action_bfs="<<cases<<" production_actions="<<checked_actions<<" pockets_allowed=1 legacy_guard=1 default_and_distant_horizon_identity=1 held_started_protected=1 repeated_service=1 deadline=1 explicit_cli=1\n";
 }
 
-int main(){try{temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+
+// Independent shortest paths on the complete action/service product graph.
+// This deliberately uses neither heading-table construction nor chain DP.
+std::vector<int64_t> chain_action_reference(const std::vector<char>& free,
+ const std::vector<char>& core,const std::vector<int>& pocket,int rows,int cols,
+ const std::vector<int>& goals,const std::vector<std::array<int,4>>& forward,int turn,int wait) {
+ const int cells=free.size(),states=cells*4,total=(goals.size()+1)*states;
+ std::vector<std::vector<std::pair<int,int>>> reverse(total);
+ auto index=[&](int k,int u,int d){return k*states+u*4+d;};
+ for(int k=0;k<int(goals.size());++k)for(int u=0;u<cells;++u)if(free[u])for(int d=0;d<4;++d){
+  for(int action=0;action<4;++action){
+   int v=u,h=d,cost=wait;
+   if(action==0){v=nb(u,d,rows,cols);cost=forward[u][d];
+    if(v<0||!free[v])continue;
+    bool destination=core[v]||(pocket[goals[k]]>=0&&pocket[v]==pocket[goals[k]]);
+    bool escaping=pocket[u]>=0&&pocket[v]==pocket[u];
+    if(!destination&&!escaping)continue;
+   }else if(action==1){h=(d+1)%4;cost=turn;}
+   else if(action==2){h=(d+3)%4;cost=turn;}
+   int next=k+(v==goals[k]);
+   reverse[index(next,v,h)].push_back({index(k,u,d),cost});
+  }
+ }
+ const int64_t inf=ChainPotential::infinity;
+ std::vector<int64_t> dist(total,inf);
+ using Item=std::pair<int64_t,int>;std::priority_queue<Item,std::vector<Item>,std::greater<Item>> q;
+ for(int u=0;u<cells;++u)if(free[u])for(int d=0;d<4;++d){int i=index(goals.size(),u,d);dist[i]=0;q.push({0,i});}
+ while(!q.empty()){
+  const auto [cost,u]=q.top();q.pop();if(cost!=dist[u])continue;
+  for(auto edge:reverse[u])if(cost+edge.second<dist[edge.first]){
+   dist[edge.first]=cost+edge.second;q.push({dist[edge.first],edge.first});}
+ }
+ return dist;
+}
+
+void chain_potential_regression() {
+ auto require=[](bool ok,const std::string& why){if(!ok)throw std::runtime_error("CHAIN_POTENTIAL "+why);};
+ long long checked=0,paths_checked=0,unreachable=0;int oriented_tails=0,pocket_cases=0;
+ for(int layout=0;layout<3;++layout){
+  const int rows=5,cols=6,cells=rows*cols;
+  std::vector<char> free(cells,true),core(cells,true);std::vector<int> pocket(cells,-1);
+  if(layout==1)for(int r=0;r<rows;++r)free[r*cols+3]=core[r*cols+3]=false;
+  if(layout==2){
+   free.assign(cells,false);core.assign(cells,false);
+   for(int r=1;r<=3;++r)for(int c=2;c<=4;++c)free[r*cols+c]=core[r*cols+c]=true;
+   for(int u:{12,13}){free[u]=true;pocket[u]=0;}free[4]=true;pocket[4]=1;++pocket_cases;
+  }
+  std::vector<int> locations;for(int u=0;u<cells;++u)if(free[u])locations.push_back(u);
+  TemporalGeometry geometry;geometry.initialize(free,rows,cols,[]{});
+  for(int turn:{1,2,7})for(int wait:{1,3,20}){
+   std::vector<std::array<int,4>> costs(cells);
+   for(int u=0;u<cells;++u)for(int d=0;d<4;++d)costs[u][d]=1+(u*11+d*7+turn+wait)%8;
+   auto forward=[&](int u,int d){return costs[u][d];};
+   ChainPotential serial,parallel;const size_t bytes=64*locations.size()*locations.size();
+   serial.initialize(free,core,pocket,rows,cols,forward,turn,wait,bytes,1,[]{});
+   parallel.initialize(free,core,pocket,rows,cols,forward,turn,wait,bytes,4,[]{});
+   require(serial.ready()&&parallel.ready()&&serial.storage_bytes()==bytes&&parallel.storage_bytes()==bytes,"complete storage size");
+   std::mt19937 random(59+layout);
+   for(int sample=0;sample<16;++sample){
+    std::vector<int> goals;
+    for(int k=0;k<1+sample%5;++k)goals.push_back(locations[random()%locations.size()]);
+    if(sample%3==0)goals.assign(2+sample%4,goals[0]);
+    if(layout==2&&sample==1)goals={12,4,13,4,12};
+    auto chain=serial.make_chain(goals,0,[]{}),other=parallel.make_chain(goals,0,[]{});
+    auto reference=chain_action_reference(free,core,pocket,rows,cols,goals,costs,turn,wait);
+    if(goals.size()>1&&*std::min_element(chain.tail[0].begin(),chain.tail[0].end())!=*std::max_element(chain.tail[0].begin(),chain.tail[0].end()))++oriented_tails;
+    for(int k=0;k<=int(goals.size());++k){
+     auto suffix=serial.make_chain(goals,k,[]{});
+     for(int u:locations)for(int d=0;d<4;++d){
+      int64_t want=reference[k*cells*4+u*4+d],got=serial.value(chain,k,u,d);
+      require(got==want,"expanded-action mismatch layout="+std::to_string(layout)+" sample="+std::to_string(sample)+" turn="+std::to_string(turn)+" wait="+std::to_string(wait)+" stage="+std::to_string(k)+" cell="+std::to_string(u)+" heading="+std::to_string(d)+" want="+std::to_string(want)+" got="+std::to_string(got));
+      require(parallel.value(other,k,u,d)==want&&serial.value(suffix,0,u,d)==want,"thread or starting-stage mismatch");
+      unreachable+=want==ChainPotential::infinity;++checked;
+     }
+    }
+    // Advance post-action services independently along real temporal choices.
+    int u=locations[sample%locations.size()],d=sample%4;
+    for(const auto& path:geometry.paths(u,d))if(path.valid){
+     size_t stage=0;for(int t=0;t<5;++t)if(stage<goals.size()&&path.cells[t]==goals[stage])++stage;
+     require(ChainPotential::advance(chain,path)==stage,"more than one service in a tick");
+     require(serial.value(chain,stage,path.cells[4],path.orientation)==reference[stage*cells*4+path.cells[4]*4+path.orientation],"end heading or service cost");++paths_checked;
+    }
+   }
+   bool rejected=false;ChainPotential limited;
+   try{limited.initialize(free,core,pocket,rows,cols,forward,turn,wait,bytes-1,1,[]{});}catch(const std::invalid_argument&){rejected=true;}
+   require(rejected&&!limited.ready()&&limited.storage_bytes()==0,"partial table accepted under memory cap");
+   std::atomic<int> checks{0};bool timeout=false;
+   try{limited.initialize(free,core,pocket,rows,cols,forward,turn,wait,bytes,4,[&]{if(++checks>int(locations.size())+3)throw Timeout("chain_preprocess_fixture");});}catch(const Timeout&){timeout=true;}
+   bool lookup_failed=false;try{limited.make_chain({locations[0]},0,[]{});}catch(const std::invalid_argument&){lookup_failed=true;}
+   require(timeout&&!limited.ready()&&lookup_failed,"partial preprocessing became usable after timeout");
+   limited.initialize(free,core,pocket,rows,cols,forward,turn,wait,bytes,1,[]{});
+   auto repeats=limited.make_chain(std::vector<int>(7,locations[0]),0,[]{});
+   auto wait_path=geometry.seed(locations[0],0,3);
+   require(ChainPotential::advance(repeats,wait_path)==5,"repeated co-located errands skipped");
+   timeout=false;try{limited.make_chain(std::vector<int>(100,locations[0]),0,[]{throw Timeout("chain_tail_fixture");});}catch(const Timeout&){timeout=true;}
+   require(timeout,"chain DP ignored deadline");
+   rejected=false;try{limited.make_chain({cells},0,[]{});}catch(const std::invalid_argument&){rejected=true;}
+   require(rejected,"invalid revealed goal accepted");
+  }
+ }
+ require(checked>100000&&paths_checked>1000&&oriented_tails>0&&unreachable>0&&pocket_cases>0,"vacuous independent fixture");
+ std::cout<<"CHAIN_POTENTIAL passed independent_product_graph_states="<<checked<<" temporal_paths="<<paths_checked<<" heading_coupled_tails="<<oriented_tails<<" unreachable="<<unreachable<<" service_after_action=1 serial_parallel=1 memory_cap=1 explicit_timeout=1\n";
+}
+
+void temporal_chain_regression() {
+ auto require=[](bool ok,const std::string& why){if(!ok)throw std::runtime_error("TEMPORAL_CHAIN "+why);};
+ const std::vector<std::pair<const char*,const char*>> settings={
+  {"CGAR_TEMPORAL","1"},{"CGAR_ORIENTATION_GUIDANCE","1"},{"CGAR_TEMPORAL_ORDER","2"},
+  {"CGAR_TEMPORAL_STEPS","128"},{"CGAR_TEMPORAL_WORKERS","4"},{"CGAR_TEMPORAL_REGIONS","4"},
+  {"CGAR_TEMPORAL_REGION_STEPS","128"},{"CGAR_TEMPORAL_REGION_ROUNDS","2"}};
+ auto fixture=[](){SharedEnvironment e;e.rows=7;e.cols=9;e.num_of_agents=20;e.map.assign(63,0);
+  e.curr_task_schedule.resize(20);e.goal_locations.resize(20);
+  for(int r=0;r<20;++r){e.curr_states.emplace_back(r*3,0,r%4);e.curr_task_schedule[r]=r;
+   Task t;t.task_id=r;t.agent_assigned=r;t.t_revealed=0;t.locations={r*3,r*3,(62-r*3)};
+   e.task_pool.emplace(r,t);e.goal_locations[r]={{t.locations[0],0}};}return e;};
+ for(auto setting:settings)setenv(setting.first,setting.second,1);
+ int checked=0,served=0;std::vector<int> absent_trace,disabled_trace;
+ for(int mode=-1;mode<=3;++mode){
+  if(mode<0)unsetenv("CGAR_TEMPORAL_CHAIN_MODE");else setenv("CGAR_TEMPORAL_CHAIN_MODE",std::to_string(mode).c_str(),1);
+  auto e=fixture();
+  setenv("CGAR_TEMPORAL_PREP_THREADS","1",1);setenv("CGAR_TEMPORAL_THREADS","1",1);setenv("CGAR_TEMPORAL_REGION_THREADS","1",1);
+  if(mode>0)setenv("CGAR_TEMPORAL_CHAIN_THREADS","1",1);Cgar serial;serial.initialize(&e,2000);
+  setenv("CGAR_TEMPORAL_PREP_THREADS","4",1);setenv("CGAR_TEMPORAL_THREADS","4",1);setenv("CGAR_TEMPORAL_REGION_THREADS","4",1);
+  if(mode>0)setenv("CGAR_TEMPORAL_CHAIN_THREADS","4",1);Cgar parallel;parallel.initialize(&e,2000);
+  for(int tick=0;tick<80;++tick){
+   e.curr_timestep=tick;std::vector<Action>a,b;serial.plan(&e,1000,a);parallel.plan(&e,1000,b);
+   require(a==b,"preparation/search thread count changed decisions");
+   auto next=step(e,e.curr_states,a);require(!next.empty(),"invalid motion");e.curr_states=next;checked+=a.size();
+   for(int r=0;r<e.num_of_agents;++r){
+    if(mode<0)absent_trace.push_back(int(a[r]));if(mode==0)disabled_trace.push_back(int(a[r]));
+    Task& task=e.task_pool.at(e.curr_task_schedule[r]);
+    if(e.curr_states[r].location==task.locations[task.idx_next_loc]){
+     ++task.idx_next_loc;++served;
+     if(task.idx_next_loc==int(task.locations.size())){
+      const int old=task.task_id;task.t_completed=tick;Task fresh;fresh.task_id=100+tick*20+r;
+      fresh.agent_assigned=r;fresh.t_revealed=tick;int u=e.curr_states[r].location;
+      fresh.locations={(u+17)%63,(u+17)%63,(u+39)%63};e.task_pool.emplace(fresh.task_id,fresh);
+      e.curr_task_schedule[r]=fresh.task_id;e.task_pool.erase(old);
+     }
+    }
+    const Task& current=e.task_pool.at(e.curr_task_schedule[r]);e.goal_locations[r]={{current.locations[current.idx_next_loc],tick}};
+   }
+  }
+  const auto& x=serial.stats();const auto& y=parallel.stats();
+  require(x.chain_robot_steps==y.chain_robot_steps&&x.chain_scored_choices==y.chain_scored_choices&&
+   x.chain_service_choices==y.chain_service_choices&&x.chain_multi_service_choices==y.chain_multi_service_choices&&
+   x.chain_completed_choices==y.chain_completed_choices&&!x.chain_fallback_steps&&!y.chain_fallback_steps,"chain counters disagree");
+  if(mode>0)require(x.chain_robot_steps>0,"enabled mode was unused");
+  else require(!x.chain_robot_steps&&!x.chain_scored_choices,"disabled chain did work");
+  if(mode>0&&(mode&1))require(x.chain_scored_choices>0&&x.chain_multi_service_choices>0&&x.chain_completed_choices>0,"service scoring fixture was vacuous");
+  else require(!x.chain_scored_choices,"rank-only or disabled mode scored paths");
+  unsetenv("CGAR_TEMPORAL_CHAIN_THREADS");
+ }
+ require(absent_trace==disabled_trace&&served>0,"disabled trajectory changed or no tasks serviced");
+ // Parse errors must fail during initialization; no silent clamping/fallback.
+ for(auto setting:std::vector<std::pair<const char*,const char*>>{
+  {"CGAR_TEMPORAL_CHAIN_MODE","-1"},{"CGAR_TEMPORAL_CHAIN_MODE","4"},{"CGAR_TEMPORAL_CHAIN_MODE","foo"},
+  {"CGAR_TEMPORAL_CHAIN_MB","0"},{"CGAR_TEMPORAL_CHAIN_MB","8193"},
+  {"CGAR_TEMPORAL_CHAIN_THREADS","0"},{"CGAR_TEMPORAL_CHAIN_THREADS","33"},
+  {"CGAR_TEMPORAL","0"},{"CGAR_ORIENTATION_GUIDANCE","0"},{"CGAR_TEMPORAL_ORDER","1"},{"CGAR_FLOW_STRENGTH","4"}}){
+  for(auto base:settings)setenv(base.first,base.second,1);setenv("CGAR_TEMPORAL_CHAIN_MODE","3",1);
+  setenv(setting.first,setting.second,1);bool rejected=false;auto e=fixture();
+  try{Cgar c;c.initialize(&e,2000);}catch(const std::invalid_argument&){rejected=true;}
+  require(rejected,std::string("invalid configuration accepted: ")+setting.first+"="+setting.second);unsetenv(setting.first);
+ }
+ for(auto base:settings)setenv(base.first,base.second,1);
+ setenv("CGAR_TEMPORAL_CHAIN_MODE","0",1);setenv("CGAR_TEMPORAL_CHAIN_THREADS","4",1);
+ bool rejected=false;auto e=fixture();try{Cgar c;c.initialize(&e,2000);}catch(const std::invalid_argument&){rejected=true;}
+ require(rejected,"disabled resource overrides accepted");unsetenv("CGAR_TEMPORAL_CHAIN_THREADS");
+ setenv("CGAR_TEMPORAL_CHAIN_MODE","3",1);temporal_primary_regression();
+ for(auto setting:settings)unsetenv(setting.first);
+ for(const char* key:{"CGAR_TEMPORAL_CHAIN_MODE","CGAR_TEMPORAL_CHAIN_THREADS","CGAR_TEMPORAL_CHAIN_MB","CGAR_TEMPORAL_PREP_THREADS","CGAR_TEMPORAL_THREADS","CGAR_TEMPORAL_REGION_THREADS"})unsetenv(key);
+ std::cout<<"TEMPORAL_CHAIN passed serial_parallel_actions="<<checked<<" service_events="<<served<<" modes=0,1,2,3 disabled_trajectory_identity=1 repeated_and_replaced_tasks=1 protected_primary=1 strict_parser=1\n";
+}
+
+int main(){try{chain_potential_regression();temporal_chain_regression();temporal_keep_peak_regression();geometric_horizon_regression();rematch_task_budget_regression();game_fleet_trick_regression();random_reference_trick_regression();squared_rank_trick_regression();city_game_trick_regression();temporal_after_turn_promise_regression();random_trick_regression();temporal_priority_portfolio_regression();sortation_trick_regression();temporal_region_budget_regression();turn_prewarm_regression();match_horizon_guard_regression();fresh_pickup_audit_regression();native_metric_regression();native_short_preference_regression();known_horizon_regression();horizon_percentile_regression();horizon_margin_regression();chain_flow_pricing_regression();warehouse_trick_regression();temporal_remaining_flow_regression();temporal_group_snapshot_regression();temporal_peak_audit_regression();temporal_next_errand_regression();temporal_service_audit_regression();fractional_turn_scheduler_regression();temporal_mixed_start_regression();oriented_pickup_search_regression();pickup_flow_scheduler_regression();complete_pickup_scheduler_regression();temporal_table_batch_regression();turn_build_limit_regression();temporal_transaction_safety_regression();pool_exchange_regression();pool_exchange_fair_admission();temporal_transaction_regression();temporal_preparation_regression();temporal_forward_audit_regression();guide_window_regression();guide_routes_regression();guide_reconnect_regression();guide_refine_regression();flow_margin_regression();flow_refresh_regression();flow_cache_only_regression();flow_cost_scale_regression();temporal_wait_turn_regression();temporal_warm_start_regression();for(const char* temperature:{"100","0"}){setenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM",temperature,1);temporal_region_adapter_regression();}unsetenv("CGAR_TEMPORAL_REGION_TEMPERATURE_PPM");temporal_distance_scale_regression();flow_guidance_regression();temporal_turn_progress_regression();temporal_region_adapter_regression();compact_turn_tables();turn_prefetch_regression();temporal_regions_regression();setenv("CGAR_TURN_COST","4",1);temporal_primary_regression();temporal_parallel_regression();unsetenv("CGAR_TURN_COST");initialization_failure_recovery();temporal_idle_blocker();global_task_candidates();temporal_parallel_regression();temporal_kernel_on_thread();temporal_primary_regression();oriented_distances();movement_diagnostics();assignment_permutation_regression();unopened_matching_production();unopened_reassignment();reassignment_primary_and_commitments();reassignment_recovery_protection();reassignment_fair_admission();weighted_pickup_assignment();cache_and_chain_consistency();consistent_progress_basis();certificates();pocket_case();pocket_case(20);persistent_primary();capacity_bootstrap();scheduler_case();fair_sparse_schedule();sparse_fallback_quality();replenish_taken_candidate();bounded_scheduler_work();compact_distances();bounded_distance_work();std::cout<<"All CGAR regression checks passed\n";}catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

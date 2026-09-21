@@ -127,3 +127,36 @@ The configuration receipt and `[cgar-regional-keep-peak]` counters record activa
 and actual restored batches. `CGAR_TEMPORAL_REGION_PEAK_AUDIT=1` adds read-only
 observations of initial, peak, final and returned scores. Higher local scores do
 not establish a throughput gain; keep this option experimental until full A/B runs.
+
+
+### Experimental complete-chain potential
+
+`CGAR_TEMPORAL_CHAIN_MODE=1` scores temporal choices against the complete remaining
+revealed task chain, preserving all four arrival headings. Mode 2 changes only the
+remaining-work priority; mode 3 enables both. Modes 2/3 require
+`CGAR_TEMPORAL_ORDER=2`. Default 0 preserves the previous choices and random streams.
+This is a general CGAR guidance mechanism; map-specific fields still require the
+corresponding `--trick INSTANCE` flag. No unrevealed task or known run horizon is used.
+
+The score uses the actual end heading and advances at most one errand after each
+simulated action, including turns and waits. Starting on an errand does not service
+it without an action. Costs are exact for the declared static weighted guidance
+graph and ordered services, not predictions of actual congested travel time.
+CGAR reservations, primary paths, task ownership and recovery remain authoritative.
+A missing task record uses its visible single goal; unreachable guidance falls back
+to the existing score and is counted. Learned/dynamic fields, guide routes, the old
+partial next-errand extension and neutral-tail scoring are incompatible.
+
+Preprocessing builds **complete** heading tables using `64 * free_cells^2` bytes:
+42,928,704 bytes for the 819-cell random map. `CGAR_TEMPORAL_CHAIN_MB` limits this
+table allocation (default 512 MiB, at most 8192); total process RSS is separately
+enforced. Large maps may exceed this budget and are rejected before allocation.
+`CGAR_TEMPORAL_CHAIN_THREADS` selects 1–32 preprocessing threads (default 1).
+Preparation/search thread counts remain separately controlled. No partial table
+is exposed, and preprocessing or planning timeouts fail explicitly.
+
+`[cgar-chain-config]` records complete preprocessing, storage and service semantics;
+`[cgar-chain]` reports prepared robot steps, fallback and scored/service/completed
+choices. Independent regression compares against a heap shortest-path search on
+the full action/service product graph and checks serial/parallel production actions.
+The option remains experimental pending full throughput comparisons.

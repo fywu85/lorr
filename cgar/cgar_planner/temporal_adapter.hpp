@@ -102,6 +102,7 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         }
     }
     std::vector<std::array<long long, 5>> next_metrics(temporal_prepare_threads_, {0, 0, 0, 0, 0});
+    std::vector<std::array<long long, 6>> chain_metrics(temporal_chain_mode_ ? temporal_prepare_threads_ : 0, {0, 0, 0, 0, 0, 0});
     std::vector<std::array<long long, 2>> native_service_metrics(native_neutral_tail_ ? temporal_prepare_threads_ : 0, {0, 0});
     std::vector<std::array<int, 2>> prepared_metrics(temporal_prepare_threads_, {0, 0});
     run_temporal_preparation(temporal_prepare_threads_, [&](int worker) {
@@ -137,6 +138,21 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 }
                 return heuristic_value[state];
             };
+            ChainPotential::Chain chain;
+            bool chain_available = false;
+            int64_t chain_initial = ChainPotential::infinity;
+            if (temporal_chain_mode_ && !pinned[i] && goal >= 0) {
+                const auto task = env_->task_pool.find(agents_[i].task);
+                auto check = [&] { check_deadline(deadline_, "temporal_chain_prepare"); };
+                if (task != env_->task_pool.end() && task->second.idx_next_loc >= 0 &&
+                    task->second.idx_next_loc < static_cast<int>(task->second.locations.size()) &&
+                    task->second.locations[task->second.idx_next_loc] == goal)
+                    chain = chain_potential_.make_chain(task->second.locations, task->second.idx_next_loc, check);
+                else chain = chain_potential_.make_chain(std::vector<int>{goal}, 0, check);
+                chain_initial = chain_potential_.value(chain, 0, loc_[i], ori_[i]);
+                chain_available = chain_initial < ChainPotential::infinity;
+                ++chain_metrics[worker][chain_available ? 0 : 1];
+            }
             const TurnTable* next_table = nullptr;
             int next_baseline = kInf;
             bool use_next = false;
@@ -164,6 +180,17 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                 ++next_metrics[worker][use_next ? 1 : 2];
             }
             auto cost = [&](const TemporalPath& path, int op) {
+                if ((temporal_chain_mode_ & 1) && chain_available) {
+                    const size_t served = ChainPotential::advance(chain, path);
+                    const int64_t remaining = chain_potential_.value(chain, served, path.cells[4], path.orientation);
+                    if (remaining >= ChainPotential::infinity)
+                        throw std::logic_error("finite task chain became unreachable after a valid temporal path");
+                    ++chain_metrics[worker][2];
+                    chain_metrics[worker][3] += served > 0;
+                    chain_metrics[worker][4] += served > 1;
+                    chain_metrics[worker][5] += served == chain.goals.size();
+                    return remaining * temporal_distance_scale_ - int64_t(op) * (native_trick_metric_ ? 1 : flow_cost_scale_);
+                }
                 if (native_trick_metric_) {
                     if (native_neutral_tail_ && TemporalGeometry::first_goal_hit(path, goal) >= 0) {
                         ++native_service_metrics[worker][0];
@@ -203,6 +230,8 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
                     }
                 }
             }
+            if ((temporal_chain_mode_ & 2) && chain_available)
+                priorities[i] = static_cast<int>(std::min<int64_t>(kInf - 1, chain_initial));
             choices[i].reserve(pinned[i] ? 1 : 129);
             seeds[i] = temporal_geometry_.seed(loc_[i], ori_[i], pinned[i] ? static_cast<int>(actions[i]) : 3);
             choices[i].push_back({&seeds[i], cost(seeds[i], 0), 0});
@@ -227,6 +256,11 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
     });
     for (const auto& count : prepared_metrics) {
         exact_metric_robots += count[0]; fallback_metric_robots += count[1];
+    }
+    for (const auto& count : chain_metrics) {
+        stats_.chain_robot_steps += count[0]; stats_.chain_fallback_steps += count[1];
+        stats_.chain_scored_choices += count[2]; stats_.chain_service_choices += count[3];
+        stats_.chain_multi_service_choices += count[4]; stats_.chain_completed_choices += count[5];
     }
     for (const auto& count : next_metrics) {
         stats_.temporal_next_known += count[0]; stats_.temporal_next_eligible += count[1];
@@ -513,6 +547,10 @@ void Cgar::plan_temporal(std::vector<Action>& actions) {
         if (native_neutral_tail_)
             std::printf("[cgar-native-service] step=%d served_choices=%lld changed_choices=%lld\n",
                 env_->curr_timestep + 1, stats_.native_service_choices, stats_.native_service_changed_choices);
+        if (temporal_chain_mode_)
+            std::printf("[cgar-chain] step=%d mode=%d robots=%lld fallback=%lld choices=%lld service=%lld multi_service=%lld completed=%lld\n",
+                env_->curr_timestep + 1, temporal_chain_mode_, stats_.chain_robot_steps, stats_.chain_fallback_steps,
+                stats_.chain_scored_choices, stats_.chain_service_choices, stats_.chain_multi_service_choices, stats_.chain_completed_choices);
         if (temporal_next_errand_)
             std::printf("[cgar-temporal-next-errand] step=%d enabled=1 known=%lld eligible=%lld unavailable=%lld arriving_choices=%lld changed_choices=%lld\n",
                 env_->curr_timestep + 1, stats_.temporal_next_known, stats_.temporal_next_eligible,

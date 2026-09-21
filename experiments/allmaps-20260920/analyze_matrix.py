@@ -197,6 +197,26 @@ def main():
                     if int(case['environment'].get('CGAR_TRICK_HORIZON_MARGIN','0')):
                         margin_samples=[fields(l) for l in logs if l.startswith('[cgar-horizon-margin] ')]
                         assert margin_samples and all(int(x['bound_violations'])==0 for x in margin_samples)
+                chain_mode=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MODE','0'))
+                chain_config=[fields(l) for l in logs if l.startswith('[cgar-chain-config] ')]
+                chain_samples=[fields(l) for l in logs if l.startswith('[cgar-chain] ')]
+                if chain_mode:
+                    assert len(chain_config)==1
+                    chain=chain_config[0];cells=int(chain['cells'])
+                    assert chain==dict(mode=str(chain_mode),score=str(int(bool(chain_mode&1))),order=str(int(bool(chain_mode&2))),complete='1',cells=str(cells),stored_bytes=str(64*cells*cells),threads=case['environment'].get('CGAR_TEMPORAL_CHAIN_THREADS','1'),service='after_action',domain='core_goal_pocket_escape',fixed_work='1')
+                    assert 0<int(chain['stored_bytes'])<=int(case['environment'].get('CGAR_TEMPORAL_CHAIN_MB','512'))*1024*1024
+                    assert [int(x['step']) for x in chain_samples]==list(range(200,row['steps']+1,200))
+                    for x in chain_samples:
+                        assert int(x['mode'])==chain_mode
+                        assert 0<=int(x['robots'])+int(x['fallback'])<=row['robots']*int(x['step'])
+                        assert 0<=int(x['multi_service'])<=int(x['service'])<=int(x['choices'])
+                        assert 0<=int(x['completed'])<=int(x['service'])
+                    for counter in ('robots','fallback','choices','service','multi_service','completed'):
+                        counts=[int(x[counter]) for x in chain_samples];assert counts==sorted(counts)
+                    assert int(chain_samples[-1]['robots'])>0
+                    assert (int(chain_samples[-1]['choices'])>0)==bool(chain_mode&1)
+                else:
+                    assert not chain_config and not chain_samples
                 peak_samples=[fields(l) for l in logs if l.startswith('[cgar-regional-peaks] ')]
                 if int(case['environment'].get('CGAR_TEMPORAL_REGION_PEAK_AUDIT','0')):
                     assert [int(x['step']) for x in peak_samples]==list(range(200,row['steps']+1,200))
@@ -285,7 +305,7 @@ def main():
                 else:
                     assert not promise_config and not promise_samples
                 fairness[key]=waiting_audit(raw/label/(name+'.json'),m,retarget_budget=retarget_budget)
-                work[key]=dict(regional_peak_retention=retention_samples,regional_peaks=peak_samples,retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
+                work[key]=dict(chain_config=chain_config,chain_samples=chain_samples,regional_peak_retention=retention_samples,regional_peaks=peak_samples,retarget_budget=retarget_budget,retarget_samples=retarget_samples,game_fleet=fleet,game_fleet_audit=fleet_audit,rank_squared=rank_samples,after_turn_promises=promise_samples,priority_portfolio=priority_samples,regional_budget=sampled,regional=[fields(l) for l in logs if l.startswith('[cgar-temporal-regions] ')],timing=[fields(l) for l in logs if l.startswith('[cgar-temporal-timing] ')])
                 row.update(tasks=m['tasks'],mean_entry_ms=1000*m['total_decision_seconds']/row['steps'],
                            max_entry_seconds=m['max_decision_seconds'],trajectory_sha256=m['trajectory_sha256'],
                            outstanding_age_p90=m['outstanding_task_age']['p90'],competition_budget_confirmed=False)
