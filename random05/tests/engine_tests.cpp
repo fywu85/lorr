@@ -99,6 +99,27 @@ void idle_displacement_price() {
     }
 }
 
+void arrival_priority_semantics() {
+    auto env=environment(3,3,1);Config cfg;Graph g(env,cfg);
+    require(arrival_priority_bonus(g,4,0,false,5,50)==50,"facing immediate goal lost its bonus");
+    require(arrival_priority_bonus(g,4,0,false,1,50)==50,"one-turn arrival lost its bonus");
+    require(arrival_priority_bonus(g,4,0,true,1,50)==0,"moving robot received an impossible turn bonus");
+    require(arrival_priority_bonus(g,4,0,false,3,50)==0,"half-turn arrival received a bonus");
+    require(arrival_priority_bonus(g,4,0,false,8,50)==0,"distant waypoint received immediate-arrival priority");
+    require(arrival_priority_bonus(g,4,0,false,4,50)==50,"repeated current waypoint lost its wait opportunity");
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting option("R05_ARRIVAL_PRIORITY","50");bool rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"arrival priority escaped its explicit trick gate");
+    env.trick_instance="RANDOM-04";require(Config::environment(env).arrival_priority==50,"valid arrival priority rejected");
+}
+
 void scheduling() {
     auto e=environment(3,3,2);Config cfg;Engine engine(cfg);engine.initialize(&e);
     Task t;t.task_id=7;t.locations={8,0};t.idx_next_loc=1;t.agent_assigned=0;e.task_pool[7]=t;
@@ -1618,6 +1639,16 @@ void window_reproducibility() {
 }
 
 int main() {
+    arrival_priority_semantics();
+    for(float bonus:{50.f,200.f}) {
+        Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";
+        cfg.arrival_priority=bonus;cfg.threads=1;cfg.active_task_cap=18;
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.threads=2;cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;
+        cfg.shared_rankings_mb=16;cfg.shared_orders=true;cfg.kinematic_mask=true;
+        require(reference==simulate(cfg,12),"arrival priority changed with caches or workers");
+    }
+
     idle_displacement_price();
     for(float price:{.25f,1.f,2.f}) {
         Config cfg;cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.guidance="lanes";

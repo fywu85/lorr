@@ -179,6 +179,9 @@ Config Config::environment(const SharedEnvironment& env) {
     c.noise=real("R05_NOISE",c.noise);c.mutation=real("R05_MUTATION",c.mutation);
     c.priority_remaining_weight=real("R05_PRIORITY_REMAINING",0);
     c.priority_remaining_steps=integer("R05_PRIORITY_REMAINING_STEPS",0);
+    c.arrival_priority=real("R05_ARRIVAL_PRIORITY",0);
+    if(!std::isfinite(c.arrival_priority) || c.arrival_priority<0 || (c.arrival_priority>0 && !random_trick))
+        throw std::invalid_argument("arrival priority needs a nonnegative bonus and explicit trick instance");
     if(!std::isfinite(c.priority_remaining_weight) || c.priority_remaining_weight<0 ||
        c.priority_remaining_steps<0 || (c.priority_remaining_weight>0 && !random_trick))
         throw std::invalid_argument("remaining-work priority requires a nonnegative weight and explicit --trick RANDOM-01..05");
@@ -376,6 +379,8 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("replanning forecast currently needs pipeline and undiscounted guided scoring");
     if(c.replan_threads<1 || c.replan_threads>c.threads)
         throw std::invalid_argument("inner forecast workers must fit the declared total worker count");
+    if(c.arrival_priority>0 && (c.operation_depth || c.window))
+        throw std::invalid_argument("arrival priority is implemented for the pipelined policy only");
     if(c.priority_remaining_weight>0 && (c.operation_depth || c.window))
         throw std::invalid_argument("remaining-work priority is implemented for the pipelined policy only");
     if(c.window && (c.operation_depth || c.rollout_match || c.replan_roots || c.rescore_roots ||
@@ -385,6 +390,14 @@ Config Config::environment(const SharedEnvironment& env) {
        c.wait_cost<=0 || c.mutation<0 || c.mutation>1)
         throw std::invalid_argument("invalid R05 configuration");
     return c;
+}
+
+float arrival_priority_bonus(const Graph& graph,int cell,int heading,bool moving,int goal,float bonus) {
+    // A repeated waypoint can be consumed while waiting. Otherwise the next
+    // promised move must reach it under the existing one-turn kinematic mask.
+    if(cell==goal)return bonus;
+    const int direction=graph.direction(cell,goal);
+    return direction>=0 && (moving?direction==heading:turn(direction,heading)<=1)?bonus:0;
 }
 
 // Negative entries are inactive goals. Equal remaining costs share a rank;
@@ -1293,6 +1306,8 @@ void Engine::advance(Frame& f,const std::vector<float>& offsets,std::vector<Acti
         const bool active=assigned[i] && f.stage[i]<int(assigned[i]->goals.size());
         if(!active)priority-=100000;
         else if(priority_remaining_scale_>0)priority-=priority_remaining_scale_*base_cost[i];
+        if(active && cfg.arrival_priority>0)
+            priority+=arrival_priority_bonus(g,p[i],f.dir[i],moving[i],assigned[i]->goals[f.stage[i]],cfg.arrival_priority);
         if(cfg.deadends && g.pocket[p[i]] &&
            (!active || g.pocket[assigned[i]->goals[f.stage[i]]]!=g.pocket[p[i]]))priority+=1000000;
         priorities[i]=priority;
