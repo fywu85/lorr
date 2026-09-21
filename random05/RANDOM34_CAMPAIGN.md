@@ -8,7 +8,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 | Instance | Current selected best | Matched NMS | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
 | RANDOM-03 | 2,602 | 2,359 | 2,595 | 800 |
-| RANDOM-04 | 2,741 | 2,580 | 2,838 | 1,000 |
+| RANDOM-04 | 2,776 | 2,580 | 2,838 | 1,000 |
 
 The comparison uses 16 physical EPYC9354 cores / 32 SMT workers, a 32 decimal GB
 process limit, 30-second initialization, and strict 1-second entry deadlines.
@@ -571,3 +571,73 @@ with dispersion, turn/wait costs and exact chained matching. They include a full
 runtime-control repetition. Cost-sensitive admission is the next separate mechanism:
 leave expensive unopened pairings unassigned instead of always filling the cap.
 No fresh RANDOM-04 inputs have been generated or used for tuning.
+
+## September 21, 10:42 UTC: reduced dispersion reaches 2,762
+
+On the capped profile, dispersion0.4 gives **2762**, source487a35da/build119,
+mean/max in the runtime ledger (maximum629.872ms). Every action and task event
+replays. Dispersion0/1.6 give2721/2603; turn0.4/1, wait1 and chained matching
+all lose (2717/2688/2693/2726). The runtime control preserves2741 in all six
+fields. Three planner seeds and nearby cap/dispersion choices are running.
+The current archived target remains76tasks away; no fresh R04 input exists.
+
+The [admission diagnosis](results/random04-admission-diagnosis/REPORT.md) locates
+an early gain despite fewer forward moves, but NMS still completes more orders
+in the first200steps. All initial matchings select271two-stop tasks. New full
+trials therefore test guidance costs under reduced demand and short-task reward
+variants, rather than attributing the gap solely to task selection.
+
+Source236a04c6/build121 passes33.44s regression for optional priced idle slots.
+Cheaper mandatory dummy columns preserve the existing hard cap; extra idle slots
+at the declared price make expensive unopened assignments optional. Semantic
+fixtures cover expensive/cheap pairs, opened locks, scarcity, zero tasks, cap
+limits, exact/greedy matching, checkpoint/cache/worker invariance and trick gates.
+Seven full tests include price-off control, prices12/16/20/24/32, and uncapped24.
+
+Sourceb752b6e8/build122 tests a smooth completion preference in the rollout score:
+replace remaining cost d by tau*d/(tau+d), normalized to mean initial slope1.
+Priorities, full rollout work and legal execution are unchanged. This is an
+explicit short-task preference trick, default off; it still needs regression
+and full-run evidence. No improvement is claimed from the new objective.
+
+## September 21, 11:06 UTC: 2,776 tasks and a startup admission hypothesis
+
+The selected contrast2.2, dispersion0.4, cap560, cutoff0.875 profile reaches
+**2776**, source487a35da/build119, mean434.778/max626.736ms. Seeds0/3/4/5 give
+2730/2711/2776/2776, all maxima below630ms. This selected best is62tasks short
+of2838. Contrast2.4 gives2725/2751/2762/2772, so the2.2 change improves the
+best observed score but not the four-seed aggregate. Do not call it a general win.
+The contrast2.4 exact seed4 repetition peaks729.537ms; retain that slower observation.
+
+All ordinary reward trials lose: completion bonuses2/8 give2721/2716, rank
+powers0.25/0.5 give2729/2714, startup rank1 gives2725, startup remaining-work
+priority2 gives2738. Nonlinear utility122 (scales25/100/400/1600) gives
+2617/2692/2718/2758; default control2762 is exact in all six fields. Keep all
+these optional reward changes off. Cutoff scales0.625/0.75/1/1.125 and mixes0.5/1
+also lose2750–2764. Immediate legal forward candidates on periods1/2/4/8 lose
+2732/2720/2724/2726. More fixed work atK11520/K13824 or B12K11520 gives
+2771/2762/2771; increasing work again does not improve throughput.
+
+One intended B8/K8192 trial was rejected by native configuration validation
+before simulation: K and first-stepK must fill complete screening groups of
+four generations times14 evaluations. Preserve the original exit125 and its
+configuration note. A separate corrected B8/K8064 run gives2710; submission
+validation now catches this specific class of invalid budgets before allocation.
+Four manifest checks pass. This was a configuration error, not a deadline failure.
+
+Fixed admission price12/16/20/24/32 gives874/1587/2627/2740/2741 on the previous
+2741 profile. Priceoff and nonbinding32 preserve the full control trace exactly.
+The low prices eventually stop admitting useful work; leave them off for now.
+However price12 completes289/669 tasks by steps100/200 versus222/570 for its
+control and309/638 for NMS. Price16 completes1206 bystep400 versus1121.
+These early observations motivate a bounded startup policy, not a claim that
+phase-specific gains can simply be added.
+
+Sourced51bdbf2/build123 passes34.81s regression. R05_ADMISSION_PRICE_STEPS
+expires the optional price at an explicit simulation-step boundary while the
+560-task cap remains. Opened orders stay protected. Tests cover the boundary
+for exact and greedy matching, cap preservation, dense mobility, checkpoint and
+worker equivalence. Eight full trials test price12 through100/150/200/250 on
+the original profile, price12 through150/200 on the2776 profile, price16 through
+300 on2776, and a priceoff2776 control. All are strict1s/full1000steps. No new
+RANDOM-04 validation inputs have been generated.

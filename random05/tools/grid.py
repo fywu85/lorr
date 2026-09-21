@@ -28,6 +28,30 @@ def validate_r05_case(case):
     unknown = requested - known
     if unknown:
         raise ValueError('{} has unknown options in its frozen solver: {}'.format(case['name'], ', '.join(sorted(unknown))))
+    # The frozen source explicitly defines this work accounting. Reject an
+    # indivisible budget before reserving GRID resources; native validation
+    # remains authoritative for all other parameter interactions.
+    if "each generation's K must divide into complete screening groups" in (source / 'engine.cpp').read_text():
+        env = case.get('env', {})
+        branches = int(env.get('R05_CONTINUATIONS', 1))
+        screens = int(env.get('R05_SCREEN_BRANCHES', 0))
+        keep = int(env.get('R05_SCREEN_KEEP', 4))
+        generations = int(env.get('R05_GENERATIONS', 1))
+        budgets = [int(env.get('R05_K', 16))]
+        first = int(env.get('R05_FIRST_K', 0))
+        if first:
+            budgets.append(first)
+        if branches < 1 or generations < 1 or any(b < 1 for b in budgets):
+            raise ValueError(case['name'] + ' has nonpositive fixed search work')
+        if screens:
+            if not (0 < screens < branches and 2 <= keep <= 64):
+                raise ValueError(case['name'] + ' has invalid screening settings')
+            group = keep * screens + branches - screens
+            unit = generations * group
+            if any(b % unit or b // unit < 2 for b in budgets):
+                raise ValueError('{} needs full screening groups: each K must be a multiple of {} and at least {}'.format(case['name'], unit, 2 * unit))
+        elif any(b % branches for b in budgets):
+            raise ValueError(case['name'] + ' needs K divisible by its continuation count')
 
 
 def submit(a):

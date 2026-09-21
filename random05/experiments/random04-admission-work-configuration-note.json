@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-09-21T10:56:08.048313+00:00",
+  "original_batch": "random04-admission-work-split-full-v119",
+  "original_case": "trick-random-04-admission-work-b8k8192",
+  "failure": "Configuration rejected at initialization: K8192 and first4096 are not divisible by four generations times screening group14.",
+  "native_log_sha256": "50b3a0f7af324b1e1b7fe15e00f6aa10951ae6695daedcac0dd969884de3f64f",
+  "native_error": "R05_ERROR phase=initialize message=each generation's K must divide into complete screening groups",
+  "correction": "Separate new run with K8064 and first4032; original failure remains unchanged.",
+  "corrected_manifest": "random05/experiments/random04-admission-work-b8-corrected-full-v119.json"
+}

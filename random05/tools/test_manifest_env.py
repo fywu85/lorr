@@ -23,6 +23,25 @@ class ManifestOptions(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_r05_case(case)
 
+    def test_rejects_the_failed_8192_eight_branch_budget_before_submission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'source/src'
+            source.mkdir(parents=True)
+            keys = ['R05_K','R05_FIRST_K','R05_CONTINUATIONS','R05_SCREEN_BRANCHES','R05_SCREEN_KEEP','R05_GENERATIONS']
+            text = ' '.join('"'+k+'"' for k in keys)
+            text += " each generation's K must divide into complete screening groups"
+            (source / 'engine.cpp').write_text(text)
+            case = dict(name='eight-branch', binary=str(root / 'build/lifelong'),
+                        env=dict(zip(keys, ['8192','4096','8','2','4','4'])))
+            with self.assertRaisesRegex(ValueError, 'multiple of 56'):
+                validate_r05_case(case)
+            case['env'].update(R05_K='8064', R05_FIRST_K='4032')
+            validate_r05_case(case)
+            case['env']['R05_FIRST_K'] = '4096'
+            with self.assertRaises(ValueError):
+                validate_r05_case(case)
+
     def test_missing_frozen_source_rejected(self):
         with self.assertRaises(ValueError):
             validate_r05_case(dict(name='missing', binary='/missing/build/lifelong', env=dict(R05_K='16')))

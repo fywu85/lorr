@@ -21,7 +21,7 @@ Large maps are outside active development.
 | RANDOM-01 | 100 | 600 | 726 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1376 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2602 | 2359 |
-| RANDOM-04 | 700 | 1000 | 1558 | 2741 | 2580 |
+| RANDOM-04 | 700 | 1000 | 1558 | 2776 | 2580 |
 | RANDOM-05 | 800 | 2000 | 2226 | 4011 | 3172 |
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
@@ -139,6 +139,9 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T09:58:17.479292+00:00 | RANDOM-04 | trick | 2701 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-admission-refine-split-full-v116/trick-random-04-admission-refine-cap580/summary.json) |
 | 2026-09-21T09:58:25.614128+00:00 | RANDOM-04 | trick | 2738 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-admission-refine-split-full-v116/trick-random-04-admission-refine-triage1/summary.json) |
 | 2026-09-21T10:14:35.787464+00:00 | RANDOM-04 | trick | 2741 | [aa171530](https://github.com/fywu85/lorr/commit/aa171530) | [Full run](results/random04-active-cutoff-split-full-v116/trick-random-04-active-cutoff-scalep875/summary.json) |
+| 2026-09-21T10:34:13.678386+00:00 | RANDOM-04 | trick | 2762 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-coupling-split-full-v119/trick-random-04-admission-coupling-dispersion04/summary.json) |
+| 2026-09-21T10:43:18.044735+00:00 | RANDOM-04 | trick | 2772 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-dispersion-split-full-v119/trick-random-04-admission-dispersion-seed5/summary.json) |
+| 2026-09-21T10:45:33.558405+00:00 | RANDOM-04 | trick | 2776 | [487a35da](https://github.com/fywu85/lorr/commit/487a35da) | [Full run](results/random04-admission-guidance-split-full-v119/trick-random-04-admission-guidance-contrast2p2/summary.json) |
 
 
 ## September21: first development comparisons

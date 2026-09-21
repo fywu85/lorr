@@ -66,6 +66,21 @@ All listed runs finish their full 800/1000-step horizons under a strict one-seco
 | R04-2738-fast119 | 2738 | 432.0 | 451.4 | 454.9 | 684.3 | 566 | 31.1 |
 | R04-2738-extra-control119 | 2738 | 455.1 | 468.8 | 472.7 | 625.5 | 565 | 31.1 |
 | R04-2738-control120 | 2738 | 448.5 | 463.2 | 467.8 | 631.7 | 572 | 31.1 |
+| R04-record2762 | 2762 | 447.9 | 460.3 | 465.8 | 629.9 | 554 | 31.2 |
+| R04-2741-fast119 | 2741 | 446.9 | 459.3 | 469.4 | 629.7 | 550 | 31.1 |
+| R04-2741-seed0 | 2719 | 432.0 | 445.3 | 449.9 | 621.5 | 536 | 31.2 |
+| R04-2741-seed3 | 2710 | 432.0 | 446.7 | 450.0 | 618.3 | 567 | 31.2 |
+| R04-2741-seed5 | 2759 | 434.9 | 454.7 | 460.7 | 618.0 | 558 | 31.2 |
+| R04-2762-seed0 | 2725 | 449.7 | 462.7 | 467.5 | 631.0 | 562 | 31.2 |
+| R04-2762-seed3 | 2751 | 445.0 | 456.7 | 463.5 | 635.9 | 534 | 31.1 |
+| R04-record2772 | 2772 | 448.3 | 460.1 | 469.6 | 628.8 | 541 | 31.1 |
+| R04-record2776 | 2776 | 434.8 | 454.1 | 458.3 | 626.7 | 553 | 31.2 |
+| R04-2762-repeat119 | 2762 | 521.2 | 620.3 | 659.0 | 729.5 | 551 | 28.3 |
+| R04-2776-seed0 | 2730 | 433.9 | 447.9 | 452.3 | 627.8 | 550 | 31.2 |
+| R04-2776-seed3 | 2711 | 433.1 | 446.8 | 455.3 | 622.1 | 535 | 31.1 |
+| R04-2776-seed5 | 2776 | 448.6 | 460.7 | 469.9 | 629.5 | 548 | 31.1 |
+| R04-2741-control121 | 2741 | 445.8 | 466.3 | 471.5 | 633.0 | 548 | 31.2 |
+| R04-2762-control122 | 2762 | 451.6 | 464.9 | 470.1 | 630.1 | 539 | 31.1 |
 
 The 2,602-task RANDOM-03 recipe has an exact repetition and three planner seeds (5/0/3): 2,602/2,548/2,566 tasks. The original, repeat and both other seeds all peak below 710 ms. Frozen fresh inputs give 2,599/2,557 tasks: +11.69%/+9.13% against the stronger NMS repetition, +10.41% aggregate. [Frozen validation](../../RANDOM03_FRESH_VALIDATION_V1.md).
 
@@ -74,6 +89,8 @@ The 2,661-task RANDOM-04 recipe has exact repetitions and four planner seeds (0/
 The 2,698-task admission profile is checked on seeds0/3/4/5:2701/2654/2698/2705. All original-source qualification runs peak below671 ms. Every seed improves over the corresponding uncapped profile; initial unfinished orders increase on the record seed. The exact8byte-cache and fast-matching controls are listed separately.
 
 The 2,738-task profile (cap560, cutoff1) has an exact repetition and four seeds0/3/4/5:2718/2689/2738/2735. Original-source qualification peaks below671 ms; equivalent newer-source controls peak below685 ms. The 2,741-task cutoff0.875 record is listed separately and still needs its own seed qualification.
+
+The contrast2.2, dispersion0.4, cap560, cutoff0.875 profile has four seeds0/3/4/5:2730/2711/2776/2776, all maxima below630 ms. Its original-binary seed4 repetition is still pending. The preceding contrast2.4 profile has an exact repetition at729.537 ms; that slower observation is retained.
 
 The current throughput frontier and remaining target are maintained in [PILOT_PROGRESS.md](../../../PILOT_PROGRESS.md) and [the campaign](../../RANDOM34_CAMPAIGN.md). A higher score does not inherit the timing qualification of a different cutoff or admission profile.
 

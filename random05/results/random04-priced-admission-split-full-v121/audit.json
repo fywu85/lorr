@@ -1,0 +1,1079 @@
+{
+  "checked_utc": "2026-09-21T10:46:48.416444+00:00",
+  "source": {
+    "commit": "236a04c6",
+    "binary_sha256": "e99f2fca4dabad303d550b7a2526ca931269bcc85fcf101f2bacea12834ff777",
+    "checked_files": [
+      "CMakeLists.txt",
+      "simulator/inc/Logger.h",
+      "simulator/inc/Evaluation.h",
+      "simulator/inc/TaskManager.h",
+      "simulator/inc/common.h",
+      "simulator/inc/States.h",
+      "simulator/inc/SharedEnv.h",
+      "simulator/inc/Tasks.h",
+      "simulator/inc/Simulator.h",
+      "simulator/inc/CompetitionSystem.h",
+      "simulator/inc/ActionModel.h",
+      "simulator/inc/Grid.h",
+      "simulator/inc/Entry.h",
+      "simulator/inc/nlohmann/json_fwd.hpp",
+      "simulator/inc/nlohmann/json.hpp",
+      "simulator/src/Grid.cpp",
+      "simulator/src/CompetitionSystem.cpp",
+      "simulator/src/ActionModel.cpp",
+      "simulator/src/States.cpp",
+      "simulator/src/driver.cpp",
+      "simulator/src/Logger.cpp",
+      "simulator/src/TaskManager.cpp",
+      "simulator/src/common.cpp",
+      "simulator/src/Simulator.cpp",
+      "simulator/src/Evaluation.cpp",
+      "src/operations.cpp",
+      "src/engine.hpp",
+      "src/rescore.cpp",
+      "src/replan.cpp",
+      "src/shared_rankings.cpp",
+      "src/engine.cpp",
+      "src/diagnostics.cpp",
+      "src/Entry.cpp",
+      "src/components.cpp",
+      "src/window.cpp"
+    ]
+  },
+  "sources_by_binary": {
+    "e99f2fca4dabad303d550b7a2526ca931269bcc85fcf101f2bacea12834ff777": {
+      "commit": "236a04c6",
+      "binary_sha256": "e99f2fca4dabad303d550b7a2526ca931269bcc85fcf101f2bacea12834ff777",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/window.cpp"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-control",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:40:53.582203+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-control/summary.json",
+      "peak_rss_bytes": 548462592,
+      "latency_seconds": {
+        "mean": 0.44580143254199966,
+        "max": 0.632958321
+      },
+      "tasks": 2741,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-control/trick-random-04-priced-admission-control/result.json",
+        "result_sha256": "104a44b6fbb3f4de0afc59e372381a061be146b9b4a2aac70ffe5862bdfc1a5b",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2741,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 8453,
+            "R": 4486,
+            "C": 3063,
+            "F": 9673
+          },
+          "loaded": {
+            "F": 234880,
+            "W": 157022,
+            "C": 60805,
+            "R": 81618
+          },
+          "idle": {
+            "W": 76014,
+            "C": 10641,
+            "R": 16957,
+            "F": 36388
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5238,
+              "F": 7797,
+              "C": 2516,
+              "R": 3695
+            },
+            "loaded": {
+              "C": 55544,
+              "F": 216707,
+              "W": 129391,
+              "R": 74209
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "F": 1876,
+              "R": 791,
+              "W": 3215,
+              "C": 547
+            },
+            "loaded": {
+              "R": 7409,
+              "F": 18173,
+              "W": 27631,
+              "C": 5261
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 121241,
+        "completed_loaded_detour_cells": 95466,
+        "completed_loaded_mean_steps": 173.60488872674208,
+        "completed_chain_lengths": {
+          "2": 888,
+          "3": 837,
+          "4": 650,
+          "5": 366
+        },
+        "unopened_reassignments": 4924,
+        "task_starts": 3234,
+        "waiting_streaks": {
+          "count": 119961,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 453
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-control/trick-random-04-priced-admission-control/result.json",
+        "result_sha256": "104a44b6fbb3f4de0afc59e372381a061be146b9b4a2aac70ffe5862bdfc1a5b",
+        "horizon_steps": 1000,
+        "tasks_finished": 2741,
+        "tasks_revealed": 3791,
+        "completed_latency": {
+          "count": 2741,
+          "mean_steps": 220.27143378329077,
+          "p50_steps": 170,
+          "p95_steps": 613,
+          "p99_steps": 855
+        },
+        "maximum_release_to_completion": {
+          "steps": 997,
+          "task_id": 709,
+          "released_at": 0,
+          "observed_at": 997
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 992,
+          "task_id": 55,
+          "released_at": 0,
+          "observed_at": 992
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 557,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 394.45714285714286,
+        "initial_still_unfinished": 178,
+        "initial_still_unopened": 134,
+        "initial_started_unfinished": 44,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-price12",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:43:51.979280+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price12/summary.json",
+      "peak_rss_bytes": 584007680,
+      "latency_seconds": {
+        "mean": 0.6244293076089994,
+        "max": 0.712917374
+      },
+      "tasks": 874,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price12/trick-random-04-priced-admission-price12/result.json",
+        "result_sha256": "251b040e1e996750f245d036e2d8175107471f1e1253eb11c694db1f63376a90",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 874,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "C": 324,
+            "W": 533,
+            "R": 496,
+            "F": 783
+          },
+          "loaded": {
+            "F": 38528,
+            "C": 9191,
+            "W": 31320,
+            "R": 12002
+          },
+          "idle": {
+            "C": 14096,
+            "W": 522191,
+            "R": 19802,
+            "F": 50734
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "C": 315,
+              "W": 521,
+              "F": 770,
+              "R": 488
+            },
+            "loaded": {
+              "F": 35164,
+              "C": 7485,
+              "W": 17039,
+              "R": 9626
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 8,
+              "C": 9,
+              "W": 12,
+              "F": 13
+            },
+            "loaded": {
+              "F": 3364,
+              "W": 14281,
+              "C": 1706,
+              "R": 2376
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 24294,
+        "completed_loaded_detour_cells": 10870,
+        "completed_loaded_mean_steps": 79.30663615560641,
+        "completed_chain_lengths": {
+          "2": 493,
+          "3": 291,
+          "4": 76,
+          "5": 14
+        },
+        "unopened_reassignments": 293,
+        "task_starts": 898,
+        "waiting_streaks": {
+          "count": 47397,
+          "p50": 1,
+          "p90": 8,
+          "p99": 511,
+          "maximum": 1000
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price12/trick-random-04-priced-admission-price12/result.json",
+        "result_sha256": "251b040e1e996750f245d036e2d8175107471f1e1253eb11c694db1f63376a90",
+        "horizon_steps": 1000,
+        "tasks_finished": 874,
+        "tasks_revealed": 1924,
+        "completed_latency": {
+          "count": 874,
+          "mean_steps": 82.66819221967964,
+          "p50_steps": 77,
+          "p95_steps": 159,
+          "p99_steps": 193
+        },
+        "maximum_release_to_completion": {
+          "steps": 284,
+          "task_id": 331,
+          "released_at": 0,
+          "observed_at": 284
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 68,
+          "task_id": 453,
+          "released_at": 0,
+          "observed_at": 68
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1045,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1045,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 1026,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 591.1371428571429,
+        "initial_still_unfinished": 576,
+        "initial_still_unopened": 564,
+        "initial_started_unfinished": 12,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-price16",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:43:01.222990+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price16/summary.json",
+      "peak_rss_bytes": 605163520,
+      "latency_seconds": {
+        "mean": 0.5735442126069996,
+        "max": 0.760218704
+      },
+      "tasks": 1587,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price16/trick-random-04-priced-admission-price16/result.json",
+        "result_sha256": "d94a150ff148e5c20a7679a0bcb95db923d3f5f48a69655848801f3bc9c61d8f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 1587,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 1529,
+            "R": 1181,
+            "C": 757,
+            "F": 2342
+          },
+          "loaded": {
+            "F": 94087,
+            "W": 64332,
+            "C": 22556,
+            "R": 31863
+          },
+          "idle": {
+            "W": 328658,
+            "C": 25765,
+            "R": 36524,
+            "F": 90406
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 1481,
+              "F": 2275,
+              "C": 740,
+              "R": 1147
+            },
+            "loaded": {
+              "C": 19816,
+              "F": 87084,
+              "W": 46621,
+              "R": 26304
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 17,
+              "R": 34,
+              "W": 48,
+              "F": 67
+            },
+            "loaded": {
+              "F": 7003,
+              "R": 5559,
+              "W": 17711,
+              "C": 2740
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 55684,
+        "completed_loaded_detour_cells": 31400,
+        "completed_loaded_mean_steps": 113.31127914303718,
+        "completed_chain_lengths": {
+          "2": 666,
+          "3": 571,
+          "4": 277,
+          "5": 73
+        },
+        "unopened_reassignments": 884,
+        "task_starts": 1637,
+        "waiting_streaks": {
+          "count": 94920,
+          "p50": 1,
+          "p90": 6,
+          "p99": 54,
+          "maximum": 958
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price16/trick-random-04-priced-admission-price16/result.json",
+        "result_sha256": "d94a150ff148e5c20a7679a0bcb95db923d3f5f48a69655848801f3bc9c61d8f",
+        "horizon_steps": 1000,
+        "tasks_finished": 1587,
+        "tasks_revealed": 2637,
+        "completed_latency": {
+          "count": 1587,
+          "mean_steps": 120.98361688720857,
+          "p50_steps": 109,
+          "p95_steps": 253,
+          "p99_steps": 343
+        },
+        "maximum_release_to_completion": {
+          "steps": 507,
+          "task_id": 1023,
+          "released_at": 0,
+          "observed_at": 507
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 194,
+          "task_id": 951,
+          "released_at": 0,
+          "observed_at": 194
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1045,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1045,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 1000,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 485.18,
+        "initial_still_unfinished": 419,
+        "initial_still_unopened": 409,
+        "initial_started_unfinished": 10,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-price20",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:41:09.969994+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price20/summary.json",
+      "peak_rss_bytes": 662904832,
+      "latency_seconds": {
+        "mean": 0.4621037360819997,
+        "max": 0.770020638
+      },
+      "tasks": 2627,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price20/trick-random-04-priced-admission-price20/result.json",
+        "result_sha256": "52bd89238c5ef8461a83f7de18b4a5fe48c486d86d5c7f87522dedf6437b999b",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2627,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 4431,
+            "R": 2851,
+            "C": 1958,
+            "F": 6250
+          },
+          "loaded": {
+            "F": 196378,
+            "W": 122920,
+            "C": 48586,
+            "R": 65811
+          },
+          "idle": {
+            "W": 134527,
+            "C": 19389,
+            "R": 29176,
+            "F": 67723
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 3811,
+              "F": 5875,
+              "C": 1862,
+              "R": 2709
+            },
+            "loaded": {
+              "C": 45814,
+              "F": 186995,
+              "W": 107370,
+              "R": 61461
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 96,
+              "W": 620,
+              "R": 142,
+              "F": 375
+            },
+            "loaded": {
+              "R": 4350,
+              "C": 2772,
+              "W": 15550,
+              "F": 9383
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 109879,
+        "completed_loaded_detour_cells": 77116,
+        "completed_loaded_mean_steps": 152.88922725542443,
+        "completed_chain_lengths": {
+          "2": 894,
+          "3": 836,
+          "4": 613,
+          "5": 284
+        },
+        "unopened_reassignments": 2626,
+        "task_starts": 2853,
+        "waiting_streaks": {
+          "count": 119369,
+          "p50": 1,
+          "p90": 4,
+          "p99": 16,
+          "maximum": 568
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price20/trick-random-04-priced-admission-price20/result.json",
+        "result_sha256": "52bd89238c5ef8461a83f7de18b4a5fe48c486d86d5c7f87522dedf6437b999b",
+        "horizon_steps": 1000,
+        "tasks_finished": 2627,
+        "tasks_revealed": 3677,
+        "completed_latency": {
+          "count": 2627,
+          "mean_steps": 178.85420631899504,
+          "p50_steps": 147,
+          "p95_steps": 455,
+          "p99_steps": 641
+        },
+        "maximum_release_to_completion": {
+          "steps": 820,
+          "task_id": 176,
+          "released_at": 0,
+          "observed_at": 820
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 552,
+          "task_id": 847,
+          "released_at": 0,
+          "observed_at": 552
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1044,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1044,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 824,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 404.97238095238095,
+        "initial_still_unfinished": 245,
+        "initial_still_unopened": 243,
+        "initial_started_unfinished": 2,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-price24",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:40:46.569433+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price24/summary.json",
+      "peak_rss_bytes": 698064896,
+      "latency_seconds": {
+        "mean": 0.43864833951199916,
+        "max": 0.768308551
+      },
+      "tasks": 2740,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price24/trick-random-04-priced-admission-price24/result.json",
+        "result_sha256": "997f3bb23079a93a0ccda99b0eea5317016f8ab44eef2ca8abd8a4bcb57c1466",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2740,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 8494,
+            "R": 4433,
+            "C": 3043,
+            "F": 9584
+          },
+          "loaded": {
+            "F": 234916,
+            "W": 157143,
+            "C": 60720,
+            "R": 81655
+          },
+          "idle": {
+            "W": 76040,
+            "C": 10630,
+            "R": 16855,
+            "F": 36487
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5221,
+              "F": 7813,
+              "C": 2525,
+              "R": 3680
+            },
+            "loaded": {
+              "C": 55462,
+              "F": 216552,
+              "W": 129379,
+              "R": 74198
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "F": 1771,
+              "R": 753,
+              "W": 3273,
+              "C": 518
+            },
+            "loaded": {
+              "R": 7457,
+              "F": 18364,
+              "W": 27764,
+              "C": 5258
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 121236,
+        "completed_loaded_detour_cells": 95316,
+        "completed_loaded_mean_steps": 173.57335766423358,
+        "completed_chain_lengths": {
+          "2": 884,
+          "3": 840,
+          "4": 654,
+          "5": 362
+        },
+        "unopened_reassignments": 4901,
+        "task_starts": 3230,
+        "waiting_streaks": {
+          "count": 119647,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 453
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price24/trick-random-04-priced-admission-price24/result.json",
+        "result_sha256": "997f3bb23079a93a0ccda99b0eea5317016f8ab44eef2ca8abd8a4bcb57c1466",
+        "horizon_steps": 1000,
+        "tasks_finished": 2740,
+        "tasks_revealed": 3790,
+        "completed_latency": {
+          "count": 2740,
+          "mean_steps": 220.28467153284672,
+          "p50_steps": 170,
+          "p95_steps": 613,
+          "p99_steps": 859
+        },
+        "maximum_release_to_completion": {
+          "steps": 991,
+          "task_id": 709,
+          "released_at": 0,
+          "observed_at": 991
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 991,
+          "task_id": 654,
+          "released_at": 0,
+          "observed_at": 991
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 560,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 394.4695238095238,
+        "initial_still_unfinished": 178,
+        "initial_still_unopened": 134,
+        "initial_started_unfinished": 44,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-price32",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:40:50.669444+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price32/summary.json",
+      "peak_rss_bytes": 694300672,
+      "latency_seconds": {
+        "mean": 0.4428067699079999,
+        "max": 0.764805434
+      },
+      "tasks": 2741,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price32/trick-random-04-priced-admission-price32/result.json",
+        "result_sha256": "431954ae4c55db9d59c77321fbdedc8bb8ad0fb897962794382add75f33041b6",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2741,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 8453,
+            "R": 4486,
+            "C": 3063,
+            "F": 9673
+          },
+          "loaded": {
+            "F": 234880,
+            "W": 157022,
+            "C": 60805,
+            "R": 81618
+          },
+          "idle": {
+            "W": 76014,
+            "C": 10641,
+            "R": 16957,
+            "F": 36388
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 5238,
+              "F": 7797,
+              "C": 2516,
+              "R": 3695
+            },
+            "loaded": {
+              "C": 55544,
+              "F": 216707,
+              "W": 129391,
+              "R": 74209
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "F": 1876,
+              "R": 791,
+              "W": 3215,
+              "C": 547
+            },
+            "loaded": {
+              "R": 7409,
+              "F": 18173,
+              "W": 27631,
+              "C": 5261
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 121241,
+        "completed_loaded_detour_cells": 95466,
+        "completed_loaded_mean_steps": 173.60488872674208,
+        "completed_chain_lengths": {
+          "2": 888,
+          "3": 837,
+          "4": 650,
+          "5": 366
+        },
+        "unopened_reassignments": 4924,
+        "task_starts": 3234,
+        "waiting_streaks": {
+          "count": 119961,
+          "p50": 1,
+          "p90": 4,
+          "p99": 13,
+          "maximum": 453
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-price32/trick-random-04-priced-admission-price32/result.json",
+        "result_sha256": "431954ae4c55db9d59c77321fbdedc8bb8ad0fb897962794382add75f33041b6",
+        "horizon_steps": 1000,
+        "tasks_finished": 2741,
+        "tasks_revealed": 3791,
+        "completed_latency": {
+          "count": 2741,
+          "mean_steps": 220.27143378329077,
+          "p50_steps": 170,
+          "p95_steps": 613,
+          "p99_steps": 855
+        },
+        "maximum_release_to_completion": {
+          "steps": 997,
+          "task_id": 709,
+          "released_at": 0,
+          "observed_at": 997
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 992,
+          "task_id": 55,
+          "released_at": 0,
+          "observed_at": 992
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 557,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 394.45714285714286,
+        "initial_still_unfinished": 178,
+        "initial_still_unopened": 134,
+        "initial_started_unfinished": 44,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-04",
+      "profile": "trick",
+      "name": "trick-random-04-priced-admission-uncapped24",
+      "valid": true,
+      "source_commit": "236a04c6",
+      "finished_utc": "2026-09-21T10:40:52.486550+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-uncapped24/summary.json",
+      "peak_rss_bytes": 718938112,
+      "latency_seconds": {
+        "mean": 0.4445791045960003,
+        "max": 0.488340845
+      },
+      "tasks": 2658,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-uncapped24/trick-random-04-priced-admission-uncapped24/result.json",
+        "result_sha256": "cef07dc361bb8edda1b3d9f521836c43346fc879d0eb9c1148a6fc3d6fbfa0d9",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 2658,
+        "steps": 1000,
+        "agents": 700,
+        "robot_steps": 700000,
+        "phases": {
+          "unopened": {
+            "W": 14434,
+            "C": 5390,
+            "R": 7881,
+            "F": 16103
+          },
+          "loaded": {
+            "F": 258725,
+            "W": 184805,
+            "C": 71475,
+            "R": 99140
+          },
+          "idle": {
+            "W": 24716,
+            "F": 10033,
+            "R": 4488,
+            "C": 2810
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 9991,
+              "F": 13435,
+              "C": 4576,
+              "R": 6681
+            },
+            "loaded": {
+              "C": 65949,
+              "F": 239299,
+              "W": 156507,
+              "R": 91101
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "W": 4443,
+              "R": 1200,
+              "F": 2668,
+              "C": 814
+            },
+            "loaded": {
+              "R": 8039,
+              "F": 19426,
+              "C": 5526,
+              "W": 28298
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 119137,
+        "completed_loaded_detour_cells": 120162,
+        "completed_loaded_mean_steps": 207.9969902182092,
+        "completed_chain_lengths": {
+          "2": 851,
+          "3": 800,
+          "5": 384,
+          "4": 623
+        },
+        "unopened_reassignments": 11437,
+        "task_starts": 3154,
+        "waiting_streaks": {
+          "count": 121860,
+          "p50": 1,
+          "p90": 3,
+          "p99": 11,
+          "maximum": 273
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random04-priced-admission-split-full-v121/trick-random-04-priced-admission-uncapped24/trick-random-04-priced-admission-uncapped24/result.json",
+        "result_sha256": "cef07dc361bb8edda1b3d9f521836c43346fc879d0eb9c1148a6fc3d6fbfa0d9",
+        "horizon_steps": 1000,
+        "tasks_finished": 2658,
+        "tasks_revealed": 3708,
+        "completed_latency": {
+          "count": 2658,
+          "mean_steps": 246.01617757712566,
+          "p50_steps": 210,
+          "p95_steps": 585,
+          "p99_steps": 824
+        },
+        "maximum_release_to_completion": {
+          "steps": 982,
+          "task_id": 168,
+          "released_at": 0,
+          "observed_at": 982
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 947,
+          "task_id": 55,
+          "released_at": 0,
+          "observed_at": 947
+        },
+        "oldest_unfinished": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "oldest_unopened": {
+          "steps": 1000,
+          "task_id": 1043,
+          "released_at": 0,
+          "observed_at": 1000
+        },
+        "unfinished_count": 1050,
+        "unopened_count": 554,
+        "initial_cohort_count": 1050,
+        "initial_restricted_mean_steps": 380.16190476190474,
+        "initial_still_unfinished": 149,
+        "initial_still_unopened": 129,
+        "initial_started_unfinished": 20,
+        "event_accounting_valid": true
+      }
+    }
+  ],
+  "pending": [],
+  "complete": true,
+  "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
+}
