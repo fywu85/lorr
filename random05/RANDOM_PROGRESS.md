@@ -17,7 +17,7 @@ RANDOM-05 still targets4,000. Large maps are outside active development.
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched NMS32 |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 651 | 628 | 649 |
+| RANDOM-01 | 100 | 600 | 685 | 628 | 649 |
 | RANDOM-02 | 200 | 600 | 1106 | 1122 | 1228 |
 | RANDOM-03 | 400 | 800 | 1582 | 2171 | 2359 |
 | RANDOM-04 | 700 | 1000 | 1558 | 2462 | 2580 |
@@ -66,6 +66,9 @@ has been added yet.
 | 2026-09-21T02:27:08.813026+00:00 | RANDOM-04 | trick | 2462 | [9e9dbfa](https://github.com/fywu85/lorr/commit/9e9dbfa) | [Full run](results/random-density-first-split-full-v79/trick-random-04-k24480/summary.json) |
 
 
+| 2026-09-21T02:43:54.755684+00:00 | RANDOM-01 | general | 664 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-iters24/summary.json) |
+| 2026-09-21T02:43:55.001681+00:00 | RANDOM-01 | general | 685 | [a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) | [Full run](results/random-window-split-full-v80/general-random-01-window15-unit-cost/summary.json) |
+
 ## September21: first development comparisons
 
 All29 original runs are strict full-horizon successes and independently replayed.
@@ -97,3 +100,33 @@ Source, input hashes, allocation, deadlines, RAM, action replay and completed /
 unfinished order latency are stored in the
 [density audit](results/random-density-first-split-full-v79/audit.json) and
 [action-policy audit](results/random-operations-split-full-v79/audit.json).
+
+
+## Windowed search and cutoff follow-up (declared before execution)
+
+Source[a2ff2b2](https://github.com/fywu85/lorr/commit/a2ff2b2) passed35.39s of regression tests. Frozen experiment files are in`experiments/random-window-full-v80.json` and`experiments/random04-triage-full-v80.json`. Window15/keep6/32islands runs8or24iterations per island at every density; RANDOM-01..03 also get unit turn/wait costs. A* has a5,000-expansion cap per repair; failed repairs preserve the full incumbent. RANDOM-04 independently tests cutoff scales0.75/1.5, cutoff off and hop-only estimation, all with its explicit trick flag. These are hypotheses, not reported improvements.
+
+
+### Initial windowed results
+
+All13 full runs are valid and independently replayed. RANDOM-01 improves to
+664 with24iterations and685 with unit turn/wait costs (+5.5% against matched
+NMS649). The685 run averages9.87ms per entry, maximum25.66ms, RSS285.5MB.
+These are selected development records, not fresh-input or paired-seed claims.
+
+| Window setting | RANDOM-01 | RANDOM-02 | RANDOM-03 | RANDOM-04 | RANDOM-05 |
+|---|---:|---:|---:|---:|---:|
+| 8iterations, turn0.6/wait0.5 | 623 | 147 | 48 | 4 | 2 |
+| 24iterations, turn0.6/wait0.5 | 664 | 298 | 47 | 6 | 2 |
+| 24iterations, unit costs | 685 | 823 | 162 | not run | not run |
+
+This first windowed mode gridlocks at higher densities. It is not a replacement
+for the crowded reactive solver. With substantial time headroom, the next
+RANDOM-01..03 comparisons increase repairs to128/512iterations, test turn/wait2,
+and extend the window to20. The same four variants run at each of these densities.
+Original dense failures remain in the [full audit](results/random-window-split-full-v80/audit.json).
+
+The first RANDOM-04 horizon-off case failed configuration validation because its
+directional triage mix was still0.5. Preserve that original exit125. A separately
+named `no-horizon-configfix` attempt sets the inactive mix to0; no solver fix or
+outcome substitution is involved.

@@ -1,11 +1,15 @@
 [
   {
-    "exit": 0,
-    "finished_utc": "2026-09-21T02:41:40.193238+00:00",
-    "name": "32-move-bias3-b18-seed6",
-    "steps": 2000,
-    "binary_sha256": "ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c",
-    "environment": {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+    "cores": 16,
+    "smt": 2,
+    "steps": 1000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": "RANDOM-04",
+    "name": "trick-random-04-triage-scale0.75",
+    "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -13,10 +17,10 @@
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
       "R05_LOCAL": "0",
       "R05_EQUAL": "1",
-      "R05_HORIZON": "2000",
+      "R05_HORIZON": "1000",
       "R05_COST_CACHE": "1",
       "R05_WAIT_COST": "0.5",
-      "R05_TRIAGE_SCALE": "1.25",
+      "R05_TRIAGE_SCALE": "0.75",
       "R05_TURN_COST": "0.6",
       "R05_FLOW_AVERAGE": "1",
       "R05_FLOW_NORMALIZE": "1",
@@ -29,7 +33,7 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "6",
+      "R05_SEED": "5",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "18",
@@ -59,47 +63,20 @@
       "R05_SCORE_RANK_STEPS": "0",
       "R05_RESCORE_ROOTS": "0",
       "R05_RESCORE_BRANCHES": "64",
-      "R05_RESCORE_BLEND": "0",
-      "R05_MOVE_BIAS": "3"
-    },
-    "trick": true,
-    "result": {
-      "numTaskFinished": 3901,
-      "makespan": 2000,
-      "numPlannerErrors": 0,
-      "numScheduleErrors": 0,
-      "numEntryTimeouts": 0,
-      "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.606058266
-    },
-    "errors": 0,
-    "scheduleErrors": 0,
-    "latency_seconds": {
-      "mean": 0.5354925802954993,
-      "max": 0.606058266
-    },
-    "actual_path_steps": [
-      2000,
-      2000
-    ],
-    "trajectory_sha256": "c66a9b668272a4be90a7ab6b85522bad436d5ea8b37156fb4700febc3c048660",
-    "valid": true,
-    "usage": {
-      "user_seconds": 32303.435477,
-      "system_seconds": 23.455453,
-      "peak_rss_kib": 545292,
-      "wall_seconds": 1073.5989304911345,
-      "exit": 0
-    },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/move-bias-seeds-split-full-v77/32-move-bias3-b18-seed6/summary.json"
+      "R05_RESCORE_BLEND": "0"
+    }
   },
   {
-    "exit": 0,
-    "finished_utc": "2026-09-21T02:41:52.954075+00:00",
-    "name": "32-move-bias3-b18-seed7",
-    "steps": 2000,
-    "binary_sha256": "ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c",
-    "environment": {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+    "cores": 16,
+    "smt": 2,
+    "steps": 1000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": "RANDOM-04",
+    "name": "trick-random-04-triage-scale1.5",
+    "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -107,10 +84,10 @@
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
       "R05_LOCAL": "0",
       "R05_EQUAL": "1",
-      "R05_HORIZON": "2000",
+      "R05_HORIZON": "1000",
       "R05_COST_CACHE": "1",
       "R05_WAIT_COST": "0.5",
-      "R05_TRIAGE_SCALE": "1.25",
+      "R05_TRIAGE_SCALE": "1.5",
       "R05_TURN_COST": "0.6",
       "R05_FLOW_AVERAGE": "1",
       "R05_FLOW_NORMALIZE": "1",
@@ -123,7 +100,7 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "7",
+      "R05_SEED": "5",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "18",
@@ -153,47 +130,20 @@
       "R05_SCORE_RANK_STEPS": "0",
       "R05_RESCORE_ROOTS": "0",
       "R05_RESCORE_BRANCHES": "64",
-      "R05_RESCORE_BLEND": "0",
-      "R05_MOVE_BIAS": "3"
-    },
-    "trick": true,
-    "result": {
-      "numTaskFinished": 3948,
-      "makespan": 2000,
-      "numPlannerErrors": 0,
-      "numScheduleErrors": 0,
-      "numEntryTimeouts": 0,
-      "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.574995336
-    },
-    "errors": 0,
-    "scheduleErrors": 0,
-    "latency_seconds": {
-      "mean": 0.541685340411999,
-      "max": 0.574995336
-    },
-    "actual_path_steps": [
-      2000,
-      2000
-    ],
-    "trajectory_sha256": "74334b6c5d2e1edb49b1129e152f5ac191e3058fc34effbbfb0504f9a9532312",
-    "valid": true,
-    "usage": {
-      "user_seconds": 32551.792559,
-      "system_seconds": 24.133635,
-      "peak_rss_kib": 545856,
-      "wall_seconds": 1086.3550408408046,
-      "exit": 0
-    },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/move-bias-seeds-split-full-v77/32-move-bias3-b18-seed7/summary.json"
+      "R05_RESCORE_BLEND": "0"
+    }
   },
   {
-    "exit": 0,
-    "finished_utc": "2026-09-21T02:41:51.214704+00:00",
-    "name": "32-move-bias3-b18-seed8",
-    "steps": 2000,
-    "binary_sha256": "ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c",
-    "environment": {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+    "cores": 16,
+    "smt": 2,
+    "steps": 1000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": "RANDOM-04",
+    "name": "trick-random-04-triage-no-horizon",
+    "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -201,7 +151,7 @@
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
       "R05_LOCAL": "0",
       "R05_EQUAL": "1",
-      "R05_HORIZON": "2000",
+      "R05_HORIZON": "0",
       "R05_COST_CACHE": "1",
       "R05_WAIT_COST": "0.5",
       "R05_TRIAGE_SCALE": "1.25",
@@ -217,7 +167,7 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "8",
+      "R05_SEED": "5",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "18",
@@ -247,47 +197,20 @@
       "R05_SCORE_RANK_STEPS": "0",
       "R05_RESCORE_ROOTS": "0",
       "R05_RESCORE_BRANCHES": "64",
-      "R05_RESCORE_BLEND": "0",
-      "R05_MOVE_BIAS": "3"
-    },
-    "trick": true,
-    "result": {
-      "numTaskFinished": 3850,
-      "makespan": 2000,
-      "numPlannerErrors": 0,
-      "numScheduleErrors": 0,
-      "numEntryTimeouts": 0,
-      "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.581007355
-    },
-    "errors": 0,
-    "scheduleErrors": 0,
-    "latency_seconds": {
-      "mean": 0.5409193764884994,
-      "max": 0.581007355
-    },
-    "actual_path_steps": [
-      2000,
-      2000
-    ],
-    "trajectory_sha256": "0b10e0addd695d74a9bd4855372610d14ce03e5f26ef5db71090192cea85266e",
-    "valid": true,
-    "usage": {
-      "user_seconds": 32622.36953,
-      "system_seconds": 22.132014,
-      "peak_rss_kib": 545072,
-      "wall_seconds": 1084.6212797705084,
-      "exit": 0
-    },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/move-bias-seeds-split-full-v77/32-move-bias3-b18-seed8/summary.json"
+      "R05_RESCORE_BLEND": "0"
+    }
   },
   {
-    "exit": 0,
-    "finished_utc": "2026-09-21T02:41:43.913005+00:00",
-    "name": "32-move-bias3-b18-seed24",
-    "steps": 2000,
-    "binary_sha256": "ca5840674488735bcd31dbed3416f309e9928ce2954a1c1fcfe70308dbea3e5c",
-    "environment": {
+    "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v80/build/lifelong_random05",
+    "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
+    "cores": 16,
+    "smt": 2,
+    "steps": 1000,
+    "limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "trick": "RANDOM-04",
+    "name": "trick-random-04-triage-hop-only",
+    "env": {
       "R05_K": "16320",
       "R05_THREADS": "32",
       "R05_GUIDANCE": "flow",
@@ -295,7 +218,7 @@
       "R05_WEIGHTS": "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json",
       "R05_LOCAL": "0",
       "R05_EQUAL": "1",
-      "R05_HORIZON": "2000",
+      "R05_HORIZON": "1000",
       "R05_COST_CACHE": "1",
       "R05_WAIT_COST": "0.5",
       "R05_TRIAGE_SCALE": "1.25",
@@ -311,7 +234,7 @@
       "R05_SCHED_GUIDE": "1",
       "R05_FLOW_OUTPUT_PENALTY": "2.4",
       "R05_RANDOM_BY_STEP": "1",
-      "R05_SEED": "24",
+      "R05_SEED": "5",
       "R05_FLOW_FLIPS": "1",
       "R05_FLOW_FLIP_SEED": "5",
       "R05_CONTINUATIONS": "18",
@@ -336,43 +259,12 @@
       "R05_CACHE_SLOTS": "64",
       "R05_SCREEN_BRANCHES": "2",
       "R05_SCREEN_KEEP": "4",
-      "R05_TRIAGE_GUIDED_MIX": "0.5",
+      "R05_TRIAGE_GUIDED_MIX": "0",
       "R05_SCORE_RANK_POWER": "0",
       "R05_SCORE_RANK_STEPS": "0",
       "R05_RESCORE_ROOTS": "0",
       "R05_RESCORE_BRANCHES": "64",
-      "R05_RESCORE_BLEND": "0",
-      "R05_MOVE_BIAS": "3"
-    },
-    "trick": true,
-    "result": {
-      "numTaskFinished": 3864,
-      "makespan": 2000,
-      "numPlannerErrors": 0,
-      "numScheduleErrors": 0,
-      "numEntryTimeouts": 0,
-      "entryComputeSamples": 2000,
-      "entryComputeMaxSeconds": 0.596752905
-    },
-    "errors": 0,
-    "scheduleErrors": 0,
-    "latency_seconds": {
-      "mean": 0.5372370000199994,
-      "max": 0.596752905
-    },
-    "actual_path_steps": [
-      2000,
-      2000
-    ],
-    "trajectory_sha256": "705864034ca5b54e7df07166f4758dd6565f9ee6f7dbbb2e397eab6b67ae4faa",
-    "valid": true,
-    "usage": {
-      "user_seconds": 32396.357379,
-      "system_seconds": 24.386346,
-      "peak_rss_kib": 544600,
-      "wall_seconds": 1077.3159869033843,
-      "exit": 0
-    },
-    "evidence": "/shared/share_mala/fw2449/lorr2024/runs/random05/move-bias-seeds-split-full-v77/32-move-bias3-b18-seed24/summary.json"
+      "R05_RESCORE_BLEND": "0"
+    }
   }
 ]

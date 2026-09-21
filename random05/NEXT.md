@@ -181,3 +181,16 @@ Source77 new bias3 seeds6/7/8/24 running jobs8901242–45, batch
 move-bias-seeds-split-full-v77. Keep originals, collect and audit any record.
 
 Build80 completed successfully02:40:32UTC; regression passed and all35 compiled/test inputs match the frozen snapshot. BinarySHA2196d6df96c220e40f141caf64830c65a0cb8cf540a25d75f32c36ecb41c9232. Full windowed benchmarks are next.
+
+Source80 verified commit`a2ff2b2`. Declared full batches:random-window-full-v80(13general cases),random04-triage-full-v80(4explicit tricks),move-bias-seed0-full-v80(7cases including exact3978control). No fresh50009+ inputs generated.
+
+Window80 first13cases complete, all strict/replayed. NewR01records664 then685,
+unit-cost685mean9.87/max25.66ms; generalindex/ledger updated. R02bestwindow823,
+R03best162, denseR04/R05gridlock6/2. New12casebatch
+random-window-work-split-full-v80 jobs8901302–13 tests128/512iterations,
+turn/wait2 andwindow20 identically across01–03. All still general/no tricks.
+R04triage jobs8901287–90 running; originalno-horizon configfails125 because
+mix.5requires horizon. Corrected separatejob8901314 in
+random04-no-horizon-configfix-split-full-v80 sets mix0 with horizon0.
+R05seed0seven-casefollowup jobs8901291–97 running;source80 a2ff2b2.
+Previousbias3seeds6/7/8/24 allstrict:3901/3948/3850/3864; no newrecord.
