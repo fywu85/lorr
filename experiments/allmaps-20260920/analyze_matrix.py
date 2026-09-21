@@ -286,8 +286,14 @@ def main():
                 window_config=[fields(l) for l in logs if l.startswith('[cgar-window-config] ')]
                 window_samples=[fields(l) for l in logs if l.startswith('[cgar-window] ')]
                 if window_horizon:
-                    assert not chain_mode and len(window_config)==1
+                    assert len(window_config)==1
                     cfg=window_config[0];cells=int(cfg['cells'])
+                    chain_seed=int(case['environment'].get('CGAR_WINDOW_CHAIN_SEED','0'))
+                    assert chain_seed in (0,1) and int(cfg.get('chain_seed','0'))==chain_seed
+                    if chain_seed:
+                        assert chain_mode==1
+                        assert int(cfg['wait_cost'])==int(case['environment'].get('CGAR_FLOW_COST_SCALE','1'))
+                    else:assert not chain_mode
                     for field,key,default in [('horizon','CGAR_WINDOW',0),('keep','CGAR_WINDOW_KEEP',6),
                             ('iterations','CGAR_WINDOW_ITERS',128),('nodes','CGAR_WINDOW_NODES',2048),
                             ('group','CGAR_WINDOW_GROUP',4),('workers','CGAR_WINDOW_WORKERS',4),
@@ -342,6 +348,7 @@ def main():
                     row['rolling_window']=dict(configuration=cfg,last_sample=window_samples[-1])
                 else:
                     assert not window_config and not window_samples
+                    assert not int(case['environment'].get('CGAR_WINDOW_CHAIN_SEED','0'))
                 future_roots=int(case['environment'].get('CGAR_FUTURE_ROOTS','0'))
                 future_config=[fields(l) for l in logs if l.startswith('[cgar-future-config] ')]
                 future_samples=[fields(l) for l in logs if l.startswith('[cgar-future] ')]

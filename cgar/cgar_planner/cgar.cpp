@@ -995,8 +995,15 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         !temporal_chain_mb_ || !temporal_chain_threads_ ||
         ((temporal_chain_mode_ & 2) && temporal_order_ != 2)))
         throw std::invalid_argument("chain potential requires temporal static guidance, a memory budget, and chain ordering for rank mode; guide/next-errand/neutral-tail are incompatible");
-    if (temporal_chain_mode_ && window_options_.horizon)
-        throw std::invalid_argument("rolling window uses its own paid-action plus chain objective; five-step chain scoring must be disabled");
+    const int window_chain_seed = priority_setting("CGAR_WINDOW_CHAIN_SEED", 0, 1);
+    // Compose the stronger CGAR seed with window repair only by explicit opt-in.
+    // Both stages share one immutable chain oracle, so their service/wait units
+    // must agree. Keep priority changes (chain modes 2/3) out of this experiment.
+    if (window_chain_seed && (!window_options_.horizon || temporal_chain_mode_ != 1 ||
+        (window_options_.wait_cost && window_options_.wait_cost != flow_cost_scale_)))
+        throw std::invalid_argument("chain-seeded window requires an enabled window, chain score mode1, and the ordinary forward-base wait cost");
+    if (temporal_chain_mode_ && window_options_.horizon && !window_chain_seed)
+        throw std::invalid_argument("rolling window with five-step chain scoring requires explicit CGAR_WINDOW_CHAIN_SEED=1");
     if ((window_options_.horizon || future_options_.roots) && (!temporal_chain_mb_ || !temporal_chain_threads_))
         throw std::invalid_argument("window or future forecasts require complete chain table resources");
     if (!temporal_chain_mode_ && !window_options_.horizon && !future_options_.roots && (temporal_chain_mb_ != 512 || temporal_chain_threads_ != 1))
@@ -1244,10 +1251,10 @@ void Cgar::initialize(SharedEnvironment* env, int preprocess_ms) {
         if (temporal_chain_mode_) std::printf("[cgar-chain-config] mode=%d score=%d order=%d complete=1 cells=%d stored_bytes=%zu threads=%d service=after_action domain=core_goal_pocket_escape fixed_work=1\n",
             temporal_chain_mode_, int(bool(temporal_chain_mode_ & 1)), int(bool(temporal_chain_mode_ & 2)),
             chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_);
-        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d temperature=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
+        if (window_options_.horizon) std::printf("[cgar-window-config] horizon=%d keep=%d iterations=%d nodes=%d group=%d workers=%d threads=%d turn_cost=%d wait_cost=%d cells=%d stored_bytes=%zu table_threads=%d seed_rollout=%d progress_ties=%d protected_prefix=%d history_rollout=%d delay_samples=%d temperature=%d chain_seed=%d seed=cgar protected=immutable_first_action objective=paid_plus_chain service=after_action fixed_work=1 timeout_is_failure=1\n",
             window_options_.horizon, window_options_.keep, window_options_.iterations, window_options_.nodes,
             window_options_.group, window_options_.workers, window_options_.threads, guidance_turn_cost_, wait,
-            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature);
+            chain_potential_.free_cells(), chain_potential_.storage_bytes(), temporal_chain_threads_, window_options_.seed_rollout, window_options_.progress_ties, window_options_.protected_prefix, window_options_.history_rollout, window_options_.delay_samples, window_options_.temperature, window_chain_seed);
     }
 
     if (future_options_.roots)

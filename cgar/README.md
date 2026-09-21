@@ -194,9 +194,14 @@ Thread count changes execution allocation without changing island seeds or resul
 uses that integer wait cost. Turn/forward costs follow the static guidance graph.
 The existing `CGAR_TEMPORAL_CHAIN_MB/THREADS` bound and build the complete oracle.
 
-The first implementation requires static guidance and disables five-step chain
-scoring, legacy temporal history/promises, guide routes and partial next-errand
-scoring while the new layer is enabled. Instance fields still require
+The layer requires static guidance and disables legacy temporal history/promises,
+guide routes and partial next-errand scoring. Five-step chain scoring is disabled
+by default. `CGAR_WINDOW_CHAIN_SEED=1` explicitly composes a mode-1 chain-scored
+CGAR seed with the window; both use the same complete oracle, so the window wait
+cost must equal the ordinary forward base (or use its default 0). This flag
+requires an enabled window and `CGAR_TEMPORAL_CHAIN_MODE=1`; modes 2/3 are rejected.
+The seed still uses terminal remaining-chain cost, while repairs use paid action
+cost plus remaining-chain cost. This composition does not change either objective. Instance fields still require
 `--trick INSTANCE`. No run horizon or unrevealed task is used. Existing temporal
 score/rotation diagnostics describe the seed search; `[cgar-window-config]` and
 `[cgar-window]` identify the final objective, complete work, history and changed
