@@ -18,11 +18,25 @@ def read(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--batch', required=True)
-    parser.add_argument('--build', required=True)
-    parser.add_argument('--source', required=True)
+    parser.add_argument('--build')
+    parser.add_argument('--source')
+    parser.add_argument('--source-map', type=Path, help='JSON mapping binary SHA256 to build/source for a mixed-source batch')
     parser.add_argument('--allow-pending', action='store_true')
     args = parser.parse_args()
-    source = source_check(args.build, args.source)
+    if args.source_map:
+        if args.build or args.source:
+            parser.error('Use --source-map or --build/--source, not both')
+        sources = {}
+        for digest, declaration in read(args.source_map).items():
+            checked = source_check(declaration['build'], declaration['source'])
+            assert checked['binary_sha256'] == digest, 'declared build digest mismatch'
+            sources[digest] = checked
+        assert sources, 'empty source map'
+    else:
+        if not args.build or not args.source:
+            parser.error('--build and --source are required without --source-map')
+        checked = source_check(args.build, args.source)
+        sources = {checked['binary_sha256']: checked}
     directory = ROOT / 'runs/random05' / args.batch
     archived = ROOT / 'random05/results' / args.batch
     frontiers = read(ROOT / 'random05/random-frontiers.json')
@@ -38,6 +52,8 @@ def main():
             pending.append(job['name'])
             continue
         case = read(case_dir / 'spec.json')['cases'][0]
+        assert case['binary_sha256'] in sources, 'undeclared case binary'
+        source = sources[case['binary_sha256']]
         summary = read(case_dir / 'summary.json')[0]
         instance = Path(case['input']).stem
         reference = frontiers[instance]['general']['case']
@@ -63,7 +79,7 @@ def main():
             assert case['env']['R05_GUIDANCE'] == 'none' and int(case['env']['R05_HORIZON']) == 0
             profile = 'general'
         row = dict(instance=instance, profile=profile, name=case['name'], valid=summary['valid'],
-                   source_commit=args.source, finished_utc=summary['finished_utc'], exit=summary['exit'],
+                   source_commit=source['commit'], finished_utc=summary['finished_utc'], exit=summary['exit'],
                    evidence=str((archived / case['name'] / 'summary.json').relative_to(ROOT)),
                    peak_rss_bytes=summary['usage']['peak_rss_kib']*1024,
                    latency_seconds=summary.get('latency_seconds'))
@@ -86,7 +102,8 @@ def main():
         rows.append(row)
         print(instance, case['name'], row.get('tasks', 'failed'), 'audited', flush=True)
     report = dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                  source=source, rows=rows, pending=pending, complete=not pending,
+                  source=next(iter(sources.values())) if len(sources)==1 else None,
+                  sources_by_binary=sources, rows=rows, pending=pending, complete=not pending,
                   caveat='Development comparisons on one archived layout across densities; no independent task/start or geometry validation.')
     (archived / 'audit.json').write_text(json.dumps(report, indent=2)+'\n')
     assert args.allow_pending or not pending, pending

@@ -147,6 +147,8 @@ configured iteration finishes; deadline overruns still fail the entry.
 `R05_WINDOW_KEEP`, `R05_WINDOW_ISLANDS`, `R05_WINDOW_ITERS`,
 `R05_WINDOW_NEIGHBORHOOD` and `R05_WINDOW_EXPANSIONS` declare the search budget.
 The windowed mode uses these counts instead of the reactive `R05_K` portfolio.
+`R05_WINDOW_ITERS` accepts 0–8,192 complete repair attempts per island; larger
+explicit budgets still have to pass the strict per-step deadline.
 `R05_WINDOW_BLOCKERS=1` selects repair groups from route/reservation conflicts;
 `R05_WINDOW_EQUAL=1` permits changed paths with equal objective values. Both
 options are experimental and default off. All instance-specific guidance and

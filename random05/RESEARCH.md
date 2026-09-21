@@ -1182,3 +1182,15 @@ variants are rejected, and source is restored to f217eee. Their patches, exact
 builds, and regression logs remain in results/build-v84 and build-v85. No full
 benchmark used either failed build. Retaining the prefix by itself is insufficient
 to cure this crowded-state failure.
+
+## RANDOM-03/04 ten-percent campaign: fixed-work scaling
+
+The user now targets at least10% above matched NMS on both densities and
+robust subsecond runtime. Raising the explicit window iteration ceiling from
+2048 to8192 allows measured work scaling on RANDOM-03, whose selected run
+averages275ms. The default count is unchanged, and the optimizer still completes
+every declared attempt; the strict deadline fails any overrun. Source86 makes
+no search-policy change. Test the full regression suite and unchanged2048
+control alongside4096, with qualification across seeds before promotion.
+The first mixed-source batch separately tests eight routing/scheduling changes
+and four RANDOM-04 runtime controls. See RANDOM34_CAMPAIGN.md for criteria.

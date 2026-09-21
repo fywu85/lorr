@@ -1,7 +1,9 @@
 # RANDOM campaign continuation
 
 Updated 2026-09-21 05:09 UTC. The registered 4,000-task RANDOM-05 milestone is
-achieved and independently audited. Broader authorized work develops general
+achieved and independently audited. A NEW ACTIVE goal now targets RANDOM-03
+>=2595 and RANDOM-04>=2838, at least10% above matched NMS, with robust
+subsecond timing. See RANDOM34_CAMPAIGN.md for qualification rules. Broader authorized work develops general
 improvements and explicit tricks for RANDOM-01..05. Non-random maps are deferred.
 Latest user correction: RANDOM05_PROGRESS.md remains the authoritative detailed
 RANDOM-05 history; the earlier request naming random05/RANDOM_PROGRESS.md was a
@@ -77,7 +79,11 @@ campaign remains authorized; the goal completion does not claim all maps solved.
 
 ## Latest RANDOM-04 experiments and next research
 
-No jobs from this RANDOM campaign remain active. All six original attempts in
+New batch random34-tenpercent-first-split-full has12 active cases,
+jobs8901631–8901642: eight R03 routing/scheduling variants (source81) and
+four R04 runtime controls (source80). Audit using --source-map
+random05/experiments/random34-tenpercent-source-map.json, because the
+batch deliberately uses two frozen binaries. The older batch below is closed. All six original attempts in
 random04-depth16-validation-split-full-v80 are terminal and audited.
 Source a2ff2b2/build80, explicit --trick RANDOM-04:
 - depth16/K14400 seed4 =2565, mean832/max949ms, RSS440MB (new selected record);
@@ -119,7 +125,10 @@ All six strict/full/replayed, so retain reactive planning for crowded cases.
 
 ## Rejected source experiments / tool notes
 
-Current source exactly f217eee (build83), default WINDOW_STARTS=1. Extra starts
+Source86 raises only the explicit WINDOW_ITERS ceiling2048->8192, default
+unchanged. Regression/build and full2048 controls are required before crediting
+the larger work budget. All other current source matches f217eee (build83),
+default WINDOW_STARTS=1. Extra starts
 lost on R03. Source84 cost-ranked retained-prefix and source85 progress-ranked
 retained-prefix attempts failed the unchanged dense mobility floor (39/38 moves,
 required>150). Both patches/logs are in results/build-v84/v85. All four modified

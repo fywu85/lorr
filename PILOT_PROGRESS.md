@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 05:09 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-21 05:23 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -8,6 +8,11 @@ windowed LNS for lighter traffic. Its results are separate from CGAR.
 Current development covers RANDOM-01 through RANDOM-05. The other five
 competition instances remain placeholders for future work. NMS is the target;
 throughput is primary, with order waiting times tracked as a secondary metric.
+
+**Active target:** RANDOM-03 at least **2,595** tasks and RANDOM-04 at least
+**2,838**, each 10% above matched local NMS, with robust subsecond runtime.
+Selected configurations must pass repeated full runs and fresh-input checks.
+[Campaign and qualification rules](random05/RANDOM34_CAMPAIGN.md).
 
 Selected scores are complete combined-track runs with enforced **1,000 ms**
 entry limits, **30 s** preprocessing, and a **32 decimal GB** process limit.
