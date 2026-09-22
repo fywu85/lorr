@@ -1,0 +1,25 @@
+{
+  "created_utc": "2026-09-22T07:44:47.410288+00:00",
+  "purpose": "Complete the user-requested reliability repair and sample-SD report, then scoped commit/push/pause.",
+  "cases": "random45-reliability-dynamic-full-v174.json",
+  "references": "random45-reliability-dynamic-full-v174-references.json",
+  "new_full_runs": 20,
+  "planner_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "changes": "Only exact runtime changes: IPO, stable SIMD matching, synchronous persistent worker, dynamic assignment of complete fixed search jobs;05also uses passive OpenMP waiting. All original work budgets, objectives, seeds, map/start/task inputs, horizons and strict1,000ms entry deadlines stay fixed.",
+  "selection": "All18predeclared startup controls pass and successful six-field prefix comparisons are exact.04dynamic/default-wait startup maxima521.49/522.81ms;05dynamic/passive-wait maxima763.72/643.52ms. Shared-host noise prevents isolating each independent component speedup. Full qualification is required.",
+  "reuse": "Retain already successful ten-seed01/02original cohorts and ten-seed03v173cohort, subject to final independent replay/source/input/resource audit. Do not rerun those unchanged qualified profiles solely for more timing samples.",
+  "failure_rule": "Retain all started failures with no score or silent substitution. One separately predeclared allocation-only retry is permitted for a preflight refusal with solver_started=false; preserve refused attempts and report counts. Do not replace a started solver failure without a separately frozen implementation change.",
+  "checks": "Require all ten full solver attempts per selected implementation valid, independently replay movement/assignment/task events/waiting, compare every available original complete trace exactly, and compute sampleSD with denominator n-1. No short-prefix throughput promotion.",
+  "stop_rule": "Finish reliability validation and final reporting; commit/push only authorized PILOT scope and pause. No open-ended throughput optimization."
+}
