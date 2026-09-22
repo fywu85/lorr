@@ -37,3 +37,7 @@ target_link_libraries(random05_decision_probe PRIVATE random05_engine)
 # Read-only guided-cost classification for independently replayed traces.
 add_executable(random05_goal_probe tools/goal_probe.cpp simulator/src/States.cpp)
 target_link_libraries(random05_goal_probe PRIVATE random05_engine)
+
+# Faithful offline horizon/progress reconstruction; never plans a move.
+add_executable(random05_triage_probe tools/triage_probe.cpp simulator/src/States.cpp)
+target_link_libraries(random05_triage_probe PRIVATE random05_engine)

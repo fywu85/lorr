@@ -121,6 +121,7 @@ struct Config {
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, guidance_distance_mix=0, guidance_edge_mix=0, reverse_penalty=0, completion_bonus=0;
     float terminal_pending=0;
+    bool triage_diagnostics=false;
     int triage_progress_window=32;
     float triage_progress_mix=0;
     float triage_scale=0.45, triage_guided_mix=0, waypoint_age_retain=0, score_rank_power=0, progress_softcap=0;

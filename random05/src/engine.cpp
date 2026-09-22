@@ -427,6 +427,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
         throw std::invalid_argument("physical deadline matching needs a known horizon, boolean value and explicit trick instance");
     c.match_feasible=match_feasible;
+    const int triage_diagnostics=integer("R05_TRIAGE_DIAGNOSTICS",0);
+    if(triage_diagnostics<0 || triage_diagnostics>1)
+        throw std::invalid_argument("triage diagnostics requires a boolean value");
+    c.triage_diagnostics=triage_diagnostics;
     if(!std::isfinite(c.active_cap_triage_credit) || c.active_cap_triage_credit<0 ||
        c.active_cap_triage_credit>1 || (c.active_cap_triage_credit>0 &&
        (!random_trick || c.horizon<=0 || c.active_task_cap<=0)))
@@ -2596,6 +2600,14 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
                 assigned_[a]=nullptr;++triaged_;
             }
         }
+    }
+    if(cfg.triage_diagnostics) {
+        // Observational fingerprint in robot order. No search state, random
+        // draws or decision arithmetic changes when this logging is enabled.
+        uint64_t mask=14695981039346656037ull;
+        for(const auto* chain:assigned_) {mask^=chain?1:0;mask*=1099511628211ull;}
+        std::fprintf(stderr,"R05_TRIAGE t=%d suppressed=%d active_mask=%llu\n",
+            env->curr_timestep,triaged_,(unsigned long long)mask);
     }
     // Remember actual deferred task IDs, not robot flags: a completed or
     // reassigned task must never inherit an old admission credit. This is a

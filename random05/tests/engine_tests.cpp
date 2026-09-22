@@ -1517,6 +1517,9 @@ void observed_progress_triage() {
         const auto serial=simulate(cfg,12,5,5,true);
         cfg.threads=3;cfg.candidate_cache=true;
         require(serial==simulate(cfg,12),"progress-calibrated triage changed with workers or cached policy");
+        cfg.triage_diagnostics=true;
+        require(serial==simulate(cfg,12,5,5,true),"suppression diagnostics changed actions or checkpoint state");
+        cfg.triage_diagnostics=false;
         cfg.replan_roots=1;cfg.replan_futures=1;cfg.replan_steps=2;cfg.replan_k=1;cfg.replan_continuations=1;
         require(serial==simulate(cfg,12,5,5,true,true),"shadow forecasting changed observed-progress history");
         cfg.replan_roots=0;
@@ -1531,6 +1534,13 @@ void observed_progress_triage() {
     Setting horizon("R05_HORIZON","150"),mix("R05_TRIAGE_PROGRESS_MIX",".5"),span("R05_TRIAGE_PROGRESS_WINDOW","32");
     auto gate=environment(3,3,2);gate.trick_instance="RANDOM-04";
     require(Config::environment(gate).triage_progress_mix==.5f,"valid progress calibration was rejected");
+    {
+        Setting diagnostic("R05_TRIAGE_DIAGNOSTICS","1");
+        require(Config::environment(gate).triage_diagnostics,"suppression diagnostics were rejected");
+        setenv("R05_TRIAGE_DIAGNOSTICS","2",1);bool invalid=false;
+        try{Config::environment(gate);}catch(const std::invalid_argument&){invalid=true;}
+        require(invalid,"nonboolean suppression diagnostics were accepted");
+    }
     gate.trick_instance.clear();bool refused=false;
     try{Config::environment(gate);}catch(const std::invalid_argument&){refused=true;}
     require(refused,"progress-calibrated horizon bypassed the trick gate");gate.trick_instance="RANDOM-04";

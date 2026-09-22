@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--case',type=Path)
     parser.add_argument('--trace',type=Path)
     parser.add_argument('--binary',type=Path)
+    parser.add_argument('--purpose',default='Read-only guided move cost classification; not a benchmark score.')
     args=parser.parse_args();out=args.output.resolve()
     if args.action=='submit':
         if not all([args.case,args.trace,args.binary]):parser.error('submit needs case, trace and binary')
@@ -41,7 +42,7 @@ def main():
         spec=dict(repo=str(ROOT),created_utc=now(),commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                   case=str(args.case.resolve()),trace=str(args.trace.resolve()),binary=str(args.binary.resolve()),
                   local_hashes={name:sha(out/name) for name in ['case.json','trace.json','probe','runner.py']},input_hashes=hashes,
-                  purpose='Read-only classification of guided move costs in an already completed trace; not a benchmark score.')
+                  purpose=args.purpose)
         write(out/'probe-spec.json',spec)
         script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in ['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)])+'\n')
         hosts='research32|research33|research35|research36|research37|research39|research41|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56'.split('|')
