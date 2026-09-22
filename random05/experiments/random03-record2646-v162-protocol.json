@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-09-22T00:55:59.451140+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "purpose": "Exact2646repeat and five paired planner seeds for RANDOM-03progress correction. Launch only after independent audit of the selecting run.",
+  "historical_baseline": {
+    "0": {
+      "tasks": 2604,
+      "evidence": "random05/results/random03-record2621-split-full-v162/trick-random-03-record2621-seed0-feasible1/summary.json"
+    },
+    "1": {
+      "tasks": 2595,
+      "evidence": "random05/results/random03-record2621-split-full-v162/trick-random-03-record2621-seed1-feasible1/summary.json"
+    },
+    "2": {
+      "tasks": 2600,
+      "evidence": "random05/results/random03-record2621-split-full-v162/trick-random-03-record2621-seed2-feasible1/summary.json"
+    },
+    "3": {
+      "tasks": 2621,
+      "evidence": "random05/results/random03-record2621-split-full-v162/trick-random-03-record2621-seed3-feasible1/summary.json"
+    },
+    "4": {
+      "tasks": 2609,
+      "evidence": "random05/results/random03-record2621-split-full-v162/trick-random-03-record2621-seed4-feasible1/summary.json"
+    }
+  },
+  "rules": [
+    "Candidate changes only R05_TRIAGE_PROGRESS_MIX0to.25 atspan32 on the2621profile. Seed3is the selecting seed and exact repetition.",
+    "All five source162full800step runs use archived input and explicit --trick RANDOM-03,32workers/16bound physical EPYC9354cores,strict1s entries/30s initialization/32GB.",
+    "Historical2621-profile controls were independently audited on the same binary and input before this qualification. Selecting seed3is included; no fresh-input claim.",
+    "Retain every original failure. Audit every complete run, compare all six fields for the exact repeat, and report all five paired outcomes."
+  ]
+}
