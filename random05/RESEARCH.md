@@ -2117,3 +2117,7 @@ settings, and pickup-heading price0. Extra component checks have measured
 runtime costs. Controls must reproduce739/736 in six fields. This uses audited
 source166 and no new code, fresh input or implicit trick. The selected horizon
 settings retain --trick RANDOM-01.
+
+## Trick: qualify RANDOM-04 whole-chain maximum2,783 (source166)
+
+The same-source full comparison gives2,783 with the existing whole-chain matcher versus the six-field-exact2,782 off control. Pickup-heading price is0. Both pass independent replay and strict limits; the candidate mean474.908/max792.001ms stays below1second. This is only a one-task selected development maximum. Freeze its exact seed4 repeat and contemporaneous paired seeds0/1/2/3 before launch; report these four pairs separately and with the original selecting pair. No held-out input is used. Preserve every failure and do not substitute older successful controls. Protocol: experiments/random04-record2783-v166-protocol.json.

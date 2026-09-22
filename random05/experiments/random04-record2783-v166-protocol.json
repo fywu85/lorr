@@ -1,0 +1,18 @@
+{
+  "created_utc": "2026-09-22T04:04:09.432252+00:00",
+  "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+  "cases": "random05/experiments/random04-record2783-full-v166.json",
+  "references": "random05/experiments/random04-record2783-v166-references.json",
+  "purpose": "Qualify the selected 2783 development maximum without treating its one-task selecting-seed gain as a paired improvement.",
+  "design": "Exact seed4 candidate repeat and four same-source paired archived planner seeds0/1/2/3, R05_SCHED_CHAIN0/1. Include the already-audited original seed4 pair2782/2783 in the five-pair aggregate; report the four additional pairs separately.",
+  "fixed_settings": "Current selected RANDOM-04 recipe, pickup-heading price0, all700robots movable, activecap560, B10/depth16/K8064/FIRST4032, 32workers. Only chain matching differs inside each pair.",
+  "original_pair": {
+    "batch": "random12345-pickup-heading-split-full-v166",
+    "control": "trick-random-04-pickup-heading-off",
+    "candidate": "trick-random-04-pickup-heading-old-chain"
+  },
+  "validation": "Full1000steps, strict1000ms entries/30000ms preprocessing/32decimalGB, independent movement/assignment/event replay, source/input/affinity verification, six-field exact repetition. Preserve every failure; no historical substitution for a failed contemporary control.",
+  "reporting": "Selected maximum, exact reproducibility, paired planner-seed behavior and fresh task/start validation are separate claims. Comparator max(NMS,KK)=2649; milestone2914.",
+  "heldouts": "No fresh input used or generated. Reserved RANDOM-04 seeds50013/14 remain untouched.",
+  "trick": "Explicit --trick RANDOM-04 required for this tuned horizon/guidance/admission preset."
+}
