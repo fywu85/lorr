@@ -15,7 +15,7 @@ def sha(path):
 
 
 def totals(records):
-    keys = ('transition_steps', 'approach_bound', 'approach_extra',
+    keys = ('transition_steps', 'approach_bound', 'physical_approach_bound', 'release_delay', 'approach_extra',
             'loaded_steps', 'loaded_bound', 'loaded_extra',
             'pickup_heading_excess', 'assignment_changes')
     return dict(count=len(records), **{key:sum(r[key] for r in records) for key in keys})
@@ -66,7 +66,9 @@ def main():
             if stage==1:
                 assert active[agent] is None and task not in records
                 ready=last_finish[agent];state=last_cell[agent]*4+int(headings[agent][ready])
-                bound=max(1,int(approach[state,tasks[task][0]]),release[task]-ready)
+                physical_bound=max(1,int(approach[state,tasks[task][0]]))
+                release_delay=max(0,release[task]-ready)
+                bound=max(physical_bound,release_delay)
                 elapsed=time-ready;assert bound<=elapsed
                 eligible=np.fromiter((release[t]<=ready and pickups.get(t,horizon+1)>ready for t in task_ids),dtype=bool)
                 nearest=max(1,int(approach[state,task_goals[eligible]].min())) if eligible.any() else None
@@ -79,6 +81,7 @@ def main():
                 records[task]=dict(task=task,agent=agent,ready=ready,pickup=time,
                     initial_transition=ready==0,transition_steps=elapsed,
                     approach_bound=bound,approach_extra=elapsed-bound,
+                    physical_approach_bound=physical_bound,release_delay=release_delay,
                     nearest_visible_pickup_bound=nearest,
                     released_after_ready=release[task]>ready,
                     pickup_heading_excess=int(tail[heading]-tail.min()),
@@ -133,6 +136,7 @@ def main():
         rows=outputs,paired=paired,
         caveats=['Completed-task cohorts exclude censored work; the full robot-step partition includes it.',
             'Approach lower bounds ignore collisions and use the previous completion pose or initial pose. The chosen task may be released later.',
+            'A transition includes unassigned/admission waiting before the next pickup. Its bound is max(physical approach, release delay), not the sum; a large transition bound is not necessarily long travel.',
             'Nearest visible pickup bounds ignore competition and task length; they are not assignment optima or recoverable savings.',
             'Pickup-heading excess ignores the approach cost of obtaining another heading.',
             'Same task IDs still have different robots, preceding tasks, headings, release times and traffic histories. Observed differences do not prove causal throughput gains.'])

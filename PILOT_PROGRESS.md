@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 03:19 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 05:08 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -34,10 +34,10 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | CITY-01 | — | — | — | — | Not evaluated | — | — |
 | CITY-02 | — | — | — | — | Not evaluated | — | — |
 | GAME | — | — | — | — | Not evaluated | — | — |
-| RANDOM-01 | 739 | 692 | KK | +6.79% | TRICK | 1 | 114.53 |
+| RANDOM-01 | 745 | 692 | KK | +7.66% | TRICK | 4 | 119.47 |
 | RANDOM-02 | 1,408 | 1,256 | KK | +12.10% | TRICK | 2 | 492.79 |
 | RANDOM-03 | 2,646 | 2,359 | NMS | +12.17% | TRICK | 3 | 676.51 |
-| RANDOM-04 | 2,782 | 2,649 | NMS | +5.02% | TRICK | 4 | 739.55 |
+| RANDOM-04 | 2,799 | 2,649 | NMS | +5.66% | TRICK | 0 | 984.80 |
 | RANDOM-05 | 4,302 | 3,172 | NMS | +35.62% | TRICK | 0 | 830.91 |
 
 **Headline comparisons use the stronger matched local result from NMS and Kitty Knight.**
@@ -59,10 +59,10 @@ assignment and task-event replay checks.
 
 | Instance | PILOT | Local NMS32 | Local KK32 | Matched max(NMS, KK) | Difference |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 739 | 649 | 692 | 692 | +6.79% |
+| RANDOM-01 | 745 | 649 | 692 | 692 | +7.66% |
 | RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
 | RANDOM-03 | 2,646 | 2,359 | 2,110 | 2,359 | +12.17% |
-| RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
+| RANDOM-04 | 2,799 | 2,649 | 1,472 | 2,649 | +5.66% |
 | RANDOM-05 | 4,302 | 3,172 | 2,085 | 3,172 | +35.62% |
 
 **Published scores below are historical orientation, not matched local comparisons.**
@@ -76,10 +76,10 @@ in the [target snapshot](random05/references/published-nms-kk-combined-2024.json
 | CITY-01 | — | 8,445 | KK | — |
 | CITY-02 | — | 16,997 | KK | — |
 | GAME | — | 23,274 | NMS | — |
-| RANDOM-01 | 739 | 688 | KK | +7.41% |
+| RANDOM-01 | 745 | 688 | KK | +8.28% |
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% |
 | RANDOM-03 | 2,646 | 2,334 | NMS | +13.37% |
-| RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% |
+| RANDOM-04 | 2,799 | 2,547 | NMS | +9.89% |
 | RANDOM-05 | 4,302 | 3,050 | NMS | +41.05% |
 
 These are selected individual bests, not an average or one universal preset.
@@ -99,20 +99,20 @@ not unseen-map validation.
 | CITY-01 | — | — | — | — | — |
 | CITY-02 | — | — | — | — | — |
 | GAME | — | — | — | — | — |
-| RANDOM-01 | 727 | +5.06% | 739 | +6.79% | 692 |
+| RANDOM-01 | 727 | +5.06% | 745 | +7.66% | 692 |
 | RANDOM-02 | 1,397 | +11.23% | 1,408 | +12.10% | 1,256 |
 | RANDOM-03 | 1,634 | -30.73% | 2,646 | +12.17% | 2,359 |
-| RANDOM-04 | 1,616 | -39.00% | 2,782 | +5.02% | 2,649 |
+| RANDOM-04 | 1,616 | -39.00% | 2,799 | +5.66% | 2,649 |
 | RANDOM-05 | 2,314 | -27.05% | 4,302 | +35.62% | 3,172 |
 
 Current selected records are pinned to their completion timestamps and source commits:
 
 | Instance | Completed UTC | Source | Full-run evidence |
 |---|---|---|---|
-| RANDOM-01 | 2026-09-22T00:43:24.293402+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mixp25-span32/summary.json) |
+| RANDOM-01 | 2026-09-22T04:44:25.643796+00:00 | [6074498c3357d3f59f6e5a32e7ad478e81dd1bd3](https://github.com/fywu85/lorr/commit/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3) | [Run](random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed4/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
 | RANDOM-03 | 2026-09-22T00:53:28.091236+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
-| RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
+| RANDOM-04 | 2026-09-22T04:26:21.345951+00:00 | [0bb92ceaece9a08a48465bfe94295f646659749a](https://github.com/fywu85/lorr/commit/0bb92ceaece9a08a48465bfe94295f646659749a) | [Run](random05/results/random04-chain-price-split-full-v166/trick-random-04-chain-price-lengthp5-seed0/summary.json) |
 | RANDOM-05 | 2026-09-22T02:19:09.148099+00:00 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Run](random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
 
 **RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
@@ -139,12 +139,25 @@ latency455.6/480.2ms versus553.1/545.7ms. The supplemented fresh
 max(NMS,KK) comparison is **+8.852%**, below10%. NMS is stronger on both
 streams; the four later unmodified KK repeats also pass replay and timing.
 [Fresh V2 report](random05/RANDOM03_FRESH_VALIDATION_V2.md).
-RANDOM-01 reaches739 with observed-progress horizon correction0.25/span32,
+RANDOM-01 previously reached739 with observed-progress correction0.25/span32,
 added to the735profile. The exact repeat passes all six fields. Five paired
 planner seeds736/739/726/732/732 versus732/735/725/729/730 give+0.3835%,
 all positive. Maximum qualification entry118.656ms. This is a modest
 development gain; fresh01V1still qualifies the earlier729profile only.
 [Paired evidence](random05/results/random01-record739-split-full-v162/REPORT.md).
+
+Focused RANDOM-01 repair-group, island-cooperation and pickup-heading
+experiments all lose. Its completed-task trace already improves both
+pickup transitions and loaded routes relative to KK. Bounded forecast
+assignment now gives a selected745 maximum: seed4, radius8,
+mean70.901/max119.472ms. Five paired planner seeds total3705versus3665
+(+1.0914%, four gains/one tie), all strict-valid and independently replayed.
+Largest qualification entry119.523ms. The740 and742 traces repeat exactly;
+the745 maximum also repeats all six fields exactly. Larger radii do not beat745.
+General01radius4
+loses727to721, and other completed transfer tests lose or time out.
+No broad or fresh-input benefit is claimed.
+[Transition diagnosis](random05/results/random01-task-transitions-v162/REPORT.md).
 
 The preceding2,621 physical-deadline gate record repeats exactly. Five paired
 development seeds total13,029 versus12,999 (+0.231%, four gains/one loss).
@@ -170,8 +183,8 @@ Candidate mean494.489/478.907ms, max727.685/677.620ms; RSS below465MB.
 These are same-layout validation streams, not new archived records.
 [Fresh V3 report](random05/RANDOM03_FRESH_VALIDATION_V3.md).
 
-RANDOM-04 currently reaches **2,782** (+5.02% above matched max(NMS,KK)),
-**132 tasks short** of2,914. Its record peaks at739.6ms;
+RANDOM-04 currently reaches **2,799** (+5.66% above matched max(NMS,KK)),
+**115 tasks short** of2,914. Its record peaks at984.8ms;
 The earlier 2,777-task profile repeated exactly. Eight planner seeds score
 2,726–2,777; all original, repeat and seed checks peak below 791 ms.
 Frozen RANDOM-01/02 task/start checks are supplemented with KK repeats.
@@ -182,11 +195,33 @@ These two streams per density use the same layout, not unseen maps.
 [RANDOM-01](random05/RANDOM01_FRESH_VALIDATION_V1.md),
 [RANDOM-02](random05/RANDOM02_FRESH_VALIDATION_V1.md).
 
-The new2,782 record uses task-specific observed progress to adjust the
+The preceding2,782 record uses task-specific observed progress to adjust the
 known-horizon estimate. Exact repetition passes; the new profile improves
 the eight-seed aggregate by0.340% (six gains, two losses). Seed11's later
 extension fails the strict first-step deadline; it has no valid score.
 [Replication](random05/results/random124-seed-extension-split-full/paired-comparison.json).
+Whole-chain matching now raises the selected maximum to2,795 on seed1:
+mean469.862/max797.611ms, RSS695.480MB. Five paired planner seeds total
+13,905versus13,826 (+0.5714%, four gains/one loss), including the original
+selecting seed4. The four additional pairs alone gain0.7063%. Every run
+passes strict checks and full replay; maximum qualification entry907.769ms.
+Both2,783 and2,795 repeat all six trace fields exactly.
+A larger whole-chain length coefficient0.5 raises the selected maximum
+to2,799 on seed0, mean467.634/max984.795ms. However, seed1 fails at
+step0/1046.301ms. This configuration is not called robust. The failure
+is preserved. The exact2,799 repeat passes. Optional-column compression
+preserves the declared complete traces and completes both candidate seeds
+below860ms. Their2799/2771total is one task below the compressed0.25
+controls2776/2795; no paired throughput gain is claimed. The three
+additional paired seeds are complete, with three first-step timeouts
+(1039.572/1144.865/1041.974ms), including two controls. Completed pairs
+0/1/3 total8,331candidate versus8,347control (-0.1917%); full five-pair
+qualification fails. Compression alone has not established robust runtime.
+[Final qualification](random05/results/random04-compact-qualification-split-full-v166/REPORT.md).
+[Preserved qualification failures](random05/results/random04-compact-qualification-split-full-v166/FAILURES.md).
+[Exact runtime comparison](random05/results/random04-chain-runtime-split-full-v166/REPORT.md).
+[Work-price results](random05/results/random04-chain-price-split-full-v166/REPORT.md).
+[Whole-chain qualification](random05/results/random04-record2783-split-full-v166/REPORT.md).
 Fresh RANDOM-04 validation is still pending.
 The earlier 2,661-task configuration passed four planner seeds and exact
 repetitions below 491 ms; a later equivalent source control peaked at

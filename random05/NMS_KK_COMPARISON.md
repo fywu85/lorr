@@ -4,10 +4,10 @@ Updated 2026-09-22 02:23 UTC. Every headline reference is **max(NMS, Kitty Knigh
 
 | Instance | PILOT selected best | Strongest valid NMS | Strongest valid KK | max(NMS, KK) | Difference |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 739 | 649 | 692 | 692 | +6.79% |
+| RANDOM-01 | 745 | 649 | 692 | 692 | +7.66% |
 | RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
 | RANDOM-03 | 2,646 | 2,359 | 2,110 | 2,359 | +12.17% |
-| RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
+| RANDOM-04 | 2,799 | 2,649 | 1,472 | 2,649 | +5.66% |
 | RANDOM-05 | 4,302 | 3,172 | 2,085 | 3,172 | +35.62% |
 
 Selected bests are development maxima, not seed averages or a universal preset. Retain the strongest previously audited reference when a newer repetition scores lower. Published competition maxima688/1260/2334/2547/3050 use different task/start inputs and hardware and remain historical targets. The local RANDOM-04 reference increases from2,580 to2,649, so a10% lead now requires2,914.

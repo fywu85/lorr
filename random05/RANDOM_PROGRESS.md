@@ -1,7 +1,7 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-Current selected records are739/1408/2646/2782/4302. Fresh validation qualifies
+Current selected records are745/1408/2646/2799/4302. Fresh validation qualifies
 specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
@@ -20,14 +20,14 @@ Large maps are outside active development.
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched max(NMS, KK) | Best vs matched max |
 |---|---:|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 727 | 739 | 692 | +6.79% |
+| RANDOM-01 | 100 | 600 | 727 | 745 | 692 | +7.66% |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1256 | +12.10% |
 | RANDOM-03 | 400 | 800 | 1634 | 2646 | 2359 | +12.17% |
-| RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2649 | +5.02% |
+| RANDOM-04 | 700 | 1000 | 1616 | 2799 | 2649 | +5.66% |
 | RANDOM-05 | 800 | 2000 | 2314 | 4302 | 3172 | +35.62% |
 
 Both local baselines are complete. Selected-best gains versus matched
-max(NMS,KK) are +6.79%/+12.10%/+12.17%/+5.02%/+35.62%.
+max(NMS,KK) are +7.66%/+12.10%/+12.17%/+5.66%/+35.62%.
 Published historical maxima688/1260/2334/2547/3050 use different inputs/hardware;
 see [PILOT_PROGRESS.md](../PILOT_PROGRESS.md) for that separate comparison.
 [Matched evidence](NMS_KK_COMPARISON.md).
@@ -191,6 +191,12 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-22T00:53:28.091236+00:00 | RANDOM-03 | trick | 2646 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
 | 2026-09-22T02:07:14.726513+00:00 | RANDOM-05 | general | 2314 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Full run](results/random12345-terminal-pending-split-full-v164/general-random-05-terminal-pending-1/summary.json) |
 | 2026-09-22T02:19:09.148099+00:00 | RANDOM-05 | trick | 4302 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Full run](results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
+| 2026-09-22T03:55:13.773867+00:00 | RANDOM-04 | trick | 2783 | [0bb92ceaece9a08a48465bfe94295f646659749a](https://github.com/fywu85/lorr/commit/0bb92ceaece9a08a48465bfe94295f646659749a) | [Full run](results/random12345-pickup-heading-split-full-v166/trick-random-04-pickup-heading-old-chain/summary.json) |
+| 2026-09-22T04:12:41.655814+00:00 | RANDOM-04 | trick | 2795 | [0bb92ceaece9a08a48465bfe94295f646659749a](https://github.com/fywu85/lorr/commit/0bb92ceaece9a08a48465bfe94295f646659749a) | [Full run](results/random04-record2783-split-full-v166/trick-random-04-record2783-seed1/summary.json) |
+| 2026-09-22T04:24:36.347075+00:00 | RANDOM-01 | trick | 740 | [6074498c3357d3f59f6e5a32e7ad478e81dd1bd3](https://github.com/fywu85/lorr/commit/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3) | [Full run](results/random12345-match-forecast-split-full-v167/trick-random-01-match-forecast-h8-seed0/summary.json) |
+| 2026-09-22T04:26:21.345951+00:00 | RANDOM-04 | trick | 2799 | [0bb92ceaece9a08a48465bfe94295f646659749a](https://github.com/fywu85/lorr/commit/0bb92ceaece9a08a48465bfe94295f646659749a) | [Full run](results/random04-chain-price-split-full-v166/trick-random-04-chain-price-lengthp5-seed0/summary.json) |
+| 2026-09-22T04:36:25.846364+00:00 | RANDOM-01 | trick | 742 | [6074498c3357d3f59f6e5a32e7ad478e81dd1bd3](https://github.com/fywu85/lorr/commit/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3) | [Full run](results/random01-record740-split-full-v167/trick-random-01-record740-seed2/summary.json) |
+| 2026-09-22T04:44:25.643796+00:00 | RANDOM-01 | trick | 745 | [6074498c3357d3f59f6e5a32e7ad478e81dd1bd3](https://github.com/fywu85/lorr/commit/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3) | [Full run](results/random01-record740-split-full-v167/trick-random-01-record740-seed4/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1350,3 +1356,127 @@ Source165 local refinement is complete and negative across all five general
 reactive profiles and selected04/05. All18 runs and nine exact controls pass.
 Selected05 stays4302; exact repetition is verified, while an original baseline
 timeout prevents the complete four-pair qualification. All attempts are retained.
+
+## Focused01/04 outcomes and new tests (2026-09-22 04:26 UTC)
+
+Selected739/1408/2646/2795/4302 lead matched max(NMS,KK) by
+6.79%/12.10%/12.17%/5.51%/35.62%. RANDOM-04 is119short of2,914.
+Its whole-chain scheduler has five paired scores2776/2795/2775/2776/2783
+versus2749/2773/2781/2741/2782:13,905versus13,826 (+0.5714%), four gains
+and one loss. The original2783 repeats exactly; exact2795 is frozen/queued.
+All runs pass full replay and strict checks, max907.769ms. This is archived
+planner-seed evidence, not fresh task/start qualification.
+
+RANDOM-01 remains739: repair-group and current island-cooperation variants lose,
+as does the new pickup-heading price. On685common completed orders it already
+has shorter pickup transitions and loaded routes than KK692. Source167/6074498c
+instead tests joint-assignment forecast rows for soon-finishing robots. Opened
+assignments stay locked; only visible tasks are used. Full regression63.70s
+passes; twenty frozen full runs prioritize eight paired01tests and cover all five
+general profiles plus selected03. No throughput gain is claimed before results.
+
+All24pickup-heading runs pass replay/strict checks; all ten off controls are
+six-field exact. Price1 loses on all five general and selected profiles. Only
+the separate existing whole-chain04mode improves. All six04future-memory trials
+lose. All four05reduced-startup portfolios are complete: pairedtotals8336/8292
+versus8526for the separately valid current candidates; keep4302. These do not
+replace the failed disabled-credit seed3qualification control. All heldouts stay
+excluded and RANDOM04reserved50013/14 stay unused.
+
+[04qualification](results/random04-record2783-split-full-v166/REPORT.md),
+[01cooperation](results/random01-current-cooperation-split-full-v166/REPORT.md),
+[heading-price report](results/random12345-pickup-heading-split-full-v166/REPORT.md),
+[05startup follow-up](results/random05-first-work-split-full-v164/REPORT.md).
+
+## Small new01/04 maxima and runtime caveats
+
+RANDOM-01 reaches740 at forecast radius8/seed0 (source6074498c,
+finished2026-09-22T04:24:36.347075+00:00), mean72.242/max115.926ms,
+RSS393.945MB. Two initial pairedseeds0/1total1479versus1475; exact repetition
+and additional pairs2/3/4 are frozen in18c39bd1. This is a small selected
+maximum, not yet a broadly qualified gain. General01radius4 loses727to721;
+general02radius4fails step2/1016.576ms. Preserve that failure.
+
+RANDOM-04 reaches2799 with whole-chain length coefficient0.5/seed0,
+source0bb92cea, finished2026-09-22T04:26:21.345951+00:00. Full replay/strict
+checks pass, mean467.634/max984.795ms,RSS685.867MB, but itsseed1counterpart
+fails atstep0/1046.301ms. Record the valid maximum without calling the recipe
+robust. The earlier2795now repeats exactly and retains its positive five-pair
+qualification. Nine frozen18c39bd1follow-ups test existing exact optional-idle
+column compression and coupled task-work/idle prices; original failures remain.
+
+Current selected740/1408/2646/2799/4302 lead matched max(NMS,KK) by
+6.94%/12.10%/12.17%/5.66%/35.62%. Targets and heldouts are unchanged.
+[04work-price evidence](results/random04-chain-price-split-full-v166/REPORT.md),
+[01qualification protocol](experiments/random01-record740-v167-protocol.json).
+
+## RANDOM-01 follow-up reaches742 (2026-09-22 04:42 UTC)
+
+Source6074498c, radius8/seed2 scores742, finished2026-09-22T04:36:25.846364+00:00.
+Independent full replay and strict checks pass, mean71.116/max109.274ms,
+RSS393.466MB. This leads matched max692by7.23%,20tasks below the762yardstick.
+The740seed0 repeat is also independently audited; full-field exact checks await
+the complete qualification batch. Additionalseed3scores739versus732; seed4's
+candidate remains queued, with its732control complete. No full five-pair or
+fresh-input claim yet. A twelve-case radius follow-up is frozen in6775cac1,
+including exact742/740/727 controls, selected01radii8/12/16/24 and general01
+radii0/8/16/24. No validation stream was used for tuning.
+
+## Completed sparse qualification and dense runtime comparison (2026-09-22 04:53 UTC)
+
+RANDOM-01 forecast radius8 now reaches **745**, source6074498c, seed4,
+finished2026-09-22T04:44:25.643796+00:00. Mean70.901/max119.472ms,
+RSS373.232MB; full replay and strict checks pass. Five paired planner seeds give
+740/739/742/739/745 versus736/739/726/732/732: **3705vs3665, +1.0914%**,
+four gains and one tie. Largest qualification entry119.523ms. The740 and742
+traces repeat exactly; a separately frozen745repeat is submitted. This remains
+archived planner-seed evidence, not fresh task/start qualification. The radius
+follow-up is complete: selected two-seed totals at8/12/16/24 are
+1482/1479/1484/1478; none beats745. General01 at0/8/16/24 gives727/726/714/719.
+
+All20forecast-transfer attempts are audited,19valid/one preserved general02
+timeout. All eight off controls are exact. General05 on/off gives2255/2314;
+no broad transfer gain is established. Keep all five general records unchanged.
+
+RANDOM-04 exact2,799 repetition passes. All nine matching-runtime cases pass
+full replay/strict checks; four full-trace comparisons prove the declared exact
+compression equivalences. Compressed coefficient0.5seeds0/1 give2799/2771,
+max848.301/859.270ms, versus coefficient0.25controls2776/2795. Total5570vs5571
+is not a paired throughput gain. The original noncompressed seed1timeout is
+preserved. Three more paired compressed seeds are frozen in879a1f93 and submitted;
+robustness and selected maximum remain separate claims. Higher coupled idle
+prices also lose. Current maxima745/1408/2646/2799/4302 lead matched max by
+**7.66%/12.10%/12.17%/5.66%/35.62%**. R01is17below762; R04is115below2914.
+
+[01 qualification](results/random01-record740-split-full-v167/REPORT.md),
+[01 radius follow-up](results/random01-forecast-radius-split-full-v167/REPORT.md),
+[all-five transfer](results/random12345-match-forecast-split-full-v167/REPORT.md),
+[04 runtime comparison](results/random04-chain-runtime-split-full-v166/REPORT.md).
+
+## Exact745 confirmed; compressed04 extension still fails startup (2026-09-22 05:01 UTC)
+
+The source167 radius8/seed4 configuration repeats **745** and all six trace fields
+exactly, with independent full replay and strict checks. Its five-pair+1.0914%
+gain is retained; no fresh-input claim follows. [Exact repeat](results/random01-record745-split-full-v167/REPORT.md).
+
+The compressedRANDOM-04 extension preserves three further step0timeouts:
+controlseed2=1039.572ms, candidateseed2=1144.865ms, controlseed4=1041.974ms.
+All three failed attempts are independently audited; remaining cases continue.
+Assignment costs495–593ms and look-ahead464–497ms in these traces. These are
+observed wall times, not proof that external contention caused the failures.
+Compression alone has not made the configuration robust. Keep2799as the valid
+selected maximum, preserve every failed qualification pair, and target startup
+matching/search cost next. [Failure evidence](results/random04-compact-qualification-split-full-v166/FAILURES.md).
+
+## RANDOM-04 compressed qualification complete (2026-09-22 05:09 UTC)
+
+All six extension attempts are independently audited. Control seed 3 completes
+2,776; candidate seeds 3/4 complete 2,761/2,766. Control seeds 2/4 and candidate
+seed 2 retain their startup timeouts at 1039.572/1041.974/1144.865 ms.
+Across completed pairs 0/1/3, the candidate totals 8,331 versus 8,347 (-0.1917%,
+one gain and two losses). No full five-pair gain or robust runtime claim follows.
+The selected 2,799 exact maximum remains separate from this failed qualification.
+No benchmark jobs remain active and no fresh input was used. Next effort targets
+startup matching/search and sustained loaded-robot progress on RANDOM-04, while
+continuing focused RANDOM-01 improvement beyond the exact 745 record.
+[Final report](results/random04-compact-qualification-split-full-v166/REPORT.md).

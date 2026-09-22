@@ -1,154 +1,160 @@
-# PILOT campaign continuation
+# PILOT continuation
 
-Updated 2026-09-22 03:19 UTC. The all-five campaign remains active.
+Updated 2026-09-22 05:09 UTC. Goal active; this turn made progress.
 
-## Latest user steering: prioritize RANDOM-01 and RANDOM-04
+## Scope and operating constraints
 
-Make these two the main new development priorities. All five RANDOM instances
-remain in scope. Neither priority case has an established inherent ceiling.
-Always compare against matched max(NMS, Kitty Knight). Keep random05/ naming
-until development ends; the user explicitly deferred the rename.
+Prioritize RANDOM-01 and RANDOM-04 per the latest human instruction; all five
+remain in scope. Always use matched max(NMS,KK):692/1256/2359/2649/3172.
+The corrected R04 target is2914; the stored app goal has stale03/04-only text
+and2838. ACTIVE_GOAL.md governs current scope. Never falsely complete/recreate it.
 
-RANDOM-01 now has a completed, focused twelve-case repair-granularity test.
-At identical nominal agent-repair work, every alternative loses in paired total.
-Keep739. Next diagnose task assignment and task-to-task transitions on the current
-trace, comparing common-task cohorts and early/late phases with KK692. Loaded
-route slack is already small, so avoid repeating larger-iteration or group sweeps.
-Whole-chain matching and next-pickup hints already have older negative trials;
-inspect those controls before proposing an interaction or new mechanism.
+Only edit/stage/commit random05/, PILOT_PROGRESS.md, RANDOM05_PROGRESS.md.
+Public fywu85/lorr pushes authorized; preserve visibility and shared CGAR work.
+No subagents. Fable provider-credit failure unchanged; do not retry.
+Keep random05/ naming until development ends. Heldouts50001–50012 and50015–50022
+excluded;04seeds50013/14 reserved/ungenerated. No fresh data used this turn.
 
-RANDOM-04 has six frozen forecast-memory cases running/queued. Finish them and
-measure100/500/900/1000-step throughput, exact off control and all strict limits.
-The selected2782 and NMS2649 tie at2417 tasks after900steps; their entire final
-score difference appears in the last100steps. This locates the gain in time,
-without proving its cause. Target stronger traffic performance throughout the run.
+Full600/600/800/1000/2000 steps; strict1000ms entry,30000ms prep,32decimalGB.
+16bound physical EPYC9354cores/32SMTworkers, actual affinity/topology/no-quota
+checks. Shared hosts allowed. Fixed work finishes or fails; no timed partial
+solution. Explicit --trick INSTANCE for tuned guidance/admission/horizon presets.
+Throughput primary; preserve completed/censored waiting evidence.
 
-## Boundaries
+## Current records
 
-Only edit/stage/commit random05/, PILOT_PROGRESS.md and RANDOM05_PROGRESS.md.
-Public fywu85/lorr pushes are authorized; preserve visibility. Leave shared CGAR
-files, jobs and locks alone. No subagents. Fable's provider-credit failure has
-not changed; do not retry without new information.
+Selected745/1408/2646/2799/4302; general727/1397/1634/1616/2314.
+Leads7.66/12.10/12.17/5.66/35.62% over matched maxima. R01 needs17to762;
+R04 needs115to2914. Frontiers pin full recipes and source/timestamps.
 
-Full horizons600/600/800/1000/2000; strict1000ms entries,30000ms preprocessing,
-32decimalGB guard. Allocate16 bound physical EPYC9354 cores /32SMT workers,
-verify actual affinity/topology/no quota. Shared hosts are allowed. Fixed work
-completes or fails; no time-triggered partial solution. Every tuned trick needs
---trick RANDOM-0N. Throughput is primary; preserve waiting-time evidence.
-
-Held-out50001–50012 and50015–50022 are excluded from tuning. Seeds50013/14
-remain reserved/ungenerated for04. Freeze protocols before fresh generation.
-No new held-out input was generated in this turn.
-
-ACTIVE_GOAL.md governs the all-five objective and latest01/04 priority. The stored
-app goal still has older03/04-only wording and04reference2580/target2838.
-Do not falsely complete/recreate it; current04reference is2649 and target2914.
-
-## Selected records and qualification
-
-Selected739/1408/2646/2782/4302; general727/1397/1634/1616/2314.
-Matched max692/1256/2359/2649/3172: +6.79/+12.10/+12.17/+5.02/+35.62%.
-R04 remains132short of2914. Every selected record passes full independent replay
-and strict limits. Full settings, source hashes and timestamps are pinned in
-random-frontiers.json, best.json, best-32-workers.json and the progress logs.
-
-R01=739, source162/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad, plannerseed1,
-progress.25/span32 on anneal.25/physicalgate1. Mean73.552/max114.527ms,
-RSS388.555MB. Exact repeat; five paired seeds736/739/726/732/732 versus
-732/735/725/729/730: +.3835%,all5positive,max118.656ms. Fresh01V1 qualifies729only.
+R01=745, source167/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3, seed4,
+MATCH_FORECAST_HOPS8/MAX32 on previous739 profile. Finished2026-09-22T04:44:25.643796+00:00,
+mean70.901/max119.472ms,RSS373.232MB. Five pairs740/739/742/739/745 versus
+736/739/726/732/732 total3705vs3665,+1.0914%,4gains/1tie,max119.523ms.
+All audited/strict-valid.740,742 and745 repeat all six fields exactly.
+Fresh01V1 still qualifies729only; general727 unchanged.
 
 R02=1408 source132/027df4d9; general1397 source141/611aa2a6. Fresh02V1
-qualifies1408 at+10.17% over max(NMS,KK). More iterations4096 failed atstep1;
-retain that failure. Current stronger-window/progress/third-order trials lose.
+qualifies1408 at+10.17% over matched max. Preserve new general forecast radius4
+step2 timeout1016.576ms; one forecast row does not isolate its cause.
 
-R03=2646 source162, plannerseed3, progress.25/span32 on physicalgate1 and
-heuristic1.2, H20/keep14/I6144/group6. Mean484.103/max676.507ms,RSS469.467MB.
-Exact repeat; five paired seeds total13084versus13029 (+.4221%,allpositive),
-max730.523ms. Frozen freshV3 candidate2660/2622 versus prior2639/2612:
-+.590% paired, but only+9.109688% against max(NMS,KK)2461/2380. All12fresh
-runs audited; the10% fresh milestone is still missed. Seeds50021/22 excluded.
+R03=2646 source162/4fb9498e, seed3, progress.25/span32, physical gate1,
+heuristic1.2,H20/keep14/I6144/group6. Exact/fivepairs+0.4221%,allpositive.
+FreshV3=2660/2622 vs max2461/2380, +9.109688%, still below fresh10% milestone.
+All12 fresh runs audited,50021/22 excluded. General1634 unchanged.
 
-R04=2782 source144/88551e69df5b6f5ee14600dfe3a7ae8fe586783c, plannerseed4.
-Cap560/all700movable, B10/depth16/K8064/FIRST4032, field15/flip5/contrast2.2,
-flow20, sharedrankings2048MiB/orders1, progress.25/span32, horizon1000.
-Mean478.686/max739.553ms. Exact repeat and8pairs+.340%,6gain/2loss;
-a later seed11 original failed atstep0/1050.759ms. Preserve that failure even
-though the new first-work batch's same-budget seed11 succeeds. General1616
-face8 repeats but five-pair mean-.101%; general auction1595 gains4.312%all5pairs.
+R04=2799, source166/0bb92ceaece9a08a48465bfe94295f646659749a, seed0,
+SCHED_CHAIN1/LENGTH_WEIGHT.5 on prior2782 profile. Source166 pickup-heading price0.
+Cap560/all700movable, B10/depth16/K8064/FIRST4032; flowseed15,oneflip/flipseed5,
+contrast2.2/20updates; sharedrankings2048MiB/orders1. Horizon1000,cutoff.875,
+guidedmix.75/progress.25/span32; optionalidle32/horizonprice16. Mean467.634,
+max984.795ms,RSS685.867MB. Exact repeat passes all six fields, max902.458ms.
+Original noncompressedseed1 fails step0/1046.301ms; recipe NOT called robust.
+Exact compact_idle1 candidate seeds0/1 give2799/2771,max848.301/859.270ms.
+Their total5570 vs controls2776/2795(total5571) is not a paired gain.
+The compressed extension has three audited startup timeouts:control2=1039.572ms,
+candidate2=1144.865ms,control4=1041.974ms. All six extension attempts are complete.
+Control3/candidate3/candidate4 finish2776/2761/2766. The three complete pairs
+0/1/3 total8331candidatevs8347control(-0.1917%); five-pair qualification fails. Neither
+configuration is robust; compression alone is insufficient. Better-qualified old0.25
+recipe2795 exact/fivepairs+0.5714%,4gains/1loss,max907.769ms. No fresh04claim.
+General1616 unchanged. Do not erase the earlier oldseed11 startup failure either.
 
-R05=4302 source164/30a5664757b8ffad1150f5eb763c747ba1001bed, seed0,
-terminal_pending.5 on4254 field80 profile. Mean582.723/max830.909ms,
-RSS491.999MB. Exact repeat matches six fields; candidate seeds0/1/2/3 score
-4302/4250/4276/4224. Three valid controls4254/4189/4252 give12828vs12695
-(+1.0477%), but disabled seed3 failed atstep0/1045.313ms. All attempts complete
-and audited; full four-pair qualification is NOT achieved. Do not substitute
-historical source162seed3=4253. Largest valid qualification entry956.058ms.
-FreshV6 qualifies4175only and is NMS-only. All92 selected frontier/waiting rows
-were audited after4302 promotion. Longest completed wait1986,146initialunfinished,
-110unopened, oldest censored2000. General2314 repeats exactly and gains3.4599%
-over four paired seeds,3gains/1loss,max595.950ms; still27.05% below matched3172.
+R05=4302 source164/30a56647,seed0,terminal_pending.5 on4254field80recipe.
+Exact repeat; three valid pairs+1.0477%, but disabledseed3 fails1045.313ms.
+Full four-pair qualification NOT achieved; no historical substitution.
+General2314 exact/fourpairs+3.4599%,3gains/1loss. FreshV6 qualifies4175only,
+NMS-only. All92 selected05frontier/waiting rows audited. Longest completed1986,
+146initialunfinished/110unopened,censoredoldest2000. Keep these caveats.
 
-## Newly completed experiments (all full independent audits)
+## Completed batches and next bounded work
 
-- Local refinement source165:18/18 complete, nine six-field controls exact.
-  General01..05 off/five:647/642,1106/1090,1634/1616,1616/1564,2226/2160.
-  Selected04 off/five/fifteen:2782/2756/2750; selected05:4254/4189/4242.
-  Both serial/parallel five-proposal pairs are six-field exact. All changes lose.
-- Current layouts source162:12/12 complete, two controls exact. R03 control2646,
-  noflip2614, fields23/7/31/43=2598/2514/2566/2603. R04 control2782,
-  noflip2743, fields105/109/111/115=2722/2668/2688/2704. All lose.
-- RANDOM01 repair granularity frozen b8109a76, jobs8921556–8921567:
-  twelve full runs audited, both controls exact. Groups8/1/2/4/16/mixed8 totals
-  1475/1383/1457/1457/1452/1471 across seeds1/0. Source162 unchanged.
-- RANDOM04 first-work frozen c6aacea3, jobs8921537–8921545:
-  nine full runs audited, control2782 exact. FIRST4032/3072/2048 gives
-  seed4=2782/2724/2746, seed0=2749/2751/2746, seed11=2736/2729/2718.
-  Totals8267/8204/8210. LaterK8064 unchanged. Startup/later timing is in
-  random04-first-work-split-full-v162/startup-latency.json. No new record.
+No PILOT benchmark jobs remain active. The random04-compact-qualification-split-full-v166
+batch, frozen879a1f93, is complete and independently audited: three valid full runs
+and three startup failures. Original compressed0/1pairs remain2799/2771vs2776/2795.
+Completed pairs0/1/3 give8331vs8347; no five-pair gain or robust runtime claim.
+REPORT.md, paired-comparison.json, FAILURES.md and startup-failures.json contain
+final accounting. Never replace failed pairs with older scores.
 
-Reports live under random05/results/<batch>/REPORT.md. Preserve all losses,
-strict failures and previous partial evidence. General and selected remain distinct.
+The exact745 job8921735 is complete, independently replayed and six-fieldexact.
+Its report is random01-record745-split-full-v167/REPORT.md.
 
-## Active batches
+Next priority: R04 startup headroom. Observed failures spend495–593ms in
+assignment and464–497ms in look-ahead; task-cost preparation adds46–54ms.
+Inspect existing exact matching/cost-preparation opportunities before repeating
+parameter sweeps. Parallel independent matrix/chain preparation is a hypothesis,
+not implemented or sufficient by itself; no source168 yet. A declared smaller
+FIRST_K is a separate deterministic configuration and must keep its own scores.
+Task-dependent matching cannot move into initialization because tasks are revealed
+afterward. Continue R01 effort without treating its remaining gap as a ceiling.
 
-1. random04-future-memory-split-full-v162: sixjobs8921569–8921574,
-   frozen2c79afc1. Source162; plannerseeds4/0 x FUTURE_ELITE_BLEND0/.5/1.
-   Current2782profile otherwise fixed. Report phase throughput and strict timing.
-   Seed4off must reproduce all six2782fields. All positive-cap04manifests previously
-   kept blend0. This is a hypothesis, with no performance claim yet.
-2. random05-first-work-split-full-v164: fourjobs8921546–8921549,
-   frozen8bcefa2b. Selectedcredit.5,seeds0/3 x FIRST5952/4032,laterK16320.
-   These changed configurations never replace the failed4302qualification pair.
+## Newly completed and audited
 
-Collect live summaries before assuming these jobs are still pending. Only selected
-full strict-valid independently replayed records may be promoted. R05 promotion
-remains manual; the generic promotion helper excludes R05. Exact repetitions,
-paired planner seeds and fresh task/start validation are separate claims.
+- random12345-match-forecast-split-full-v167:20attempts,19valid/onegeneral02
+  timeout; all8offcontrols six-fieldexact. General off/on radius4:
+  01=727/721,02=1397/FAIL,03=1634/1628,04=1616/1510,05=2314/2255;
+  selected03=2646/2625. Selected01 radius8 helps; no broad transfer claim.
+- random01-record740-split-full-v167:7valid; exact740repeat+3disabledcontrols.
+  Complete five-pair+1.0914% and record745, as above.
+- random01-forecast-radius-split-full-v167:12valid; exact742/740/727controls.
+  Selected seeds2/0, radii8/12/16/24:742/739/740/739 and740/740/744/739.
+  Totals1482/1479/1484/1478. Radius16 gains2 in total but does not beat745;
+  do not silently change radius. General0/8/16/24=727/726/714/719, all negative.
+- random04-chain-runtime-split-full-v166:9valid; four exact refs cover original
+  2799repeat and optional-column compression. Compressed pairs length/idleprice
+  (.25,32),(.5,32),(.5,64),(1,128) total5571/5570/5524/5529.
+  Candidate.5/32 bothseeds below860ms. No paired gain. Original timeout preserved.
+- random04-chain-price-split-full-v166:8attempts,7valid/one1046.301mstimeout.
+  Weights.25/.125/.5/1 at idleprice32: seed1=2795/2777/FAIL/709;
+  seed0=2776/2785/2799/709. Twoexactcontrols. Higher coupled idle prices later lose.
+- random04-record2783-split-full-v166:9valid; exact2783; fivepairs+0.5714%,
+  new2795 then exactly repeated. Later2799 is separately less-qualified.
+- source166pickup-heading24valid,tenexactcontrols: feature loses all profiles;
+  existing04whole-chain alternative is the useful separate finding.
+- R01cooperation8valid/twoexactcontrols: totals1475/1471/1465/1467,allchangeslose.
+  Prior12repair-granularity trials also allnegative.
+- R04futurememory6valid: blend0/.5/1 totals5531/5459/5345;keep0.
+- R05firstwork4valid: FIRST5952/4032 totals8336/8292 vs separate valid candidates
+  8526; keep4302. Never substitute these for the failed disabled-credit control.
 
-## Builds and tools
+Reports under random05/results/<batch>/REPORT.md. Old record files/history remain.
+Sync root summary/completion after collect; audit rows can finish after an earlier
+summary snapshot. Do not re-run a complete unchanged independent audit needlessly.
 
-Source162 binary runs/random05/build-v162/build/lifelong_random05,
-SHA fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556;
-full regression54.99s. Source164 binary build-v164,
-SHA4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd,
-regression57.30s. Source165/513cbe8910d17f70fdce12dc517f4391e7eb729f,
-binarya9a32eb1e6f07443f5865be9fb2989dd0d288abf264aec4661345dde03020a9e,
-regression62.69s. Source/test/binary proofs are archived. No source166 exists.
+## Diagnosis and implementation
+
+R01 task-transitions:739 vs KK692 on685 common completed orders, approach5922vs7955,
+loaded44842vs45855. No broad matching deficit. General source167 adds bounded
+final-leg forecast rows to joint assignment; real opened tasks remain locked,
+only visible orders used, no future-task reservation. Counts bounded by hop radius,
+spare columns and row limit. Admission/idle/deadline matrices bypass forecasts;
+horizon-price mode is rejected. Selected02/04/05 are excluded from this feature
+trial because their constraints disable it; all-five GENERAL profiles were tested.
+
+R04 task-transition report freezes2795/off2773/NMS2649. On2568 common completed
+orders, loaded420016vs404002, physical bounds133115vs133584. Transition intervals
+include admission/idling and order-release delay, now split from physical travel
+in the diagnostic; do NOT interpret a larger release bound as long travel.
+At900steps2795/NMS=2431/2417, at1000=2795/2649:132of146lead appears inlast100.
+This locates the gain, not its cause. Target sustained traffic execution next.
+
+Source166 regression67.56s; binary9c2916c87a5637ee4b9f02fbc3075b869d1effb905325ae50542b8bad3fe677d.
+Source167 regression63.70s; binary0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e.
+Frozen executables runs/random05/build-vNNN/build/lifelong_random05; source/test/binary
+proofs inresults/build-vNNN. No source168 yet. Default-off166heading price loses.
+
+## Tools and git
 
 collect: python3 random05/tools/split_grid.py collect --output runs/random05/BATCH
-independent audit: audit_random_cases.py --batch BATCH --build build-vNNN --source HASH
-exact controls: audit_exact_controls.py --batch BATCH --references random05/experiments/REF.json
-Add --allow-pending only to the independent audit for active batches. Do not
-claim exact controls until the independent audit is complete. Render the dashboard
-with random05/tools/render_pilot_progress.py after updates; do not erase history.
+independent: audit_random_cases.py --batch BATCH --build build-vNNN --source HASH
+exact: audit_exact_controls.py --batch BATCH --references random05/experiments/REF.json
+Use --allow-pending only for partial independent audits; mark partial control
+proofs explicitly. Promote only valid full replayed records; helper excludes05.
+Render PILOT with tools/render_pilot_progress.py after updates.
 
-Shell calls require escalation because the sandbox namespace is broken. Default
-Python3.7; env/bin/python has NumPy. Use scoped git operations, never reset/amend
-or remove other work. Check HEAD before committing. Public push:
+Sandbox namespace broken: shell calls need escalation. DefaultPython3.7;
+env/bin/python has NumPy. No reset/amend/lock removal. Scoped git operations only.
+Check HEAD/origin at resume; commit/push checkpoints are authorized:
 env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
-
-Hosts: research35|research36|research37|research39|research46|research47|
-research48|research50|research51|research52|research55|research56.
-CPU model exactly AMD EPYC 9354 32-Core Processor. Actual allocation guards are
-mandatory. Map preprocessing precedes task revelation; task-dependent matching
-cannot move into initialization. Original timeout causes remain unproven.
+Hosts research35|research36|research37|research39|research46|research47|research48|
+research50|research51|research52|research55|research56; exactCPU AMD EPYC 9354 32-Core Processor.

@@ -2096,3 +2096,30 @@ five-proposal traces match exactly. Four lower-startup-work05 trials continue.
 New development prioritizes RANDOM-01/04 per user steering; all five remain in
 scope. [Qualification](random05/results/random05-record4302-split-full-v164/REPORT.md),
 [local refinement](random05/results/random12345-local-refinement-split-full-v165/REPORT.md).
+
+## Completed startup/heading follow-ups (2026-09-22 04:26 UTC)
+
+The four lower-FIRST_K runs are complete and independently audited. With
+terminal credit0.5 and unchanged laterK16320, FIRST5952 gives4110/4226 on
+seeds0/3 and FIRST4032 gives4062/4230; totals8336/8292, below the separately
+valid original7968candidates4302/4224(total8526). Every changed run passes
+strict checks, but none replaces the original disabled-credit seed3failure.
+The declared four-pair4302qualification remains incomplete because of that
+retained timeout. [Full report](random05/results/random05-first-work-split-full-v164/REPORT.md).
+
+Pickup-heading price1 also loses: general2314to2282 and selected4302to4228.
+Both disabled05controls reproduce all six trace fields; all24all-density trials
+pass full replay and strict limits. Keep selected4302 (+35.62%over matched
+max3172) and general2314 (-27.05%). Source167forecast matching is now queued
+on all five general profiles while new development prioritizes01/04. No fresh
+input was used. [Heading-price report](random05/results/random12345-pickup-heading-split-full-v166/REPORT.md).
+
+## Forecast-assignment transfer complete (2026-09-22 04:53 UTC)
+
+Source167 generalRANDOM-05 radius4 finishes2,255 versus the six-field-exact
+2,314 control. Both full2,000-step runs pass independent replay and strict checks.
+All20all-density attempts are audited; retain the general02step2timeout.
+Forecast assignment improves the selected sparse01profile, without a broad
+transfer claim. RANDOM-05 remains selected4,302 (+35.62%over matchedmax3,172)
+and general2,314 (-27.05%). No new05frontier or fresh-input result is claimed.
+[Complete transfer report](random05/results/random12345-match-forecast-split-full-v167/REPORT.md).
