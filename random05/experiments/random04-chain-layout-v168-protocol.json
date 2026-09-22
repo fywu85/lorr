@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-09-22T05:32:43.951533+00:00",
+  "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+  "cases": "random05/experiments/random04-chain-layout-full-v168.json",
+  "references": "random05/experiments/random04-chain-layout-v168-references.json",
+  "inventory": "Before freezing this batch, 415 positive-cap RANDOM-04 manifest case entries used only five flow-generation seeds:15/105/109/111/115. Many were changes to work, policy, prices or replication rather than independent traffic layouts. No fresh validation stream was read.",
+  "hypothesis": "The selected whole-chain matcher changes how guidance affects assignment as well as motion. Broaden the limited capped-profile traffic-layout coverage to seeds1/3/7/23/31/43, removing the edge flip tuned specifically on layout15. Include layout15 with and without its existing flip as controls.",
+  "design": "Eight full1000-step cases, planner seed0, selected whole-chain length0.5/cap560/idle32/horizon1000 recipe. Fixed K8064/FIRST4032/depth16/B10, identical field model and contrast2.2. Source168 exact zero-update elision and optional-column compression enabled for every case. Only field generation seed/declared flip change.",
+  "validation": "Strict1000ms entries,30000ms prep,32decimalGB,16physical/32SMT bound workers. Full source/input/resource/action/assignment/event/waiting audits. Original layout15/oneflip must exactly repeat2799 before comparison. Preserve failures and do not replace them.",
+  "qualification": "This is explicitly map-tuned trick development on one archived task/start input and planner seed. New selected maxima require exact repetition and paired planner-seed checks; no broad or fresh-input claim.",
+  "trick": "Every case requires --trick RANDOM-04. This batch samples map-specific guidance patterns, not a new general algorithm."
+}
