@@ -66,6 +66,10 @@ Config Config::environment(const SharedEnvironment& env) {
     c.persist_elites=integer("R05_PERSIST_ELITES",1);
     c.continuations=integer("R05_CONTINUATIONS",1);
     c.continuation_start=integer("R05_CONTINUATION_START",1);
+    const int parallel_continuations=integer("R05_PARALLEL_CONTINUATIONS",0);
+    if(parallel_continuations<0 || parallel_continuations>1)
+        throw std::invalid_argument("parallel continuations requires a boolean value");
+    c.parallel_continuations=parallel_continuations;
     c.screen_branches=integer("R05_SCREEN_BRANCHES",0);
     c.screen_keep=integer("R05_SCREEN_KEEP",4);
     c.component_trials=integer("R05_COMPONENT_TRIALS",0);
@@ -2164,11 +2168,33 @@ Rollout Engine::evaluate(const Frame& frame,const std::vector<float>& offsets,
     if(continuations.empty())return result;
     if(shared && prefix.time!=cfg.continuation_start)
         throw std::runtime_error("missing shared rollout prefix");
-    double score=result.score,mean=result.score,variance_sum=0;int count=1;
-    for(const auto& continuation:continuations) {
-        Rollout branch=shared
+    auto evaluate_branch=[&](size_t index) {
+        const auto& continuation=continuations[index];
+        return shared
             ?rollout(prefix.frame,offsets,cycle_moves,&continuation,nullptr,&prefix,nullptr,early_moves,arrival_moves)
             :rollout(frame,offsets,cycle_moves,&continuation,nullptr,nullptr,forced_first,early_moves,arrival_moves);
+    };
+    // Local proposals depend on the previous accepted proposal, but their
+    // continuations are independent. Reuse the allocated team only when no
+    // outer root/component search is already using it. Keep every branch and
+    // reduce in the original order, preserving scores, work and tie decisions.
+    const bool parallel=cfg.parallel_continuations && cfg.threads>1 &&
+                        continuations.size()>1 && !omp_in_parallel();
+    std::vector<Rollout> branches;
+    std::vector<std::exception_ptr> errors;
+    if(parallel) {
+        branches.resize(continuations.size());errors.resize(continuations.size());
+        const int workers=std::min(cfg.threads,int(continuations.size()));
+        #pragma omp parallel for num_threads(workers) schedule(static)
+        for(size_t index=0;index<continuations.size();++index) {
+            try {branches[index]=evaluate_branch(index);}
+            catch(...) {errors[index]=std::current_exception();}
+        }
+    }
+    double score=result.score,mean=result.score,variance_sum=0;int count=1;
+    for(size_t index=0;index<continuations.size();++index) {
+        if(parallel && errors[index])std::rethrow_exception(errors[index]);
+        Rollout branch=parallel?std::move(branches[index]):evaluate_branch(index);
         // A branch evaluates the root's decision; it cannot silently substitute
         // a different first action or promise while contributing to its score.
         if(branch.actions!=result.actions || branch.first.loc!=result.first.loc ||

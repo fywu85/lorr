@@ -140,13 +140,18 @@ void scheduling() {
     require(assignment[0]==7,"started task reassigned");
     require(assignment[1]==8,"eligible task missing");
 }
-uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_restore=false,bool replan_control=false) {
+uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_restore=false,bool replan_control=false,bool continuation_control=false) {
     const int cells=rows*cols,n=cells-1;
     auto e=environment(rows,cols,n);
     uint64_t signature=14695981039346656037ULL;
     Engine engine(cfg);engine.initialize(&e);
     std::unique_ptr<Engine> control;
-    if(replan_control) {auto base=cfg;base.replan_roots=0;base.rescore_roots=0;control=std::make_unique<Engine>(base);control->initialize(&e);}
+    if(replan_control || continuation_control) {
+        auto base=cfg;
+        if(replan_control){base.replan_roots=0;base.rescore_roots=0;}
+        if(continuation_control)base.parallel_continuations=false;
+        control=std::make_unique<Engine>(base);control->initialize(&e);
+    }
     for(int a=0;a<n+spare_tasks;++a) {Task t;t.task_id=a;t.locations={(a+7)%cells,(a+17)%cells};e.task_pool[a]=t;}
     int next_task=n+spare_tasks,total_moved=0;
     for(int step=0;step<150;++step) {
@@ -162,8 +167,8 @@ uint64_t simulate(Config cfg,int spare_tasks=0,int rows=5,int cols=5,bool check_
         if(control) {
             std::vector<Action> base_actions;std::vector<int> base_schedule;
             control->compute(&e,base_actions,base_schedule);
-            require(actions==base_actions && assignment==base_schedule,"single-root forecast changed the decision");
-            require(engine.checkpoint(e)==control->checkpoint(e),"forecast mutated persistent solver state");
+            require(actions==base_actions && assignment==base_schedule,"equivalent solver changed the decision");
+            require(engine.checkpoint(e)==control->checkpoint(e),"equivalent solver changed persistent state");
         }
         if(!before.is_null()) {
             const auto after=engine.checkpoint(e);
@@ -745,6 +750,54 @@ void continuation_risk() {
         const auto serial=simulate(cfg,12);cfg.threads=2;
         require(serial==simulate(cfg,12),"signed continuation score changed with worker count");
     }
+}
+
+void parallel_continuations() {
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;
+    cfg.continuation_start=2;cfg.random_by_step=true;cfg.accept_equal=true;
+    cfg.cost_cache=true;cfg.scratch_reuse=true;cfg.goal_cache=true;
+    cfg.packed_order=true;cfg.radix_order=true;cfg.candidate_cache=true;cfg.kinematic_mask=true;
+    cfg.fast_dispersion=true;cfg.dispersion=.8f;
+    const auto no_local=simulate(cfg,12);
+    // LOCAL counts rollouts, not proposals: twenty gives five complete groups.
+    cfg.local_trials=20;bool changed=false;
+    for(bool shared:{false,true}) {
+        cfg.share_prefix=shared;cfg.threads=1;cfg.parallel_continuations=false;
+        const auto serial=simulate(cfg,12,5,5,true);changed=changed || serial!=no_local;
+        cfg.parallel_continuations=true;
+        require(serial==simulate(cfg,12),"one-worker continuation option changed local refinement");
+        cfg.threads=3;
+        // The control compares every action, assignment and complete persistent
+        // checkpoint at every step, while restore/replay also runs periodically.
+        require(serial==simulate(cfg,12,5,5,true,false,true),
+                "parallel continuation reduction changed the local trajectory");
+    }
+    require(changed,"local continuation fixture never changed a decision");
+    for(float risk:{-.5f,.5f}) {
+        cfg.continuation_risk=risk;cfg.rollout_match=true;cfg.terminal_pending=.5f;
+        simulate(cfg,12,5,5,true,false,true);
+    }
+    cfg.continuation_risk=0;cfg.rollout_match=false;cfg.shared_rankings_mb=16;cfg.shared_orders=true;
+    cfg.policy_profile=true;cfg.screen_branches=2;cfg.screen_keep=4;cfg.futures=80;
+    simulate(cfg,12,5,5,true,false,true);
+    // Forced joint first decisions use the same branch evaluator outside an
+    // outer parallel root search; certify their exact serial equivalence too.
+    cfg.policy_profile=false;cfg.joint_proposals=1;
+    simulate(cfg,12,5,5,true,false,true);
+    auto env=environment(2,2,1);const char* key="R05_PARALLEL_CONTINUATIONS";
+    const char* prior=std::getenv(key);const bool present=prior;const std::string old=prior?prior:"";
+    for(const char* invalid:{"-1","2"}) {
+        setenv(key,invalid,1);bool rejected=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"non-boolean parallel continuations accepted");
+    }
+    for(const char* value:{"0","1"}) {
+        setenv(key,value,1);
+        require(Config::environment(env).parallel_continuations==(value[0]=='1'),
+                "general parallel continuations lost its value or required a trick");
+    }
+    if(present)setenv(key,old.c_str(),1);else unsetenv(key);
 }
 
 void released_push_revisits() {
@@ -3051,6 +3104,7 @@ int main() {
     const auto unmeasured=simulate(measured,12);measured.profile=true;measured.policy_profile=true;
     require(unmeasured==simulate(measured,12),"phase profiling changed the trajectory");
     continuation_risk();
+    parallel_continuations();
     exact_hot_paths();
     for(int prefix:{1,2}) {
         Config cfg;cfg.futures=16;cfg.continuations=4;cfg.continuation_start=prefix;cfg.depth=6;

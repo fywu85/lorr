@@ -1867,3 +1867,30 @@ The pipelined forecast finishes each step with a legal simultaneous forward/wait
 Regression covers manually derived pickup/completion/backwards-heading costs, rejection of unaligned promises, legal full simulator turnover, cache/worker/shared-prefix/checkpoint invariance, compound scoring and configuration bounds. The feature is a hypothesis with no throughput or runtime claim. After a successful frozen build, compare reactive general profiles on all five archived densities and the current selected04/05profiles, preserving selected sparse/window bests. Fresh inputs never select this change.
 
 Source164/30a56647 full regression passed57.30s; compiled/test sources and binary4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd are independently checked. Freeze16full cases: general reactive01/02/03/04/05 credit0/1, selected trick04/05 credit0/.5/1. General01/02 use their archived reactive baselines647/1106, not the better windowed profiles727/1397, because the option specifically scores reactive forecasts. General03/04/05 controls are1634/1616/2226; selected controls2782/4254. Seven full six-field references are declared. Existing sparse selected bests remain untouched. All runs retain their prior full fixed budgets and strict limits; new scoring may add runtime. No benchmark gain is yet claimed.
+
+
+## Source165: parallel continuations for sequential local refinement
+
+R05_LOCAL has been disabled in the current dense profiles. Older local-search
+trials used different single-future settings; a manifest inventory found no
+nonzero RANDOM-04 local budget and no current RANDOM-05 continuation-averaged
+local refinement test. Importantly, LOCAL is a rollout allowance: five proposals
+need LOCAL=5*B, not5 when B>5. This is an interaction hypothesis, not evidence of
+a throughput gain.
+
+Optional general R05_PARALLEL_CONTINUATIONS=1 runs independent continuation
+branches concurrently only outside an already-active OpenMP root/component
+team. The base branch and shared prefix are completed first; reductions,
+exception checks and first-decision certification retain original branch order.
+Sequential local proposals still depend on the prior accepted incumbent. Every
+configured branch completes; no clock-dependent partial evaluation is added.
+Defaultoff preserves the serial path. Regression compares actions, assignments
+and complete persistent state at every step, plus checkpoint restore, signed
+risk, shared-prefix/cache/ranking paths, screening and forced joint decisions.
+
+After the frozen build passes, test small fixed local budgets on all five
+general reactive profiles and selected04/05, preserving explicit instance
+tricks and every full-run failure. General01/02 reactive results must remain
+separate from their stronger windowed records. Include serial/parallel exact
+controls before claiming a runtime improvement. Keep terminal-credit disabled
+in this first local-refinement comparison so mechanisms are not conflated.

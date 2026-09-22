@@ -77,6 +77,7 @@ struct Config {
     int snapshot_interval=0, snapshot_candidates=8;
     std::string snapshot_directory="snapshots";
     float future_mutation=0.3, future_elite_blend=0, continuation_risk=0;
+    bool parallel_continuations=false;
     bool share_prefix=false, packed_order=false, fast_dispersion=false, scratch_reuse=false, profile=false, goal_cache=false, policy_profile=false, radix_order=false, candidate_cache=false, kinematic_mask=false, cycle_mask=false;
     bool fuse_cache_hits=false, lazy_cost_rows=false, shared_orders=false;
     int shared_rankings_mb=0;
