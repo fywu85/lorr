@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-09-22T04:17:18.448466+00:00",
+  "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+  "cases": "random05/experiments/random04-chain-price-full-v166.json",
+  "references": "random05/experiments/random04-chain-price-v166-references.json",
+  "hypothesis": "The old whole-chain matcher changes internal task-work prices as well as pickup heading; pickup-heading-only prices lost. Guided whole-chain price may better order visible tasks under the existing560task cap.",
+  "design": "Two paired archived planner seeds1/0, task-length coefficients0.25/0.125/0.5/1 with R05_SCHED_CHAIN1. Everything else equals selected2795. The0.25 controls must reproduce all six prior trace fields; seed1 also provides exact repetition of2795.",
+  "qualification": "Seed1 was selected during the prior fixed qualification and is development data. Report both full results and paired totals; do not infer fresh-input generalization. New maxima require replay and repeat before reproducibility claims.",
+  "validation": "Full1000steps, strict1000ms entries,30000ms preparation,32decimalGB,32bound workers and source/input/replay/waiting audit. Complete budgets only. Preserve failures.",
+  "heldouts": "No fresh input is used or generated; reserved50013/14 untouched.",
+  "trick": "Existing tuned cap/guidance/horizon preset requires --trick RANDOM-04. This is explicitly task selection for throughput; no fairness improvement is presumed."
+}

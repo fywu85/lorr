@@ -2155,3 +2155,18 @@ turnover under both planners, caches/workers/checkpoints, and configuration
 bounds. Full comparison is required before claiming any throughput improvement.
 Prioritize paired RANDOM-01 tests and measure transfer on the five general
 profiles; selected capped04/05 cannot exercise this mechanism and stay separate.
+
+## Trick: RANDOM-04 whole-chain work price on the current admission preset
+
+The fixed five-seed whole-chain qualification has produced an independently
+replayed strict-valid2,795 maximum on seed1 versus its2,773 contemporaneous off
+control. Other completed pairs include2,776/2,749 and2,775/2,781; the selected
+maximum is not a uniform paired gain. The original2,783 also repeats with a
+valid full run. Finish the last qualification case and exact checks separately.
+
+The normalized pickup-heading-only experiment lost on04. Whole-chain mode also
+changes internal task-work prices from cell hops to oriented guided cost. Freeze
+coefficients0.25/0.125/0.5/1 on plannerseeds1/0, all other current settings fixed.
+The0.25 controls must repeat2,795/2,776 exactly. This explicit task-selection
+trick optimizes throughput without a fairness claim; waiting evidence is retained.
+No held-out input is involved. Protocol: experiments/random04-chain-price-v166-protocol.json.
