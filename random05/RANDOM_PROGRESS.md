@@ -1,7 +1,7 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-Current selected records are739/1408/2646/2782/4254. Fresh validation qualifies
+Current selected records are739/1408/2646/2782/4302. Fresh validation qualifies
 specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
@@ -24,10 +24,10 @@ Large maps are outside active development.
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1256 | +12.10% |
 | RANDOM-03 | 400 | 800 | 1634 | 2646 | 2359 | +12.17% |
 | RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2649 | +5.02% |
-| RANDOM-05 | 800 | 2000 | 2226 | 4254 | 3172 | +34.11% |
+| RANDOM-05 | 800 | 2000 | 2314 | 4302 | 3172 | +35.62% |
 
 Both local baselines are complete. Selected-best gains versus matched
-max(NMS,KK) are +6.79%/+12.10%/+12.17%/+5.02%/+34.11%.
+max(NMS,KK) are +6.79%/+12.10%/+12.17%/+5.02%/+35.62%.
 Published historical maxima688/1260/2334/2547/3050 use different inputs/hardware;
 see [PILOT_PROGRESS.md](../PILOT_PROGRESS.md) for that separate comparison.
 [Matched evidence](NMS_KK_COMPARISON.md).
@@ -189,6 +189,8 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-22T00:43:24.293402+00:00 | RANDOM-01 | trick | 739 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mixp25-span32/summary.json) |
 | 2026-09-22T00:53:00.178139+00:00 | RANDOM-03 | trick | 2628 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp125-span32/summary.json) |
 | 2026-09-22T00:53:28.091236+00:00 | RANDOM-03 | trick | 2646 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
+| 2026-09-22T02:07:14.726513+00:00 | RANDOM-05 | general | 2314 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Full run](results/random12345-terminal-pending-split-full-v164/general-random-05-terminal-pending-1/summary.json) |
+| 2026-09-22T02:19:09.148099+00:00 | RANDOM-05 | trick | 4302 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Full run](results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1265,3 +1267,40 @@ Source164/30a56647 adds optional general committed-motion terminal credit. It pa
 All12frozen freshV3runs pass source/input/runtime/allocation/deadline/memory checks and independent full action/schedule/task/waiting replay. Candidate2660/2622 versus the prior2620recipe2639/2612 gives +0.590%aggregate, positive on both. Repeated NMS2461/2444 and2361/2380 exceed repeated KK2084/2093 and2094/2130. Against per-input max(NMS,KK), gains are8.086%/10.168%, **9.110%aggregate**, below10%. Candidate maxima727.685/677.620ms, RSS<465MB. This qualifies the frozen2646configuration; different-input2660does not replace the archived2646record. [Complete V3report](RANDOM03_FRESH_VALIDATION_V3.md).
 
 The current-work-v162 batch is complete:03I8192finishes2619versus2646. No extra-work candidate on01/02/03improves throughput. All seven successful full runs replay independently; the original02I4096deadline failure is retained. Three controls match all six fields. [Work report](results/random123-current-work-split-full-v162/REPORT.md). Flow-model04results2696/2558/2714/2319alllose2782;05results and complete batch control proof remain pending. Source164terminal-scoring trials remain in progress.
+
+
+## Flow model outcome and local-refinement follow-up (2026-09-22 02:18 UTC)
+
+The co-flow exponent/coefficient experiment is complete. All ten full runs pass
+independent replay and strict limits; both unchanged controls are six-field exact.
+RANDOM-04control2782 beats2696/2558/2714/2319; RANDOM-05control4254beats
+4059/4030/4007/3518. Keep the current fields. Selected bests739/1408/2646/2782/4254
+remain+6.79%/+12.10%/+12.17%/+5.02%/+34.11%over matched max(NMS,KK).
+
+Source164committed-motion credit raises general reactiveRANDOM-05from2226to2314,
+with full replay and max559.538ms; it is still27.05%below matchedmax3172.
+Thirteen completed terminal-credit runs are audited, three selected05trials remain.
+The general candidate has a frozen exact repeat and three additional paired planner
+seeds running; no replicated gain or overall record is claimed yet.
+
+Source165parallelizes independent continuations while retaining their original
+reduction order and sequential local proposals. Full regression62.69s passes.
+Eighteen frozen full tests cover all five general reactive profiles and selected04/05,
+with nine exact control comparisons, including serial/parallel local work. Local
+allowances count full continuation groups. Directory/naming cleanup remains deferred.
+
+
+## Completed terminal scoring: new4,302record (2026-09-22 02:23 UTC)
+
+All16source164full runs are independently replayed/strict-valid; all seven
+unchanged controls are six-field exact. SelectedRANDOM-05credit0/.5/1gives
+4254/4302/4250. Promote4302 (+35.62%over matched max3172), source30a56647,
+finished2026-09-22T02:19:09.148099+00:00, plannerseed0. Mean582.723/max830.909ms,
+RSS491.999MB; longestcompleted1986steps,146initialunfinished/110unopened,
+censoredoldest2000. General05credit1separately promotes2314. All01..04variantslose.
+
+Frozen5e47a72fadds seven strict selected qualification runs: exactseed0repeat,
+thencredit0/.5pairedseeds1/2/3. Include originalseed0pair in the four-seed
+aggregate. The general2314qualification uses5/6/7/8. No replicated or fresh-input
+gain for either new recipe is claimed yet. Local-refinement tests retain their
+previously frozen4254parent. Source165regression62.69spassed before submission.

@@ -60,6 +60,16 @@ per group of `q` roots. Only fully evaluated candidates become parents or
 persist between real steps. For example, K5120/B14/s2/q4 over four generations
 tests1,024 roots and fully evaluates256. Screening is disabled by default.
 
+`R05_LOCAL` adds a fixed rollout allowance for sequential regional refinements
+of the best priority vector. One proposal evaluates all `B` continuations, so
+five proposals require `R05_LOCAL=5*B`; an incomplete remainder is unused.
+Optional `R05_PARALLEL_CONTINUATIONS=1` evaluates those independent branches
+concurrently when no outer search team is active. It preserves the original
+reduction and proposal order, avoids nested active teams and completes all
+branches. Defaults are local work0 and parallel continuations off. This is an
+experimental exact runtime optimization, with throughput depending separately
+on the chosen local-search budget.
+
 `R05_BRANCH_DIAGNOSTICS=N` separately logs already-computed branch scores every
 N steps without altering search decisions. Use `tools/audit_branch_ranking.py`
 on completed diagnostic runs to measure screening recall. The diagnostic and

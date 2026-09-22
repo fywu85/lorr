@@ -1,6 +1,6 @@
 # PILOT campaign continuation
 
-Updated 2026-09-22 01:55 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
+Updated 2026-09-22 02:25 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
 ACTIVE_GOAL.md is the working objective. Always headline matched max(NMS, Kitty Knight).
 The stored app goal has stale03/04-only wording and old04reference2580/threshold2838;
 do not falsely complete it to change its text. Current user steering governs.
@@ -22,10 +22,10 @@ All tuned tricks require --trick RANDOM-0N; mark them as tricks in commits/logs.
 
 ## Current selected records and qualification
 
-Selected739/1408/2646/2782/4254. General727/1397/1634/1616/2226.
-Matchedmax692/1256/2359/2649/3172; leads+6.79/+12.10/+12.17/+5.02/+34.11%.
+Selected739/1408/2646/2782/4302. General727/1397/1634/1616/2314.
+Matchedmax692/1256/2359/2649/3172; leads+6.79/+12.10/+12.17/+5.02/+35.62%.
 R04target2914still132short. Fresh03V3gain9.110%is below10%; all12runs are fully audited. Fresh01V1qualifies729,
-02V1qualifies1408,03V3qualifies2646. No fresh739/4254qualification;05V6qualifies
+02V1qualifies1408,03V3qualifies2646. No fresh739/4302qualification;05V6qualifies
 4175only and is NMS-only. The dashboard/density ledger use current matched references.
 
 R01=739: source162/4fb9498e, progress.25/span32 on735anneal.25+physicalgate1,
@@ -44,14 +44,18 @@ Intermediate2628chronologicalrecord also logged. Exactrepeat6fieldpasses. Five p
 (+.4221%,all5positive),max730.523ms,RSS482.013MB. FreshV3now gives9.110%over max(NMS,KK), below10%, and+.590%over prior2620.
 Preceding2621fivepairs13029vs12999 (+.231%,4gains/1loss);2620freshV2remainsseparate.
 
-R05=4254: source162/4fb9498e, flow80updates on4242profile,seed0.
-Batchrandom345-flow-iterations-split-full-v162/casetrick-random-05-flow-iterations80.
-Finished2026-09-22T00:21:04.224019+00:00; mean579.781/max874.301ms,RSS490.107MB.
-Longestcompletedorder1973,147initialunfinished/109unopened,censoredoldest2000.
-All91chronologicalrecords/waitingmetrics pass. Exactrepeat6fieldpasses. Pairedseeds0..3
-4254/4189/4252/4253 vs4242/4028/4183/4128 yield16948vs16581 (+2.2134%,all4positive),
-mean4237.0,max919.594ms,RSS494.387MB. Also+1.5641%above historical4197profiletotal16687.
-Report random05-record4254-split-full-v162. This is development-input qualification.
+R05=4302: source164/30a5664757b8ffad1150f5eb763c747ba1001bed, credit.5,
+seed0; parent4254recipeotherwiseunchanged. Batchrandom12345-terminal-pending-split-full-v164,
+case trick-random-05-terminal-pending-p5. Finished2026-09-22T02:19:09.148099+00:00.
+Mean582.723/max830.909ms,RSS491.999MB. Fullreplay/waitingpass; off4254control6fieldexact.
+Longestcompleted1986,146initialunfinished/110unopened,oldestcensored2000.
+All92chronologicalfrontier/waitingrows passedaudit_progress.pyafterpromotion.
+Exactrepeat/threeadditionalpairedseedsfrozen5e47a72fsubmitted; nopairedevidenceyet.
+Thepreceding4254field80profilehasfourpositiveseeds4254/4189/4252/4253 vs4242/4028/4183/4128,
++2.2134%,mean4237.0,max919.594ms. Thatqualificationdoesnotapplytoterminalcredit.
+General05new2314source164credit1seed5ismatched-auditedandpromoted; prior2226offexact.
+Mean518.413/max559.538ms,RSS490.627MB;completedmax1968,206initialunfinished/131unopened.
+Four-seedqualificationrunning; still27.05%below matchedmax3172.
 
 R02=1408source132/027df4d9; general1397source141/611aa2a6 remains.
 R04=2782source144/88551e69; mean478.686/max739.553ms. Exactrepeat plus8pairedseeds
@@ -72,21 +76,37 @@ Current-work-v162 is complete/audited, three controls six-field exact.
 01=739/732/731;02=1408/1402/failedI4096t1at1029.213ms;03=2646/2619.
 No new best. Report random123-current-work-split-full-v162/REPORT.md.
 
-Two active batches:
-- random45-flow-model-split-full-v162:04allfive audited, control2782,
-  candidates2696/2558/2714/2319 all lose. Five05cases pending.
-  Finish full audit and both declared control proofs when all10finish.
-- random12345-terminal-pending-split-full-v164: all16submitted/frozen38011347.
-  First six report general reactive01=647/643,02=1106/1101,03=1634/1619 (off/on),
-  not yet independently batch-audited.04/05general and selected trials pending.
-  Seven complete control proofs required. Do not promote from raw summaries.
+Flow-model-v162: all10complete, independently audited, both controls six-field exact.
+04scores2782/2696/2558/2714/2319;05scores4254/4059/4030/4007/3518. All changeslose.
+Report random45-flow-model-split-full-v162/REPORT.md.
 
-Source164/30a5664757b8ffad1150f5eb763c747ba1001bed is built/regression-passed57.30s;
-binary4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd.
-Optional general R05_TERMINAL_PENDING credits a committed forward/wait at
-rollout termination without a new action choice or task. Defaults OFF;
-operation/window modes reject it. No throughput benefit claimed. General01/02
-trials use earlier reactive baselines647/1106, not window bests727/1397.
+Terminal-pending-v164iscomplete:all16audited/allsevencontrols6fieldexact.
+Generaloff/on01=647/643,02=1106/1101,03=1634/1619,04=1616/1600,05=2226/2314.
+Selected04credit0/.5/1=2782/2747/2769;05=4254/4302/4250. Only05improves.
+Fullreport random12345-terminal-pending-split-full-v164/REPORT.md.
+
+Active batches:
+
+- random05-record4302-split-full-v164:sevenjobs8921510–8921516,frozen5e47a72f.
+  Exactcredit.5seed0repeat; thencredit0/.5pairedseeds1/2/3; includeoriginalseed0pair.
+- random05-general-terminal-qualification-split-full-v164: seven submittedjobs
+  8921481–8921487, frozen4d94594a. Exact2314repeatseed5 andcredit0/1seeds6/7/8.
+  Four-seedpairedaggregateincludesoriginalseed5; do notfilteroutlosses/failures.
+- random12345-local-refinement-split-full-v165:18jobs8921489–8921506,
+  frozen919612ec. General01..05andselected04/05LOCAL0or5*B; selected04/05also
+  15*B and serial5*B. All terminalcredit0. Nine declaredexactcomparisons.
+  LOCALcountsrollouts,notproposals(B18general/05,B10selected04). Complete
+  fixedworkandstrict1s. General01/02reactiveprofilesarenotthewindowedbests.
+
+Source164/30a5664757b8ffad1150f5eb763c747ba1001bed, regression57.30s,
+SHA4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd.
+Source165/513cbe8910d17f70fdce12dc517f4391e7eb729f, regression62.69s,
+SHAa9a32eb1e6f07443f5865be9fb2989dd0d288abf264aec4661345dde03020a9e.
+New R05_PARALLEL_CONTINUATIONS defaults0; only outside activeOMPteams,
+completebranchwork/order preserved. NonzeroLOCAL legal turnover/cache/prefix/
+workers/signedrisk/screening/joint/checkpoint regression passes. Buildmetadata
+andcompiled/test sourcechecksarchivedunderresults/build-v165. No performance
+claimuntilthefrozenfullrunsareindependentlyaudited.
 Other agents' jobs and work remain outside this session's scope.
 
 ## Completed batches since the last checkpoint
@@ -135,7 +155,7 @@ shows little sparse loadedwaiting/detouring and much more on04/05; it is observa
 not causally recoverable work. Candidate-bound rejection in window repair is only a
 possible runtimehypothesis: prove lowerbound/FPsafety, exactrollback, and handling of
 annealing/component salvage/thirdorder before implementation. No speedup claimed.
-The739/2646tricks and4254field now need independent fresh-input qualification after
+The739/2646tricks and4302terminal-credit recipe need independent fresh-input qualification after
 configuration/protocol freeze, if chosen as the next validation step; no new stream
 has been generated. Do not repeatedly draw heldouts just to cross a threshold.
 
@@ -434,3 +454,16 @@ Current-workbatch6/8complete:01control739/I1024=732/I2048=731;02control1408/I307
 Fresh03V3all12complete/strictvalid/replayed; finalKKseed50022repeat2=2130. Finalcandidate2660/2622vsbaseline2639/2612 and per-input max2461/2380: +9.109688%reference, +.590364%baseline. Largestcandidateentry727.685ms,RSS<465MB. Fullreport RANDOM03_FRESH_VALIDATION_V3.md. Fresh reference updater preservesV2history and selectsV3; dashboard updated. No fresh10%claim.
 
 Current-work8/8complete/audited;03I8192=2619loses2646. Three controls allsixfieldexact; REPORT.md/failures.json retain02I4096t1deadline1029.213ms. No recordchange. Flow-model04all5complete/auditedandallvariantslose2696/2558/2714/2319vs2782;05pending. Terminal-pending-v164all16submitted, pending. Source164compiled/test audit is complete; no throughputclaim.
+
+General05record2314and selected4302are independently verified/promoted. Seven off controls are six-field exact. Exact and paired qualification remain pending. [Record evidence](results/random12345-terminal-pending-split-full-v164/GENERAL05_RECORD.md).
+
+
+## Latest local-refinement checkpoint (2026-09-22 02:27 UTC)
+
+The first six source165 full runs are independently audited. General reactive
+RANDOM-01 scores647/642, RANDOM-02 scores1106/1090, and RANDOM-03 scores1634/1616
+for zero/five local proposals. These are negative changes, and do not alter the
+stronger selected or windowed records. Twelve crowded cases remain pending.
+The selected4302 and general2314 exact/paired qualification batches are pending.
+All92 historical selected RANDOM-05 frontier/waiting rows pass after promotion.
+Keep the running local trials' frozen4254parent; do not mutate their configuration.

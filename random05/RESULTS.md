@@ -1,22 +1,22 @@
 # RANDOM-05 results
 
-The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+39.48%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
+The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+41.05%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
 
-**Current selected archived best: 4,254 tasks** (+34.11% versus matched max(NMS, Kitty Knight)),
-source[4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad), plannerseed0.
-Traffic-assignment guidance receives80 updates instead of20; all other4,242
-settings and per-step search work are unchanged. Full2,000steps pass independent
-replay and strict checks: mean579.781/max874.301ms, RSS490.107MB.
-The20-update control matches the prior4,242 run in all six trace fields.
-The exact repeat matches all six trace fields. Four planner seeds score
-4254/4189/4252/4253 against4242/4028/4183/4128: **+2.2134%aggregate**, all
-positive, with candidate mean4237.0. Their largest entry is919.594ms; all pass.
-The same candidate total is1.5641%above the earlier4197profile. These are paired
-development-input gains; fresh validationV6still qualifies4,175only.
-[Current audit](results/random345-flow-iterations-split-full-v162/audit.json),
-[paired qualification](results/random05-record4254-split-full-v162/REPORT.md),
-[previous paired seeds](results/random05-record4242-split-full-v144/paired-comparison.json),
-[fresh admission comparison](FRESH_VALIDATION_V6.md).
+**Current selected archived best: 4,302 tasks** (+35.62% versus matched max(NMS, Kitty Knight)),
+source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed), plannerseed0.
+Crediting half of the next committed movement at the forecast boundary adds48tasks
+to4,254at unchanged fixed work. Full2,000steps pass independent replay, strict
+1s entries and32GB: mean582.723/max830.909ms, RSS491.999MB. The disabled4254
+control matches all six trace fields; fullcredit1loses at4250. Exact repetition
+and three further paired planner seeds are running under a frozen protocol.
+No paired-seed or fresh-input gain is claimed for4,302yet.
+[Full comparison](results/random12345-terminal-pending-split-full-v164/REPORT.md).
+
+The preceding4,254traffic-field profile repeats exactly and improves all four
+paired planner seeds over4,242 (+2.2134%aggregate). Its largest qualification
+entry is919.594ms. That evidence applies to the field change only.
+[Prior qualification](results/random05-record4254-split-full-v162/REPORT.md).
+FreshV6still qualifies4,175only and compares NMS only.
 
 The **4,000-task milestone is independently verified**:4,011 on the full archived
 RANDOM-05 combined benchmark, reproduced exactly. On two untouched task/start
@@ -36,7 +36,7 @@ The 32-worker reference includes both teams; the older four-core reference is NM
 | Allocation | Our best | Reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 (NMS only) | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,254 | 3,172 (max NMS, KK) | +34.1% | 580 / 874ms | 490MB |
+| 16 physical cores / 32 workers | 4,302 | 3,172 (max NMS, KK) | +35.6% | 583 / 831ms | 492MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results

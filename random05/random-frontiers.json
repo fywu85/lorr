@@ -709,10 +709,10 @@
   },
   "RANDOM-05": {
     "general": {
-      "source_commit": "233f5bf",
-      "evidence": "random05/results/generalization-random-generic-split-full-v69/pipeline-generic-random-05/summary.json",
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "evidence": "random05/results/random12345-terminal-pending-split-full-v164/general-random-05-terminal-pending-1/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v69/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
         "cores": 16,
         "smt": 2,
@@ -720,7 +720,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": false,
-        "name": "pipeline-generic-random-05",
+        "name": "general-random-05-terminal-pending-1",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -769,10 +769,11 @@
           "R05_CACHE_SLOTS": "64",
           "R05_SCREEN_BRANCHES": "2",
           "R05_SCREEN_KEEP": "4",
-          "R05_TRIAGE_GUIDED_MIX": "0"
+          "R05_TRIAGE_GUIDED_MIX": "0",
+          "R05_TERMINAL_PENDING": "1"
         },
-        "binary_sha256": "b2d044351e254b40e6dddab7828f2de32defd60470edaa3fcaa6f8b7f9335746",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v69/build/lifelong_random05",
+        "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
@@ -780,14 +781,15 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 2226,
-      "finished_utc": "2026-09-21T01:46:49.544530+00:00"
+      "tasks": 2314,
+      "finished_utc": "2026-09-22T02:07:14.726513+00:00",
+      "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
     },
     "trick": {
-      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
-      "evidence": "random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json",
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
         "cores": 16,
         "smt": 2,
@@ -795,7 +797,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-05",
-        "name": "trick-random-05-flow-iterations80",
+        "name": "trick-random-05-terminal-pending-p5",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -856,10 +858,11 @@
           "R05_FAST_ADMISSION": "1",
           "R05_TRIAGE_PROGRESS_MIX": ".125",
           "R05_TRIAGE_PROGRESS_WINDOW": "32",
-          "R05_FLOW_ITERS": "80"
+          "R05_FLOW_ITERS": "80",
+          "R05_TERMINAL_PENDING": ".5"
         },
-        "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
+        "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -868,9 +871,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 4254,
-      "finished_utc": "2026-09-22T00:21:04.224019+00:00",
-      "audit": "random05/results/random345-flow-iterations-split-full-v162/audit.json"
+      "tasks": 4302,
+      "finished_utc": "2026-09-22T02:19:09.148099+00:00",
+      "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
     },
     "nms32_tasks": 3172
   }

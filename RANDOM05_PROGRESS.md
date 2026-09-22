@@ -15,9 +15,9 @@ baselines. All prior fresh inputs50001–50012 and50015/50016 remain excluded fr
 ## Comparison rules
 
 Headline comparisons now use **max(NMS, Kitty Knight)** per instance. Published
-RANDOM-05 max is3,050; the4,254 development record is+39.48% above that historical
+RANDOM-05 max is3,050; the4,302 development record is+41.05% above that historical
 target. Inputs/hardware differ. The matched local max is **3,172** (NMS; KK=2,085),
-so the selected **4,254 is +34.11%**. Both KK allocator-only repeats pass full
+so the selected **4,302 is +35.62%**. Both KK allocator-only repeats pass full
 replay and strict limits; source and algorithm are unchanged. Older fresh-input
 protocols that measured only NMS remain NMS-only comparisons.
 See [comparison policy](random05/COMPARISON_POLICY.md).
@@ -46,24 +46,27 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-22 00:31 UTC.
+Updated: 2026-09-22 02:23 UTC.
 
-**Current selected archived best: 4,254 tasks**, +34.11% versus matched max(NMS,KK)=3,172.
-Source [4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad), planner seed0.
-Refining the traffic-assignment guidance for80 updates instead of20 adds12 tasks
-to the4,242 profile, with the same per-step search work. Full2,000steps pass
-independent replay, strict1s entry limits and32GB checks: mean579.781/max874.301ms,
-RSS490.107MB. The20-update control reproduces4,242 in all six trace fields.
-The exact repeat matches all six trace fields. Planner seeds0/1/2/3 score
-4254/4189/4252/4253 versus4242/4028/4183/4128: +2.2134%aggregate,
-positive on all four. The largest qualification entry is919.594ms; all pass.
-This is development-input planner-seed evidence, without fresh-input qualification.
-Longest completed order1,973steps;147initial orders unfinished,109unopened;
+**Current selected archived best: 4,302 tasks**, +35.62% versus matched max(NMS,KK)=3,172.
+Source [30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed), plannerseed0.
+Committed-motion terminal credit0.5 adds48tasks (+1.128%) to the4,254profile,
+with the same fixed search work. All2,000steps pass independent replay and strict
+checks: mean582.723/max830.909ms,RSS491.999MB. Disabled4,254control is exact in
+all six full-trace fields. Credit1scores4,250; retain this negative alternative.
+The new exact repeat and three additional paired planner seeds are frozen in
+5e47a72f and running; no replicated or fresh-input gain is claimed yet.
+Longest completed order1,986steps;146initialorders unfinished,110unopened;
 oldest unfinished age is censored at2,000. All800robots remain movable.
-Admission cap680, startup weighting0.125/250steps, progress correction0.125/span32,
+Admission cap680, startup weighting0.125/250steps, progress0.125/span32,
 selected guidance and known-horizon scale1/mix1 require `--trick RANDOM-05`.
-[Full audit](random05/results/random345-flow-iterations-split-full-v162/audit.json),
-[paired qualification](random05/results/random05-record4254-split-full-v162/REPORT.md).
+[Full audited comparison](random05/results/random12345-terminal-pending-split-full-v164/REPORT.md).
+
+The preceding4,254field80profile repeats exactly. Four paired planner seeds
+4254/4189/4252/4253 versus4242/4028/4183/4128 give+2.2134%aggregate,
+positive on all four, with maximum qualification entry919.594ms. That evidence
+qualifies the field-iteration improvement, not the new terminal-credit change.
+[Previous paired qualification](random05/results/random05-record4254-split-full-v162/REPORT.md).
 
 The previous4,242 profile repeats exactly. Planner seeds0/1/2/3 score
 4242/4028/4183/4128: +0.157%aggregate over4,236, but0.635% below4,197.
@@ -386,6 +389,7 @@ fix. Neither removes combined-track features.
 | 2026-09-21T17:28:48.985827+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; explicit `--trick RANDOM-05` | 4236 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.5% | [Full evidence](random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; explicit `--trick RANDOM-05` | 4242 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.7% | [Full evidence](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 | 2026-09-22T00:21:04.224019+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; flow80 updates; explicit `--trick RANDOM-05` | 4254 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +34.1% | [Full evidence](random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
+| 2026-09-22T02:19:09.148099+00:00 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125/250steps; progress0.125/span32; flow80; committed-motion credit0.5; explicit `--trick RANDOM-05` | 4302 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +35.6% | [Full evidence](random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1999,3 +2003,49 @@ The selecting seed0is included, and these are the same development task/start
 stream. No fresh-input qualification is implied. The selected4254still leads
 matched max(NMS,KK)=3172by34.11%.
 [Full paired report](random05/results/random05-record4254-split-full-v162/REPORT.md).
+
+
+## Flow model outcome and local-refinement follow-up (2026-09-22 02:18 UTC)
+
+The co-flow exponent/coefficient experiment is complete. All ten full runs pass
+independent replay and strict limits; both unchanged controls are six-field exact.
+RANDOM-04control2782 beats2696/2558/2714/2319; RANDOM-05control4254beats
+4059/4030/4007/3518. Keep the current fields. Selected bests739/1408/2646/2782/4254
+remain+6.79%/+12.10%/+12.17%/+5.02%/+34.11%over matched max(NMS,KK).
+
+Source164committed-motion credit raises general reactiveRANDOM-05from2226to2314,
+with full replay and max559.538ms; it is still27.05%below matchedmax3172.
+Thirteen completed terminal-credit runs are audited, three selected05trials remain.
+The general candidate has a frozen exact repeat and three additional paired planner
+seeds running; no replicated gain or overall record is claimed yet.
+
+Source165parallelizes independent continuations while retaining their original
+reduction order and sequential local proposals. Full regression62.69s passes.
+Eighteen frozen full tests cover all five general reactive profiles and selected04/05,
+with nine exact control comparisons, including serial/parallel local work. Local
+allowances count full continuation groups. Directory/naming cleanup remains deferred.
+
+
+General RANDOM-05record2314is now promoted separately from the selected4254.
+Source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed),
+finished2026-09-22T02:07:14.726513+00:00, plannerseed5. General disabled controls
+are six-field exact. Independent full replay and waiting accounting pass, with
+mean518.413/max559.538ms andRSS490.627MB. Longest completed order1968steps,
+206initialunfinished/131unopened, censoredoldest2000. Qualification remains pending;
+no overall4254record change. [General record](random05/results/random12345-terminal-pending-split-full-v164/GENERAL05_RECORD.md).
+
+
+## Completed terminal scoring: new4,302record (2026-09-22 02:23 UTC)
+
+All16source164full runs are independently replayed/strict-valid; all seven
+unchanged controls are six-field exact. SelectedRANDOM-05credit0/.5/1gives
+4254/4302/4250. Promote4302 (+35.62%over matched max3172), source30a56647,
+finished2026-09-22T02:19:09.148099+00:00, plannerseed0. Mean582.723/max830.909ms,
+RSS491.999MB; longestcompleted1986steps,146initialunfinished/110unopened,
+censoredoldest2000. General05credit1separately promotes2314. All01..04variantslose.
+
+Frozen5e47a72fadds seven strict selected qualification runs: exactseed0repeat,
+thencredit0/.5pairedseeds1/2/3. Include originalseed0pair in the four-seed
+aggregate. The general2314qualification uses5/6/7/8. No replicated or fresh-input
+gain for either new recipe is claimed yet. Local-refinement tests retain their
+previously frozen4254parent. Source165regression62.69spassed before submission.
