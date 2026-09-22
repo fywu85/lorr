@@ -21,6 +21,18 @@
 namespace r05 {
 namespace {
 constexpr float INF=1e20f;
+// Price only the downstream consequence of the pickup heading. Removing the
+// minimum tail cost keeps the existing task-length preference in its own units.
+// The caller provides a visible unopened chain; no future order is consulted.
+float pickup_heading_approach(const Graph& graph,int goal,int state,
+                             const std::array<float,4>& tail,float price) {
+    const float minimum=*std::min_element(tail.begin(),tail.end());
+    if(minimum>=INF/2)return INF;
+    float best=INF;
+    for(int d=0;d<4;++d)
+        best=std::min(best,graph.dist(goal*4+d,state)+price*(tail[d]-minimum));
+    return best/2;
+}
 int integer(const char* key,int value) { const char* v=std::getenv(key);return v?std::stoi(v):value; }
 float real(const char* key,float value) { const char* v=std::getenv(key);return v?std::stof(v):value; }
 int turn(int a,int b) { const int d=(a-b+4)%4;return std::min(d,4-d); }
@@ -381,6 +393,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.age_cap>0 && !random_trick)
         throw std::invalid_argument("capped priority aging requires an explicit --trick RANDOM-01..05 instance");
     c.chain_matching=integer("R05_SCHED_CHAIN",0);c.hungarian_limit=integer("R05_HUNGARIAN",0);c.prospective_wait=integer("R05_PROSPECTIVE_WAIT",0);
+    c.pickup_heading_price=real("R05_PICKUP_HEADING_PRICE",0);
+    if(!std::isfinite(c.pickup_heading_price) || c.pickup_heading_price<0 || c.pickup_heading_price>1 ||
+       (c.pickup_heading_price>0 && c.chain_matching))
+        throw std::invalid_argument("pickup heading price requires [0,1] and a separate task-length preference");
     c.auction_epsilon=real("R05_MATCH_AUCTION",0);
     c.auction_bids_per_row=integer("R05_AUCTION_BIDS",128);
     if(!std::isfinite(c.auction_epsilon) || c.auction_epsilon<0 || c.auction_epsilon>8 ||
@@ -1029,6 +1045,9 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
+    if(!std::isfinite(cfg.pickup_heading_price) || cfg.pickup_heading_price<0 || cfg.pickup_heading_price>1 ||
+       (cfg.pickup_heading_price>0 && cfg.chain_matching))
+        throw std::invalid_argument("pickup heading price requires [0,1] and a separate task-length preference");
     if(!std::isfinite(cfg.terminal_pending) || cfg.terminal_pending<0 || cfg.terminal_pending>1 ||
        (cfg.terminal_pending>0 && (cfg.operation_depth || cfg.window)))
         throw std::invalid_argument("terminal pending credit requires a pipelined rollout and a fraction in [0,1]");
@@ -1257,7 +1276,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         for(size_t k=1;k<stops.size();++k)length[j]+=g.hop(g.from_grid[stops[k]],g.from_grid[stops[k-1]]);
     }
     std::vector<std::array<float,4>> continuation;
-    if(cfg.chain_matching) {
+    if(cfg.chain_matching || cfg.pickup_heading_price>0) {
         continuation.resize(tasks.size());
         for(int j=0;j<int(tasks.size());++j) {
             Chain chain(g,env->task_pool.at(tasks[j]));
@@ -1332,6 +1351,12 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                 for(int d=0;d<4;++d)cost=std::min(cost,
                     (g.dist(goal*4+d,p*4+env->curr_states[a].orientation)
                      +length_weight*continuation[j][d])/2);
+            }
+            if(cfg.pickup_heading_price>0) {
+                const int goal=g.from_grid[task.locations[0]];
+                cost=pickup_heading_approach(g,goal,p*4+env->curr_states[a].orientation,
+                                            continuation[j],cfg.pickup_heading_price)
+                     +length_weight*length[j];
             }
             if(!destination_pressure.empty())
                 cost+=cfg.destination_load*destination_pressure[g.from_grid[task.locations[task.idx_next_loc]]];
@@ -2031,6 +2056,9 @@ void Engine::match_future(Frame& frame) const {
                     approach=INF;
                     for(int d=0;d<4;++d)approach=std::min(approach,g.dist(goal*4+d,p*4+frame.dir[a])/2);
                 }
+                if(cfg.pickup_heading_price>0)
+                    approach=pickup_heading_approach(g,goal,p*4+frame.dir[a],
+                                                    future_tasks_[j]->tail[0],cfg.pickup_heading_price);
                 float cost=approach+cfg.length_weight*future_lengths_[j];
                 if(cost<best){best=cost;robot=a;task=j;position=k;}
             }

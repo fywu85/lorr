@@ -446,6 +446,76 @@ void initial_task_length_preference() {
     engine.match(&e,schedule);
     require(schedule[0]==1,"phase change reassigned a started task");
 }
+void pickup_heading_matching() {
+    // Facing east at (1,1), order A goes east then back west: four actions.
+    // Order B goes south twice: three actions. Both have one internal hop.
+    // Pickup-only costs prefer A (1 vs2), as does tail cost scaled by.25.
+    // Charging only the arrival-heading consequence prefers B, without
+    // increasing the coefficient on intrinsic task length.
+    for(int threshold:{0,1000})for(float epsilon:{0.f,.125f}) {
+        if(!threshold && epsilon)continue;
+        auto env=environment(4,4,1);env.curr_states[0].location=5;env.curr_states[0].orientation=0;
+        Task a;a.task_id=10;a.locations={6,5};env.task_pool[10]=a;
+        Task b;b.task_id=20;b.locations={9,13};env.task_pool[20]=b;
+        Config cfg;cfg.guided_matching=true;cfg.hungarian_limit=threshold;
+        cfg.auction_epsilon=epsilon;cfg.keep_bonus=0;cfg.length_weight=.25;
+        auto match=[&](Config c){Engine engine(c);engine.initialize(&env);
+            std::vector<int> schedule;engine.match(&env,schedule);return schedule;};
+        require(match(cfg)==std::vector<int>{10},"pickup heading fixture lacks the nearer-turnaround choice");
+        cfg.chain_matching=true;
+        require(match(cfg)==std::vector<int>{10},"weighted-tail fixture did not preserve its length-scaled baseline");
+        cfg.chain_matching=false;cfg.pickup_heading_price=1;
+        require(match(cfg)==std::vector<int>{20},"pickup heading price did not select the three-action chain");
+        require(env.task_pool[10].idx_next_loc==0 && env.task_pool[20].idx_next_loc==0,
+                "pickup heading matching mutated task progress");
+        env.curr_task_schedule[0]=10;env.task_pool[10].idx_next_loc=1;
+        require(match(cfg)==std::vector<int>{10},"pickup heading matching reassigned an opened order");
+    }
+    // With no downstream errand, there is no heading consequence. Preserve
+    // oriented pickup choices exactly, including competing rows and idle slots.
+    for(int threshold:{0,1000}) {
+        auto env=environment(5,5,3);env.curr_states[1].location=20;env.curr_states[2].location=12;
+        for(int id:{3,6,18,24}){Task task;task.task_id=id;task.locations={id};env.task_pool[id]=task;}
+        Config cfg;cfg.guided_matching=true;cfg.hungarian_limit=threshold;
+        cfg.active_task_cap=2;cfg.keep_bonus=.5;cfg.admission_price=8;
+        Engine base(cfg);base.initialize(&env);std::vector<int> expected,actual;base.match(&env,expected);
+        cfg.pickup_heading_price=1;Engine shaped(cfg);shaped.initialize(&env);shaped.match(&env,actual);
+        require(actual==expected,"pickup heading price changed a single-waypoint assignment");
+    }
+    for(bool window:{false,true}) {
+        Config cfg;cfg.pickup_heading_price=1;cfg.guided_matching=true;cfg.hungarian_limit=1000;
+        cfg.futures=8;cfg.depth=6;cfg.random_by_step=true;cfg.keep_bonus=.5;
+        cfg.active_task_cap=18;cfg.admission_price=24;cfg.rollout_match=!window;
+        if(window){cfg.window=8;cfg.window_keep=4;cfg.window_islands=2;cfg.window_iterations=8;
+            cfg.window_neighborhood=4;cfg.window_temperature=.25;}
+        const auto expected=simulate(cfg,12,5,5,true);
+        cfg.threads=3;cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;cfg.fast_admission=true;
+        require(expected==simulate(cfg,12,5,5,true),
+                "pickup heading matching depends on workers, caches or exact dummy-prefix optimization");
+    }
+    for(float price:{-.1f,1.1f,std::numeric_limits<float>::infinity(),std::numeric_limits<float>::quiet_NaN()}) {
+        Config cfg;cfg.pickup_heading_price=price;auto env=environment(2,2,1);bool rejected=false;
+        try{Engine engine(cfg);engine.initialize(&env);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid pickup heading price accepted by direct initialization");
+    }
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting price("R05_PICKUP_HEADING_PRICE",".5"),chain("R05_SCHED_CHAIN","0");
+    auto env=environment(4,4,1);
+    require(Config::environment(env).pickup_heading_price==.5f,"general pickup heading option unexpectedly requires a trick");
+    setenv("R05_SCHED_CHAIN","1",1);bool rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"incompatible task-length objectives were silently combined");
+    setenv("R05_SCHED_CHAIN","0",1);setenv("R05_PICKUP_HEADING_PRICE","nan",1);rejected=false;
+    try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"nonfinite pickup heading price accepted by environment parser");
+}
+
 void guidance_scale_reference() {
     auto e=environment(4,4,1);Config cfg;
     cfg.guidance="flow";cfg.flow_iterations=3;cfg.flow_average=true;
@@ -3154,6 +3224,7 @@ int main() {
     simulation(2,true,0,0,1,0,0,0,0,true,3,false);
     // A one-visit ablation stalled; mobility is required of the selected four-visit policy.
     initial_task_length_preference();
+    pickup_heading_matching();
     require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");
     require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");
     require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");

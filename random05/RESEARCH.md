@@ -2052,3 +2052,40 @@ Keep K8064/FIRST_K4032, depth16/B10, four generations, all matching, field and
 horizon settings fixed. The seed4 off control must reproduce2782 in six fields.
 Report100/500/900/1000-step completions alongside full throughput and latency.
 No new source, fresh input, timed partial return or claimed gain is involved.
+
+
+## Source166 hypothesis: pickup heading price (2026-09-22T03:39:44.188083+00:00)
+
+Previous goal turn made progress: it finished01/04 comparisons and audits,
+qualified the4302 exact repeat while preserving its failed control, updated
+priorities, and submitted six04 forecasts. Those six now all pass replay/strict
+checks but lose: off/half/full totals5531/5459/5345 across seeds4/0. Keep off.
+
+New independent RANDOM-01 diagnosis compares current739 with KK692. On their685
+common completed tasks, approach-transition steps are5922versus7955; loaded
+steps44842versus45855. PILOT already leads both measures. The remaining-chain
+penalty of actual pickup headings totals689versus812; this ignores the approach
+cost of choosing another heading and is not recoverable throughput. All60,000
+robot-steps per trace are partitioned and both traces independently replayed.
+See results/random01-task-transitions-v162/REPORT.md.
+
+Optional general R05_PICKUP_HEADING_PRICE in[0,1], default0, changes the
+scheduler's pickup approach cost to min_d(distance_to_pickup_heading_d +
+price*(continuation_d - min_continuation))/2. The task-length coefficient still
+applies to the same internal cell-hop length as before. The existing whole-chain
+mode scales both intrinsic length and orientation by that coefficient; it is a
+separate, incompatible option. This isolates heading consequences without
+retuning task selection toward shorter chains. Only currently visible unopened
+tasks enter matching; opened assignments remain locked. Virtual future matching
+uses the same price on its already-visible task pool. No task stream, horizon
+or map identity is used by this mechanism. Selected presets keep their trick gates.
+
+A hand-derived4x4 witness distinguishes the options: facing east, a one-step
+east pickup followed by returning west requires4actions; turning south then
+moving twice requires3. Both orders have one internal hop. Pickup-only and
+length-scaled whole-chain matching choose the former atlength_weight.25; the
+new normalized heading price1 must choose the latter. Regression covers greedy,
+Hungarian and auction paths, opened locks, single-waypoint identity, complete
+reactive/windowed turnover, worker/cache/checkpoint/dummy-prefix equivalence,
+and configuration bounds. All declared work still completes or fails. No runtime
+or throughput gain is claimed before the frozen build and full comparisons.
