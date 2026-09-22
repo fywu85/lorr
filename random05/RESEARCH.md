@@ -1908,3 +1908,12 @@ Freeze seven qualification runs before launch: exact2314repeat atseed5, then
 credit0/1 paired plannerseeds6/7/8. Include the original seed5pair in the declared
 four-seed aggregate. Same archived input/full2000steps/bound32workers/strict1s.
 No fresh inputs and no seed filtering. Preserve failures and all lower outcomes.
+
+
+Source165/513cbe89 builds and passes the complete regression in62.69s. Compiled
+and test sources match the frozen commit; binarySHA a9a32eb1e6f07443f5865be9fb2989dd0d288abf264aec4661345dde03020a9e.
+Freeze18full cases: general reactive01..05 and selected04/05 with0or5local
+proposals, plus selected04/05 with15proposals and serial five-proposal controls.
+LOCAL=proposals*B (B18general/selected05;B10selected04). The nine declared trace
+comparisons cover seven unchanged controls and two serial/parallel local paths.
+No throughput or runtime gain is claimed before full audited measurements.
