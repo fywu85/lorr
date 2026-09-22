@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-21 23:55 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 00:05 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -24,25 +24,22 @@ These rows use **16 physical EPYC9354 cores / 32 SMT workers**, with bound
 affinity and no CPU quota on shared GRID hosts. A deadline overrun fails the
 run; PILOT completes its declared fixed work instead of returning a partial search.
 
-| Instance | PILOT tasks | Published max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |
+| Instance | PILOT tasks | Matched max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |
 |---|---:|---:|---|---:|---|---:|---:|
-| WAREHOUSE | — | 154,795 | NMS | — | Not evaluated | — | — |
-| SORTATION | — | 152,714 | NMS | — | Not evaluated | — | — |
-| CITY-01 | — | 8,445 | KK | — | Not evaluated | — | — |
-| CITY-02 | — | 16,997 | KK | — | Not evaluated | — | — |
-| GAME | — | 23,274 | NMS | — | Not evaluated | — | — |
-| RANDOM-01 | 735 | 688 | KK | +6.83% | TRICK | 1 | 111.23 |
-| RANDOM-02 | 1,408 | 1,260 | KK | +11.75% | TRICK | 2 | 492.79 |
-| RANDOM-03 | 2,621 | 2,334 | NMS | +12.30% | TRICK | 3 | 745.65 |
-| RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% | TRICK | 4 | 739.55 |
-| RANDOM-05 | 4,242 | 3,050 | NMS | +39.08% | TRICK | 0 | 780.49 |
+| WAREHOUSE | — | — | — | — | Not evaluated | — | — |
+| SORTATION | — | — | — | — | Not evaluated | — | — |
+| CITY-01 | — | — | — | — | Not evaluated | — | — |
+| CITY-02 | — | — | — | — | Not evaluated | — | — |
+| GAME | — | — | — | — | Not evaluated | — | — |
+| RANDOM-01 | 735 | 692 | KK | +6.21% | TRICK | 1 | 111.23 |
+| RANDOM-02 | 1,408 | 1,256 | KK | +12.10% | TRICK | 2 | 492.79 |
+| RANDOM-03 | 2,621 | 2,359 | NMS | +11.11% | TRICK | 3 | 745.65 |
+| RANDOM-04 | 2,782 | 2,649 | NMS | +5.02% | TRICK | 4 | 739.55 |
+| RANDOM-05 | 4,242 | 3,172 | NMS | +33.73% | TRICK | 0 | 780.49 |
 
-**Published scores are historical targets, not matched local baselines.**
-This table uses the stronger published result from NMS and Kitty Knight.
+**Headline comparisons use the stronger matched local result from NMS and Kitty Knight.**
 KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.
-NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved
-in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).
-Matched local comparisons now include both teams on all five RANDOM instances.
+Both teams have valid measurements on all five RANDOM instances.
 RANDOM-05 KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`;
 both allocator-only repeats score2,085 and pass strict limits and replay.
 Original virtual-address exhaustion failures remain in the [baseline audit](random05/NMS_KK_COMPARISON.md).
@@ -64,6 +61,23 @@ assignment and task-event replay checks.
 | RANDOM-03 | 2,621 | 2,359 | 2,110 | 2,359 | +11.11% |
 | RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
 | RANDOM-05 | 4,242 | 3,172 | 2,085 | 3,172 | +33.73% |
+
+**Published scores below are historical orientation, not matched local comparisons.**
+NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved
+in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).
+
+| Instance | PILOT | Published max(NMS, KK) | Reference | Difference |
+|---|---:|---:|---|---:|
+| WAREHOUSE | — | 154,795 | NMS | — |
+| SORTATION | — | 152,714 | NMS | — |
+| CITY-01 | — | 8,445 | KK | — |
+| CITY-02 | — | 16,997 | KK | — |
+| GAME | — | 23,274 | NMS | — |
+| RANDOM-01 | 735 | 688 | KK | +6.83% |
+| RANDOM-02 | 1,408 | 1,260 | KK | +11.75% |
+| RANDOM-03 | 2,621 | 2,334 | NMS | +12.30% |
+| RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% |
+| RANDOM-05 | 4,242 | 3,050 | NMS | +39.08% |
 
 These are selected individual bests, not an average or one universal preset.
 GENERAL means no map-specific guidance or known-horizon rule was enabled;

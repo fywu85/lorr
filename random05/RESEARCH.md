@@ -1822,3 +1822,10 @@ exhausted search cleanup, component salvage, worker/cache/storage/checkpoint
 invariance. Then compare01/02general and selected01/02/03 with three orders
 at matched nominal repair work;01also has headroom for the unchanged iteration
 count. No throughput claim before full strict benchmarks and replay.
+
+Source163/d323e605 passes the full regression in62.13s. All compiled and test
+files match the frozen commit; binarySHA eb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd.
+Twelve full600/600/800step cases are frozen: five exact controls and five
+three-order trials with matched nominal order attempts (rounded down for whole
+rounds), plus two01trials retaining all512iterations. Nominal work is not a
+claim of equal CPU time: bounded failures and path difficulty still differ.

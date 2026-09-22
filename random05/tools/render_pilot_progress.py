@@ -61,28 +61,37 @@ def render():
         'These rows use **16 physical EPYC9354 cores / 32 SMT workers**, with bound',
         'affinity and no CPU quota on shared GRID hosts. A deadline overrun fails the',
         'run; PILOT completes its declared fixed work instead of returning a partial search.', '',
-        '| Instance | PILOT tasks | Published max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |',
+        '| Instance | PILOT tasks | Matched max(NMS, KK) | Reference | Difference | Profile | Seed | Max step (ms) |',
         '|---|---:|---:|---|---:|---|---:|---:|']
+    published_rows=['| Instance | PILOT | Published max(NMS, KK) | Reference | Difference |',
+                    '|---|---:|---:|---|---:|']
     for instance in INSTANCES:
         nms_target = published['teams']["No Man's Sky"]['score_details'][instance]['my_metric']
         kk_target = published['teams']['Kitty Knight']['score_details'][instance]['my_metric']
         target = max(nms_target, kk_target)
         reference = 'NMS' if nms_target >= kk_target else 'KK'
+        historical_tasks=selected[instance][1]['tasks'] if instance in selected else None
+        published_rows.append('| {} | {} | {:,} | {} | {} |'.format(instance,
+            '{:,}'.format(historical_tasks) if historical_tasks is not None else '—',target,reference,
+            '{:+.2f}%'.format(100*(historical_tasks/target-1)) if historical_tasks is not None else '—'))
         if instance not in selected:
-            lines.append('| {} | — | {:,} | {} | — | Not evaluated | — | — |'.format(instance, target, reference))
+            lines.append('| {} | — | — | — | — | Not evaluated | — | — |'.format(instance))
             continue
         profile, row, summary = selected[instance]
-        lines.append('| {} | {:,} | {:,} | {} | {:+.2f}% | {} | {} | {:.2f} |'.format(
-            instance, row['tasks'], target, reference, 100*(row['tasks']/target-1),
-            'GENERAL' if profile == 'general' else 'TRICK', row['case']['env']['R05_SEED'],
+        local=matched['archived'].get(instance)
+        target=local['target'] if local else None
+        reference='Pending'
+        if local and local['nms'] and local['kk']:
+            reference='NMS' if local['nms']['tasks']>=local['kk']['tasks'] else 'KK'
+        lines.append('| {} | {:,} | {} | {} | {} | {} | {} | {:.2f} |'.format(
+            instance,row['tasks'],'{:,}'.format(target) if target is not None else 'Pending',reference,
+            '{:+.2f}%'.format(100*(row['tasks']/target-1)) if target is not None else 'Pending',
+            'GENERAL' if profile == 'general' else 'TRICK',row['case']['env']['R05_SEED'],
             1000*summary['latency_seconds']['max']))
     lines += ['',
-        '**Published scores are historical targets, not matched local baselines.**',
-        'This table uses the stronger published result from NMS and Kitty Knight.',
+        '**Headline comparisons use the stronger matched local result from NMS and Kitty Knight.**',
         'KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.',
-        'NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved',
-        'in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).',
-        'Matched local comparisons now include both teams on all five RANDOM instances.',
+        'Both teams have valid measurements on all five RANDOM instances.',
         'RANDOM-05 KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`;',
         'both allocator-only repeats score2,085 and pass strict limits and replay.',
         'Original virtual-address exhaustion failures remain in the [baseline audit](random05/NMS_KK_COMPARISON.md).',
@@ -109,6 +118,9 @@ def render():
                 '{:,}'.format(kk) if kk is not None else 'Pending',
                 '{:,}'.format(target) if target is not None else 'Pending',
                 '{:+.2f}%'.format(100*(row['tasks']/target-1)) if target is not None else 'Pending'))
+    lines += ['', '**Published scores below are historical orientation, not matched local comparisons.**',
+        'NMS reported timeout labels for WAREHOUSE, SORTATION and GAME are preserved',
+        'in the [target snapshot](random05/references/published-nms-kk-combined-2024.json).', '']+published_rows
     lines += ['',
         'These are selected individual bests, not an average or one universal preset.',
         'GENERAL means no map-specific guidance or known-horizon rule was enabled;',
@@ -288,9 +300,9 @@ def render():
     if campaign_path.exists():
         campaign=campaign_path.read_text()
         for instance in ('RANDOM-03','RANDOM-04'):
-            nms=records[instance]['nms32_tasks'];threshold=(11*nms+9)//10
+            target=matched['archived'][instance]['target'];threshold=(11*target+9)//10
             record=selected[instance][1]
-            row='| {} | {:,} | {:,} | {:,} | {:,} |'.format(instance,record['tasks'],nms,threshold,record['case']['steps'])
+            row='| {} | {:,} | {:,} | {:,} | {:,} |'.format(instance,record['tasks'],target,threshold,record['case']['steps'])
             pattern=r'^\| '+re.escape(instance)+r' \| [0-9,]+ \| [0-9,]+ \| [0-9,]+ \| [0-9,]+ \|$'
             campaign,count=re.subn(pattern,row,campaign,count=1,flags=re.MULTILINE)
             assert count==1,'missing campaign status row'
