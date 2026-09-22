@@ -1,0 +1,15 @@
+{
+  "created_utc": "2026-09-22T06:23:43.677712+00:00",
+  "source_commit": "e30c20b1ccc8291c83a73066835c0db6c49f3e5b",
+  "purpose": "Reconstruct horizon suppression and classify recorded effort on finished/unfinished orders for the current RANDOM-01 and RANDOM-04 selected traces.",
+  "cases": "random14-triage-diagnostic-full-v170.json",
+  "references": "random14-triage-diagnostic-v170-references.json",
+  "new_task_start_inputs": false,
+  "requirements": [
+    "Full horizons600/1000; strict1000ms;30000ms preprocessing;32 decimal GB;16 physical EPYC9354 cores/32 workers with binding verified.",
+    "Complete independent replay and six-field exact equality to the recorded745/2799 controls before attributing diagnostic findings to selected solvers.",
+    "Offline reconstruction checks all per-step native suppressed counts and FNV active-mask fingerprints.",
+    "Physical remaining cost is a lower bound, not proof of feasible recovery. No throughput improvement is hypothesized or claimed for instrumentation.",
+    "Known horizon remains an explicit map trick. Diagnostic logger is observational and defaults off."
+  ]
+}
