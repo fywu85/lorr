@@ -1981,3 +1981,24 @@ is a declared work-schedule comparison, not a clock-triggered partial return.
 Full horizons determine any throughput cost, and step0 versus later-step times
 will be reported separately. It is not evidence of universal runtime robustness.
 The seed4/4032control must reproduce all six archived2782trace fields.
+
+
+## RANDOM-05 startup failure and declared-budget follow-up (2026-09-22)
+
+The source164 terminal-credit qualification's disabled seed3 control fails at
+step0 after1,045.313ms on research55 with a verified16-core allocation. Native
+phase times are assignment498.259ms (Hungarian469.424ms), task costs5.677ms,
+ranking17.684ms and look-ahead522.687ms. The prior source1624254profile's seed3
+completed successfully; keep both observations and do not infer a host cause.
+No score or silently substituted historical run completes this failed pair.
+
+Freeze four additional full runs on the selected credit.5 profile: seeds0/3,
+FIRST_K5952 or4032, retaining K16320 from step1 onward. All are whole96-evaluation
+screening units. The unchanged7968credit.5 controls are already frozen/running
+in the original qualification. Compare these separately, retaining every failure
+and reporting step0 versus later latency. No new production code or timed partial
+search is added, and a changed first budget may change the full throughput.
+
+Simulator initialization explicitly precedes task revelation, so task-dependent
+matching or chain preparation cannot move into the preparation budget. Existing
+map-only tables and worker ranking allocations already initialize there.
