@@ -1,0 +1,16 @@
+{
+  "created_utc": "2026-09-22T03:53:22.418616+00:00",
+  "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+  "cases": "random05/experiments/random01-current-cooperation-full-v166.json",
+  "references": "random05/experiments/random01-current-cooperation-v166-references.json",
+  "hypothesis": "Sharing complete incumbent plans between islands, or merging independent conflict components, may improve sparse complete-plan quality while retaining512 repair attempts per island.",
+  "design": "Two paired archived planner seeds1/0, merge0/1 crossed with rounds1/2. All other selected739 settings fixed; new pickup-heading price disabled.",
+  "nominal_work": "512 repair iterations per island and eight agents per group; extra cooperation/merging overhead is measured rather than assumed equal.",
+  "expected_controls": {
+    "seed1": 739,
+    "seed0": 736
+  },
+  "validation": "Full600steps, strict1000ms/30000ms/32GB, independent replay, source/input/resource checks and two six-field exact controls. Any selected gain requires exact repeat and broader paired seeds.",
+  "heldouts": "No fresh inputs used or generated.",
+  "trick": "Existing selected horizon preset requires --trick RANDOM-01."
+}

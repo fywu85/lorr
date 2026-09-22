@@ -2099,3 +2099,21 @@ and existing whole-chain matching on selected01/04. Those two instances launch
 first. Ten off controls have explicit six-field references. Keep all current
 seeds, full horizons, declared work, strict limits and trick gates. No benchmark
 gain is claimed before results.
+
+
+## RANDOM-01 current-profile cooperation (source166, configuration only)
+
+The first full pickup-heading results lose on01: selected price0/.5/1 and old
+whole-chain mode score739/730/725/727; general price0/1 scores727/726. No record
+is promoted, and other densities are still pending. Independently test the
+existing island-cooperation mechanisms on the current01 profile. Inventory
+finds merge1 only in the old resume-general bundle and rounds2 only with group4
+and4096 iterations. Current739 uses32 independent islands, group8/I512 and
+annealing.25, leaving these interactions untested in isolation.
+
+Freeze eight full trials: plannerseeds1/0, merge0/1 crossed with rounds1/2.
+Keep512 total iterations per island, group8, all matching/progress/annealing
+settings, and pickup-heading price0. Extra component checks have measured
+runtime costs. Controls must reproduce739/736 in six fields. This uses audited
+source166 and no new code, fresh input or implicit trick. The selected horizon
+settings retain --trick RANDOM-01.
