@@ -15,9 +15,9 @@ baselines. All prior fresh inputs50001–50012 and50015/50016 remain excluded fr
 ## Comparison rules
 
 Headline comparisons now use **max(NMS, Kitty Knight)** per instance. Published
-RANDOM-05 max is3,050; the4,242 development record is+39.08% above that historical
+RANDOM-05 max is3,050; the4,254 development record is+39.48% above that historical
 target. Inputs/hardware differ. The matched local max is **3,172** (NMS; KK=2,085),
-so the selected **4,242 is +33.73%**. Both KK allocator-only repeats pass full
+so the selected **4,254 is +34.11%**. Both KK allocator-only repeats pass full
 replay and strict limits; source and algorithm are unchanged. Older fresh-input
 protocols that measured only NMS remain NMS-only comparisons.
 See [comparison policy](random05/COMPARISON_POLICY.md).
@@ -46,21 +46,27 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-22 00:11 UTC.
+Updated: 2026-09-22 00:31 UTC.
 
-**Current selected archived best: 4,242 tasks**, +33.73% versus matched max(NMS,KK)=3,172.
-Source [88551e69](https://github.com/fywu85/lorr/commit/88551e69), planner seed0.
-The previous4,236 startup profile gains six tasks with observed-progress
-horizon correction at mix0.125/span32. All2,000steps pass independent replay,
-strict1s entry limits and32GB checks: mean589.171/max780.487ms, RSS489.562MB.
-Exact repetition passes. Planner seeds0/1/2/3 score4242/4028/4183/4128:
-+0.157%aggregate over the4,236profile, but0.635% below the4,197profile.
-This remains a selected-seed record without fresh-input qualification.
-Longest completed order1,983steps;147initial orders unfinished,110unopened;
+**Current selected archived best: 4,254 tasks**, +34.11% versus matched max(NMS,KK)=3,172.
+Source [4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad), planner seed0.
+Refining the traffic-assignment guidance for80 updates instead of20 adds12 tasks
+to the4,242 profile, with the same per-step search work. Full2,000steps pass
+independent replay, strict1s entry limits and32GB checks: mean579.781/max874.301ms,
+RSS490.107MB. The20-update control reproduces4,242 in all six trace fields.
+An exact repeat and three additional paired planner seeds are running; this is
+currently a selected-seed record without paired or fresh-input qualification.
+Longest completed order1,973steps;147initial orders unfinished,109unopened;
 oldest unfinished age is censored at2,000. All800robots remain movable.
-Admission cap680, startup weighting0.125/250steps, selected guidance and
-known-horizon scale1/mix1 are explicit `--trick RANDOM-05` choices.
-[Full audit](random05/results/random05-startup-progress-split-full-v144/audit.json).
+Admission cap680, startup weighting0.125/250steps, progress correction0.125/span32,
+selected guidance and known-horizon scale1/mix1 require `--trick RANDOM-05`.
+[Full audit](random05/results/random345-flow-iterations-split-full-v162/audit.json),
+[frozen qualification](random05/experiments/random05-record4254-v162-protocol.json).
+
+The previous4,242 profile repeats exactly. Planner seeds0/1/2/3 score
+4242/4028/4183/4128: +0.157%aggregate over4,236, but0.635% below4,197.
+Those results do not qualify the new80-update guidance field.
+[Previous paired evidence](random05/results/random05-record4242-split-full-v144/paired-comparison.json).
 
 The preceding4,236profile repeats exactly. Its four seeds4,236/4,051/4,172/4,096
 have a0.791% lower aggregate than the earlier4,197profile's4,197/4,168/4,179/4,143.
@@ -377,7 +383,7 @@ fix. Neither removes combined-track features.
 
 | 2026-09-21T17:28:48.985827+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; explicit `--trick RANDOM-05` | 4236 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.5% | [Full evidence](random05/results/random05-record4197-startup-split-full-v132/trick-random-05-record4197-startup-rankp125-steps250/summary.json) |
 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; explicit `--trick RANDOM-05` | 4242 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.7% | [Full evidence](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
-
+| 2026-09-22T00:21:04.224019+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; flow80 updates; explicit `--trick RANDOM-05` | 4254 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +34.1% | [Full evidence](random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -1967,3 +1973,15 @@ In parallel, substantive sparse work has raised RANDOM-01 to735 and is testing
 a general third repair order on01/02/03. All-five scope is explicit in
 [ACTIVE_GOAL.md](random05/ACTIVE_GOAL.md), and the dashboard now leads with local
 max-team comparisons. The broader throughput campaign is active.
+
+### 2026-09-22 00:31 UTC: guidance refinement reaches4,254
+
+The full12-case comparison is independently audited; all three controls match
+all six trace fields. For10/20/40/80updates, RANDOM-03 scores2527/2621/2600/2602,
+RANDOM-04 scores2570/2782/2761/2771, and RANDOM-05 scores3864/4242/4193/4254.
+Only RANDOM-05 improves its selected record. Refinement happens in preprocessing;
+per-step declared search work is unchanged. Keep20updates on03/04. The new05
+record is+34.11% versus matched max(NMS,KK)=3172, and+0.283% versus4242.
+Its exact repeat and pairedseeds1/2/3 use the frozen source162binary and archived
+input; no fresh stream was generated.
+[All cases](random05/results/random345-flow-iterations-split-full-v162/REPORT.md).

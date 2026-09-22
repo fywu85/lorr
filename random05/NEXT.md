@@ -1,6 +1,6 @@
 # RANDOM campaign continuation
 
-Updated 2026-09-22 00:11 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
+Updated 2026-09-22 00:32 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
 ACTIVE_GOAL.md is the current working objective. RANDOM-03/04 ten-percent qualification
 is a milestone inside it. Always headline matched max(NMS, Kitty Knight). The stored
 app goal is stale; do not falsely complete it merely to change its text.
@@ -8,7 +8,8 @@ app goal is stale; do not falsely complete it merely to change its text.
 ## Boundaries
 
 Only edit/stage/commit random05/, PILOT_PROGRESS.md and RANDOM05_PROGRESS.md.
-Public fywu85/lorr pushes are authorized; preserve visibility. Leave other agents'
+Public fywu85/lorr pushes are authorized; preserve visibility. The user deferred
+renaming random05/ to pilot/ until development is finished; no rename was made. Leave other agents'
 files, commits, GRID jobs and locks alone. No subagents. Fable's provider-credit
 failure is unchanged; do not retry without new credit information.
 
@@ -21,10 +22,10 @@ before fresh generation. All tuned tricks require --trick RANDOM-0N.
 
 ## Verified frontiers and qualification
 
-Selected735/1408/2621/2782/4242. General727/1397/1634/1616/2226.
-Matchedmax692/1256/2359/2649/3172; leads+6.21/+12.10/+11.11/+5.02/+33.73%.
+Selected735/1408/2621/2782/4254. General727/1397/1634/1616/2226.
+Matchedmax692/1256/2359/2649/3172; leads+6.21/+12.10/+11.11/+5.02/+34.11%.
 R04 target2914 remains132short; fresh03V2 gain8.852% is below10%. Fresh01V1
-qualifies729 only,02V1 qualifies1408,03V2 qualifies2620. No fresh4242 qualification;
+qualifies729 only,02V1 qualifies1408,03V2 qualifies2620. No fresh4254 qualification;
 05V6 qualifies4175 only and is NMS-only. Keep all historical failures and caveats.
 The dashboard renderer now puts local references first and correctly derives
 RANDOM34_CAMPAIGN targets from matched-nms-kk-combined.json (fixed stale2580).
@@ -63,23 +64,26 @@ Earlier all-five face/retry and sparse rank/prefix-search negatives remain archi
  all six fields. Candidates atseeds0..4=732/735/725/729/730 versus historical
  gate-only controls729/733/729/727/732:3651vs3650 (+.027%,3gains/2losses).
  Selected735 remains, but no meaningful mean-gain claim; no fresh qualification.
-2. random03-record2621-split-full-v162:9runs, jobs8918513/15/17/20/22/24/26/28/30.
- Exactseed3 gate-on2621 repeat, plus pairedseeds0/1/2/4 gateoff/on. Raw completed
- seed3repeat2621, seed0off2614/on2604. Include original selectingseed3off2620
- from the audited allocation replacement. Finish full audit and five-seed report.
-3. random345-flow-iterations-split-full-v162:12runs, jobs8918485/87/89/91/94/96/98/
- 8500/8502/8503/8505/8507. Iterations20/10/40/80, all else fixed. Raw03=
- 2621/2527/2600/2602;04=2782/2570/2761/2771;05pending. Audit then exact3controls.
-4. Source163=d323e605a5bcdc2cc7f5e3a5864f89fb6f6351c6/build163, job8920036.
- Full regression passes62.13s; binaryeb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd.
- All compiled/test sources audited, build metadata archived. Adds optional third
- window repair order: last failed member first; if no failure, largest route delay.
- Forward/reverse remain unchanged, exact outside reservations restored each time,
- best complete group retained. General mechanism, defaults unchanged.
- random123-failure-first-split-full-v163:12cases jobs8920049 through8920060.
- Five exact controls (general01/02, selected01/02/03), five3-order variants with
- matched nominal work, plus2extra-work01 variants. No new results yet. Nominal
- work is not identical CPU time. Audit with source163, preserve every failure.
+2. random03-record2621-split-full-v162: all nine audited, exact2621 repeat matches
+ all six fields. Five paired seeds0..4: off2614/2571/2597/2620/2597 versus
+ on2604/2595/2600/2621/2609. Total13029vs12999 (+.231%,4gains/1loss).
+ No fresh qualification; selectingseed3off uses the audited original replacement.
+3. random345-flow-iterations-split-full-v162: all12audited, three controls exact.
+ Iterations20/10/40/80:03=2621/2527/2600/2602;04=2782/2570/2761/2771;
+ 05=4242/3864/4193/4254. Promote4254: source162, completed2026-09-22T00:21:04.224019+00:00,
+ mean579.781/max874.301ms, RSS490.107MB. Waitmax1973,147initialunfinished/109unopened,
+ censoredoldest2000. Main/history/best manifests updated; all91frontier rows and waiting metrics pass.
+4. Source163=d323e605a5bcdc2cc7f5e3a5864f89fb6f6351c6/build163; tests62.13s.
+ Binaryeb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd.
+ All12failure-first cases audited, all five controls exact. General01control727,
+ matched720/full723; trick01control735,matched731/full733; general02control1397,
+ matched1389; trick02control1408,matched1383; trick03control2621,matched2582.
+ The optional third repair order stays off; no candidate promoted.
+5. random05-record4254-split-full-v162: seven cases frozen in e3a499af before
+ submission, jobs8920067–8920073. Exact seed0/80update repeat; seeds1/2/3 each
+20versus80updates. Same source162binary/input, strict2000steps/1s/32GB. Historical
+seed0control4242 is already six-field exact. Audit all7, exact repeat, then report
+four paired totals including selectingseed0. Preserve every original failure.
 
 Source162=4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad/build162,
 SHAfda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556.
@@ -88,8 +92,8 @@ incorrect horizon18 versus150steps. Failed build161 is preserved, never benchmar
 
 ## Immediate next operations
 
-Finish/audit active batches, compare exact controls, promote only verified new
-records, preserve selected versus paired/fresh distinctions. Update all progress
+Finish4254qualification and the91-row audit; preserve selected versus paired/fresh
+distinctions. All other batches are complete and independently audited. Update all progress
 logs and checkpoint current jobs, then commit/push scoped files. No source164 yet.
 Keep meaningful planner/scheduler work across allfive; do not chase records by
 silently discarding failures or excluding weak seeds. Guidance/preprocessing trials
@@ -97,7 +101,7 @@ are explicit tricks; general repair tests have no map identity/horizon dependenc
 
 Hosts35/36/37/39/46/47/48/50/51/52/55/56. Exclude49/54 binding refusals (also older
 34/40/42/45 failures); don't change scheduler/other jobs. Latest successful push
-was4431b12ae665a7591d1d7853a092c77689a4c7b1; subsequent scoped commits need push.
+was9799663bd3c718c62f2d64e2ba32357e271c4646; subsequent scoped commits need push.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 

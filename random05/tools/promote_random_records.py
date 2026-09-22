@@ -2,6 +2,7 @@
 """Promote independently audited RANDOM01-04 records into the density ledger."""
 import argparse
 import json
+import re
 from pathlib import Path
 from result_horizon import summary_steps
 
@@ -15,7 +16,7 @@ def main():
     index_path = ROOT / 'random05/random-frontiers.json'
     ledger_path = ROOT / 'random05/RANDOM_PROGRESS.md'
     index = json.loads(index_path.read_text())
-    published = json.loads((ROOT/'random05/references/published-nms-kk-combined-2024.json').read_text())
+    matched = json.loads((ROOT/'random05/references/matched-nms-kk-combined.json').read_text())['archived']
     text = ledger_path.read_text()
     candidates = []
     for path in args.audits:
@@ -57,10 +58,19 @@ def main():
         prefix = '| {} | {} | {} | '.format(instance, robots, steps)
         old = next(line for line in text.splitlines() if line.startswith(prefix))
         row = index[instance]
-        target = max(team['score_details'][instance]['my_metric'] for team in published['teams'].values())
+        target = matched[instance]['target']
         best = max(row['general']['tasks'],row['trick']['tasks'])
         new = prefix+'{} | {} | {} | {:+.2f}% |'.format(row['general']['tasks'], row['trick']['tasks'], target,100*(best/target-1))
         text = text.replace(old, new, 1)
+    text = text.replace('Published max(NMS, KK) | Best vs published max',
+                        'Matched max(NMS, KK) | Best vs matched max', 1)
+    selected = [max(index['RANDOM-0'+str(i)][p]['tasks'] for p in ('general','trick')) for i in range(1,6)]
+    text = re.sub(r'Current selected records are[^.]+\.',
+                  'Current selected records are'+ '/'.join(map(str,selected))+'.', text, count=1)
+    gains = ['{:+.2f}%'.format(100*(score/matched['RANDOM-0'+str(i+1)]['target']-1))
+             for i, score in enumerate(selected)]
+    text = re.sub(r'Selected-best gains versus matched\nmax\(NMS,KK\) are [^\n]+',
+                  'Selected-best gains versus matched\nmax(NMS,KK) are '+ '/'.join(gains)+'.', text, count=1)
     index_path.write_text(json.dumps(index, indent=2)+'\n')
     ledger_path.write_text(text)
     if (ROOT / 'PILOT_PROGRESS.md').exists():

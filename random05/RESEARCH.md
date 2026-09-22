@@ -1829,3 +1829,12 @@ Twelve full600/600/800step cases are frozen: five exact controls and five
 three-order trials with matched nominal order attempts (rounded down for whole
 rounds), plus two01trials retaining all512iterations. Nominal work is not a
 claim of equal CPU time: bounded failures and path difficulty still differ.
+
+
+## Source163 outcome and dense guidance record (2026-09-22 00:32 UTC)
+
+All12repair-order runs are audited and every candidate loses. Controls727/735/1397/1408/2621
+are full six-field exact. Leave3orders off. The separate guidance iteration trial
+produces a verified4254onRANDOM-05 at80updates (+12), while all03/04alternatives
+lose. Exact4254repeat plus three paired planner seeds is frozen before submission
+in e3a499af. This is selected progress, not yet a paired mean or fresh-input gain.

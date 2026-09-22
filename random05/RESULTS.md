@@ -1,18 +1,20 @@
 # RANDOM-05 results
 
-The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+39.08%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
+The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+39.48%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
 
-**Current selected archived best: 4,242 tasks** (+33.73% versus matched max(NMS, Kitty Knight)),
-source[88551e69](https://github.com/fywu85/lorr/commit/88551e69), plannerseed0.
-Observed-progress horizon correction0.125/span32 adds six tasks to the4,236
-startup-weighted profile. Full2,000steps pass independent replay and strict
-resource/deadline checks: mean589.171/max780.487ms, RSS489.562MB.
-Exact repetition passes; seeds4242/4028/4183/4128 improve the previous
-four-seed aggregate by0.157% but remain0.635% below4,197's. The preceding4,236
-profile repeats exactly but its four-seed aggregate is0.791% below4,197's.
-FrozenV6 qualifies4,175 only, not these later selected records.
-[Current audit](results/random05-startup-progress-split-full-v144/audit.json),
-[paired seeds](results/random05-record4236-split-full-v132/paired-comparison.json),
+**Current selected archived best: 4,254 tasks** (+34.11% versus matched max(NMS, Kitty Knight)),
+source[4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad), plannerseed0.
+Traffic-assignment guidance receives80 updates instead of20; all other4,242
+settings and per-step search work are unchanged. Full2,000steps pass independent
+replay and strict checks: mean579.781/max874.301ms, RSS490.107MB.
+The20-update control matches the prior4,242 run in all six trace fields.
+An exact repeat and three additional paired planner seeds are running. No paired
+or fresh-input qualification is yet claimed for4,254. The preceding4,242 profile
+repeats exactly but its four-seed aggregate is0.635% below4,197's. FrozenV6
+qualifies4,175 only, not these later selected records.
+[Current audit](results/random345-flow-iterations-split-full-v162/audit.json),
+[frozen repeat protocol](experiments/random05-record4254-v162-protocol.json),
+[previous paired seeds](results/random05-record4242-split-full-v144/paired-comparison.json),
 [fresh admission comparison](FRESH_VALIDATION_V6.md).
 
 The **4,000-task milestone is independently verified**:4,011 on the full archived
@@ -33,7 +35,7 @@ The 32-worker reference includes both teams; the older four-core reference is NM
 | Allocation | Our best | Reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 (NMS only) | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,242 | 3,172 (max NMS, KK) | +33.7% | 589 / 780ms | 490MB |
+| 16 physical cores / 32 workers | 4,254 | 3,172 (max NMS, KK) | +34.1% | 580 / 874ms | 490MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
@@ -51,7 +53,7 @@ These are selected single-seed maxima. Exact configurations and executable hashe
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[88551e69](https://github.com/fywu85/lorr/commit/88551e69). Both use declared map-specific
+[4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Earlier four-core frozen independent-input comparison

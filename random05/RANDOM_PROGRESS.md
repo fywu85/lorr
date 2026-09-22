@@ -1,7 +1,7 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-Current selected records are729/1408/2620/2782/4242. Fresh validation qualifies
+Current selected records are735/1408/2621/2782/4254. Fresh validation qualifies
 specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
@@ -18,18 +18,19 @@ Large maps are outside active development.
 
 ## Current records
 
-| Instance | Robots | Steps | General profile | Trick profile | Published max(NMS, KK) | Best vs published max |
+| Instance | Robots | Steps | General profile | Trick profile | Matched max(NMS, KK) | Best vs matched max |
 |---|---:|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 727 | 735 | 688 | +6.83% |
-| RANDOM-02 | 200 | 600 | 1397 | 1408 | 1260 | +11.75% |
-| RANDOM-03 | 400 | 800 | 1634 | 2621 | 2334 | +12.30% |
-| RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2547 | +9.23% |
-| RANDOM-05 | 800 | 2000 | 2226 | 4242 | 3050 | +39.08% |
+| RANDOM-01 | 100 | 600 | 727 | 735 | 692 | +6.21% |
+| RANDOM-02 | 200 | 600 | 1397 | 1408 | 1256 | +12.10% |
+| RANDOM-03 | 400 | 800 | 1634 | 2621 | 2359 | +11.11% |
+| RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2649 | +5.02% |
+| RANDOM-05 | 800 | 2000 | 2226 | 4254 | 3172 | +34.11% |
 
-Published rows are historical targets on different inputs/hardware, not matched
-comparisons. Both local baselines are now complete: matched maxima are
-692/1256/2359/2649/3172. Selected-best gains are
-+5.35%/+12.10%/+11.06%/+5.02%/+33.73%. See [matched evidence](NMS_KK_COMPARISON.md).
+Both local baselines are complete. Selected-best gains versus matched
+max(NMS,KK) are +6.21%/+12.10%/+11.11%/+5.02%/+34.11%.
+Published historical maxima688/1260/2334/2547/3050 use different inputs/hardware;
+see [PILOT_PROGRESS.md](../PILOT_PROGRESS.md) for that separate comparison.
+[Matched evidence](NMS_KK_COMPARISON.md).
 
 The initial records come from the [frozen transfer](GENERALIZATION.md). The
 RANDOM-05 trick record includes subsequent development; its complete history
@@ -184,6 +185,7 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T23:35:12.917204+00:00 | RANDOM-01 | trick | 733 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random01-record732-split-full-v162/trick-random-01-record732-seed1-feasible1/summary.json) |
 | 2026-09-21T23:36:22.952126+00:00 | RANDOM-03 | trick | 2621 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json) |
 | 2026-09-21T23:45:46.330230+00:00 | RANDOM-01 | trick | 735 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/summary.json) |
+| 2026-09-22T00:21:04.224019+00:00 | RANDOM-05 | trick | 4254 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1188,3 +1190,12 @@ idle objects preserve slot capacities; completed assignments certify their
 price tolerance. Fixed-bid exhaustion invokes complete Hungarian fallback.
 No gain is assumed. Publishedmax(NMS,KK) remains the headline reference until
 new matched local baselines are fully audited.
+
+### 2026-09-22 00:31 UTC: full guidance comparison and RANDOM-05 record
+
+RANDOM-05 reaches4,254, +34.11% over matched max(NMS,KK)=3172. The80-update
+guidance field adds12tasks to4242 with unchanged per-step work; mean579.781ms,
+max874.301ms, RSS490.107MB. All12guidance cases and three exact controls pass
+independent audit. Other03/04guidance iteration counts lose. Seven frozen05repeat
+and paired-seed runs are submitted; no fresh-input qualification is implied.
+[Full evidence](results/random345-flow-iterations-split-full-v162/REPORT.md).
