@@ -1,0 +1,11 @@
+{
+  "created_utc": "2026-09-22T05:44:34.488076+00:00",
+  "source_commit": "b429a0285b729e3a42d090b1c56cbc9abbdd4bd6",
+  "cases": "random05/experiments/random01-forecast-emphasis-full-v169.json",
+  "references": "random05/experiments/random01-forecast-emphasis-v169-references.json",
+  "evidence": "The completed selected discount trials on seeds4/0 total1468/1462/1472/1485 at future weights0/.25/.5/1. Population caps8/16 also lose. Test stronger future objective weights rather than repeat weaker discounts; these preliminary score observations do not replace the independent audit.",
+  "design": "Selected RANDOM-01 seeds4/0 and general RANDOM-01 at weights1/2/4, radius8/max32 fixed. Nine full600-step cases. All other settings unchanged, zero-update optimization off. Three full-trace controls must reproduce745/740/726.",
+  "validation": "Strict1000ms/30000ms/32decimalGB,16physical/32SMT workers and complete independent source/input/resource/action/assignment/event/waiting audit. Preserve every failure.",
+  "qualification": "This is further development tuning on already used input and planner seeds. New maxima require exact repetition and paired qualification. No fresh inputs generated or read.",
+  "trick": "Selected profiles retain explicit --trick RANDOM-01; general keeps horizon0 and guidance none."
+}
