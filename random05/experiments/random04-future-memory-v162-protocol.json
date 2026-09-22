@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-09-22T03:10:13.954673+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "build": "build-v162",
+  "hypothesis": "Correlating forecast priority updates with retained successful vectors may better model the next steps of the actual persistent search at RANDOM-04 density.",
+  "cases": "random05/experiments/random04-future-memory-full-v162.json",
+  "exact_references": "random05/experiments/random04-future-memory-v162-references.json",
+  "variants": {
+    "R05_FUTURE_ELITE_BLEND": [
+      "0",
+      ".5",
+      "1"
+    ]
+  },
+  "planner_seeds": [
+    4,
+    0
+  ],
+  "fixed_work": {
+    "first_evaluations": 4032,
+    "later_evaluations": 8064,
+    "depth": 16,
+    "continuations": 10,
+    "generations": 4
+  },
+  "outcomes": [
+    "Full 1000-step throughput against matched max(NMS, KK)=2649",
+    "Completions at steps100,500,900 and1000; final100-step increment",
+    "Per-step runtime including step0, memory and all original failures"
+  ],
+  "heldouts": "Archived development input only. No held-out seed or unseen input is used for selection.",
+  "controls": "Seed4 blend0 must reproduce the full 2782 trace in six fields. Seed0 receives its own contemporaneous paired control.",
+  "qualification": "Independent full replay and strict source/input/runtime checks; any selected gain requires exact repeat and additional paired seeds before a reproducibility claim.",
+  "runtime": "16 bound physical EPYC9354 cores / 32 SMT workers, strict 1000 ms entries, 30000 ms preprocessing, 32 decimal GB. No timed partial search.",
+  "trick": "The selected layout/horizon/admission preset requires --trick RANDOM-04."
+}

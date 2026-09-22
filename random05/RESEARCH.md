@@ -2034,3 +2034,21 @@ and NMS2649 tied at2,417 completions atstep900. This is an observed timing of
 the advantage, not a claim that horizon triage alone caused all of it. Use the
 phase evidence to choose the next coordination change. Throughput remains the
 primary objective; known-horizon and layout settings remain explicit tricks.
+
+
+## RANDOM-04 forecast memory, frozen comparison (2026-09-22T03:10:13.954673+00:00)
+
+The positive-admission-cap manifest inventory contains363 declared RANDOM-04
+cases. Every one keeps FUTURE_ELITE_BLEND0; all retain eight elite vectors but
+forecast mutations use fresh random values. Earlier RANDOM-05 studies do not
+establish the outcome for this density, cap560 and depth16 profile.
+
+Freeze six full source162 runs: planner seeds4/0 at blend0/.5/1. The existing
+option blends a retained successful priority vector into future mutation values,
+while simulating every action and cost again. It preserves mutation masks, work
+counts and the first-step fallback before history exists. This is a general
+forecast mechanism evaluated inside the explicit selected RANDOM-04 trick preset.
+Keep K8064/FIRST_K4032, depth16/B10, four generations, all matching, field and
+horizon settings fixed. The seed4 off control must reproduce2782 in six fields.
+Report100/500/900/1000-step completions alongside full throughput and latency.
+No new source, fresh input, timed partial return or claimed gain is involved.
