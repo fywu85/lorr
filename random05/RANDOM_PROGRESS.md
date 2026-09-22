@@ -1480,3 +1480,17 @@ No benchmark jobs remain active and no fresh input was used. Next effort targets
 startup matching/search and sustained loaded-robot progress on RANDOM-04, while
 continuing focused RANDOM-01 improvement beyond the exact 745 record.
 [Final report](results/random04-compact-qualification-split-full-v166/REPORT.md).
+
+## Exact matching runtime optimization frozen (2026-09-22)
+
+Source `0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6` / build168 passes the
+full 63.31-second regression, including 3,840 exact zero-update assignment
+comparisons. The default-off `R05_MATCH_SKIP_ZERO` omits add/subtract-zero
+Hungarian bookkeeping passes, with all relaxations and tie rules unchanged.
+Eighteen paired full runs are frozen: all five selected profiles, with five
+paired planner seeds on RANDOM-04. Original one-second failures remain in the
+history; no runtime benefit is claimed before measurement. In parallel, eight
+RANDOM-01 source167 trials vary forecast population caps at fixed radius8 on
+planner seeds4/0, with exact745/740 controls. No fresh inputs are used.
+[Runtime protocol](experiments/random12345-zero-update-v168-protocol.json),
+[RANDOM-01 protocol](experiments/random01-forecast-cap-v167-protocol.json).

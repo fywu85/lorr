@@ -1,0 +1,11 @@
+{
+  "created_utc": "2026-09-22T05:23:48.467761+00:00",
+  "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+  "cases": "random05/experiments/random12345-zero-update-full-v168.json",
+  "references": "random05/experiments/random12345-zero-update-v168-references.json",
+  "design": "Eighteen full paired off/on trials. RANDOM-04 uses the exact compressed 2799 recipe at planner seeds0..4; RANDOM-01/02/03/05 use their selected745/1408/2646/4302 profiles and selected seeds. Only R05_MATCH_SKIP_ZERO changes within each pair. Keep all declared startup/full search work, matching objective, task policy and horizons fixed.",
+  "hypothesis": "Exact zero-increment dual update elision removes redundant full-column write scans, especially from tied mandatory/optional idle matching. Sampled scan and zero counts test whether it targets the measured dense startup bottleneck.",
+  "validation": "Independent full source/input/allocation/movement/assignment/event/waiting audit; strict1000ms entry,30000ms prep,32decimalGB,16boundphysical/32SMT workers. Sixteen declared historical exact references; seed2 has no valid prior full score. Any completed off/on pair must match all six trace fields. Failed attempts remain failures and never receive historical substitute scores.",
+  "selection": "RANDOM-04 seed2 may newly complete if runtime improves; an improved selected score in that event would be a planner-seed maximum, not evidence of changed assignment/search choices. Report each distinction explicitly.",
+  "heldouts": "No fresh input or heldout seed is used; all selected map/horizon/admission settings retain explicit --trick INSTANCE."
+}
