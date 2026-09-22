@@ -1,0 +1,41 @@
+{
+  "created_utc": "2026-09-22T07:05:29.042755+00:00",
+  "purpose": "Strict full-run reliability repair qualification; then report and pause.",
+  "source_build": "build-v171",
+  "cases": "random345-reliability-bound-full-v171.json",
+  "references": "random345-reliability-bound-full-v171-references.json",
+  "planner_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "selection": "All8 IPO+bound short startup probes passed, versus startup/early failures in unbound checks. These short runs are not throughput observations. Whole-program optimization and explicit worker binding;05 also uses the exact zero-update/identical-idle matching speedups already proven on full4302 traces.",
+  "constraints": {
+    "steps": [
+      600,
+      600,
+      800,
+      1000,
+      2000
+    ],
+    "entry_limit_ms": 1000,
+    "preprocess_ms": 30000,
+    "memory_bytes": 32000000000,
+    "physical_cores": 16,
+    "workers": 32,
+    "cpu": "AMD EPYC 9354 32-Core Processor",
+    "fresh_inputs": false
+  },
+  "fixed_work": "All search budgets, objectives and original full algorithm horizons remain unchanged. No timed early exit or raised deadline.",
+  "checks": "Independently replay every full run and preserve all failed attempts. Compare all available historical complete trace fields exactly, including any newly completed original wrap-up trace. Require all30 seeded full runs valid before claiming ten-seed reliability for03/04/05.",
+  "failure_rule": "No partial scores or silent reruns. Any additional diagnostic or repaired implementation must be a separate predeclared batch. Preflight refusals are reported separately and never counted as a solver success.",
+  "statistics": "Combine the30 new runs with the20 already-valid frozen01/02 observations. Compute sample SD (n-1), one observation per seed per selected implementation; preserve the original failed batch separately.",
+  "stop_rule": "After full audit, statistics, record updates, log/commit/push, pause per user request. No throughput search is resumed."
+}
