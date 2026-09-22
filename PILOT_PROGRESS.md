@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 02:26 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 02:48 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -230,10 +230,15 @@ Selectingseed0is included; no fresh-input qualification is claimed.
 The new4,302 selected record adds committed-motion terminal credit0.5:
 mean582.723/max830.909ms,RSS491.999MB. Full replay passes and its4254
 disabled control is six-field exact. This is+35.62%over matched max3172.
-Exact repetition and three further paired planner seeds are running;
-no replicated or fresh-input gain is claimed for this new change yet.
-General05also reaches2314atcredit1 (+3.953%over2226), still27.05%below
-matched max3172. It has a separate frozen four-seed qualification.
+Exact repetition and further paired planner seeds are pending. One
+disabled-credit seed3 control failed at step0/1045.313ms; retain the
+failure and make no complete four-pair strict-valid qualification claim.
+Separate smaller fixed startup budgets are being tested.
+General05also reaches2314atcredit1, still27.05%below matched max3172.
+It repeats exactly; four paired seeds total8911versus8613 (+3.4599%,
+three gains/one loss). All nine original/qualification runs pass strict
+checks and replay, with maximum595.950ms andRSS491.377MB.
+[General qualification](random05/results/random05-general-terminal-qualification-split-full-v164/REPORT.md).
 [Terminal-scoring evidence](random05/results/random12345-terminal-pending-split-full-v164/REPORT.md).
 
 **The earlier RANDOM-05 4,000-task milestone is independently verified.** The archived

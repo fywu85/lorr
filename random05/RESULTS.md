@@ -9,7 +9,7 @@ to4,254at unchanged fixed work. Full2,000steps pass independent replay, strict
 1s entries and32GB: mean582.723/max830.909ms, RSS491.999MB. The disabled4254
 control matches all six trace fields; fullcredit1loses at4250. Exact repetition
 and three further paired planner seeds are running under a frozen protocol.
-No paired-seed or fresh-input gain is claimed for4,302yet.
+One disabled-credit seed3control failed at step0/1,045.313ms; retain the failure. No complete four-pair qualification or fresh-input gain is claimed for4,302yet. Separate smaller declared first-step budgets are being evaluated.
 [Full comparison](results/random12345-terminal-pending-split-full-v164/REPORT.md).
 
 The preceding4,254traffic-field profile repeats exactly and improves all four

@@ -1,6 +1,6 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-22 02:25 UTC following the all-five campaign and deferred rename.
+Updated 2026-09-22 02:50 UTC following current run audits.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01, RANDOM-02, RANDOM-03, RANDOM-04 and RANDOM-05. Make a substantial, evidence-driven effort on every instance, developing general improvements and separately labelled instance tricks. Always compare each instance with max(NMS, Kitty Knight).**
 
@@ -34,7 +34,7 @@ Selected records are **739 / 1408 / 2646 / 2782 / 4302**. Every selected run pas
 - RANDOM-02: selected1408 and general1397remain. All observed-progress mixtures and third-repair-order variants lose. Preserve that negative evidence; do not import the new01/03settings here.
 - RANDOM-03: progress correction.25/span32 raises2621to2646 (+12.17% versus matched max2359). Mean484.103/max676.507ms,RSS469.467MB. The off2621control matches all six archived fields. The exact2646repeat matches all six fields. Five paired planner seeds2611/2606/2611/2646/2610 total13084versus13029 (+0.4221%, all positive); largest entry730.523ms. Frozen fresh03V3qualifies2646:2660/2622 versus max(NMS,KK)2461/2380 (+9.110%aggregate, below10%); prior2620recipe2639/2612 gives a positive0.590%paired aggregate. All12runs pass strict checks and independent full replay.
 - RANDOM-04: selected2782remains132short of2914. All guidance-iteration and new progress-span alternatives lose. The existing2782profile repeats exactly and has+0.340%aggregate over eight paired seeds, but extensionseed11has a preserved first-step timeout. General auction gains have five positive paired seeds; general face-cycle selected1616has a slightly negative paired mean.
-- RANDOM-05: committed-motion terminal credit.5 raises4254to4302 (+35.62% versus matched max3172). Full replay and strict checks pass; mean582.723/max830.909ms,RSS491.999MB. The disabled4254control is six-field exact. Exact4302repeat and three additional paired planner seeds are frozen/submitted; no replicated gain yet. The preceding4254field80recipe has all-four-positive paired qualification (+2.2134%). General05separately rises2226to2314atcredit1, with exact/four-seed qualification running. FreshV6qualifies4175only and is NMS-only.
+- RANDOM-05: committed-motion terminal credit.5 raises4254to4302 (+35.62% versus matched max3172). Full replay and strict checks pass; mean582.723/max830.909ms,RSS491.999MB. The disabled4254control is six-field exact. Exact4302repeat and additional paired seeds are pending; disabled-credit seed3control failed at step0/1045.313ms and has no score. No complete four-pair qualification is claimed. The preceding4254field80recipe has all-four-positive paired qualification (+2.2134%). General05separately rises2226to2314atcredit1, with an exact repeat and+3.4599%aggregate over four paired planner seeds (three gains/one loss), all strict-valid. FreshV6qualifies4175only and is NMS-only.
 
 The12-case progress-transfer experiment is complete and independently audited. Source163's third repair order and source162's larger current-profile repair budgets lose on every tested profile. The04/05flow-model batch is now complete: all10runs pass replay/strict checks, both controls are six-field exact, and every alternative loses. No record came from that experiment. See [flow-model report](results/random45-flow-model-split-full-v162/REPORT.md).
 
@@ -50,6 +50,9 @@ The user deferred renaming random05/ to pilot/ until the end of development. Onl
 
 Fresh RANDOM-03 V3 is complete and independently audited: candidate2660/2622 versus prior2639/2612; NMS2461/2444 and2361/2380; KK2084/2093 and2094/2130. The candidate gains9.110%over max(NMS,KK) and0.590%over its predecessor. All12original runs pass source/input/runtime/bound-affinity/deadline/memory and full replay checks. This misses the10%fresh milestone. Both inputs remain excluded from tuning. [Full report](RANDOM03_FRESH_VALIDATION_V3.md).
 
-General05record2314and selected4302are independently verified/promoted. All seven off controls are six-field exact. Exact and paired qualification remain pending. [Record evidence](results/random12345-terminal-pending-split-full-v164/GENERAL05_RECORD.md).
+General05record2314and selected4302are independently verified/promoted. All seven off controls are six-field exact. General2314exact/paired qualification is complete (+3.4599%); selected4302qualification is incomplete with a retained baseline startup failure. [Record evidence](results/random12345-terminal-pending-split-full-v164/GENERAL05_RECORD.md).
 
-All92chronological selected RANDOM-05 frontier/waiting rows pass the complete audit after4302promotion. First six source165local trials are audited and negative on general reactive01/02/03; remaining04/05trials and both new05qualification batches are pending.
+All92chronological selected RANDOM-05 frontier/waiting rows pass the complete audit after4302promotion. Fourteen source165local trials are audited and negative across all five general profiles and selected04. Four selected05cases remain; general2314qualification is complete, while selected4302qualification has a retained baseline timeout.
+
+
+Current follow-ups: source165local refinement loses on all five general reactive profiles and selected04; fourteen runs are audited, four selected05cases remain. The04serial/parallel five-proposal pair is six-field exact but loses to2782. Frozen source162layout interactions (12cases) test03softened prices/04admission; fixed startup-work budgets (9cases04and4cases05) target observed first-step failures. All use full horizons, preserve explicit trick flags and retain original failures. No new held-out stream has been generated.

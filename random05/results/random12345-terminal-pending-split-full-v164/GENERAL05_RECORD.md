@@ -17,11 +17,12 @@ Longest completed order1,968steps; completedmean558.604/p951,374steps.
 There are206initial orders unfinished,131unopened; oldest unfinished age is
 censored at2,000steps. Higher throughput is not a fairness guarantee.
 
-Promoted as a general development record, with exact repeat and planner-seed
-qualification pending. Seven frozen runs repeatseed5 and compare credit0/1on
-seeds6/7/8; the four-seed aggregate includes the originalseed5pair. No fresh-input
-qualification or broad gain at other densities is claimed. Completed general
-01/02/03/04 alternatives lose; selected04 alternatives also lose.
+The record repeats exactly. Four paired planner seeds5/6/7/8 give2314/2147/2147/2303
+versus2226/2082/1997/2308: **+3.4599% aggregate**, three gains and one loss.
+All nine original/qualification runs pass replay and strict limits; maximum
+595.950ms, RSS491.377MB. The selecting seed5 is included. This is qualification
+on one archived task/start input; no fresh-input or unseen-layout gain is claimed.
+[Full qualification](../random05-general-terminal-qualification-split-full-v164/REPORT.md).
 
 [Independent audit](audit.json), [five exact controls](general-controls-partial.json),
 [record summary](general-random-05-terminal-pending-1/summary.json).

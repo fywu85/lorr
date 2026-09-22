@@ -27,6 +27,6 @@ General RANDOM-05credit1 improves2226to2314 (+3.953%), still27.05%below matched 
 
 The4302record finishes2026-09-22T02:19:09.148099+00:00, plannerseed0; mean582.723/max830.909ms, RSS491.999MB. Longest completed order1986steps,146initialunfinished/110unopened; oldest unfinished age is censored at2000. Its complete fixed search work and map-specific settings match4254exceptcredit.5.
 
-Both improvements have separately frozen exact repeats and three additional paired planner seeds running. The original selecting pair is included in each four-seed aggregate. These are development records; no replicated or fresh-input improvement is claimed yet. The local-refinement experiment keeps its frozen old4254parent, not4302.
+General2314repeats exactly and its four paired planner seeds improve3.4599%in aggregate (three gains/one loss), with all nine original/qualification runs strict-valid and replayed. The selected4302qualification remains incomplete: its disabled-credit seed3control failed at step0/1045.313ms and has no score. Preserve that failure; no complete four-pair qualification or fresh-input gain is claimed. Separate smaller fixed startup budgets are under test. The local-refinement experiment keeps its frozen4254parent.
 
 [Independent audit](audit.json), [seven exact controls](control-equivalence.json), [general record](GENERAL05_RECORD.md).

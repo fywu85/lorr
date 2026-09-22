@@ -1,6 +1,6 @@
 # PILOT campaign continuation
 
-Updated 2026-09-22 02:25 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
+Updated 2026-09-22 02:50 UTC. The all-five campaign remains active.
 ACTIVE_GOAL.md is the working objective. Always headline matched max(NMS, Kitty Knight).
 The stored app goal has stale03/04-only wording and old04reference2580/threshold2838;
 do not falsely complete it to change its text. Current user steering governs.
@@ -50,12 +50,12 @@ case trick-random-05-terminal-pending-p5. Finished2026-09-22T02:19:09.148099+00:
 Mean582.723/max830.909ms,RSS491.999MB. Fullreplay/waitingpass; off4254control6fieldexact.
 Longestcompleted1986,146initialunfinished/110unopened,oldestcensored2000.
 All92chronologicalfrontier/waitingrows passedaudit_progress.pyafterpromotion.
-Exactrepeat/threeadditionalpairedseedsfrozen5e47a72fsubmitted; nopairedevidenceyet.
+Exactrepeat/threeadditionalpairedseedsfrozen5e47a72f: disabledseed3controlfails t0/1045.313ms; sixotherspending. No completefour-pairqualification.
 Thepreceding4254field80profilehasfourpositiveseeds4254/4189/4252/4253 vs4242/4028/4183/4128,
 +2.2134%,mean4237.0,max919.594ms. Thatqualificationdoesnotapplytoterminalcredit.
 General05new2314source164credit1seed5ismatched-auditedandpromoted; prior2226offexact.
 Mean518.413/max559.538ms,RSS490.627MB;completedmax1968,206initialunfinished/131unopened.
-Four-seedqualificationrunning; still27.05%below matchedmax3172.
+Exact2314repeatpasses; fourseeds2314/2147/2147/2303 vs2226/2082/1997/2308 give+3.4599%,threegains/oneloss. All9strictvalid/replayed,max595.950ms,RSS491.377MB. Still27.05%below matchedmax3172.
 
 R02=1408source132/027df4d9; general1397source141/611aa2a6 remains.
 R04=2782source144/88551e69; mean478.686/max739.553ms. Exactrepeat plus8pairedseeds
@@ -85,18 +85,34 @@ Generaloff/on01=647/643,02=1106/1101,03=1634/1619,04=1616/1600,05=2226/2314.
 Selected04credit0/.5/1=2782/2747/2769;05=4254/4302/4250. Only05improves.
 Fullreport random12345-terminal-pending-split-full-v164/REPORT.md.
 
-Active batches:
+Completed general05 qualification:
+- random05-general-terminal-qualification-split-full-v164: all seven new runs
+  audited; exactseed5repeat6fieldpasses. Four-pair report includes originalseed5:
+  8911vs8613,+3.459886%,threegains/oneloss; all9max595.950ms,RSS491.377MB.
 
-- random05-record4302-split-full-v164:sevenjobs8921510–8921516,frozen5e47a72f.
-  Exactcredit.5seed0repeat; thencredit0/.5pairedseeds1/2/3; includeoriginalseed0pair.
-- random05-general-terminal-qualification-split-full-v164: seven submittedjobs
-  8921481–8921487, frozen4d94594a. Exact2314repeatseed5 andcredit0/1seeds6/7/8.
-  Four-seedpairedaggregateincludesoriginalseed5; do notfilteroutlosses/failures.
+Active batches:
+- random05-record4302-split-full-v164: sevenjobs8921510–8921516,frozen5e47a72f.
+  Disabled-credit seed3 failsstep0/1045.313ms; sixotherspending. No score for
+  failure; do not silently replace it with older successful historical4253.
 - random12345-local-refinement-split-full-v165:18jobs8921489–8921506,
-  frozen919612ec. General01..05andselected04/05LOCAL0or5*B; selected04/05also
-  15*B and serial5*B. All terminalcredit0. Nine declaredexactcomparisons.
-  LOCALcountsrollouts,notproposals(B18general/05,B10selected04). Complete
-  fixedworkandstrict1s. General01/02reactiveprofilesarenotthewindowedbests.
+  frozen919612ec. Fourteen are independently audited. General01..05LOCAL5all
+  lose642/1090/1616/1564/2160 vs647/1106/1634/1616/2226. Selected04LOCAL0/5/15
+  scores2782/2756/2750. Serial/parallelLOCAL5tracesmatch allsixfields; mean
+  513.502/479.301ms is one shared-host pair, not a robust speedup claim.
+  Fourselected05casesremain. Complete nine declared exact comparisons later.
+  LOCAL counts complete B-branch groups; all terminalcredit0. General01/02
+  reactive profiles are distinct from stronger windowed records.
+- random34-current-layout-split-full-v162:12jobs8921524–8921535,
+  frozen6bca2e22. Current03/04controls,field15noflip,03fields23/7/31/43,
+  04fields105/109/111/115. Testsinteractionwith03edge-mix.25and04cap560;
+  allprioralternative layoutsuseddifferentprofiles. Twoexactcontrolsrequired.
+- random04-first-work-split-full-v162:9jobs8921537–8921545,frozenc6aacea3.
+  Seeds4/0/11 × FIRST_K4032/3072/2048; laterK8064unchanged. Preserveearlier
+  seed11t0/1050.759msfailure. Seed4/4032controlmustmatch2782sixfields.
+- random05-first-work-split-full-v164:4jobs8921546–8921549,frozen8bcefa2b.
+  Selectedcredit.5seeds0/3 × FIRST_K5952/4032; laterK16320unchanged.
+  Existing7968candidatecontrolsremaininoriginalqualification. Do notreplace
+  originalfailedpairswithchangedbudgets. Reportstartupvsregularlatency.
 
 Source164/30a5664757b8ffad1150f5eb763c747ba1001bed, regression57.30s,
 SHA4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd.
@@ -467,3 +483,14 @@ stronger selected or windowed records. Twelve crowded cases remain pending.
 The selected4302 and general2314 exact/paired qualification batches are pending.
 All92 historical selected RANDOM-05 frontier/waiting rows pass after promotion.
 Keep the running local trials' frozen4254parent; do not mutate their configuration.
+
+
+## Strict runtime diagnosis
+
+The selected05qualification's disabled-credit seed3 failed at step0 on research55:
+assignment498.259ms (Hungarian469.424ms), look-ahead522.687ms, total1045.313ms.
+Original failure audited and preserved in record4302/failure-details.json; no
+score. Do not infer a host cause or silently use the older successfulseed3score.
+Map-only preprocessing already allocates graph/caches. Simulator reveals tasks
+only after initialize(), so matching or chain preparation cannot move earlier.
+The new startup-work tests are fixed complete portfolios, not timed partial search.

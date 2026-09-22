@@ -1304,3 +1304,29 @@ thencredit0/.5pairedseeds1/2/3. Include originalseed0pair in the four-seed
 aggregate. The general2314qualification uses5/6/7/8. No replicated or fresh-input
 gain for either new recipe is claimed yet. Local-refinement tests retain their
 previously frozen4254parent. Source165regression62.69spassed before submission.
+
+
+## Qualification and startup headroom (2026-09-22 02:50 UTC)
+
+GeneralRANDOM-05record2314repeats exactly. Plannerseeds5/6/7/8give
+2314/2147/2147/2303 versus2226/2082/1997/2308:8911versus8613,
+**+3.4599%aggregate**, three gains/one loss, selectingseedincluded. All nine
+original/qualification runs pass strict checks and replay, max595.950ms,
+RSS491.377MB. The generalbest remains27.05%below matched max(NMS,KK)=3172.
+This is planner-seed evidence on one archived input, not fresh validation.
+
+Selected4302remains+35.62%over matchedmax3172, but its disabled-credit seed3
+qualification control fails atstep0/1045.313ms and has no score. Other six runs
+remain pending; do not claim a complete four-pair qualification. Preserve this
+failure and the earlier successful baseline separately. Assignment498.259ms plus
+look-ahead522.687ms motivated four frozen lower-FIRST_K follow-ups on seeds0/3,
+with all laterK16320work unchanged. RANDOM-04 similarly has nine first-work tests
+on seeds4/0/11, preserving its earlier1050.759msfailure. These complete declared
+portfolios never return a timed partial solution.
+
+Fourteen source165local-refinement runs are audited; all general01..05changes
+lose, and selected04scores2756/2750for5/15proposals versus2782. The serial/parallel
+five-proposal04traces are exact; four selected05trials remain. Twelve additional
+frozen03/04layout trials test interactions absent from earlier profiles, keeping
+full horizons, planner seeds, work, scheduling and explicit trick gates fixed.
+No new fresh input is used. Selected frontiers stay739/1408/2646/2782/4302.
