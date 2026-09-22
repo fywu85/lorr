@@ -2102,6 +2102,67 @@ void optional_arrival_proposals() {
     require(rescored==simulate(cfg,12),"rescoring changed an arrival proposal decision");
 }
 
+void terminal_pending_progress() {
+    auto env=environment(1,4,1);Config unit;Graph graph(env,unit);
+    Task task;task.locations={1,3};Chain chain(graph,task),cached(graph,task,true);
+    require(promised_chain_cost(graph,chain,0,0,0,1)==4,
+            "committed pickup did not leave exactly two forward actions of work");
+    require(promised_chain_cost(graph,cached,0,0,0,1)==4,
+            "cached committed pickup changed remaining work");
+    require(promised_chain_cost(graph,chain,1,1,2,1)==8,
+            "committed wait incorrectly credited a future rotation");
+    require(promised_chain_cost(graph,chain,1,2,0,3)==0,
+            "committed final arrival retained completed work");
+    require(promised_chain_cost(graph,chain,2,2,0,3)==0,
+            "completed chain acquired future work");
+    bool rejected=false;
+    try{promised_chain_cost(graph,chain,0,0,2,1);}catch(const std::runtime_error&){rejected=true;}
+    require(rejected,"terminal evaluator accepted an unaligned promised move");
+
+    Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.scratch_reuse=true;cfg.hungarian_limit=1000;
+    const auto baseline=simulate(cfg,12);bool changed=false;
+    for(float fraction:{0.5f,1.f}) {
+        cfg.terminal_pending=fraction;cfg.threads=1;cfg.share_prefix=false;
+        cfg.candidate_cache=false;cfg.kinematic_mask=false;
+        const auto serial=simulate(cfg,12,5,5,true);changed|=serial!=baseline;
+        cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.threads=3;
+        require(serial==simulate(cfg,12),"committed progress changed with caches or workers");
+        cfg.share_prefix=true;
+        require(serial==simulate(cfg,12),"shared continuations changed committed progress");
+    }
+    require(changed,"committed progress did not exercise any forecast decision");
+    cfg.rollout_match=true;cfg.plain_score=.25f;cfg.progress_discount=.9f;
+    cfg.completion_bonus=2;cfg.score_rank_power=.5f;cfg.threads=1;
+    const auto turnover=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.share_prefix=false;
+    require(turnover==simulate(cfg,12),"committed progress changed task turnover or discounted scoring");
+    cfg.progress_softcap=100;cfg.threads=1;
+    const auto nonlinear=simulate(cfg,12,5,5,true);cfg.threads=3;cfg.share_prefix=true;
+    require(nonlinear==simulate(cfg,12),"committed progress changed nonlinear scoring across workers");
+
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);require(setenv(k,v,1)==0,"cannot configure terminal fixture");
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting credit("R05_TERMINAL_PENDING","0.5");
+    require(Config::environment(env).terminal_pending==.5f,"general committed-progress configuration was rejected");
+    for(const char* value:{"-0.1","1.1","nan"}) {
+        Setting invalid("R05_TERMINAL_PENDING",value);rejected=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid committed-progress fraction accepted");
+    }
+    {Setting operations("R05_OPERATIONS","3");rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"operation forecasts accepted pipeline-only terminal credit");}
+    {Setting window("R05_WINDOW","20");rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"window search silently ignored terminal credit");}
+}
+
 void remaining_work_priorities() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -2955,6 +3016,7 @@ int main() {
     physical_guidance_edges();
     mixed_guidance_potentials();
     optional_immediate_moves();
+    terminal_pending_progress();
     remaining_work_priorities();
     horizon_aware_matching();
     physical_deadline_matching();

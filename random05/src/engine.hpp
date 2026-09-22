@@ -116,6 +116,7 @@ struct Config {
     bool operation_inherit=true, operation_moving=false, operation_protect=false, operation_finish_move=false;
     float operation_cost_weight=0;
     float progress_discount=1, flow_turn_load=0, plain_score=0, guidance_distance_mix=0, guidance_edge_mix=0, reverse_penalty=0, completion_bonus=0;
+    float terminal_pending=0;
     int triage_progress_window=32;
     float triage_progress_mix=0;
     float triage_scale=0.45, triage_guided_mix=0, waypoint_age_retain=0, score_rank_power=0, progress_softcap=0;
@@ -179,6 +180,8 @@ struct Chain {
     const float* cached_row(const Graph& g,int stage) const;
     float cost(const Graph& g,int stage,int cell,int direction) const;
 };
+// Remaining visible-chain cost after one committed forward/wait; no new rotation.
+float promised_chain_cost(const Graph& graph,const Chain& chain,int stage,int cell,int heading,int pending);
 struct Frame {
     std::vector<int> loc, dir, pending, stage, age;
     std::vector<Action> last_actions;

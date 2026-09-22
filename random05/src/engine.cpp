@@ -354,6 +354,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(c.early_root_period<0)throw std::invalid_argument("early root period must be nonnegative");
     if(c.early_fill_gain<0)throw std::invalid_argument("early-fill threshold must be nonnegative");
     c.operation_depth=integer("R05_OPERATIONS",0);
+    c.terminal_pending=real("R05_TERMINAL_PENDING",0);
+    if(!std::isfinite(c.terminal_pending) || c.terminal_pending<0 || c.terminal_pending>1 ||
+       (c.terminal_pending>0 && (c.operation_depth || c.window)))
+        throw std::invalid_argument("terminal pending credit requires a pipelined rollout and a fraction in [0,1]");
     if(c.operation_depth && c.move_bias>0)
         throw std::invalid_argument("move proposal bias is only implemented for the pipelined policy");
     c.operation_revisits=integer("R05_OPERATION_REVISITS",4);
@@ -1021,6 +1025,9 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
+    if(!std::isfinite(cfg.terminal_pending) || cfg.terminal_pending<0 || cfg.terminal_pending>1 ||
+       (cfg.terminal_pending>0 && (cfg.operation_depth || cfg.window)))
+        throw std::invalid_argument("terminal pending credit requires a pipelined rollout and a fraction in [0,1]");
     // Nested teams are bounded below by outer_workers*inner_workers<=threads.
     // They permit a few more faithful forecasts to use the existing allocation.
     if(cfg.replan_roots && cfg.replan_threads>1)omp_set_max_active_levels(2);
@@ -2031,17 +2038,28 @@ void Engine::match_future(Frame& frame) const {
     }
 }
 
+float promised_chain_cost(const Graph& g,const Chain& chain,int stage,int cell,int heading,int pending) {
+    if(pending!=cell && g.next[cell][heading]!=pending)
+        throw std::runtime_error("terminal pending move is not aligned with its heading");
+    // A real action serves at most one errand, including a wait on a repeated
+    // waypoint. Only this already committed forward/wait is projected.
+    if(stage<int(chain.goals.size()) && pending==chain.goals[stage])++stage;
+    return chain.cost(g,stage,pending,heading);
+}
+
 Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle_moves,
                         const Continuation* continuation,RolloutPrefix* save,
                         const RolloutPrefix* resume,const Rollout* forced_first,bool early_moves,bool arrival_moves) const {
     const auto& g=*graph;Rollout r;r.offsets=offsets;r.cycle_moves=cycle_moves;r.early_moves=early_moves;r.arrival_moves=arrival_moves;
-    auto total_cost=[&](const Frame& f) {
+    auto total_cost=[&](const Frame& f,bool committed=false) {
         double guided=0,plain=0;
         const auto& assigned=cfg.rollout_match?f.active_chains:assigned_;
         if(cfg.progress_softcap>0) {
             const double scale=cfg.progress_softcap;
             for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
-                const double remaining=assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
+                const double remaining=committed
+                    ?promised_chain_cost(g,*assigned[i],f.stage[i],f.loc[i],f.dir[i],f.pending[i])
+                    :assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
                 guided+=scale*remaining/(scale+remaining);
             }
             return guided*progress_normalization_;
@@ -2049,8 +2067,12 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
         const auto& plain_assigned=cfg.rollout_match?f.plain_chains:score_assigned_;
         for(int i=0;i<int(f.loc.size());++i)if(assigned[i]) {
             const double weight=score_weights_.empty()?1:score_weights_[i];
-            guided+=weight*assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]);
-            if(score_graph_)plain+=weight*plain_assigned[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]);
+            guided+=weight*(committed
+                ?promised_chain_cost(g,*assigned[i],f.stage[i],f.loc[i],f.dir[i],f.pending[i])
+                :assigned[i]->cost(g,f.stage[i],f.loc[i],f.dir[i]));
+            if(score_graph_)plain+=weight*(committed
+                ?promised_chain_cost(*score_graph_,*plain_assigned[i],f.stage[i],f.loc[i],f.dir[i],f.pending[i])
+                :plain_assigned[i]->cost(*score_graph_,f.stage[i],f.loc[i],f.dir[i]));
         }
         return score_graph_?guided*(1-cfg.plain_score)+plain*cfg.plain_score:guided;
     };
@@ -2103,6 +2125,13 @@ Rollout Engine::rollout(Frame frame,const std::vector<float>& offsets,bool cycle
     }
     r.score=(cfg.rollout_match?progress:initial-total_cost(frame))/2.0;
     if(cfg.progress_discount<1)r.score=discounted*cfg.depth/(2*weight_sum);
+    if(cfg.terminal_pending>0) {
+        // The last forecast step has already committed the next simultaneous
+        // forward/wait. Credit its known route progress without choosing another
+        // action, rotating idle robots, assigning tasks, or extending the search.
+        const double scale=cfg.progress_discount<1?weight*cfg.depth/weight_sum:1;
+        r.score+=cfg.terminal_pending*scale*(total_cost(frame)-total_cost(frame,true))/2;
+    }
     r.score-=cfg.reverse_penalty*frame.reverse_turns;
     // Finished agents have no replacement task inside these short rollouts.
     // An optional terminal reward tests whether pure distance decrease therefore
