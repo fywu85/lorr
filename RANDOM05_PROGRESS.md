@@ -46,7 +46,7 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-21 23:27 UTC.
+Updated: 2026-09-22 00:11 UTC.
 
 **Current selected archived best: 4,242 tasks**, +33.73% versus matched max(NMS,KK)=3,172.
 Source [88551e69](https://github.com/fywu85/lorr/commit/88551e69), planner seed0.
@@ -1942,3 +1942,28 @@ The latter's first new regression fixture used a mismatched18step horizon in a
 corrects only that fixture's horizon and must pass the full suite before launch.
 The chronological frontier remains4,242 and its earlier seed/fresh qualifications
 retain their stated limits. No pending case is reported as an improvement.
+
+
+### 2026-09-22 00:11 UTC: dense follow-ups retain 4,242; all-five work continues
+
+The physical deadline gate finishes 4,241 versus the unchanged 4,242 control.
+Both pass independent replay and strict limits; the replacement control matches
+all six full trace fields. Its original research49 allocation refusal remains
+preserved. Leave the gate off for RANDOM-05. Source162 is fully regression-tested
+and its production binary is identical to source161, whose only failure was the
+incorrect horizon in a new test fixture.
+[All-five gate report](random05/results/random12345-physical-deadline-split-full-v162/REPORT.md).
+
+Raising the startup admission cap to740/800 for25/100steps gives
+4,185 / 4,050 / 4,151 / 4,117 against4,242. All full runs pass and the control is
+trace-exact; keep the previous admission profile.
+[Startup-cap report](random05/results/random45-higher-start-cap-split-full-v159/REPORT.md).
+
+A frozen follow-up tests10/20/40/80 traffic-assignment preprocessing updates on
+RANDOM-03/04/05 with identical remaining settings. Its RANDOM-05 cases are still
+running. These are declared map tricks; no hidden tasks or held-out inputs are
+used. The current best remains **4,242, +33.73% over matched max(NMS,KK)=3,172**.
+In parallel, substantive sparse work has raised RANDOM-01 to735 and is testing
+a general third repair order on01/02/03. All-five scope is explicit in
+[ACTIVE_GOAL.md](random05/ACTIVE_GOAL.md), and the dashboard now leads with local
+max-team comparisons. The broader throughput campaign is active.
