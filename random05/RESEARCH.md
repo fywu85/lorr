@@ -1963,3 +1963,21 @@ general improvement. Keep all current planner seeds, fixed work, scheduling,
 edge prices, triage, full horizons and strict limits. No held-out stream chooses
 or evaluates these configurations. A selected improvement needs independent
 replay, exact repeat and paired-seed qualification before any replication claim.
+
+
+## Declared RANDOM-04 startup work and strict runtime
+
+The retained seed-extension failure is at step0:1,050.759ms, with no score.
+Current selected04 uses FIRST_K4032 thenK8064. Existing lower-FIRST_K2048 tests
+also enabled joint components, so they do not isolate startup work on the
+current cap560/progress.25 profile. Source162 already supports complete fixed
+first-step groups; no production change is needed.
+
+Freeze nine full trials: plannerseeds4/0/11 at FIRST_K4032/3072/2048, keeping
+all later steps atK8064 and every other selected setting fixed. Include the
+historically failingseed11 and retain its original failure even if a new4032
+control succeeds. The reason for that earlier latency remains unproven. This
+is a declared work-schedule comparison, not a clock-triggered partial return.
+Full horizons determine any throughput cost, and step0 versus later-step times
+will be reported separately. It is not evidence of universal runtime robustness.
+The seed4/4032control must reproduce all six archived2782trace fields.
