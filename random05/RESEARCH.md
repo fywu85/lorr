@@ -1943,3 +1943,23 @@ then credit0/.5 paired plannerseeds1/2/3. The declared four-seed aggregate uses
 the originalsource164seed0pair. Every timeout and lower result is retained.
 Current local-refinement trials keep their already-frozen4254parent and
 terminalcredit0; do not change running experiments after observing this result.
+
+
+## Current-profile layout interaction (2026-09-22)
+
+Manifest inventory found only layoutseed15 at RANDOM-04's positive admission
+cap, apart from adding more flips to that same layout. Earlier alternative
+layouts all predate the cap. RANDOM-03's edge-mix.25 manifests likewise use
+only layout15. Previous negative layout comparisons remain valid for their
+original profiles and are retained; field-cost/extra-flip/jitter trials are
+separate and mostly negative.
+
+Freeze twelve archived full runs using already-audited source162. Each density
+gets its current exact control, the same layout15 without its one edge flip,
+and four previously measured layouts without extra flips. RANDOM-03 layouts
+23/7/31/43 were stronger historical alternatives; RANDOM-04 uses previous
+full-run finalists105/109/111/115. These are explicit --trick instances, not a
+general improvement. Keep all current planner seeds, fixed work, scheduling,
+edge prices, triage, full horizons and strict limits. No held-out stream chooses
+or evaluates these configurations. A selected improvement needs independent
+replay, exact repeat and paired-seed qualification before any replication claim.

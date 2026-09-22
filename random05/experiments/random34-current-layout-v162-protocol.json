@@ -1,0 +1,38 @@
+{
+  "created_utc": "2026-09-22T02:33:24.832809+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "build": "build-v162",
+  "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "manifest": "random05/experiments/random34-current-layout-full-v162.json",
+  "scope": "Explicit instance tricks on archived inputs only",
+  "hypothesis": "Traffic layout interacts with softened RANDOM-03 edge costs and RANDOM-04 active-task admission; neither interaction has had an alternative-layout comparison.",
+  "historical_basis": {
+    "RANDOM-03": [
+      "23",
+      "7",
+      "31",
+      "43"
+    ],
+    "RANDOM-04": [
+      "105",
+      "109",
+      "111",
+      "115"
+    ]
+  },
+  "controls": {
+    "trick-random-03-current-layout-control": "runs/random05/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/trick-random-03-progress-transfer-mixp25-span32/result.json",
+    "trick-random-04-current-layout-control": "runs/random05/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/trick-random-04-progress-triage-mixp25-span32/result.json"
+  },
+  "selection_rule": "Archive every full run and failure. Independently replay any strict-valid best, then exact-repeat and compare paired planner seeds before claiming replication. No held-out input participates.",
+  "settings_preserved": [
+    "planner seed",
+    "fixed search work",
+    "step and preparation deadlines",
+    "memory budget",
+    "guidance contrast/load/mix",
+    "task scheduling and admission",
+    "triage"
+  ],
+  "caveat": "These layouts were previously tested under different profiles. This is a bounded interaction test, not a claim that earlier negatives were wrong or a general improvement."
+}
