@@ -54,9 +54,33 @@ def main():
         if all('general' in r for r in records):
             result['general_total']=sum(r['general'] for r in records);result['general_gain_percent']=100*(result['general_total']/target-1)
         fresh[instance]=result
+    fresh_history={}
+    v3_path='random05/results/random03-fresh-validation-v3/audit.json'
+    if (ROOT/v3_path).exists():
+        frozen=read(v3_path)
+        replay=read('random05/results/random03-fresh-validation-v3/replay-audit.json')
+        assert frozen['all_valid'] and frozen['reference']=='max(NMS, Kitty Knight)'
+        assert replay['complete'] and replay['all_attempts_valid'] and not replay['pending']
+        assert frozen['protocol_commit']==replay['protocol_commit']
+        records=[]
+        for c in frozen['comparisons']:
+            target=max(c['nms_repeats']+c['kk_repeats'])
+            assert target==c['matched_max'] and len(c['nms_repeats'])==len(c['kk_repeats'])==2
+            records.append(dict(seed=c['seed'],ours=c['ours'],baseline=c['baseline'],
+                nms=c['nms_repeats'],kk=c['kk_repeats'],target=target,
+                gain_percent=100*(c['ours']/target-1),evidence=v3_path,kk_audit=v3_path))
+        total=sum(r['ours'] for r in records);target=sum(r['target'] for r in records)
+        baseline=sum(r['baseline'] for r in records)
+        result=dict(rows=records,candidate_total=total,reference_total=target,
+            gain_percent=100*(total/target-1),baseline_total=baseline,
+            gain_over_baseline_percent=100*(total/baseline-1),version=3,
+            candidate_development_tasks=2646,baseline_development_tasks=2620,
+            protocol_commit=frozen['protocol_commit'],candidate_source_commit=frozen['candidate_source_commit'])
+        fresh_history['RANDOM-03']={'v2':fresh['RANDOM-03'],'v3':result}
+        fresh['RANDOM-03']=result
     report=dict(updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         policy='Strongest retained valid full local run of each team; max(NMS,KK) requires both. Published results remain separate. Original failures remain in the source audits.',
-        input_audits=paths,archived=archived,fresh=fresh,pending=read(paths[0])['pending'])
+        input_audits=paths,archived=archived,fresh=fresh,fresh_history=fresh_history,pending=read(paths[0])['pending'])
     (ROOT/'random05/references/matched-nms-kk-combined.json').write_text(json.dumps(report,indent=2)+'\n')
     for instance,result in archived.items():print(instance,result['target'],result['ten_percent_target'])
 if __name__=='__main__':main()

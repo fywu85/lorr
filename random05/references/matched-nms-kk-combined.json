@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-09-21T20:59:26.699153+00:00",
+  "updated_utc": "2026-09-22T01:50:51.795156+00:00",
   "policy": "Strongest retained valid full local run of each team; max(NMS,KK) requires both. Published results remain separate. Original failures remain in the source audits.",
   "input_audits": [
     "random05/results/random-nms-kk-baselines-v1/audit.json",
@@ -368,41 +368,141 @@
     "RANDOM-03": {
       "rows": [
         {
-          "seed": 50019,
-          "ours": 2617,
+          "seed": 50021,
+          "ours": 2660,
+          "baseline": 2639,
           "nms": [
-            2413,
-            2403
+            2461,
+            2444
           ],
           "kk": [
-            2124,
-            2116
+            2084,
+            2093
           ],
-          "target": 2413,
-          "gain_percent": 8.454206382096974,
-          "evidence": "random05/results/random03-fresh-validation-v2/audit.json",
-          "kk_audit": "random05/results/random-nms-kk-baselines-v1/audit.json"
+          "target": 2461,
+          "gain_percent": 8.086143843965864,
+          "evidence": "random05/results/random03-fresh-validation-v3/audit.json",
+          "kk_audit": "random05/results/random03-fresh-validation-v3/audit.json"
         },
         {
-          "seed": 50020,
-          "ours": 2609,
+          "seed": 50022,
+          "ours": 2622,
+          "baseline": 2612,
           "nms": [
-            2388,
-            2371
+            2361,
+            2380
           ],
           "kk": [
-            2044,
-            2058
+            2094,
+            2130
           ],
-          "target": 2388,
-          "gain_percent": 9.254606365159134,
-          "evidence": "random05/results/random03-fresh-validation-v2/audit.json",
-          "kk_audit": "random05/results/random-nms-kk-baselines-v1/audit.json"
+          "target": 2380,
+          "gain_percent": 10.168067226890765,
+          "evidence": "random05/results/random03-fresh-validation-v3/audit.json",
+          "kk_audit": "random05/results/random03-fresh-validation-v3/audit.json"
         }
       ],
-      "candidate_total": 5226,
-      "reference_total": 4801,
-      "gain_percent": 8.852322432826497
+      "candidate_total": 5282,
+      "reference_total": 4841,
+      "gain_percent": 9.109688080975008,
+      "baseline_total": 5251,
+      "gain_over_baseline_percent": 0.590363740239952,
+      "version": 3,
+      "candidate_development_tasks": 2646,
+      "baseline_development_tasks": 2620,
+      "protocol_commit": "3fc121ad4ccd0ec4e56c60e25caa4d35fb86b156",
+      "candidate_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad"
+    }
+  },
+  "fresh_history": {
+    "RANDOM-03": {
+      "v2": {
+        "rows": [
+          {
+            "seed": 50019,
+            "ours": 2617,
+            "nms": [
+              2413,
+              2403
+            ],
+            "kk": [
+              2124,
+              2116
+            ],
+            "target": 2413,
+            "gain_percent": 8.454206382096974,
+            "evidence": "random05/results/random03-fresh-validation-v2/audit.json",
+            "kk_audit": "random05/results/random-nms-kk-baselines-v1/audit.json"
+          },
+          {
+            "seed": 50020,
+            "ours": 2609,
+            "nms": [
+              2388,
+              2371
+            ],
+            "kk": [
+              2044,
+              2058
+            ],
+            "target": 2388,
+            "gain_percent": 9.254606365159134,
+            "evidence": "random05/results/random03-fresh-validation-v2/audit.json",
+            "kk_audit": "random05/results/random-nms-kk-baselines-v1/audit.json"
+          }
+        ],
+        "candidate_total": 5226,
+        "reference_total": 4801,
+        "gain_percent": 8.852322432826497
+      },
+      "v3": {
+        "rows": [
+          {
+            "seed": 50021,
+            "ours": 2660,
+            "baseline": 2639,
+            "nms": [
+              2461,
+              2444
+            ],
+            "kk": [
+              2084,
+              2093
+            ],
+            "target": 2461,
+            "gain_percent": 8.086143843965864,
+            "evidence": "random05/results/random03-fresh-validation-v3/audit.json",
+            "kk_audit": "random05/results/random03-fresh-validation-v3/audit.json"
+          },
+          {
+            "seed": 50022,
+            "ours": 2622,
+            "baseline": 2612,
+            "nms": [
+              2361,
+              2380
+            ],
+            "kk": [
+              2094,
+              2130
+            ],
+            "target": 2380,
+            "gain_percent": 10.168067226890765,
+            "evidence": "random05/results/random03-fresh-validation-v3/audit.json",
+            "kk_audit": "random05/results/random03-fresh-validation-v3/audit.json"
+          }
+        ],
+        "candidate_total": 5282,
+        "reference_total": 4841,
+        "gain_percent": 9.109688080975008,
+        "baseline_total": 5251,
+        "gain_over_baseline_percent": 0.590363740239952,
+        "version": 3,
+        "candidate_development_tasks": 2646,
+        "baseline_development_tasks": 2620,
+        "protocol_commit": "3fc121ad4ccd0ec4e56c60e25caa4d35fb86b156",
+        "candidate_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad"
+      }
     }
   },
   "pending": []

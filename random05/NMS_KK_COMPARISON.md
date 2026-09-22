@@ -1,14 +1,14 @@
 # Matched NMS and Kitty Knight comparison
 
-Updated 2026-09-21 20:59 UTC. Every headline reference is **max(NMS, Kitty Knight)** per instance. These combined-track runs use identical archived input hashes, full horizons,16 physical EPYC9354 cores/32 SMT workers,1s entries,30s preprocessing and the32 decimal GB process guard. Original failures remain in the evidence.
+Updated 2026-09-22 01:53 UTC. Every headline reference is **max(NMS, Kitty Knight)** per instance. These combined-track runs use identical archived input hashes, full horizons,16 physical EPYC9354 cores/32 SMT workers,1s entries,30s preprocessing and the32 decimal GB process guard. Original failures remain in the evidence.
 
 | Instance | PILOT selected best | Strongest valid NMS | Strongest valid KK | max(NMS, KK) | Difference |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 729 | 649 | 692 | 692 | +5.35% |
+| RANDOM-01 | 739 | 649 | 692 | 692 | +6.79% |
 | RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
-| RANDOM-03 | 2,620 | 2,359 | 2,110 | 2,359 | +11.06% |
+| RANDOM-03 | 2,646 | 2,359 | 2,110 | 2,359 | +12.17% |
 | RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
-| RANDOM-05 | 4,242 | 3,172 | 2,085 | 3,172 | +33.73% |
+| RANDOM-05 | 4,254 | 3,172 | 2,085 | 3,172 | +34.11% |
 
 Selected bests are development maxima, not seed averages or a universal preset. Retain the strongest previously audited reference when a newer repetition scores lower. Published competition maxima688/1260/2334/2547/3050 use different task/start inputs and hardware and remain historical targets. The local RANDOM-04 reference increases from2,580 to2,649, so a10% lead now requires2,914.
 
@@ -35,12 +35,15 @@ Evidence: [original monitored35](results/kk-random05-resource-research35-v1/audi
 
 ## Fresh task/start supplements
 
-| Instance | Selected total | General total | Sum of per-input max(NMS, KK) | Selected gain | General gain |
+| Frozen comparison | Selected total | General total | Sum of per-input max(NMS, KK) | Selected gain | General gain |
 |---|---:|---:|---:|---:|---:|
 | RANDOM-01 | 1432 | 1425 | 1372 | +4.37% | +3.86% |
 | RANDOM-02 | 2730 | 2714 | 2478 | +10.17% | +9.52% |
-| RANDOM-03 | 5226 | — | 4801 | +8.85% | — |
+| RANDOM-03 V2 | 5226 | — | 4801 | +8.85% | — |
+| RANDOM-03 V3 | 5282 | — | 4841 | +9.11% | — |
 
 These supplements preserve the frozen PILOT profiles and all held-out exclusions. RANDOM-03 V2 remains0.115% below its preceding solver in aggregate, although faster. The R01/R02 frozen profiles and R03 V2 use the same geometry with new task/start streams. R03 V1 and R05 V6 did not measure KK on their streams: retain their NMS-only labels.
 
 Machine-readable references: [matched maxima and evidence](references/matched-nms-kk-combined.json).
+
+Fresh RANDOM-03 V3 directly includes two repetitions of both teams in its pre-generation protocol. It qualifies the2646profile:2660/2622 versus per-input maxima2461/2380 (+9.110%aggregate), and +0.590%over the preceding2620recipe on those same inputs. All12original runs pass strict checks and full independent replay. This misses the10%fresh milestone. V2 remains in the machine-readable history; these different streams/configurations must not be pooled as one matched experiment. [V3report](RANDOM03_FRESH_VALIDATION_V3.md).

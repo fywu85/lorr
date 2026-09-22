@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 01:09 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 01:52 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -145,17 +145,27 @@ development gain; fresh01V1still qualifies the earlier729profile only.
 
 The preceding2,621 physical-deadline gate record repeats exactly. Five paired
 development seeds total13,029 versus12,999 (+0.231%, four gains/one loss).
-This modest gain has not received fresh-input qualification.
+The gate alone has not received standalone fresh-input qualification.
 [Paired evidence](random05/results/random03-record2621-split-full-v162/paired-seeds.json).
 
-The current2,646 selected result adds observed-progress horizon correction
+The2,646 selected result adds observed-progress horizon correction
 0.25/span32 to the2,621profile. Full replay and strict limits pass:
 mean484.103/max676.507ms, RSS469.467MB. The unchanged2,621control is
 exact in all six fields, as is the2,646repeat. Five paired planner seeds
 2611/2606/2611/2646/2610 total13,084versus13,029 (+0.4221%, all positive).
-Maximum qualification entry730.523ms. Selectingseed3is included; fresh
-validation still applies only to the earlier frozen2,620profile.
+Maximum qualification entry730.523ms. Selectingseed3is included.
 [Paired evidence](random05/results/random03-record2646-split-full-v162/REPORT.md).
+
+**Frozen fresh V3 validates the2,646 profile on two new task/start inputs:**
+2,660/2,622 versus the prior2,620 recipe2,639/2,612 (+0.590% aggregate,
+positive on both). Both teams were frozen in the original protocol:
+NMS2,461/2,444 and2,361/2,380; KK2,084/2,093 and2,094/2,130.
+**+9.110% aggregate versus max(NMS,KK)**, with individual gains8.086%/10.168%.
+This still misses the10% fresh-input milestone. All12runs pass strict
+source/input/runtime/bound-affinity checks and independent full replay.
+Candidate mean494.489/478.907ms, max727.685/677.620ms; RSS below465MB.
+These are same-layout validation streams, not new archived records.
+[Fresh V3 report](random05/RANDOM03_FRESH_VALIDATION_V3.md).
 
 RANDOM-04 currently reaches **2,782** (+5.02% above matched max(NMS,KK)),
 **132 tasks short** of2,914. Its record peaks at739.6ms;

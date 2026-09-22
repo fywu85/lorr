@@ -1253,3 +1253,15 @@ the user explicitly deferred directory/naming cleanup until development ends.
 ## Frozen RANDOM-03 fresh comparison V3 (prepared 2026-09-22)
 
 The2646 record and preceding2620 profile are frozen at source162, plannerseed3. Two new task/start streams50021/50022 will be generated only after the protocol commit, then measured against two NMS and two Kitty Knight repetitions each. Headline reference is the stronger team/repetition on each input. All12cases use full800steps, strict1s entries and16physical/32SMTworkers. The fresh auditor now directly checks both teams and KK runtime hashes; the earlier V2 audit still reproduces its8.852% result. No fresh2646 result is claimed yet. Both inputs are permanently excluded from tuning. See [protocol](experiments/random03-fresh-validation-v3-protocol.json).
+
+## Active all-density follow-up (2026-09-22 01:44 UTC)
+
+The current-work-v162 trial does not improve01 (739control,732atI1024,731atI2048) or02 (1408control,1402atI3072;I4096fails atstep1,1029.213ms). Two03runs remain. This partial evidence preserves the failed attempt; no archived best changes. The04/05flow-model batch is in progress.
+
+Source164/30a56647 adds optional general committed-motion terminal credit. It passed the full57.30sregression. Sixteen frozen full trials cover all five reactive densities and selected04/05; controls require six-field exact replay. General01/02 reactive baselines647/1106 are separate from the better windowed profiles727/1397. New scoring is defaultoff and has no measured throughput claim yet. [Manifest](experiments/random12345-terminal-pending-full-v164.json), [source/regression audit](results/build-v164/source-audit.json).
+
+## Fresh RANDOM-03 V3 and current-work outcome (2026-09-22 01:53 UTC)
+
+All12frozen freshV3runs pass source/input/runtime/allocation/deadline/memory checks and independent full action/schedule/task/waiting replay. Candidate2660/2622 versus the prior2620recipe2639/2612 gives +0.590%aggregate, positive on both. Repeated NMS2461/2444 and2361/2380 exceed repeated KK2084/2093 and2094/2130. Against per-input max(NMS,KK), gains are8.086%/10.168%, **9.110%aggregate**, below10%. Candidate maxima727.685/677.620ms, RSS<465MB. This qualifies the frozen2646configuration; different-input2660does not replace the archived2646record. [Complete V3report](RANDOM03_FRESH_VALIDATION_V3.md).
+
+The current-work-v162 batch is complete:03I8192finishes2619versus2646. No extra-work candidate on01/02/03improves throughput. All seven successful full runs replay independently; the original02I4096deadline failure is retained. Three controls match all six fields. [Work report](results/random123-current-work-split-full-v162/REPORT.md). Flow-model04results2696/2558/2714/2319alllose2782;05results and complete batch control proof remain pending. Source164terminal-scoring trials remain in progress.

@@ -1,0 +1,40 @@
+{
+  "kind": "benchmark",
+  "created_utc": "2026-09-22T01:26:05.958094+00:00",
+  "repo": "/shared/share_mala/fw2449/lorr2024",
+  "commit": "3fc121ad4ccd0ec4e56c60e25caa4d35fb86b156",
+  "hosts": "research35|research36|research37|research39|research46|research47|research48|research50|research51|research52|research55|research56",
+  "required_cpu_model": "AMD EPYC 9354 32-Core Processor",
+  "interprocedural_optimization": false,
+  "cases": [
+    {
+      "name": "seed50021-nms-repeat1",
+      "team": "nms",
+      "binary": "/shared/share_mala/fw2449/lorr2024/nms/build/lifelong",
+      "input": "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random03-v3/seed50021/RANDOM-03.json",
+      "cores": 16,
+      "smt": 2,
+      "steps": 800,
+      "limit_ms": 1000,
+      "preprocess_ms": 30000,
+      "env": {},
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "original_binary": "/shared/share_mala/fw2449/lorr2024/Code-Archive/2024 Competition/Team_No_Man's_Sky/44950d1b61b7482b4529a9dc127fa9d220962bdc/build/lifelong",
+      "input_hashes": {
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random03-v3/seed50021/RANDOM-03.json": "5eb9cb3bebf21576b3982b63d8747d4536e952aa719529962d7a6190ae27d405",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random03-v3/seed50021/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random03-v3/seed50021/agents.agents": "1f845ac9fbf253c79986e417ff244b9fdb25813b406d15005b41bbe89f9f178c",
+        "/shared/share_mala/fw2449/lorr2024/runs/random05/fresh-inputs-random03-v3/seed50021/tasks.tasks": "95e9ba323e825176b4131400d437841d21402c43c152b58a0cf5c105e94e5ea0"
+      }
+    }
+  ],
+  "cases_input": "/shared/share_mala/fw2449/lorr2024/runs/random05/random03-fresh-validation-v3-split/seed50021-nms-repeat1.cases.json",
+  "physical": 16,
+  "slots": 32,
+  "exclusive": false,
+  "memory_per_slot_gib": 1,
+  "runner_dependencies": {
+    "result_horizon.py": "1827e5afb1ab40875c72139fc73ba09667de854800e7389608cadbed3a83ea7c",
+    "process_resources.py": "1f25e668190d56ea3773d988a15d3a9f203d03c7c79fd59fb0f717c5129f3b67"
+  }
+}

@@ -1,0 +1,382 @@
+{
+  "checked_utc": "2026-09-22T01:47:54.465667+00:00",
+  "protocol_commit": "3fc121ad4ccd0ec4e56c60e25caa4d35fb86b156",
+  "candidate_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "all_valid": true,
+  "instance": "RANDOM-03",
+  "steps": 800,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "source_checks": {
+    "ours": {
+      "commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/matching.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/cycles.cpp",
+        "src/window.cpp",
+        "src/joint_moves.cpp"
+      ]
+    },
+    "baseline": {
+      "commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "checked_files": [
+        "CMakeLists.txt",
+        "simulator/inc/Logger.h",
+        "simulator/inc/Evaluation.h",
+        "simulator/inc/TaskManager.h",
+        "simulator/inc/common.h",
+        "simulator/inc/States.h",
+        "simulator/inc/SharedEnv.h",
+        "simulator/inc/Tasks.h",
+        "simulator/inc/Simulator.h",
+        "simulator/inc/CompetitionSystem.h",
+        "simulator/inc/ActionModel.h",
+        "simulator/inc/Grid.h",
+        "simulator/inc/Entry.h",
+        "simulator/inc/nlohmann/json_fwd.hpp",
+        "simulator/inc/nlohmann/json.hpp",
+        "simulator/src/Grid.cpp",
+        "simulator/src/CompetitionSystem.cpp",
+        "simulator/src/ActionModel.cpp",
+        "simulator/src/States.cpp",
+        "simulator/src/driver.cpp",
+        "simulator/src/Logger.cpp",
+        "simulator/src/TaskManager.cpp",
+        "simulator/src/common.cpp",
+        "simulator/src/Simulator.cpp",
+        "simulator/src/Evaluation.cpp",
+        "src/operations.cpp",
+        "src/engine.hpp",
+        "src/rescore.cpp",
+        "src/replan.cpp",
+        "src/matching.cpp",
+        "src/shared_rankings.cpp",
+        "src/engine.cpp",
+        "src/diagnostics.cpp",
+        "src/Entry.cpp",
+        "src/components.cpp",
+        "src/cycles.cpp",
+        "src/window.cpp",
+        "src/joint_moves.cpp"
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "seed": 50021,
+      "ours": 2660,
+      "nms_repeats": [
+        2461,
+        2444
+      ],
+      "stronger_nms": 2461,
+      "kk_repeats": [
+        2084,
+        2093
+      ],
+      "stronger_kk": 2093,
+      "matched_max": 2461,
+      "strongest_team": "nms",
+      "gain_over_nms_percent": 8.086143843965864,
+      "gain_percent": 8.086143843965864,
+      "baseline": 2639,
+      "gain_over_baseline_percent": 0.7957559681697646
+    },
+    {
+      "seed": 50022,
+      "ours": 2622,
+      "nms_repeats": [
+        2361,
+        2380
+      ],
+      "stronger_nms": 2380,
+      "kk_repeats": [
+        2094,
+        2130
+      ],
+      "stronger_kk": 2130,
+      "matched_max": 2380,
+      "strongest_team": "nms",
+      "gain_over_nms_percent": 10.168067226890765,
+      "gain_percent": 10.168067226890765,
+      "baseline": 2612,
+      "gain_over_baseline_percent": 0.3828483920367498
+    }
+  ],
+  "aggregate_gain_percent": 9.109688080975008,
+  "runs": {
+    "seed50021-ours": {
+      "tasks": 2660,
+      "finished_utc": "2026-09-22T01:32:47.050396+00:00",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "latency_seconds": {
+        "mean": 0.49448948930749964,
+        "max": 0.727684627
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 12093.715054,
+        "system_seconds": 130.723757,
+        "peak_rss_kib": 453384,
+        "wall_seconds": 396.85342637076974,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-ours/summary.json"
+    },
+    "seed50021-baseline": {
+      "tasks": 2639,
+      "finished_utc": "2026-09-22T01:33:06.532883+00:00",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "latency_seconds": {
+        "mean": 0.5186438483450004,
+        "max": 0.672532212
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 12769.475272,
+        "system_seconds": 131.303253,
+        "peak_rss_kib": 416884,
+        "wall_seconds": 416.1201189653948,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-baseline/summary.json"
+    },
+    "seed50021-nms-repeat1": {
+      "tasks": 2461,
+      "finished_utc": "2026-09-22T01:39:00.938624+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9505033645024991,
+        "max": 0.950811922
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 24245.532898,
+        "system_seconds": 6.476955,
+        "peak_rss_kib": 1668180,
+        "wall_seconds": 761.2979950383306,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-nms-repeat1/summary.json"
+    },
+    "seed50021-nms-repeat2": {
+      "tasks": 2444,
+      "finished_utc": "2026-09-22T01:39:01.108378+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9507332328600004,
+        "max": 0.95103979
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 20954.559826,
+        "system_seconds": 4.4665,
+        "peak_rss_kib": 1668656,
+        "wall_seconds": 761.4698490388691,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-nms-repeat2/summary.json"
+    },
+    "seed50021-kk-repeat1": {
+      "tasks": 2084,
+      "finished_utc": "2026-09-22T01:39:07.340309+00:00",
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "latency_seconds": {
+        "mean": 0.9456305283899995,
+        "max": 0.951545751
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 21566.685361,
+        "system_seconds": 2301.702548,
+        "peak_rss_kib": 245224,
+        "wall_seconds": 757.1276207342744,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-kk-repeat1/summary.json"
+    },
+    "seed50021-kk-repeat2": {
+      "tasks": 2093,
+      "finished_utc": "2026-09-22T01:39:07.107275+00:00",
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "latency_seconds": {
+        "mean": 0.9453461191350008,
+        "max": 0.952111131
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 19867.629564,
+        "system_seconds": 3897.22788,
+        "peak_rss_kib": 245748,
+        "wall_seconds": 756.9099874310195,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50021-kk-repeat2/summary.json"
+    },
+    "seed50022-ours": {
+      "tasks": 2622,
+      "finished_utc": "2026-09-22T01:32:54.016411+00:00",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "latency_seconds": {
+        "mean": 0.4789074851262495,
+        "max": 0.677619734
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 11740.71932,
+        "system_seconds": 128.77935,
+        "peak_rss_kib": 451052,
+        "wall_seconds": 384.35291623696685,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-ours/summary.json"
+    },
+    "seed50022-baseline": {
+      "tasks": 2612,
+      "finished_utc": "2026-09-22T01:32:48.122409+00:00",
+      "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+      "latency_seconds": {
+        "mean": 0.4716219290287497,
+        "max": 0.681222368
+      },
+      "timing_source": "entryComputeTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 11624.261901,
+        "system_seconds": 110.858351,
+        "peak_rss_kib": 424312,
+        "wall_seconds": 378.4627625402063,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-baseline/summary.json"
+    },
+    "seed50022-nms-repeat1": {
+      "tasks": 2361,
+      "finished_utc": "2026-09-22T01:39:20.823482+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9505250027625013,
+        "max": 0.950957041
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 24244.864819,
+        "system_seconds": 6.160941,
+        "peak_rss_kib": 1667888,
+        "wall_seconds": 761.2692197300494,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-nms-repeat1/summary.json"
+    },
+    "seed50022-nms-repeat2": {
+      "tasks": 2380,
+      "finished_utc": "2026-09-22T01:39:20.871610+00:00",
+      "binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+      "latency_seconds": {
+        "mean": 0.9505357565549999,
+        "max": 0.951396534
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 24245.031503,
+        "system_seconds": 6.201756,
+        "peak_rss_kib": 1668516,
+        "wall_seconds": 761.3178385002539,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-nms-repeat2/summary.json"
+    },
+    "seed50022-kk-repeat1": {
+      "tasks": 2094,
+      "finished_utc": "2026-09-22T01:39:17.135835+00:00",
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "latency_seconds": {
+        "mean": 0.9455073625787503,
+        "max": 0.951097726
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 22031.704756,
+        "system_seconds": 1752.286127,
+        "peak_rss_kib": 246356,
+        "wall_seconds": 757.0855819284916,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-kk-repeat1/summary.json"
+    },
+    "seed50022-kk-repeat2": {
+      "tasks": 2130,
+      "finished_utc": "2026-09-22T01:45:27.626271+00:00",
+      "binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+      "latency_seconds": {
+        "mean": 0.9454659074087508,
+        "max": 0.950156305
+      },
+      "timing_source": "plannerTimes",
+      "timing_samples": 800,
+      "usage": {
+        "user_seconds": 21404.847442,
+        "system_seconds": 2427.578911,
+        "peak_rss_kib": 253100,
+        "wall_seconds": 757.0181376319379,
+        "exit": 0
+      },
+      "evidence": "runs/random05/random03-fresh-validation-v3-split/seed50022-kk-repeat2/summary.json"
+    }
+  },
+  "caveat": "Frozen held-out task/start inputs on the same map and the stated allocation. These are not the colleague's private inputs.",
+  "reference": "max(NMS, Kitty Knight)",
+  "kk_binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+  "baseline_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "aggregate_gain_over_baseline_percent": 0.590363740239952
+}

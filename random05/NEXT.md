@@ -1,6 +1,6 @@
 # PILOT campaign continuation
 
-Updated 2026-09-22 01:02 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
+Updated 2026-09-22 01:55 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
 ACTIVE_GOAL.md is the working objective. Always headline matched max(NMS, Kitty Knight).
 The stored app goal has stale03/04-only wording and old04reference2580/threshold2838;
 do not falsely complete it to change its text. Current user steering governs.
@@ -24,8 +24,8 @@ All tuned tricks require --trick RANDOM-0N; mark them as tricks in commits/logs.
 
 Selected739/1408/2646/2782/4254. General727/1397/1634/1616/2226.
 Matchedmax692/1256/2359/2649/3172; leads+6.79/+12.10/+12.17/+5.02/+34.11%.
-R04target2914still132short. Fresh03V2gain8.852%is below10%. Fresh01V1qualifies729,
-02V1qualifies1408,03V2qualifies2620. No fresh739/2646/4254qualification;05V6qualifies
+R04target2914still132short. Fresh03V3gain9.110%is below10%; all12runs are fully audited. Fresh01V1qualifies729,
+02V1qualifies1408,03V3qualifies2646. No fresh739/4254qualification;05V6qualifies
 4175only and is NMS-only. The dashboard/density ledger use current matched references.
 
 R01=739: source162/4fb9498e, progress.25/span32 on735anneal.25+physicalgate1,
@@ -41,7 +41,7 @@ Batchrandom1234-progress-transfer-split-full-v162,
 case trick-random-03-progress-transfer-mixp25-span32. Finished2026-09-22T00:53:28.091236+00:00.
 Mean484.103/max676.507ms,RSS469.467MB. Full replay passes; off2621control6fieldexact.
 Intermediate2628chronologicalrecord also logged. Exactrepeat6fieldpasses. Five pairedseeds2611/2606/2611/2646/2610 total13084vs13029
-(+.4221%,all5positive),max730.523ms,RSS482.013MB. No fresh2646validation.
+(+.4221%,all5positive),max730.523ms,RSS482.013MB. FreshV3now gives9.110%over max(NMS,KK), below10%, and+.590%over prior2620.
 Preceding2621fivepairs13029vs12999 (+.231%,4gains/1loss);2620freshV2remainsseparate.
 
 R05=4254: source162/4fb9498e, flow80updates on4242profile,seed0.
@@ -61,13 +61,33 @@ has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.j
 
 ## Active state
 
-The frozen RANDOM-03 fresh-validation-v3 protocol reserves seeds50021/50022 for the selected2646 recipe against prior2620 and two repetitions each of NMS/Kitty Knight. Protocol3fc121ad was committed before generation2026-09-22T01:25:17.637576+00:00. All twelve800-step cases have been submitted as GRID8920769–8920780; no result is yet available. Inputs remain excluded from tuning.
+Fresh03V3 is complete: all12 original runs pass source/input/deadline/memory,
+actual binary/affinity and independent full replay/waiting audits. Protocol3fc121ad
+predates generation2026-09-22T01:25:17.637576+00:00. Candidate2660/2622,
+prior2639/2612; repeated NMS2461/2444 and2361/2380; KK2084/2093 and2094/2130.
+Aggregate9.109688%over max(NMS,KK) misses10%;+.590364%over predecessor.
+Both new seeds remain excluded from tuning. Full report RANDOM03_FRESH_VALIDATION_V3.md.
 
-No PILOT benchmark jobs remain running or queued from the previous checkpoint.
-All frozen batches, including random03-record2646-split-full-v162, are complete,
-independently audited and have their declared full-trace equivalence proofs.
-The broad all-five goal remains active; no source164implementation exists.
-Other agents' jobs and work are outside this session's scope and remain untouched.
+Current-work-v162 is complete/audited, three controls six-field exact.
+01=739/732/731;02=1408/1402/failedI4096t1at1029.213ms;03=2646/2619.
+No new best. Report random123-current-work-split-full-v162/REPORT.md.
+
+Two active batches:
+- random45-flow-model-split-full-v162:04allfive audited, control2782,
+  candidates2696/2558/2714/2319 all lose. Five05cases pending.
+  Finish full audit and both declared control proofs when all10finish.
+- random12345-terminal-pending-split-full-v164: all16submitted/frozen38011347.
+  First six report general reactive01=647/643,02=1106/1101,03=1634/1619 (off/on),
+  not yet independently batch-audited.04/05general and selected trials pending.
+  Seven complete control proofs required. Do not promote from raw summaries.
+
+Source164/30a5664757b8ffad1150f5eb763c747ba1001bed is built/regression-passed57.30s;
+binary4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd.
+Optional general R05_TERMINAL_PENDING credits a committed forward/wait at
+rollout termination without a new action choice or task. Defaults OFF;
+operation/window modes reject it. No throughput benefit claimed. General01/02
+trials use earlier reactive baselines647/1106, not window bests727/1397.
+Other agents' jobs and work remain outside this session's scope.
 
 ## Completed batches since the last checkpoint
 
@@ -401,4 +421,16 @@ research41|research46|research47|research48|research49|research50|
 research51|research52|research54|research55|research56. Avoid34/40/42/45 binding refusal
 and53/58 timing spikes; causes unproven. Actual allocation guards are mandatory.
 
-Prepared current-work-v162 (8cases across01/02/03) and flow-model-v162 (10cases across04/05). Commit manifests before launch; source162 unchanged. Five exact controls and full replay required. Current-work retains original first-step repairs, increases later iterations; flow-model varies co-flow power/coefficient while holding output prices fixed. No throughput result yet.
+Frozen a0d752ea current-work-v162 (8cases across01/02/03) and flow-model-v162 (10cases across04/05) are both submitted; source162 unchanged. Five exact controls and full replay required. Current-work retains original first-step repairs, increases later iterations; flow-model varies co-flow power/coefficient while holding output prices fixed. No throughput result yet.
+
+## Earlier live checkpoint 2026-09-22 01:44 UTC
+
+Fresh03V3 (protocol3fc121ad):11/12complete, finalseed50022KKrepeat2started01:32:49UTC. PILOT2660/2622 vsbaseline2639/2612; NMS2461/2444 and2361/2380; KK2084/2093 and2094/pending. Four PILOT traces independently replayed; partiallaunch audit checks actual binaries/32affinity/noquota on11complete runs. Complete fresh/source/runtime and full replay audits only once the last repetition finishes. Preserve all comparisons even though provisional aggregate gain9.11%misses10%. Archivecompactmetadataonly.
+
+Current-workbatch6/8complete:01control739/I1024=732/I2048=731;02control1408/I3072=1402/I4096fails t1 at1029.213ms. Original failure is in native.log and audited, no partial score.03I6144/I8192pending. Finishaudit/exactcontrols before reporting full batch. Flow-model10cases and terminal-pending16cases are running/queued. No archived frontier change in this continuation yet.
+
+## Completed fresh/work audits 2026-09-22 01:53 UTC
+
+Fresh03V3all12complete/strictvalid/replayed; finalKKseed50022repeat2=2130. Finalcandidate2660/2622vsbaseline2639/2612 and per-input max2461/2380: +9.109688%reference, +.590364%baseline. Largestcandidateentry727.685ms,RSS<465MB. Fullreport RANDOM03_FRESH_VALIDATION_V3.md. Fresh reference updater preservesV2history and selectsV3; dashboard updated. No fresh10%claim.
+
+Current-work8/8complete/audited;03I8192=2619loses2646. Three controls allsixfieldexact; REPORT.md/failures.json retain02I4096t1deadline1029.213ms. No recordchange. Flow-model04all5complete/auditedandallvariantslose2696/2558/2714/2319vs2782;05pending. Terminal-pending-v164all16submitted, pending. Source164compiled/test audit is complete; no throughputclaim.
