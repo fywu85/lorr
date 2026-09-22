@@ -2138,3 +2138,15 @@ and freshV6 qualification remain unchanged. The same general runtime mechanism
 has its clearest verified benefit on RANDOM-04 startup, where five pairs and
 an exact repetition stay below670ms without changing search work.
 [All-five runtime audit](random05/results/random12345-zero-update-split-full-v168/REPORT.md).
+
+
+## User-requested pause (2026-09-22 06:36 UTC)
+
+The in-flight RANDOM-01/04diagnostic controls and audits are complete. A subsequent
+user request authorizes ten-seed variability measurement before the final pause.
+No algorithm development is resumed. RANDOM-05 remains **4,302** against
+matchedmax(NMS,KK)=**3,172** (**+35.62%**), with general best2,314.
+No new05run or frontier change was made in this final checkpoint. Its selected
+source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed),
+original timestamp and incomplete four-pair/fresh qualifications remain intact.
+[All-instance dashboard](PILOT_PROGRESS.md), [final diagnosis](random05/results/random14-triage-diagnostic-split-full-v170/REPORT.md).

@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 06:02 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 06:36 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -10,11 +10,23 @@ competition instances remain placeholders for future work. The reference is
 **max(NMS, Kitty Knight)** for each instance;
 throughput is primary, with order waiting times tracked as a secondary metric.
 
-**Active objective:** maximize verified throughput across all five RANDOM instances.
+**Status: completing the user-requested seed-variability measurement, then pausing.**
+The diagnostic work is complete. Frozen additional planner seeds will provide
+mean, sample standard deviation and sample count for all five selected profiles.
+
+**Campaign objective:** maximize verified throughput across all five RANDOM instances.
 [Full goal and constraints](random05/ACTIVE_GOAL.md). RANDOM-03/04 are milestones within this campaign.
 
-**Current development priority: RANDOM-01 and RANDOM-04**, following the latest user steering.
+**Most recent development priority: RANDOM-01 and RANDOM-04.** Development will resume only on a new user request.
 All five remain in scope; neither priority instance has a demonstrated throughput ceiling.
+
+The final diagnostic checkpoint exactly reproduces745and2799on RANDOM-01/04,
+with all1600suppression decisions verified against the native solver and full
+independent replay. The selected throughput records below are unchanged.
+RANDOM-01's cutoff is not an obvious source of lost completions; RANDOM-04
+still shows unfinished short-distance orders, without a causal recovery claim.
+[Final diagnosis and pause](random05/results/random14-triage-diagnostic-split-full-v170/REPORT.md).
+
 
 **Current qualification milestones:** RANDOM-03 at least **2,595** tasks and RANDOM-04
 at least **2,914**, each 10% above matched max(NMS,KK), with robust subsecond runtime.

@@ -1534,3 +1534,29 @@ None beats745/2799. Keep max32/weight1 on01 and layout15/oneflip on04.
 No fresh validation input was used. The next throughput work should investigate
 unfinished end-of-run work and sustained traffic progress rather than repeat
 these negative settings. The all-five throughput goal remains active.
+
+
+## Full horizon diagnosis completed; campaign paused (2026-09-22 06:36 UTC)
+
+Source[e30c20b1](https://github.com/fywu85/lorr/commit/e30c20b1ccc8291c83a73066835c0db6c49f3e5b)
+adds observational diagnostics only. Both full01/04controls exactly repeat745/2799
+in all six trace fields and pass independent replay, strict one-second entries
+and32GB. Maxima113.104/665.535ms. All1600native suppression masks match the
+faithful guided/progress reconstruction. The selected frontier manifest stays
+unchanged; this is no throughput record or fresh-input validation.
+
+RANDOM-01 leaves8opened orders unfinished; all112suppressed loaded robot-steps
+already exceed an optimistic physical deadline bound. RANDOM-04 leaves119,
+including21within5physical actions, but traffic is excluded from that bound.
+No number of recoverable tasks or inherent ceiling is asserted.
+[Complete evidence](results/random14-triage-diagnostic-split-full-v170/REPORT.md).
+
+The user asked to wrap up and stop. All pending work is finished; pause the
+campaign until an explicit new request. Bests remain745/1408/2646/2799/4302,
++7.66/+12.10/+12.17/+5.66/+35.62%against matchedmax(NMS,KK).
+
+
+The subsequent user request authorizes a bounded ten-seed standard-deviation
+measurement on each selected profile before the final pause:23existing exact
+profile observations plus27new seeds. No algorithm or parameter search is resumed.
+[Predeclared statistical protocol](experiments/random12345-wrapup-seeds10-protocol.json).

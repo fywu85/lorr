@@ -1,8 +1,19 @@
-# PILOT continuation
+# PILOT bounded statistical wrap-up
 
-Updated 2026-09-22 06:04 UTC. The preceding goal turn made progress, and this turn made
-concrete progress: an exact runtime optimization, two passing builds, 55 full
-benchmark runs and complete independent audits. The throughput goal remains active.
+The latest user request adds throughput standard deviations and authorizes more
+seeds after asking to wrap up and stop. The only remaining work is the frozen
+random12345-wrapup-seeds10 protocol:23existing distinct seed observations and27
+new runs, covering planner seeds0..9 for each selected profile. No algorithm
+or parameter changes. Finish source/input/resource/trajectory/waiting audits,
+report sample SD(n-1),mean,best,n and failures,log/commit/push,then pause.
+Do not treat the earlier pause text as preventing this explicitly requested
+measurement; do not treat this measurement as restarting the development goal.
+
+Source170 observational diagnostics are complete: full01/04controls745/2799
+match all six fields;600/1000native suppression masks match. CTest64.05s passes.
+Read results/random14-triage-diagnostic-split-full-v170/REPORT.md. No source171
+or new policy exists. Best selected profiles currently745/1408/2646/2799/4302.
+The ten-seed protocol freezes exact binaries and parameters per instance.
 
 ## Scope and constraints
 
@@ -75,7 +86,7 @@ General2314 exact/four pairs+3.4599%, three gains/one loss. FreshV6 qualifies
 4175 only and is NMS-only. All92 selected05 history/waiting rows remain audited;
 longest completed1986,146 initial unfinished/110 unopened, censored oldest2000.
 
-## Completed this turn; no live PILOT jobs
+## Previous checkpoint: 55 completed full runs
 
 1. `random12345-zero-update-split-full-v168`:18/18 valid and independently
    replayed.16 declared historical comparisons and9 contemporary off/on pairs
@@ -115,18 +126,17 @@ FullCTest61.04s. MATCH_FORECAST_WEIGHT0..4 scales only virtual rows' final price
 default1 exact. Manual witness, workers/caches/checkpoints/constraints pass.
 No nondefault weight has shown a gain. Source/test/binary proofs inresults/build-v169.
 Frozen executables are runs/random05/build-vNNN/build/lifelong_random05.
-No source170 exists yet. Do not repeat passing full tests without a new reason.
+Source170 adds only observational diagnostics; see the paused checkpoint above.
+Do not repeat passing full tests without a new reason.
 
-## Next bounded work
+## Notes for an explicit future resume
 
-Continue throughput work on01/04. Runtime no longer needs to be the first04
-priority. Diagnose end-of-run effort spent on unfinished orders and current goal
-suppression; distinguish optimistic physical lower bounds from actual traffic
-and from release/admission waiting. `audit_goal_suppression.py` reconstructs only
-the OLD hop-only rule and is unsuitable for current guided/progress mixtures.
-Extend a diagnostic faithfully or add bounded observational snapshots before
-claiming suppressed tasks could have finished. No new diagnostic is implemented
-yet and no recoverable-throughput estimate is justified.
+The end-of-run diagnosis is now complete; do not repeat it. No further algorithm
+was implemented after the diagnostic because the user asked to stop. All archived
+runtime and negative-setting evidence below remains relevant. The old
+`audit_goal_suppression.py` still handles only the old hop-only rule; use the
+new triage probe and audited native fingerprints for current guided/progress
+mixtures. Neither case has a demonstrated inherent ceiling.
 
 The prior04 common-order comparison (2795 vs NMS2649,2568 common completions)
 finds loaded420016vs404002 steps, physical bounds133115vs133584. At900steps
@@ -153,16 +163,8 @@ render: python3 random05/tools/render_pilot_progress.py
 
 Sandbox namespace broken; shell calls need escalation. DefaultPython3.7;
 env/bin/python has NumPy. No reset/amend/lock removal. Scoped git operations only.
-Last completed public push wasb8553559; current turn's source/protocol/results
-need its final checkpoint. Verify HEAD/origin rather than rely on this note.
-Source/protocol commits include0f95c787,86ff2144,1c1e7613,b429a028,0c0c72ce,
-40ea9cb8,bab02fc4. Public push remains authorized:
-env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
-
-A previous push was initially rejected because raw outputs were excluded. An
-audit of every outgoing blob proved only source/tests/settings/compact reports,
-then review approved. No raw path/schedule arrays, stdout/stderr, binaries or
-environment files were published. /tmp/lorr-public-push-b8553559.json records
-that earlier check; it is not an audit of new commits. Do not bypass review.
-Hosts: research35|research36|research37|research39|research46|research47|research48|
-research50|research51|research52|research55|research56. CPU AMD EPYC 9354 32-Core Processor.
+The prior public checkpoint wasa00599ab. This wrap-up includes sourcee30c20b1,
+protocol455e642e, runner4b1b2dd0and its final audit/pause commit. Verify HEAD and
+origin/main rather than rely on a commit hash embedded in the same checkpoint.
+All edits are scoped to random05/,PILOT_PROGRESS.md,RANDOM05_PROGRESS.md.
+Public push remains authorized; preserve unrelated shared CGAR work and visibility.

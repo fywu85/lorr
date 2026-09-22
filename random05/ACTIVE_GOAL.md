@@ -1,6 +1,8 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-22 06:02 UTC.
+Updated 2026-09-22 06:36 UTC.
+
+**Status: bounded statistical wrap-up.** After asking to stop, the user requested throughput standard deviations and explicitly authorized more seeds. Run only the frozen ten-seed measurement for each selected profile, finish its audits/log/commit/push, then pause. No algorithm development or parameter search is resumed.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01 through RANDOM-05. Give each instance substantial development effort, and compare every headline result with matched max(NMS, Kitty Knight). The latest user steering makes RANDOM-01 and RANDOM-04 the main priorities.** Neither priority instance has a demonstrated inherent ceiling.
 
@@ -38,10 +40,17 @@ The all-instance ten-percent references are useful yardsticks; only RANDOM-03/04
 
 **RANDOM-05:** Selected4302 repeats exactly. Three valid pairs improve+1.0477%, but the disabled-credit seed3 control fails startup at1045.313ms; the full four-pair qualification is not achieved and no historical score substitutes for that failure. General2314 repeats and gains+3.4599% across four pairs. FreshV6 qualifies4175 only and is NMS-only. All92 chronological selected frontier/waiting rows remain audited. [Detailed history](../RANDOM05_PROGRESS.md).
 
-## Next work
+## Wrap-up and paused handoff
 
 The source168 all-five runtime comparison is complete: 18 independently audited runs, 16 historical exact comparisons and nine exact off/on pairs. Every declared search step remains; no throughput change is claimed. All 29 RANDOM-01 forecast cap/weight trials and eight RANDOM-04 layout trials are also complete and audited. Retain RANDOM-01 radius8/max32/weight1 and the current RANDOM-04 layout. No benchmark jobs remain active.
 
-Continue prioritizing RANDOM-01/04 throughput while keeping all five in scope. Next diagnose which end-of-run effort goes to unfinished orders and whether current horizon suppression abandons physically short remaining chains. Distinguish optimistic physical bounds, observed traffic delays, and admission/release waiting. The existing suppression auditor only reconstructs the older hop-only estimate; it must be extended or replaced before applying it to current guided/progress estimates. No change or recoverable-throughput claim is justified yet. Sustained traffic progress remains a RANDOM-04 target; its earlier common-order diagnosis found more loaded steps than NMS and most of its final lead emerging in the last100 steps. [Diagnosis](results/random04-task-transitions-v166/REPORT.md).
+The source170 diagnostic is complete. Both full controls independently replay and match the selected745/2799trajectories in all six fields. All600/1000native suppression masks match the reconstruction; maxima113.104/665.535ms. RANDOM-01 has8opened orders unfinished, and all suppressed loaded robot-steps already exceed the physical deadline lower bound. RANDOM-04 has119opened orders unfinished,21within a five-action physical lower bound; the bound ignores traffic and is not a recovery estimate. No new throughput record, fresh qualification or inherent-ceiling claim follows. [Complete diagnosis](results/random14-triage-diagnostic-split-full-v170/REPORT.md). No PILOT benchmark/build/probe jobs remain active.
+
+On an explicit future resume, retain the human-selected priority on RANDOM-01/04 while keeping all five in scope. No inherent ceiling is established. Do not automatically resume merely because the qualification goal remains unmet.
 
 Current records, timestamps and sources are in [PILOT_PROGRESS.md](../PILOT_PROGRESS.md), [the density ledger](RANDOM_PROGRESS.md) and [the record manifest](random-frontiers.json). Operational continuation details are in [NEXT.md](NEXT.md).
+
+
+## Additional user-requested variability measurement
+
+Frozen planner seeds0..9 on each archived instance;23matching historical seed runs are reused and27missing seeds will run. Report sample SD (n-1), mean, best, n, failures, and comparisons with matchedmax(NMS,KK). Do not count exact repetitions as extra seeds or replace failed attempts. This measures development-profile seed variation, not fresh-input generalization. [Protocol](experiments/random12345-wrapup-seeds10-protocol.json).
