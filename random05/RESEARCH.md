@@ -2194,3 +2194,14 @@ successful selected run does not make the timeout-bearing recipe robust.
 The all-five forecast batch also retains a general02step2timeout/1016.576ms.
 Only one forecast row was present at that step; the timing trace does not prove
 that forecast matching caused the overrun. No failed run is silently replaced.
+
+## RANDOM-01 forecast radius follow-up (source167, frozen configuration)
+
+The original740 repeats in a full strict-valid independently replayed run.
+Additional pairedseed2scores742versus726 andseed3scores739versus732; the
+finalseed4candidate is still pending. Promote the individually audited742 as a
+selected maximum, without treating the partial qualification as complete.
+Freeze radii8/12/16/24 on selectedseeds2/0, plus0/8/16/24 on the current general
+profile. Radius8sampled forecast counts17/22 are below the32row cap. Three
+controls must repeat742/740/727. This is development tuning; no held-out data
+or broad transfer claim. The independent original qualification remains intact.
