@@ -1,0 +1,60 @@
+{
+  "created_utc": "2026-09-22T03:04:49.376194+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "build": "build-v162",
+  "hypothesis": "At sparse occupancy, smaller or mixed repair groups may improve complete-plan quality at the same nominal requested agent repairs.",
+  "selection": "Archived RANDOM-01 only; paired planner seeds 1 and 0. Seed 1 selected the current record, so this is development evidence.",
+  "cases": "random05/experiments/random01-repair-granularity-full-v162.json",
+  "exact_references": "random05/experiments/random01-repair-granularity-v162-references.json",
+  "nominal_requested_agent_repairs_per_island_step": 4096,
+  "variants": [
+    {
+      "label": "group8",
+      "neighborhood": 8,
+      "iterations": 512,
+      "mixed": false
+    },
+    {
+      "label": "group1",
+      "neighborhood": 1,
+      "iterations": 4096,
+      "mixed": false
+    },
+    {
+      "label": "group2",
+      "neighborhood": 2,
+      "iterations": 2048,
+      "mixed": false
+    },
+    {
+      "label": "group4",
+      "neighborhood": 4,
+      "iterations": 1024,
+      "mixed": false
+    },
+    {
+      "label": "group16",
+      "neighborhood": 16,
+      "iterations": 256,
+      "mixed": false
+    },
+    {
+      "label": "mixed8",
+      "neighborhood": 8,
+      "iterations": 512,
+      "mixed": true
+    }
+  ],
+  "controls": {
+    "seed1": 739,
+    "seed0": 736
+  },
+  "matched_reference": {
+    "team": "Kitty Knight",
+    "max_nms_kk": 692
+  },
+  "heldouts": "No fresh task/start inputs used or generated; all existing held-outs remain excluded.",
+  "runtime": "Full 600 steps, strict 1000 ms entries, 30000 ms preparation, 32 decimal GB. All fixed work completes or the run fails. Equal nominal repairs do not imply equal expansions or CPU time.",
+  "promotion": "Independent full replay, runtime/source/input checks and exact controls required. Any selected gain needs exact repetition and broader paired-seed checks before a reproducibility claim.",
+  "trick": "The selected instance preset, including known horizon, requires --trick RANDOM-01."
+}

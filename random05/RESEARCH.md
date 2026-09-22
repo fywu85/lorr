@@ -2002,3 +2002,35 @@ search is added, and a changed first budget may change the full throughput.
 Simulator initialization explicitly precedes task revelation, so task-dependent
 matching or chain preparation cannot move into the preparation budget. Existing
 map-only tables and worker ranking allocations already initialize there.
+
+
+## Priority steering: RANDOM-01 and RANDOM-04 (2026-09-22T03:04:49.376194+00:00)
+
+The user requested more attention to RANDOM-01 and RANDOM-04. Make these the
+main new development priorities while the existing frozen experiments finish.
+All five remain in scope; no inherent throughput ceiling has been established.
+
+The manifest inventory contains 250 RANDOM-01 and 755 RANDOM-04 case entries,
+versus 1,252 RANDOM-05 entries. These include controls, repeats and declarations;
+they are not counts of independent ideas or successful completed experiments.
+RANDOM-01's windowed cases overwhelmingly retain eight-agent repair groups.
+Its selected run averages 73.552 ms, and simply increasing iterations lost.
+The earlier four-agent general tests also changed work to 4,096 iterations,
+so they do not isolate group granularity at the current selected work.
+
+Freeze twelve full RANDOM-01 comparisons with source162: planner seeds1/0,
+then groups1/2/4/8/16 at iterations4096/2048/1024/512/256, plus mixed groups
+4/4/8/16 at512iterations. Every case requests4,096 agent repairs per island
+and step; actual expansions and CPU time need not match. All other current739
+settings, including annealing.25 and progress correction.25/span32, remain fixed.
+The group8 controls must reproduce739/736 in all six trace fields. This tests
+a specific search structure rather than repeating the larger-iteration sweep.
+No new source or held-out input is needed. All failures and losses are retained.
+
+For RANDOM-04, finish the already frozen guidance-layout/admission interaction
+and declared first-step work tests. Compare throughput before the final100steps
+as well as the full1,000-step score: the existing diagnostic finds PILOT2782
+and NMS2649 tied at2,417 completions atstep900. This is an observed timing of
+the advantage, not a claim that horizon triage alone caused all of it. Use the
+phase evidence to choose the next coordination change. Throughput remains the
+primary objective; known-horizon and layout settings remain explicit tricks.

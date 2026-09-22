@@ -16,6 +16,15 @@ The RANDOM-03/04 ten-percent qualification is a milestone inside this broader ca
 
 The table's10% values are useful yardsticks for all instances. Only RANDOM-03/04 were explicitly assigned that numeric qualification requirement; crossing a yardstick does not end work on the other instances or prove the open-ended throughput objective complete. References may strengthen with later valid measurements. Preserve previous runs and refresh margins against the stronger baseline.
 
+## Current development priority
+
+The latest user steering prioritizes **RANDOM-01 and RANDOM-04** for new development.
+Keep all five RANDOM instances in scope, finish frozen experiments, and direct
+new diagnosis and tests toward these two weaker margins. Neither has a demonstrated
+inherent ceiling. RANDOM-01 starts with a paired, fixed-work repair-granularity
+comparison; RANDOM-04 continues routing/admission and startup-work tests, with
+earlier throughput reported alongside the final score.
+
 ## Execution and evidence
 
 - Work across all five densities. Run broadly applicable changes on all five; conduct focused follow-ups where a mechanism helps. Give RANDOM-01/02 meaningful planner/scheduler work and keep pushing RANDOM-05 beyond4,302.
