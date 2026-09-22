@@ -92,6 +92,7 @@ struct Config {
     float length_weight=0.25, keep_bonus=2, turn_cost=2, wait_cost=2, destination_load=0;
     float pickup_heading_price=0;
     int match_forecast_hops=0, match_forecast_max=32;
+    float match_forecast_weight=1;
     float initial_length_weight=-1, match_horizon_weight=0, admission_price=-1, active_cap_triage_credit=0;
     float match_power=1;
     int initial_length_steps=250, active_task_cap=0, active_cap_steps=0, admission_price_steps=0;

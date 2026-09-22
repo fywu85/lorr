@@ -2380,6 +2380,17 @@ void forecast_assignment_rows() {
         env.task_pool.clear();env.task_pool[11]=alternative;env.task_pool[10]=near;env.task_pool[7]=opened;
         require(match(c,env)==schedule,"forecast matching depends on task insertion order");
     }
+    // In this witness the current robot pays one extra action to leave a
+    // nearby pickup for the future robot. A zero or small future weight should
+    // favor the immediate two-action trip; full weight retains anticipation.
+    for(float weight:{0.f,.125f,1.f,2.f}) {
+        auto weighted=cfg;weighted.match_forecast_weight=weight;
+        require(match(weighted,original)==std::vector<int>({weight<.5f?10:11,7}),
+                "forecast weight did not separate immediate and future travel prices");
+        weighted.active_task_cap=1;
+        require(match(weighted,original)==std::vector<int>({-1,7}),
+                "forecast weight weakened the real admission constraint");
+    }
     auto completed=original;completed.task_pool.erase(7);completed.curr_states[1].location=2;
     completed.curr_task_schedule={11,-1};
     require(match(cfg,completed)==std::vector<int>({11,10}),"completed forecast did not become an ordinary free assignment");
@@ -2423,6 +2434,13 @@ void forecast_assignment_rows() {
     cfg.window_iterations=8;cfg.window_islands=4;cfg.window_neighborhood=4;cfg.window_expansions=2000;
     cfg.threads=1;const auto windowed=simulate(cfg,12,5,5,true);cfg.threads=3;
     require(windowed==simulate(cfg,12),"windowed task forecasting depends on worker scheduling");
+    for(float weight:{0.f,.25f,.5f,2.f}) {
+        cfg.match_forecast_weight=weight;cfg.threads=1;cfg.match_skip_zero=false;
+        const auto weighted=simulate(cfg,12,5,5,true);
+        cfg.threads=3;cfg.match_skip_zero=true;
+        require(weighted==simulate(cfg,12,5,5,true),
+                "weighted forecast assignment changed with workers, dual optimization or checkpoints");
+    }
 
     struct Setting {
         std::string key,old;bool present;
@@ -2436,6 +2454,8 @@ void forecast_assignment_rows() {
     for(auto setting:std::vector<std::pair<const char*,const char*>>{
             {"R05_MATCH_FORECAST_HOPS","-1"},{"R05_MATCH_FORECAST_HOPS","33"},
             {"R05_MATCH_FORECAST_MAX","0"},{"R05_MATCH_FORECAST_MAX","257"},
+            {"R05_MATCH_FORECAST_WEIGHT","-0.1"},{"R05_MATCH_FORECAST_WEIGHT","4.1"},
+            {"R05_MATCH_FORECAST_WEIGHT","nan"},
             {"R05_MATCH","0"},{"R05_HUNGARIAN","0"}}) {
         Setting invalid(setting.first,setting.second);bool rejected=false;
         try{Config::environment(original);}catch(const std::invalid_argument&){rejected=true;}
@@ -2448,6 +2468,9 @@ void forecast_assignment_rows() {
     cfg.match_forecast_hops=33;bool rejected=false;
     try{Engine invalid(cfg);invalid.initialize(&original);}catch(const std::invalid_argument&){rejected=true;}
     require(rejected,"direct initialization accepted an invalid forecast radius");
+    cfg.match_forecast_hops=4;cfg.match_forecast_weight=-1;rejected=false;
+    try{Engine invalid(cfg);invalid.initialize(&original);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"direct initialization accepted an invalid forecast weight");
 }
 
 void remaining_work_priorities() {

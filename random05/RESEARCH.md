@@ -2238,3 +2238,20 @@ Regression compares exact assignments and augmentation counts on signed-zero,
 negative, tied, nonintegral, rectangular and capacitated matrices, plus full
 turnover across workers, caches and checkpoints. Build and full-run runtime
 comparisons are pending. No speed or throughput benefit is claimed yet.
+
+
+## 2026-09-22: weighted future assignment coverage (source169)
+
+RANDOM-01 forecast row caps8/16 lose on both selected planner seeds, while cap24
+ties the existing cap32. Retain coverage and test a separate mechanism:
+`R05_MATCH_FORECAST_WEIGHT` scales only the hypothetical future rows' final
+assignment prices. Default1 preserves the preceding arithmetic exactly;
+weights below1 reduce the opportunity cost of giving a currently free robot a
+nearby pickup. It uses only the existing visible unopened pool and final-leg
+forecasts. All real rows, task locks, admission/deadline bypasses and row limits
+remain unchanged. There is no map or known-horizon dependency in the mechanism.
+
+A manual assignment witness tests the change in current versus future travel
+preference; full turnover checks workers, caches, checkpoint restoration and the
+new zero-dual-update optimization. General and direct-configuration validation
+reject invalid weights. No throughput benefit is claimed before full evaluation.

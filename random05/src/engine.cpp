@@ -399,6 +399,9 @@ Config Config::environment(const SharedEnvironment& env) {
         throw std::invalid_argument("pickup heading price requires [0,1] and a separate task-length preference");
     c.match_forecast_hops=integer("R05_MATCH_FORECAST_HOPS",0);
     c.match_forecast_max=integer("R05_MATCH_FORECAST_MAX",32);
+    c.match_forecast_weight=real("R05_MATCH_FORECAST_WEIGHT",1);
+    if(!std::isfinite(c.match_forecast_weight) || c.match_forecast_weight<0 || c.match_forecast_weight>4)
+        throw std::invalid_argument("matching forecast weight must be in [0,4]");
     if(c.match_forecast_hops<0 || c.match_forecast_hops>32 || c.match_forecast_max<1 || c.match_forecast_max>256 ||
        (c.match_forecast_hops>0 && (!c.matching || c.hungarian_limit<=0)))
         throw std::invalid_argument("matching forecasts need hops0..32, max1..256, joint matching and no horizon price");
@@ -1056,6 +1059,8 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
+    if(!std::isfinite(cfg.match_forecast_weight) || cfg.match_forecast_weight<0 || cfg.match_forecast_weight>4)
+        throw std::invalid_argument("matching forecast weight must be in [0,4]");
     if(cfg.match_forecast_hops<0 || cfg.match_forecast_hops>32 || cfg.match_forecast_max<1 || cfg.match_forecast_max>256 ||
        (cfg.match_forecast_hops>0 && (!cfg.matching || cfg.hungarian_limit<=0 || cfg.match_horizon_weight>0)))
         throw std::invalid_argument("matching forecasts need hops0..32, max1..256, joint matching and no horizon price");
@@ -1486,7 +1491,14 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
                     price=std::min(price,forecast.arrival[d]/2+approach);
                 }
                 if(!destination_pressure.empty())price+=cfg.destination_load*destination_pressure[goal];
-                matrix[size_t(matching_rows+k)*columns+j]=assignment_price(price);
+                // Forecasts concern a later allocation, whereas free robots
+                // can act now. Weight their objective contribution separately
+                // without removing their spatial coverage or changing any real
+                // row's price, task visibility, or opened-task protection.
+                const float priced=assignment_price(price);
+                const float weighted=cfg.match_forecast_weight==1?priced:cfg.match_forecast_weight*priced;
+                if(!std::isfinite(weighted))throw std::overflow_error("weighted forecast assignment price overflow");
+                matrix[size_t(matching_rows+k)*columns+j]=weighted;
             }
         }
         matching_rows+=count;
