@@ -28,6 +28,9 @@ if(BUILD_TESTING)
   add_executable(random05_tests tests/engine_tests.cpp simulator/src/States.cpp)
   target_link_libraries(random05_tests PRIVATE random05_engine)
   add_test(NAME random05_tests COMMAND random05_tests)
+  add_executable(random05_entry_tests tests/entry_worker_tests.cpp src/Entry.cpp simulator/src/States.cpp)
+  target_link_libraries(random05_entry_tests PRIVATE random05_engine)
+  add_test(NAME random05_entry_tests COMMAND random05_entry_tests)
 endif()
 
 # Offline counterfactual evaluator: never used by the competition entry.

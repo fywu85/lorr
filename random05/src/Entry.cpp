@@ -16,13 +16,22 @@ void deadline(SharedEnvironment* env,int limit,const char* phase) {
 }
 void Entry::initialize(int limit) {
     try {
-        engine_=std::make_unique<r05::Engine>(r05::Config::environment(*env));
-        engine_->initialize(env); deadline(env,limit,"initialize");
+        const auto config=r05::Config::environment(*env);
+        engine_=std::make_unique<r05::Engine>(config);
+        if(config.persistent_worker) {
+            worker_=std::make_unique<r05::PersistentWorker>();
+            worker_->run([&]{engine_->initialize(env);});
+        } else engine_->initialize(env);
+        deadline(env,limit,"initialize");
     } catch(const std::exception& e) { fail("initialize",e); }
 }
 void Entry::compute(int limit,std::vector<Action>& plan,std::vector<int>& schedule) {
     try {
-        engine_->compute(env,plan,schedule);
+        // The simulator uses a fresh caller thread at every step. Dispatch
+        // synchronously to preserve OpenMP teams and thread-local workspace.
+        // The original clock includes dispatch, waiting and complete search.
+        if(worker_)worker_->run([&]{engine_->compute(env,plan,schedule);});
+        else engine_->compute(env,plan,schedule);
         // Keep the simulator's goal view consistent with the combined schedule.
         // Its solution-cost/makespan accounting reads this view after compute.
         env->curr_task_schedule=schedule;

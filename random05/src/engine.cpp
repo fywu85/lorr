@@ -426,6 +426,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(match_simd<0 || match_simd>1)
         throw std::invalid_argument("vectorized matching scans require a boolean value");
     c.match_simd=match_simd;
+    const int persistent_worker=integer("R05_PERSISTENT_WORKER",0);
+    if(persistent_worker<0 || persistent_worker>1)
+        throw std::invalid_argument("persistent worker requires a boolean value");
+    c.persistent_worker=persistent_worker;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     const int match_feasible=integer("R05_MATCH_FEASIBLE",0);
     if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
