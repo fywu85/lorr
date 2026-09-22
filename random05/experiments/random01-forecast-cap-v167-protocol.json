@@ -1,0 +1,10 @@
+{
+  "created_utc": "2026-09-22T05:21:37.690091+00:00",
+  "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+  "cases": "random05/experiments/random01-forecast-cap-full-v167.json",
+  "references": "random05/experiments/random01-forecast-cap-v167-references.json",
+  "hypothesis": "Limiting the number of soon-finishing robots that compete in current joint assignment may avoid reserving too much pickup proximity for the future. Existing radius8 samples reach17/22 rows, so caps8/16 change the objective independently of radius.",
+  "design": "Selected RANDOM-01, planner seeds4/0, radius8 fixed, max forecast rows32/8/16/24. Every other selected setting remains fixed. Include exact745/740 controls. Full600 steps under strict1000ms entry,30000ms prep,32decimalGB,16physical/32SMT bound workers.",
+  "qualification": "Development on already used archived input and planner seeds; no fresh input or unseen-geometry claim. New maxima require independent full replay, exact repetition and paired qualification. Preserve every failed attempt.",
+  "trick": "All selected profiles retain explicit --trick RANDOM-01 for the known-horizon preset."
+}
