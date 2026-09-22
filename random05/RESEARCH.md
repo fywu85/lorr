@@ -1894,3 +1894,17 @@ tricks and every full-run failure. General01/02 reactive results must remain
 separate from their stronger windowed records. Include serial/parallel exact
 controls before claiming a runtime improvement. Keep terminal-credit disabled
 in this first local-refinement comparison so mechanisms are not conflated.
+
+
+## General RANDOM-05 committed-motion qualification (2026-09-22)
+
+The source164 credit1 candidate finishes2314 versus2226atcredit0, plannerseed5.
+Independent full replay, waiting accounting and strict deadlines pass; candidate
+mean518.413/max559.538ms, RSS490.627MB. Other completed density trials lose.
+This is general reactive progress, still27.05%below matched max(NMS,KK)=3172,
+and far below the selected trick4254. It is not a new overall record.
+
+Freeze seven qualification runs before launch: exact2314repeat atseed5, then
+credit0/1 paired plannerseeds6/7/8. Include the original seed5pair in the declared
+four-seed aggregate. Same archived input/full2000steps/bound32workers/strict1s.
+No fresh inputs and no seed filtering. Preserve failures and all lower outcomes.
