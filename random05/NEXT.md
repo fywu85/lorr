@@ -40,7 +40,8 @@ R03=2646: source162/4fb9498e, progress.25/span32 on2621gate1profile,seed3.
 Batchrandom1234-progress-transfer-split-full-v162,
 case trick-random-03-progress-transfer-mixp25-span32. Finished2026-09-22T00:53:28.091236+00:00.
 Mean484.103/max676.507ms,RSS469.467MB. Full replay passes; off2621control6fieldexact.
-Intermediate2628chronologicalrecord also logged. Exactrepeat/paired qualification pending below.
+Intermediate2628chronologicalrecord also logged. Exactrepeat6fieldpasses. Five pairedseeds2611/2606/2611/2646/2610 total13084vs13029
+(+.4221%,all5positive),max730.523ms,RSS482.013MB. No fresh2646validation.
 Preceding2621fivepairs13029vs12999 (+.231%,4gains/1loss);2620freshV2remainsseparate.
 
 R05=4254: source162/4fb9498e, flow80updates on4242profile,seed0.
@@ -58,15 +59,13 @@ R04=2782source144/88551e69; mean478.686/max739.553ms. Exactrepeat plus8pairedsee
 General04=1616face8source158 repeats but five-pair mean-.101%; general auction1595
 has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.json.
 
-## The only active batch
+## Active state
 
-random03-record2646-split-full-v162: five full800step cases, seeds0..4.
-Jobs8920753/8920754/8920755/8920756/8920757, frozenbeforelaunch in c511babe.
-Seed3repeats2646. Same-source historical2621-profile controls2604/2595/2600/2621/2609
-were predeclared in random03-record2646-v162-protocol.json. All strict1s/32GB;
-selectingseed3is included, no fresh input. Audit all5withsource162/build162,
-run declared exactrepeat, report five paired totals and preserve any failures.
-Promote only independently audited higher selected seeds. No source164 exists.
+No PILOT benchmark jobs remain running or queued from this continuation.
+All frozen batches, including random03-record2646-split-full-v162, are complete,
+independently audited and have their declared full-trace equivalence proofs.
+The broad all-five goal remains active; no source164implementation exists.
+Other agents' jobs and work are outside this session's scope and remain untouched.
 
 ## Completed batches since the last checkpoint
 
@@ -81,7 +80,7 @@ Promote only independently audited higher selected seeds. No source164 exists.
   General01control727,matched720/full723; trick01control735,matched731/full733;
   general02control1397,matched1389; trick02control1408,matched1383;
   trick03control2621,matched2582. All candidateslose; optional3ordersstaysOFF.
-- 739/4254qualification batches: all5/all7audited, exact repeats6fieldpass, pairedreports complete.
+- 739/2646/4254qualification batches: all5/all5/all7audited, exact repeats6fieldpass, pairedreports complete.
 - Earlier source162physicalgate10valid+2allocationrefusals allpreserved/audited;
   sparseanneal16allvalid/4exactcontrols;735/733/2621qualification complete.
 - Earlier source159startup-capalllose; general04facepairedmeannegative. Source158face,
@@ -104,10 +103,10 @@ AMD EPYC 9354 32-Core Processor. Exclude49/54binding refusals, older34/40/42/45;
 
 Shell requires escalation because the sandbox namespace fails; Python3.7default,
 env/bin/pythonforNumPy. apply_patch unavailable; safe Pythonheredocs. Only scopedgit
-operations; never reset/amend shared work. Latest successful push9092d222;
-subsequent scoped commits needpush. Publicpushuses existing gh credentialhelper.
+operations; never reset/amend shared work. Usegitlogandorigin/mainfor the latest shared checkpoint. Publicpushuses the
+existing gh credentialhelper; the final response identifies the pushed commit.
 
-## Next work after qualification
+## Next work
 
 Keep meaningful effort across allfive. The dated current-bottlenecks-v162snapshot
 shows little sparse loadedwaiting/detouring and much more on04/05; it is observational,

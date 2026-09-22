@@ -23,8 +23,8 @@ Source4fb9498e/build162; every case requires its explicit instance trick.
 RANDOM-01 .125/.25both reach739; the.25run finishes first and is the selected
 chronological record. Its exact repetition and five planner seeds pass:
 3665versus3651 (+0.3835%, all five positive). RANDOM-03reaches2628/2646;
-the latter adds25tasks to2621, but its exact repetition and paired-seed study
-are still running. RANDOM-02and04variants all lose; their settings stay unchanged.
+the latter adds25tasks to2621. Its exact repetition matches all six fields and
+five paired seeds total13084versus13029 (+0.4221%, all positive). RANDOM-02and04variants all lose; their settings stay unchanged.
 
 RANDOM-05is covered by the separate field80qualification:4254selected, mean4237,
 +2.2134%aggregate over field20on four paired planner seeds. No new fresh input
@@ -34,4 +34,4 @@ or unseen-layout claim is made for these development improvements.
 [declared04control](../random345-flow-iterations-split-full-v162/control-equivalence.json),
 [01qualification](../random01-record739-split-full-v162/REPORT.md),
 [05qualification](../random05-record4254-split-full-v162/REPORT.md),
-[03frozen qualification](../../experiments/random03-record2646-v162-protocol.json).
+[03qualification](../random03-record2646-split-full-v162/REPORT.md).

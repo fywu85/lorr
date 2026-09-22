@@ -1235,3 +1235,17 @@ frozen in c511babe and running; no paired/fresh qualification yet. All04transfer
 variants lose2766/2768/2777 against2782, and all02variants lose1405/1403.
 [Full transfer audit](results/random1234-progress-transfer-split-full-v162/audit.json),
 [frozen03qualification](experiments/random03-record2646-v162-protocol.json).
+
+### 2026-09-22 01:08 UTC: RANDOM-03 qualification complete
+
+All five full800step runs pass independent replay and strict limits. The exact2646
+repeat matches all six trace fields. Seeds0..4=2611/2606/2611/2646/2610 versus
+2604/2595/2600/2621/2609 total13084versus13029 (**+0.4221%**, all five positive).
+Maximum qualification entry730.523ms; RSS482.013MB. The selecting seed3is included;
+freshV2still qualifies2620only and remains+8.852%over fresh max(NMS,KK).
+[Paired report](results/random03-record2646-split-full-v162/REPORT.md).
+
+All declared batches from this continuation are complete and audited. Selected
+records739/1408/2646/2782/4254 lead matched max(NMS,KK) by
++6.79%/+12.10%/+12.17%/+5.02%/+34.11%. The all-five campaign remains active;
+the user explicitly deferred directory/naming cleanup until development ends.

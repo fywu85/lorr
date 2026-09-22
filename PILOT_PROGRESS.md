@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 01:00 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 01:09 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -151,9 +151,11 @@ This modest gain has not received fresh-input qualification.
 The current2,646 selected result adds observed-progress horizon correction
 0.25/span32 to the2,621profile. Full replay and strict limits pass:
 mean484.103/max676.507ms, RSS469.467MB. The unchanged2,621control is
-exact in all six fields. Exact repetition and five paired planner seeds
-are running; neither paired nor fresh-input qualification is claimed yet.
-[Evidence](random05/results/random1234-progress-transfer-split-full-v162/audit.json).
+exact in all six fields, as is the2,646repeat. Five paired planner seeds
+2611/2606/2611/2646/2610 total13,084versus13,029 (+0.4221%, all positive).
+Maximum qualification entry730.523ms. Selectingseed3is included; fresh
+validation still applies only to the earlier frozen2,620profile.
+[Paired evidence](random05/results/random03-record2646-split-full-v162/REPORT.md).
 
 RANDOM-04 currently reaches **2,782** (+5.02% above matched max(NMS,KK)),
 **132 tasks short** of2,914. Its record peaks at739.6ms;
