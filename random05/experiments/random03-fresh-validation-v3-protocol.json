@@ -1,0 +1,31 @@
+{
+  "declared_utc": "2026-09-22T01:23:57.201454+00:00",
+  "instance": "RANDOM-03",
+  "candidate_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "candidate_binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "baseline_source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "baseline_binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "reference_binary_sha256": "2dfe6f35b3ae532d075aa487de88ec8d436a07ddef97e4dec24e94b550820539",
+  "kk_binary_sha256": "bdc989d3fb76da23356b6db871e0e154d6f136b2f3a052abbd73ce01004fe184",
+  "kk_build_spec_sha256": "a3ab7353fe8d20d540012c9df808f497903701281f5ccda2810dbe172cf06f50",
+  "manifest": "random05/experiments/random03-fresh-validation-v3-full.json",
+  "generation": "random05/results/random03-fresh-validation-v3/generation.json",
+  "seeds": [
+    50021,
+    50022
+  ],
+  "candidate_development_tasks": 2646,
+  "baseline_development_tasks": 2620,
+  "allocation": {
+    "physical_cores": 16,
+    "smt": 2,
+    "workers": 32,
+    "cpu_model": "AMD EPYC 9354 32-Core Processor"
+  },
+  "criteria": {
+    "comparison": "Report each input and aggregate against max of both unchanged NMS repetitions and both unchanged Kitty Knight repetitions on that input. Seek at least 10% aggregate and positive aggregate versus the frozen 2620 profile; preserve every miss or failure.",
+    "timing": "Full 800 steps, strict 1000 ms entries, 30000 ms preprocessing and 32 decimal GB process guard. PILOT completes declared fixed work or fails. Same 16 physical cores / 32 SMT workers for every team.",
+    "integrity": "Commit before generating 50021/50022. Permanently exclude both seeds from tuning at every density. Preserve all original attempts and independent action/collision/schedule/task/waiting replay. No input may be replaced or used to choose a new configuration."
+  },
+  "description": "Freeze the selected 2646 recipe at planner seed 3, including physical matching feasibility and observed-progress horizon correction .25/span32. Compare with the previous 2620 recipe on the identical source and planner seed, switching only R05_MATCH_FEASIBLE and R05_TRIAGE_PROGRESS_MIX off. Both use explicit --trick RANDOM-03. Generate new starts/tasks on the same existing random layout, not new geometry. Later development cannot alter this comparison."
+}

@@ -16,7 +16,7 @@ Fable's provider-credit failure is unchanged; do not retry without new informati
 Full horizons600/600/800/1000/2000; strict1000ms entries,30s initialization,
 32decimalGB process guard. Allocate16bound physical EPYC9354cores/32SMTworkers,
 verify actual topology/affinity/no quota. Shared hosts allowed. Fixed work completes
-or fails. Held-out50001–50012 and50015–50020 are excluded from all tuning;
+or fails. Held-out50001–50012 and50015–50022 are excluded from all tuning;
 50013/14remain reserved/ungenerated04inputs. Freeze protocols before fresh generation.
 All tuned tricks require --trick RANDOM-0N; mark them as tricks in commits/logs.
 
@@ -61,7 +61,9 @@ has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.j
 
 ## Active state
 
-No PILOT benchmark jobs remain running or queued from this continuation.
+The frozen RANDOM-03 fresh-validation-v3 protocol reserves seeds50021/50022 for the selected2646 recipe against prior2620 and two repetitions each of NMS/Kitty Knight. Twelve800-step cases are prepared; commit the protocol before generating either stream or submitting jobs. No result is yet available.
+
+No PILOT benchmark jobs remain running or queued from the previous checkpoint.
 All frozen batches, including random03-record2646-split-full-v162, are complete,
 independently audited and have their declared full-trace equivalence proofs.
 The broad all-five goal remains active; no source164implementation exists.

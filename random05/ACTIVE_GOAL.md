@@ -43,3 +43,5 @@ The frozen2646qualification is complete. No PILOT benchmark jobs remain active a
 No held-out input was generated or used for tuning. Selected maxima, paired planner-seed gains and fresh-input qualification remain separate. The dashboard and density ledger lead with matched max(NMS,KK); historical published comparisons stay separate.
 
 The user deferred renaming random05/ to pilot/ until the end of development. Only a read-only naming inventory was performed; keep current paths during this campaign.
+
+Fresh RANDOM-03 V3 is now declared for2646 versus2620 and two repetitions each of NMS and Kitty Knight on new50021/50022. Freeze the protocol before generation; both seeds are excluded from all tuning. No result or10% fresh-input qualification is yet claimed.

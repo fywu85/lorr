@@ -28,11 +28,38 @@ def verify_allocation(case, resources, declared, expected_steps=2000):
     assert case.get('preprocess_ms', 30000) == 30000
     quota = resources['effective_cpu_quota']
     assert quota is None or quota >= workers
-    if case.get('team') != 'nms':
+    assert case.get('team') in (None, 'nms', 'kk'), 'unknown benchmark team'
+    if case.get('team') == 'kk':
+        assert int(case['env']['LNS_NUM_THREADS']) == workers
+    elif case.get('team') != 'nms':
         assert int(case['env']['R05_THREADS']) == workers
     return dict(physical_cores=cores, smt=smt, workers=workers,
                 cpu_model=resources['cpu_model'])
 
+
+
+def compare_seed(seed, runs, include_baseline=False, include_kk=False):
+    """Use the strongest measured team repetition on this exact input."""
+    prefix = 'seed' + str(seed)
+    ours = runs[prefix + '-ours']['tasks']
+    nms = [runs[prefix + '-nms-repeat' + str(k)]['tasks'] for k in (1, 2)]
+    assert max(nms) > 0, 'undefined reference percentage'
+    comparison = dict(seed=seed, ours=ours, nms_repeats=nms,
+                      stronger_nms=max(nms))
+    target = max(nms)
+    if include_kk:
+        kk = [runs[prefix + '-kk-repeat' + str(k)]['tasks'] for k in (1, 2)]
+        target = max(target, max(kk))
+        comparison.update(kk_repeats=kk, stronger_kk=max(kk),
+                          matched_max=target,
+                          strongest_team='nms' if max(nms) >= max(kk) else 'kk',
+                          gain_over_nms_percent=(ours / max(nms) - 1) * 100)
+    comparison['gain_percent'] = (ours / target - 1) * 100
+    if include_baseline:
+        old = runs[prefix + '-baseline']['tasks']
+        assert old > 0, 'undefined baseline percentage'
+        comparison.update(baseline=old, gain_over_baseline_percent=(ours / old - 1) * 100)
+    return comparison
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -71,7 +98,9 @@ def main():
     records = {str(Path(r['input']).parent): r for r in generation['records']}
     baseline = protocol.get('baseline_binary_sha256')
     assert bool(baseline) == bool(protocol.get('baseline_source_commit')), 'incomplete baseline provenance'
-    suffixes = ('ours', 'nms-repeat1', 'nms-repeat2') + (('baseline',) if baseline else ())
+    kk_reference = protocol.get('kk_binary_sha256')
+    suffixes = (('ours', 'nms-repeat1', 'nms-repeat2') + (('baseline',) if baseline else ())
+                + (('kk-repeat1', 'kk-repeat2') if kk_reference else ()))
     expected_names = {'seed{}-{}'.format(r['seed'], suffix) for r in generation['records']
                       for suffix in suffixes}
     assert len(frozen) == len(expected_names) and {c['name'] for c in frozen} == expected_names
@@ -110,8 +139,24 @@ def main():
             assert case['input_hashes'][str(path)] == digest, (name, filename)
             assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, (name, filename)
         summary = read(directory / 'summary.json')[0]
-        expected_binary = candidate if name.endswith('-ours') else baseline if name.endswith('-baseline') else reference
+        if name.endswith('-ours') or name.endswith('-baseline'):
+            assert case.get('team') is None, (name, 'PILOT role changed team')
+            expected_binary = candidate if name.endswith('-ours') else baseline
+        else:
+            team = 'kk' if '-kk-repeat' in name else 'nms'
+            assert case.get('team') == team, (name, 'reference role changed team')
+            expected_binary = kk_reference if team == 'kk' else reference
         assert case['binary_sha256'] == summary['binary_sha256'] == expected_binary, name
+        if case.get('team') == 'kk':
+            build = Path(case['original_binary']).parent.parent
+            build_spec = read(build / 'spec.json')
+            completion = read(build / 'completion.json')
+            assert build_spec['kind'] == 'kk-build' and build_spec['change'].startswith('Unmodified')
+            assert completion['exit'] == 0 and completion['binary_sha256'] == kk_reference
+            assert hashlib.sha256((build / 'spec.json').read_bytes()).hexdigest() == protocol['kk_build_spec_sha256']
+            assert case['runtime_hashes'] == build_spec['source_hashes']
+            for path, digest in case['runtime_hashes'].items():
+                assert hashlib.sha256((directory / name / 'cwd' / path).read_bytes()).hexdigest() == digest, (name, 'changed KK runtime', path)
         assert summary['valid'] and summary['exit'] == 0, name
         assert summary_steps(summary) == expected_steps, name
         # The unchanged NMS simulator reports wall time for the full combined
@@ -119,12 +164,12 @@ def main():
         # the actual per-step series for both, rather than requiring a PILOT-
         # specific summary field from the reference executable.
         raw = read(directory / name / 'result.json')
-        timing_field = 'plannerTimes' if case.get('team') == 'nms' else 'entryComputeTimes'
+        timing_field = 'plannerTimes' if case.get('team') in ('nms', 'kk') else 'entryComputeTimes'
         samples = raw[timing_field]
         assert len(samples) == expected_steps, (name, 'incomplete timing series')
         assert all(0 <= value < 1 for value in samples), (name, 'entry deadline')
         assert max(samples) == summary['latency_seconds']['max'], name
-        if case.get('team') != 'nms':
+        if case.get('team') not in ('nms', 'kk'):
             assert summary['result']['entryComputeSamples'] == expected_steps, name
         for key in ('numPlannerErrors', 'numScheduleErrors', 'numEntryTimeouts'):
             assert summary['result'][key] == 0, (name, key)
@@ -135,31 +180,26 @@ def main():
                           latency_seconds=summary['latency_seconds'], timing_source=timing_field,
                           timing_samples=len(samples), usage=summary['usage'],
                           evidence=str(directory / 'summary.json'))
-    comparisons = []
-    for generated in generation['records']:
-        prefix = 'seed' + str(generated['seed'])
-        ours = runs[prefix + '-ours']['tasks']
-        nms = [runs[prefix + '-nms-repeat' + str(k)]['tasks'] for k in (1, 2)]
-        comparison = dict(seed=generated['seed'], ours=ours, nms_repeats=nms,
-                          stronger_nms=max(nms), gain_percent=(ours / max(nms) - 1) * 100)
-        if baseline:
-            old = runs[prefix + '-baseline']['tasks']
-            comparison.update(baseline=old, gain_over_baseline_percent=(ours / old - 1) * 100)
-        comparisons.append(comparison)
-    ratio = sum(c['ours'] for c in comparisons) / sum(c['stronger_nms'] for c in comparisons)
+    comparisons = [compare_seed(r['seed'], runs, bool(baseline), bool(kk_reference))
+                   for r in generation['records']]
+    target_key = 'matched_max' if kk_reference else 'stronger_nms'
+    ratio = sum(c['ours'] for c in comparisons) / sum(c[target_key] for c in comparisons)
     result = dict(checked_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   protocol_commit=args.protocol_commit, candidate_source_commit=candidate_source,
                   all_valid=True, instance=instance, steps=expected_steps, allocation=declared_allocation, source_checks=source_checks, comparisons=comparisons,
                   aggregate_gain_percent=(ratio-1)*100, runs=runs,
                   caveat='Frozen held-out task/start inputs on the same map and the stated allocation. These are not the colleague\'s private inputs.')
+    result['reference'] = 'max(NMS, Kitty Knight)' if kk_reference else 'stronger NMS repetition'
+    if kk_reference:
+        result['kk_binary_sha256'] = kk_reference
     if baseline:
         result['baseline_source_commit'] = protocol['baseline_source_commit']
         result['aggregate_gain_over_baseline_percent'] = (sum(c['ours'] for c in comparisons) / sum(c['baseline'] for c in comparisons) - 1) * 100
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + '\n')
     for c in comparisons:
-        print('seed{}: {} vs {}, {:+.2f}%'.format(c['seed'], c['ours'], c['nms_repeats'], c['gain_percent']))
-    print('Aggregate gain versus stronger NMS repetitions: {:+.2f}%'.format(result['aggregate_gain_percent']))
+        print('seed{}: {} vs {} ({}) {:+.2f}%'.format(c['seed'], c['ours'], c[target_key], result['reference'], c['gain_percent']))
+    print('Aggregate gain versus {}: {:+.2f}%'.format(result['reference'], result['aggregate_gain_percent']))
 
 
 if __name__ == '__main__':

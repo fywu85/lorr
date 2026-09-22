@@ -14,7 +14,7 @@ Large maps are outside active development.
 - Apply general variants across all five densities before claiming broad benefit. Selecting different settings by instance name counts as a trick. Geometry-independent density rules remain hypotheses until tested.
 - Preserve all original failures. Selected maxima, paired planner-seed means and fresh task/start validation are distinct.
 - The five cases share one layout; improvements across densities do not establish transfer to unseen geometry.
-- Inputs50001–50012,50015–50020 remain excluded from tuning;50013/14 are reserved for RANDOM-04. Future fresh-input protocols must precede generation.
+- Inputs50001–50012,50015–50022 remain excluded from tuning;50013/14 are reserved for RANDOM-04. Future fresh-input protocols must precede generation.
 
 ## Current records
 
@@ -1249,3 +1249,7 @@ All declared batches from this continuation are complete and audited. Selected
 records739/1408/2646/2782/4254 lead matched max(NMS,KK) by
 +6.79%/+12.10%/+12.17%/+5.02%/+34.11%. The all-five campaign remains active;
 the user explicitly deferred directory/naming cleanup until development ends.
+
+## Frozen RANDOM-03 fresh comparison V3 (prepared 2026-09-22)
+
+The2646 record and preceding2620 profile are frozen at source162, plannerseed3. Two new task/start streams50021/50022 will be generated only after the protocol commit, then measured against two NMS and two Kitty Knight repetitions each. Headline reference is the stronger team/repetition on each input. All12cases use full800steps, strict1s entries and16physical/32SMTworkers. The fresh auditor now directly checks both teams and KK runtime hashes; the earlier V2 audit still reproduces its8.852% result. No fresh2646 result is claimed yet. Both inputs are permanently excluded from tuning. See [protocol](experiments/random03-fresh-validation-v3-protocol.json).

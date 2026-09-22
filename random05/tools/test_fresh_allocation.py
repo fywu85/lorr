@@ -2,7 +2,7 @@
 """Check that fresh-audit allocation declarations cannot silently change scale."""
 import copy
 import unittest
-from audit_fresh import verify_allocation
+from audit_fresh import verify_allocation, compare_seed
 
 class AllocationTests(unittest.TestCase):
     def setUp(self):
@@ -33,6 +33,35 @@ class AllocationTests(unittest.TestCase):
                 verify_allocation(dict(case, steps=steps-1), self.resources, self.protocol, steps)
             with self.assertRaises(AssertionError):
                 verify_allocation(case, self.resources, self.protocol)
+
+    def test_reference_team_worker_checks(self):
+        nms = dict(self.case, team='nms', env={})
+        kk = dict(self.case, team='kk', env={'LNS_NUM_THREADS': '32'})
+        self.assertEqual(verify_allocation(nms, self.resources, self.protocol)['workers'], 32)
+        self.assertEqual(verify_allocation(kk, self.resources, self.protocol)['workers'], 32)
+        with self.assertRaises(AssertionError):
+            verify_allocation(dict(kk, env={'LNS_NUM_THREADS': '16'}), self.resources, self.protocol)
+        with self.assertRaises(AssertionError):
+            verify_allocation(dict(self.case, team='unknown'), self.resources, self.protocol)
+
+    def test_reference_uses_stronger_team_on_each_input(self):
+        runs = {'seed1-'+role: {'tasks': tasks} for role, tasks in
+                [('ours', 110), ('baseline', 100), ('nms-repeat1', 90),
+                 ('nms-repeat2', 95), ('kk-repeat1', 98), ('kk-repeat2', 96)]}
+        row = compare_seed(1, runs, include_baseline=True, include_kk=True)
+        self.assertEqual(row['matched_max'], 98)
+        self.assertEqual(row['strongest_team'], 'kk')
+        self.assertAlmostEqual(row['gain_percent'], (110/98-1)*100)
+        self.assertAlmostEqual(row['gain_over_baseline_percent'], 10)
+        runs['seed1-nms-repeat2']['tasks'] = 105
+        row = compare_seed(1, runs, include_kk=True)
+        self.assertEqual(row['matched_max'], 105)
+        self.assertEqual(row['strongest_team'], 'nms')
+        del runs['seed1-kk-repeat2']
+        with self.assertRaises(KeyError): compare_seed(1, runs, include_kk=True)
+        legacy = compare_seed(1, runs)
+        self.assertEqual(legacy['stronger_nms'], 105)
+        self.assertNotIn('matched_max', legacy)
 
     def test_legacy_four_core_default(self):
         case = dict(self.case, cores=4, smt=1, env={'R05_THREADS': '4'})
