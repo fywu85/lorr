@@ -2170,3 +2170,5 @@ coefficients0.25/0.125/0.5/1 on plannerseeds1/0, all other current settings fixe
 The0.25 controls must repeat2,795/2,776 exactly. This explicit task-selection
 trick optimizes throughput without a fairness claim; waiting evidence is retained.
 No held-out input is involved. Protocol: experiments/random04-chain-price-v166-protocol.json.
+
+Source167build6074498c passes the full63.70-second regression; compiled/test sources and binary0f27448c are verified. Freeze20full forecast-assignment comparisons: eight priority01cases (pairedseeds1/0, hops0/2/4/8), ten all-five generalcases (off/hops4), and two selected03transfercases. Eight disabled controls must match complete traces. Selected02is excluded because it uses horizon pricing and an optional idle price; selected04/05have active admission. Their current constraints remain unchanged. General mechanism; selected presets retain explicit trick gates. No measured throughput gain yet. Protocol: experiments/random12345-match-forecast-v167-protocol.json.

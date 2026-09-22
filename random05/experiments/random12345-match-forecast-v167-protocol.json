@@ -1,0 +1,15 @@
+{
+  "created_utc": "2026-09-22T04:20:59.837804+00:00",
+  "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+  "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+  "cases": "random05/experiments/random12345-match-forecast-full-v167.json",
+  "references": "random05/experiments/random12345-match-forecast-v167-references.json",
+  "hypothesis": "Jointly pricing current free robots and a bounded set of soon-finishing final-leg robots may shorten future pickups, beyond current-pose matching and the previously negative path-hint experiments.",
+  "design": "Prioritize selected RANDOM-01: paired plannerseeds1/0 crossed with hopradius0/2/4/8, max32forecastrows. Then current general01..05 and selected03 at0/4. Selected02 has a horizon price and optional idle assignment; selected04/05 have active admission. Those selected profiles are excluded instead of silently changing their constraints. All five general profiles still test transfer.",
+  "controls": "Eight disabled controls must reproduce all six archived paths/schedules/events/tasks fields. Selected RANDOM-01 expected739/736. Every forecast run must show nonzero forecast rows in sampled profiling, or report that the mechanism was not exercised.",
+  "work": "All inherited fixed search budgets finish; only the declared bounded joint-matching matrix may gain forecast rows. No elapsed-time return or partial assignment.",
+  "validation": "Full600/600/800/1000/2000 horizons, strict1000ms entries/30000ms prep/32decimalGB,32boundEPYC9354workers, source/input/resource/independent replay and waiting audit. Retain every failure.",
+  "qualification": "New selected maxima need independent replay, exact repeats and paired planner seeds. Report selected development maxima separately from paired behavior and fresh validation.",
+  "heldouts": "No held-out input used or generated. RANDOM04reserved50013/14 remain untouched.",
+  "tricks": "Forecast-row mechanism is general and default off. Existing selected guidance/known-horizon presets remain explicitly --trick INSTANCE; general controls have no map guidance or declared final horizon."
+}
