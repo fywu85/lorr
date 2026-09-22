@@ -2340,13 +2340,13 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"component repair accepted an unsupported mode");
     }
-    {
-        Setting orders("R05_WINDOW_REPAIR_ORDERS","2"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
+    for(const char* value:{"2","3"}) {
+        Setting orders("R05_WINDOW_REPAIR_ORDERS",value),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
         auto general=environment(5,5,4);
-        require(Config::environment(general).window_repair_orders==2,"general two-order repair was rejected");
+        require(Config::environment(general).window_repair_orders==std::atoi(value),"general multi-order repair was rejected");
         Setting disabled("R05_WINDOW","0");bool rejected=false;
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
-        require(rejected,"two-order repair accepted a missing window");
+        require(rejected,"multi-order repair accepted a missing window");
     }
     {
         Setting merge("R05_WINDOW_SEED_MERGE","1"),rank_off("R05_SCORE_RANK_POWER","0"),startup_off("R05_SCORE_RANK_STEPS","0");
@@ -2462,7 +2462,7 @@ void window_configuration() {
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
         require(rejected,"next-pickup hint accepted an invalid hop bound");
     }
-    for(const char* value:{"0","3"}) {
+    for(const char* value:{"0","4"}) {
         Setting orders("R05_WINDOW_REPAIR_ORDERS",value);
         auto general=environment(5,5,4);bool rejected=false;
         try{Config::environment(general);}catch(const std::invalid_argument&){rejected=true;}
@@ -2640,6 +2640,54 @@ void window_local_goal_optimum() {
     }
 }
 
+void window_three_order_monotonicity() {
+    // A single whole-team repair gives both policies exactly the same initial
+    // plan and first two orders. Independently check full kinematics/collisions
+    // and that adding the third complete candidate cannot worsen primary cost.
+    for(int count:{4,8,15})for(int seed=0;seed<6;++seed)
+    for(int limit:{1,800})for(int components:{0,2}) {
+        auto env=environment(4,4,count);
+        for(int a=0;a<count;++a) {
+            env.curr_states[a].orientation=(a+seed)%4;
+            Task task;task.task_id=a;task.locations={a,(7*a+5*seed+3)%16};
+            task.idx_next_loc=1;task.agent_assigned=a;
+            env.task_pool[a]=task;env.curr_task_schedule[a]=a;
+        }
+        Config cfg;cfg.seed=seed;cfg.window=8;cfg.window_islands=1;cfg.window_iterations=1;
+        cfg.window_neighborhood=count;cfg.window_expansions=limit;cfg.window_component_repair=components;
+        cfg.threads=1;cfg.cost_cache=true;
+        auto solve=[&](int orders) {
+            cfg.window_repair_orders=orders;auto state=env;Engine engine(cfg);engine.initialize(&state);
+            std::vector<Action> actions;std::vector<int> schedule;engine.compute(&state,actions,schedule);
+            require(schedule==env.curr_task_schedule,"three-order repair changed opened tasks");
+            const auto& g=*engine.graph;
+            const auto paths=engine.checkpoint(state).at("window_paths").get<std::vector<std::vector<int>>>();
+            std::vector<int> from(count),to(count);double total=0;
+            for(int a=0;a<count;++a) {
+                const auto& path=paths.at(a);const auto& task=env.task_pool.at(a);Chain chain(g,task);
+                require(path.size()==size_t(cfg.window+1) && path[0]==a*4+env.curr_states[a].orientation,
+                        "three-order repair lost its full start-to-end path");
+                int stage=1;
+                for(size_t tick=1;tick<path.size();++tick) {
+                    const int u=path[tick-1],v=path[tick];
+                    require((u/4==v/4 && (v%4-u%4+4)%4!=2) ||
+                            (u%4==v%4 && g.next[u/4][u%4]==v/4),"three-order repair violated kinematics");
+                    total+=(stage==2 && u==v)?0:2;
+                    if(stage==1 && v/4==task.locations[1])stage=2;
+                }
+                total+=chain.cost(g,stage,path.back()/4,path.back()%4);
+            }
+            for(int tick=1;tick<=cfg.window;++tick) {
+                for(int a=0;a<count;++a){from[a]=paths[a][tick-1]/4;to[a]=paths[a][tick]/4;}
+                Engine::certify(g,from,to);
+            }
+            return total;
+        };
+        const double before=solve(2),after=solve(3);
+        require(after<=before+1e-5,"third order worsened the best complete one-repair plan");
+    }
+}
+
 void window_reproducibility() {
     Config cfg;cfg.window=8;cfg.window_keep=3;cfg.window_islands=4;
     cfg.window_iterations=3;cfg.window_neighborhood=5;cfg.window_expansions=800;
@@ -2736,6 +2784,18 @@ void window_reproducibility() {
     cfg.threads=2;
     require(annealed_orders==simulate(cfg,8),"annealed two-order repairs depend on worker scheduling");
     cfg.window_temperature=0;cfg.window_progress_tie=false;
+    cfg.window_repair_orders=3;
+    for(int components:{0,2})for(int limit:{1,800}) {
+        cfg.window_component_repair=components;cfg.window_expansions=limit;
+        cfg.threads=1;cfg.cost_cache=true;cfg.window_heap4=true;cfg.window_reuse=true;
+        cfg.window_query_cache=0;cfg.window_path_reuse=false;
+        const auto adaptive_order=simulate(cfg,8,5,5,true);
+        cfg.threads=3;cfg.cost_cache=false;cfg.window_heap4=false;cfg.window_reuse=false;
+        cfg.window_query_cache=4096;cfg.window_path_reuse=true;
+        require(adaptive_order==simulate(cfg,8,5,5,true),
+                "three-order repairs depend on workers, caches, storage or checkpoint restoration");
+    }
+    cfg.window_component_repair=0;cfg.window_expansions=800;cfg.window_query_cache=0;cfg.window_path_reuse=false;
     cfg.window_seed_merge=true;
     for(int starts:{1,4}) {
         cfg.window_starts=starts;cfg.threads=1;cfg.window_repair_orders=1;
@@ -2903,7 +2963,7 @@ int main() {
     window_configuration();
     window_components();
     window_single_agent();
-    window_future_pickup_selection();window_local_goal_optimum();
+    window_future_pickup_selection();window_local_goal_optimum();window_three_order_monotonicity();
     window_reproducibility();
     move_proposal_bias();
     ranked_task_progress();

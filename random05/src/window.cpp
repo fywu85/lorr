@@ -589,18 +589,41 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     int a=group[k];old[k]=island.paths[a];reserve.set(a,old[k],false);
                     previous.total+=costs[a].total;previous.remaining+=costs[a].remaining;previous.integral+=costs[a].integral;
                 }
-                int planned=0;
+                int planned=0,failed_member=-1;
+                // The optional third order promotes the last member whose
+                // bounded search failed in an earlier order. If both completed,
+                // prioritize the route with the largest incumbent excess cost.
+                // Outside reservations and all search budgets stay identical.
+                auto leading_member=[&]() {
+                    if(failed_member>=0)return failed_member;
+                    int lead=0;double largest=-std::numeric_limits<double>::infinity();
+                    for(int k=0;k<count;++k) {
+                        const int a=group[k];const Chain* chain=planning_chains[a];
+                        const double lower=chain?chain->cost(g,initial.stage[a],initial.loc[a],initial.dir[a]):0;
+                        const double delay=costs[a].total-agent_weight(a)*lower;
+                        if(delay>largest){largest=delay;lead=k;}
+                    }
+                    return lead;
+                };
+                auto order_index=[&](int order,int rank,int lead) {
+                    if(order==0)return rank;
+                    if(order==1)return count-1-rank;
+                    return rank==0?lead:(rank<=lead?rank-1:rank);
+                };
                 if(cfg.window_component_repair) {
                     // Finish every declared priority order. Then salvage only
                     // independently compatible, non-worsening components. A
                     // failed member forces its entire dependency component back
                     // to old paths; every returned group is complete and legal.
                     for(int order=0;order<cfg.window_repair_orders;++order) {
+                        const int lead=order<2?0:leading_member();
                         Paths candidate(count);std::vector<unsigned char> built_mask(count,0);
                         int built=0;
                         for(;built<count;++built) {
-                            const int k=order?count-1-built:built,a=group[k];
-                            if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr))break;
+                            const int k=order_index(order,built,lead),a=group[k];
+                            if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr)) {
+                                failed_member=k;break;
+                            }
                             reserve.set(a,candidate[k],true);built_mask[k]=1;
                         }
                         for(int k=0;k<count;++k) {
@@ -650,16 +673,19 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                     }
                 } else {
                     // A prioritized repair can strand a later member behind an
-                    // earlier member's reservations. Optionally solve both the
-                    // sampled order and its reverse against the identical outside
-                    // reservations, then retain the better complete group. Every
+                    // earlier member's reservations. Try the sampled order, its
+                    // reverse and optionally a failure-first order against identical
+                    // outside reservations; retain the best complete group. Every
                     // declared order is attempted; no wall-clock truncation occurs.
                     for(int order=0;order<cfg.window_repair_orders;++order) {
+                        const int lead=order<2?0:leading_member();
                         std::vector<std::vector<int>> candidate(count);
                         int built=0;
                         for(;built<count;++built) {
-                            const int k=order?count-1-built:built,a=group[k];
-                            if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr))break;
+                            const int k=order_index(order,built,lead),a=group[k];
+                            if(!search.solve(g,cfg,reserve,planning_chains[a],initial.stage[a],initial.loc[a]*4+initial.dir[a],candidate[k],cfg.window_query_cache?&memo[a]:nullptr)) {
+                                failed_member=k;break;
+                            }
                             reserve.set(a,candidate[k],true);
                         }
                         Cost candidate_cost;
@@ -672,7 +698,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
                         // Restore the exact outside-only reservation table before
                         // the next order, including cleanup after a bounded failure.
                         for(int done=0;done<built;++done) {
-                            const int k=order?count-1-done:done;
+                            const int k=order_index(order,done,lead);
                             reserve.set(group[k],candidate[k],false);
                         }
                         if(built==count && (planned!=count || better(candidate_cost,proposed))) {

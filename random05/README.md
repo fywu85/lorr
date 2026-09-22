@@ -195,6 +195,13 @@ round. The fixed total iterations per island must be divisible by r (1–32).
 Defaults remain reuse off and one round; no wall-clock cutoff changes the work.
 
 
+`R05_WINDOW_REPAIR_ORDERS=3` adds a third complete repair attempt after the
+sampled order and its reverse. It plans the last blocked member first; if both
+orders succeeded, it leads with the route having the largest excess cost.
+Every attempt uses the same outside reservations and fixed search limit. The
+best complete group is retained. Defaults remain one order; three orders are
+experimental and need throughput/runtime comparisons at a declared budget.
+
 `R05_WINDOW_COMPONENT_REPAIR=1` accepts compatible improving components of
 completed window repairs; `2` also salvages components after a bounded repair
 failure. Unplanned dependencies retain their old paths. Default0 preserves the

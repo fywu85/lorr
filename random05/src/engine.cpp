@@ -173,8 +173,8 @@ Config Config::environment(const SharedEnvironment& env) {
     c.window_heap4=integer("R05_WINDOW_HEAP4",0);
     c.window_merge=integer("R05_WINDOW_MERGE",0);
     c.window_repair_orders=integer("R05_WINDOW_REPAIR_ORDERS",1);
-    if(c.window_repair_orders<1 || c.window_repair_orders>2 || (c.window_repair_orders>1 && !c.window))
-        throw std::invalid_argument("window repairs require one or two complete priority orders and an enabled window");
+    if(c.window_repair_orders<1 || c.window_repair_orders>3 || (c.window_repair_orders>1 && !c.window))
+        throw std::invalid_argument("window repairs require one to three complete priority orders and an enabled window");
     c.window_component_repair=integer("R05_WINDOW_COMPONENT_REPAIR",0);
     if(c.window_component_repair<0 || c.window_component_repair>2 || (c.window_component_repair && !c.window))
         throw std::invalid_argument("component repair requires an enabled window and mode0,1 or2");

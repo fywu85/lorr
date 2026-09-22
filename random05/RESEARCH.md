@@ -1802,3 +1802,23 @@ reproduces its earlier733trace exactly in the annealing batch. Only temperature
 changes to0.25, and all budgets/configurations/input hashes remain fixed. These
 are deterministic development-input seed checks with historical exact controls,
 not fresh or concurrent randomized trials. Preserve every outcome.
+
+
+## Source163: failure-first third window repair order (2026-09-22T00:02:19.042789+00:00)
+
+Sequential repairs can strand a later group member behind earlier reservations.
+The existing forward/reverse pair helped the general02profile. Extend the
+optional fixed R05_WINDOW_REPAIR_ORDERS budget to3: after those unchanged two
+attempts, move the last failing member to the front of the sampled order. If
+neither failed, promote the largest incumbent route-delay member instead.
+Restore the exact outside reservations between all attempts and retain the best
+complete group (or compatible complete components under the existing salvage
+mode). No random draw, live clock, task horizon or map name chooses this order.
+
+This is a general proposal-search hypothesis. One/two-order controls must remain
+trace-identical. Regression independently checks complete-path legality and
+non-worsening primary cost for a single whole-team repair, opened-task locking,
+exhausted search cleanup, component salvage, worker/cache/storage/checkpoint
+invariance. Then compare01/02general and selected01/02/03 with three orders
+at matched nominal repair work;01also has headroom for the unchanged iteration
+count. No throughput claim before full strict benchmarks and replay.
