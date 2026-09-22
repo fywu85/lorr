@@ -1849,3 +1849,13 @@ around its .25/span32 record; the same-source2782control is already exact. All12
 use source162, existing explicit instance tricks, fixed search work and strict
 full horizons. This only transfers a previously measured dense-task correction;
 no new solver code, fresh input or claimed benefit. Audit and qualify any gain.
+
+## Current work budgets and crowded flow model (2026-09-22T01:28:43.732037+00:00)
+
+Two bounded, predeclared development experiments cover all five archived densities while fresh RANDOM-03 V3 is evaluated independently. No held-out outcomes choose these tests. Both reuse audited source162 and explicit --trick INSTANCE presets.
+
+For01/02/03, test more complete window repairs with the current selected profiles:01 I512/1024/2048,02 I2048/3072/4096,03 I6144/8192. The original first-step repair count is preserved to reserve initialization headroom. Earlier weighted-search budgets were negative on01/02 and stronger heuristic weights were not positive on03; these tests instead retain the current selected heuristic, matching/progress settings and annealing. More work is a hypothesis, not a guaranteed improvement or change to the timeout contract.
+
+For04/05, vary the static traffic-assignment model rather than its output street contrast: co-flow power2/3/4 and co-flow price coefficient0.5/1/2, changing one variable at a time. Existing output prices, field seed/flip, planner seed, scheduler and fixed search work stay frozen. The current bottleneck snapshot shows much more loaded waiting/turning/detouring on these densities. It does not prove this field change will recover that work. A prior turn-aware field was negative; no repeat of that setting is included.
+
+Eight sparse/medium plus ten crowded full runs include five exact six-field controls. Preserve all failures and lower scores. Promote only independently replayed strict-valid full runs, then repeat and compare paired planner seeds. Guidance remains an explicitly labelled trick; no general improvement is claimed from these presets.

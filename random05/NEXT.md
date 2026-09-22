@@ -61,7 +61,7 @@ has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.j
 
 ## Active state
 
-The frozen RANDOM-03 fresh-validation-v3 protocol reserves seeds50021/50022 for the selected2646 recipe against prior2620 and two repetitions each of NMS/Kitty Knight. Twelve800-step cases are prepared; commit the protocol before generating either stream or submitting jobs. No result is yet available.
+The frozen RANDOM-03 fresh-validation-v3 protocol reserves seeds50021/50022 for the selected2646 recipe against prior2620 and two repetitions each of NMS/Kitty Knight. Protocol3fc121ad was committed before generation2026-09-22T01:25:17.637576+00:00. All twelve800-step cases have been submitted as GRID8920769–8920780; no result is yet available. Inputs remain excluded from tuning.
 
 No PILOT benchmark jobs remain running or queued from the previous checkpoint.
 All frozen batches, including random03-record2646-split-full-v162, are complete,
@@ -400,3 +400,5 @@ Hosts: research32|research33|research35|research36|research37|research39|
 research41|research46|research47|research48|research49|research50|
 research51|research52|research54|research55|research56. Avoid34/40/42/45 binding refusal
 and53/58 timing spikes; causes unproven. Actual allocation guards are mandatory.
+
+Prepared current-work-v162 (8cases across01/02/03) and flow-model-v162 (10cases across04/05). Commit manifests before launch; source162 unchanged. Five exact controls and full replay required. Current-work retains original first-step repairs, increases later iterations; flow-model varies co-flow power/coefficient while holding output prices fixed. No throughput result yet.
