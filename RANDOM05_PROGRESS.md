@@ -2123,3 +2123,18 @@ Forecast assignment improves the selected sparse01profile, without a broad
 transfer claim. RANDOM-05 remains selected4,302 (+35.62%over matchedmax3,172)
 and general2,314 (-27.05%). No new05frontier or fresh-input result is claimed.
 [Complete transfer report](random05/results/random12345-match-forecast-split-full-v167/REPORT.md).
+
+
+## Exact matching runtime transfer; frontier unchanged (2026-09-22 06:02 UTC)
+
+Source168 zero-increment matching update elision is tested on the selected
+RANDOM-05 seed0 recipe. Off/on both finish **4,302**, matching each other and
+the earlier source164 record in all six complete trace fields. Both are independently
+replayed and strict-valid. Off/on maximum entry868.178/716.671ms;
+mean577.651/578.908ms. This is no throughput improvement and
+does not complete the earlier terminal-credit four-pair qualification: that
+separate disabled-credit seed3 failure remains preserved. The selected05 frontier
+and freshV6 qualification remain unchanged. The same general runtime mechanism
+has its clearest verified benefit on RANDOM-04 startup, where five pairs and
+an exact repetition stay below670ms without changing search work.
+[All-five runtime audit](random05/results/random12345-zero-update-split-full-v168/REPORT.md).

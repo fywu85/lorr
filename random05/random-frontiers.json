@@ -615,10 +615,10 @@
       "audit": "random05/results/random12345-face-cycles-split-full-v158/audit.json"
     },
     "trick": {
-      "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
-      "evidence": "random05/results/random04-chain-price-split-full-v166/trick-random-04-chain-price-lengthp5-seed0/summary.json",
+      "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+      "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed0/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v166/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v168/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
         "cores": 16,
         "smt": 2,
@@ -626,7 +626,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-04",
-        "name": "trick-random-04-chain-price-lengthp5-seed0",
+        "name": "trick-random-04-zero-update-on-seed0",
         "env": {
           "R05_K": "8064",
           "R05_THREADS": "32",
@@ -694,10 +694,12 @@
           "R05_TRIAGE_PROGRESS_WINDOW": "32",
           "R05_PICKUP_HEADING_PRICE": "0",
           "R05_SCHED_CHAIN": "1",
-          "R05_LENGTH_WEIGHT": "0.5"
+          "R05_LENGTH_WEIGHT": "0.5",
+          "R05_MATCH_SKIP_ZERO": "1",
+          "R05_COMPACT_IDLE": "1"
         },
-        "binary_sha256": "9c2916c87a5637ee4b9f02fbc3075b869d1effb905325ae50542b8bad3fe677d",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v166/build/lifelong_random05",
+        "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v168/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json": "ef81d9db98eb3679e5c4a7fc424f2d0f726d2a1fdfb564a2333aa0eae89faf37",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -707,8 +709,17 @@
         }
       },
       "tasks": 2799,
-      "finished_utc": "2026-09-22T04:26:21.345951+00:00",
-      "audit": "random05/results/random04-chain-price-split-full-v166/audit.json"
+      "finished_utc": "2026-09-22T05:33:23.330167+00:00",
+      "audit": "random05/results/random12345-zero-update-split-full-v168/audit.json",
+      "first_attained": {
+        "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+        "evidence": "random05/results/random04-chain-price-split-full-v166/trick-random-04-chain-price-lengthp5-seed0/summary.json",
+        "tasks": 2799,
+        "finished_utc": "2026-09-22T04:26:21.345951+00:00",
+        "audit": "random05/results/random04-chain-price-split-full-v166/audit.json"
+      },
+      "selection_reason": "Equivalent implementation replacement, not a throughput increase: five same-source off/on planner-seed pairs and sixteen historical references reproduce complete traces; optimized RANDOM-04 maxima remain below670ms, plus a separate exact2799 repetition.",
+      "runtime_qualification": "random05/results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md"
     },
     "nms32_tasks": 2580
   },

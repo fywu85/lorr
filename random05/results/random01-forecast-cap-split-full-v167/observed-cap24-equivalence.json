@@ -1,0 +1,34 @@
+{
+  "checked_utc": "2026-09-22T05:29:49.939268+00:00",
+  "checks": [
+    {
+      "candidate": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap24-seed4/trick-random-01-forecast-cap24-seed4/result.json",
+      "reference": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap32-seed4/trick-random-01-forecast-cap32-seed4/result.json",
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "c0629642fd4de95ccbdb27bd4d5ee1e395fa235bd265dcaad63c52c38e678363",
+      "reference_sha256": "80646654ef2781c31edd3de6f996c83578b1764c2a29b1496e6f9960ddfc3354"
+    },
+    {
+      "candidate": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap24-seed0/trick-random-01-forecast-cap24-seed0/result.json",
+      "reference": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap32-seed0/trick-random-01-forecast-cap32-seed0/result.json",
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "15847cbaff0bc7be84d1126566b0dbd6e2d202fd7d0ad7ec5e476ef83c38fe6e",
+      "reference_sha256": "ad391293848fbc0e973a8d2579d2e5bbc378704d02248dc43175ee4b378d2344"
+    }
+  ],
+  "caveat": "Post-result explanatory comparison; the declared historical controls are separately checked in control-equivalence.json."
+}

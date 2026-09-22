@@ -1494,3 +1494,43 @@ RANDOM-01 source167 trials vary forecast population caps at fixed radius8 on
 planner seeds4/0, with exact745/740 controls. No fresh inputs are used.
 [Runtime protocol](experiments/random12345-zero-update-v168-protocol.json),
 [RANDOM-01 protocol](experiments/random01-forecast-cap-v167-protocol.json).
+
+## RANDOM-04 runtime headroom recovered without changing throughput (2026-09-22 05:40 UTC)
+
+All ten source168 RANDOM-04 runs pass independent replay and strict limits.
+Five off/on pairs are exact in all six complete trace fields, scoring
+2799/2771/2761/2761/2766. The optimized maxima are664.721/669.091/666.852/
+666.778/661.972ms, versus805.002–824.746ms for controls. Startup matching
+solving falls from478.015–500.912ms to338.328–338.968ms:160752of163770
+augmentations have zero dual increments. This skips bookkeeping writes only,
+with the full search work unchanged. The previous source166 failures remain
+failures. Mean full-run latency is mixed; the measured gain is startup headroom.
+Other-density pairs are still running. [Qualification](results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md).
+
+RANDOM-01 forecast caps32/8/16/24 total1485/1474/1473/1485 across seeds4/0.
+All eight full runs replay;745/740controls are exact and cap24also reproduces
+both complete trajectories. Keep max32. Source169 forecast weights passed
+61.04seconds of regression; twelve selected/general comparisons are queued.
+Eight explicitly marked RANDOM-04 layout trials broaden the capped solver's
+previously limited five-seed layout coverage. No fresh validation input is used.
+
+## Select the exact faster RANDOM-04 implementation (2026-09-22T05:59:25.951171+00:00)
+
+All18 source168 runtime runs are independently audited;16historical comparisons
+and nine contemporary off/on pairs match all six trace fields. Throughput is
+unchanged. The selected RANDOM-04 manifest now uses the first declared optimized
+seed0 run (2799, mean474.550ms/max664.721ms),
+source[0f95c787](https://github.com/fywu85/lorr/commit/0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6),
+completed2026-09-22T05:33:23.330167+00:00. This is an implementation replacement, not a
+new throughput record. The source166 first-attained2799provenance remains both
+in the chronological ledger and `first_attained` in the frontier manifest.
+All source166 timeouts remain failures. The optimized recipe passes five
+paired seeds and another exact repetition; maximum across these six runs669.091ms.
+[Complete runtime report](results/random12345-zero-update-split-full-v168/REPORT.md).
+
+All29 new RANDOM-01 forecast cap/weight trials and all8 RANDOM-04 layout trials
+pass full independent replay and strict limits. Every declared control is exact.
+None beats745/2799. Keep max32/weight1 on01 and layout15/oneflip on04.
+No fresh validation input was used. The next throughput work should investigate
+unfinished end-of-run work and sustained traffic progress rather than repeat
+these negative settings. The all-five throughput goal remains active.

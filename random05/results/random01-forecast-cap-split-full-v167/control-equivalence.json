@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-09-22T05:26:59.840108+00:00",
+  "references": "random05/experiments/random01-forecast-cap-v167-references.json",
+  "checks": [
+    {
+      "candidate": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap32-seed4/trick-random-01-forecast-cap32-seed4/result.json",
+      "reference": "runs/random05/random01-record740-split-full-v167/trick-random-01-record740-seed4/trick-random-01-record740-seed4/result.json",
+      "tasks": 745,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "80646654ef2781c31edd3de6f996c83578b1764c2a29b1496e6f9960ddfc3354",
+      "reference_sha256": "73422a15ffe548ea468a994e7afcdeb7483bf83a99c400e55fe9fa3a030b1cc7"
+    },
+    {
+      "candidate": "runs/random05/random01-forecast-cap-split-full-v167/trick-random-01-forecast-cap32-seed0/trick-random-01-forecast-cap32-seed0/result.json",
+      "reference": "runs/random05/random01-forecast-radius-split-full-v167/trick-random-01-forecast-radius8-seed0/trick-random-01-forecast-radius8-seed0/result.json",
+      "tasks": 740,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "ad391293848fbc0e973a8d2579d2e5bbc378704d02248dc43175ee4b378d2344",
+      "reference_sha256": "7d7c6bbaa978dea180b1f0330fb534cb290aff887d3322b4c3ae4eb00ee3b5b0"
+    }
+  ]
+}

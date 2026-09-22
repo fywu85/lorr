@@ -1049,3 +1049,16 @@ startup solve time about9%; overall means are mixed but full traces remain exact
 The completed waiting-front analysis does not identify idle robots as the dominant
 obstacle. A declared smooth route-price search preserves selected street directions
 and mean cost, requires the explicit trick flag, and uses only development inputs.
+
+
+## Exact RANDOM-04 runtime replacement (2026-09-22 06:02 UTC)
+
+Throughput remains2,799 versus matched max(NMS,KK)2,649 (+5.66%); the10%
+reference2,914 remains115tasks away. The selected recipe now uses source168
+zero-update matching elision and optional-column compression. Five planner
+seeds and a separate repetition preserve complete traces; their largest entry
+is669.091ms. The manifest retains the source166 first-attained provenance and
+all source166 timeouts remain failed attempts. This improves runtime qualification,
+not throughput or fresh-input validation. Six new guidance layouts all lose.
+[Runtime qualification](results/random12345-zero-update-split-full-v168/REPORT.md),
+[layout trials](results/random04-chain-layout-split-full-v168/REPORT.md).
