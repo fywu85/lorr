@@ -1,0 +1,13 @@
+{
+  "created_utc": "2026-09-22T04:49:42.146514+00:00",
+  "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+  "cases": "random05/experiments/random04-compact-qualification-full-v166.json",
+  "purpose": "Measure runtime on at least three additional seeds for the exact compressed2799recipe and test whether its length-price selected gain survives paired planner seeds.",
+  "design": "Compact_idle1, lengthweights0.25/0.5, pairedseeds2/3/4. All remaining current2799settings unchanged. Include original compressed0/1pairs2799/2771versus2776/2795 in the five-pair aggregate; report three additionalpairs separately.",
+  "original_pairs": "random04-chain-runtime-split-full-v166: current-seed0/1 versus control-seed0/1. Full exact-compression proofs and all nine runtime audits must be completed before final qualification reporting.",
+  "current_caveat": "The two completed original compressedpairs total5570vs5571, one gain/one loss. This is not a paired throughput gain. The valid2799maximum is retained separately. Both candidateentries stay below860ms; more runtime evidence is needed.",
+  "validation": "Full1000steps, strict1000ms entry/30000ms prep/32decimalGB,32boundworkers, independent source/input/resource/movement/assignment/event/waiting audit. Every failure retained.",
+  "historical_failure": "Original noncompressedlength0.5seed1fails1046.301ms. Successful compressedcases identify a different exact runtime configuration; they do not erase or replace it.",
+  "trick": "Explicit --trick RANDOM-04 for the existing guidance/cap/admission/horizon preset. No fairness or fresh-input claim.",
+  "heldouts": "No fresh input used or generated;50013/14reserved."
+}

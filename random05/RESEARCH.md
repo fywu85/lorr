@@ -2205,3 +2205,20 @@ Freeze radii8/12/16/24 on selectedseeds2/0, plus0/8/16/24 on the current general
 profile. Radius8sampled forecast counts17/22 are below the32row cap. Three
 controls must repeat742/740/727. This is development tuning; no held-out data
 or broad transfer claim. The independent original qualification remains intact.
+
+## Qualification after full sparse pairs and dense exact compression
+
+All seven sparse qualification runs are independently replayed/strict-valid.
+Forecast radius8 gives740/739/742/739/745versus736/739/726/732/732:
+3705versus3665 (+1.0914%), four gains and one tie. The original selectingseed0
+is included. The740repeat and all three new disabledcontrols are six-fieldexact;
+742also repeats exactly in the radius follow-up. New745seed4gets one frozen
+exact repetition. These are archived planner-seed comparisons, not fresh inputs.
+
+The dense compressed matching candidate completes bothseeds0/1at2799/2771,
+max848.301/859.270ms, while its compressed0.25controls give2776/2795. The pair
+total5570versus5571does not improve. Preserve the selected2799maximum separately
+from paired behavior and the original noncompressed1046.301msfailure. Freeze
+three more pairedseeds2/3/4for current0.25/0.5with compression enabled, retaining
+all strict failures. Full runtime-batch audit/exactproofs must finish before
+qualification claims. Coupled higher idle prices are negative on the testedpair.
