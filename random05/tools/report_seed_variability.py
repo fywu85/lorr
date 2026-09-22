@@ -93,8 +93,36 @@ def main():
         assert row['valid'] and row['tasks'] == reused['tasks']
         assert row['replay']['result_sha256'] == reused['result_sha256']
         accept(row, spec, True)
+    allocation_refusals = []
+    retry_rules = protocol.get('allocation_retries', {})
+    assert set(retry_rules).issubset(expected_names)
     for row in audit['rows']:
-        accept(row, args.audit.parent / row['name'] / 'spec.json', False)
+        if row['name'] not in retry_rules:
+            accept(row, args.audit.parent / row['name'] / 'spec.json', False)
+            continue
+        assert not row['valid'] and row.get('failure_kind') == 'resource_preflight'
+        assert row['solver_started'] is False, 'A started solver failure cannot be replaced'
+        rule = retry_rules[row['name']]
+        retry_audit_path = ROOT / rule['audit']
+        retry_audit = read(retry_audit_path)
+        assert retry_audit['complete']
+        retry = next(r for r in retry_audit['rows'] if r['name'] == rule['case'])
+        original_spec = read(args.audit.parent / row['name'] / 'spec.json')['cases'][0]
+        retry_spec_path = retry_audit_path.parent / retry['name'] / 'spec.json'
+        retry_spec = read(retry_spec_path)['cases'][0]
+        assert row['instance'] == retry['instance']
+        assert original_spec['env'] == retry_spec['env']
+        assert original_spec['binary_sha256'] == retry_spec['binary_sha256']
+        assert original_spec['input_hashes'] == retry_spec['input_hashes']
+        assert all(original_spec[k] == retry_spec[k] for k in ('steps','cores','smt','limit_ms','preprocess_ms','trick'))
+        refusal = dict(instance=row['instance'], seed=int(original_spec['env']['R05_SEED']),
+                       original_case=row['name'], retry_case=retry['name'],
+                       evidence=row['evidence'], failure=row['failure'], solver_started=False,
+                       retry_audit=str(retry_audit_path.relative_to(ROOT)), retry_audit_sha256=sha(retry_audit_path))
+        allocation_refusals.append(refusal)
+        accept(retry, retry_spec_path, False)
+        rows[(row['instance'], refusal['seed'])]['allocation_refusal'] = refusal
+
     expected = {(instance, seed) for instance in protocol['selected_profiles'] for seed in protocol['planner_seeds']}
     assert set(rows) == expected, 'Incomplete predeclared seed set'
     references = read(ROOT / 'random05/references/matched-nms-kk-combined.json')['archived']
@@ -139,6 +167,16 @@ def main():
         for row in failures:
             details = ', '.join('{} step{}: {:.3f}ms'.format(t['phase'], t['timestep'], t['elapsed_ms']) for t in row.get('timeouts', []))
             lines.append('- {} seed{}: {}. [Original attempt]({}).'.format(row['instance'], row['seed'], details or row['failure_kind'], row['evidence'].replace('random05/results/'+args.audit.parent.name+'/', '', 1)))
+    if allocation_refusals:
+        lines += ['', '## Allocation refusals', '',
+                  '{} original allocations were refused before any solver launch. Each has'.format(len(allocation_refusals)),
+                  'one predeclared retry with the identical binary, seed, settings, inputs and',
+                  'limits. Refusals remain in the original audit and are not throughput',
+                  'observations or extra planner seeds. The table counts the resulting full',
+                  'solver attempt once per seed.', '']
+        for refusal in allocation_refusals:
+            lines.append('- {} seed{}: original{}, retry{}; {}.'.format(refusal['instance'], refusal['seed'],
+                         refusal['original_case'], refusal['retry_case'], refusal['failure']))
     lines += ['', 'These are descriptive statistics for development-selected profiles. Some',
               'reused seeds helped select those profiles. They do not establish unseen-map',
               'or fresh-task-stream variability, nor a statistical confidence claim against',
@@ -148,7 +186,8 @@ def main():
               '[Frozen protocol](../../experiments/'+args.protocol.name+'), [independent audit](audit.json), [full numeric statistics](seed-statistics.json).', '']
     report = dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), protocol=str(args.protocol),
                   protocol_sha256=sha(args.protocol), new_audit_sha256=sha(args.audit),
-                  estimator=protocol['estimator'], selection_limit=protocol['selection_limit'], instances=output)
+                  estimator=protocol['estimator'], selection_limit=protocol['selection_limit'],
+                  allocation_refusals=allocation_refusals, instances=output)
     (args.audit.parent / 'seed-statistics.json').write_text(json.dumps(report, indent=2) + '\n')
     (args.audit.parent / 'REPORT.md').write_text('\n'.join(lines))
     for instance, record in output.items():
