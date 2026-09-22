@@ -1,0 +1,50 @@
+{
+  "created_utc": "2026-09-22T03:45:25.556445+00:00",
+  "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
+  "binary_sha256": "9c2916c87a5637ee4b9f02fbc3075b869d1effb905325ae50542b8bad3fe677d",
+  "cases": "random05/experiments/random12345-pickup-heading-full-v166.json",
+  "references": "random05/experiments/random12345-pickup-heading-v166-references.json",
+  "priority": [
+    "RANDOM-01",
+    "RANDOM-04"
+  ],
+  "design": "Each current general and selected profile gets an exact off control and price1; selected RANDOM-01/04 also test price0.5 and the existing unnormalized whole-chain matcher. All other settings and planner seeds remain fixed.",
+  "expected_controls": {
+    "trick-random-01-pickup-heading-off": 739,
+    "trick-random-04-pickup-heading-off": 2782,
+    "general-random-01-pickup-heading-off": 727,
+    "general-random-04-pickup-heading-off": 1616,
+    "general-random-02-pickup-heading-off": 1397,
+    "general-random-03-pickup-heading-off": 1634,
+    "general-random-05-pickup-heading-off": 2314,
+    "trick-random-02-pickup-heading-off": 1408,
+    "trick-random-03-pickup-heading-off": 2646,
+    "trick-random-05-pickup-heading-off": 4302
+  },
+  "comparators": {
+    "RANDOM-01": {
+      "matched_max_nms_kk": 692
+    },
+    "RANDOM-02": {
+      "matched_max_nms_kk": 1256
+    },
+    "RANDOM-03": {
+      "matched_max_nms_kk": 2359
+    },
+    "RANDOM-04": {
+      "matched_max_nms_kk": 2649
+    },
+    "RANDOM-05": {
+      "matched_max_nms_kk": 3172
+    }
+  },
+  "outcomes": [
+    "Full-horizon throughput, strict deadlines, memory and independent full replay",
+    "Six-field exact off controls",
+    "Phase throughput at 100-step intervals for RANDOM-01/04",
+    "Only then exact repetition and paired seeds for selected gains"
+  ],
+  "heldouts": "Only archived development inputs; no held-out seed may select configurations.",
+  "runtime": "16 bound physical EPYC9354 cores /32 SMT workers, strict1000ms steps,30000ms preparation,32 decimal GB. All work completes or fails.",
+  "tricks": "The mechanism itself is general; the existing selected map/horizon presets retain their explicit --trick gates."
+}

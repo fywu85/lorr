@@ -2089,3 +2089,13 @@ Hungarian and auction paths, opened locks, single-waypoint identity, complete
 reactive/windowed turnover, worker/cache/checkpoint/dummy-prefix equivalence,
 and configuration bounds. All declared work still completes or fails. No runtime
 or throughput gain is claimed before the frozen build and full comparisons.
+
+
+Source166/0bb92cea passes the full67.56s regression suite. Compiled sources,
+test source and binary9c2916c87a5637ee4b9f02fbc3075b869d1effb905325ae50542b8bad3fe677d
+are independently checked and archived. Freeze24 full comparisons: all five
+current general and selected profiles at pickup-heading price0/1, plus price.5
+and existing whole-chain matching on selected01/04. Those two instances launch
+first. Ten off controls have explicit six-field references. Keep all current
+seeds, full horizons, declared work, strict limits and trick gates. No benchmark
+gain is claimed before results.
