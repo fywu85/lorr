@@ -1775,6 +1775,41 @@ void zero_matching_updates() {
     std::cout<<"exact zero-update assignments="<<comparisons<<"\n";
 }
 
+void dynamic_fixed_work() {
+    for(int mode=0;mode<3;++mode) {
+        Config cfg;cfg.hungarian_limit=1000;cfg.random_by_step=true;
+        cfg.cost_cache=true;cfg.goal_cache=true;cfg.candidate_cache=true;
+        cfg.scratch_reuse=true;cfg.share_prefix=true;cfg.threads=3;
+        cfg.futures=16;cfg.depth=6;
+        if(mode==1) {
+            cfg.futures=112;cfg.continuations=8;cfg.continuation_start=2;
+            cfg.screen_branches=2;cfg.screen_keep=4;cfg.generations=2;cfg.elites=2;
+            cfg.shared_rankings_mb=16;cfg.shared_orders=true;
+        }
+        if(mode==2) {
+            cfg.window=8;cfg.window_keep=4;cfg.window_iterations=32;
+            cfg.window_islands=8;cfg.window_neighborhood=4;cfg.window_reuse=true;
+            cfg.window_rounds=2;cfg.window_heap4=true;
+        }
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.dynamic_work=true;
+        require(simulate(cfg,12,5,5,true)==reference,
+                "dynamic work scheduling changed a fixed candidate or task trajectory");
+        cfg.threads=1;
+        require(simulate(cfg,12,5,5,true)==reference,
+                "dynamic work scheduling changed with worker count");
+    }
+    const char* previous=std::getenv("R05_DYNAMIC_WORK");
+    const bool present=previous;const std::string saved=previous?previous:"";
+    auto env=environment(3,3,2);
+    for(const char* value:{"-1","2"}) {
+        setenv("R05_DYNAMIC_WORK",value,1);bool refused=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){refused=true;}
+        require(refused,"dynamic work accepted a nonboolean option");
+    }
+    if(present)setenv("R05_DYNAMIC_WORK",saved.c_str(),1);else unsetenv("R05_DYNAMIC_WORK");
+}
+
 void vectorized_matching_scans() {
     // Independent exact assignments, including signed zeros, negative keep
     // bonuses, nonintegral costs, compulsory and optional idle columns. The
@@ -3390,7 +3425,7 @@ int main() {
     compact_prepared_rankings();
     active_travel_calibration();
     observed_progress_triage();
-    rectangular_matching_optimality();capacitated_auction();free_matching_ties();compact_optional_matching();zero_matching_updates();vectorized_matching_scans();
+    rectangular_matching_optimality();capacitated_auction();free_matching_ties();compact_optional_matching();zero_matching_updates();vectorized_matching_scans();dynamic_fixed_work();
     exact_dummy_prefix();
     active_task_admission();initial_task_admission();
     priced_task_admission();

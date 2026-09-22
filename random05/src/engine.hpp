@@ -97,7 +97,7 @@ struct Config {
     float match_power=1;
     int initial_length_steps=250, active_task_cap=0, active_cap_steps=0, admission_price_steps=0;
     int initial_active_cap=0, initial_active_steps=0;
-    bool fast_admission=false, active_travel_rate=false, idle_align=false, match_free_ties=false, compact_idle=false, match_skip_zero=false, match_simd=false, persistent_worker=false, match_feasible=false;
+    bool fast_admission=false, active_travel_rate=false, idle_align=false, match_free_ties=false, compact_idle=false, match_skip_zero=false, match_simd=false, persistent_worker=false, dynamic_work=false, match_feasible=false;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     int flow_extra_flips=0, flow_extra_flip_seed=1, field_jitter_seed=0;

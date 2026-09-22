@@ -472,7 +472,7 @@ void Engine::window_plan(const Frame& initial,const SharedEnvironment& env,std::
     // of wall time and worker scheduling. One round is the original control.
     for(int round=0;round<cfg.window_rounds;++round) {
     std::vector<std::exception_ptr> errors(cfg.window_islands);
-    #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+    #pragma omp parallel for num_threads(cfg.threads) schedule(runtime)
     for(int index=0;index<cfg.window_islands;++index) {
         try {
             auto& island=islands[index];island.paths=base;island.cost=base_cost;island.accepted=0;island.skipped_sorts=0;island.cost_hits=0;island.component_saved=0;

@@ -430,6 +430,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(persistent_worker<0 || persistent_worker>1)
         throw std::invalid_argument("persistent worker requires a boolean value");
     c.persistent_worker=persistent_worker;
+    const int dynamic_work=integer("R05_DYNAMIC_WORK",0);
+    if(dynamic_work<0 || dynamic_work>1)
+        throw std::invalid_argument("dynamic fixed-work scheduling requires a boolean value");
+    c.dynamic_work=dynamic_work;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     const int match_feasible=integer("R05_MATCH_FEASIBLE",0);
     if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
@@ -2496,6 +2500,9 @@ std::vector<int> select_rollout_elites(const std::vector<Rollout>& results,int u
 }
 
 void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vector<int>& schedule,int forced_candidate) {
+    // Change only which worker executes an independent item, never its random
+    // stream, work budget, result index or ordered incumbent reduction.
+    omp_set_schedule(cfg.dynamic_work?omp_sched_dynamic:omp_sched_static,cfg.dynamic_work?1:0);
     replan_stats_=ReplanStats{};rescore_stats_=RescoreStats{};
     // Recompute the declared startup preference on every real call. It changes
     // proposals only; complete rollout scoring and the fixed work remain intact.
@@ -2812,7 +2819,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
         }
         mark(2);
         if(!cfg.screen_branches) {
-            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            #pragma omp parallel for num_threads(cfg.threads) schedule(runtime)
             for(int k=begin;k<end;++k) {
                 try { results[k]=evaluate(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
                                          diagnose_branches?&branch_scores[k]:nullptr,nullptr,root_early[k],root_arrival[k]); }
@@ -2820,7 +2827,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             }
         } else {
             std::vector<ScreenedRollout> screened(end-begin);
-            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            #pragma omp parallel for num_threads(cfg.threads) schedule(runtime)
             for(int k=begin;k<end;++k) {
                 try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,
                                      cfg.screen_branches,screened[k-begin],root_early[k],root_arrival[k]); }
@@ -2837,7 +2844,7 @@ void Engine::compute(SharedEnvironment* env,std::vector<Action>& plan,std::vecto
             // Keep the unmodified incumbent anchor in every generation.
             if(std::find(survivors.begin(),survivors.end(),begin)==survivors.end())survivors.back()=begin;
             std::sort(survivors.begin(),survivors.end());
-            #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+            #pragma omp parallel for num_threads(cfg.threads) schedule(runtime)
             for(size_t j=0;j<survivors.size();++j) {
                 int k=survivors[j];
                 try { evaluate_until(frame,offsets[k],continuations,!cfg.cycle_portfolio || k%2==1,

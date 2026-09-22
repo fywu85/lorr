@@ -87,7 +87,7 @@ void Engine::prepare_shared_rankings(int timestep) {
         if(bytes<=limit-used){used+=bytes;pending.push_back(chain);}
     }
     std::vector<std::exception_ptr> errors(pending.size());
-    #pragma omp parallel for num_threads(cfg.threads) schedule(static)
+    #pragma omp parallel for num_threads(cfg.threads) schedule(runtime)
     for(size_t i=0;i<pending.size();++i) {
         try{build_rankings(g,cfg,*pending[i],orders_only);}catch(...){errors[i]=std::current_exception();}
     }
