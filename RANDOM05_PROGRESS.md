@@ -46,23 +46,37 @@ separate development qualification and have not received a fresh-input check.
 
 ## Verified local frontier
 
-Updated: 2026-09-22 02:23 UTC.
+Updated: 2026-09-22 08:16 UTC.
 
-**Current selected archived best: 4,302 tasks**, +35.62% versus matched max(NMS,KK)=3,172.
-Source [30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed), plannerseed0.
-Committed-motion terminal credit0.5 adds48tasks (+1.128%) to the4,254profile,
-with the same fixed search work. All2,000steps pass independent replay and strict
-checks: mean582.723/max830.909ms,RSS491.999MB. Disabled4,254control is exact in
-all six full-trace fields. Credit1scores4,250; retain this negative alternative.
-The new exact repeat and three additional paired planner seeds are frozen in
-5e47a72f. One disabled-credit seed3control fails step0at1,045.313ms; other
-runs are pending. No complete four-pair or fresh-input qualification is claimed.
-The original failure is retained; smaller declared startup budgets are tested separately.
-Longest completed order1,986steps;146initialorders unfinished,110unopened;
+**Current selected archived best: 4,302 tasks**, +35.62% versus matched
+max(NMS, KK) = 3,172. The exact runtime replacement uses source
+[2d893f96](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e), planner seed0,
+completed 2026-09-22T08:06:15.158769+00:00. The original record remains source30a56647, attained
+2026-09-22T02:19:09.148099+00:00; this is no throughput increase.
+
+**Ten planner seeds: 4,230.1 ± 46.5 tasks (sample SD), range4,155–4,302.**
+All ten full2,000-step runs pass independent replay, strict1s entries and32GB.
+The selected run averages619.039ms, peaks822.711ms and uses452.637MB peak RSS.
+Across all ten, the worst entry is885.879ms and peak RSS453.771MB.
+The mean is+33.36% versus matchedmax(NMS,KK). All ten complete trajectories
+match available earlier successful implementations in all six fields.
+These are development-selected planner-seed statistics on fixed archived
+inputs, not fresh-input qualification or a new paired terminal-credit result.
+[Final all-instance statistics and runtime audit](random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md).
+
+The runtime repair keeps all fixed search work: exact SIMD matching, skipped
+redundant matching updates, a synchronous persistent worker, dynamic work
+scheduling, passive OpenMP waiting, binding and portable IPO. Original startup
+failures remain in their original batches. The campaign is now paused.
+
+The terminal-credit change's older qualification remains three valid pairs
+(+1.0477%); its disabled-credit seed3 control failed, so the declared four-pair
+qualification remains incomplete. FreshV6 qualifies4,175only, NMS-only.
+Longest completed order1,986steps;146initial orders unfinished,110unopened;
 oldest unfinished age is censored at2,000. All800robots remain movable.
 Admission cap680, startup weighting0.125/250steps, progress0.125/span32,
 selected guidance and known-horizon scale1/mix1 require `--trick RANDOM-05`.
-[Full audited comparison](random05/results/random12345-terminal-pending-split-full-v164/REPORT.md).
+[Original terminal-credit qualification](random05/results/random05-record4302-split-full-v164/REPORT.md).
 
 The preceding4,254field80profile repeats exactly. Four paired planner seeds
 4254/4189/4252/4253 versus4242/4028/4183/4128 give+2.2134%aggregate,
@@ -392,6 +406,8 @@ fix. Neither removes combined-track features.
 | 2026-09-21T18:11:42.053845+00:00 | [88551e69df5b6f5ee14600dfe3a7ae8fe586783c](https://github.com/fywu85/lorr/commit/88551e69df5b6f5ee14600dfe3a7ae8fe586783c) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; explicit `--trick RANDOM-05` | 4242 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +33.7% | [Full evidence](random05/results/random05-startup-progress-split-full-v144/trick-random-05-startup-progress-mixp125/summary.json) |
 | 2026-09-22T00:21:04.224019+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125for250steps; progress0.125/span32; flow80 updates; explicit `--trick RANDOM-05` | 4254 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +34.1% | [Full evidence](random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
 | 2026-09-22T02:19:09.148099+00:00 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | K16320/B18; first7968; seed0; cap680; cutoff1/mix1; startup rank0.125/250steps; progress0.125/span32; flow80; committed-motion credit0.5; explicit `--trick RANDOM-05` | 4302 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +35.6% | [Full evidence](random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
+
+| 2026-09-22T08:06:15.158769+00:00 | [2d893f96e78d3fcc092c37a03a7b1888880b306e](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e) | Exact runtime replacement; fixed work unchanged; seed0; explicit `--trick RANDOM-05` | 4302 | 32 / 16 / EPYC 9354 | 3172 (32 workers) | +35.6% | [Full evidence](random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed0/summary.json) |
 
 ## Reference evidence supplied by the user
 
@@ -2150,3 +2166,15 @@ No new05run or frontier change was made in this final checkpoint. Its selected
 source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed),
 original timestamp and incomplete four-pair/fresh qualifications remain intact.
 [All-instance dashboard](PILOT_PROGRESS.md), [final diagnosis](random05/results/random14-triage-diagnostic-split-full-v170/REPORT.md).
+
+## Reliability repaired and campaign paused (2026-09-22 08:16 UTC)
+
+The bounded repair is complete. All five selected configurations now have ten
+successful full planner seeds; no work budget, objective, horizon or deadline
+was relaxed. RANDOM-05 is4,230.1±46.5 tasks, best4,302; all20,000 planning calls
+pass, worst885.879ms. Complete trajectories match all ten available references.
+The synchronous worker and exact matching/scheduling controls are general
+implementation improvements; tuned guidance, admission and known-horizon
+presets remain explicitly gated tricks. The original five deadline failures,
+failed intermediate repairs and three allocation refusals remain preserved.
+[Final statistics and methodology](random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md).

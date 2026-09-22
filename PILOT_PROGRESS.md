@@ -1,6 +1,9 @@
 # PILOT competition progress
 
-Updated 2026-09-22 06:36 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 08:21 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+
+**Status: paused at the user's request. Reliability repair and final reporting are complete.**
+
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -10,23 +13,11 @@ competition instances remain placeholders for future work. The reference is
 **max(NMS, Kitty Knight)** for each instance;
 throughput is primary, with order waiting times tracked as a secondary metric.
 
-**Status: completing the user-requested seed-variability measurement, then pausing.**
-The diagnostic work is complete. Frozen additional planner seeds will provide
-mean, sample standard deviation and sample count for all five selected profiles.
-
 **Campaign objective:** maximize verified throughput across all five RANDOM instances.
 [Full goal and constraints](random05/ACTIVE_GOAL.md). RANDOM-03/04 are milestones within this campaign.
 
-**Most recent development priority: RANDOM-01 and RANDOM-04.** Development will resume only on a new user request.
+**Most recent development priority: RANDOM-01 and RANDOM-04**, following the latest user steering.
 All five remain in scope; neither priority instance has a demonstrated throughput ceiling.
-
-The final diagnostic checkpoint exactly reproduces745and2799on RANDOM-01/04,
-with all1600suppression decisions verified against the native solver and full
-independent replay. The selected throughput records below are unchanged.
-RANDOM-01's cutoff is not an obvious source of lost completions; RANDOM-04
-still shows unfinished short-distance orders, without a causal recovery claim.
-[Final diagnosis and pause](random05/results/random14-triage-diagnostic-split-full-v170/REPORT.md).
-
 
 **Current qualification milestones:** RANDOM-03 at least **2,595** tasks and RANDOM-04
 at least **2,914**, each 10% above matched max(NMS,KK), with robust subsecond runtime.
@@ -48,9 +39,26 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | GAME | — | — | — | — | Not evaluated | — | — |
 | RANDOM-01 | 745 | 692 | KK | +7.66% | TRICK | 4 | 119.47 |
 | RANDOM-02 | 1,408 | 1,256 | KK | +12.10% | TRICK | 2 | 492.79 |
-| RANDOM-03 | 2,646 | 2,359 | NMS | +12.17% | TRICK | 3 | 676.51 |
-| RANDOM-04 | 2,799 | 2,649 | NMS | +5.66% | TRICK | 0 | 664.72 |
-| RANDOM-05 | 4,302 | 3,172 | NMS | +35.62% | TRICK | 0 | 830.91 |
+| RANDOM-03 | 2,646 | 2,359 | NMS | +12.17% | TRICK | 3 | 686.18 |
+| RANDOM-04 | 2,799 | 2,649 | NMS | +5.66% | TRICK | 0 | 532.12 |
+| RANDOM-05 | 4,302 | 3,172 | NMS | +35.62% | TRICK | 0 | 822.71 |
+
+**Throughput variability across planner seeds**
+
+Sample SD uses denominator n−1. Each successful seed contributes one full run.
+Failures are retained and excluded from throughput arithmetic; where failures
+occur, mean ± SD describes the successful subset. These are development-profile
+statistics on fixed archived task/start inputs, not fresh-input qualification.
+
+| Instance | Mean ± sample SD | Valid / attempted seeds | Mean vs max(NMS, KK) |
+|---|---:|---:|---:|
+| RANDOM-01 | 738.7 ± 3.2 | 10/10 | +6.75% |
+| RANDOM-02 | 1,394.9 ± 6.0 | 10/10 | +11.06% |
+| RANDOM-03 | 2,616.5 ± 14.7 | 10/10 | +10.92% |
+| RANDOM-04 | 2,773.2 ± 15.1 | 10/10 | +4.69% |
+| RANDOM-05 | 4,230.1 ± 46.5 | 10/10 | +33.36% |
+
+[Individual seeds, timing failures and statistical limits](random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md).
 
 **Headline comparisons use the stronger matched local result from NMS and Kitty Knight.**
 KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.
@@ -123,9 +131,9 @@ Current selected implementations are pinned to their completion timestamps and s
 |---|---|---|---|
 | RANDOM-01 | 2026-09-22T04:44:25.643796+00:00 | [6074498c3357d3f59f6e5a32e7ad478e81dd1bd3](https://github.com/fywu85/lorr/commit/6074498c3357d3f59f6e5a32e7ad478e81dd1bd3) | [Run](random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed4/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
-| RANDOM-03 | 2026-09-22T00:53:28.091236+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
-| RANDOM-04 | 2026-09-22T05:33:23.330167+00:00 | [0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6](https://github.com/fywu85/lorr/commit/0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6) | [Run](random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed0/summary.json) |
-| RANDOM-05 | 2026-09-22T02:19:09.148099+00:00 | [30a5664757b8ffad1150f5eb763c747ba1001bed](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed) | [Run](random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json) |
+| RANDOM-03 | 2026-09-22T07:40:33.103168+00:00 | [8870903e3693583223cc13132d56785ce8465f76](https://github.com/fywu85/lorr/commit/8870903e3693583223cc13132d56785ce8465f76) | [Run](random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed3/summary.json) |
+| RANDOM-04 | 2026-09-22T07:54:39.067931+00:00 | [2d893f96e78d3fcc092c37a03a7b1888880b306e](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e) | [Run](random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed0/summary.json) |
+| RANDOM-05 | 2026-09-22T08:06:15.158769+00:00 | [2d893f96e78d3fcc092c37a03a7b1888880b306e](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e) | [Run](random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed0/summary.json) |
 
 **RANDOM-03 has crossed the archived ten-percent target:** 2,602 versus
 2,359 matched max(NMS,KK) (+10.30%). Its original NMS-only fresh comparison gives
@@ -200,7 +208,7 @@ These are same-layout validation streams, not new archived records.
 [Fresh V3 report](random05/RANDOM03_FRESH_VALIDATION_V3.md).
 
 RANDOM-04 currently reaches **2,799** (+5.66% above matched max(NMS,KK)),
-**115 tasks short** of2,914. Its record peaks at664.7ms;
+**115 tasks short** of2,914. Its record peaks at532.1ms;
 The earlier 2,777-task profile repeated exactly. Eight planner seeds score
 2,726–2,777; all original, repeat and seed checks peak below 791 ms.
 Frozen RANDOM-01/02 task/start checks are supplemented with KK repeats.
@@ -238,7 +246,7 @@ qualification fails. Compression alone has not established robust runtime.
 [Exact runtime comparison](random05/results/random04-chain-runtime-split-full-v166/REPORT.md).
 [Work-price results](random05/results/random04-chain-price-split-full-v166/REPORT.md).
 [Whole-chain qualification](random05/results/random04-record2783-split-full-v166/REPORT.md).
-An equivalent source168 runtime variant now passes five paired planner
+The earlier equivalent source168 runtime variant passes five paired planner
 seeds: 2,799/2,771/2,761/2,761/2,766, with all six trace fields identical
 to their contemporaneous controls. All ten runs pass independent replay.
 With zero-increment matching updates skipped and optional columns compressed,
@@ -247,7 +255,7 @@ the optimized maximum across all five seeds is **669.091ms**, versus
 The earlier source166 failures remain preserved. All18 all-five comparisons
 are complete:16 historical references and9 off/on pairs are six-field exact.
 Another exact2,799 repetition peaks657.644ms. The frontier now selects
-the source168 runtime variant and retains the first-attained record provenance.
+the qualified runtime replacement and retains the first-attained record provenance.
 [Exact runtime qualification](random05/results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md).
 All six additional guidance-generation seeds lose; retain layout15/one flip.
 [Layout results](random05/results/random04-chain-layout-split-full-v168/REPORT.md).
@@ -325,8 +333,8 @@ All eight original fresh runs passed strict timing, resource and replay checks.
 
 The four-core RANDOM-05 record stays separate: **3,770 versus matched NMS4
 2,914 (+29.4%)**. Its earlier frozen fresh comparison was +25.42%.
-The current 32-worker archived record averages 583 ms per step, peaks at
-831 ms, and uses 492 MB peak RSS. Its longest completed order takes 1,986
+The current 32-worker archived record averages 619 ms per step, peaks at
+823 ms, and uses 453 MB peak RSS. Its longest completed order takes 1,986
 steps; some initial orders remain unfinished at 2,000, so the eventual
 maximum wait is unknown. Throughput, rather than fairness, selected these runs.
 [Completed and censored waits](random05/WAITING_PROGRESS.md),

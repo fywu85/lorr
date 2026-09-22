@@ -2,20 +2,35 @@
 
 The current local reference is **max(NMS 3,172, KK 2,085) = 3,172**. KK uses its unchanged binary with `MALLOC_ARENA_MAX=2`; both full allocator-only repeats pass strict limits and replay. Published max 3,050 is a separate historical target (+41.05%). See the [matched baseline audit](NMS_KK_COMPARISON.md). Older four-core/fresh comparisons below that did not run KK remain NMS-only.
 
-**Current selected archived best: 4,302 tasks** (+35.62% versus matched max(NMS, Kitty Knight)),
-source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed), plannerseed0.
-Crediting half of the next committed movement at the forecast boundary adds48tasks
-to4,254at unchanged fixed work. Full2,000steps pass independent replay, strict
-1s entries and32GB: mean582.723/max830.909ms, RSS491.999MB. The disabled4254
-control matches all six trace fields; fullcredit1loses at4250. The exact repeat
-also matches all six fields. Candidate seeds0/1/2/3 score4302/4250/4276/4224.
-All seven new attempts are complete and audited, but the disabled-credit seed3
-control failed at step0/1,045.313ms. The three valid pairs improve1.0477%;
-this does not complete the declared four-pair qualification. Largest valid
-qualification entry956.058ms. No fresh-input gain is claimed for4,302yet.
-Separate smaller declared first-step budgets are being evaluated.
-[Qualification report](results/random05-record4302-split-full-v164/REPORT.md).
-[Full comparison](results/random12345-terminal-pending-split-full-v164/REPORT.md).
+**Current selected archived best: 4,302 tasks**, +35.62% versus matched
+max(NMS, KK) = 3,172. The exact runtime replacement uses source
+[2d893f96](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e), planner seed0,
+completed 2026-09-22T08:06:15.158769+00:00. The original record remains source30a56647, attained
+2026-09-22T02:19:09.148099+00:00; this is no throughput increase.
+
+**Ten planner seeds: 4,230.1 ± 46.5 tasks (sample SD), range4,155–4,302.**
+All ten full2,000-step runs pass independent replay, strict1s entries and32GB.
+The selected run averages619.039ms, peaks822.711ms and uses452.637MB peak RSS.
+Across all ten, the worst entry is885.879ms and peak RSS453.771MB.
+The mean is+33.36% versus matchedmax(NMS,KK). All ten complete trajectories
+match available earlier successful implementations in all six fields.
+These are development-selected planner-seed statistics on fixed archived
+inputs, not fresh-input qualification or a new paired terminal-credit result.
+[Final all-instance statistics and runtime audit](results/random45-reliability-dynamic-split-full-v174/REPORT.md).
+
+The runtime repair keeps all fixed search work: exact SIMD matching, skipped
+redundant matching updates, a synchronous persistent worker, dynamic work
+scheduling, passive OpenMP waiting, binding and portable IPO. Original startup
+failures remain in their original batches. The campaign is now paused.
+
+The terminal-credit change's older qualification remains three valid pairs
+(+1.0477%); its disabled-credit seed3 control failed, so the declared four-pair
+qualification remains incomplete. FreshV6 qualifies4,175only, NMS-only.
+Longest completed order1,986steps;146initial orders unfinished,110unopened;
+oldest unfinished age is censored at2,000. All800robots remain movable.
+Admission cap680, startup weighting0.125/250steps, progress0.125/span32,
+selected guidance and known-horizon scale1/mix1 require `--trick RANDOM-05`.
+[Original terminal-credit qualification](results/random05-record4302-split-full-v164/REPORT.md).
 
 The preceding4,254traffic-field profile repeats exactly and improves all four
 paired planner seeds over4,242 (+2.2134%aggregate). Its largest qualification
@@ -41,7 +56,7 @@ The 32-worker reference includes both teams; the older four-core reference is NM
 | Allocation | Our best | Reference | Gain | Mean / max entry time | Peak RSS |
 |---|---:|---:|---:|---:|---:|
 | Four physical cores / four workers | 3,770 | 2,914 (NMS only) | +29.4% | 788 / 845ms | 485MB |
-| 16 physical cores / 32 workers | 4,302 | 3,172 (max NMS, KK) | +35.6% | 583 / 831ms | 492MB |
+| 16 physical cores / 32 workers | 4,302 | 3,172 (max NMS, KK) | +35.6% | 619 / 823ms | 453MB |
 
 For the preceding4,011 configuration, raising the explicit cutoff's directional mix from0.75 to1 adds21tasks on the
 selected archived planner seed0. The archived repeat is exact. Frozen V5 results
@@ -59,7 +74,7 @@ These are selected single-seed maxima. Exact configurations and executable hashe
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed). Both use declared map-specific
+[2d893f96](https://github.com/fywu85/lorr/commit/2d893f96e78d3fcc092c37a03a7b1888880b306e). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Earlier four-core frozen independent-input comparison

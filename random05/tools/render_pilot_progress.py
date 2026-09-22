@@ -94,7 +94,7 @@ def render():
     status_path=ROOT/'random05/ACTIVE_GOAL.md'
     if status_path.exists():
         status=next((line for line in status_path.read_text().splitlines() if line.startswith('**Status:')),None)
-        if status:lines[3:3]=['',status]
+        if status:lines[3:3]=['',status,'']
     variability_index=ROOT/'random05/seed-variability.json'
     if variability_index.exists():
         from report_seed_variability import settings
@@ -309,7 +309,7 @@ def render():
         '[Exact runtime comparison](random05/results/random04-chain-runtime-split-full-v166/REPORT.md).',
         '[Work-price results](random05/results/random04-chain-price-split-full-v166/REPORT.md).',
         '[Whole-chain qualification](random05/results/random04-record2783-split-full-v166/REPORT.md).',
-        'An equivalent source168 runtime variant now passes five paired planner',
+        'The earlier equivalent source168 runtime variant passes five paired planner',
         'seeds: 2,799/2,771/2,761/2,761/2,766, with all six trace fields identical',
         'to their contemporaneous controls. All ten runs pass independent replay.',
         'With zero-increment matching updates skipped and optional columns compressed,',
@@ -318,7 +318,7 @@ def render():
         'The earlier source166 failures remain preserved. All18 all-five comparisons',
         'are complete:16 historical references and9 off/on pairs are six-field exact.',
         'Another exact2,799 repetition peaks657.644ms. The frontier now selects',
-        'the source168 runtime variant and retains the first-attained record provenance.',
+        'the qualified runtime replacement and retains the first-attained record provenance.',
         '[Exact runtime qualification](random05/results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md).',
         'All six additional guidance-generation seeds lose; retain layout15/one flip.',
         '[Layout results](random05/results/random04-chain-layout-split-full-v168/REPORT.md).',

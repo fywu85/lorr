@@ -1,0 +1,1077 @@
+{
+  "created_utc": "2026-09-22T08:12:05.052344+00:00",
+  "protocol": "random05/experiments/random12345-final-reliability-seeds10-v174-protocol.json",
+  "protocol_sha256": "132f51f0a570d4fe85d8e3db8475911041dd33038ac1c480b805bc148f695c4c",
+  "new_audit_sha256": "f2c06be252e24c35e6aa0d19835ad3acbfcdc6e3dc73ba6b12a89ba5eaa8a33d",
+  "estimator": "Arithmetic mean and sample standard deviation with denominator n-1. One observation per distinct planner seed; identical repeats never increase n. Report individual scores, n, range, observed best and both mean/best versus matched max(NMS,KK).",
+  "selection_limit": "Some reused seeds were involved in choosing these configurations. These are descriptive development-profile statistics, not unbiased held-out evidence or a formal confidence interval for new instances.",
+  "allocation_refusals": [
+    {
+      "instance": "RANDOM-04",
+      "seed": 7,
+      "original_case": "trick-random-04-reliability-dynamic-seed7",
+      "retry_case": "trick-random-04-reliability-dynamic-seed7-allocation-retry1",
+      "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed7/summary.json",
+      "failure": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "solver_started": false,
+      "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+      "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+    },
+    {
+      "instance": "RANDOM-04",
+      "seed": 8,
+      "original_case": "trick-random-04-reliability-dynamic-seed8",
+      "retry_case": "trick-random-04-reliability-dynamic-seed8-allocation-retry1",
+      "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed8/summary.json",
+      "failure": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "solver_started": false,
+      "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+      "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+    },
+    {
+      "instance": "RANDOM-04",
+      "seed": 9,
+      "original_case": "trick-random-04-reliability-dynamic-seed9",
+      "retry_case": "trick-random-04-reliability-dynamic-seed9-allocation-retry1",
+      "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed9/summary.json",
+      "failure": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "solver_started": false,
+      "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+      "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+    }
+  ],
+  "instances": {
+    "RANDOM-01": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 738.7,
+      "sample_standard_deviation": 3.1640339933558095,
+      "minimum": 735,
+      "maximum": 745,
+      "matched_max_nms_kk": 692,
+      "mean_gain_percent": 6.748554913294802,
+      "best_gain_percent": 7.658959537572252,
+      "worst_valid_entry_ms": 224.04270200000002,
+      "attempts": [
+        {
+          "instance": "RANDOM-01",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-01-match-forecast-h8-seed0",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-match-forecast-split-full-v167/trick-random-01-match-forecast-h8-seed0/summary.json",
+          "tasks": 740,
+          "latency_seconds": {
+            "mean": 0.07224168279166672,
+            "max": 0.115925994
+          },
+          "peak_rss_bytes": 393945088,
+          "finished_utc": "2026-09-22T04:24:36.347075+00:00",
+          "result_sha256": "1a6baf8a08aef1370cb3b6ef320690813c14848985498ae4d90cc11191ed119f"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-01-match-forecast-h8-seed1",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-match-forecast-split-full-v167/trick-random-01-match-forecast-h8-seed1/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.0738110216166667,
+            "max": 0.116399116
+          },
+          "peak_rss_bytes": 405118976,
+          "finished_utc": "2026-09-22T04:23:17.292730+00:00",
+          "result_sha256": "734a998c0a13ffbac51afa2ac7171e66972e6c1fe2bf290aff582855cfcc9de1"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-01-record740-seed2",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed2/summary.json",
+          "tasks": 742,
+          "latency_seconds": {
+            "mean": 0.07111647431833333,
+            "max": 0.109274427
+          },
+          "peak_rss_bytes": 393465856,
+          "finished_utc": "2026-09-22T04:36:25.846364+00:00",
+          "result_sha256": "f1b7ca0c069295e4fee1b65d564cc97a8be6519c88563087249e62d49a49ba58"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-01-record740-seed3",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed3/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.07504633488333329,
+            "max": 0.110930595
+          },
+          "peak_rss_bytes": 383442944,
+          "finished_utc": "2026-09-22T04:37:48.121237+00:00",
+          "result_sha256": "a3afb0c3da734a6e310a54f8c0692e3c70409260603ea3d73acfd5525a2eab09"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-01-record740-seed4",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed4/summary.json",
+          "tasks": 745,
+          "latency_seconds": {
+            "mean": 0.07090110236499998,
+            "max": 0.119472197
+          },
+          "peak_rss_bytes": 373231616,
+          "finished_utc": "2026-09-22T04:44:25.643796+00:00",
+          "result_sha256": "73422a15ffe548ea468a994e7afcdeb7483bf83a99c400e55fe9fa3a030b1cc7"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 5,
+          "historical": true,
+          "name": "trick-random-01-wrapup-seed5",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed5/summary.json",
+          "tasks": 735,
+          "latency_seconds": {
+            "mean": 0.11026725971333327,
+            "max": 0.224042702
+          },
+          "peak_rss_bytes": 391094272,
+          "finished_utc": "2026-09-22T06:43:04.317532+00:00",
+          "result_sha256": "942a8c9cfb70e361749d58ef38731f8124f7954400fd7fef87a8eb765f113167"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 6,
+          "historical": true,
+          "name": "trick-random-01-wrapup-seed6",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed6/summary.json",
+          "tasks": 736,
+          "latency_seconds": {
+            "mean": 0.07663858791000001,
+            "max": 0.162526578
+          },
+          "peak_rss_bytes": 395153408,
+          "finished_utc": "2026-09-22T06:42:41.492661+00:00",
+          "result_sha256": "ea8ed526598a44b1d271ea7bad551317a2175ba1da085d49aaf4251c6ec99267"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 7,
+          "historical": true,
+          "name": "trick-random-01-wrapup-seed7",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed7/summary.json",
+          "tasks": 737,
+          "latency_seconds": {
+            "mean": 0.09821786429666664,
+            "max": 0.157990265
+          },
+          "peak_rss_bytes": 386334720,
+          "finished_utc": "2026-09-22T06:42:56.514552+00:00",
+          "result_sha256": "6840b704493970a3dde0d5b5127dcbc029ec2caa3a2fd62a9f7a27f4dd77cd2d"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 8,
+          "historical": true,
+          "name": "trick-random-01-wrapup-seed8",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed8/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.10161274219500004,
+            "max": 0.185244198
+          },
+          "peak_rss_bytes": 390131712,
+          "finished_utc": "2026-09-22T06:42:58.986673+00:00",
+          "result_sha256": "38a1ccd1dfebec79adc2bf03e28d9beb18a314e2cf69e7100e93016d04150f06"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 9,
+          "historical": true,
+          "name": "trick-random-01-wrapup-seed9",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed9/summary.json",
+          "tasks": 735,
+          "latency_seconds": {
+            "mean": 0.10858103614499996,
+            "max": 0.221602734
+          },
+          "peak_rss_bytes": 400285696,
+          "finished_utc": "2026-09-22T06:43:03.353182+00:00",
+          "result_sha256": "696996ab764958a77e2dab070eca79fe794d1bd757f5af71ba75cd23450e821f"
+        }
+      ]
+    },
+    "RANDOM-02": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 1394.9,
+      "sample_standard_deviation": 5.97122730730924,
+      "minimum": 1386,
+      "maximum": 1408,
+      "matched_max_nms_kk": 1256,
+      "mean_gain_percent": 11.058917197452246,
+      "best_gain_percent": 12.101910828025474,
+      "worst_valid_entry_ms": 780.246374,
+      "attempts": [
+        {
+          "instance": "RANDOM-02",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed0",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed0/summary.json",
+          "tasks": 1396,
+          "latency_seconds": {
+            "mean": 0.31830460569833346,
+            "max": 0.467467462
+          },
+          "peak_rss_bytes": 362078208,
+          "finished_utc": "2026-09-21T16:03:56.171365+00:00",
+          "result_sha256": "1e20dab8771bde1dc424d9b7f4cb4ded7203104e204ccf8a6b6f8a6e6ea89951"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed1",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed1/summary.json",
+          "tasks": 1391,
+          "latency_seconds": {
+            "mean": 0.33078009813,
+            "max": 0.505583183
+          },
+          "peak_rss_bytes": 363495424,
+          "finished_utc": "2026-09-21T16:04:03.531619+00:00",
+          "result_sha256": "c20959b78903d8c1995f2ea50a3a01d37b5541ebd59afdebcb3168db4e04ee8c"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-02-resume-cutoff-0p875",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json",
+          "tasks": 1408,
+          "latency_seconds": {
+            "mean": 0.3175326956533331,
+            "max": 0.49279242
+          },
+          "peak_rss_bytes": 368418816,
+          "finished_utc": "2026-09-21T15:54:03.792427+00:00",
+          "result_sha256": "00dc988868d24ab7f90bdc4ef3b482078479113e17f65aedfa15e857db7a5060"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed3",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed3/summary.json",
+          "tasks": 1393,
+          "latency_seconds": {
+            "mean": 0.4425868066333333,
+            "max": 0.681120318
+          },
+          "peak_rss_bytes": 366022656,
+          "finished_utc": "2026-09-21T16:05:12.731515+00:00",
+          "result_sha256": "8d3c62c31190b990ca3c3a5377b1edef31c23fd7ebf14eb01475bc1edf5394f2"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed4",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed4/summary.json",
+          "tasks": 1392,
+          "latency_seconds": {
+            "mean": 0.3274358640833336,
+            "max": 0.592901212
+          },
+          "peak_rss_bytes": 369102848,
+          "finished_utc": "2026-09-22T06:46:01.678928+00:00",
+          "result_sha256": "95367ef29a46143514d6d42a18c9dc3d247dce9f7963d9af3beb2da38e62fbce"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 5,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed5",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed5/summary.json",
+          "tasks": 1395,
+          "latency_seconds": {
+            "mean": 0.4043235946766667,
+            "max": 0.685945056
+          },
+          "peak_rss_bytes": 362790912,
+          "finished_utc": "2026-09-22T06:47:19.918908+00:00",
+          "result_sha256": "f4f007574bd2c17f16a5254c9520d1a0adb9c47cf86c8cfde156b4e9111b0369"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 6,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed6",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed6/summary.json",
+          "tasks": 1391,
+          "latency_seconds": {
+            "mean": 0.41714780204666674,
+            "max": 0.744428547
+          },
+          "peak_rss_bytes": 361213952,
+          "finished_utc": "2026-09-22T06:47:27.659071+00:00",
+          "result_sha256": "93c17d49d87205a677751d1d00da2f6c0ccbfd3d0db4e7dae542f8aebb9cb8cb"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 7,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed7",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed7/summary.json",
+          "tasks": 1386,
+          "latency_seconds": {
+            "mean": 0.4434488194866664,
+            "max": 0.749312058
+          },
+          "peak_rss_bytes": 376213504,
+          "finished_utc": "2026-09-22T06:47:43.595259+00:00",
+          "result_sha256": "6610d53180a717d39a610479bf077035f933f26a59fbf175984ba517853e7f18"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 8,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed8",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed8/summary.json",
+          "tasks": 1398,
+          "latency_seconds": {
+            "mean": 0.4227015016150002,
+            "max": 0.780246374
+          },
+          "peak_rss_bytes": 368721920,
+          "finished_utc": "2026-09-22T06:47:40.853774+00:00",
+          "result_sha256": "32e2b4e2ba6f91f5c8bf87312fd2c7ed9c23de2fd89483febb25afe4c0db7237"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 9,
+          "historical": true,
+          "name": "trick-random-02-wrapup-seed9",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed9/summary.json",
+          "tasks": 1399,
+          "latency_seconds": {
+            "mean": 0.33260092615499953,
+            "max": 0.561810875
+          },
+          "peak_rss_bytes": 370507776,
+          "finished_utc": "2026-09-22T06:49:25.052513+00:00",
+          "result_sha256": "93a367efb8d0ee8afa6f7d71af0ad7689886867a21b604ebfc4dc7ac34d2879e"
+        }
+      ]
+    },
+    "RANDOM-03": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 2616.5,
+      "sample_standard_deviation": 14.744113703064315,
+      "minimum": 2598,
+      "maximum": 2646,
+      "matched_max_nms_kk": 2359,
+      "mean_gain_percent": 10.915642221280208,
+      "best_gain_percent": 12.166172106824934,
+      "worst_valid_entry_ms": 772.971771,
+      "attempts": [
+        {
+          "instance": "RANDOM-03",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed0",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed0/summary.json",
+          "tasks": 2611,
+          "latency_seconds": {
+            "mean": 0.4859483921087495,
+            "max": 0.772971771
+          },
+          "peak_rss_bytes": 437501952,
+          "finished_utc": "2026-09-22T07:33:44.077376+00:00",
+          "result_sha256": "ebb614b2dc71b6ac7a0e2135c459e7c09f840a4032cff8195df54ad2137d1777"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed1",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed1/summary.json",
+          "tasks": 2606,
+          "latency_seconds": {
+            "mean": 0.49236067477500006,
+            "max": 0.759857243
+          },
+          "peak_rss_bytes": 450326528,
+          "finished_utc": "2026-09-22T07:33:49.128541+00:00",
+          "result_sha256": "08b9d1f25d4c1f16f0aec647228fa24b605e859a4949483000d4b5dbf1ebb0da"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed2",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed2/summary.json",
+          "tasks": 2611,
+          "latency_seconds": {
+            "mean": 0.4861676643399997,
+            "max": 0.705580642
+          },
+          "peak_rss_bytes": 432390144,
+          "finished_utc": "2026-09-22T07:40:24.120173+00:00",
+          "result_sha256": "82bb9f7469507f63c5664bf4afc78d67fb82ca931c51b8cd4f071c6efa417e67"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed3",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed3/summary.json",
+          "tasks": 2646,
+          "latency_seconds": {
+            "mean": 0.4971988348625005,
+            "max": 0.686179881
+          },
+          "peak_rss_bytes": 436662272,
+          "finished_utc": "2026-09-22T07:40:33.103168+00:00",
+          "result_sha256": "11ccede8629de04c366b4b11ce50bf9d04cd9f6d599779b2788a0e3f19f2b75a"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed4",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed4/summary.json",
+          "tasks": 2610,
+          "latency_seconds": {
+            "mean": 0.4749227891575001,
+            "max": 0.67155856
+          },
+          "peak_rss_bytes": 460857344,
+          "finished_utc": "2026-09-22T07:40:55.205007+00:00",
+          "result_sha256": "7febc5e610712152cfdbb614e93ab49c82692c2d7369e11ffde1bb7ee1c76402"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 5,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed5",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed5/summary.json",
+          "tasks": 2633,
+          "latency_seconds": {
+            "mean": 0.4768134962612499,
+            "max": 0.682988799
+          },
+          "peak_rss_bytes": 447303680,
+          "finished_utc": "2026-09-22T07:40:56.699002+00:00",
+          "result_sha256": "b335cd6161f5bc67a33300b64d0b2578bf70bad35da6f0098bd3c05ab3849add"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 6,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed6",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed6/summary.json",
+          "tasks": 2620,
+          "latency_seconds": {
+            "mean": 0.49666442207624967,
+            "max": 0.705304493
+          },
+          "peak_rss_bytes": 433520640,
+          "finished_utc": "2026-09-22T07:41:32.682993+00:00",
+          "result_sha256": "56c45f86fe95eafd011d714e03896d4c4197933c173f4c27f3f7d8c64b39d0d7"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 7,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed7",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed7/summary.json",
+          "tasks": 2626,
+          "latency_seconds": {
+            "mean": 0.49346222749999996,
+            "max": 0.669545275
+          },
+          "peak_rss_bytes": 452464640,
+          "finished_utc": "2026-09-22T07:41:40.343067+00:00",
+          "result_sha256": "2f42cf7273e655b6215864114ee4ee2c96b88aaed6619caa0c3f1a058f4c5981"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 8,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed8",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed8/summary.json",
+          "tasks": 2598,
+          "latency_seconds": {
+            "mean": 0.5000992471450008,
+            "max": 0.721111961
+          },
+          "peak_rss_bytes": 448356352,
+          "finished_utc": "2026-09-22T07:41:45.590669+00:00",
+          "result_sha256": "3808bc2e1954de6a27434a0b60f21230498d88b032b71b49a42626deedb57f13"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 9,
+          "historical": true,
+          "name": "trick-random-03-reliability-persistent-seed9",
+          "valid": true,
+          "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+          "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+          "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed9/summary.json",
+          "tasks": 2604,
+          "latency_seconds": {
+            "mean": 0.49662616874624993,
+            "max": 0.694378255
+          },
+          "peak_rss_bytes": 439595008,
+          "finished_utc": "2026-09-22T07:41:42.931583+00:00",
+          "result_sha256": "18d85e66dd3fb19a1e2df3af9fb65f3ecb4d3d23ad115de6028e1ad88e76aca6"
+        }
+      ]
+    },
+    "RANDOM-04": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 2773.2,
+      "sample_standard_deviation": 15.083471454247896,
+      "minimum": 2754,
+      "maximum": 2799,
+      "matched_max_nms_kk": 2649,
+      "mean_gain_percent": 4.688561721404305,
+      "best_gain_percent": 5.662514156285381,
+      "worst_valid_entry_ms": 765.902211,
+      "attempts": [
+        {
+          "instance": "RANDOM-04",
+          "seed": 0,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed0",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed0/summary.json",
+          "tasks": 2799,
+          "latency_seconds": {
+            "mean": 0.45338393654000037,
+            "max": 0.532116784
+          },
+          "peak_rss_bytes": 483356672,
+          "finished_utc": "2026-09-22T07:54:39.067931+00:00",
+          "result_sha256": "0c79a3621eb43495beefedcb868afb2e1c2447e669a859f4209bea6d8a2760e7"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 1,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed1",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed1/summary.json",
+          "tasks": 2771,
+          "latency_seconds": {
+            "mean": 0.45447145308399944,
+            "max": 0.535616703
+          },
+          "peak_rss_bytes": 495132672,
+          "finished_utc": "2026-09-22T07:54:50.172410+00:00",
+          "result_sha256": "65f94f433296ba9600ad25ef2425f054bb33b11494afff34adee7eaedc0e35bd"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 2,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed2",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed2/summary.json",
+          "tasks": 2761,
+          "latency_seconds": {
+            "mean": 0.46503123547599967,
+            "max": 0.531326775
+          },
+          "peak_rss_bytes": 492732416,
+          "finished_utc": "2026-09-22T07:55:00.836126+00:00",
+          "result_sha256": "4b6bf0fb2c8449383491961aad70ad9d286615bfe155fae87b4de6ca0ae18fd7"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 3,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed3",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed3/summary.json",
+          "tasks": 2761,
+          "latency_seconds": {
+            "mean": 0.4755797815039998,
+            "max": 0.533685297
+          },
+          "peak_rss_bytes": 493670400,
+          "finished_utc": "2026-09-22T07:55:11.291330+00:00",
+          "result_sha256": "bf1a7a01b5583933ef6fe10e23aa055f738883167d204a6d7e237767f5b9e319"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 4,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed4",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed4/summary.json",
+          "tasks": 2766,
+          "latency_seconds": {
+            "mean": 0.4784655169650006,
+            "max": 0.534531486
+          },
+          "peak_rss_bytes": 485052416,
+          "finished_utc": "2026-09-22T07:55:14.259905+00:00",
+          "result_sha256": "f278b63df0eb1e6fd5cdf6ed9235a71e61057bd52ac78e40f14526a656c802cd"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed5",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed5/summary.json",
+          "tasks": 2789,
+          "latency_seconds": {
+            "mean": 0.4643968014059993,
+            "max": 0.765902211
+          },
+          "peak_rss_bytes": 493424640,
+          "finished_utc": "2026-09-22T07:55:30.104243+00:00",
+          "result_sha256": "2ca716835057b7627307d005e01322f642b5e09a3d94853e24b1b00647a69960"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed6",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed6/summary.json",
+          "tasks": 2763,
+          "latency_seconds": {
+            "mean": 0.45040828164700025,
+            "max": 0.523531549
+          },
+          "peak_rss_bytes": 492961792,
+          "finished_utc": "2026-09-22T07:55:36.046087+00:00",
+          "result_sha256": "05ba444cb98a36db62ecb59c54571126348ca034c3147d64fbbb3f0f3df97b5b"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed7-allocation-retry1",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random04-dynamic-allocation-retry1-split-v174/trick-random-04-reliability-dynamic-seed7-allocation-retry1/summary.json",
+          "tasks": 2790,
+          "latency_seconds": {
+            "mean": 0.4549094571710002,
+            "max": 0.530776002
+          },
+          "peak_rss_bytes": 482705408,
+          "finished_utc": "2026-09-22T08:02:20.582713+00:00",
+          "result_sha256": "c375a0141b654f3e38abfaf0098e4c8bbd1bea58fa26ad1934474eb1f9b92366",
+          "allocation_refusal": {
+            "instance": "RANDOM-04",
+            "seed": 7,
+            "original_case": "trick-random-04-reliability-dynamic-seed7",
+            "retry_case": "trick-random-04-reliability-dynamic-seed7-allocation-retry1",
+            "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed7/summary.json",
+            "failure": {
+              "kind": "core_binding",
+              "expected": 16,
+              "observed": 64
+            },
+            "solver_started": false,
+            "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+            "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+          }
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed8-allocation-retry1",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random04-dynamic-allocation-retry1-split-v174/trick-random-04-reliability-dynamic-seed8-allocation-retry1/summary.json",
+          "tasks": 2754,
+          "latency_seconds": {
+            "mean": 0.46284897131499997,
+            "max": 0.529444921
+          },
+          "peak_rss_bytes": 500015104,
+          "finished_utc": "2026-09-22T08:02:58.701909+00:00",
+          "result_sha256": "7a5833ba9bce77a4195f34d0d147e13325a7e7f9af63e2774a7e715645668597",
+          "allocation_refusal": {
+            "instance": "RANDOM-04",
+            "seed": 8,
+            "original_case": "trick-random-04-reliability-dynamic-seed8",
+            "retry_case": "trick-random-04-reliability-dynamic-seed8-allocation-retry1",
+            "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed8/summary.json",
+            "failure": {
+              "kind": "core_binding",
+              "expected": 16,
+              "observed": 64
+            },
+            "solver_started": false,
+            "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+            "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+          }
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-04-reliability-dynamic-seed9-allocation-retry1",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random04-dynamic-allocation-retry1-split-v174/trick-random-04-reliability-dynamic-seed9-allocation-retry1/summary.json",
+          "tasks": 2778,
+          "latency_seconds": {
+            "mean": 0.45318484536500037,
+            "max": 0.674070425
+          },
+          "peak_rss_bytes": 485306368,
+          "finished_utc": "2026-09-22T08:02:48.883834+00:00",
+          "result_sha256": "62178757ce7a35ea741c3b7fc94346dab3477418d47bfb5a9a28f52d3ba3c15c",
+          "allocation_refusal": {
+            "instance": "RANDOM-04",
+            "seed": 9,
+            "original_case": "trick-random-04-reliability-dynamic-seed9",
+            "retry_case": "trick-random-04-reliability-dynamic-seed9-allocation-retry1",
+            "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed9/summary.json",
+            "failure": {
+              "kind": "core_binding",
+              "expected": 16,
+              "observed": 64
+            },
+            "solver_started": false,
+            "retry_audit": "random05/results/random04-dynamic-allocation-retry1-split-v174/audit.json",
+            "retry_audit_sha256": "41422859ef48fceb007c3d4632a5c41ce1bf192839101b9f0cec86923b6bc8c4"
+          }
+        }
+      ]
+    },
+    "RANDOM-05": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 4230.1,
+      "sample_standard_deviation": 46.50794436318261,
+      "minimum": 4155,
+      "maximum": 4302,
+      "matched_max_nms_kk": 3172,
+      "mean_gain_percent": 33.357503152585124,
+      "best_gain_percent": 35.62421185372004,
+      "worst_valid_entry_ms": 885.87911,
+      "attempts": [
+        {
+          "instance": "RANDOM-05",
+          "seed": 0,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed0",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed0/summary.json",
+          "tasks": 4302,
+          "latency_seconds": {
+            "mean": 0.6190393216349998,
+            "max": 0.822711441
+          },
+          "peak_rss_bytes": 452636672,
+          "finished_utc": "2026-09-22T08:06:15.158769+00:00",
+          "result_sha256": "9f8518145bd77e8c46806f8f28d12b70b2a95abac4cd9a1407f76c712067a1f0"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 1,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed1",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed1/summary.json",
+          "tasks": 4250,
+          "latency_seconds": {
+            "mean": 0.5859867660100007,
+            "max": 0.646221603
+          },
+          "peak_rss_bytes": 452751360,
+          "finished_utc": "2026-09-22T08:05:08.877536+00:00",
+          "result_sha256": "68f67ed9cd10c761048b9d291a59a2779b9d371d9082c5f35ac0113dde97082b"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 2,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed2",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed2/summary.json",
+          "tasks": 4276,
+          "latency_seconds": {
+            "mean": 0.6137648468265016,
+            "max": 0.700378618
+          },
+          "peak_rss_bytes": 453771264,
+          "finished_utc": "2026-09-22T08:06:04.604628+00:00",
+          "result_sha256": "5e4f62727814f6b516b63709a6b1958ff223ba38aed025129525298afd82ccd8"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 3,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed3",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed3/summary.json",
+          "tasks": 4224,
+          "latency_seconds": {
+            "mean": 0.5889591820405008,
+            "max": 0.651609323
+          },
+          "peak_rss_bytes": 452411392,
+          "finished_utc": "2026-09-22T08:05:14.752326+00:00",
+          "result_sha256": "d5d09a086df10a3d4ea7b71c5dd0e7db5f20c110864ab52b48636e332880c0ec"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 4,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed4",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed4/summary.json",
+          "tasks": 4251,
+          "latency_seconds": {
+            "mean": 0.6075771005155002,
+            "max": 0.84557623
+          },
+          "peak_rss_bytes": 453144576,
+          "finished_utc": "2026-09-22T08:05:52.318990+00:00",
+          "result_sha256": "2a1f6181a9fdf9b8c11c6dcd727464035615ad39fa5c75cd1346a4bd8ffbe0d6"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed5",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed5/summary.json",
+          "tasks": 4204,
+          "latency_seconds": {
+            "mean": 0.5944674139434992,
+            "max": 0.656846549
+          },
+          "peak_rss_bytes": 453206016,
+          "finished_utc": "2026-09-22T08:05:25.932507+00:00",
+          "result_sha256": "f0aeca9a418a0643b9b2b689a410accea107841e598dc5f494f42139504cc33f"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed6",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed6/summary.json",
+          "tasks": 4155,
+          "latency_seconds": {
+            "mean": 0.6039026138669995,
+            "max": 0.712170703
+          },
+          "peak_rss_bytes": 452321280,
+          "finished_utc": "2026-09-22T08:05:44.989553+00:00",
+          "result_sha256": "ee17948822667076539ad1ef410d7114faa66b6e2d9135128e77134c2ec965ea"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed7",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed7/summary.json",
+          "tasks": 4249,
+          "latency_seconds": {
+            "mean": 0.6253788395135006,
+            "max": 0.88587911
+          },
+          "peak_rss_bytes": 450301952,
+          "finished_utc": "2026-09-22T08:06:27.923045+00:00",
+          "result_sha256": "7dd31e8e12eb1a7779e092ff9258bf8838747041ba37d53a1f6601a71ff8e694"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed8",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed8/summary.json",
+          "tasks": 4162,
+          "latency_seconds": {
+            "mean": 0.585279004683499,
+            "max": 0.652722938
+          },
+          "peak_rss_bytes": 453308416,
+          "finished_utc": "2026-09-22T08:06:07.360441+00:00",
+          "result_sha256": "a3b5ed5299fcc08d7fc562e1681c81a50d7d0bdc89ba3e3dd13ea704bb7cfbeb"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-05-reliability-dynamic-seed9",
+          "valid": true,
+          "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+          "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+          "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed9/summary.json",
+          "tasks": 4228,
+          "latency_seconds": {
+            "mean": 0.5860489523385012,
+            "max": 0.64022644
+          },
+          "peak_rss_bytes": 452354048,
+          "finished_utc": "2026-09-22T08:06:08.905425+00:00",
+          "result_sha256": "5854aadacaf4f69354710dff7bf9a58241fda4176d5147a536d4cf34269b2e1d"
+        }
+      ]
+    }
+  }
+}

@@ -1,77 +1,46 @@
-# Active PILOT goal: all five RANDOM instances
+# PILOT campaign: all five RANDOM instances
 
-Updated 2026-09-22 07:33 UTC.
+Updated 2026-09-22 08:17 UTC.
 
-**Status: reliability repair before the final report.** The latest user explicitly requests fixing the new startup deadline failures. Preserve the original ten-seed attempts; test exact runtime changes, repeat full reliability/statistical validation, log/commit/push, then pause. No open-ended throughput search is resumed.
+**Status: paused at the user's request. Reliability repair and final reporting are complete.**
 
-**Maximize verified full-run combined-track throughput on RANDOM-01 through RANDOM-05. Give each instance substantial development effort, and compare every headline result with matched max(NMS, Kitty Knight). The latest user steering makes RANDOM-01 and RANDOM-04 the main priorities.** Neither priority instance has a demonstrated inherent ceiling.
+No automatic throughput search, benchmark submission or fresh-input generation is authorized by the unfinished broader goal. The completed work is logged with source and evidence links; the final scoped commit and push complete the handoff.
 
-The RANDOM-03/04 ten-percent qualification is a milestone within this broader campaign. The stored app goal has older NMS-only wording and a superseded RANDOM-04 target of 2,838; current comparisons use 2,649 and a target of 2,914. Do not falsely complete or recreate the goal to change that text.
+The broader objective remains maximizing verified full-run combined-track throughput on RANDOM-01 through RANDOM-05, always compared with matched **max(NMS, Kitty Knight)**. The latest development priority was RANDOM-01 and RANDOM-04; neither has a demonstrated inherent ceiling. The stored app goal's NMS-only wording and old RANDOM-04 target of 2,838 are superseded by this log. Do not mark that goal complete or recreate it merely to edit its wording.
 
-| Instance | Selected maximum | Matched max(NMS, KK) | Lead | 10% reference |
-|---|---:|---:|---:|---:|
-| RANDOM-01 | 745 | 692 | +7.66% | 762 |
-| RANDOM-02 | 1,408 | 1,256 | +12.10% | 1,382 |
-| RANDOM-03 | 2,646 | 2,359 | +12.17% | 2,595 |
-| RANDOM-04 | 2,799 | 2,649 | +5.66% | 2,914 |
-| RANDOM-05 | 4,302 | 3,172 | +35.62% | 3,490 |
+| Instance | Mean ± sample SD (10 planner seeds) | Selected best | Matched max(NMS, KK) | Best lead | 10% reference |
+|---|---:|---:|---:|---:|---:|
+| RANDOM-01 | 738.7 ± 3.2 | 745 | 692 | +7.66% | 762 |
+| RANDOM-02 | 1,394.9 ± 6.0 | 1,408 | 1,256 | +12.10% | 1,382 |
+| RANDOM-03 | 2,616.5 ± 14.7 | 2,646 | 2,359 | +12.17% | 2,595 |
+| RANDOM-04 | 2,773.2 ± 15.1 | 2,799 | 2,649 | +5.66% | 2,914 |
+| RANDOM-05 | 4,230.1 ± 46.5 | 4,302 | 3,172 | +35.62% | 3,490 |
 
-The all-instance ten-percent references are useful yardsticks; only RANDOM-03/04 were explicitly assigned that numeric qualification requirement. Crossing a yardstick does not complete the open-ended goal. General bests remain 727 / 1397 / 1634 / 1616 / 2314. These five densities share one map layout; this is not unseen-map validation.
+The final selected cohort has **50 successful full runs / 50,000 planning calls**, all independently replayed under strict 1,000 ms entries and 32 decimal GB. Worst entry is **885.879 ms** and peak RSS **500.015 MB**. RANDOM-01/02 reuse their already valid frozen observations; RANDOM-03 uses source173 and RANDOM-04/05 source174. Three incorrectly bound allocations were refused before any solver launch, then retried once each with identical settings. Their refusals remain in the audit.
+
+This is sample SD (n−1) across planner seeds on fixed archived inputs, with development-selected trick presets. It does not measure fresh task/start or unseen-layout variability. All 29 available prior successful full trajectories for the repaired RANDOM-03/04/05 cohorts match exactly; RANDOM-04 seed8 has independent replay but no prior successful full reference. Original and intermediate deadline failures remain preserved. [Frozen statistics and runtime report](results/random45-reliability-dynamic-split-full-v174/REPORT.md).
 
 ## Evidence and limits
 
-- Use full horizons 600 / 600 / 800 / 1000 / 2000, strict 1,000 ms entries, 30-second preparation and 32 decimal GB. Use 16 bound physical EPYC9354 cores / 32 SMT workers, verifying affinity and no CPU quota. Shared hosts are allowed.
-- Complete the declared fixed work or fail. Do not turn PILOT into a deadline-truncated search or emit partial assignments.
-- Independently replay movement, collisions, assignments and task events before promoting a valid selected run. Pin source, timestamp, settings, latency, memory and completed/censored waiting metrics.
-- Distinguish a selected maximum, exact reproduction, paired planner-seed behavior, runtime robustness and fresh task/start validation. Preserve every original timeout, refusal and losing trial.
-- Keep general mechanisms separate from tuned map, admission and known-horizon presets, which require explicit `--trick RANDOM-0N`. Throughput is primary; no fairness claim follows from a higher score.
-- Freeze fresh protocols before generation. Inputs 50001–50012 and 50015–50022 are excluded from tuning; 50013/14 remain reserved and ungenerated for RANDOM-04.
-- Scope writes to `random05/`, `PILOT_PROGRESS.md` and `RANDOM05_PROGRESS.md`. Public `fywu85/lorr` pushes are authorized. Preserve other work and repository visibility. Naming cleanup to `pilot/` is explicitly deferred.
+- Full horizons: 600 / 600 / 800 / 1000 / 2000. Strict 1,000 ms entries, 30-second preparation, 32 decimal GB; 16 bound physical EPYC9354 cores / 32 SMT workers, verified affinity and no CPU quota. Shared hosts are allowed. Observed timing is not a guarantee under arbitrary contention.
+- Complete the declared fixed work or fail. Runtime repairs do not return partial solutions, relax deadlines or alter search budgets, objectives, seeds or horizons.
+- Independently replay movement, collisions, assignments and task events. Pin source, timestamp, binary, input, settings, latency, memory and completed/censored waiting metrics.
+- Separate selected maxima, exact reproduction, planner-seed statistics, runtime qualification and fresh-input validation. Keep failed attempts and losing trials.
+- General bests remain 727 / 1397 / 1634 / 1616 / 2314. Current selected presets use explicit `--trick RANDOM-0N` for tuned guidance, admission and known-horizon rules. Throughput is primary; fairness is not established.
+- Five densities share one map layout. Non-random maps remain unevaluated placeholders; frozen distance storage was estimated above the 32 GB budget.
+- Inputs 50001–50012 and 50015–50022 remain excluded from tuning. RANDOM-04 inputs 50013/14 stay reserved and ungenerated. Freeze future protocols before generation.
+- Scope edits/staging/commits to `random05/`, `PILOT_PROGRESS.md`, `RANDOM05_PROGRESS.md`. Public `fywu85/lorr` pushes are authorized. Preserve other shared work and repository visibility. Naming cleanup is deferred. No subagents or Fable retries without new authorization/information.
 
-## Current qualification
+## Remaining qualification on an explicit future resume
 
-**RANDOM-01:** Source167 forecast assignment at radius8 reaches 745 on planner seed4, with mean70.901/max119.472ms. Five paired seeds give 740/739/742/739/745 versus 736/739/726/732/732: **+1.0914%**, four gains and one tie. All pass strict checks and full replay; maximum qualification entry119.523ms. The earlier740 and742 trajectories repeat exactly. The exact745 repetition also matches all six fields. The larger-radius follow-up does not beat745; general01 variants lose. Fresh01V1 qualifies the older729 profile only. [Qualification](results/random01-record740-split-full-v167/REPORT.md).
+RANDOM-01's selected 745 recipe has five paired seeds (+1.0914%, four gains and one tie). Fresh V1 qualifies the older 729 recipe only. RANDOM-02's 1,408 recipe has fresh validation at +10.17% versus matched max.
 
-**RANDOM-02:** Selected1408 and general1397 remain. Fresh02V1 qualifies1408 at+10.17% over matched max. The new general forecast radius4 run fails at step2/1016.576ms and remains in the evidence. No cause is inferred solely from that timing.
+RANDOM-03's 2,646 recipe has five positive paired seeds (+0.4221%). Fresh V3 yields 2,660 / 2,622 versus matched maxima 2,461 / 2,380: +9.109688% aggregate, below the 10% fresh milestone. All twelve fresh runs are independently audited. [Fresh V3](RANDOM03_FRESH_VALIDATION_V3.md).
 
-**RANDOM-03:** Selected2646 is exact and gains+0.4221% over five paired seeds. Frozen freshV3 gives2660/2622 versus matched maxima2461/2380: **+9.109688%**, below the10% fresh milestone. All12 fresh runs pass independent checks; both inputs remain excluded from tuning. [Fresh report](RANDOM03_FRESH_VALIDATION_V3.md).
+RANDOM-04 remains 115 tasks below the 2,914 yardstick and has no fresh qualification. Its former source166/source168 implementations and all startup failures are retained. The current source174 replacement changes runtime only. The preceding length0.25 recipe's five-pair +0.5714% gain is separate; length0.5 has not shown a paired mean gain over it.
 
-**RANDOM-04:** The selected maximum remains 2,799, 115 tasks below 2,914. Its selected implementation now uses source168, `R05_MATCH_SKIP_ZERO=1` and `R05_COMPACT_IDLE=1`: mean474.550/max664.721ms. Five contemporaneous off/on planner-seed pairs score2799/2771/2761/2761/2766 and match every complete trace field; optimized maximum across the five is669.091ms. A separate exact repetition peaks657.644ms. All runs pass independent replay and strict limits. The original source166 first-attained record and startup failures remain preserved; this is a runtime replacement, not a throughput increase. The preceding length0.25 recipe's five-pair gain remains separate; no new claim that length0.5 improves its average is made. All six new guidance layouts lose; retain layout15/one flip. No fresh04 qualification yet. [Runtime report](results/random12345-zero-update-split-full-v168/REPORT.md), [layout comparison](results/random04-chain-layout-split-full-v168/REPORT.md).
+RANDOM-05's 4,302 recipe still has only three valid terminal-credit comparison pairs (+1.0477%); its disabled-credit seed3 control failed at startup. The declared four-pair qualification remains incomplete, regardless of the new ten-seed candidate reliability results. Fresh V6 qualifies 4,175 only, NMS-only. The longest completed selected order is 1,986 steps, with initial orders still unfinished at 2,000; eventual maximum latency is censored.
 
-**RANDOM-05:** Selected4302 repeats exactly. Three valid pairs improve+1.0477%, but the disabled-credit seed3 control fails startup at1045.313ms; the full four-pair qualification is not achieved and no historical score substitutes for that failure. General2314 repeats and gains+3.4599% across four pairs. FreshV6 qualifies4175 only and is NMS-only. All92 chronological selected frontier/waiting rows remain audited. [Detailed history](../RANDOM05_PROGRESS.md).
+The source170 diagnosis is complete: exact 745/2,799 controls and all 1,600 suppression masks validate. RANDOM-01's suppressed loaded steps already exceed the physical deadline lower bound. RANDOM-04 has 119 opened unfinished orders, 21 within a five-action physical lower bound; this ignores traffic and is not a throughput recovery estimate. [Diagnosis](results/random14-triage-diagnostic-split-full-v170/REPORT.md).
 
-## Wrap-up and paused handoff
-
-The source168 all-five runtime comparison is complete: 18 independently audited runs, 16 historical exact comparisons and nine exact off/on pairs. Every declared search step remains; no throughput change is claimed. All 29 RANDOM-01 forecast cap/weight trials and eight RANDOM-04 layout trials are also complete and audited. Retain RANDOM-01 radius8/max32/weight1 and the current RANDOM-04 layout. Those earlier throughput trials are complete; the later reliability batches below are active.
-
-The source170 diagnostic is complete. Both full controls independently replay and match the selected745/2799trajectories in all six fields. All600/1000native suppression masks match the reconstruction; maxima113.104/665.535ms. RANDOM-01 has8opened orders unfinished, and all suppressed loaded robot-steps already exceed the physical deadline lower bound. RANDOM-04 has119opened orders unfinished,21within a five-action physical lower bound; the bound ignores traffic and is not a recovery estimate. No new throughput record, fresh qualification or inherent-ceiling claim follows. [Complete diagnosis](results/random14-triage-diagnostic-split-full-v170/REPORT.md). That diagnostic phase is complete; the later reliability work below remains active.
-
-On an explicit future resume, retain the human-selected priority on RANDOM-01/04 while keeping all five in scope. No inherent ceiling is established. Do not automatically resume merely because the qualification goal remains unmet.
-
-Current records, timestamps and sources are in [PILOT_PROGRESS.md](../PILOT_PROGRESS.md), [the density ledger](RANDOM_PROGRESS.md) and [the record manifest](random-frontiers.json). Operational continuation details are in [NEXT.md](NEXT.md).
-
-
-## Additional user-requested variability measurement
-
-Frozen planner seeds0..9 on each archived instance;23matching historical seed runs are reused and27missing seeds will run. Report sample SD (n-1), mean, best, n, failures, and comparisons with matchedmax(NMS,KK). Do not count exact repetitions as extra seeds or replace failed attempts. This measures development-profile seed variation, not fresh-input generalization. [Protocol](experiments/random12345-wrapup-seeds10-protocol.json).
-
-
-[Bounded reliability protocol](experiments/random345-reliability-ipo-protocol.json). The original seed protocol remains frozen; improved implementation validation will be a separate, predeclared batch.
-
-## Reliability repair before reporting
-
-The original frozen ten-seed evaluation is complete and independently audited:
-01/02 pass10/10,03/04 pass9/10,05 passes7/10. Every missing result is an explicit
-startup timeout, not a partial score. The original sample-SD report remains
-[archived](results/random12345-wrapup-seeds10-split-full/REPORT.md).
-
-IPO and explicit worker binding alone are insufficient: the separate full v171
-attempt has7entry timeouts and1allocation refusal. Exact SIMD Hungarian scans
-then reduce startup solve time04about356→211ms and05about358→172ms. A synchronous
-persistent Entry worker preserves the OpenMP team and thread-local workspace
-across the simulator's fresh caller threads. Full v173 still has three early
-timeouts, so reliability is not yet claimed. v174 tests dynamic scheduling of
-the same independent fixed work and passive barrier waiting. All fixed budgets,
-objectives, full horizons, strict deadlines and source/input/resource checks
-remain. No new throughput search is authorized. Finish reliability, sample SD,
-logs and scoped commit/push, then pause.
+[PILOT dashboard](../PILOT_PROGRESS.md), [density ledger](RANDOM_PROGRESS.md), [selected manifests](random-frontiers.json), [handoff](NEXT.md). Resume only on explicit user request.

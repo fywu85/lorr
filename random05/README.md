@@ -250,4 +250,10 @@ LNS islands dynamically; each island retains its own seeded search.
 Portable interprocedural optimization is available with `-DPILOT_IPO=ON`. GRID
 measurements also record `OMP_PROC_BIND=spread` and `OMP_PLACES=threads` inside
 the verified16physical-core/32worker allocation. Exact regression and prefix
-checks are complete; full-run reliability qualification is in progress.
+checks and full-run qualification are complete: ten valid full planner seeds per
+instance, 50,000 planning calls total, worst885.879ms and peak500.015MB RSS.
+RANDOM-05 additionally sets `OMP_WAIT_POLICY=PASSIVE` and `GOMP_SPINCOUNT=0`.
+See [the frozen statistics and runtime report](results/random45-reliability-dynamic-split-full-v174/REPORT.md).
+Selected runtime flags and exact binaries are in `random-frontiers.json`;
+source173 is retained for RANDOM-03 and source174 for RANDOM-04/05.
+All presets keep their original fixed budgets and explicit trick flags.

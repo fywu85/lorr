@@ -1,13 +1,13 @@
 {
-  "created_utc": "2026-09-21T03:55:05.162133+00:00",
+  "created_utc": "2026-09-22T08:18:22.650468+00:00",
   "units": "simulation steps, not wall-clock seconds",
   "completed_latency": "final-waypoint event time minus task release time",
   "unfinished_age": "run horizon minus task release time; eventual completion latency is censored",
   "unopened": "no first-waypoint event; assignment alone does not open a task",
   "initial_restricted_mean": "mean of completion time or horizon for step-zero orders; not uncensored eventual latency",
   "caveat": "Completed-only maxima exclude unfinished orders. Task release times after the initial cohort depend on throughput.",
-  "source_sha256": "19216c5eb9254d6ee72c2e716002e501ade6c7080b95ae0a29048ef3369af997",
-  "manifest_sha256": "f220cbd7bb25d931aacb144d673fab4e05421b779ba9e0f7b9acb8c0cc9f3285",
+  "source_sha256": "d346b52dc43712034a79c492a8f86566bc1d9abc5b1482bba1e2f2969fe9045c",
+  "manifest_sha256": "b18685d953352d0cb049390473de77fb48d41cdec4c033f90776ad97a82a65e1",
   "same_starts_horizon_and_task_stream": true,
   "runs": {
     "ours-four-cores": {
@@ -1480,6 +1480,52 @@
       "initial_still_unfinished": 130,
       "initial_still_unopened": 86,
       "initial_started_unfinished": 44,
+      "event_accounting_valid": true
+    },
+    "ours-32-workers-4302-runtime174": {
+      "result": "runs/random05/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed0/trick-random-05-reliability-dynamic-seed0/result.json",
+      "result_sha256": "9f8518145bd77e8c46806f8f28d12b70b2a95abac4cd9a1407f76c712067a1f0",
+      "horizon_steps": 2000,
+      "tasks_finished": 4302,
+      "tasks_revealed": 5502,
+      "completed_latency": {
+        "count": 4302,
+        "mean_steps": 352.26173872617386,
+        "p50_steps": 277,
+        "p95_steps": 957,
+        "p99_steps": 1636
+      },
+      "maximum_release_to_completion": {
+        "steps": 1986,
+        "task_id": 1016,
+        "released_at": 0,
+        "observed_at": 1986
+      },
+      "maximum_release_to_first_waypoint": {
+        "steps": 1993,
+        "task_id": 397,
+        "released_at": 0,
+        "observed_at": 1993
+      },
+      "oldest_unfinished": {
+        "steps": 2000,
+        "task_id": 1185,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "oldest_unopened": {
+        "steps": 2000,
+        "task_id": 1163,
+        "released_at": 0,
+        "observed_at": 2000
+      },
+      "unfinished_count": 1200,
+      "unopened_count": 577,
+      "initial_cohort_count": 1200,
+      "initial_restricted_mean_steps": 633.66,
+      "initial_still_unfinished": 146,
+      "initial_still_unopened": 110,
+      "initial_started_unfinished": 36,
       "event_accounting_valid": true
     }
   }

@@ -433,10 +433,9 @@
       "audit": "random05/results/random12345-auction-split-full-v157/audit.json"
     },
     "trick": {
-      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
-      "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json",
+      "source_commit": "8870903e3693583223cc13132d56785ce8465f76",
+      "evidence": "random05/results/random345-reliability-persistent-split-full-v173/trick-random-03-reliability-persistent-seed3/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
         "cores": 16,
         "smt": 2,
@@ -444,7 +443,6 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-03",
-        "name": "trick-random-03-progress-transfer-mixp25-span32",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -517,10 +515,16 @@
           "R05_WINDOW_HEURISTIC_WEIGHT": "1.2",
           "R05_MATCH_FEASIBLE": "1",
           "R05_TRIAGE_PROGRESS_MIX": ".25",
-          "R05_TRIAGE_PROGRESS_WINDOW": "32"
+          "R05_TRIAGE_PROGRESS_WINDOW": "32",
+          "OMP_PROC_BIND": "spread",
+          "OMP_PLACES": "threads",
+          "R05_MATCH_SIMD": "1",
+          "R05_PERSISTENT_WORKER": "1"
         },
-        "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v173/build/lifelong_random05",
+        "name": "trick-random-03-reliability-persistent-seed3",
+        "binary_sha256": "2574567beff6362bd6ec44885738d36c8b22b1b88bd8888e99ccddad962656e2",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v173/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json": "6055eabe6eb02b1ebe0208482f523e658348a1f565765d002992fd5528c96499",
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/maps/random-32-32-20.map": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
@@ -529,8 +533,26 @@
         }
       },
       "tasks": 2646,
-      "finished_utc": "2026-09-22T00:53:28.091236+00:00",
-      "audit": "random05/results/random1234-progress-transfer-split-full-v162/audit.json"
+      "finished_utc": "2026-09-22T07:40:33.103168+00:00",
+      "audit": "random05/results/random345-reliability-persistent-split-full-v173/audit.json",
+      "first_attained": {
+        "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+        "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json",
+        "tasks": 2646,
+        "finished_utc": "2026-09-22T00:53:28.091236+00:00",
+        "audit": "random05/results/random1234-progress-transfer-split-full-v162/audit.json"
+      },
+      "implementation_history": [
+        {
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json",
+          "tasks": 2646,
+          "finished_utc": "2026-09-22T00:53:28.091236+00:00",
+          "audit": "random05/results/random1234-progress-transfer-split-full-v162/audit.json"
+        }
+      ],
+      "selection_reason": "Exact runtime replacement; no throughput increase. Ten full planner seeds pass strict 1-second entries and independent replay. Original failures remain separate.",
+      "runtime_qualification": "random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md"
     },
     "nms32_tasks": 2359
   },
@@ -615,10 +637,9 @@
       "audit": "random05/results/random12345-face-cycles-split-full-v158/audit.json"
     },
     "trick": {
-      "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
-      "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed0/summary.json",
+      "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+      "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-04-reliability-dynamic-seed0/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v168/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json",
         "cores": 16,
         "smt": 2,
@@ -626,7 +647,6 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-04",
-        "name": "trick-random-04-zero-update-on-seed0",
         "env": {
           "R05_K": "8064",
           "R05_THREADS": "32",
@@ -696,10 +716,17 @@
           "R05_SCHED_CHAIN": "1",
           "R05_LENGTH_WEIGHT": "0.5",
           "R05_MATCH_SKIP_ZERO": "1",
-          "R05_COMPACT_IDLE": "1"
+          "R05_COMPACT_IDLE": "1",
+          "OMP_PROC_BIND": "spread",
+          "OMP_PLACES": "threads",
+          "R05_MATCH_SIMD": "1",
+          "R05_PERSISTENT_WORKER": "1",
+          "R05_DYNAMIC_WORK": "1"
         },
-        "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v168/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v174/build/lifelong_random05",
+        "name": "trick-random-04-reliability-dynamic-seed0",
+        "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v174/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-04.json": "ef81d9db98eb3679e5c4a7fc424f2d0f726d2a1fdfb564a2333aa0eae89faf37",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -709,8 +736,8 @@
         }
       },
       "tasks": 2799,
-      "finished_utc": "2026-09-22T05:33:23.330167+00:00",
-      "audit": "random05/results/random12345-zero-update-split-full-v168/audit.json",
+      "finished_utc": "2026-09-22T07:54:39.067931+00:00",
+      "audit": "random05/results/random45-reliability-dynamic-split-full-v174/audit.json",
       "first_attained": {
         "source_commit": "0bb92ceaece9a08a48465bfe94295f646659749a",
         "evidence": "random05/results/random04-chain-price-split-full-v166/trick-random-04-chain-price-lengthp5-seed0/summary.json",
@@ -718,8 +745,19 @@
         "finished_utc": "2026-09-22T04:26:21.345951+00:00",
         "audit": "random05/results/random04-chain-price-split-full-v166/audit.json"
       },
-      "selection_reason": "Equivalent implementation replacement, not a throughput increase: five same-source off/on planner-seed pairs and sixteen historical references reproduce complete traces; optimized RANDOM-04 maxima remain below670ms, plus a separate exact2799 repetition.",
-      "runtime_qualification": "random05/results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md"
+      "implementation_history": [
+        {
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed0/summary.json",
+          "tasks": 2799,
+          "finished_utc": "2026-09-22T05:33:23.330167+00:00",
+          "audit": "random05/results/random12345-zero-update-split-full-v168/audit.json",
+          "selection_reason": "Equivalent implementation replacement, not a throughput increase: five same-source off/on planner-seed pairs and sixteen historical references reproduce complete traces; optimized RANDOM-04 maxima remain below670ms, plus a separate exact2799 repetition.",
+          "runtime_qualification": "random05/results/random12345-zero-update-split-full-v168/RANDOM04_RUNTIME.md"
+        }
+      ],
+      "selection_reason": "Exact runtime replacement; no throughput increase. Ten full planner seeds pass strict 1-second entries and independent replay. Original failures remain separate.",
+      "runtime_qualification": "random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md"
     },
     "nms32_tasks": 2580
   },
@@ -802,10 +840,9 @@
       "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
     },
     "trick": {
-      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
-      "evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json",
+      "source_commit": "2d893f96e78d3fcc092c37a03a7b1888880b306e",
+      "evidence": "random05/results/random45-reliability-dynamic-split-full-v174/trick-random-05-reliability-dynamic-seed0/summary.json",
       "case": {
-        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json",
         "cores": 16,
         "smt": 2,
@@ -813,7 +850,6 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-05",
-        "name": "trick-random-05-terminal-pending-p5",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -875,10 +911,21 @@
           "R05_TRIAGE_PROGRESS_MIX": ".125",
           "R05_TRIAGE_PROGRESS_WINDOW": "32",
           "R05_FLOW_ITERS": "80",
-          "R05_TERMINAL_PENDING": ".5"
+          "R05_TERMINAL_PENDING": ".5",
+          "OMP_PROC_BIND": "spread",
+          "OMP_PLACES": "threads",
+          "R05_MATCH_SKIP_ZERO": "1",
+          "R05_COMPACT_IDLE": "1",
+          "R05_MATCH_SIMD": "1",
+          "R05_PERSISTENT_WORKER": "1",
+          "R05_DYNAMIC_WORK": "1",
+          "OMP_WAIT_POLICY": "PASSIVE",
+          "GOMP_SPINCOUNT": "0"
         },
-        "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
-        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v164/build/lifelong_random05",
+        "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v174/build/lifelong_random05",
+        "name": "trick-random-05-reliability-dynamic-seed0",
+        "binary_sha256": "903f7ee4e6d0f8c68c963d1233d35ffaf9c732d1fc9dec3a3c5d94d0bc7d69f5",
+        "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v174/build/lifelong_random05",
         "input_hashes": {
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-05.json": "7a3a05e58171a567832779378d48c07a1c25db4e7c58372593c0dd9ed428afb8",
           "/shared/share_mala/fw2449/lorr2024/random05/assets/upstream-random800.json": "fc1da24ca5497ac29920f6bc67e0f0f3ee1bdfa391c43f980cd561452b9e8827",
@@ -888,8 +935,26 @@
         }
       },
       "tasks": 4302,
-      "finished_utc": "2026-09-22T02:19:09.148099+00:00",
-      "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
+      "finished_utc": "2026-09-22T08:06:15.158769+00:00",
+      "audit": "random05/results/random45-reliability-dynamic-split-full-v174/audit.json",
+      "first_attained": {
+        "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+        "evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json",
+        "tasks": 4302,
+        "finished_utc": "2026-09-22T02:19:09.148099+00:00",
+        "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
+      },
+      "implementation_history": [
+        {
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json",
+          "tasks": 4302,
+          "finished_utc": "2026-09-22T02:19:09.148099+00:00",
+          "audit": "random05/results/random12345-terminal-pending-split-full-v164/audit.json"
+        }
+      ],
+      "selection_reason": "Exact runtime replacement; no throughput increase. Ten full planner seeds pass strict 1-second entries and independent replay. Original failures remain separate.",
+      "runtime_qualification": "random05/results/random45-reliability-dynamic-split-full-v174/REPORT.md"
     },
     "nms32_tasks": 3172
   }

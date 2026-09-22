@@ -5,6 +5,28 @@ Current selected records are745/1408/2646/2799/4302. Fresh validation qualifies
 specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
+## Final reliability and variability checkpoint (2026-09-22 08:16 UTC)
+
+**Paused at the user's request.** Best throughput is unchanged; exact runtime
+repairs complete ten successful full seeds per instance under strict 1-second
+entries and the 32 GB limit. Earlier failed attempts remain archived.
+
+| Instance | Mean ± sample SD (n=10) | Best | max(NMS, KK) | Best lead |
+|---|---:|---:|---:|---:|
+| RANDOM-01 | 738.7 ± 3.2 | 745 | 692 | +7.66% |
+| RANDOM-02 | 1,394.9 ± 6.0 | 1,408 | 1,256 | +12.10% |
+| RANDOM-03 | 2,616.5 ± 14.7 | 2,646 | 2,359 | +12.17% |
+| RANDOM-04 | 2,773.2 ± 15.1 | 2,799 | 2,649 | +5.66% |
+| RANDOM-05 | 4,230.1 ± 46.5 | 4,302 | 3,172 | +35.62% |
+
+Worst entry across the 50 selected full runs: **885.879 ms**; peak RSS:
+**500.015 MB**. SD is sample SD across planner seeds on fixed archived inputs,
+not fresh task/start variability. Selected presets require `--trick RANDOM-0N`.
+[Full statistics, runtime evidence and retained failures](results/random45-reliability-dynamic-split-full-v174/REPORT.md).
+
+Current runtime sources are173 for RANDOM-03 and174 for RANDOM-04/05.
+The first-attained sources and timestamps are retained in the record manifest.
+
 ## Comparison rules
 
 - Full archived horizons600/600/800/1000/2000;32 workers on16 physical EPYC9354 cores,1s entry,30s preprocessing,32GB guard.
