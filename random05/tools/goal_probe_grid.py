@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--trace',type=Path)
     parser.add_argument('--binary',type=Path)
     parser.add_argument('--purpose',default='Read-only guided move cost classification; not a benchmark score.')
+    parser.add_argument('--hosts',default='research35|research36|research37|research39|research46|research47|research48|research50|research51|research52|research55|research56')
     args=parser.parse_args();out=args.output.resolve()
     if args.action=='submit':
         if not all([args.case,args.trace,args.binary]):parser.error('submit needs case, trace and binary')
@@ -45,7 +46,7 @@ def main():
                   purpose=args.purpose)
         write(out/'probe-spec.json',spec)
         script=out/'job.sh';script.write_text('#!/bin/bash\nset -eu\nexec '+' '.join(shlex.quote(x) for x in ['/usr/bin/python3',str(out/'runner.py'),'execute','--output',str(out)])+'\n')
-        hosts='research32|research33|research35|research36|research37|research39|research41|research46|research47|research48|research49|research50|research51|research52|research54|research55|research56'.split('|')
+        hosts=args.hosts.split('|')
         command=['/opt/n1ge/bin/lx24-amd64/qsub','-terse','-w','n','-cwd','-q',','.join('debian.q@'+h+'*' for h in hosts),
                  '-pe','threaded','32','-binding','linear:16','-l','h_rt=00:30:00,h_vmem=1G,m_topology_inuse=*'+('CTT*'*16),
                  '-m','n','-N','r05_goal_probe','-j','y','-o',str(out/'scheduler.log'),'-S','/bin/bash',str(script)]
