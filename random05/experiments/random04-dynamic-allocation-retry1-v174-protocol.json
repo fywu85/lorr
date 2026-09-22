@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-09-22T07:49:27.879274+00:00",
+  "reason": "Only preflight core-binding refusals; no solver was started in any original attempt. Same exact binary, inputs, seed, work and limits. One retry per original refusal, all originals retained.",
+  "failed_allocation_hosts": [
+    "research35"
+  ],
+  "cases": "random05/experiments/random04-dynamic-allocation-retry1-v174.json",
+  "retries": [
+    {
+      "original": "trick-random-04-reliability-dynamic-seed7",
+      "retry": "trick-random-04-reliability-dynamic-seed7-allocation-retry1",
+      "seed": "7",
+      "instance": "RANDOM-04",
+      "refusal": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "host": "research35"
+    },
+    {
+      "original": "trick-random-04-reliability-dynamic-seed8",
+      "retry": "trick-random-04-reliability-dynamic-seed8-allocation-retry1",
+      "seed": "8",
+      "instance": "RANDOM-04",
+      "refusal": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "host": "research35"
+    },
+    {
+      "original": "trick-random-04-reliability-dynamic-seed9",
+      "retry": "trick-random-04-reliability-dynamic-seed9-allocation-retry1",
+      "seed": "9",
+      "instance": "RANDOM-04",
+      "refusal": {
+        "kind": "core_binding",
+        "expected": 16,
+        "observed": 64
+      },
+      "host": "research35"
+    }
+  ]
+}
