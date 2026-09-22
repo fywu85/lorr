@@ -1917,3 +1917,29 @@ proposals, plus selected04/05 with15proposals and serial five-proposal controls.
 LOCAL=proposals*B (B18general/selected05;B10selected04). The nine declared trace
 comparisons cover seven unchanged controls and two serial/parallel local paths.
 No throughput or runtime gain is claimed before full audited measurements.
+
+
+## Completed flow-model trial (2026-09-22 02:18 UTC)
+
+All10source162full runs pass independent replay and strict limits. Both controls
+match all six prior trace fields. For exponent3/2/4/coefficient.5/2, RANDOM-04
+scores2782/2696/2558/2714/2319 and RANDOM-05scores4254/4059/4030/4007/3518.
+Every alternative loses. Keep default exponent3/coefficient1, including the
+previously qualified80field updates on05. Full report is
+results/random45-flow-model-split-full-v162/REPORT.md. No selected best changes.
+
+
+## Frozen selected RANDOM-05 terminal-credit qualification
+
+The completed source164 selected trials give4254/4302/4250 at credit0/.5/1.
+Credit.5 adds48tasks to the source1624254recipe without changing fixed search
+work. The selecting seed is0; full2000steps, mean582.723/max830.909ms,
+RSS491.999MB. Its headline margin is35.624%over matched max(NMS,KK)=3172.
+Independent replay/promotion is performed separately; no paired or fresh gain
+is assumed from this selected record.
+
+Freeze seven strict full qualification cases: repeatcredit.5/seed0 exactly,
+then credit0/.5 paired plannerseeds1/2/3. The declared four-seed aggregate uses
+the originalsource164seed0pair. Every timeout and lower result is retained.
+Current local-refinement trials keep their already-frozen4254parent and
+terminalcredit0; do not change running experiments after observing this result.
