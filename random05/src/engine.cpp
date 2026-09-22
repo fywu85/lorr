@@ -415,6 +415,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(compact_idle<0 || compact_idle>1)
         throw std::invalid_argument("compact idle matching requires a boolean value");
     c.compact_idle=compact_idle;
+    const int match_skip_zero=integer("R05_MATCH_SKIP_ZERO",0);
+    if(match_skip_zero<0 || match_skip_zero>1)
+        throw std::invalid_argument("zero matching update elision requires a boolean value");
+    c.match_skip_zero=match_skip_zero;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     const int match_feasible=integer("R05_MATCH_FEASIBLE",0);
     if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
@@ -1146,7 +1150,7 @@ void Engine::record_travel(const std::vector<Action>& actions) {
 
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
     int dummy_columns,bool fast_dummy_prefix,bool prefer_free_ties,uint64_t* augment_scans,
-    int optional_columns,bool compact_optional) {
+    int optional_columns,bool compact_optional,bool skip_zero_updates,uint64_t* zero_updates) {
     if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
         throw std::invalid_argument("invalid rectangular matching problem");
     if(optional_columns<0 || optional_columns>nc-dummy_columns)
@@ -1157,6 +1161,7 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
         if(matrix[size_t(row)*nc+j-1]!=matrix[size_t(row)*nc+optional_start-1])
             throw std::invalid_argument("optional matching columns must be identical");
     if(augment_scans)*augment_scans=0;
+    if(zero_updates)*zero_updates=0;
     std::vector<double> u(nr+1),v(nc+1);
     std::vector<int> owner(nc+1),previous(nc+1);
     int first_row=1;
@@ -1221,8 +1226,15 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
             };
             // Ignored free columns cannot be visited; their distances are reset
             // before they could become a representative in a later augmentation.
-            if(compact)for(int j:scan_columns)update(j);
-            else for(int j=0;j<=nc;++j)update(j);
+            if(zero_updates && delta==0)++*zero_updates;
+            // A zero dual increment cannot change any numeric comparison or
+            // predecessor. Keep all column relaxations and stable tie choices;
+            // elide only this whole-array add/subtract-zero bookkeeping pass.
+            // Both signs of zero compare identically in the finite cost domain.
+            if(!skip_zero_updates || delta!=0) {
+                if(compact)for(int j:scan_columns)update(j);
+                else for(int j=0;j<=nc;++j)update(j);
+            }
             column=next_column;
         } while(owner[column]);
         do {int prev=previous[column];owner[column]=owner[prev];column=prev;}while(column);
@@ -1499,7 +1511,15 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
             selected=auction_assignment(matrix,matching_rows,columns,cfg.auction_epsilon,
                 uint64_t(matching_rows)*cfg.auction_bids_per_row,dummy_columns,optional_columns,&auction_bids);
         const bool auction_fallback=cfg.auction_epsilon>0 && selected.empty();
-        if(selected.empty())selected=hungarian_assignment(matrix,matching_rows,columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
+        uint64_t augment_scans=0,zero_updates=0;
+        const bool profile_match=cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0);
+        if(selected.empty()) {
+            selected=hungarian_assignment(matrix,matching_rows,columns,dummy_columns,cfg.fast_admission,
+                cfg.match_free_ties,profile_match?&augment_scans:nullptr,optional_columns,cfg.compact_idle,
+                cfg.match_skip_zero,profile_match?&zero_updates:nullptr);
+            if(profile_match)std::fprintf(stderr,"R05_MATCH_DUAL t=%d scans=%llu zero_updates=%llu skip_zero=%d\n",
+                env->curr_timestep,(unsigned long long)augment_scans,(unsigned long long)zero_updates,int(cfg.match_skip_zero));
+        }
         if(cfg.profile && cfg.auction_epsilon>0 && (env->curr_timestep<5 || env->curr_timestep%100==0))
             std::fprintf(stderr,"R05_AUCTION_PROFILE t=%d epsilon=%.6f bids=%llu fallback=%d\n",
                 env->curr_timestep,cfg.auction_epsilon,(unsigned long long)auction_bids,int(auction_fallback));

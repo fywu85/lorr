@@ -2222,3 +2222,19 @@ from paired behavior and the original noncompressed1046.301msfailure. Freeze
 three more pairedseeds2/3/4for current0.25/0.5with compression enabled, retaining
 all strict failures. Full runtime-batch audit/exactproofs must finish before
 qualification claims. Coupled higher idle prices are negative on the testedpair.
+
+
+## 2026-09-22: exact zero-increment matching update elision (source168)
+
+The RANDOM-04 startup audit attributes roughly 436–533 ms to the serial exact
+assignment solve in failed runs. Its Hungarian loop updates every slack and
+visited dual even when the chosen increment is zero. `R05_MATCH_SKIP_ZERO=1`
+skips only that add/subtract-zero pass. All augmentations, relaxations,
+predecessors, column order and tie rules are unchanged; default0 retains the
+previous implementation. The optimization has no map or horizon dependence.
+Sampled profiling records augmentations and zero increments for diagnosis.
+
+Regression compares exact assignments and augmentation counts on signed-zero,
+negative, tied, nonintegral, rectangular and capacitated matrices, plus full
+turnover across workers, caches and checkpoints. Build and full-run runtime
+comparisons are pending. No speed or throughput benefit is claimed yet.

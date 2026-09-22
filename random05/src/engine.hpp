@@ -96,7 +96,7 @@ struct Config {
     float match_power=1;
     int initial_length_steps=250, active_task_cap=0, active_cap_steps=0, admission_price_steps=0;
     int initial_active_cap=0, initial_active_steps=0;
-    bool fast_admission=false, active_travel_rate=false, idle_align=false, match_free_ties=false, compact_idle=false, match_feasible=false;
+    bool fast_admission=false, active_travel_rate=false, idle_align=false, match_free_ties=false, compact_idle=false, match_skip_zero=false, match_feasible=false;
     bool matching=true, loops=true, deadends=true, guided_matching=false, intent_rotation=true;
     int flow_seed=1, flow_iterations=20, flow_flips=0, flow_flip_seed=1;
     int flow_extra_flips=0, flow_extra_flip_seed=1, field_jitter_seed=0;
@@ -129,7 +129,8 @@ struct Config {
 };
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int rows,int columns,
                                       int dummy_columns=0,bool fast_dummy_prefix=false,bool prefer_free_ties=false,uint64_t* augment_scans=nullptr,
-                                      int optional_columns=0,bool compact_optional=false);
+                                      int optional_columns=0,bool compact_optional=false,bool skip_zero_updates=false,
+                                      uint64_t* zero_updates=nullptr);
 // Empty on an exhausted fixed bid budget; callers retain a complete fallback.
 std::vector<int> auction_assignment(const std::vector<float>& matrix,int rows,int columns,
     double epsilon,uint64_t bid_limit,int dummy_columns=0,int optional_columns=0,uint64_t* bids=nullptr);
