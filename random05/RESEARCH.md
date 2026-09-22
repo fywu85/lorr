@@ -2172,3 +2172,25 @@ trick optimizes throughput without a fairness claim; waiting evidence is retaine
 No held-out input is involved. Protocol: experiments/random04-chain-price-v166-protocol.json.
 
 Source167build6074498c passes the full63.70-second regression; compiled/test sources and binary0f27448c are verified. Freeze20full forecast-assignment comparisons: eight priority01cases (pairedseeds1/0, hops0/2/4/8), ten all-five generalcases (off/hops4), and two selected03transfercases. Eight disabled controls must match complete traces. Selected02is excluded because it uses horizon pricing and an optional idle price; selected04/05have active admission. Their current constraints remain unchanged. General mechanism; selected presets retain explicit trick gates. No measured throughput gain yet. Protocol: experiments/random12345-match-forecast-v167-protocol.json.
+
+## Trick: qualify sparse forecast740 and restore dense matching headroom
+
+Source167forecast hops8 gives739/740 on selected01seeds1/0 against739/736;
+hops2 gives737/733 andhops4 gives736/737. General01loses727to721. The740
+run passes full replay and strict checks (mean72.242/max115.926ms). Freeze its
+exact seed0 repeat and paired2/3/4, preserving the original0/1pairs and four
+full-trace controls. No broad or fresh-input gain is claimed.
+
+Selected04whole-chain coefficient0.5 scores2799 onseed0 but peaks984.795ms;
+seed1 fails atstep0/1046.301ms, including630.108ms assignment. Keep thatfailure.
+Coefficient1 with the unchanged optional idle price32 scores709 on both seeds,
+consistent with an admission threshold interaction; this is not yet a causal
+attribution. Freeze an exact2799repeat and eight two-seed tests of existing exact
+optional-column compression with length/idle prices(.25,32),(.5,32),(.5,64),
+(1,128). The fixed active cap remains560. Four references require exact complete
+trajectories. New constrained settings remain explicit RANDOM-04 tricks. A
+successful selected run does not make the timeout-bearing recipe robust.
+
+The all-five forecast batch also retains a general02step2timeout/1016.576ms.
+Only one forecast row was present at that step; the timing trace does not prove
+that forecast matching caused the overrun. No failed run is silently replaced.
