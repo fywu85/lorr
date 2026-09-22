@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-09-22T02:44:12.860214+00:00",
+  "checked_utc": "2026-09-22T03:08:03.442173+00:00",
   "source": {
     "commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
     "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
@@ -94,6 +94,711 @@
     {
       "instance": "RANDOM-05",
       "profile": "trick",
+      "name": "trick-random-05-terminal-creditp5-seed0",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T02:52:50.940465+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed0/summary.json",
+      "peak_rss_bytes": 492351488,
+      "latency_seconds": {
+        "mean": 0.5931172412934992,
+        "max": 0.873343855
+      },
+      "tasks": 4302,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed0/trick-random-05-terminal-creditp5-seed0/result.json",
+        "result_sha256": "684392d68ce565c1993396dce4edc049f30d1c2aae600f1cc03563a18aaf1633",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4302,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "C": 6775,
+            "W": 22069,
+            "R": 10394,
+            "F": 18210
+          },
+          "loaded": {
+            "R": 218023,
+            "W": 485954,
+            "F": 447015,
+            "C": 151560
+          },
+          "idle": {
+            "W": 124365,
+            "C": 21153,
+            "R": 35350,
+            "F": 59132
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "C": 5740,
+              "W": 17507,
+              "F": 15172,
+              "R": 8822
+            },
+            "loaded": {
+              "R": 201948,
+              "W": 440565,
+              "F": 416845,
+              "C": 141017
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "W": 4562,
+              "F": 3038,
+              "C": 1035,
+              "R": 1572
+            },
+            "loaded": {
+              "C": 10543,
+              "F": 30170,
+              "W": 45389,
+              "R": 16075
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 200923,
+        "completed_loaded_detour_cells": 215922,
+        "completed_loaded_mean_steps": 279.0271966527197,
+        "completed_chain_lengths": {
+          "2": 1312,
+          "3": 1246,
+          "4": 1059,
+          "5": 685
+        },
+        "unopened_reassignments": 4599,
+        "task_starts": 4925,
+        "waiting_streaks": {
+          "count": 313935,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 236
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed0/trick-random-05-terminal-creditp5-seed0/result.json",
+        "result_sha256": "684392d68ce565c1993396dce4edc049f30d1c2aae600f1cc03563a18aaf1633",
+        "horizon_steps": 2000,
+        "tasks_finished": 4302,
+        "tasks_revealed": 5502,
+        "completed_latency": {
+          "count": 4302,
+          "mean_steps": 352.26173872617386,
+          "p50_steps": 277,
+          "p95_steps": 957,
+          "p99_steps": 1636
+        },
+        "maximum_release_to_completion": {
+          "steps": 1986,
+          "task_id": 1016,
+          "released_at": 0,
+          "observed_at": 1986
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1993,
+          "task_id": 397,
+          "released_at": 0,
+          "observed_at": 1993
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1163,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 577,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 633.66,
+        "initial_still_unfinished": 146,
+        "initial_still_unopened": 110,
+        "initial_started_unfinished": 36,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-terminal-credit0-seed1",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T02:56:28.125791+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed1/summary.json",
+      "peak_rss_bytes": 489234432,
+      "latency_seconds": {
+        "mean": 0.5766765473035004,
+        "max": 0.807498211
+      },
+      "tasks": 4189,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed1/trick-random-05-terminal-credit0-seed1/result.json",
+        "result_sha256": "41c7745d1ac95f30f1e7e6da6fedbb08d7ae2e0f8f87c7916add94b36cf1301f",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4189,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "W": 21874,
+            "R": 10819,
+            "C": 7011,
+            "F": 18289
+          },
+          "loaded": {
+            "W": 486544,
+            "C": 153237,
+            "F": 443145,
+            "R": 219081
+          },
+          "idle": {
+            "W": 123356,
+            "R": 35201,
+            "C": 21627,
+            "F": 59816
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 16740,
+              "F": 14780,
+              "R": 8789,
+              "C": 5692
+            },
+            "loaded": {
+              "W": 438693,
+              "F": 411738,
+              "C": 142334,
+              "R": 202241
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 1319,
+              "F": 3509,
+              "R": 2030,
+              "W": 5134
+            },
+            "loaded": {
+              "R": 16840,
+              "F": 31407,
+              "C": 10903,
+              "W": 47851
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 194478,
+        "completed_loaded_detour_cells": 217260,
+        "completed_loaded_mean_steps": 285.2723800429697,
+        "completed_chain_lengths": {
+          "2": 1287,
+          "3": 1217,
+          "4": 1035,
+          "5": 650
+        },
+        "unopened_reassignments": 4791,
+        "task_starts": 4816,
+        "waiting_streaks": {
+          "count": 313287,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 406
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed1/trick-random-05-terminal-credit0-seed1/result.json",
+        "result_sha256": "41c7745d1ac95f30f1e7e6da6fedbb08d7ae2e0f8f87c7916add94b36cf1301f",
+        "horizon_steps": 2000,
+        "tasks_finished": 4189,
+        "tasks_revealed": 5389,
+        "completed_latency": {
+          "count": 4189,
+          "mean_steps": 360.0181427548341,
+          "p50_steps": 279,
+          "p95_steps": 1007,
+          "p99_steps": 1634
+        },
+        "maximum_release_to_completion": {
+          "steps": 1990,
+          "task_id": 117,
+          "released_at": 0,
+          "observed_at": 1990
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1997,
+          "task_id": 373,
+          "released_at": 0,
+          "observed_at": 1997
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1163,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 573,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 646.9791666666666,
+        "initial_still_unfinished": 148,
+        "initial_still_unopened": 111,
+        "initial_started_unfinished": 37,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-terminal-creditp5-seed1",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T02:58:53.098880+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed1/summary.json",
+      "peak_rss_bytes": 491810816,
+      "latency_seconds": {
+        "mean": 0.6437939693705004,
+        "max": 0.956058191
+      },
+      "tasks": 4250,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed1/trick-random-05-terminal-creditp5-seed1/result.json",
+        "result_sha256": "a7b0ac173b976b8e41deaf44e7abd3eb6d24c8945264e9d65dc7e580fb1da660",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4250,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "R": 10505,
+            "W": 22190,
+            "C": 6961,
+            "F": 18688
+          },
+          "loaded": {
+            "C": 152480,
+            "W": 485678,
+            "F": 445320,
+            "R": 218178
+          },
+          "idle": {
+            "R": 35034,
+            "W": 122921,
+            "C": 21609,
+            "F": 60436
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "R": 8993,
+              "W": 17706,
+              "F": 15499,
+              "C": 5870
+            },
+            "loaded": {
+              "C": 141699,
+              "W": 439665,
+              "F": 414747,
+              "R": 201787
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "C": 1091,
+              "W": 4484,
+              "F": 3189,
+              "R": 1512
+            },
+            "loaded": {
+              "R": 16391,
+              "F": 30573,
+              "W": 46013,
+              "C": 10781
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 197919,
+        "completed_loaded_detour_cells": 216828,
+        "completed_loaded_mean_steps": 281.85835294117646,
+        "completed_chain_lengths": {
+          "2": 1307,
+          "3": 1226,
+          "4": 1046,
+          "5": 671
+        },
+        "unopened_reassignments": 4815,
+        "task_starts": 4883,
+        "waiting_streaks": {
+          "count": 313954,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 378
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed1/trick-random-05-terminal-creditp5-seed1/result.json",
+        "result_sha256": "a7b0ac173b976b8e41deaf44e7abd3eb6d24c8945264e9d65dc7e580fb1da660",
+        "horizon_steps": 2000,
+        "tasks_finished": 4250,
+        "tasks_revealed": 5450,
+        "completed_latency": {
+          "count": 4250,
+          "mean_steps": 356.7491764705882,
+          "p50_steps": 277,
+          "p95_steps": 978,
+          "p99_steps": 1666
+        },
+        "maximum_release_to_completion": {
+          "steps": 1978,
+          "task_id": 503,
+          "released_at": 0,
+          "observed_at": 1978
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1999,
+          "task_id": 223,
+          "released_at": 0,
+          "observed_at": 1999
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 567,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 639.9308333333333,
+        "initial_still_unfinished": 148,
+        "initial_still_unopened": 112,
+        "initial_started_unfinished": 36,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-terminal-credit0-seed2",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T02:57:46.307755+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed2/summary.json",
+      "peak_rss_bytes": 489242624,
+      "latency_seconds": {
+        "mean": 0.555952175093,
+        "max": 0.809044841
+      },
+      "tasks": 4252,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed2/trick-random-05-terminal-credit0-seed2/result.json",
+        "result_sha256": "ad5e6181d7b75e3ccbe8272b6cd8e98a0fa018aa722ae8002fb2112531bc55a4",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4252,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "W": 22020,
+            "R": 10410,
+            "C": 6820,
+            "F": 18155
+          },
+          "loaded": {
+            "W": 483630,
+            "F": 448135,
+            "R": 218486,
+            "C": 152344
+          },
+          "idle": {
+            "W": 124489,
+            "R": 34785,
+            "C": 21332,
+            "F": 59394
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 17640,
+              "F": 15065,
+              "R": 8894,
+              "C": 5771
+            },
+            "loaded": {
+              "W": 438487,
+              "R": 202645,
+              "C": 141815,
+              "F": 417961
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 1516,
+              "W": 4380,
+              "F": 3090,
+              "C": 1049
+            },
+            "loaded": {
+              "W": 45143,
+              "R": 15841,
+              "F": 30174,
+              "C": 10529
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 198121,
+        "completed_loaded_detour_cells": 219840,
+        "completed_loaded_mean_steps": 282.43367826904984,
+        "completed_chain_lengths": {
+          "2": 1304,
+          "3": 1232,
+          "4": 1049,
+          "5": 667
+        },
+        "unopened_reassignments": 4664,
+        "task_starts": 4886,
+        "waiting_streaks": {
+          "count": 312798,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 270
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed2/trick-random-05-terminal-credit0-seed2/result.json",
+        "result_sha256": "ad5e6181d7b75e3ccbe8272b6cd8e98a0fa018aa722ae8002fb2112531bc55a4",
+        "horizon_steps": 2000,
+        "tasks_finished": 4252,
+        "tasks_revealed": 5452,
+        "completed_latency": {
+          "count": 4252,
+          "mean_steps": 358.20037629350895,
+          "p50_steps": 278,
+          "p95_steps": 988,
+          "p99_steps": 1623
+        },
+        "maximum_release_to_completion": {
+          "steps": 1971,
+          "task_id": 658,
+          "released_at": 0,
+          "observed_at": 1971
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1991,
+          "task_id": 223,
+          "released_at": 0,
+          "observed_at": 1991
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 566,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 642.2125,
+        "initial_still_unfinished": 149,
+        "initial_still_unopened": 113,
+        "initial_started_unfinished": 36,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-terminal-creditp5-seed2",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T03:00:14.934781+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed2/summary.json",
+      "peak_rss_bytes": 491769856,
+      "latency_seconds": {
+        "mean": 0.5752007086845009,
+        "max": 0.806959311
+      },
+      "tasks": 4276,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed2/trick-random-05-terminal-creditp5-seed2/result.json",
+        "result_sha256": "63cf48d51eeb3b32683d7b6f3862c03c77e9b0e8c81c7e848e52e07f3ed2bb72",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4276,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "W": 21862,
+            "R": 10461,
+            "C": 7039,
+            "F": 18116
+          },
+          "loaded": {
+            "W": 484906,
+            "F": 447091,
+            "R": 218840,
+            "C": 151685
+          },
+          "idle": {
+            "R": 35166,
+            "W": 125140,
+            "C": 21287,
+            "F": 58407
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "W": 17136,
+              "F": 15019,
+              "R": 8798,
+              "C": 5919
+            },
+            "loaded": {
+              "W": 436657,
+              "C": 140823,
+              "R": 201833,
+              "F": 415128
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "R": 1663,
+              "F": 3097,
+              "W": 4726,
+              "C": 1120
+            },
+            "loaded": {
+              "F": 31963,
+              "C": 10862,
+              "W": 48249,
+              "R": 17007
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 199402,
+        "completed_loaded_detour_cells": 215726,
+        "completed_loaded_mean_steps": 279.3360617399439,
+        "completed_chain_lengths": {
+          "2": 1309,
+          "3": 1242,
+          "4": 1050,
+          "5": 675
+        },
+        "unopened_reassignments": 4845,
+        "task_starts": 4899,
+        "waiting_streaks": {
+          "count": 313003,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 255
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed2/trick-random-05-terminal-creditp5-seed2/result.json",
+        "result_sha256": "63cf48d51eeb3b32683d7b6f3862c03c77e9b0e8c81c7e848e52e07f3ed2bb72",
+        "horizon_steps": 2000,
+        "tasks_finished": 4276,
+        "tasks_revealed": 5476,
+        "completed_latency": {
+          "count": 4276,
+          "mean_steps": 353.10453695042094,
+          "p50_steps": 272,
+          "p95_steps": 974,
+          "p99_steps": 1645
+        },
+        "maximum_release_to_completion": {
+          "steps": 1990,
+          "task_id": 144,
+          "released_at": 0,
+          "observed_at": 1990
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1986,
+          "task_id": 223,
+          "released_at": 0,
+          "observed_at": 1986
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 577,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 638.2966666666666,
+        "initial_still_unfinished": 150,
+        "initial_still_unopened": 112,
+        "initial_started_unfinished": 38,
+        "event_accounting_valid": true
+      }
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
       "name": "trick-random-05-terminal-credit0-seed3",
       "valid": false,
       "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
@@ -104,16 +809,150 @@
       "latency_seconds": null,
       "result": null,
       "note": "Original unsuccessful attempt retained; not a frontier candidate."
+    },
+    {
+      "instance": "RANDOM-05",
+      "profile": "trick",
+      "name": "trick-random-05-terminal-creditp5-seed3",
+      "valid": true,
+      "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+      "finished_utc": "2026-09-22T03:01:14.509259+00:00",
+      "exit": 0,
+      "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed3/summary.json",
+      "peak_rss_bytes": 489660416,
+      "latency_seconds": {
+        "mean": 0.5848873130479999,
+        "max": 0.818943001
+      },
+      "tasks": 4224,
+      "replay": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed3/trick-random-05-terminal-creditp5-seed3/result.json",
+        "result_sha256": "38d798be8e4766c65445ea4a049da127dcef6bcbb8b21fd9f73cdddc015d9888",
+        "map_sha256": "8c5a83498ab92a2579aeef91c5f42d9ecf9019ef038cf98e623061a15beb6f56",
+        "tasks": 4224,
+        "steps": 2000,
+        "agents": 800,
+        "robot_steps": 1600000,
+        "phases": {
+          "unopened": {
+            "C": 6873,
+            "R": 10525,
+            "W": 22495,
+            "F": 18147
+          },
+          "loaded": {
+            "R": 218595,
+            "C": 152820,
+            "W": 484136,
+            "F": 446409
+          },
+          "idle": {
+            "R": 34958,
+            "W": 122854,
+            "C": 21765,
+            "F": 60423
+          }
+        },
+        "work_by_final_status": {
+          "completed": {
+            "unopened": {
+              "C": 5743,
+              "R": 8882,
+              "W": 17227,
+              "F": 14829
+            },
+            "loaded": {
+              "R": 202130,
+              "W": 437043,
+              "F": 415805,
+              "C": 142235
+            }
+          },
+          "unfinished": {
+            "unopened": {
+              "F": 3318,
+              "W": 5268,
+              "C": 1130,
+              "R": 1643
+            },
+            "loaded": {
+              "W": 47093,
+              "F": 30604,
+              "C": 10585,
+              "R": 16465
+            }
+          }
+        },
+        "completed_loaded_lower_bound_cells": 196747,
+        "completed_loaded_detour_cells": 219058,
+        "completed_loaded_mean_steps": 283.43110795454544,
+        "completed_chain_lengths": {
+          "2": 1295,
+          "3": 1227,
+          "4": 1034,
+          "5": 668
+        },
+        "unopened_reassignments": 4625,
+        "task_starts": 4852,
+        "waiting_streaks": {
+          "count": 313067,
+          "p50": 1,
+          "p90": 4,
+          "p99": 11,
+          "maximum": 306
+        },
+        "replay_valid": true,
+        "caveat": "Work attribution is observational; different policies complete different task sets. Unfinished work is not a recoverable-throughput estimate."
+      },
+      "waiting": {
+        "result": "/shared/share_mala/fw2449/lorr2024/runs/random05/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed3/trick-random-05-terminal-creditp5-seed3/result.json",
+        "result_sha256": "38d798be8e4766c65445ea4a049da127dcef6bcbb8b21fd9f73cdddc015d9888",
+        "horizon_steps": 2000,
+        "tasks_finished": 4224,
+        "tasks_revealed": 5424,
+        "completed_latency": {
+          "count": 4224,
+          "mean_steps": 359.32054924242425,
+          "p50_steps": 280,
+          "p95_steps": 1012,
+          "p99_steps": 1677
+        },
+        "maximum_release_to_completion": {
+          "steps": 1987,
+          "task_id": 144,
+          "released_at": 0,
+          "observed_at": 1987
+        },
+        "maximum_release_to_first_waypoint": {
+          "steps": 1943,
+          "task_id": 674,
+          "released_at": 0,
+          "observed_at": 1943
+        },
+        "oldest_unfinished": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "oldest_unopened": {
+          "steps": 2000,
+          "task_id": 1185,
+          "released_at": 0,
+          "observed_at": 2000
+        },
+        "unfinished_count": 1200,
+        "unopened_count": 572,
+        "initial_cohort_count": 1200,
+        "initial_restricted_mean_steps": 641.4308333333333,
+        "initial_still_unfinished": 146,
+        "initial_still_unopened": 116,
+        "initial_started_unfinished": 30,
+        "event_accounting_valid": true
+      }
     }
   ],
-  "pending": [
-    "trick-random-05-terminal-creditp5-seed0",
-    "trick-random-05-terminal-credit0-seed1",
-    "trick-random-05-terminal-creditp5-seed1",
-    "trick-random-05-terminal-credit0-seed2",
-    "trick-random-05-terminal-creditp5-seed2",
-    "trick-random-05-terminal-creditp5-seed3"
-  ],
-  "complete": false,
+  "pending": [],
+  "complete": true,
   "caveat": "Development comparisons on one archived layout across densities; no independent task/start or geometry validation."
 }

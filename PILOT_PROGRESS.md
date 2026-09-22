@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 02:48 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 03:19 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -12,6 +12,9 @@ throughput is primary, with order waiting times tracked as a secondary metric.
 
 **Active objective:** maximize verified throughput across all five RANDOM instances.
 [Full goal and constraints](random05/ACTIVE_GOAL.md). RANDOM-03/04 are milestones within this campaign.
+
+**Current development priority: RANDOM-01 and RANDOM-04**, following the latest user steering.
+All five remain in scope; neither priority instance has a demonstrated throughput ceiling.
 
 **Current qualification milestones:** RANDOM-03 at least **2,595** tasks and RANDOM-04
 at least **2,914**, each 10% above matched max(NMS,KK), with robust subsecond runtime.
@@ -230,10 +233,14 @@ Selectingseed0is included; no fresh-input qualification is claimed.
 The new4,302 selected record adds committed-motion terminal credit0.5:
 mean582.723/max830.909ms,RSS491.999MB. Full replay passes and its4254
 disabled control is six-field exact. This is+35.62%over matched max3172.
-Exact repetition and further paired planner seeds are pending. One
-disabled-credit seed3 control failed at step0/1045.313ms; retain the
-failure and make no complete four-pair strict-valid qualification claim.
-Separate smaller fixed startup budgets are being tested.
+The exact repeat matches all six trace fields. Candidate seeds0/1/2/3
+score4302/4250/4276/4224. The three valid paired comparisons improve
+1.0477% in aggregate, including the selecting seed0; the seed3 control
+failed at step0/1045.313ms, so full four-pair qualification is not achieved.
+All attempts are complete and audited; no historical score replaces the failure.
+The largest valid qualification entry is956.058ms. Separate smaller fixed
+startup budgets are being tested. No fresh qualification is claimed.
+[Qualification report](random05/results/random05-record4302-split-full-v164/REPORT.md).
 General05also reaches2314atcredit1, still27.05%below matched max3172.
 It repeats exactly; four paired seeds total8911versus8613 (+3.4599%,
 three gains/one loss). All nine original/qualification runs pass strict

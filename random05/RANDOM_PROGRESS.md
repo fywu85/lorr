@@ -1330,3 +1330,23 @@ five-proposal04traces are exact; four selected05trials remain. Twelve additional
 frozen03/04layout trials test interactions absent from earlier profiles, keeping
 full horizons, planner seeds, work, scheduling and explicit trick gates fixed.
 No new fresh input is used. Selected frontiers stay739/1408/2646/2782/4302.
+
+
+## Focused RANDOM-01/04 checkpoint (2026-09-22 03:17 UTC)
+
+User steering now prioritizes01/04, with no claim of an inherent ceiling.
+Twelve full01 repair-granularity cases pass replay and strict limits; two controls
+are six-field exact. Groups8/1/2/4/16/mixed8 total1475/1383/1457/1457/1452/1471
+across seeds1/0. No improvement on739 (+6.79% versus matched max692).
+
+The12-case03/04 layout interaction finishes with every alternative worse;
+controls2646/2782 are exact. Nine04 startup-work cases also pass, preserving
+the earlier seed11 timeout. Smaller first portfolios generally reduce throughput.
+Six new04 forecast-memory comparisons are frozen and submitted, reporting
+100/500/900/1000-step completions as well as strict timing. The selected04 best
+remains2782 (+5.02% versus matched max2649),132short of2914.
+
+Source165 local refinement is complete and negative across all five general
+reactive profiles and selected04/05. All18 runs and nine exact controls pass.
+Selected05 stays4302; exact repetition is verified, while an original baseline
+timeout prevents the complete four-pair qualification. All attempts are retained.

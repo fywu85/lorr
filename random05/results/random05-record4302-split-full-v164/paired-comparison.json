@@ -1,0 +1,53 @@
+{
+  "checked_utc": "2026-09-22T03:13:25.682309+00:00",
+  "all_attempts_complete": true,
+  "full_four_pair_qualification": false,
+  "exact_repeat": true,
+  "pairs": [
+    {
+      "seed": 0,
+      "control": 4254,
+      "candidate": 4302,
+      "control_valid": true,
+      "candidate_valid": true,
+      "control_evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-0/summary.json",
+      "candidate_evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json"
+    },
+    {
+      "seed": 1,
+      "control": 4189,
+      "candidate": 4250,
+      "control_valid": true,
+      "candidate_valid": true,
+      "control_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed1/summary.json",
+      "candidate_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed1/summary.json"
+    },
+    {
+      "seed": 2,
+      "control": 4252,
+      "candidate": 4276,
+      "control_valid": true,
+      "candidate_valid": true,
+      "control_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed2/summary.json",
+      "candidate_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed2/summary.json"
+    },
+    {
+      "seed": 3,
+      "control": null,
+      "candidate": 4224,
+      "control_valid": false,
+      "candidate_valid": true,
+      "control_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-credit0-seed3/summary.json",
+      "candidate_evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed3/summary.json"
+    }
+  ],
+  "valid_subset": {
+    "pairs": 3,
+    "candidate": 12828,
+    "control": 12695,
+    "gain_percent": 1.047656557699872,
+    "caveat": "Only the three complete valid pairs, including selection seed0. Excludes a declared failed control; not the four-pair qualification."
+  },
+  "failure": "Original disabled-credit seed3 timed out at step0/1045.313ms. No historical replacement or retry is substituted.",
+  "fresh_validation": false
+}

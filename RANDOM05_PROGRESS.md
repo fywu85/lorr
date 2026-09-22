@@ -2077,3 +2077,22 @@ five-proposal04traces are exact; four selected05trials remain. Twelve additional
 frozen03/04layout trials test interactions absent from earlier profiles, keeping
 full horizons, planner seeds, work, scheduling and explicit trick gates fixed.
 No new fresh input is used. Selected frontiers stay739/1408/2646/2782/4302.
+
+
+## Exact4,302 repetition and completed qualification attempts (2026-09-22 03:17 UTC)
+
+The exact4,302 repetition matches all six trace fields and passes full replay.
+Candidate seeds0/1/2/3 score4302/4250/4276/4224 (mean4263). Controls for0/1/2
+score4254/4189/4252: the three valid pairs total12828versus12695 (+1.0477%).
+The seed3 control failed atstep0/1045.313ms, so the declared four-pair
+qualification is not achieved. All original attempts are complete and audited;
+no historical score replaces that failure. Largest successful qualification
+entry956.058ms. No fresh-input claim. Selected4302 (+35.62% versus matched
+max3172) and general2314 (-27.05%) remain unchanged.
+
+All18 local-refinement runs are audited and negative; nine controls are exact.
+Selected05 no/five/fifteen proposals score4254/4189/4242. Serial and parallel
+five-proposal traces match exactly. Four lower-startup-work05 trials continue.
+New development prioritizes RANDOM-01/04 per user steering; all five remain in
+scope. [Qualification](random05/results/random05-record4302-split-full-v164/REPORT.md),
+[local refinement](random05/results/random12345-local-refinement-split-full-v165/REPORT.md).

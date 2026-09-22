@@ -1,496 +1,154 @@
 # PILOT campaign continuation
 
-Updated 2026-09-22 02:50 UTC. The all-five campaign remains active.
-ACTIVE_GOAL.md is the working objective. Always headline matched max(NMS, Kitty Knight).
-The stored app goal has stale03/04-only wording and old04reference2580/threshold2838;
-do not falsely complete it to change its text. Current user steering governs.
+Updated 2026-09-22 03:19 UTC. The all-five campaign remains active.
+
+## Latest user steering: prioritize RANDOM-01 and RANDOM-04
+
+Make these two the main new development priorities. All five RANDOM instances
+remain in scope. Neither priority case has an established inherent ceiling.
+Always compare against matched max(NMS, Kitty Knight). Keep random05/ naming
+until development ends; the user explicitly deferred the rename.
+
+RANDOM-01 now has a completed, focused twelve-case repair-granularity test.
+At identical nominal agent-repair work, every alternative loses in paired total.
+Keep739. Next diagnose task assignment and task-to-task transitions on the current
+trace, comparing common-task cohorts and early/late phases with KK692. Loaded
+route slack is already small, so avoid repeating larger-iteration or group sweeps.
+Whole-chain matching and next-pickup hints already have older negative trials;
+inspect those controls before proposing an interaction or new mechanism.
+
+RANDOM-04 has six frozen forecast-memory cases running/queued. Finish them and
+measure100/500/900/1000-step throughput, exact off control and all strict limits.
+The selected2782 and NMS2649 tie at2417 tasks after900steps; their entire final
+score difference appears in the last100steps. This locates the gain in time,
+without proving its cause. Target stronger traffic performance throughout the run.
 
 ## Boundaries
 
 Only edit/stage/commit random05/, PILOT_PROGRESS.md and RANDOM05_PROGRESS.md.
-Public fywu85/lorr pushes are authorized; preserve visibility. The user deferred
-renaming random05/ to pilot/ until the end of development; no rename was made.
-Leave other agents' files, commits, GRID jobs and locks alone. No subagents.
-Fable's provider-credit failure is unchanged; do not retry without new information.
-
-Full horizons600/600/800/1000/2000; strict1000ms entries,30s initialization,
-32decimalGB process guard. Allocate16bound physical EPYC9354cores/32SMTworkers,
-verify actual topology/affinity/no quota. Shared hosts allowed. Fixed work completes
-or fails. Held-out50001–50012 and50015–50022 are excluded from all tuning;
-50013/14remain reserved/ungenerated04inputs. Freeze protocols before fresh generation.
-All tuned tricks require --trick RANDOM-0N; mark them as tricks in commits/logs.
-
-## Current selected records and qualification
-
-Selected739/1408/2646/2782/4302. General727/1397/1634/1616/2314.
-Matchedmax692/1256/2359/2649/3172; leads+6.79/+12.10/+12.17/+5.02/+35.62%.
-R04target2914still132short. Fresh03V3gain9.110%is below10%; all12runs are fully audited. Fresh01V1qualifies729,
-02V1qualifies1408,03V3qualifies2646. No fresh739/4302qualification;05V6qualifies
-4175only and is NMS-only. The dashboard/density ledger use current matched references.
-
-R01=739: source162/4fb9498e, progress.25/span32 on735anneal.25+physicalgate1,
-seed1. Batchrandom1234-progress-transfer-split-full-v162,
-case trick-random-01-progress-transfer-mixp25-span32. Finished2026-09-22T00:43:24.293402+00:00.
-Mean73.552/max114.527ms,RSS388.555MB. Exactrepeat6fieldpasses. Five qualification
-seeds0..4=736/739/726/732/732 versus732/735/725/729/730:3665vs3651 (+.3835%,all5positive),
-max118.656ms. Report random01-record739-split-full-v162. Earlier physicalgate alone
-+.690%all5positive; annealing alone+.027%3gains/2losses. No fresh current-profile claim.
-
-R03=2646: source162/4fb9498e, progress.25/span32 on2621gate1profile,seed3.
-Batchrandom1234-progress-transfer-split-full-v162,
-case trick-random-03-progress-transfer-mixp25-span32. Finished2026-09-22T00:53:28.091236+00:00.
-Mean484.103/max676.507ms,RSS469.467MB. Full replay passes; off2621control6fieldexact.
-Intermediate2628chronologicalrecord also logged. Exactrepeat6fieldpasses. Five pairedseeds2611/2606/2611/2646/2610 total13084vs13029
-(+.4221%,all5positive),max730.523ms,RSS482.013MB. FreshV3now gives9.110%over max(NMS,KK), below10%, and+.590%over prior2620.
-Preceding2621fivepairs13029vs12999 (+.231%,4gains/1loss);2620freshV2remainsseparate.
-
-R05=4302: source164/30a5664757b8ffad1150f5eb763c747ba1001bed, credit.5,
-seed0; parent4254recipeotherwiseunchanged. Batchrandom12345-terminal-pending-split-full-v164,
-case trick-random-05-terminal-pending-p5. Finished2026-09-22T02:19:09.148099+00:00.
-Mean582.723/max830.909ms,RSS491.999MB. Fullreplay/waitingpass; off4254control6fieldexact.
-Longestcompleted1986,146initialunfinished/110unopened,oldestcensored2000.
-All92chronologicalfrontier/waitingrows passedaudit_progress.pyafterpromotion.
-Exactrepeat/threeadditionalpairedseedsfrozen5e47a72f: disabledseed3controlfails t0/1045.313ms; sixotherspending. No completefour-pairqualification.
-Thepreceding4254field80profilehasfourpositiveseeds4254/4189/4252/4253 vs4242/4028/4183/4128,
-+2.2134%,mean4237.0,max919.594ms. Thatqualificationdoesnotapplytoterminalcredit.
-General05new2314source164credit1seed5ismatched-auditedandpromoted; prior2226offexact.
-Mean518.413/max559.538ms,RSS490.627MB;completedmax1968,206initialunfinished/131unopened.
-Exact2314repeatpasses; fourseeds2314/2147/2147/2303 vs2226/2082/1997/2308 give+3.4599%,threegains/oneloss. All9strictvalid/replayed,max595.950ms,RSS491.377MB. Still27.05%below matchedmax3172.
-
-R02=1408source132/027df4d9; general1397source141/611aa2a6 remains.
-R04=2782source144/88551e69; mean478.686/max739.553ms. Exactrepeat plus8pairedseeds
-+.340%6gains/2losses, with a preserved laterseed11first-step1050.759mstimeout.
-General04=1616face8source158 repeats but five-pair mean-.101%; general auction1595
-has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.json.
-
-## Active state
-
-Fresh03V3 is complete: all12 original runs pass source/input/deadline/memory,
-actual binary/affinity and independent full replay/waiting audits. Protocol3fc121ad
-predates generation2026-09-22T01:25:17.637576+00:00. Candidate2660/2622,
-prior2639/2612; repeated NMS2461/2444 and2361/2380; KK2084/2093 and2094/2130.
-Aggregate9.109688%over max(NMS,KK) misses10%;+.590364%over predecessor.
-Both new seeds remain excluded from tuning. Full report RANDOM03_FRESH_VALIDATION_V3.md.
-
-Current-work-v162 is complete/audited, three controls six-field exact.
-01=739/732/731;02=1408/1402/failedI4096t1at1029.213ms;03=2646/2619.
-No new best. Report random123-current-work-split-full-v162/REPORT.md.
-
-Flow-model-v162: all10complete, independently audited, both controls six-field exact.
-04scores2782/2696/2558/2714/2319;05scores4254/4059/4030/4007/3518. All changeslose.
-Report random45-flow-model-split-full-v162/REPORT.md.
-
-Terminal-pending-v164iscomplete:all16audited/allsevencontrols6fieldexact.
-Generaloff/on01=647/643,02=1106/1101,03=1634/1619,04=1616/1600,05=2226/2314.
-Selected04credit0/.5/1=2782/2747/2769;05=4254/4302/4250. Only05improves.
-Fullreport random12345-terminal-pending-split-full-v164/REPORT.md.
-
-Completed general05 qualification:
-- random05-general-terminal-qualification-split-full-v164: all seven new runs
-  audited; exactseed5repeat6fieldpasses. Four-pair report includes originalseed5:
-  8911vs8613,+3.459886%,threegains/oneloss; all9max595.950ms,RSS491.377MB.
-
-Active batches:
-- random05-record4302-split-full-v164: sevenjobs8921510–8921516,frozen5e47a72f.
-  Disabled-credit seed3 failsstep0/1045.313ms; sixotherspending. No score for
-  failure; do not silently replace it with older successful historical4253.
-- random12345-local-refinement-split-full-v165:18jobs8921489–8921506,
-  frozen919612ec. Fourteen are independently audited. General01..05LOCAL5all
-  lose642/1090/1616/1564/2160 vs647/1106/1634/1616/2226. Selected04LOCAL0/5/15
-  scores2782/2756/2750. Serial/parallelLOCAL5tracesmatch allsixfields; mean
-  513.502/479.301ms is one shared-host pair, not a robust speedup claim.
-  Fourselected05casesremain. Complete nine declared exact comparisons later.
-  LOCAL counts complete B-branch groups; all terminalcredit0. General01/02
-  reactive profiles are distinct from stronger windowed records.
-- random34-current-layout-split-full-v162:12jobs8921524–8921535,
-  frozen6bca2e22. Current03/04controls,field15noflip,03fields23/7/31/43,
-  04fields105/109/111/115. Testsinteractionwith03edge-mix.25and04cap560;
-  allprioralternative layoutsuseddifferentprofiles. Twoexactcontrolsrequired.
-- random04-first-work-split-full-v162:9jobs8921537–8921545,frozenc6aacea3.
-  Seeds4/0/11 × FIRST_K4032/3072/2048; laterK8064unchanged. Preserveearlier
-  seed11t0/1050.759msfailure. Seed4/4032controlmustmatch2782sixfields.
-- random05-first-work-split-full-v164:4jobs8921546–8921549,frozen8bcefa2b.
-  Selectedcredit.5seeds0/3 × FIRST_K5952/4032; laterK16320unchanged.
-  Existing7968candidatecontrolsremaininoriginalqualification. Do notreplace
-  originalfailedpairswithchangedbudgets. Reportstartupvsregularlatency.
-
-Source164/30a5664757b8ffad1150f5eb763c747ba1001bed, regression57.30s,
-SHA4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd.
-Source165/513cbe8910d17f70fdce12dc517f4391e7eb729f, regression62.69s,
-SHAa9a32eb1e6f07443f5865be9fb2989dd0d288abf264aec4661345dde03020a9e.
-New R05_PARALLEL_CONTINUATIONS defaults0; only outside activeOMPteams,
-completebranchwork/order preserved. NonzeroLOCAL legal turnover/cache/prefix/
-workers/signedrisk/screening/joint/checkpoint regression passes. Buildmetadata
-andcompiled/test sourcechecksarchivedunderresults/build-v165. No performance
-claimuntilthefrozenfullrunsareindependentlyaudited.
-Other agents' jobs and work remain outside this session's scope.
-
-## Completed batches since the last checkpoint
-
-- random1234-progress-transfer-split-full-v162: all12audited, all3declared controls6fieldexact.
-  01=735/739/739,02=1408/1405/1403,03=2621/2628/2646;04=.125/span32:2766,
-  .25/span16:2768,.25/span128:2777 vs historicalsame-source2782. All04alternativeslose.
-  Complete REPORT.md; original partial01/03controlproofs explicitly retained as partial.
-- random345-flow-iterations-split-full-v162: all12audited,3controls6fieldexact.
-  Iterations20/10/40/80:03=2621/2527/2600/2602;04=2782/2570/2761/2771;
-  05=4242/3864/4193/4254. Keep20on03/04; only05flow80promoted and qualified.
-- random123-failure-first-split-full-v163: all12audited,5controls6fieldexact.
-  General01control727,matched720/full723; trick01control735,matched731/full733;
-  general02control1397,matched1389; trick02control1408,matched1383;
-  trick03control2621,matched2582. All candidateslose; optional3ordersstaysOFF.
-- 739/2646/4254qualification batches: all5/all5/all7audited, exact repeats6fieldpass, pairedreports complete.
-- Earlier source162physicalgate10valid+2allocationrefusals allpreserved/audited;
-  sparseanneal16allvalid/4exactcontrols;735/733/2621qualification complete.
-- Earlier source159startup-capalllose; general04facepairedmeannegative. Source158face,
-  159revisit,160prefix-search and153weighted sparse trials retained all negatives/timeouts.
-
-## Source and execution
-
-Source162=4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad/build162,
-SHAfda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556, regression54.99s.
-Source161failed only its new horizon18vs150step fixture;162fixed that fixture without
-changing production source/assertions. Never benchmark failed161; retain original evidence.
-Source163=d323e605a5bcdc2cc7f5e3a5864f89fb6f6351c6/build163,
-SHAeb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd, regression62.13s.
-Adds optional third repair order; default1 unchanged. Source163benchmarks allnegative.
-
-Hosts research35|research36|research37|research39|research46|research47|research48|
-research50|research51|research52|research55|research56; exact CPUmodel
-AMD EPYC 9354 32-Core Processor. Exclude49/54binding refusals, older34/40/42/45;
-53/58have earlier timing concerns. Do not alter other jobs or infer hostcauses.
-
-Shell requires escalation because the sandbox namespace fails; Python3.7default,
-env/bin/pythonforNumPy. apply_patch unavailable; safe Pythonheredocs. Only scopedgit
-operations; never reset/amend shared work. Usegitlogandorigin/mainfor the latest shared checkpoint. Publicpushuses the
-existing gh credentialhelper; the final response identifies the pushed commit.
-
-## Next work
-
-Keep meaningful effort across allfive. The dated current-bottlenecks-v162snapshot
-shows little sparse loadedwaiting/detouring and much more on04/05; it is observational,
-not causally recoverable work. Candidate-bound rejection in window repair is only a
-possible runtimehypothesis: prove lowerbound/FPsafety, exactrollback, and handling of
-annealing/component salvage/thirdorder before implementation. No speedup claimed.
-The739/2646tricks and4302terminal-credit recipe need independent fresh-input qualification after
-configuration/protocol freeze, if chosen as the next validation step; no new stream
-has been generated. Do not repeatedly draw heldouts just to cross a threshold.
-
-## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
-
-No PILOT GRID jobs are running or queued. All declared cases through build132
-have completed and their results are audited. Other agents' CGAR jobs are
-outside this session's scope and remain untouched. No source133 implementation,
-new experiment, or fresh RANDOM-04 input was started.
-
-Latest compiled source: 027df4d9 / build132, full regression passed in38.30s.
-Binary SHA175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801.
-Default-off joint proposals and rematching did not improve the selected profile:
-- build131: unchanged control2776; one/two proposals2775/2773; lowerK6144=2721.
-  The unchanged control matches the archived2776 run in all six trace fields.
-- build132: zero/one/two/four repair rounds2773/2776/2776/2776. Every run is
-  strict-valid and independently replayed; largest observed entry699.938ms.
-  Zero repairs matches build131's2773 in all six fields. The three2776 repair
-  runs differ from the original2776 trajectories despite matching its score.
-- build130: exact2776/2764 controls; first-decision arrival alternatives
-  2727/2699/2728/2740. Keep all arrival and joint-move options disabled.
-
-The source124 record2777 profile now has eight planner seeds0..7:
-2726/2757/2766/2742/2777/2771/2753/2753. All pass replay and strict timing,
-with the largest entry790.204ms; exact seed4 repetition is retained.
-
-Source119 depth12/20=2756/2753; noise100/150/300/400=2707/2738/2724/2723;
-turn0.5/0.75=2739/2734; wait0.25/0.75=2754/2685; K4096/5120/6144=2661/2703/2757.
-Source129 arrival bonuses all lose2764/2734/2745/2732; control2776 is exact.
-All completed results, lower-work alternatives and failures remain recorded.
-
-The approved Fable summary was submitted through the existing CLI session,
-but the provider returned a usage-credit error and no review. Approval is
-resolved. Do not retry without a change in the credit condition.
-
-If resumed, a possible next hypothesis is to combine independently legal local
-components from a joint proposal with the best PIBT plan. This is only an idea:
-no source, benchmark or performance claim exists for it. Reassess against the
-negative whole-proposal evidence before implementing. Fresh RANDOM-04 inputs
-50013/50014 stay reserved until a qualifying configuration is frozen.
-
-## Current records and evidence
-
-General RANDOM-01..05: 726 / 1390 / 1582 / 1558 / 2226.
-Trick RANDOM-01..05: 729 / 1408 / 2602 / 2777 / 4197.
-Matched NMS32: 649 / 1228 / 2359 / 2580 / 3172.
-Published max(NMS,KK):688/1260/2334/2547/3050. Selected gains versus that
-published orientation reference are5.96%/11.75%/11.48%/9.03%/37.61%; these are
-not matched-machine comparisons. All records have independent full replay and
-resource/waiting checks. One layout at five densities is not unseen-layout transfer.
-Exact cases:random-frontiers.json. Consolidated ledger:RANDOM_PROGRESS.md.
-
-RANDOM-05: source027df4d9/build132, case trick-random-05-record4175-coupling-triage1,
-batchrandom05-record4175-coupling-split-full-v132, finished2026-09-21T16:24:44.415657Z.
-Seed0, activecap680/fastadmission1, first7968/K16320/B18/s2/q4/G4/E8/P8,
-movebias3/fraction0.25, field15/flipseed5/oneflip/contrast2.4,
-triage1/mix1,turn0.6/wait0.5. Mean569.038/max802.896ms; peakRSS490.828MB.
-Longest completed order1977steps;150initialordersunfinished,113unopened;
-oldest unfinished censored2000. Exact repeat and seeds1/2/3 are running.
-Previous4175has exact repeats and frozenV6qualification;4011sourcea2ff2b2/build80
-retains its exact repeats and freshV5qualification. Neither qualifies4197.
-
-Four-core record3770 stays separate: source5f81613/build65, seed3,
-first4608/K5760/B12/cache512/triage1.5, mean788/max845ms, RSS485MB.
-Matched NMS4=2914 (+29.4%). Earlier fresh V4 gives +25.42%; it is not evidence
-for the latest 32-worker configuration.
-
-## Completed frozen V5 validation and 4,000 milestone
-
-Protocol e46f57b committed 03:56:06 UTC, before generation 03:56:45 UTC.
-Candidate4011 and previous3990 use the same source/binary; only cutoff mix
-changes0.75 -> 1. All eight original runs finish without errors/timeouts.
-
-Seed50009: candidate3912 / previous3901 / NMS3095,3090.
-Seed50010: candidate4047 / previous4023 / NMS3177,3190.
-Aggregate candidate7959 vs stronger NMS6285 (+26.6348%) and previous7924
-(+0.4417%, positive on both inputs). Fresh4047 is a different input; the
-archived frontier stays4011. Candidate mean573/560ms, max624/644ms, RSS<560MB.
-Two fresh task/start streams provide limited replication on the same layout.
-
-FRESH_VALIDATION_V5.md and results/fresh-validation-v5/{audit,replay-audit}.json
-contain the full frozen comparison. results/completion-audit-4000/audit.json
-passes ten requirements. Supporting proofs include all starts/task chains on
-10 traces, 35 compiled/test source files, actual CPU/AS guards, frozen config
-difference, unchanged held-out hashes, 52 unsuccessful attempts and 6 failed
-builds. results/trick-gates-v80/audit.json tests the actual frozen executable.
-All 85 main frontier rows and waiting metrics are checked; separate manifests
-and all user-facing logs are current. The registered goal was marked COMPLETE
-at05:07 UTC after the evidence and PILOT dashboard were committed/pushed in
-a87f097. Reproduce the historical milestone auditor at its archived commit; its checks pin the then-current best manifests. The broader RANDOM
-campaign remains authorized; the goal completion does not claim all maps solved.
-
-## Retained RANDOM-03/04 goal and qualification
-
-R03 archived threshold and frozen fresh qualification are COMPLETE. Current
-record2602, source02bccaa7/build102, batchrandom03-merge-coupling-split-full-v102,
-case trick-random-03-merge-coupling-triage0875. H20/keep14/I6144/group6,
-32islands/2rounds/window_merge1/heap4=1/fastgroups1/storage1/temperature0;
-field15/flip5/contrast2.4,turn2/wait2,seed5,horizon800/triage0.875/hop-onlymix0.
-Originalmean507/max710ms; exactrepeat2602 max661ms; seeds0/3=2548/2566,
-max655/674ms. All full800steps/replayed. No claim all seeds exceed10%.
-
-Protocol0fb8a953 committed07:55:00UTC before generation07:55:03.289264.
-Fresh50011/50012: candidate2599/2557, previous2580 recipe2590/2535,
-NMS2318/2327 and2343/2322. Individualgains11.69%/9.13%,aggregate10.41%.
-All8valid/replayed; candidatefreshmax700/676ms. Never tune on50001–50012.
-RANDOM03_FRESH_VALIDATION_V1.md contains full source/timing/wait evidence.
-The auditor checks actualNMSplannerTimes versusPILOTentryComputeTimes, rather
-than requiring PILOT-onlyentryComputeSamples from the unmodified reference.
-
-R04 CURRENT **2777**, sourcecaedcce7/build124, batchrandom04-triaged-credit-split-full-v124,
-case trick-random-04-triaged-credit-horizon16-price32. This adds matchhorizonweight16
-and optionalidleprice32 to the2776 profile; admissioncredit remainsOFF. Full1000steps
-independently replayed; mean469.540/max779.602ms, RAM697MB. Onlyone extra task, not
-a substantial win; +7.64% versusNMS2580,61shortof2838. Exact repetition passes all6fields,max770.041ms.
-Longestcompleted998,initialunfinished175/unopened157,oldestunfinishedcensored1000.
-
-R04 preceding **2776**, source487a35da/build119,
-batchrandom04-admission-guidance-split-full-v119,
-case trick-random-04-admission-guidance-contrast2p2.
-Full independently replayed1000steps, mean434.778/max626.736ms.
-+7.60% vs NMS2580, still62shortof2838. Seed4; cap560, triage0.875/mix0.75,
-dispersion0.4, fieldoutputcontrast2.2, shared8Borders1, fastadmission1.
-All other B10/K8064/first4032/depth16/G4/E8/P8/field15flip5 settings retained.
-Four-seed timing at contrast2.2/2.6 is complete; no fresh R04 inputs.
-
-Previous2762 profile (contrast2.4) improves allseeds0/3/4/5 over dispersion0.8:
-2725/2751/2762/2772 vs2719/2710/2741/2759. All initialrunsmax<636ms;
-exact seed4 repetition is slower, mean521/max729.537ms, preserved in evidence.
-The2772 seed5 record is retained in the historical ledger. Original2741profile
-repeats exactly on119and121 (all6fields); newcache/matching traceproofs pass.
-
-Preceding2738 usescap560/triage1; fourseeds0/3/4/5=2718/2689/2738/2735,
-all originalsourcequalificationmax<671ms. Full controlrepeat116and119/120
-runtimecontrols matchall6tracefields (largest119controlmax684.333ms).
-Prior2698cap560/triage1.25 scores2701/2654/2698/2705; admissionimprovesall4seeds
-againstuncapped2661profile2542/2576/2661/2605. Allsourcecontrols andfailuresstay.
-Prior2661hasaslowerexact113controlmax755.061ms, no hostcauseinferred.
-
-Config: B10/K8064/first4032,depth16/G4/E8/P8,screen2/keep4,rootmutation0.1,
-noise200,sharedrankings2048MiB,keepbonus0,field15/flip5/contrast2.4,
-turn0.6/wait0.5/dispersion0.8,horizon1000,guidedmatch/length0.25.
-Openedtasksstaylocked; all700robotsremainmovable. Explicitadmissiontrick.
-No freshR04inputexists. Reserve50013+onlyafter freezingqualifiedcandidate.
-
-HORIZON CHECK FIX: makespan is maxassigned-workcost, NOT executedsteps.
-Cap480's oldrunnerrejectedmakespan976 althoughall700pathsand1000entrysamples
-cover1000stepswithnotimeouts. Newindependentreplayconfirms2631tasks; original
-invalidsummaryremainsunchanged, supplementalcap480-horizon-correction.json
-recordsfullproof. Correctedrunner/auditors use actualpathcounts andentrysamples,
-retainreportedmakespan,andrejectuneven/truncatedpaths. Sixhelpertests pass;
-all10existinggeneral/trickfrontierhorizonsremainunchanged. Thehelperisfrozen
-andhashedwithnewGRIDrunners. No benchmarkdata,binaryorinputwasrewritten.
-
-CURRENT SELECTED RECORD SOURCEcaedcce7/build124, regression33.72s, SHAd43d3708b526521317df8159dcaf64131be38e872e1a039d4d846489cb1c8237.
-Active-onlytravelratecalibrationdoesnotbeat2738control; leaveoff.
-Source118/ca22bb7c exact8byteordercache, fallback32Bwhenroutingbiasneedscores.
-Source119/487a35da exactdummy-prefixHungarianoptimization. All6cacheand3matching
-fullcontrolsproved6tracefieldsidentical. 2698RAM1.73GB->0.57GB; fastmatching
-controlmean427/max619ms. Bothenabledinnewexperiments, noscorebenefitclaimed.
-
-Allbatches throughactive-cutoff116,2738seeds116,active-rate120,
-admission-match119andcorrectedpredict119closed/audited. Active-ratevariants
-2733/2737/2714/2659 lose2738; matchinglength0/.5/1/2=2297/2691/2712/2693;
-correctpredict2715. Original-predictcasewasmisconfiguredR05_PREDICT_MATCHING,
-ignoredbybinaryandexact2738control; preservedwithconfiguration-note.json.
-CorrectkeyR05_SCHED_PREDICT. NewmanifestlintrejectsunknownR05optionsagainst
-frozenbinarysource;3tests pass. Nooriginalartifactchanged.
-
-CLOSED/AUDITED through admission-coupling119,2741seeds119,dispersion119,
-priced-admission121,guidance119,objective119. Guidance2.2=2776,2.6=2770;
-1.2/1.6/2.0=2675/2706/2715. New task rewards all lose2721/2716/2729/2714/2725/2738.
-Price12/16/20/24/32=874/1587/2627/2740/2741; uncapped24=2658. Priceoffcontrol
-andprice32 preserve2741 exactly. Price mechanism remains off. Semantic tests
-passed34s; newly cheaper idle slots can starve the pool at low prices.
-
-CLOSED/AUDITED: nonlinear122 loses2617/2692/2718/2758, exactdefault2762.
-Fieldseeds119 at2.2 give2730/2711/2776 on0/3/5, maxima<630ms; contrast2.2
-best2776 improvesselectedbest butnotaggregate versus2.4. Cutoffvariantsalllose.
-Immediateperiods1/2/4/8=2732/2720/2724/2726. LargerworkK11520/13824/B12K11520
-=2771/2762/2771. OriginalB8K8192 initializationrejected(error125), nottimedout;
-K8192notdivisibleby4*14screeningwork. Originalpreserved, noteinexperiments.
-CorrectedB8K8064=2710, fullyaudited. Newlintchecksfullscreeninggroups;4tests.
-
-STARTUP123 CLOSED/AUDITED: control2776, oldprice12until100/150/200/250 gives
-2690/2661/2630/2547, newprice12until150/200 gives2710/2666, new16until300 gives2703.
-Early gains do not survive the full run. All4oldcases match theconstant-price12
-reference exactly through expiry in all6fields; firstactiondifference isexpiry+1.
-The2776control123 is6fieldexact. Keepstartuppriceoff; no positive claim.
-
-CLOSED/AUDITED: random04-triaged-credit-split-full-v124. Control2776 matchesall6fields.
-Credit0.25/0.5/1 loses2766/2757/2743; fullcredit+horizon4/16+price32 gives2767/2762;
-fullcredit+horizon16withoutprice2693. Credit staysOFF. Horizon16+price32only2777.
-
-CLOSED/AUDITED: pairing124, original2776repeat119 and unifiedR03/R05controls124.
-All6pairingvariantslose2705–2760. Exact2777repeat max770.041ms; original2776repeat
-max622.264ms; R03/R05currentengine max671.719/572.148ms. All4controls exact6fields.
-
-CLOSED/AUDITED: all7goal-local125cases and3additional2777seeds124.
-Localradius2mix.25/.5/1=2753/2725/2692; radius4=2719/2713/2665. Control2776
-is6fieldexact. Keepgoal-localoff: no reductioninnear-goalawaymoves oncommonorders.
-2777profile seeds0/3/4/5=2726/2742/2777/2771; everyoriginal/repeat/seed max<789ms.
-Still61shortof2838. No freshR04input has been generated.
-
-CLOSED DIAGNOSIS: build126/source1c9c8b95 read-only goal_probe replayspasses.
-First700steps near-goalaway:2781total,102staticmin,203kinematic-onlyminimum,
-2476(89.03%)nonminimumeligible. Interaction/cycles/suppressedgoalspossible, not
-causalwasteproof. IndependentPythonloaded-forward/awaycounts agreeexactly.
-Artifactsrandom04-goal-score-diagnosis-v126. Frozen126tools hashesverifiedagainst
-latercommit afterconcurrentgitindexlock; originalspecpreserved.
-
-CLOSED: source127 displacement trials and source119 route trials all lose.
-Source127 low-work slow/fast2559 controls match all six fields. Source128
-optimized2559 also matches; its fullK8064 push0.25 run failed at step1,
-1027.906ms/exit124. Preserve this real deadline failure. LowerK6144 pricing
-scores2736/2695/2723/2654, all valid but below the record. No pending audit.
-
-RECENT NEGATIVE EVIDENCE:
-- Horizon matching108/d879feda weights.25/1/4/16:2602/2573/2575/2585 vs2661.
-- Startup priority109/7714e8ca (shorter remainingwork) all variants2522–2630
-  vs2661. Includes200/100step bounds andallrun preference; leave off.
-- Loop/dispersion/noise refinements96 all2496–2601 vs2661.
-- 32 new fields101–132 atK1024 alllose inherited2361 (best109=2324).
-  Declaredtop4 full-work verification109/111/105/115 onplannerseeds4/0 also
-  loses:2526/2490,2481/2490,2494/2567,2433/2489 versus2661/2542. No new field
-  promoted. Allfull1000/replayed; archive selectionprotocol andoriginalattempts.
-- Morecompletework+sharedcache+IPO100/03b68098:K11520/13824/16128 gives
-  2615/2592/2615,allstrict,so extra compute didnothelp.
-- Three-stepoperationtransfer96:fivevalid1733–1936;K256 timesout atstep74,
-  18562.600ms. Preservefailure; do not attribute a host cause without evidence.
-- Feasiblemoveproposal107/ae18871e:all6lose2531–2615,exactdefault2641.
-- Rootdiversity106/75723ed8:all7lose2447–2605,exactdefault2641.
-- Destinationprices105/aa370473:all4lose2540/2515/2543/2566,exactdefault2641.
-- Cachelayout104/1436f231:four full2641exactcontrols, no compelling measured
-  alignment/lazy-row win. Original104/105jobnameswithoutcpufix were refused
-  beforelaunch because I supplied abbreviatedCPUmodel; preserved/audited.
-- Older guidance reversal/field flips, replan forecasts, component crossover,
-  score weighting, window scaling also lose; detailsinRANDOM34_CAMPAIGN.md.
-
-FABLE REVIEW APPROVAL RESOLVED at13:11UTC: user explicitly approved the unchanged
-6022-byte results summary at runs/random05/fable-random04-diagnosis-02/payload.txt.
-SHA493ff3fb8a05766e037127300fcf4489196c8bea2c506a2c00b0ed16d9a70bd5 was verified,
-then CLI resumed session27a4316e-b79d-46cf-86b4-41b0f558938a with Fable5.1/max,
-no tools and12USD cap. Provider returned OUT OF USAGE CREDITS; no review arrived.
-Status/response/completion are preserved in that ignored directory. This is now
-a provider-credit issue, not a pending approval or automatic-review rejection.
-Do not retry unchanged credit failure or send new unapproved payloads. The
-optional review does not block a future local continuation, once requested.
-
-This stopping checkpoint is to be committed and pushed to public fywu85/lorr
-main, with the resulting hash reported to the user. Only random05/,
-PILOT_PROGRESS.md and RANDOM05_PROGRESS.md are in scope. Exact Fable payload
-and response remain in ignored runs; neither is published or rerouted.
-
-## Rejected source experiments / tool notes
-
-Source86 raises only the explicit WINDOW_ITERS ceiling2048->8192, default
-unchanged. Full regression and exact six-field2439 control passed. The older
-source84/85 retained-prefix proposals failed the unchanged dense mobility
-floor (39/38moves,required>150); patches/logs preserved and source restored.
-Do not weaken the test or silently resurrect the approach.
-
-Audit: tools/audit_random_cases.py --batch NAME --build build-vNN --source HASH.
-Promote R01–04 with tools/promote_random_records.py AUDIT; R05 also requires its
-main frontier, best manifests, waiting manifest, and full history audit.
-R01–04 promotion now refreshes PILOT_PROGRESS.md automatically. After a new R05
-record, also run tools/render_pilot_progress.py. Published and matched-local NMS
-comparisons must stay separate; missing maps keep their placeholders. Archive
-small direct/one-level spec/allocation/submission/summary/completion/batch JSON,
-never raw traces or NMScwd. Split raw traces live at BATCH/CASE/CASE/result.json.
-
-Fable persistent session27a4316e-b79d-46cf-86b4-41b0f558938a failed provider credits;
-no new feedback. The new6022-byte payload was explicitly approved and submitted but also hit
-usage credits. Do not retry unchanged quota or send new unapproved payloads. Shell requires escalation due namespace failure.
-Python3.7; env/bin/python has NumPy. apply_patch unavailable; use safe heredocs.
-
-Only scoped git operations; never reset/amend others' work. Public push:
+Public fywu85/lorr pushes are authorized; preserve visibility. Leave shared CGAR
+files, jobs and locks alone. No subagents. Fable's provider-credit failure has
+not changed; do not retry without new information.
+
+Full horizons600/600/800/1000/2000; strict1000ms entries,30000ms preprocessing,
+32decimalGB guard. Allocate16 bound physical EPYC9354 cores /32SMT workers,
+verify actual affinity/topology/no quota. Shared hosts are allowed. Fixed work
+completes or fails; no time-triggered partial solution. Every tuned trick needs
+--trick RANDOM-0N. Throughput is primary; preserve waiting-time evidence.
+
+Held-out50001–50012 and50015–50022 are excluded from tuning. Seeds50013/14
+remain reserved/ungenerated for04. Freeze protocols before fresh generation.
+No new held-out input was generated in this turn.
+
+ACTIVE_GOAL.md governs the all-five objective and latest01/04 priority. The stored
+app goal still has older03/04-only wording and04reference2580/target2838.
+Do not falsely complete/recreate it; current04reference is2649 and target2914.
+
+## Selected records and qualification
+
+Selected739/1408/2646/2782/4302; general727/1397/1634/1616/2314.
+Matched max692/1256/2359/2649/3172: +6.79/+12.10/+12.17/+5.02/+35.62%.
+R04 remains132short of2914. Every selected record passes full independent replay
+and strict limits. Full settings, source hashes and timestamps are pinned in
+random-frontiers.json, best.json, best-32-workers.json and the progress logs.
+
+R01=739, source162/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad, plannerseed1,
+progress.25/span32 on anneal.25/physicalgate1. Mean73.552/max114.527ms,
+RSS388.555MB. Exact repeat; five paired seeds736/739/726/732/732 versus
+732/735/725/729/730: +.3835%,all5positive,max118.656ms. Fresh01V1 qualifies729only.
+
+R02=1408 source132/027df4d9; general1397 source141/611aa2a6. Fresh02V1
+qualifies1408 at+10.17% over max(NMS,KK). More iterations4096 failed atstep1;
+retain that failure. Current stronger-window/progress/third-order trials lose.
+
+R03=2646 source162, plannerseed3, progress.25/span32 on physicalgate1 and
+heuristic1.2, H20/keep14/I6144/group6. Mean484.103/max676.507ms,RSS469.467MB.
+Exact repeat; five paired seeds total13084versus13029 (+.4221%,allpositive),
+max730.523ms. Frozen freshV3 candidate2660/2622 versus prior2639/2612:
++.590% paired, but only+9.109688% against max(NMS,KK)2461/2380. All12fresh
+runs audited; the10% fresh milestone is still missed. Seeds50021/22 excluded.
+
+R04=2782 source144/88551e69df5b6f5ee14600dfe3a7ae8fe586783c, plannerseed4.
+Cap560/all700movable, B10/depth16/K8064/FIRST4032, field15/flip5/contrast2.2,
+flow20, sharedrankings2048MiB/orders1, progress.25/span32, horizon1000.
+Mean478.686/max739.553ms. Exact repeat and8pairs+.340%,6gain/2loss;
+a later seed11 original failed atstep0/1050.759ms. Preserve that failure even
+though the new first-work batch's same-budget seed11 succeeds. General1616
+face8 repeats but five-pair mean-.101%; general auction1595 gains4.312%all5pairs.
+
+R05=4302 source164/30a5664757b8ffad1150f5eb763c747ba1001bed, seed0,
+terminal_pending.5 on4254 field80 profile. Mean582.723/max830.909ms,
+RSS491.999MB. Exact repeat matches six fields; candidate seeds0/1/2/3 score
+4302/4250/4276/4224. Three valid controls4254/4189/4252 give12828vs12695
+(+1.0477%), but disabled seed3 failed atstep0/1045.313ms. All attempts complete
+and audited; full four-pair qualification is NOT achieved. Do not substitute
+historical source162seed3=4253. Largest valid qualification entry956.058ms.
+FreshV6 qualifies4175only and is NMS-only. All92 selected frontier/waiting rows
+were audited after4302 promotion. Longest completed wait1986,146initialunfinished,
+110unopened, oldest censored2000. General2314 repeats exactly and gains3.4599%
+over four paired seeds,3gains/1loss,max595.950ms; still27.05% below matched3172.
+
+## Newly completed experiments (all full independent audits)
+
+- Local refinement source165:18/18 complete, nine six-field controls exact.
+  General01..05 off/five:647/642,1106/1090,1634/1616,1616/1564,2226/2160.
+  Selected04 off/five/fifteen:2782/2756/2750; selected05:4254/4189/4242.
+  Both serial/parallel five-proposal pairs are six-field exact. All changes lose.
+- Current layouts source162:12/12 complete, two controls exact. R03 control2646,
+  noflip2614, fields23/7/31/43=2598/2514/2566/2603. R04 control2782,
+  noflip2743, fields105/109/111/115=2722/2668/2688/2704. All lose.
+- RANDOM01 repair granularity frozen b8109a76, jobs8921556–8921567:
+  twelve full runs audited, both controls exact. Groups8/1/2/4/16/mixed8 totals
+  1475/1383/1457/1457/1452/1471 across seeds1/0. Source162 unchanged.
+- RANDOM04 first-work frozen c6aacea3, jobs8921537–8921545:
+  nine full runs audited, control2782 exact. FIRST4032/3072/2048 gives
+  seed4=2782/2724/2746, seed0=2749/2751/2746, seed11=2736/2729/2718.
+  Totals8267/8204/8210. LaterK8064 unchanged. Startup/later timing is in
+  random04-first-work-split-full-v162/startup-latency.json. No new record.
+
+Reports live under random05/results/<batch>/REPORT.md. Preserve all losses,
+strict failures and previous partial evidence. General and selected remain distinct.
+
+## Active batches
+
+1. random04-future-memory-split-full-v162: sixjobs8921569–8921574,
+   frozen2c79afc1. Source162; plannerseeds4/0 x FUTURE_ELITE_BLEND0/.5/1.
+   Current2782profile otherwise fixed. Report phase throughput and strict timing.
+   Seed4off must reproduce all six2782fields. All positive-cap04manifests previously
+   kept blend0. This is a hypothesis, with no performance claim yet.
+2. random05-first-work-split-full-v164: fourjobs8921546–8921549,
+   frozen8bcefa2b. Selectedcredit.5,seeds0/3 x FIRST5952/4032,laterK16320.
+   These changed configurations never replace the failed4302qualification pair.
+
+Collect live summaries before assuming these jobs are still pending. Only selected
+full strict-valid independently replayed records may be promoted. R05 promotion
+remains manual; the generic promotion helper excludes R05. Exact repetitions,
+paired planner seeds and fresh task/start validation are separate claims.
+
+## Builds and tools
+
+Source162 binary runs/random05/build-v162/build/lifelong_random05,
+SHA fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556;
+full regression54.99s. Source164 binary build-v164,
+SHA4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd,
+regression57.30s. Source165/513cbe8910d17f70fdce12dc517f4391e7eb729f,
+binarya9a32eb1e6f07443f5865be9fb2989dd0d288abf264aec4661345dde03020a9e,
+regression62.69s. Source/test/binary proofs are archived. No source166 exists.
+
+collect: python3 random05/tools/split_grid.py collect --output runs/random05/BATCH
+independent audit: audit_random_cases.py --batch BATCH --build build-vNNN --source HASH
+exact controls: audit_exact_controls.py --batch BATCH --references random05/experiments/REF.json
+Add --allow-pending only to the independent audit for active batches. Do not
+claim exact controls until the independent audit is complete. Render the dashboard
+with random05/tools/render_pilot_progress.py after updates; do not erase history.
+
+Shell calls require escalation because the sandbox namespace is broken. Default
+Python3.7; env/bin/python has NumPy. Use scoped git operations, never reset/amend
+or remove other work. Check HEAD before committing. Public push:
 env -u GIT_ASKPASS -u SSH_ASKPASS GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push origin main
-Check git log before assuming the current HEAD; other agents commit independently.
 
-Hosts: research32|research33|research35|research36|research37|research39|
-research41|research46|research47|research48|research49|research50|
-research51|research52|research54|research55|research56. Avoid34/40/42/45 binding refusal
-and53/58 timing spikes; causes unproven. Actual allocation guards are mandatory.
-
-Frozen a0d752ea current-work-v162 (8cases across01/02/03) and flow-model-v162 (10cases across04/05) are both submitted; source162 unchanged. Five exact controls and full replay required. Current-work retains original first-step repairs, increases later iterations; flow-model varies co-flow power/coefficient while holding output prices fixed. No throughput result yet.
-
-## Earlier live checkpoint 2026-09-22 01:44 UTC
-
-Fresh03V3 (protocol3fc121ad):11/12complete, finalseed50022KKrepeat2started01:32:49UTC. PILOT2660/2622 vsbaseline2639/2612; NMS2461/2444 and2361/2380; KK2084/2093 and2094/pending. Four PILOT traces independently replayed; partiallaunch audit checks actual binaries/32affinity/noquota on11complete runs. Complete fresh/source/runtime and full replay audits only once the last repetition finishes. Preserve all comparisons even though provisional aggregate gain9.11%misses10%. Archivecompactmetadataonly.
-
-Current-workbatch6/8complete:01control739/I1024=732/I2048=731;02control1408/I3072=1402/I4096fails t1 at1029.213ms. Original failure is in native.log and audited, no partial score.03I6144/I8192pending. Finishaudit/exactcontrols before reporting full batch. Flow-model10cases and terminal-pending16cases are running/queued. No archived frontier change in this continuation yet.
-
-## Completed fresh/work audits 2026-09-22 01:53 UTC
-
-Fresh03V3all12complete/strictvalid/replayed; finalKKseed50022repeat2=2130. Finalcandidate2660/2622vsbaseline2639/2612 and per-input max2461/2380: +9.109688%reference, +.590364%baseline. Largestcandidateentry727.685ms,RSS<465MB. Fullreport RANDOM03_FRESH_VALIDATION_V3.md. Fresh reference updater preservesV2history and selectsV3; dashboard updated. No fresh10%claim.
-
-Current-work8/8complete/audited;03I8192=2619loses2646. Three controls allsixfieldexact; REPORT.md/failures.json retain02I4096t1deadline1029.213ms. No recordchange. Flow-model04all5complete/auditedandallvariantslose2696/2558/2714/2319vs2782;05pending. Terminal-pending-v164all16submitted, pending. Source164compiled/test audit is complete; no throughputclaim.
-
-General05record2314and selected4302are independently verified/promoted. Seven off controls are six-field exact. Exact and paired qualification remain pending. [Record evidence](results/random12345-terminal-pending-split-full-v164/GENERAL05_RECORD.md).
-
-
-## Latest local-refinement checkpoint (2026-09-22 02:27 UTC)
-
-The first six source165 full runs are independently audited. General reactive
-RANDOM-01 scores647/642, RANDOM-02 scores1106/1090, and RANDOM-03 scores1634/1616
-for zero/five local proposals. These are negative changes, and do not alter the
-stronger selected or windowed records. Twelve crowded cases remain pending.
-The selected4302 and general2314 exact/paired qualification batches are pending.
-All92 historical selected RANDOM-05 frontier/waiting rows pass after promotion.
-Keep the running local trials' frozen4254parent; do not mutate their configuration.
-
-
-## Strict runtime diagnosis
-
-The selected05qualification's disabled-credit seed3 failed at step0 on research55:
-assignment498.259ms (Hungarian469.424ms), look-ahead522.687ms, total1045.313ms.
-Original failure audited and preserved in record4302/failure-details.json; no
-score. Do not infer a host cause or silently use the older successfulseed3score.
-Map-only preprocessing already allocates graph/caches. Simulator reveals tasks
-only after initialize(), so matching or chain preparation cannot move earlier.
-The new startup-work tests are fixed complete portfolios, not timed partial search.
+Hosts: research35|research36|research37|research39|research46|research47|
+research48|research50|research51|research52|research55|research56.
+CPU model exactly AMD EPYC 9354 32-Core Processor. Actual allocation guards are
+mandatory. Map preprocessing precedes task revelation; task-dependent matching
+cannot move into initialization. Original timeout causes remain unproven.

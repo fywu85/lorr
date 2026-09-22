@@ -7,9 +7,14 @@ source[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb7
 Crediting half of the next committed movement at the forecast boundary adds48tasks
 to4,254at unchanged fixed work. Full2,000steps pass independent replay, strict
 1s entries and32GB: mean582.723/max830.909ms, RSS491.999MB. The disabled4254
-control matches all six trace fields; fullcredit1loses at4250. Exact repetition
-and three further paired planner seeds are running under a frozen protocol.
-One disabled-credit seed3control failed at step0/1,045.313ms; retain the failure. No complete four-pair qualification or fresh-input gain is claimed for4,302yet. Separate smaller declared first-step budgets are being evaluated.
+control matches all six trace fields; fullcredit1loses at4250. The exact repeat
+also matches all six fields. Candidate seeds0/1/2/3 score4302/4250/4276/4224.
+All seven new attempts are complete and audited, but the disabled-credit seed3
+control failed at step0/1,045.313ms. The three valid pairs improve1.0477%;
+this does not complete the declared four-pair qualification. Largest valid
+qualification entry956.058ms. No fresh-input gain is claimed for4,302yet.
+Separate smaller declared first-step budgets are being evaluated.
+[Qualification report](results/random05-record4302-split-full-v164/REPORT.md).
 [Full comparison](results/random12345-terminal-pending-split-full-v164/REPORT.md).
 
 The preceding4,254traffic-field profile repeats exactly and improves all four
@@ -54,7 +59,7 @@ These are selected single-seed maxima. Exact configurations and executable hashe
 are in [best-four-cores.json](best-four-cores.json) and
 [best-32-workers.json](best-32-workers.json). The four-core source is
 [5f81613](https://github.com/fywu85/lorr/commit/5f81613); the32-worker source is
-[4fb9498e](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad). Both use declared map-specific
+[30a56647](https://github.com/fywu85/lorr/commit/30a5664757b8ffad1150f5eb763c747ba1001bed). Both use declared map-specific
 guidance and known-horizon triage enabled by `--trick RANDOM-05`.
 
 ## Earlier four-core frozen independent-input comparison
