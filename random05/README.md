@@ -225,3 +225,29 @@ eligible-agent count is at most`R05_HUNGARIAN`. Default0 uses Hungarian assignme
 Completed proposals certify price tolerance and caps; budget exhaustion falls
 back to a complete Hungarian assignment. There is no timed partial schedule.
 Nonzero tolerance can change throughput.
+
+## Exact runtime controls
+
+`R05_MATCH_SIMD=1` uses runtime-dispatched AVX2 Hungarian relaxations, with the
+same double-precision operations, stable column tie breaking and complete
+augmentations. Unsupported processors and the alternative free-column tie
+policy retain the scalar scan. `R05_MATCH_SKIP_ZERO=1` avoids no-op dual updates;
+`R05_COMPACT_IDLE=1` avoids redundant identical free optional columns.
+
+`R05_PERSISTENT_WORKER=1` runs initialization and each complete planning call
+synchronously on one solver-owned thread. The competition driver otherwise
+creates a new caller thread each step, losing its OpenMP team and thread-local
+workspace. The worker does no planning between calls, uses only currently
+revealed tasks, and joins before solver/environment destruction. The original
+simulator clock includes dispatch and waiting. These are general implementation
+controls, independent of the explicitly gated map-specific presets.
+
+`R05_DYNAMIC_WORK=1` distributes independent fixed rollout items and shared
+ranking builds dynamically. Random streams, candidate indices, complete work
+and final ordered selection are unchanged. It also schedules whole independent
+LNS islands dynamically; each island retains its own seeded search.
+
+Portable interprocedural optimization is available with `-DPILOT_IPO=ON`. GRID
+measurements also record `OMP_PROC_BIND=spread` and `OMP_PLACES=threads` inside
+the verified16physical-core/32worker allocation. Exact regression and prefix
+checks are complete; full-run reliability qualification is in progress.

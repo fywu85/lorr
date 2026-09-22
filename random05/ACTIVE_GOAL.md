@@ -1,6 +1,6 @@
 # Active PILOT goal: all five RANDOM instances
 
-Updated 2026-09-22 06:36 UTC.
+Updated 2026-09-22 07:33 UTC.
 
 **Status: reliability repair before the final report.** The latest user explicitly requests fixing the new startup deadline failures. Preserve the original ten-seed attempts; test exact runtime changes, repeat full reliability/statistical validation, log/commit/push, then pause. No open-ended throughput search is resumed.
 
@@ -42,9 +42,9 @@ The all-instance ten-percent references are useful yardsticks; only RANDOM-03/04
 
 ## Wrap-up and paused handoff
 
-The source168 all-five runtime comparison is complete: 18 independently audited runs, 16 historical exact comparisons and nine exact off/on pairs. Every declared search step remains; no throughput change is claimed. All 29 RANDOM-01 forecast cap/weight trials and eight RANDOM-04 layout trials are also complete and audited. Retain RANDOM-01 radius8/max32/weight1 and the current RANDOM-04 layout. No benchmark jobs remain active.
+The source168 all-five runtime comparison is complete: 18 independently audited runs, 16 historical exact comparisons and nine exact off/on pairs. Every declared search step remains; no throughput change is claimed. All 29 RANDOM-01 forecast cap/weight trials and eight RANDOM-04 layout trials are also complete and audited. Retain RANDOM-01 radius8/max32/weight1 and the current RANDOM-04 layout. Those earlier throughput trials are complete; the later reliability batches below are active.
 
-The source170 diagnostic is complete. Both full controls independently replay and match the selected745/2799trajectories in all six fields. All600/1000native suppression masks match the reconstruction; maxima113.104/665.535ms. RANDOM-01 has8opened orders unfinished, and all suppressed loaded robot-steps already exceed the physical deadline lower bound. RANDOM-04 has119opened orders unfinished,21within a five-action physical lower bound; the bound ignores traffic and is not a recovery estimate. No new throughput record, fresh qualification or inherent-ceiling claim follows. [Complete diagnosis](results/random14-triage-diagnostic-split-full-v170/REPORT.md). No PILOT benchmark/build/probe jobs remain active.
+The source170 diagnostic is complete. Both full controls independently replay and match the selected745/2799trajectories in all six fields. All600/1000native suppression masks match the reconstruction; maxima113.104/665.535ms. RANDOM-01 has8opened orders unfinished, and all suppressed loaded robot-steps already exceed the physical deadline lower bound. RANDOM-04 has119opened orders unfinished,21within a five-action physical lower bound; the bound ignores traffic and is not a recovery estimate. No new throughput record, fresh qualification or inherent-ceiling claim follows. [Complete diagnosis](results/random14-triage-diagnostic-split-full-v170/REPORT.md). That diagnostic phase is complete; the later reliability work below remains active.
 
 On an explicit future resume, retain the human-selected priority on RANDOM-01/04 while keeping all five in scope. No inherent ceiling is established. Do not automatically resume merely because the qualification goal remains unmet.
 
@@ -57,3 +57,21 @@ Frozen planner seeds0..9 on each archived instance;23matching historical seed ru
 
 
 [Bounded reliability protocol](experiments/random345-reliability-ipo-protocol.json). The original seed protocol remains frozen; improved implementation validation will be a separate, predeclared batch.
+
+## Reliability repair before reporting
+
+The original frozen ten-seed evaluation is complete and independently audited:
+01/02 pass10/10,03/04 pass9/10,05 passes7/10. Every missing result is an explicit
+startup timeout, not a partial score. The original sample-SD report remains
+[archived](results/random12345-wrapup-seeds10-split-full/REPORT.md).
+
+IPO and explicit worker binding alone are insufficient: the separate full v171
+attempt has7entry timeouts and1allocation refusal. Exact SIMD Hungarian scans
+then reduce startup solve time04about356→211ms and05about358→172ms. A synchronous
+persistent Entry worker preserves the OpenMP team and thread-local workspace
+across the simulator's fresh caller threads. Full v173 still has three early
+timeouts, so reliability is not yet claimed. v174 tests dynamic scheduling of
+the same independent fixed work and passive barrier waiting. All fixed budgets,
+objectives, full horizons, strict deadlines and source/input/resource checks
+remain. No new throughput search is authorized. Finish reliability, sample SD,
+logs and scoped commit/push, then pause.

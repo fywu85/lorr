@@ -1,5 +1,11 @@
 # PILOT reliability wrap-up
 
+Latest reliability continuation: v173 full30-seed batch still has deadline failures (04seed5/8 startup1024.577/1083.437ms;05seed8 step1/1127.361ms) and preflight refusals (04seed3/9,05seed5). Preserve this unsuccessful attempt, do not report reliability solved. v174 source2d893f96 adds exact dynamic scheduling of independent fixed rollout jobs/shared ranking builds/whole window islands; original random streams, budgets and ordered result reductions unchanged. Build8922211 running. Eighteen predeclared20-step controls compare static/dynamic/dynamic+passive (`OMP_WAIT_POLICY=PASSIVE`, `GOMP_SPINCOUNT=0`) in experiments/random345-dynamic-startup-v174.json. Original request remains fix reliability + full sampleSD report + scoped commit/push + pause. No throughput optimization or deadline relaxation.
+
+
+Current reliability repair (2026-09-22): user explicitly requests fixing failures before reporting, then finish/log/commit/push/pause. No open-ended throughput development. Original 50 seed observations are audited:01/02 10/10,03/04 9/10,05 7/10. Keep those failures. IPO+binding startup probes passed8/8, but full v171 has further startup failures, so compilation/binding alone is insufficient. v172 adds exact AVX2-dispatched Hungarian scans (3,840 exact tests plus existing regression passed; matched startup solve04 about356→211ms,05 about358→172ms). v173 adds optional synchronous persistent Entry worker: simulator creates a new caller thread per step, destroying OpenMP/thread-local workspace otherwise. Source8870903e; build job8922167 currently compiles/tests. Frozen12 startup controls in experiments/random345-persistent-startup-v173.json. Need run/audit those, freeze successful implementation for full ten-seed validation, prove exact full trajectories, generate mean±sampleSD reports, scoped commit/push, then pause. Existing full v171 jobs finish naturally and remain separate evidence.
+
+
 Latest steering: user explicitly requests fixing reliability BEFORE reporting,
 then completing the best-throughput/standard-deviation report and stopping.
 Do not resume open-ended throughput research. Preserve original failed runs.

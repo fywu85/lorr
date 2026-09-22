@@ -143,8 +143,8 @@ def main():
               'reused seeds helped select those profiles. They do not establish unseen-map',
               'or fresh-task-stream variability, nor a statistical confidence claim against',
               'the maximum of the NMS/KK observations. General solvers were not re-evaluated.', '',
-              'This completes the user-authorized statistical wrap-up; development is to',
-              'remain paused until an explicit request to resume.', '',
+              'This report describes this frozen measurement batch only. Any later',
+              'reliability repair is evaluated separately; failed attempts remain here.', '',
               '[Frozen protocol](../../experiments/'+args.protocol.name+'), [independent audit](audit.json), [full numeric statistics](seed-statistics.json).', '']
     report = dict(created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), protocol=str(args.protocol),
                   protocol_sha256=sha(args.protocol), new_audit_sha256=sha(args.audit),

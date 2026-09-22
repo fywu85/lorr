@@ -1,0 +1,1008 @@
+{
+  "created_utc": "2026-09-22T07:12:29.092307+00:00",
+  "protocol": "random05/experiments/random12345-wrapup-seeds10-protocol.json",
+  "protocol_sha256": "61f1fdf7f18bc0897b9e8889b359c9b95d961a6cc4a7a84b00e0f6e5c4029f22",
+  "new_audit_sha256": "b6e11e12c1c81d12a4369eff3a80d3719df2235865b4370e83a7670e1c56f0cb",
+  "estimator": "Arithmetic mean and sample standard deviation with denominator n-1. One observation per distinct planner seed; identical repeats never increase n. Report individual scores, n, range, observed best and both mean/best versus matched max(NMS,KK).",
+  "selection_limit": "Some reused seeds were involved in choosing these configurations. These are descriptive development-profile statistics, not unbiased held-out evidence or a formal confidence interval for new instances.",
+  "instances": {
+    "RANDOM-01": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 738.7,
+      "sample_standard_deviation": 3.1640339933558095,
+      "minimum": 735,
+      "maximum": 745,
+      "matched_max_nms_kk": 692,
+      "mean_gain_percent": 6.748554913294802,
+      "best_gain_percent": 7.658959537572252,
+      "worst_valid_entry_ms": 224.04270200000002,
+      "attempts": [
+        {
+          "instance": "RANDOM-01",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-01-match-forecast-h8-seed0",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-match-forecast-split-full-v167/trick-random-01-match-forecast-h8-seed0/summary.json",
+          "tasks": 740,
+          "latency_seconds": {
+            "mean": 0.07224168279166672,
+            "max": 0.115925994
+          },
+          "peak_rss_bytes": 393945088,
+          "finished_utc": "2026-09-22T04:24:36.347075+00:00",
+          "result_sha256": "1a6baf8a08aef1370cb3b6ef320690813c14848985498ae4d90cc11191ed119f"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-01-match-forecast-h8-seed1",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-match-forecast-split-full-v167/trick-random-01-match-forecast-h8-seed1/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.0738110216166667,
+            "max": 0.116399116
+          },
+          "peak_rss_bytes": 405118976,
+          "finished_utc": "2026-09-22T04:23:17.292730+00:00",
+          "result_sha256": "734a998c0a13ffbac51afa2ac7171e66972e6c1fe2bf290aff582855cfcc9de1"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-01-record740-seed2",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed2/summary.json",
+          "tasks": 742,
+          "latency_seconds": {
+            "mean": 0.07111647431833333,
+            "max": 0.109274427
+          },
+          "peak_rss_bytes": 393465856,
+          "finished_utc": "2026-09-22T04:36:25.846364+00:00",
+          "result_sha256": "f1b7ca0c069295e4fee1b65d564cc97a8be6519c88563087249e62d49a49ba58"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-01-record740-seed3",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed3/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.07504633488333329,
+            "max": 0.110930595
+          },
+          "peak_rss_bytes": 383442944,
+          "finished_utc": "2026-09-22T04:37:48.121237+00:00",
+          "result_sha256": "a3afb0c3da734a6e310a54f8c0692e3c70409260603ea3d73acfd5525a2eab09"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-01-record740-seed4",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random01-record740-split-full-v167/trick-random-01-record740-seed4/summary.json",
+          "tasks": 745,
+          "latency_seconds": {
+            "mean": 0.07090110236499998,
+            "max": 0.119472197
+          },
+          "peak_rss_bytes": 373231616,
+          "finished_utc": "2026-09-22T04:44:25.643796+00:00",
+          "result_sha256": "73422a15ffe548ea468a994e7afcdeb7483bf83a99c400e55fe9fa3a030b1cc7"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-01-wrapup-seed5",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed5/summary.json",
+          "tasks": 735,
+          "latency_seconds": {
+            "mean": 0.11026725971333327,
+            "max": 0.224042702
+          },
+          "peak_rss_bytes": 391094272,
+          "finished_utc": "2026-09-22T06:43:04.317532+00:00",
+          "result_sha256": "942a8c9cfb70e361749d58ef38731f8124f7954400fd7fef87a8eb765f113167"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-01-wrapup-seed6",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed6/summary.json",
+          "tasks": 736,
+          "latency_seconds": {
+            "mean": 0.07663858791000001,
+            "max": 0.162526578
+          },
+          "peak_rss_bytes": 395153408,
+          "finished_utc": "2026-09-22T06:42:41.492661+00:00",
+          "result_sha256": "ea8ed526598a44b1d271ea7bad551317a2175ba1da085d49aaf4251c6ec99267"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-01-wrapup-seed7",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed7/summary.json",
+          "tasks": 737,
+          "latency_seconds": {
+            "mean": 0.09821786429666664,
+            "max": 0.157990265
+          },
+          "peak_rss_bytes": 386334720,
+          "finished_utc": "2026-09-22T06:42:56.514552+00:00",
+          "result_sha256": "6840b704493970a3dde0d5b5127dcbc029ec2caa3a2fd62a9f7a27f4dd77cd2d"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-01-wrapup-seed8",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed8/summary.json",
+          "tasks": 739,
+          "latency_seconds": {
+            "mean": 0.10161274219500004,
+            "max": 0.185244198
+          },
+          "peak_rss_bytes": 390131712,
+          "finished_utc": "2026-09-22T06:42:58.986673+00:00",
+          "result_sha256": "38a1ccd1dfebec79adc2bf03e28d9beb18a314e2cf69e7100e93016d04150f06"
+        },
+        {
+          "instance": "RANDOM-01",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-01-wrapup-seed9",
+          "valid": true,
+          "source_commit": "6074498c3357d3f59f6e5a32e7ad478e81dd1bd3",
+          "binary_sha256": "0f27448cec1074f934909461f4b54592822d5c7a627b3908da0770d83c75104e",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-01-wrapup-seed9/summary.json",
+          "tasks": 735,
+          "latency_seconds": {
+            "mean": 0.10858103614499996,
+            "max": 0.221602734
+          },
+          "peak_rss_bytes": 400285696,
+          "finished_utc": "2026-09-22T06:43:03.353182+00:00",
+          "result_sha256": "696996ab764958a77e2dab070eca79fe794d1bd757f5af71ba75cd23450e821f"
+        }
+      ]
+    },
+    "RANDOM-02": {
+      "valid_seeds": 10,
+      "attempted_seeds": 10,
+      "failed_seeds": [],
+      "mean": 1394.9,
+      "sample_standard_deviation": 5.97122730730924,
+      "minimum": 1386,
+      "maximum": 1408,
+      "matched_max_nms_kk": 1256,
+      "mean_gain_percent": 11.058917197452246,
+      "best_gain_percent": 12.101910828025474,
+      "worst_valid_entry_ms": 780.246374,
+      "attempts": [
+        {
+          "instance": "RANDOM-02",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed0",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed0/summary.json",
+          "tasks": 1396,
+          "latency_seconds": {
+            "mean": 0.31830460569833346,
+            "max": 0.467467462
+          },
+          "peak_rss_bytes": 362078208,
+          "finished_utc": "2026-09-21T16:03:56.171365+00:00",
+          "result_sha256": "1e20dab8771bde1dc424d9b7f4cb4ded7203104e204ccf8a6b6f8a6e6ea89951"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed1",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed1/summary.json",
+          "tasks": 1391,
+          "latency_seconds": {
+            "mean": 0.33078009813,
+            "max": 0.505583183
+          },
+          "peak_rss_bytes": 363495424,
+          "finished_utc": "2026-09-21T16:04:03.531619+00:00",
+          "result_sha256": "c20959b78903d8c1995f2ea50a3a01d37b5541ebd59afdebcb3168db4e04ee8c"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-02-resume-cutoff-0p875",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json",
+          "tasks": 1408,
+          "latency_seconds": {
+            "mean": 0.3175326956533331,
+            "max": 0.49279242
+          },
+          "peak_rss_bytes": 368418816,
+          "finished_utc": "2026-09-21T15:54:03.792427+00:00",
+          "result_sha256": "00dc988868d24ab7f90bdc4ef3b482078479113e17f65aedfa15e857db7a5060"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-02-record1408-seed3",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random02-record1408-split-full-v132/trick-random-02-record1408-seed3/summary.json",
+          "tasks": 1393,
+          "latency_seconds": {
+            "mean": 0.4425868066333333,
+            "max": 0.681120318
+          },
+          "peak_rss_bytes": 366022656,
+          "finished_utc": "2026-09-21T16:05:12.731515+00:00",
+          "result_sha256": "8d3c62c31190b990ca3c3a5377b1edef31c23fd7ebf14eb01475bc1edf5394f2"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 4,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed4",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed4/summary.json",
+          "tasks": 1392,
+          "latency_seconds": {
+            "mean": 0.3274358640833336,
+            "max": 0.592901212
+          },
+          "peak_rss_bytes": 369102848,
+          "finished_utc": "2026-09-22T06:46:01.678928+00:00",
+          "result_sha256": "95367ef29a46143514d6d42a18c9dc3d247dce9f7963d9af3beb2da38e62fbce"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed5",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed5/summary.json",
+          "tasks": 1395,
+          "latency_seconds": {
+            "mean": 0.4043235946766667,
+            "max": 0.685945056
+          },
+          "peak_rss_bytes": 362790912,
+          "finished_utc": "2026-09-22T06:47:19.918908+00:00",
+          "result_sha256": "f4f007574bd2c17f16a5254c9520d1a0adb9c47cf86c8cfde156b4e9111b0369"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed6",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed6/summary.json",
+          "tasks": 1391,
+          "latency_seconds": {
+            "mean": 0.41714780204666674,
+            "max": 0.744428547
+          },
+          "peak_rss_bytes": 361213952,
+          "finished_utc": "2026-09-22T06:47:27.659071+00:00",
+          "result_sha256": "93c17d49d87205a677751d1d00da2f6c0ccbfd3d0db4e7dae542f8aebb9cb8cb"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed7",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed7/summary.json",
+          "tasks": 1386,
+          "latency_seconds": {
+            "mean": 0.4434488194866664,
+            "max": 0.749312058
+          },
+          "peak_rss_bytes": 376213504,
+          "finished_utc": "2026-09-22T06:47:43.595259+00:00",
+          "result_sha256": "6610d53180a717d39a610479bf077035f933f26a59fbf175984ba517853e7f18"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed8",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed8/summary.json",
+          "tasks": 1398,
+          "latency_seconds": {
+            "mean": 0.4227015016150002,
+            "max": 0.780246374
+          },
+          "peak_rss_bytes": 368721920,
+          "finished_utc": "2026-09-22T06:47:40.853774+00:00",
+          "result_sha256": "32e2b4e2ba6f91f5c8bf87312fd2c7ed9c23de2fd89483febb25afe4c0db7237"
+        },
+        {
+          "instance": "RANDOM-02",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-02-wrapup-seed9",
+          "valid": true,
+          "source_commit": "027df4d97ad737ad6319354abe8b92afc2840473",
+          "binary_sha256": "175466cf2a3ee9bcb2e62905f1fffa8173dc66a2bab9c4d71f11914f22fe4801",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-02-wrapup-seed9/summary.json",
+          "tasks": 1399,
+          "latency_seconds": {
+            "mean": 0.33260092615499953,
+            "max": 0.561810875
+          },
+          "peak_rss_bytes": 370507776,
+          "finished_utc": "2026-09-22T06:49:25.052513+00:00",
+          "result_sha256": "93a367efb8d0ee8afa6f7d71af0ad7689886867a21b604ebfc4dc7ac34d2879e"
+        }
+      ]
+    },
+    "RANDOM-03": {
+      "valid_seeds": 9,
+      "attempted_seeds": 10,
+      "failed_seeds": [
+        6
+      ],
+      "mean": 2616.1111111111113,
+      "sample_standard_deviation": 15.5840017681952,
+      "minimum": 2598,
+      "maximum": 2646,
+      "matched_max_nms_kk": 2359,
+      "mean_gain_percent": 10.899156893222184,
+      "best_gain_percent": 12.166172106824934,
+      "worst_valid_entry_ms": 931.968811,
+      "attempts": [
+        {
+          "instance": "RANDOM-03",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-03-record2646-seed0",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random03-record2646-split-full-v162/trick-random-03-record2646-seed0/summary.json",
+          "tasks": 2611,
+          "latency_seconds": {
+            "mean": 0.5010945308175004,
+            "max": 0.710561999
+          },
+          "peak_rss_bytes": 477319168,
+          "finished_utc": "2026-09-22T01:04:51.706141+00:00",
+          "result_sha256": "cbdb58c4190fe76a2d3031d5a1531ab66a2530cd917ddcd67d63fefdfe3dcdda"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-03-record2646-seed1",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random03-record2646-split-full-v162/trick-random-03-record2646-seed1/summary.json",
+          "tasks": 2606,
+          "latency_seconds": {
+            "mean": 0.49859996224749964,
+            "max": 0.711851626
+          },
+          "peak_rss_bytes": 479109120,
+          "finished_utc": "2026-09-22T01:04:49.780194+00:00",
+          "result_sha256": "d9493a8f6ede6a64d20a60cf59a76a1e71962a4213fb6cd1db0c00f254da5715"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-03-record2646-seed2",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random03-record2646-split-full-v162/trick-random-03-record2646-seed2/summary.json",
+          "tasks": 2611,
+          "latency_seconds": {
+            "mean": 0.5031706227562502,
+            "max": 0.730523452
+          },
+          "peak_rss_bytes": 469889024,
+          "finished_utc": "2026-09-22T01:04:53.434165+00:00",
+          "result_sha256": "cd7c2384db82b3342d15ac73fbffd86c0caa527ee3073e65d56f36dba12349e4"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-03-progress-transfer-mixp25-span32",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json",
+          "tasks": 2646,
+          "latency_seconds": {
+            "mean": 0.48410258520874977,
+            "max": 0.67650678
+          },
+          "peak_rss_bytes": 469467136,
+          "finished_utc": "2026-09-22T00:53:28.091236+00:00",
+          "result_sha256": "4b9fc100ffd25ee4fd38d9a6aed6fe382bdef7bbeb39896552cfc342f60b7717"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-03-record2646-seed4",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random03-record2646-split-full-v162/trick-random-03-record2646-seed4/summary.json",
+          "tasks": 2610,
+          "latency_seconds": {
+            "mean": 0.47350208248624986,
+            "max": 0.682282584
+          },
+          "peak_rss_bytes": 482013184,
+          "finished_utc": "2026-09-22T01:04:29.610162+00:00",
+          "result_sha256": "b67365ea9206e0ac749aa686fe34d3d6ca7ae2d71318a109bb0d1a0397ddb207"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-03-wrapup-seed5",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-03-wrapup-seed5/summary.json",
+          "tasks": 2633,
+          "latency_seconds": {
+            "mean": 0.6177153926462499,
+            "max": 0.931968811
+          },
+          "peak_rss_bytes": 473264128,
+          "finished_utc": "2026-09-22T06:50:00.811032+00:00",
+          "result_sha256": "e253ac2d074b358b0ccb9da2569a394c94b1306021c58016335eb1e7fb975ab5"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-03-wrapup-seed6",
+          "valid": false,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-03-wrapup-seed6/summary.json",
+          "tasks": null,
+          "exit": 124,
+          "timeouts": [
+            {
+              "phase": "compute",
+              "timestep": 0,
+              "elapsed_ms": 1214.267
+            }
+          ],
+          "native_log_sha256": "eafdd8a0f75bcc061393798acb812a0765ac68df865cf4e440f2fc6de179e5fd",
+          "failure_kind": "entry_timeout"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-03-wrapup-seed7",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-03-wrapup-seed7/summary.json",
+          "tasks": 2626,
+          "latency_seconds": {
+            "mean": 0.4894010417199998,
+            "max": 0.684997143
+          },
+          "peak_rss_bytes": 469204992,
+          "finished_utc": "2026-09-22T06:48:17.875659+00:00",
+          "result_sha256": "509eb0b15708c792d4b59afe537e6489729034de992636eb93066eb49ee5a0fc"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-03-wrapup-seed8",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-03-wrapup-seed8/summary.json",
+          "tasks": 2598,
+          "latency_seconds": {
+            "mean": 0.64592676148,
+            "max": 0.918186973
+          },
+          "peak_rss_bytes": 481218560,
+          "finished_utc": "2026-09-22T06:50:23.048445+00:00",
+          "result_sha256": "7661597ccfc0c5e46e2ce0a5d5b6492af0ec489d0e7d990481a9588b2c7ac7a4"
+        },
+        {
+          "instance": "RANDOM-03",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-03-wrapup-seed9",
+          "valid": true,
+          "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+          "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-03-wrapup-seed9/summary.json",
+          "tasks": 2604,
+          "latency_seconds": {
+            "mean": 0.48775221429499976,
+            "max": 0.702379276
+          },
+          "peak_rss_bytes": 471265280,
+          "finished_utc": "2026-09-22T06:48:16.504688+00:00",
+          "result_sha256": "c76fd0411b2f1ea7152654c10a2009070c6cff60b243c430f29b5983a2529186"
+        }
+      ]
+    },
+    "RANDOM-04": {
+      "valid_seeds": 9,
+      "attempted_seeds": 10,
+      "failed_seeds": [
+        8
+      ],
+      "mean": 2775.3333333333335,
+      "sample_standard_deviation": 14.309088021254185,
+      "minimum": 2761,
+      "maximum": 2799,
+      "matched_max_nms_kk": 2649,
+      "mean_gain_percent": 4.769095256071476,
+      "best_gain_percent": 5.662514156285381,
+      "worst_valid_entry_ms": 925.389484,
+      "attempts": [
+        {
+          "instance": "RANDOM-04",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-04-zero-update-on-seed0",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed0/summary.json",
+          "tasks": 2799,
+          "latency_seconds": {
+            "mean": 0.4745501475730008,
+            "max": 0.664720507
+          },
+          "peak_rss_bytes": 687599616,
+          "finished_utc": "2026-09-22T05:33:23.330167+00:00",
+          "result_sha256": "ed7c3112239c9bb5574be9d136f50051bfc618836c64ed310ea4b2ad40c5f390"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-04-zero-update-on-seed1",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed1/summary.json",
+          "tasks": 2771,
+          "latency_seconds": {
+            "mean": 0.4716638594140004,
+            "max": 0.669091341
+          },
+          "peak_rss_bytes": 688832512,
+          "finished_utc": "2026-09-22T05:33:20.453114+00:00",
+          "result_sha256": "7ba2bc94dab4ec51d59d64f2cd49b7183a46449cd58077629121f53db5c54894"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-04-zero-update-on-seed2",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed2/summary.json",
+          "tasks": 2761,
+          "latency_seconds": {
+            "mean": 0.47859847815800005,
+            "max": 0.666851636
+          },
+          "peak_rss_bytes": 686624768,
+          "finished_utc": "2026-09-22T05:33:37.313844+00:00",
+          "result_sha256": "2e7c506b566867451504b9058623fbf89cadffa5d133b7a4bc7c51620c0f5a67"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-04-zero-update-on-seed3",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed3/summary.json",
+          "tasks": 2761,
+          "latency_seconds": {
+            "mean": 0.4765414471449996,
+            "max": 0.666778316
+          },
+          "peak_rss_bytes": 685826048,
+          "finished_utc": "2026-09-22T05:33:35.256306+00:00",
+          "result_sha256": "d22274aba9fdb2f6010f156644a437795f317be1222d4477df9512ea87297f02"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 4,
+          "historical": true,
+          "name": "trick-random-04-zero-update-on-seed4",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-zero-update-split-full-v168/trick-random-04-zero-update-on-seed4/summary.json",
+          "tasks": 2766,
+          "latency_seconds": {
+            "mean": 0.46302153631600096,
+            "max": 0.661971742
+          },
+          "peak_rss_bytes": 690151424,
+          "finished_utc": "2026-09-22T05:33:21.793327+00:00",
+          "result_sha256": "cc8d8234c3965f2e4fed1b6117153ff2c5abf66ebf81b85b289df5f768cafa8c"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-04-wrapup-seed5",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-04-wrapup-seed5/summary.json",
+          "tasks": 2789,
+          "latency_seconds": {
+            "mean": 0.517998006186,
+            "max": 0.731914192
+          },
+          "peak_rss_bytes": 687267840,
+          "finished_utc": "2026-09-22T06:50:24.672309+00:00",
+          "result_sha256": "6b2bf34c9648cec37004e63b84e4cc81636a62af95d3ef1b8c1ffe68e4287248"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-04-wrapup-seed6",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-04-wrapup-seed6/summary.json",
+          "tasks": 2763,
+          "latency_seconds": {
+            "mean": 0.46773137533899956,
+            "max": 0.759612902
+          },
+          "peak_rss_bytes": 689278976,
+          "finished_utc": "2026-09-22T06:49:34.032634+00:00",
+          "result_sha256": "22ba96c865e72ecaaa2a30fde33760dcfc695b19f02bb9c3fd3f0c76bff95019"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-04-wrapup-seed7",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-04-wrapup-seed7/summary.json",
+          "tasks": 2790,
+          "latency_seconds": {
+            "mean": 0.553342988788,
+            "max": 0.859299952
+          },
+          "peak_rss_bytes": 680845312,
+          "finished_utc": "2026-09-22T06:51:00.291232+00:00",
+          "result_sha256": "0cfddf7a457d2ee6955bce8a08f469b82610dc5bc92ddd399356d7df603e79b5"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-04-wrapup-seed8",
+          "valid": false,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-04-wrapup-seed8/summary.json",
+          "tasks": null,
+          "exit": 124,
+          "timeouts": [
+            {
+              "phase": "compute",
+              "timestep": 0,
+              "elapsed_ms": 1096.994
+            }
+          ],
+          "native_log_sha256": "fef0cebea94ab453276ed88483977f68b0722f2f2db7b2ec00ad6f612d3d03cd",
+          "failure_kind": "entry_timeout"
+        },
+        {
+          "instance": "RANDOM-04",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-04-wrapup-seed9",
+          "valid": true,
+          "source_commit": "0f95c7878ac7bf4b5393a18b6feb4b16f1c400b6",
+          "binary_sha256": "96875dae2d61b629df4d31ab012f4908a654669640bffffa7142fc4945bd1ad6",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-04-wrapup-seed9/summary.json",
+          "tasks": 2778,
+          "latency_seconds": {
+            "mean": 0.46747281119100015,
+            "max": 0.925389484
+          },
+          "peak_rss_bytes": 681902080,
+          "finished_utc": "2026-09-22T06:49:33.903793+00:00",
+          "result_sha256": "041067fe93b3ba3d855f13e76fa4694699b9fc10616339469cc3fc67954c2a51"
+        }
+      ]
+    },
+    "RANDOM-05": {
+      "valid_seeds": 7,
+      "attempted_seeds": 10,
+      "failed_seeds": [
+        6,
+        7,
+        9
+      ],
+      "mean": 4238.428571428572,
+      "sample_standard_deviation": 46.51113537945203,
+      "minimum": 4162,
+      "maximum": 4302,
+      "matched_max_nms_kk": 3172,
+      "mean_gain_percent": 33.620068456134035,
+      "best_gain_percent": 35.62421185372004,
+      "worst_valid_entry_ms": 956.790489,
+      "attempts": [
+        {
+          "instance": "RANDOM-05",
+          "seed": 0,
+          "historical": true,
+          "name": "trick-random-05-terminal-pending-p5",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-terminal-pending-split-full-v164/trick-random-05-terminal-pending-p5/summary.json",
+          "tasks": 4302,
+          "latency_seconds": {
+            "mean": 0.5827228937610007,
+            "max": 0.83090918
+          },
+          "peak_rss_bytes": 491999232,
+          "finished_utc": "2026-09-22T02:19:09.148099+00:00",
+          "result_sha256": "a3ebe9896b68ce5eb815a9478f385ab547678eae8ac32e7a53dee242786398af"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 1,
+          "historical": true,
+          "name": "trick-random-05-terminal-creditp5-seed1",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed1/summary.json",
+          "tasks": 4250,
+          "latency_seconds": {
+            "mean": 0.6437939693705004,
+            "max": 0.956058191
+          },
+          "peak_rss_bytes": 491810816,
+          "finished_utc": "2026-09-22T02:58:53.098880+00:00",
+          "result_sha256": "a7b0ac173b976b8e41deaf44e7abd3eb6d24c8945264e9d65dc7e580fb1da660"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 2,
+          "historical": true,
+          "name": "trick-random-05-terminal-creditp5-seed2",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed2/summary.json",
+          "tasks": 4276,
+          "latency_seconds": {
+            "mean": 0.5752007086845009,
+            "max": 0.806959311
+          },
+          "peak_rss_bytes": 491769856,
+          "finished_utc": "2026-09-22T03:00:14.934781+00:00",
+          "result_sha256": "63cf48d51eeb3b32683d7b6f3862c03c77e9b0e8c81c7e848e52e07f3ed2bb72"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 3,
+          "historical": true,
+          "name": "trick-random-05-terminal-creditp5-seed3",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random05-record4302-split-full-v164/trick-random-05-terminal-creditp5-seed3/summary.json",
+          "tasks": 4224,
+          "latency_seconds": {
+            "mean": 0.5848873130479999,
+            "max": 0.818943001
+          },
+          "peak_rss_bytes": 489660416,
+          "finished_utc": "2026-09-22T03:01:14.509259+00:00",
+          "result_sha256": "38d798be8e4766c65445ea4a049da127dcef6bcbb8b21fd9f73cdddc015d9888"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 4,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed4",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed4/summary.json",
+          "tasks": 4251,
+          "latency_seconds": {
+            "mean": 0.5994845685559996,
+            "max": 0.887052519
+          },
+          "peak_rss_bytes": 491995136,
+          "finished_utc": "2026-09-22T07:01:47.347235+00:00",
+          "result_sha256": "91df7768a419c383ccf6f5d606ba4c5f839c4c3c8e1c5f9fa8a896a2e7ee28a9"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 5,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed5",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed5/summary.json",
+          "tasks": 4204,
+          "latency_seconds": {
+            "mean": 0.5775190997934997,
+            "max": 0.91789291
+          },
+          "peak_rss_bytes": 490795008,
+          "finished_utc": "2026-09-22T07:01:02.845986+00:00",
+          "result_sha256": "aa50f10f31122c5304d7678bf0932c8c2f00db09c0c5d0fddf0541c750685aa7"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 6,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed6",
+          "valid": false,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed6/summary.json",
+          "tasks": null,
+          "exit": 124,
+          "timeouts": [
+            {
+              "phase": "compute",
+              "timestep": 0,
+              "elapsed_ms": 1003.563
+            }
+          ],
+          "native_log_sha256": "783afd0834173f8f1220061e489e59d7a4561d354481b47dbf0492eb8cb0ad4e",
+          "failure_kind": "entry_timeout"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 7,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed7",
+          "valid": false,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed7/summary.json",
+          "tasks": null,
+          "exit": 124,
+          "timeouts": [
+            {
+              "phase": "compute",
+              "timestep": 0,
+              "elapsed_ms": 1157.953
+            }
+          ],
+          "native_log_sha256": "2a2fd9bbfc5cd6470113f91f9fc7ba6ed2e94c4e88a55ab2d7b45ff2533392ab",
+          "failure_kind": "entry_timeout"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 8,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed8",
+          "valid": true,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed8/summary.json",
+          "tasks": 4162,
+          "latency_seconds": {
+            "mean": 0.714073703408,
+            "max": 0.956790489
+          },
+          "peak_rss_bytes": 491319296,
+          "finished_utc": "2026-09-22T07:05:37.727405+00:00",
+          "result_sha256": "8a064d2913d6b25eec411d62ea52b08112f25d2812dc5f195b93e904be0c68c3"
+        },
+        {
+          "instance": "RANDOM-05",
+          "seed": 9,
+          "historical": false,
+          "name": "trick-random-05-wrapup-seed9",
+          "valid": false,
+          "source_commit": "30a5664757b8ffad1150f5eb763c747ba1001bed",
+          "binary_sha256": "4cc3280f6b38749299e68e34794e38d5c3eb6e0f45affd783c77e95afb2b9acd",
+          "evidence": "random05/results/random12345-wrapup-seeds10-split-full/trick-random-05-wrapup-seed9/summary.json",
+          "tasks": null,
+          "exit": 124,
+          "timeouts": [
+            {
+              "phase": "compute",
+              "timestep": 0,
+              "elapsed_ms": 1165.669
+            }
+          ],
+          "native_log_sha256": "5af46eb97b223eff4e73ff16119840a18d6d239f2ece75fe45d2aa2506d82119",
+          "failure_kind": "entry_timeout"
+        }
+      ]
+    }
+  }
+}
