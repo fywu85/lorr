@@ -1,6 +1,6 @@
-# Current RANDOM replay and runtime bottlenecks
+# RANDOM replay and runtime bottleneck snapshot
 
-Selected full archived combined runs; references are matched max(NMS, Kitty Knight).
+Snapshot 2026-09-22T00:39:57.954341+00:00 of the selected full archived combined runs; references are matched max(NMS, Kitty Knight). Later promotions are in [the live dashboard](../../../PILOT_PROGRESS.md).
 All source/input/replay/resource audits are linked below. This is observational diagnosis.
 
 | Instance | Tasks / matched max | Completed loaded mean steps | Completed loaded wait / turn share | Extra cells vs hop bound | Initial orders unfinished |

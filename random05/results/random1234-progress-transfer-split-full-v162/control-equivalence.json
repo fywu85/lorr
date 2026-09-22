@@ -1,0 +1,51 @@
+{
+  "checked_utc": "2026-09-22T01:00:23.659163+00:00",
+  "references": "random05/experiments/random1234-progress-transfer-v162-references.json",
+  "checks": [
+    {
+      "candidate": "runs/random05/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mix0-span32/trick-random-01-progress-transfer-mix0-span32/result.json",
+      "reference": "runs/random05/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/trick-random-01-anneal-temp0p25/result.json",
+      "tasks": 735,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "a9cfcac9989422b55f23d5db7eb740b0c711669b0abed6bcc44a6bec686aa18b",
+      "reference_sha256": "52075c8cdf0898141af3fbfe80f16ad82837ee515c3351421e1905b9837d422f"
+    },
+    {
+      "candidate": "runs/random05/random1234-progress-transfer-split-full-v162/trick-random-02-progress-transfer-mix0-span32/trick-random-02-progress-transfer-mix0-span32/result.json",
+      "reference": "runs/random05/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/trick-random-02-resume-cutoff-0p875/result.json",
+      "tasks": 1408,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "dd890815a18e0f42f1997cf6b0544948cdb611e7355c24662d63fc3aaef3f20c",
+      "reference_sha256": "00dc988868d24ab7f90bdc4ef3b482078479113e17f65aedfa15e857db7a5060"
+    },
+    {
+      "candidate": "runs/random05/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mix0-span32/trick-random-03-progress-transfer-mix0-span32/result.json",
+      "reference": "runs/random05/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/trick-random-03-physical-deadline1/result.json",
+      "tasks": 2621,
+      "equal": {
+        "actualPaths": true,
+        "plannerPaths": true,
+        "actualSchedule": true,
+        "plannerSchedule": true,
+        "events": true,
+        "tasks": true
+      },
+      "result_sha256": "808246bbdaea026a541edd588ee22c357695773b2b25f0d63615bd89b8e4533e",
+      "reference_sha256": "f555b75a8cf3dac1210e8f5a1bff4e9e4a2196e03f971dc8423d558d05319158"
+    }
+  ]
+}

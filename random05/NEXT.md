@@ -1,107 +1,122 @@
-# RANDOM campaign continuation
+# PILOT campaign continuation
 
-Updated 2026-09-22 00:32 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
-ACTIVE_GOAL.md is the current working objective. RANDOM-03/04 ten-percent qualification
-is a milestone inside it. Always headline matched max(NMS, Kitty Knight). The stored
-app goal is stale; do not falsely complete it merely to change its text.
+Updated 2026-09-22 01:02 UTC. The user explicitly requires substantial effort across all five RANDOM instances.
+ACTIVE_GOAL.md is the working objective. Always headline matched max(NMS, Kitty Knight).
+The stored app goal has stale03/04-only wording and old04reference2580/threshold2838;
+do not falsely complete it to change its text. Current user steering governs.
 
 ## Boundaries
 
 Only edit/stage/commit random05/, PILOT_PROGRESS.md and RANDOM05_PROGRESS.md.
 Public fywu85/lorr pushes are authorized; preserve visibility. The user deferred
-renaming random05/ to pilot/ until development is finished; no rename was made. Leave other agents'
-files, commits, GRID jobs and locks alone. No subagents. Fable's provider-credit
-failure is unchanged; do not retry without new credit information.
+renaming random05/ to pilot/ until the end of development; no rename was made.
+Leave other agents' files, commits, GRID jobs and locks alone. No subagents.
+Fable's provider-credit failure is unchanged; do not retry without new information.
 
-Full horizons600/600/800/1000/2000; strict1000ms entries,30s preprocessing,
-32decimalGB guard. Allocate16physical EPYC9354 cores/32SMTworkers with actual
-binding/no-quota verification. Shared hosts allowed. Fixed work completes or fails.
-Held-out50001–50012 and50015–50020 are excluded from tuning at all densities.
-50013/14 remain reserved/ungenerated for04. Freeze source/config/seed/protocol
-before fresh generation. All tuned tricks require --trick RANDOM-0N.
+Full horizons600/600/800/1000/2000; strict1000ms entries,30s initialization,
+32decimalGB process guard. Allocate16bound physical EPYC9354cores/32SMTworkers,
+verify actual topology/affinity/no quota. Shared hosts allowed. Fixed work completes
+or fails. Held-out50001–50012 and50015–50020 are excluded from all tuning;
+50013/14remain reserved/ungenerated04inputs. Freeze protocols before fresh generation.
+All tuned tricks require --trick RANDOM-0N; mark them as tricks in commits/logs.
 
-## Verified frontiers and qualification
+## Current selected records and qualification
 
-Selected735/1408/2621/2782/4254. General727/1397/1634/1616/2226.
-Matchedmax692/1256/2359/2649/3172; leads+6.21/+12.10/+11.11/+5.02/+34.11%.
-R04 target2914 remains132short; fresh03V2 gain8.852% is below10%. Fresh01V1
-qualifies729 only,02V1 qualifies1408,03V2 qualifies2620. No fresh4254 qualification;
-05V6 qualifies4175 only and is NMS-only. Keep all historical failures and caveats.
-The dashboard renderer now puts local references first and correctly derives
-RANDOM34_CAMPAIGN targets from matched-nms-kk-combined.json (fixed stale2580).
+Selected739/1408/2646/2782/4254. General727/1397/1634/1616/2226.
+Matchedmax692/1256/2359/2649/3172; leads+6.79/+12.10/+12.17/+5.02/+34.11%.
+R04target2914still132short. Fresh03V2gain8.852%is below10%. Fresh01V1qualifies729,
+02V1qualifies1408,03V2qualifies2620. No fresh739/2646/4254qualification;05V6qualifies
+4175only and is NMS-only. The dashboard/density ledger use current matched references.
 
-R01 current735: source162/4fb9498e, annealingtemp.25 plus physical deadline gate,
-seed1. Batchrandom12-anneal-split-full-v162/casetrick-random-01-anneal-temp0p25.
-Mean73.470/max111.230ms, RSS386.793MB. Gate alone selected733 repeats all six
-fields and its five pairedseeds gain0.690%, allpositive. Mild annealing735 requires
-its own qualification below. R03 current2621 is gate1 on the preceding2620 recipe,
-source162, mean502.134/max745.646ms, RSS463.966MB; first other seed loses ten tasks.
-Other exact recipes and timestamps remain in random-frontiers.json.
+R01=739: source162/4fb9498e, progress.25/span32 on735anneal.25+physicalgate1,
+seed1. Batchrandom1234-progress-transfer-split-full-v162,
+case trick-random-01-progress-transfer-mixp25-span32. Finished2026-09-22T00:43:24.293402+00:00.
+Mean73.552/max114.527ms,RSS388.555MB. Exactrepeat6fieldpasses. Five qualification
+seeds0..4=736/739/726/732/732 versus732/735/725/729/730:3665vs3651 (+.3835%,all5positive),
+max118.656ms. Report random01-record739-split-full-v162. Earlier physicalgate alone
++.690%all5positive; annealing alone+.027%3gains/2losses. No fresh current-profile claim.
 
-## Completed / audited in this continuation
+R03=2646: source162/4fb9498e, progress.25/span32 on2621gate1profile,seed3.
+Batchrandom1234-progress-transfer-split-full-v162,
+case trick-random-03-progress-transfer-mixp25-span32. Finished2026-09-22T00:53:28.091236+00:00.
+Mean484.103/max676.507ms,RSS469.467MB. Full replay passes; off2621control6fieldexact.
+Intermediate2628chronologicalrecord also logged. Exactrepeat/paired qualification pending below.
+Preceding2621fivepairs13029vs12999 (+.231%,4gains/1loss);2620freshV2remainsseparate.
 
-- source159 higher-start-cap10cases: all valid, both controls exact; every variant
- loses.04=2761/2753/2726/2756 versus2782;05=4185/4050/4151/4117 versus4242.
-- source159 general04 face qualification10cases: all valid,1616 exact repeat.
- Five paired seeds total7878 versus7886 (-.101%,2gains/3losses); compoundface8+
- retries2 gives1584. Selected1616 stays, but no positive mean claim.
-- source162 physical gate10original attempts plus2replacements: all complete,
-10valid full runs and2preserved original allocation refusals onresearch49.
- off/on01..05=729/732,1408/1403,2620/2621,2782/2782,4242/4241.
- Both source162 replacement controls exactly match six full archived trace fields.
- Combined proof/report is in original batch results; every valid row independently
- replayed with waiting/resource checks.03/05 original failed controls are not erased.
-- source162 R01gate qualification9cases: all audited,732repeat exact; seeds0..4
- off723/727/723/723/729, on729/733/729/727/732. Exact733 separate repeat audited.
-- source162 sparse annealing16cases: all audited,4controls exact. General01all727;
- selected01=733/735/732/729 attemps0/.25/1/4. General02=1397/1387/1392/1391;
- selected02=1408/1389/1398/1394. Keep nonwinning settings off.
-Earlier all-five face/retry and sparse rank/prefix-search negatives remain archived.
+R05=4254: source162/4fb9498e, flow80updates on4242profile,seed0.
+Batchrandom345-flow-iterations-split-full-v162/casetrick-random-05-flow-iterations80.
+Finished2026-09-22T00:21:04.224019+00:00; mean579.781/max874.301ms,RSS490.107MB.
+Longestcompletedorder1973,147initialunfinished/109unopened,censoredoldest2000.
+All91chronologicalrecords/waitingmetrics pass. Exactrepeat6fieldpasses. Pairedseeds0..3
+4254/4189/4252/4253 vs4242/4028/4183/4128 yield16948vs16581 (+2.2134%,all4positive),
+mean4237.0,max919.594ms,RSS494.387MB. Also+1.5641%above historical4197profiletotal16687.
+Report random05-record4254-split-full-v162. This is development-input qualification.
 
-## Active work
+R02=1408source132/027df4d9; general1397source141/611aa2a6 remains.
+R04=2782source144/88551e69; mean478.686/max739.553ms. Exactrepeat plus8pairedseeds
++.340%6gains/2losses, with a preserved laterseed11first-step1050.759mstimeout.
+General04=1616face8source158 repeats but five-pair mean-.101%; general auction1595
+has+4.312%all5pairspositive. All full recipes/evidence are in random-frontiers.json.
 
-1. random01-record735-split-full-v162: all five audited, exact735 repeat matches
- all six fields. Candidates atseeds0..4=732/735/725/729/730 versus historical
- gate-only controls729/733/729/727/732:3651vs3650 (+.027%,3gains/2losses).
- Selected735 remains, but no meaningful mean-gain claim; no fresh qualification.
-2. random03-record2621-split-full-v162: all nine audited, exact2621 repeat matches
- all six fields. Five paired seeds0..4: off2614/2571/2597/2620/2597 versus
- on2604/2595/2600/2621/2609. Total13029vs12999 (+.231%,4gains/1loss).
- No fresh qualification; selectingseed3off uses the audited original replacement.
-3. random345-flow-iterations-split-full-v162: all12audited, three controls exact.
- Iterations20/10/40/80:03=2621/2527/2600/2602;04=2782/2570/2761/2771;
- 05=4242/3864/4193/4254. Promote4254: source162, completed2026-09-22T00:21:04.224019+00:00,
- mean579.781/max874.301ms, RSS490.107MB. Waitmax1973,147initialunfinished/109unopened,
- censoredoldest2000. Main/history/best manifests updated; all91frontier rows and waiting metrics pass.
-4. Source163=d323e605a5bcdc2cc7f5e3a5864f89fb6f6351c6/build163; tests62.13s.
- Binaryeb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd.
- All12failure-first cases audited, all five controls exact. General01control727,
- matched720/full723; trick01control735,matched731/full733; general02control1397,
- matched1389; trick02control1408,matched1383; trick03control2621,matched2582.
- The optional third repair order stays off; no candidate promoted.
-5. random05-record4254-split-full-v162: seven cases frozen in e3a499af before
- submission, jobs8920067–8920073. Exact seed0/80update repeat; seeds1/2/3 each
-20versus80updates. Same source162binary/input, strict2000steps/1s/32GB. Historical
-seed0control4242 is already six-field exact. Audit all7, exact repeat, then report
-four paired totals including selectingseed0. Preserve every original failure.
+## The only active batch
+
+random03-record2646-split-full-v162: five full800step cases, seeds0..4.
+Jobs8920753/8920754/8920755/8920756/8920757, frozenbeforelaunch in c511babe.
+Seed3repeats2646. Same-source historical2621-profile controls2604/2595/2600/2621/2609
+were predeclared in random03-record2646-v162-protocol.json. All strict1s/32GB;
+selectingseed3is included, no fresh input. Audit all5withsource162/build162,
+run declared exactrepeat, report five paired totals and preserve any failures.
+Promote only independently audited higher selected seeds. No source164 exists.
+
+## Completed batches since the last checkpoint
+
+- random1234-progress-transfer-split-full-v162: all12audited, all3declared controls6fieldexact.
+  01=735/739/739,02=1408/1405/1403,03=2621/2628/2646;04=.125/span32:2766,
+  .25/span16:2768,.25/span128:2777 vs historicalsame-source2782. All04alternativeslose.
+  Complete REPORT.md; original partial01/03controlproofs explicitly retained as partial.
+- random345-flow-iterations-split-full-v162: all12audited,3controls6fieldexact.
+  Iterations20/10/40/80:03=2621/2527/2600/2602;04=2782/2570/2761/2771;
+  05=4242/3864/4193/4254. Keep20on03/04; only05flow80promoted and qualified.
+- random123-failure-first-split-full-v163: all12audited,5controls6fieldexact.
+  General01control727,matched720/full723; trick01control735,matched731/full733;
+  general02control1397,matched1389; trick02control1408,matched1383;
+  trick03control2621,matched2582. All candidateslose; optional3ordersstaysOFF.
+- 739/4254qualification batches: all5/all7audited, exact repeats6fieldpass, pairedreports complete.
+- Earlier source162physicalgate10valid+2allocationrefusals allpreserved/audited;
+  sparseanneal16allvalid/4exactcontrols;735/733/2621qualification complete.
+- Earlier source159startup-capalllose; general04facepairedmeannegative. Source158face,
+  159revisit,160prefix-search and153weighted sparse trials retained all negatives/timeouts.
+
+## Source and execution
 
 Source162=4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad/build162,
-SHAfda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556.
-Build162 regression54.99s; production identical to161 whose test fixture had an
-incorrect horizon18 versus150steps. Failed build161 is preserved, never benchmarked.
+SHAfda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556, regression54.99s.
+Source161failed only its new horizon18vs150step fixture;162fixed that fixture without
+changing production source/assertions. Never benchmark failed161; retain original evidence.
+Source163=d323e605a5bcdc2cc7f5e3a5864f89fb6f6351c6/build163,
+SHAeb99ff7049a293ba22b8c901e403fb88e690211a74df60cfa3832407f0e25ddd, regression62.13s.
+Adds optional third repair order; default1 unchanged. Source163benchmarks allnegative.
 
-## Immediate next operations
+Hosts research35|research36|research37|research39|research46|research47|research48|
+research50|research51|research52|research55|research56; exact CPUmodel
+AMD EPYC 9354 32-Core Processor. Exclude49/54binding refusals, older34/40/42/45;
+53/58have earlier timing concerns. Do not alter other jobs or infer hostcauses.
 
-Finish4254qualification and the91-row audit; preserve selected versus paired/fresh
-distinctions. All other batches are complete and independently audited. Update all progress
-logs and checkpoint current jobs, then commit/push scoped files. No source164 yet.
-Keep meaningful planner/scheduler work across allfive; do not chase records by
-silently discarding failures or excluding weak seeds. Guidance/preprocessing trials
-are explicit tricks; general repair tests have no map identity/horizon dependency.
+Shell requires escalation because the sandbox namespace fails; Python3.7default,
+env/bin/pythonforNumPy. apply_patch unavailable; safe Pythonheredocs. Only scopedgit
+operations; never reset/amend shared work. Latest successful push9092d222;
+subsequent scoped commits needpush. Publicpushuses existing gh credentialhelper.
 
-Hosts35/36/37/39/46/47/48/50/51/52/55/56. Exclude49/54 binding refusals (also older
-34/40/42/45 failures); don't change scheduler/other jobs. Latest successful push
-was9799663bd3c718c62f2d64e2ba32357e271c4646; subsequent scoped commits need push.
+## Next work after qualification
+
+Keep meaningful effort across allfive. The dated current-bottlenecks-v162snapshot
+shows little sparse loadedwaiting/detouring and much more on04/05; it is observational,
+not causally recoverable work. Candidate-bound rejection in window repair is only a
+possible runtimehypothesis: prove lowerbound/FPsafety, exactrollback, and handling of
+annealing/component salvage/thirdorder before implementation. No speedup claimed.
+The739/2646tricks and4254field now need independent fresh-input qualification after
+configuration/protocol freeze, if chosen as the next validation step; no new stream
+has been generated. Do not repeatedly draw heldouts just to cross a threshold.
 
 ## Previous stopping checkpoint (2026-09-21 13:25 UTC; historical)
 

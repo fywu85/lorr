@@ -1,0 +1,59 @@
+{
+  "checked_utc": "2026-09-22T00:51:59.948761+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "pairs": [
+    {
+      "seed": 0,
+      "baseline_tasks": 4242,
+      "candidate_tasks": 4254,
+      "delta": 12,
+      "baseline_evidence": "random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations20/summary.json",
+      "candidate_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed0-iters80/summary.json"
+    },
+    {
+      "seed": 1,
+      "baseline_tasks": 4028,
+      "candidate_tasks": 4189,
+      "delta": 161,
+      "baseline_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed1-iters20/summary.json",
+      "candidate_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed1-iters80/summary.json"
+    },
+    {
+      "seed": 2,
+      "baseline_tasks": 4183,
+      "candidate_tasks": 4252,
+      "delta": 69,
+      "baseline_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed2-iters20/summary.json",
+      "candidate_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed2-iters80/summary.json"
+    },
+    {
+      "seed": 3,
+      "baseline_tasks": 4128,
+      "candidate_tasks": 4253,
+      "delta": 125,
+      "baseline_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed3-iters20/summary.json",
+      "candidate_evidence": "random05/results/random05-record4254-split-full-v162/trick-random-05-record4254-seed3-iters80/summary.json"
+    }
+  ],
+  "baseline_total": 16581,
+  "candidate_total": 16948,
+  "baseline_mean": 4145.25,
+  "candidate_mean": 4237.0,
+  "gain_percent": 2.213376756528551,
+  "gains": 4,
+  "losses": 0,
+  "maximum_entry_seconds": 0.919594263,
+  "maximum_rss_bytes": 494387200,
+  "comparison_to_4197_profile": {
+    "historical_tasks": [
+      4197,
+      4168,
+      4179,
+      4143
+    ],
+    "historical_total": 16687,
+    "gain_percent": 1.564091807994239,
+    "evidence": "random05/results/random05-record4197-split-full-v132/audit.json"
+  },
+  "caveat": "Same archived input; selecting planner seed0 is included. Four planner seeds are not fresh task/start streams or unseen layouts. Seed0 baseline is the predeclared same-source historical control, verified against all six archived fields."
+}

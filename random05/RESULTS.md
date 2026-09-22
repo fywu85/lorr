@@ -8,12 +8,13 @@ Traffic-assignment guidance receives80 updates instead of20; all other4,242
 settings and per-step search work are unchanged. Full2,000steps pass independent
 replay and strict checks: mean579.781/max874.301ms, RSS490.107MB.
 The20-update control matches the prior4,242 run in all six trace fields.
-An exact repeat and three additional paired planner seeds are running. No paired
-or fresh-input qualification is yet claimed for4,254. The preceding4,242 profile
-repeats exactly but its four-seed aggregate is0.635% below4,197's. FrozenV6
-qualifies4,175 only, not these later selected records.
+The exact repeat matches all six trace fields. Four planner seeds score
+4254/4189/4252/4253 against4242/4028/4183/4128: **+2.2134%aggregate**, all
+positive, with candidate mean4237.0. Their largest entry is919.594ms; all pass.
+The same candidate total is1.5641%above the earlier4197profile. These are paired
+development-input gains; fresh validationV6still qualifies4,175only.
 [Current audit](results/random345-flow-iterations-split-full-v162/audit.json),
-[frozen repeat protocol](experiments/random05-record4254-v162-protocol.json),
+[paired qualification](results/random05-record4254-split-full-v162/REPORT.md),
 [previous paired seeds](results/random05-record4242-split-full-v144/paired-comparison.json),
 [fresh admission comparison](FRESH_VALIDATION_V6.md).
 

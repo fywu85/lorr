@@ -54,14 +54,16 @@ Refining the traffic-assignment guidance for80 updates instead of20 adds12 tasks
 to the4,242 profile, with the same per-step search work. Full2,000steps pass
 independent replay, strict1s entry limits and32GB checks: mean579.781/max874.301ms,
 RSS490.107MB. The20-update control reproduces4,242 in all six trace fields.
-An exact repeat and three additional paired planner seeds are running; this is
-currently a selected-seed record without paired or fresh-input qualification.
+The exact repeat matches all six trace fields. Planner seeds0/1/2/3 score
+4254/4189/4252/4253 versus4242/4028/4183/4128: +2.2134%aggregate,
+positive on all four. The largest qualification entry is919.594ms; all pass.
+This is development-input planner-seed evidence, without fresh-input qualification.
 Longest completed order1,973steps;147initial orders unfinished,109unopened;
 oldest unfinished age is censored at2,000. All800robots remain movable.
 Admission cap680, startup weighting0.125/250steps, progress correction0.125/span32,
 selected guidance and known-horizon scale1/mix1 require `--trick RANDOM-05`.
 [Full audit](random05/results/random345-flow-iterations-split-full-v162/audit.json),
-[frozen qualification](random05/experiments/random05-record4254-v162-protocol.json).
+[paired qualification](random05/results/random05-record4254-split-full-v162/REPORT.md).
 
 The previous4,242 profile repeats exactly. Planner seeds0/1/2/3 score
 4242/4028/4183/4128: +0.157%aggregate over4,236, but0.635% below4,197.
@@ -1985,3 +1987,15 @@ record is+34.11% versus matched max(NMS,KK)=3172, and+0.283% versus4242.
 Its exact repeat and pairedseeds1/2/3 use the frozen source162binary and archived
 input; no fresh stream was generated.
 [All cases](random05/results/random345-flow-iterations-split-full-v162/REPORT.md).
+
+### 2026-09-22 00:54 UTC:4,254 qualification improves all four planner seeds
+
+Seven full runs pass independent replay and strict limits. The exact4,254repeat
+matches all six trace fields. Seeds0/1/2/3 give4254/4189/4252/4253 against the
+20-update field4242/4028/4183/4128:16948versus16581, **+2.2134%**, all positive.
+The candidate mean is4237.0. Its aggregate also exceeds the earlier4197profile
+by1.5641%. Maximum observed qualification entry919.594ms; RAM below495MB.
+The selecting seed0is included, and these are the same development task/start
+stream. No fresh-input qualification is implied. The selected4254still leads
+matched max(NMS,KK)=3172by34.11%.
+[Full paired report](random05/results/random05-record4254-split-full-v162/REPORT.md).

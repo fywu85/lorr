@@ -1,6 +1,6 @@
 # PILOT competition progress
 
-Updated 2026-09-22 00:34 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
+Updated 2026-09-22 01:00 UTC. **PILOT** means **Pipelined Look-ahead with Task matching**.
 It is the independent planner/scheduler developed from the colleague's log,
 with pipelined PIBT and parallel look-ahead for crowded traffic, plus optional
 windowed LNS for lighter traffic. Its results are separate from CGAR.
@@ -31,9 +31,9 @@ run; PILOT completes its declared fixed work instead of returning a partial sear
 | CITY-01 | — | — | — | — | Not evaluated | — | — |
 | CITY-02 | — | — | — | — | Not evaluated | — | — |
 | GAME | — | — | — | — | Not evaluated | — | — |
-| RANDOM-01 | 735 | 692 | KK | +6.21% | TRICK | 1 | 111.23 |
+| RANDOM-01 | 739 | 692 | KK | +6.79% | TRICK | 1 | 114.53 |
 | RANDOM-02 | 1,408 | 1,256 | KK | +12.10% | TRICK | 2 | 492.79 |
-| RANDOM-03 | 2,621 | 2,359 | NMS | +11.11% | TRICK | 3 | 745.65 |
+| RANDOM-03 | 2,646 | 2,359 | NMS | +12.17% | TRICK | 3 | 676.51 |
 | RANDOM-04 | 2,782 | 2,649 | NMS | +5.02% | TRICK | 4 | 739.55 |
 | RANDOM-05 | 4,254 | 3,172 | NMS | +34.11% | TRICK | 0 | 874.30 |
 
@@ -56,9 +56,9 @@ assignment and task-event replay checks.
 
 | Instance | PILOT | Local NMS32 | Local KK32 | Matched max(NMS, KK) | Difference |
 |---|---:|---:|---:|---:|---:|
-| RANDOM-01 | 735 | 649 | 692 | 692 | +6.21% |
+| RANDOM-01 | 739 | 649 | 692 | 692 | +6.79% |
 | RANDOM-02 | 1,408 | 1,233 | 1,256 | 1,256 | +12.10% |
-| RANDOM-03 | 2,621 | 2,359 | 2,110 | 2,359 | +11.11% |
+| RANDOM-03 | 2,646 | 2,359 | 2,110 | 2,359 | +12.17% |
 | RANDOM-04 | 2,782 | 2,649 | 1,472 | 2,649 | +5.02% |
 | RANDOM-05 | 4,254 | 3,172 | 2,085 | 3,172 | +34.11% |
 
@@ -73,9 +73,9 @@ in the [target snapshot](random05/references/published-nms-kk-combined-2024.json
 | CITY-01 | — | 8,445 | KK | — |
 | CITY-02 | — | 16,997 | KK | — |
 | GAME | — | 23,274 | NMS | — |
-| RANDOM-01 | 735 | 688 | KK | +6.83% |
+| RANDOM-01 | 739 | 688 | KK | +7.41% |
 | RANDOM-02 | 1,408 | 1,260 | KK | +11.75% |
-| RANDOM-03 | 2,621 | 2,334 | NMS | +12.30% |
+| RANDOM-03 | 2,646 | 2,334 | NMS | +13.37% |
 | RANDOM-04 | 2,782 | 2,547 | NMS | +9.23% |
 | RANDOM-05 | 4,254 | 3,050 | NMS | +39.48% |
 
@@ -96,9 +96,9 @@ not unseen-map validation.
 | CITY-01 | — | — | — | — | — |
 | CITY-02 | — | — | — | — | — |
 | GAME | — | — | — | — | — |
-| RANDOM-01 | 727 | +5.06% | 735 | +6.21% | 692 |
+| RANDOM-01 | 727 | +5.06% | 739 | +6.79% | 692 |
 | RANDOM-02 | 1,397 | +11.23% | 1,408 | +12.10% | 1,256 |
-| RANDOM-03 | 1,634 | -30.73% | 2,621 | +11.11% | 2,359 |
+| RANDOM-03 | 1,634 | -30.73% | 2,646 | +12.17% | 2,359 |
 | RANDOM-04 | 1,616 | -39.00% | 2,782 | +5.02% | 2,649 |
 | RANDOM-05 | 2,226 | -29.82% | 4,254 | +34.11% | 3,172 |
 
@@ -106,9 +106,9 @@ Current selected records are pinned to their completion timestamps and source co
 
 | Instance | Completed UTC | Source | Full-run evidence |
 |---|---|---|---|
-| RANDOM-01 | 2026-09-21T23:45:46.330230+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/summary.json) |
+| RANDOM-01 | 2026-09-22T00:43:24.293402+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mixp25-span32/summary.json) |
 | RANDOM-02 | 2026-09-21T15:54:03.792427+00:00 | [027df4d9](https://github.com/fywu85/lorr/commit/027df4d9) | [Run](random05/results/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/summary.json) |
-| RANDOM-03 | 2026-09-21T23:36:22.952126+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json) |
+| RANDOM-03 | 2026-09-22T00:53:28.091236+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
 | RANDOM-04 | 2026-09-21T17:35:31.545879+00:00 | [88551e69](https://github.com/fywu85/lorr/commit/88551e69) | [Run](random05/results/random45-progress-triage-split-full-v144/trick-random-04-progress-triage-mixp25-span32/summary.json) |
 | RANDOM-05 | 2026-09-22T00:21:04.224019+00:00 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Run](random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
 
@@ -136,10 +136,24 @@ latency455.6/480.2ms versus553.1/545.7ms. The supplemented fresh
 max(NMS,KK) comparison is **+8.852%**, below10%. NMS is stronger on both
 streams; the four later unmodified KK repeats also pass replay and timing.
 [Fresh V2 report](random05/RANDOM03_FRESH_VALIDATION_V2.md).
-The current2,621 physical-deadline gate record repeats exactly. Five paired
+RANDOM-01 reaches739 with observed-progress horizon correction0.25/span32,
+added to the735profile. The exact repeat passes all six fields. Five paired
+planner seeds736/739/726/732/732 versus732/735/725/729/730 give+0.3835%,
+all positive. Maximum qualification entry118.656ms. This is a modest
+development gain; fresh01V1still qualifies the earlier729profile only.
+[Paired evidence](random05/results/random01-record739-split-full-v162/REPORT.md).
+
+The preceding2,621 physical-deadline gate record repeats exactly. Five paired
 development seeds total13,029 versus12,999 (+0.231%, four gains/one loss).
 This modest gain has not received fresh-input qualification.
 [Paired evidence](random05/results/random03-record2621-split-full-v162/paired-seeds.json).
+
+The current2,646 selected result adds observed-progress horizon correction
+0.25/span32 to the2,621profile. Full replay and strict limits pass:
+mean484.103/max676.507ms, RSS469.467MB. The unchanged2,621control is
+exact in all six fields. Exact repetition and five paired planner seeds
+are running; neither paired nor fresh-input qualification is claimed yet.
+[Evidence](random05/results/random1234-progress-transfer-split-full-v162/audit.json).
 
 RANDOM-04 currently reaches **2,782** (+5.02% above matched max(NMS,KK)),
 **132 tasks short** of2,914. Its record peaks at739.6ms;
@@ -195,9 +209,11 @@ and one loss; still0.635% below4,197's aggregate). Fresh validation is pending.
 The new4,254 selected record refines traffic-assignment guidance with80
 updates instead of20, keeping the same per-step work: mean579.781ms,
 max874.301ms, RSS490.107MB. All2,000steps pass independent replay and
-strict limits. Exact repetition and three additional paired planner seeds
-are running; no fresh-input qualification is claimed for this new record.
-[Evidence](random05/results/random345-flow-iterations-split-full-v162/audit.json).
+strict limits. The exact repeat matches all six trace fields. Four planner
+seeds4254/4189/4252/4253 improve all paired controls, +2.2134%aggregate,
+and average4237.0. Maximum qualification entry919.594ms; all pass.
+Selectingseed0is included; no fresh-input qualification is claimed.
+[Paired evidence](random05/results/random05-record4254-split-full-v162/REPORT.md).
 
 **The earlier RANDOM-05 4,000-task milestone is independently verified.** The archived
 4,011-task configuration repeated exactly. Frozen fresh task/start inputs

@@ -1,7 +1,7 @@
 # All RANDOM instances: throughput progress
 
 Started 2026-09-21T02:17:27.230561+00:00. The user expanded the campaign to RANDOM-01..05;
-Current selected records are735/1408/2621/2782/4254. Fresh validation qualifies
+Current selected records are739/1408/2646/2782/4254. Fresh validation qualifies
 specific frozen profiles, not every later development improvement.
 Large maps are outside active development.
 
@@ -20,14 +20,14 @@ Large maps are outside active development.
 
 | Instance | Robots | Steps | General profile | Trick profile | Matched max(NMS, KK) | Best vs matched max |
 |---|---:|---:|---:|---:|---:|---:|
-| RANDOM-01 | 100 | 600 | 727 | 735 | 692 | +6.21% |
+| RANDOM-01 | 100 | 600 | 727 | 739 | 692 | +6.79% |
 | RANDOM-02 | 200 | 600 | 1397 | 1408 | 1256 | +12.10% |
-| RANDOM-03 | 400 | 800 | 1634 | 2621 | 2359 | +11.11% |
+| RANDOM-03 | 400 | 800 | 1634 | 2646 | 2359 | +12.17% |
 | RANDOM-04 | 700 | 1000 | 1616 | 2782 | 2649 | +5.02% |
 | RANDOM-05 | 800 | 2000 | 2226 | 4254 | 3172 | +34.11% |
 
 Both local baselines are complete. Selected-best gains versus matched
-max(NMS,KK) are +6.21%/+12.10%/+11.11%/+5.02%/+34.11%.
+max(NMS,KK) are +6.79%/+12.10%/+12.17%/+5.02%/+34.11%.
 Published historical maxima688/1260/2334/2547/3050 use different inputs/hardware;
 see [PILOT_PROGRESS.md](../PILOT_PROGRESS.md) for that separate comparison.
 [Matched evidence](NMS_KK_COMPARISON.md).
@@ -186,6 +186,9 @@ added. The later sections document its implementation and measured gains.
 | 2026-09-21T23:36:22.952126+00:00 | RANDOM-03 | trick | 2621 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json) |
 | 2026-09-21T23:45:46.330230+00:00 | RANDOM-01 | trick | 735 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/summary.json) |
 | 2026-09-22T00:21:04.224019+00:00 | RANDOM-05 | trick | 4254 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json) |
+| 2026-09-22T00:43:24.293402+00:00 | RANDOM-01 | trick | 739 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mixp25-span32/summary.json) |
+| 2026-09-22T00:53:00.178139+00:00 | RANDOM-03 | trick | 2628 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp125-span32/summary.json) |
+| 2026-09-22T00:53:28.091236+00:00 | RANDOM-03 | trick | 2646 | [4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad](https://github.com/fywu85/lorr/commit/4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad) | [Full run](results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json) |
 
 
 ## September21: first development comparisons
@@ -1199,3 +1202,36 @@ max874.301ms, RSS490.107MB. All12guidance cases and three exact controls pass
 independent audit. Other03/04guidance iteration counts lose. Seven frozen05repeat
 and paired-seed runs are submitted; no fresh-input qualification is implied.
 [Full evidence](results/random345-flow-iterations-split-full-v162/REPORT.md).
+
+### 2026-09-22 00:47 UTC: RANDOM-01 transfer reaches739
+
+Observed-progress mixtures.125/.25 atspan32 both reach739; the.25run finishes
+first and becomes the chronological selected record. Full600steps pass replay,
+mean73.552/max114.527ms,RSS388.555MB. The735offcontrol is full six-field exact.
+The record is+6.79%over matched max(NMS,KK)=692. Five frozen source162planner
+seeds test .25/span32 against the prior735profile. Other density cases remain
+pending; no paired mean or fresh-input claim is made yet.
+[Partial batch audit](results/random1234-progress-transfer-split-full-v162/audit.json),
+[frozen qualification](experiments/random01-record739-v162-protocol.json).
+
+### 2026-09-22 00:54 UTC: RANDOM-01 and RANDOM-05 improvements pass paired seed checks
+
+Both records repeat exactly in all six trace fields. On01,736/739/726/732/732
+versus732/735/725/729/730 yields **+0.3835%**, all five positive; max118.656ms.
+On05,4254/4189/4252/4253 versus4242/4028/4183/4128 yields **+2.2134%**, all four
+positive; max919.594ms. All12qualification runs pass independent full replay and
+strict resource/deadline checks. Selecting seeds are included; no fresh-input claim.
+The03/04progress-transfer cases remain pending; both02mixtures lose1405/1403.
+[01qualification](results/random01-record739-split-full-v162/REPORT.md),
+[05qualification](results/random05-record4254-split-full-v162/REPORT.md).
+
+### 2026-09-22 00:59 UTC: RANDOM-03 progress correction reaches2646
+
+Mixtures.125/.25 atspan32 yield2628/2646 versus the exact2621off-control.
+The2646run passes independent full800step replay and strict checks; mean484.103ms,
+max676.507ms,RSS469.467MB. This selected record is+12.17%over matched
+max(NMS,KK)=2359. Five source162plannerseeds, including exactseed3repeat, are
+frozen in c511babe and running; no paired/fresh qualification yet. All04transfer
+variants lose2766/2768/2777 against2782, and all02variants lose1405/1403.
+[Full transfer audit](results/random1234-progress-transfer-split-full-v162/audit.json),
+[frozen03qualification](experiments/random03-record2646-v162-protocol.json).

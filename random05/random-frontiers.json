@@ -87,7 +87,7 @@
     },
     "trick": {
       "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
-      "evidence": "random05/results/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/summary.json",
+      "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-01-progress-transfer-mixp25-span32/summary.json",
       "case": {
         "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-01.json",
@@ -97,7 +97,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-01",
-        "name": "trick-random-01-anneal-temp0p25",
+        "name": "trick-random-01-progress-transfer-mixp25-span32",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -156,7 +156,9 @@
           "R05_OPERATIONS": "0",
           "R05_MOVE_BIAS": "0",
           "R05_MATCH_FEASIBLE": "1",
-          "R05_WINDOW_TEMPERATURE": "0.25"
+          "R05_WINDOW_TEMPERATURE": "0.25",
+          "R05_TRIAGE_PROGRESS_MIX": ".25",
+          "R05_TRIAGE_PROGRESS_WINDOW": "32"
         },
         "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
         "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
@@ -167,9 +169,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 735,
-      "finished_utc": "2026-09-21T23:45:46.330230+00:00",
-      "audit": "random05/results/random12-anneal-split-full-v162/audit.json"
+      "tasks": 739,
+      "finished_utc": "2026-09-22T00:43:24.293402+00:00",
+      "audit": "random05/results/random1234-progress-transfer-split-full-v162/audit.json"
     },
     "nms32_tasks": 649
   },
@@ -430,7 +432,7 @@
     },
     "trick": {
       "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
-      "evidence": "random05/results/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/summary.json",
+      "evidence": "random05/results/random1234-progress-transfer-split-full-v162/trick-random-03-progress-transfer-mixp25-span32/summary.json",
       "case": {
         "binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
         "input": "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/RANDOM-03.json",
@@ -440,7 +442,7 @@
         "limit_ms": 1000,
         "preprocess_ms": 30000,
         "trick": "RANDOM-03",
-        "name": "trick-random-03-physical-deadline1",
+        "name": "trick-random-03-progress-transfer-mixp25-span32",
         "env": {
           "R05_K": "16320",
           "R05_THREADS": "32",
@@ -511,7 +513,9 @@
           "R05_GUIDANCE_EDGE_MIX": "0.25",
           "R05_MATCH_FREE_TIES": "0",
           "R05_WINDOW_HEURISTIC_WEIGHT": "1.2",
-          "R05_MATCH_FEASIBLE": "1"
+          "R05_MATCH_FEASIBLE": "1",
+          "R05_TRIAGE_PROGRESS_MIX": ".25",
+          "R05_TRIAGE_PROGRESS_WINDOW": "32"
         },
         "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
         "original_binary": "/shared/share_mala/fw2449/lorr2024/runs/random05/build-v162/build/lifelong_random05",
@@ -522,9 +526,9 @@
           "/shared/share_mala/fw2449/lorr2024/Benchmark-Archive/2024 Competition/Main Round Evaluation Instances/random.domain/tasks/random_32_32_20.tasks": "fb2cc12b99c8b3db1a7c65a26573f5ee3ddc3bc016d4ef56b42b05c82b85bbdd"
         }
       },
-      "tasks": 2621,
-      "finished_utc": "2026-09-21T23:36:22.952126+00:00",
-      "audit": "random05/results/random12345-physical-deadline-split-full-v162/audit.json"
+      "tasks": 2646,
+      "finished_utc": "2026-09-22T00:53:28.091236+00:00",
+      "audit": "random05/results/random1234-progress-transfer-split-full-v162/audit.json"
     },
     "nms32_tasks": 2359
   },

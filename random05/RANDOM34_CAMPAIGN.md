@@ -11,7 +11,7 @@ its four-core counterpart, and all held-out inputs remain preserved.
 
 | Instance | Current selected best | Matched max(NMS, KK) | Minimum +10% | Full steps |
 |---|---:|---:|---:|---:|
-| RANDOM-03 | 2,621 | 2,359 | 2,595 | 800 |
+| RANDOM-03 | 2,646 | 2,359 | 2,595 | 800 |
 | RANDOM-04 | 2,782 | 2,649 | 2,914 | 1,000 |
 
 The new valid NMS maximum2,649 raises the RANDOM-04 target to2,914:132 tasks
