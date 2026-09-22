@@ -1,0 +1,9 @@
+{
+  "created_utc": "2026-09-22T06:55:02.537876+00:00",
+  "authorization": "User explicitly requested fixing reliability before the final throughput/SD report. Finish reliability and statistical validation, then pause.",
+  "issue": "Five of27 additional frozen seed runs time out at startup:03seed6 1214.267ms;04seed8 1096.994ms;05seeds6/7/9 1003.563/1157.953/1165.669ms. Keep original attempts. No overlapping CPU affinity among our simultaneously allocated jobs was observed.",
+  "first_stage": "Build the unchanged engine with existing portable PILOT_IPO=ON and full regression. Test exact zero-update matching for05 and optional explicit OpenMP thread binding. Preserve all fixed work, objective, seeds, horizons and memory/CPU limits.",
+  "diagnostic_rule": "Short20-step startup probes use the original declared algorithm horizon and strict1000ms entries. They are runtime/prefix controls only, never full throughput records. Declare individual cases before submission. Compare available archived prefixes and paired optimization variants.",
+  "full_rule": "Freeze the selected runtime implementation before full ten-seed03/04/05 validation. Keep the original failed batch separate. Independently replay every successful run; compare unchanged valid seed traces; report full-run pass counts and sample SD. No partial solution, raised competition timeout or timed search truncation.",
+  "stop_rule": "After reliability validation, final statistics, logs and authorized commit/push, pause at user request. This is not a return to open-ended throughput research."
+}

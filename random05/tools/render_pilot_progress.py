@@ -50,9 +50,9 @@ def render():
         'competition instances remain placeholders for future work. The reference is',
         '**max(NMS, Kitty Knight)** for each instance;',
         'throughput is primary, with order waiting times tracked as a secondary metric.', '',
-        '**Active objective:** maximize verified throughput across all five RANDOM instances.',
+        '**Campaign objective:** maximize verified throughput across all five RANDOM instances.',
         '[Full goal and constraints](random05/ACTIVE_GOAL.md). RANDOM-03/04 are milestones within this campaign.', '',
-        '**Current development priority: RANDOM-01 and RANDOM-04**, following the latest user steering.',
+        '**Most recent development priority: RANDOM-01 and RANDOM-04**, following the latest user steering.',
         'All five remain in scope; neither priority instance has a demonstrated throughput ceiling.', '',
         '**Current qualification milestones:** RANDOM-03 at least **{:,}** tasks and RANDOM-04'.format(goal03),
         'at least **{:,}**, each 10% above matched max(NMS,KK), with robust subsecond runtime.'.format(goal04),
@@ -90,6 +90,36 @@ def render():
             '{:+.2f}%'.format(100*(row['tasks']/target-1)) if target is not None else 'Pending',
             'GENERAL' if profile == 'general' else 'TRICK',row['case']['env']['R05_SEED'],
             1000*summary['latency_seconds']['max']))
+    # Retain the explicit pause/wrap-up state when the dashboard is refreshed.
+    status_path=ROOT/'random05/ACTIVE_GOAL.md'
+    if status_path.exists():
+        status=next((line for line in status_path.read_text().splitlines() if line.startswith('**Status:')),None)
+        if status:lines[3:3]=['',status]
+    variability_index=ROOT/'random05/seed-variability.json'
+    if variability_index.exists():
+        from report_seed_variability import settings
+        index=read('random05/seed-variability.json')
+        variability=read(index['statistics'])
+        frozen=read(index['protocol'])['selected_profiles']
+        lines += ['', '**Throughput variability across planner seeds**', '',
+            'Sample SD uses denominator n−1. Each successful seed contributes one full run.',
+            'Failures are retained and excluded from throughput arithmetic; where failures',
+            'occur, mean ± SD describes the successful subset. These are development-profile',
+            'statistics on fixed archived task/start inputs, not fresh-input qualification.', '',
+            '| Instance | Mean ± sample SD | Valid / attempted seeds | Mean vs max(NMS, KK) |',
+            '|---|---:|---:|---:|']
+        for instance in INSTANCES:
+            if instance not in selected:continue
+            case=selected[instance][1]['case']
+            reference=frozen.get(instance,{}).get('case',{})
+            matching=reference and case['binary_sha256']==reference['binary_sha256'] and settings(case)==settings(reference)
+            matching=matching and case['input_hashes']==reference['input_hashes']
+            if not matching:
+                lines.append('| {} | Not measured for current configuration | — | — |'.format(instance));continue
+            row=variability['instances'][instance]
+            lines.append('| {} | {:,.1f} ± {:.1f} | {}/{} | {:+.2f}% |'.format(instance,
+                row['mean'],row['sample_standard_deviation'],row['valid_seeds'],row['attempted_seeds'],row['mean_gain_percent']))
+        lines += ['', '[Individual seeds, timing failures and statistical limits]({}).'.format(index['report'])]
     lines += ['',
         '**Headline comparisons use the stronger matched local result from NMS and Kitty Knight.**',
         'KK sets the RANDOM-01/02 references; NMS sets RANDOM-03/04/05.',

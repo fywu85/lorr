@@ -1,19 +1,29 @@
-# PILOT bounded statistical wrap-up
+# PILOT reliability wrap-up
 
-The latest user request adds throughput standard deviations and authorizes more
-seeds after asking to wrap up and stop. The only remaining work is the frozen
-random12345-wrapup-seeds10 protocol:23existing distinct seed observations and27
-new runs, covering planner seeds0..9 for each selected profile. No algorithm
-or parameter changes. Finish source/input/resource/trajectory/waiting audits,
-report sample SD(n-1),mean,best,n and failures,log/commit/push,then pause.
-Do not treat the earlier pause text as preventing this explicitly requested
-measurement; do not treat this measurement as restarting the development goal.
+Latest steering: user explicitly requests fixing reliability BEFORE reporting,
+then completing the best-throughput/standard-deviation report and stopping.
+Do not resume open-ended throughput research. Preserve original failed runs.
 
-Source170 observational diagnostics are complete: full01/04controls745/2799
-match all six fields;600/1000native suppression masks match. CTest64.05s passes.
-Read results/random14-triage-diagnostic-split-full-v170/REPORT.md. No source171
-or new policy exists. Best selected profiles currently745/1408/2646/2799/4302.
-The ten-seed protocol freezes exact binaries and parameters per instance.
+Original statistics batchrandom12345-wrapup-seeds10-split-full has27newattempts
+plus23reused full seed observations. Frozen profiles and seeds0..9 are in its
+protocol. At startup03seed6fails1214.267ms,04seed8fails1096.994ms,and05seeds6/7/9
+fail1003.563/1157.953/1165.669ms. Own GRID affinities are disjoint. Shortcases
+are complete; three original05runs may still be running. Collect/audit tofinish.
+Allten01seedspass:738.7+/-3.164sampleSD,range735–745.
+
+Next bounded repair: build171with portableIPO using unchangedengine, existing
+MATCH_SKIP_ZERO1 for05, and explicitOpenMPbinding trial. Preserve fixedwork,
+objective, all horizons and strict1000ms limits. First declare20-step startup
+probes (never throughput records), then predeclare fullten-seed03/04/05 trials
+of the chosen implementation and exact controls. Protocol:
+experiments/random345-reliability-ipo-protocol.json. No code171changes yet.
+
+Source170diagnostics complete: full01/04controls745/2799match all sixfields,
+all1600native suppression masks match,CTest64.05s. See itsREPORT.md.
+HEAD9df8f012(notpushed) includes completeddiagnostics and originalstatsprotocol;
+tools/report_seed_variability.py and dashboard integration are being prepared.
+Preserve other shared CGARwork; scopes unchanged. Pause only after this bounded
+reliability/statistical wrap-up, not before the latest request is handled.
 
 ## Scope and constraints
 

@@ -2,7 +2,7 @@
 
 Updated 2026-09-22 06:36 UTC.
 
-**Status: bounded statistical wrap-up.** After asking to stop, the user requested throughput standard deviations and explicitly authorized more seeds. Run only the frozen ten-seed measurement for each selected profile, finish its audits/log/commit/push, then pause. No algorithm development or parameter search is resumed.
+**Status: reliability repair before the final report.** The latest user explicitly requests fixing the new startup deadline failures. Preserve the original ten-seed attempts; test exact runtime changes, repeat full reliability/statistical validation, log/commit/push, then pause. No open-ended throughput search is resumed.
 
 **Maximize verified full-run combined-track throughput on RANDOM-01 through RANDOM-05. Give each instance substantial development effort, and compare every headline result with matched max(NMS, Kitty Knight). The latest user steering makes RANDOM-01 and RANDOM-04 the main priorities.** Neither priority instance has a demonstrated inherent ceiling.
 
@@ -54,3 +54,6 @@ Current records, timestamps and sources are in [PILOT_PROGRESS.md](../PILOT_PROG
 ## Additional user-requested variability measurement
 
 Frozen planner seeds0..9 on each archived instance;23matching historical seed runs are reused and27missing seeds will run. Report sample SD (n-1), mean, best, n, failures, and comparisons with matchedmax(NMS,KK). Do not count exact repetitions as extra seeds or replace failed attempts. This measures development-profile seed variation, not fresh-input generalization. [Protocol](experiments/random12345-wrapup-seeds10-protocol.json).
+
+
+[Bounded reliability protocol](experiments/random345-reliability-ipo-protocol.json). The original seed protocol remains frozen; improved implementation validation will be a separate, predeclared batch.
