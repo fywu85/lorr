@@ -1,0 +1,29 @@
+{
+  "created_utc": "2026-09-22T00:28:21.073533+00:00",
+  "purpose": "Exact repeat and paired planner-seed qualification of selected RANDOM-05 4254; all seven new runs frozen before submission.",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "manifest": "random05/experiments/random05-record4254-full-v162.json",
+  "changed_setting": {
+    "name": "R05_FLOW_ITERS",
+    "baseline": 20,
+    "candidate": 80
+  },
+  "planner_seeds": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "seed0_baseline_evidence": "random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations20/summary.json",
+  "seed0_baseline_exact_control": "random05/results/random345-flow-iterations-split-full-v162/control-equivalence.json",
+  "seed0_candidate_original": "random05/results/random345-flow-iterations-split-full-v162/trick-random-05-flow-iterations80/summary.json",
+  "new_runs": 7,
+  "rules": [
+    "Same archived input and binary; explicit --trick RANDOM-05; 2000 steps, 1000ms entry, 30000ms preprocessing, 32GB guard.",
+    "32 workers on 16 physical bound EPYC9354 cores with SMT; shared hosts allowed and actual allocation verified.",
+    "Retain every original attempt and timing/allocation failure. Independently audit every full run; require all six trace fields identical for exact repeat.",
+    "Report paired total, each seed and all strict failures. Selecting seed0 is included; no independent fresh-input qualification is implied.",
+    "Known held-out input streams remain excluded from tuning. No fresh input is generated."
+  ]
+}
