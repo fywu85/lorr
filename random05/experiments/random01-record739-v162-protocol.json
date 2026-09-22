@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-09-22T00:45:59.863361+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "purpose": "Exact repeat of selected739 and five paired planner seeds for observed-progress correction .25/span32 versus0.",
+  "historical_baseline": {
+    "0": {
+      "tasks": 732,
+      "evidence": "random05/results/random01-record735-split-full-v162/trick-random-01-record735-seed0/summary.json"
+    },
+    "1": {
+      "tasks": 735,
+      "evidence": "random05/results/random01-record735-split-full-v162/trick-random-01-record735-seed1/summary.json"
+    },
+    "2": {
+      "tasks": 725,
+      "evidence": "random05/results/random01-record735-split-full-v162/trick-random-01-record735-seed2/summary.json"
+    },
+    "3": {
+      "tasks": 729,
+      "evidence": "random05/results/random01-record735-split-full-v162/trick-random-01-record735-seed3/summary.json"
+    },
+    "4": {
+      "tasks": 730,
+      "evidence": "random05/results/random01-record735-split-full-v162/trick-random-01-record735-seed4/summary.json"
+    }
+  },
+  "baseline_equivalence": "random05/results/random1234-progress-transfer-split-full-v162/random01-control-equivalence.json",
+  "rules": [
+    "Five full600step runs; seed1 repeats739, seeds0/2/3/4 extend qualification. Selecting seed1 is included.",
+    "Same archived input and source162binary as independently audited735paired-seed controls. Only progress mixture changes0to.25; span32.",
+    "Explicit --trick RANDOM-01; 32workers/16bound physical EPYC9354cores,1s entries,30s initialization,32GB guard.",
+    "No new input; preserve every original failure. Audit all full runs, compare repeat six-field identity, report all paired seeds before a mean-gain claim.",
+    "The separate12case transfer batch remains pending for other densities; this protocol relies only on its independently completed01replays."
+  ]
+}
