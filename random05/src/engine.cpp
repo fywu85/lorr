@@ -397,6 +397,11 @@ Config Config::environment(const SharedEnvironment& env) {
     if(!std::isfinite(c.pickup_heading_price) || c.pickup_heading_price<0 || c.pickup_heading_price>1 ||
        (c.pickup_heading_price>0 && c.chain_matching))
         throw std::invalid_argument("pickup heading price requires [0,1] and a separate task-length preference");
+    c.match_forecast_hops=integer("R05_MATCH_FORECAST_HOPS",0);
+    c.match_forecast_max=integer("R05_MATCH_FORECAST_MAX",32);
+    if(c.match_forecast_hops<0 || c.match_forecast_hops>32 || c.match_forecast_max<1 || c.match_forecast_max>256 ||
+       (c.match_forecast_hops>0 && (!c.matching || c.hungarian_limit<=0)))
+        throw std::invalid_argument("matching forecasts need hops0..32, max1..256, joint matching and no horizon price");
     c.auction_epsilon=real("R05_MATCH_AUCTION",0);
     c.auction_bids_per_row=integer("R05_AUCTION_BIDS",128);
     if(!std::isfinite(c.auction_epsilon) || c.auction_epsilon<0 || c.auction_epsilon>8 ||
@@ -430,6 +435,8 @@ Config Config::environment(const SharedEnvironment& env) {
     if(!std::isfinite(c.match_horizon_weight) || c.match_horizon_weight<0 ||
        (c.match_horizon_weight>0 && (!random_trick || c.horizon<=0)))
         throw std::invalid_argument("matching horizon weight requires a declared horizon and --trick RANDOM-01..05");
+    if(c.match_forecast_hops>0 && c.match_horizon_weight>0)
+        throw std::invalid_argument("matching forecasts do not support a horizon price");
     if(c.snapshot_interval && c.local_trials)throw std::invalid_argument("decision snapshots require local search off");
     c.triage_scale=real("R05_TRIAGE_SCALE",c.triage_scale);c.accept_equal=integer("R05_EQUAL",0);
     c.triage_guided_mix=real("R05_TRIAGE_GUIDED_MIX",0);
@@ -1045,6 +1052,9 @@ float Chain::cost(const Graph& g,int stage,int cell,int direction) const {
     return best;
 }
 void Engine::initialize(SharedEnvironment* env) {
+    if(cfg.match_forecast_hops<0 || cfg.match_forecast_hops>32 || cfg.match_forecast_max<1 || cfg.match_forecast_max>256 ||
+       (cfg.match_forecast_hops>0 && (!cfg.matching || cfg.hungarian_limit<=0 || cfg.match_horizon_weight>0)))
+        throw std::invalid_argument("matching forecasts need hops0..32, max1..256, joint matching and no horizon price");
     if(!std::isfinite(cfg.pickup_heading_price) || cfg.pickup_heading_price<0 || cfg.pickup_heading_price>1 ||
        (cfg.pickup_heading_price>0 && cfg.chain_matching))
         throw std::invalid_argument("pickup heading price requires [0,1] and a separate task-length preference");
@@ -1407,12 +1417,76 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         for(size_t row=0;row<agents.size();++row)
             std::fill(matrix.begin()+row*columns+tasks.size()+optional_columns,matrix.begin()+(row+1)*columns,idle_cost);
     }
+    int matching_rows=int(agents.size());
+    // Let soon-finishing opened robots compete for currently visible unopened
+    // tasks in the assignment objective. Their rows are forecasts only: the
+    // output still preserves their opened task and contains no next assignment.
+    // Spare real-task columns bound the number of forecasts, so every actual
+    // free robot remains matched. Admission/idle/deadline constraints retain
+    // their existing matrix exactly; forecasts never consume capped slots or
+    // defeat a physical feasibility rejection.
+    if(cfg.match_forecast_hops>0 && exact && !agents.empty() && !capped &&
+       admission_price<0 && !deadline_gate && int(tasks.size())>matching_rows) {
+        struct Forecast {int agent,goal;std::array<float,4> arrival;float earliest;};
+        std::vector<Forecast> forecasts;
+        for(int a=0;a<n;++a) {
+            const int id=env->curr_task_schedule[a];
+            if(id<0)continue;
+            const auto& task=env->task_pool.at(id);
+            if(task.idx_next_loc<=0 || task.idx_next_loc+1!=int(task.locations.size()))continue;
+            const int goal=g.from_grid[task.locations.back()];
+            const auto& state=env->curr_states[a];
+            const int cell=g.from_grid[state.location];
+            if(g.hop(goal,cell)>cfg.match_forecast_hops)continue;
+            Forecast forecast;forecast.agent=a;forecast.goal=goal;forecast.earliest=INF;
+            for(int d=0;d<4;++d) {
+                // A task already at its last waypoint still requires a service
+                // action. This is a collision-free price, not a promised ETA.
+                forecast.arrival[d]=std::max(2.f,g.dist(goal*4+d,cell*4+state.orientation));
+                forecast.earliest=std::min(forecast.earliest,forecast.arrival[d]);
+            }
+            if(forecast.earliest<INF/2)forecasts.push_back(forecast);
+        }
+        std::sort(forecasts.begin(),forecasts.end(),[](const Forecast& a,const Forecast& b) {
+            return a.earliest!=b.earliest?a.earliest<b.earliest:a.agent<b.agent;
+        });
+        const int count=std::min({int(forecasts.size()),cfg.match_forecast_max,
+            int(tasks.size())-matching_rows,cfg.hungarian_limit-matching_rows});
+        matrix.resize(size_t(matching_rows+count)*columns);
+        for(int k=0;k<count;++k) {
+            const auto& forecast=forecasts[k];
+            for(int j=0;j<int(tasks.size());++j) {
+                const auto& task=env->task_pool.at(tasks[j]);
+                const int goal=g.from_grid[task.locations[task.idx_next_loc]];
+                float price=INF;
+                for(int d=0;d<4;++d) {
+                    const int pose=forecast.goal*4+d;
+                    float approach=g.hop(goal,forecast.goal)+length_weight*length[j];
+                    if(cfg.guided_matching)approach=g.approach(goal,pose)/2+length_weight*length[j];
+                    if(cfg.chain_matching) {
+                        approach=INF;
+                        for(int q=0;q<4;++q)approach=std::min(approach,
+                            (g.dist(goal*4+q,pose)+length_weight*continuation[j][q])/2);
+                    }
+                    if(cfg.pickup_heading_price>0)
+                        approach=pickup_heading_approach(g,goal,pose,continuation[j],cfg.pickup_heading_price)
+                            +length_weight*length[j];
+                    price=std::min(price,forecast.arrival[d]/2+approach);
+                }
+                if(!destination_pressure.empty())price+=cfg.destination_load*destination_pressure[goal];
+                matrix[size_t(matching_rows+k)*columns+j]=assignment_price(price);
+            }
+        }
+        matching_rows+=count;
+    }
     std::chrono::steady_clock::time_point matrix_done;
     if(cfg.profile)matrix_done=std::chrono::steady_clock::now();
     auto report_match=[&]() {
         if(cfg.profile && (env->curr_timestep<5 || env->curr_timestep%100==0)) {
             const auto now=std::chrono::steady_clock::now();
             if(cfg.match_feasible)std::fprintf(stderr,"R05_DEADLINE_MATCH t=%d impossible_pairs=%d\n",env->curr_timestep,impossible_pairs);
+            if(cfg.match_forecast_hops>0)std::fprintf(stderr,"R05_MATCH_FORECAST t=%d rows=%d\n",
+                env->curr_timestep,matching_rows-int(agents.size()));
             std::fprintf(stderr,"R05_MATCH_PROFILE t=%d agents=%zu tasks=%zu matrix_ms=%.3f solve_ms=%.3f\n",
                 env->curr_timestep,agents.size(),tasks.size(),
                 std::chrono::duration<double,std::milli>(matrix_done-match_start).count(),
@@ -1422,10 +1496,10 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
     if(exact) {
         std::vector<int> selected;uint64_t auction_bids=0;
         if(cfg.auction_epsilon>0)
-            selected=auction_assignment(matrix,int(agents.size()),columns,cfg.auction_epsilon,
-                uint64_t(agents.size())*cfg.auction_bids_per_row,dummy_columns,optional_columns,&auction_bids);
+            selected=auction_assignment(matrix,matching_rows,columns,cfg.auction_epsilon,
+                uint64_t(matching_rows)*cfg.auction_bids_per_row,dummy_columns,optional_columns,&auction_bids);
         const bool auction_fallback=cfg.auction_epsilon>0 && selected.empty();
-        if(selected.empty())selected=hungarian_assignment(matrix,int(agents.size()),columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
+        if(selected.empty())selected=hungarian_assignment(matrix,matching_rows,columns,dummy_columns,cfg.fast_admission,cfg.match_free_ties,nullptr,optional_columns,cfg.compact_idle);
         if(cfg.profile && cfg.auction_epsilon>0 && (env->curr_timestep<5 || env->curr_timestep%100==0))
             std::fprintf(stderr,"R05_AUCTION_PROFILE t=%d epsilon=%.6f bids=%llu fallback=%d\n",
                 env->curr_timestep,cfg.auction_epsilon,(unsigned long long)auction_bids,int(auction_fallback));

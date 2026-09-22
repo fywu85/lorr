@@ -2286,6 +2286,106 @@ void terminal_pending_progress() {
      require(rejected,"window search silently ignored terminal credit");}
 }
 
+void forecast_assignment_rows() {
+    // The free robot can reach pickup10 in two actions and pickup11 in three.
+    // A busy robot is one action from finishing at pickup10. Jointly pricing
+    // that impending departure leaves10 for the busy robot and sends the free
+    // robot to11, without assigning a second real task to the busy robot.
+    auto original=environment(3,4,2);
+    original.curr_states[0]=State(0,0,0);original.curr_states[1]=State(6,0,3);
+    Task opened;opened.task_id=7;opened.locations={6,2};opened.idx_next_loc=1;opened.agent_assigned=1;
+    Task near;near.task_id=10;near.locations={2};
+    Task alternative;alternative.task_id=11;alternative.locations={8};
+    original.task_pool[7]=opened;original.task_pool[10]=near;original.task_pool[11]=alternative;
+    original.curr_task_schedule={-1,7};
+    auto match=[](Config cfg,SharedEnvironment env) {
+        Engine engine(cfg);engine.initialize(&env);std::vector<int> schedule;engine.match(&env,schedule);
+        return schedule;
+    };
+    Config cfg;cfg.hungarian_limit=1000;cfg.guided_matching=true;cfg.keep_bonus=0;
+    require(match(cfg,original)==std::vector<int>({10,7}),"forecast witness did not prefer the nearer pickup");
+    cfg.match_forecast_hops=2;
+    for(float epsilon:{0.f,.125f})for(int mode:{0,1,2}) {
+        auto c=cfg;c.auction_epsilon=epsilon;c.chain_matching=mode==1;c.pickup_heading_price=mode==2?1:0;
+        auto env=original;Engine engine(c);engine.initialize(&env);std::vector<int> schedule;
+        engine.match(&env,schedule);
+        require(schedule==std::vector<int>({11,7}),"forecast rows did not anticipate the imminent task completion");
+        require(env.curr_task_schedule==original.curr_task_schedule && env.task_pool.size()==3 &&
+                env.task_pool.at(7).idx_next_loc==1 && env.task_pool.at(10).idx_next_loc==0 &&
+                env.task_pool.at(11).idx_next_loc==0,"forecast matching mutated the real assignment or task pool");
+        env.task_pool.clear();env.task_pool[11]=alternative;env.task_pool[10]=near;env.task_pool[7]=opened;
+        require(match(c,env)==schedule,"forecast matching depends on task insertion order");
+    }
+    auto completed=original;completed.task_pool.erase(7);completed.curr_states[1].location=2;
+    completed.curr_task_schedule={11,-1};
+    require(match(cfg,completed)==std::vector<int>({11,10}),"completed forecast did not become an ordinary free assignment");
+    auto one_task=original;one_task.task_pool.erase(11);
+    require(match(cfg,one_task)==std::vector<int>({10,7}),"forecast consumed the only task available to a real free robot");
+    auto two_legs=original;two_legs.task_pool.at(7).locations.push_back(3);
+    require(match(cfg,two_legs)==std::vector<int>({10,7}),"forecast treated an intermediate waypoint as completion");
+    auto distant=original;distant.curr_states[1].location=9;
+    require(match(cfg,distant)==std::vector<int>({10,7}),"forecast ignored its declared hop radius");
+    auto no_free=original;no_free.curr_task_schedule[0]=10;no_free.task_pool.at(10).idx_next_loc=1;
+    require(match(cfg,no_free)==no_free.curr_task_schedule,"forecast reassigned a busy-only team");
+    auto limited=cfg;limited.hungarian_limit=1;
+    require(match(limited,original)==std::vector<int>({10,7}),"forecast exceeded the declared matching row limit");
+    // The old constrained matrix remains in force: virtual rows cannot consume
+    // admission slots, defeat an optional idle price or a physical deadline.
+    for(int constraint:{0,1,2}) {
+        auto c=cfg;
+        if(constraint==0)c.active_task_cap=1;
+        if(constraint==1)c.admission_price=0;
+        if(constraint==2){c.horizon=1;c.match_feasible=true;}
+        const auto forecast=match(c,original);c.match_forecast_hops=0;
+        require(forecast==match(c,original) && forecast==std::vector<int>({-1,7}),
+                "forecast weakened a real capacity, idle or deadline constraint");
+    }
+    // Exercise complete task turnover, exact checkpoint restoration and both
+    // planner architectures. Physical legality and opened-task locks are checked
+    // by the independent simulation harness at every step.
+    cfg=Config{};cfg.match_forecast_hops=4;cfg.match_forecast_max=8;cfg.hungarian_limit=1000;
+    cfg.futures=32;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
+    cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
+    cfg.cost_cache=true;cfg.scratch_reuse=true;cfg.guided_matching=true;
+    const auto serial=simulate(cfg,12,5,5,true);
+    auto off=cfg;off.match_forecast_hops=0;
+    require(serial!=simulate(off,12),"forecast rows did not exercise dense task turnover");
+    cfg.threads=3;cfg.candidate_cache=true;cfg.kinematic_mask=true;cfg.share_prefix=true;
+    require(serial==simulate(cfg,12,5,5,true),"forecast turnover changed with cache, worker or checkpoint state");
+    cfg.rollout_match=true;cfg.chain_matching=true;cfg.threads=1;
+    const auto virtual_turnover=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(virtual_turnover==simulate(cfg,12),"real forecast matching changed with virtual task turnover workers");
+    cfg.rollout_match=false;cfg.chain_matching=false;cfg.window=8;cfg.window_keep=3;
+    cfg.window_iterations=8;cfg.window_islands=4;cfg.window_neighborhood=4;cfg.window_expansions=2000;
+    cfg.threads=1;const auto windowed=simulate(cfg,12,5,5,true);cfg.threads=3;
+    require(windowed==simulate(cfg,12),"windowed task forecasting depends on worker scheduling");
+
+    struct Setting {
+        std::string key,old;bool present;
+        Setting(const char* k,const char* v):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,v,1);
+        }
+        ~Setting(){if(present)setenv(key.c_str(),old.c_str(),1);else unsetenv(key.c_str());}
+    };
+    Setting hops("R05_MATCH_FORECAST_HOPS","4"),maximum("R05_MATCH_FORECAST_MAX","8"),joint("R05_HUNGARIAN","1000");
+    require(Config::environment(original).match_forecast_hops==4,"general forecast matching was rejected");
+    for(auto setting:std::vector<std::pair<const char*,const char*>>{
+            {"R05_MATCH_FORECAST_HOPS","-1"},{"R05_MATCH_FORECAST_HOPS","33"},
+            {"R05_MATCH_FORECAST_MAX","0"},{"R05_MATCH_FORECAST_MAX","257"},
+            {"R05_MATCH","0"},{"R05_HUNGARIAN","0"}}) {
+        Setting invalid(setting.first,setting.second);bool rejected=false;
+        try{Config::environment(original);}catch(const std::invalid_argument&){rejected=true;}
+        require(rejected,"invalid forecast matching configuration accepted");
+    }
+    {auto env=original;env.trick_instance="RANDOM-01";
+     Setting horizon("R05_HORIZON","600"),price("R05_MATCH_HORIZON_WEIGHT","1");bool rejected=false;
+     try{Config::environment(env);}catch(const std::invalid_argument&){rejected=true;}
+     require(rejected,"forecast rows silently ignored a horizon assignment price");}
+    cfg.match_forecast_hops=33;bool rejected=false;
+    try{Engine invalid(cfg);invalid.initialize(&original);}catch(const std::invalid_argument&){rejected=true;}
+    require(rejected,"direct initialization accepted an invalid forecast radius");
+}
+
 void remaining_work_priorities() {
     Config cfg;cfg.futures=64;cfg.continuations=4;cfg.continuation_start=2;cfg.depth=6;
     cfg.generations=2;cfg.elites=2;cfg.persist_elites=2;cfg.random_by_step=true;
@@ -3225,6 +3325,7 @@ int main() {
     // A one-visit ablation stalled; mobility is required of the selected four-visit policy.
     initial_task_length_preference();
     pickup_heading_matching();
+    forecast_assignment_rows();
     require(simulation(1,true)==simulation(1,true,0,0,1,0,0,0,0,true),"cached active rows changed the task-replacement trajectory");
     require(simulation(1,true,0,0,1,0,0,0,2)==simulation(2,true,0,0,1,0,0,0,2),"regional mutation changed with worker count");
     require(simulation(1,true,0,0,1,0,0,0.2)==simulation(2,true,0,0,1,0,0,0.2),"reverse-turn scoring changed with worker count");

@@ -2121,3 +2121,37 @@ settings retain --trick RANDOM-01.
 ## Trick: qualify RANDOM-04 whole-chain maximum2,783 (source166)
 
 The same-source full comparison gives2,783 with the existing whole-chain matcher versus the six-field-exact2,782 off control. Pickup-heading price is0. Both pass independent replay and strict limits; the candidate mean474.908/max792.001ms stays below1second. This is only a one-task selected development maximum. Freeze its exact seed4 repeat and contemporaneous paired seeds0/1/2/3 before launch; report these four pairs separately and with the original selecting pair. No held-out input is used. Preserve every failure and do not substitute older successful controls. Protocol: experiments/random04-record2783-v166-protocol.json.
+
+## Source167 hypothesis: anticipate soon-finishing robots in joint assignment
+
+RANDOM-01 already beats KK on pickup transitions and loaded routes for685common
+completed tasks; this rules out claiming a broad matching deficit. Earlier
+next-pickup path hints and uniform completion prices were negative. A distinct
+hypothesis is to let a robot on the final leg of its opened task participate in
+the current joint matching objective, so a free robot need not take a pickup
+that would be substantially cheaper after that nearby completion.
+
+General, default-off R05_MATCH_FORECAST_HOPS0..32 admits final-leg forecasts
+within that cell-hop radius. R05_MATCH_FORECAST_MAX1..256 (default32), spare
+real-task columns and the existing matching-row limit bound their count. Rows
+are ordered by collision-free oriented completion price then robot ID. Each
+prices completion heading plus the existing pickup/task-length/optional whole-
+chain price. The Hungarian/auction solver returns a complete assignment; only
+actual free rows enter the real schedule. Opened tasks remain locked and
+forecast rows do not reserve a future task across steps, reveal an order or
+modify motion planning. All currently visible spare tasks remain available to
+the next ordinary matching call.
+
+Forecasts are omitted when the existing matrix has an active admission cap,
+optional idle preference or any physical deadline rejection. They cannot consume
+an admission slot or starve a real row of its only task. Horizon-price matching
+is rejected with this experimental option. No known horizon or map identity is
+needed for the mechanism; selected trick presets keep their explicit gates.
+
+Regression includes a manually derived two-robot departure witness, real-task
+visibility/immutability, intermediate-goal exclusion, radius and row budgets,
+opened locks, exhausted task pools, admission/idle/deadline preservation, task
+turnover under both planners, caches/workers/checkpoints, and configuration
+bounds. Full comparison is required before claiming any throughput improvement.
+Prioritize paired RANDOM-01 tests and measure transfer on the five general
+profiles; selected capped04/05 cannot exercise this mechanism and stay separate.
