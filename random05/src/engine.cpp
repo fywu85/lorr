@@ -422,6 +422,10 @@ Config Config::environment(const SharedEnvironment& env) {
     if(match_skip_zero<0 || match_skip_zero>1)
         throw std::invalid_argument("zero matching update elision requires a boolean value");
     c.match_skip_zero=match_skip_zero;
+    const int match_simd=integer("R05_MATCH_SIMD",0);
+    if(match_simd<0 || match_simd>1)
+        throw std::invalid_argument("vectorized matching scans require a boolean value");
+    c.match_simd=match_simd;
     c.local_trials=integer("R05_LOCAL",0);c.horizon=integer("R05_HORIZON",0);
     const int match_feasible=integer("R05_MATCH_FEASIBLE",0);
     if(match_feasible<0 || match_feasible>1 || (match_feasible && (!random_trick || c.horizon<=0)))
@@ -1159,13 +1163,14 @@ void Engine::record_travel(const std::vector<Action>& actions) {
 
 std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,int nc,
     int dummy_columns,bool fast_dummy_prefix,bool prefer_free_ties,uint64_t* augment_scans,
-    int optional_columns,bool compact_optional,bool skip_zero_updates,uint64_t* zero_updates) {
+    int optional_columns,bool compact_optional,bool skip_zero_updates,uint64_t* zero_updates,bool vectorized_scan) {
     if(nr<0 || nc<nr || matrix.size()!=size_t(nr)*nc || dummy_columns<0 || dummy_columns>nr)
         throw std::invalid_argument("invalid rectangular matching problem");
     if(optional_columns<0 || optional_columns>nc-dummy_columns)
         throw std::invalid_argument("invalid optional matching columns");
     const int optional_start=nc-dummy_columns-optional_columns+1,optional_end=nc-dummy_columns;
     const bool compact=compact_optional && optional_columns>1;
+    const bool simd=vectorized_scan && !prefer_free_ties && matching_scan_simd_supported();
     if(compact)for(int row=0;row<nr;++row)for(int j=optional_start+1;j<=optional_end;++j)
         if(matrix[size_t(row)*nc+j-1]!=matrix[size_t(row)*nc+optional_start-1])
             throw std::invalid_argument("optional matching columns must be identical");
@@ -1214,6 +1219,13 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
         owner[0]=row;int column=0;
         std::fill(distance.begin(),distance.end(),1e30);
         std::fill(visited.begin(),visited.end(),0);
+        if(simd && compact) {
+            // Mark omitted identical free columns only for the SIMD scan. The
+            // compact dual update still visits exactly scan_columns, so these
+            // sentinels cannot write an owner or change a dual potential.
+            std::fill(visited.begin()+1,visited.end(),1);
+            for(size_t k=1;k<scan_columns.size();++k)visited[scan_columns[k]]=0;
+        }
         do {
             if(augment_scans)++*augment_scans;
             visited[column]=true;int active=owner[column],next_column=0;double delta=1e30;
@@ -1227,7 +1239,9 @@ std::vector<int> hungarian_assignment(const std::vector<float>& matrix,int nr,in
                 if(distance[j]<delta || (prefer_free_ties && distance[j]==delta &&
                    owner[j]==0 && owner[next_column]!=0)){delta=distance[j];next_column=j;}
             }};
-            if(compact)for(size_t k=1;k<scan_columns.size();++k)relax(scan_columns[k]);
+            if(simd)next_column=matching_scan_simd(matrix.data()+size_t(active-1)*nc,
+                v.data(),u[active],visited.data(),distance.data(),previous.data(),nc,column,delta);
+            else if(compact)for(size_t k=1;k<scan_columns.size();++k)relax(scan_columns[k]);
             else for(int j=1;j<=nc;++j)relax(j);
             auto update=[&](int j) {
                 if(visited[j]){u[owner[j]]+=delta;v[j]-=delta;}
@@ -1532,7 +1546,7 @@ void Engine::match(SharedEnvironment* env,std::vector<int>& schedule) {
         if(selected.empty()) {
             selected=hungarian_assignment(matrix,matching_rows,columns,dummy_columns,cfg.fast_admission,
                 cfg.match_free_ties,profile_match?&augment_scans:nullptr,optional_columns,cfg.compact_idle,
-                cfg.match_skip_zero,profile_match?&zero_updates:nullptr);
+                cfg.match_skip_zero,profile_match?&zero_updates:nullptr,cfg.match_simd);
             if(profile_match)std::fprintf(stderr,"R05_MATCH_DUAL t=%d scans=%llu zero_updates=%llu skip_zero=%d\n",
                 env->curr_timestep,(unsigned long long)augment_scans,(unsigned long long)zero_updates,int(cfg.match_skip_zero));
         }

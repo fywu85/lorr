@@ -1775,6 +1775,70 @@ void zero_matching_updates() {
     std::cout<<"exact zero-update assignments="<<comparisons<<"\n";
 }
 
+void vectorized_matching_scans() {
+    // Independent exact assignments, including signed zeros, negative keep
+    // bonuses, nonintegral costs, compulsory and optional idle columns. The
+    // complete augmenting scan count must stay fixed; only dual writes vanish.
+    for(float value:{0.f,-0.f,2.f,-2.f}) {
+        std::vector<float> matrix(32*48,value);uint64_t scans[2]{},zero[2]{};
+        const auto reference=hungarian_assignment(matrix,32,48,0,false,false,&scans[0],0,false,false,&zero[0]);
+        const auto elided=hungarian_assignment(matrix,32,48,0,false,false,&scans[1],0,false,true,&zero[1],true);
+        require(reference==elided && scans[0]==scans[1] && zero[0]==zero[1] && zero[0]>400,
+                "vectorized scan changed stable flat matching or its augmentations");
+    }
+    std::mt19937 random(221688);int comparisons=0;
+    for(int rows=1;rows<=12;++rows)for(int trial=0;trial<40;++trial) {
+        const int mandatory=random()%(rows+1),optional=random()%(rows+1);
+        const int real=rows+3,columns=real+optional+mandatory;
+        std::vector<float> matrix(size_t(rows)*columns);float minimum=0;
+        for(int row=0;row<rows;++row) {
+            for(int j=0;j<real;++j) {
+                const float value=(int(random()%25)-12)*(trial%2?.37f:.25f);
+                matrix[size_t(row)*columns+j]=value;minimum=std::min(minimum,value);
+            }
+            const float idle=(int(random()%15)-7)*.125f;minimum=std::min(minimum,idle);
+            for(int j=real;j<real+optional;++j)matrix[size_t(row)*columns+j]=idle;
+        }
+        for(int row=0;row<rows;++row)for(int j=real+optional;j<columns;++j)
+            matrix[size_t(row)*columns+j]=minimum-1;
+        for(bool fast:{false,true})for(bool compact:{false,true})for(bool free_ties:{false,true}) {
+            uint64_t scans[2]{},zero[2]{};
+            const auto reference=hungarian_assignment(matrix,rows,columns,mandatory,fast,free_ties,
+                &scans[0],optional,compact,false,&zero[0]);
+            const auto elided=hungarian_assignment(matrix,rows,columns,mandatory,fast,free_ties,
+                &scans[1],optional,compact,true,&zero[1],true);
+            require(reference==elided && scans[0]==scans[1] && zero[0]==zero[1],
+                    "vectorized scan changed rectangular/capacitated assignment or scans");
+            ++comparisons;
+        }
+    }
+    for(int mode=0;mode<3;++mode) {
+        Config cfg;cfg.hungarian_limit=1000;cfg.futures=8;cfg.depth=6;
+        cfg.random_by_step=true;cfg.chain_matching=true;cfg.fast_admission=true;
+        if(mode==1){cfg.active_task_cap=18;cfg.admission_price=4;cfg.compact_idle=true;}
+        if(mode==2){cfg.match_forecast_hops=4;cfg.match_forecast_max=8;}
+        const auto reference=simulate(cfg,12,5,5,true);
+        cfg.match_skip_zero=true;cfg.match_simd=true;cfg.threads=3;cfg.cost_cache=true;cfg.goal_cache=true;
+        require(reference==simulate(cfg,12,5,5,true),
+                "vectorized scan changed turnover, worker/cache or checkpoint behavior");
+    }
+    struct Setting {
+        const char* key;bool present;std::string old;
+        Setting(const char* k,const char* value):key(k),present(std::getenv(k)!=nullptr) {
+            if(present)old=std::getenv(k);setenv(k,value,1);
+        }
+        ~Setting(){if(present)setenv(key,old.c_str(),1);else unsetenv(key);}
+    };
+    Setting enabled("R05_MATCH_SIMD","1");auto env=environment(3,3,2);
+    require(Config::environment(env).match_simd,"general vectorized scan was rejected");
+    for(const char* value:{"-1","2"}) {
+        Setting invalid("R05_MATCH_SIMD",value);bool refused=false;
+        try{Config::environment(env);}catch(const std::invalid_argument&){refused=true;}
+        require(refused,"vectorized scan accepted a non-boolean option");
+    }
+    std::cout<<"exact SIMD assignments="<<comparisons<<"\n";
+}
+
 void exact_dummy_prefix() {
     std::mt19937 random(194837);
     int comparisons=0;
@@ -3326,7 +3390,7 @@ int main() {
     compact_prepared_rankings();
     active_travel_calibration();
     observed_progress_triage();
-    rectangular_matching_optimality();capacitated_auction();free_matching_ties();compact_optional_matching();zero_matching_updates();
+    rectangular_matching_optimality();capacitated_auction();free_matching_ties();compact_optional_matching();zero_matching_updates();vectorized_matching_scans();
     exact_dummy_prefix();
     active_task_admission();initial_task_admission();
     priced_task_admission();
