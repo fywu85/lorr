@@ -1,0 +1,11 @@
+{
+  "created_utc": "2026-09-22T05:34:37.361490+00:00",
+  "source_commit": "b429a0285b729e3a42d090b1c56cbc9abbdd4bd6",
+  "cases": "random05/experiments/random01-forecast-weight-full-v169.json",
+  "references": "random05/experiments/random01-forecast-weight-v169-references.json",
+  "hypothesis": "Maintain the radius8/max32 future coverage while discounting its contribution relative to immediate free-robot assignment. Smaller forecast population caps lost or tied; this changes objective weight rather than coverage.",
+  "design": "Selected RANDOM-01 planner seeds4/0 at weights1/0/.25/.5, plus general RANDOM-01 forecast off and radius8 at weights.25/.5/1. Twelve full600-step cases. All other selected/general settings frozen. R05_MATCH_SKIP_ZERO remains0 to isolate this algorithmic comparison from the separately qualified runtime optimization.",
+  "validation": "Strict1000ms entries,30000ms prep,32decimalGB,16boundphysical/32SMT workers; independent complete replay and source/input/resource/waiting checks. Four declared complete-trace controls:745/740 selected,727 general-off,726 general-weight1. Preserve failures.",
+  "qualification": "Development comparison on previously used archived input/planner seeds. Exact repeat and paired qualification required for new maxima. No fresh/heldout task/start input or unseen geometry used.",
+  "trick": "Selected profiles retain explicit --trick RANDOM-01 horizon settings. General profiles retain horizon0 and guidance none; the forecast-weight mechanism itself has no map or horizon dependency."
+}
