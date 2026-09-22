@@ -1838,3 +1838,14 @@ are full six-field exact. Leave3orders off. The separate guidance iteration tria
 produces a verified4254onRANDOM-05 at80updates (+12), while all03/04alternatives
 lose. Exact4254repeat plus three paired planner seeds is frozen before submission
 in e3a499af. This is selected progress, not yet a paired mean or fresh-input gain.
+
+
+## Observed-progress transfer to RANDOM-01/02/03 (2026-09-22T00:42:00.461066+00:00)
+
+Manifest inventory found no prior sparse/medium progress-mixture trials. Freeze
+three settings0/.125/.25atspan32 on each current selected01/02/03profile, with
+three disabled full-trace controls. RANDOM-04 adds .125/span32 and .25/span16/128
+around its .25/span32 record; the same-source2782control is already exact. All12
+use source162, existing explicit instance tricks, fixed search work and strict
+full horizons. This only transfers a previously measured dense-task correction;
+no new solver code, fresh input or claimed benefit. Audit and qualify any gain.

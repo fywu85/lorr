@@ -1,0 +1,27 @@
+{
+  "created_utc": "2026-09-22T00:42:00.461066+00:00",
+  "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+  "binary_sha256": "fda9057b35c275b4e7efeaa6394f321c39902c76c09d9ce16fd60386a8e3e556",
+  "purpose": "Test observed-task-progress horizon correction on sparse/medium selected profiles and refine the current RANDOM-04 observation window. All twelve cases frozen before launch.",
+  "historical_controls": {
+    "RANDOM-04": {
+      "tasks": 2782,
+      "source_commit": "4fb9498ef65e0b92dcb51dbbe2cd367dc9e0a4ad",
+      "evidence": "random05/results/random345-flow-iterations-split-full-v162/trick-random-04-flow-iterations20/summary.json",
+      "exact_control": "random05/results/random345-flow-iterations-split-full-v162/control-equivalence.json"
+    }
+  },
+  "expected_trace_controls": {
+    "trick-random-01-progress-transfer-mix0-span32": "runs/random05/random12-anneal-split-full-v162/trick-random-01-anneal-temp0p25/trick-random-01-anneal-temp0p25/result.json",
+    "trick-random-02-progress-transfer-mix0-span32": "runs/random05/random12-resume-cutoff-split-full-v132/trick-random-02-resume-cutoff-0p875/trick-random-02-resume-cutoff-0p875/result.json",
+    "trick-random-03-progress-transfer-mix0-span32": "runs/random05/random12345-physical-deadline-split-full-v162/trick-random-03-physical-deadline1/trick-random-03-physical-deadline1/result.json"
+  },
+  "rules": [
+    "RANDOM-01/02/03 each compare progress mixture0/.125/.25 at span32; all other current selected settings stay fixed.",
+    "RANDOM-04 tests previously unmeasured .125/span32 and .25/span16/128 around the current .25/span32. Same-source complete 2782 control already matches all six archived fields.",
+    "All cases use explicit --trick INSTANCE; observed progress is not a general no-horizon algorithm claim.",
+    "Full600/600/800/1000steps, strict1000ms entries,30000ms initialization,32GB guard,32workers/16bound physical EPYC9354cores.",
+    "Same archived inputs; no held-out stream generated or consulted. Retain every original failure and low score; independent audit precedes any promotion.",
+    "Current bests735/1408/2621/2782 are selected planner-seed records; any improvement requires its own exact repeat and paired-seed assessment."
+  ]
+}
